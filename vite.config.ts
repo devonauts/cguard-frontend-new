@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
-import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { sinComentariosHtml } from "./build/sinComentariosHtml";
@@ -23,8 +22,66 @@ const API_LOCAL = (() => {
   }
 })();
 
+// ── LOS GRUPOS DE LIBRERÍA ────────────────────────────────────────────────
+// Mismos grupos de siempre. Desde Vite 8 (Rolldown) se aplican como grupos de
+// `codeSplitting` (ver `build`), y por eso esta tabla va ANTES de la
+// configuración: se lee al evaluarla. `hacerTrozos` (abajo) decide el grupo.
+const GRUPOS: Record<string, string[]> = {
+  // Core React runtime
+  "vendor-react": ["react", "react-dom", "react-router-dom"],
+  // Form + validation
+  "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
+  // UI component library
+  "vendor-ui": [
+    "@radix-ui/react-dialog",
+    "@radix-ui/react-dropdown-menu",
+    "@radix-ui/react-select",
+    "@radix-ui/react-tabs",
+    "@radix-ui/react-tooltip",
+    "@radix-ui/react-accordion",
+    "@radix-ui/react-checkbox",
+    "@radix-ui/react-label",
+    "@radix-ui/react-popover",
+    "@radix-ui/react-scroll-area",
+    "@radix-ui/react-separator",
+    "@radix-ui/react-slot",
+    "@radix-ui/react-switch",
+  ],
+  // Date utilities
+  "vendor-dates": ["date-fns", "react-day-picker"],
+  // i18n
+  "vendor-i18n": ["i18next", "react-i18next"],
+  // Spreadsheet / export
+  "vendor-xlsx": ["xlsx"],
+  // Los dos armadores del PDF van juntos: `jspdf-autotable` no sirve de
+  // nada sin `jspdf`, y separados eran dos peticiones encadenadas —la
+  // segunda no puede empezar hasta que la primera resuelve— justo en el
+  // momento en que el usuario está esperando su archivo.
+  "vendor-pdf": ["jspdf", "jspdf-autotable"],
+  // Phone input
+  "vendor-phone": ["libphonenumber-js"],
+  // Notifications
+  "vendor-toast": ["sonner"],
+  // ── LOS ICONOS, EN UN SOLO FICHERO ──────────────────────────────
+  // Sin esto Rollup le hacía un trozo a CADA icono: 136 ficheros de
+  // menos de 1 KB de los 395 del build. El Horario pide una veintena, y
+  // cada uno es un viaje de ida y vuelta que se encola detrás de los
+  // demás — medido en producción: 900 ms por icono con la caché
+  // caliente y 8,5 s con la caché fría, para 300 bytes de contenido.
+  // Agrupados van en una sola petición.
+  "vendor-icons": ["lucide-react"],
+  // Heavy, feature-specific libs — split out so they never sit in the
+  // initial entry. Combined with route-level React.lazy, these only
+  // download when a user actually opens radio / maps.
+  "vendor-livekit": ["livekit-client"],
+  "vendor-maps": ["leaflet", "react-leaflet"],
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  // Vite 8 resolves the tsconfig `paths` (`@/*`) natively; this replaces the
+  // `vite-tsconfig-paths` plugin.
+  resolve: { tsconfigPaths: true },
   server: {
     proxy: {
       "/api": { target: API_LOCAL, changeOrigin: false },
@@ -32,7 +89,6 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    tsconfigPaths(),
     tailwindcss(),
     sinComentariosHtml(),
     precargaDeIdioma(),
@@ -220,18 +276,39 @@ export default defineConfig({
       },
     }),
   ],
-  // Defense-in-depth: strip console.*/debugger from production bundles so any
-  // stray payload/token logging never reaches the shipped app. esbuild applies
-  // `drop` only when minifying (i.e. production builds), leaving dev untouched.
-  esbuild: {
-    drop: ["console", "debugger"],
-  },
   build: {
     // Raise warning threshold — chunks are intentionally split below
     chunkSizeWarningLimit: 600,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: hacerTrozos,
+        // Defense-in-depth: strip console.*/debugger from production bundles so
+        // any stray payload/token logging never reaches the shipped app. Vite 8
+        // minifies with Oxc (the old `esbuild.drop` no longer reaches the
+        // minifier), so the drop lives in the minifier options. Only `vite
+        // build` minifies, so dev keeps its console.
+        minify: {
+          compress: { dropConsole: true, dropDebugger: true },
+          mangle: true,
+          codegen: true,
+        },
+        /* Rolldown mete en un grupo también las dependencias de lo que
+           captura, y gana el grupo de MÁS prioridad. Por eso cada librería es
+           su propio grupo con prioridad (en el orden de GRUPOS) y el ayudante
+           de precarga va primero: con un solo grupo se iba a `vendor-pdf` y
+           jsPDF y Leaflet volvían al arranque. `arranque` junta lo que el
+           index carga de salida; sin él eran 23 peticiones en vez de 8. Vale
+           con UNA sola entrada: con dos HTML juntaría el arranque de ambos. */
+        codeSplitting: {
+          groups: [
+            { name: "vite-precarga", test: /vite\/preload-helper/, priority: 100 },
+            ...Object.keys(GRUPOS).map((nombre, i) => ({
+              name: nombre,
+              priority: 50 - i,
+              test: (id: string) => hacerTrozos(id) === nombre,
+            })),
+            { name: "arranque", tags: ["$initial"], priority: 1 },
+          ],
+        },
       },
     },
   },
@@ -255,62 +332,6 @@ async function soloElArranque(entradas: { url: string; size: number }[]) {
 
   return { manifest, warnings: [] };
 }
-
-// ── LOS GRUPOS DE LIBRERÍA ────────────────────────────────────────────────
-// Mismos grupos de siempre. Lo que cambió es CÓMO se aplican: antes iban como
-// objeto y ahora los aplica `hacerTrozos`, porque hacía falta poder colocar a
-// mano el ayudante de precarga de Vite (ver abajo). El contenido de cada grupo
-// no se ha tocado.
-const GRUPOS: Record<string, string[]> = {
-  // Core React runtime
-  "vendor-react": ["react", "react-dom", "react-router-dom"],
-  // Form + validation
-  "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
-  // UI component library
-  "vendor-ui": [
-    "@radix-ui/react-dialog",
-    "@radix-ui/react-dropdown-menu",
-    "@radix-ui/react-select",
-    "@radix-ui/react-tabs",
-    "@radix-ui/react-tooltip",
-    "@radix-ui/react-accordion",
-    "@radix-ui/react-checkbox",
-    "@radix-ui/react-label",
-    "@radix-ui/react-popover",
-    "@radix-ui/react-scroll-area",
-    "@radix-ui/react-separator",
-    "@radix-ui/react-slot",
-    "@radix-ui/react-switch",
-  ],
-  // Date utilities
-  "vendor-dates": ["date-fns", "react-day-picker"],
-  // i18n
-  "vendor-i18n": ["i18next", "react-i18next"],
-  // Spreadsheet / export
-  "vendor-xlsx": ["xlsx"],
-  // Los dos armadores del PDF van juntos: `jspdf-autotable` no sirve de
-  // nada sin `jspdf`, y separados eran dos peticiones encadenadas —la
-  // segunda no puede empezar hasta que la primera resuelve— justo en el
-  // momento en que el usuario está esperando su archivo.
-  "vendor-pdf": ["jspdf", "jspdf-autotable"],
-  // Phone input
-  "vendor-phone": ["libphonenumber-js"],
-  // Notifications
-  "vendor-toast": ["sonner"],
-  // ── LOS ICONOS, EN UN SOLO FICHERO ──────────────────────────────
-  // Sin esto Rollup le hacía un trozo a CADA icono: 136 ficheros de
-  // menos de 1 KB de los 395 del build. El Horario pide una veintena, y
-  // cada uno es un viaje de ida y vuelta que se encola detrás de los
-  // demás — medido en producción: 900 ms por icono con la caché
-  // caliente y 8,5 s con la caché fría, para 300 bytes de contenido.
-  // Agrupados van en una sola petición.
-  "vendor-icons": ["lucide-react"],
-  // Heavy, feature-specific libs — split out so they never sit in the
-  // initial entry. Combined with route-level React.lazy, these only
-  // download when a user actually opens radio / maps.
-  "vendor-livekit": ["livekit-client"],
-  "vendor-maps": ["leaflet", "react-leaflet"],
-};
 
 /** De `/…/node_modules/@radix-ui/react-slot/dist/x.js` saca `@radix-ui/react-slot`.
  *  Se corta por el ÚLTIMO `node_modules/` (las dependencias anidadas cuentan por

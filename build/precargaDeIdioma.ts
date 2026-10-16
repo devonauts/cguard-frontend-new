@@ -47,16 +47,20 @@ export function precargaDeIdioma(): Plugin {
         const huella = createHash("sha256").update(guion).digest("hex").slice(0, 8);
         const fileName = `assets/precarga-idioma-${huella}.js`;
 
-        (ctx.bundle as any)[fileName] = {
-          type: "asset",
-          fileName,
-          name: "precarga-idioma.js",
-          names: ["precarga-idioma.js"],
-          originalFileName: null,
-          originalFileNames: [],
-          needsCodeReference: false,
-          source: guion,
+        /* Se EMITE con `emitFile`. Vite 8 compila con Rolldown, que ignora
+           (sólo avisa) lo que se asigna a mano en `ctx.bundle`: el script
+           salía en el HTML y su archivo no, un 404 en cada carga. Este hook
+           corre dentro del `generateBundle` de vite:build-html, así que
+           `this` es su contexto de plugin y tiene `emitFile`. */
+        const contexto = this as unknown as {
+          emitFile(archivo: {
+            type: "asset";
+            fileName: string;
+            source: string;
+          }): string;
         };
+
+        contexto.emitFile({ type: "asset", fileName, source: guion });
 
         return {
           html,
