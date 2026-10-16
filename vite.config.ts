@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -153,7 +155,20 @@ export default defineConfig({
           // ESOS alfabetos disponibles sin conexión, y no se pierden los del
           // usuario: el latino sí se precachea.
           "assets/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2",
+          // Las insignias de las tiendas, en ocho idiomas: 16 imágenes que el
+          // arranque no pinta. Se piden cuando una pantalla las muestra.
+          "assets/badges/**",
         ],
+        // ── SÓLO EL ARRANQUE SE DESCARGA POR ADELANTADO ─────────────────────
+        // Aun con las exclusiones de arriba quedaban ~440 ficheros que el SW se
+        // bajaba de fondo en la primera visita y tras CADA deploy: en la
+        // pestaña Red de app.cguardpro.com/login salían cientos de peticiones
+        // para una pantalla que pide 22. Ahora el precache es sólo lo que
+        // `index.html` carga para arrancar (entrada, sus modulepreload y su
+        // hoja) más los ficheros fijos de public/; cada pantalla se guarda en
+        // caché la primera vez que se abre (ver `runtimeCaching`). Offline
+        // sigue abriendo la app, y las pantallas ya visitadas.
+        manifestTransforms: [soloElArranque],
         // El chunk principal supera los 2 MB por defecto de Workbox.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         // SPA: cualquier navegación sin archivo propio cae al index…
@@ -183,7 +198,22 @@ export default defineConfig({
         // deja pasar directo a la red (passthrough) — que es lo correcto: el
         // caché de datos offline vive en react-query/IndexedDB, con claves por
         // empresa y limpieza en el cierre de sesión, no en un caché HTTP ciego.
-        runtimeCaching: [],
+        //
+        // Lo que SÍ va en caché al usarse: los ficheros con hash de /assets/
+        // (trozos, hojas, fuentes). El hash cambia con el contenido, así que
+        // CacheFirst es seguro: una URL dada nunca cambia de contenido.
+        runtimeCaching: [
+          {
+            urlPattern: ({ url, sameOrigin }) =>
+              sameOrigin && /^\/assets\/[^/]+-[\w-]{8}\.\w+$/.test(url.pathname),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "cg-trozos",
+              expiration: { maxEntries: 600, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+        ],
         // Los deploys borran los chunks viejos del servidor; limpiar también
         // los cachés viejos del SW.
         cleanupOutdatedCaches: true,
@@ -206,6 +236,25 @@ export default defineConfig({
     },
   },
 });
+
+/** Filtra el precache a lo que `index.html` necesita para arrancar. Los
+ *  ficheros con hash de `assets/` que el index no nombra se quedan fuera (se
+ *  guardan al usarse); lo que no lleva hash viene de public/ y se queda. */
+async function soloElArranque(entradas: { url: string; size: number }[]) {
+  const html = readFileSync(
+    fileURLToPath(new URL("./dist/index.html", import.meta.url)),
+    "utf8",
+  );
+  const delArranque = new Set(
+    [...html.matchAll(/(?:src|href)="\/(assets\/[^"?]+)"/g)].map((m) => m[1]),
+  );
+  const conHash = /^assets\/[^/]+-[\w-]{8}\.\w+$/;
+  const manifest = entradas.filter(
+    (e) => !conHash.test(e.url) || delArranque.has(e.url),
+  );
+
+  return { manifest, warnings: [] };
+}
 
 // ── LOS GRUPOS DE LIBRERÍA ────────────────────────────────────────────────
 // Mismos grupos de siempre. Lo que cambió es CÓMO se aplican: antes iban como
