@@ -49,6 +49,10 @@ export interface BillingSummary {
   /** `'reseller'` = la relación de cobro es con el distribuidor, no con nosotros. */
   billingOwnership?: "direct" | "reseller";
   managedBy?: ManagedByProvider | null;
+  /** Partner-billed only: the maximum seats its partner set (null/absent =
+   *  none). Sent only while a superadmin lets that partner manage seats. */
+  seatCap?: number | null;
+  seatsRemaining?: number | null;
   trial: {
     endsAt: string | null;
     daysLeft: number;

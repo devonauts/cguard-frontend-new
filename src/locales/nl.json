@@ -6194,6 +6194,12 @@
       "rejectedMsg": "We hebben je aanvraag bekeken en kunnen de gratis proefperiode voor dit account niet starten. Denk je dat dit een vergissing is, schrijf ons dan en we kijken er opnieuw naar.",
       "reasonLabel": "Reden",
       "contact": "Contact opnemen met support"
+    },
+    "partnerSeats": {
+      "label": "Gebruikers: {{usados}} van {{maximo}}",
+      "body": "{{proveedor}} bepaalt hoeveel gebruikers je bedrijf kan hebben. Heb je er meer nodig, vraag het hen.",
+      "bodyUnnamed": "Je leverancier bepaalt hoeveel gebruikers je bedrijf kan hebben. Heb je er meer nodig, vraag het hen.",
+      "full": "Je hebt je maximum bereikt. Vraag {{proveedor}} om meer gebruikers toe te voegen."
     }
   },
   "brand": {

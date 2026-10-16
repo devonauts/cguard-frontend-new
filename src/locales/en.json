@@ -642,6 +642,12 @@
       "rejectedMsg": "We reviewed your request and can't start the free trial for this account. If you think this is a mistake, write to us and we'll take another look.",
       "reasonLabel": "Reason",
       "contact": "Contact support"
+    },
+    "partnerSeats": {
+      "label": "Users: {{usados}} of {{maximo}}",
+      "body": "{{proveedor}} sets how many users your company can have. If you need more, ask them.",
+      "bodyUnnamed": "Your provider sets how many users your company can have. If you need more, ask them.",
+      "full": "You've reached your maximum. To add more users, ask {{proveedor}}."
     }
   },
   "categories": {

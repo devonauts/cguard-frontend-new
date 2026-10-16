@@ -6194,6 +6194,12 @@
       "rejectedMsg": "Abbiamo esaminato la tua richiesta e non possiamo attivare la prova gratuita per questo account. Se pensi che sia un errore, scrivici e la riesamineremo.",
       "reasonLabel": "Motivo",
       "contact": "Scrivi all'assistenza"
+    },
+    "partnerSeats": {
+      "label": "Utenti: {{usados}} di {{maximo}}",
+      "body": "{{proveedor}} stabilisce quanti utenti può avere la tua azienda. Se te ne servono altri, chiedili a loro.",
+      "bodyUnnamed": "Il tuo fornitore stabilisce quanti utenti può avere la tua azienda. Se te ne servono altri, chiedili a lui.",
+      "full": "Hai raggiunto il tuo massimo. Per aggiungere altri utenti, chiedi a {{proveedor}}."
     }
   },
   "brand": {

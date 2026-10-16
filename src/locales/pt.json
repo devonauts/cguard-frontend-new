@@ -7113,6 +7113,12 @@
       "rejectedMsg": "Analisamos sua solicitação e não podemos ativar o teste gratuito desta conta. Se você acha que é um erro, escreva para nós e analisaremos novamente.",
       "reasonLabel": "Motivo",
       "contact": "Falar com o suporte"
+    },
+    "partnerSeats": {
+      "label": "Usuários: {{usados}} de {{maximo}}",
+      "body": "{{proveedor}} define quantos usuários sua empresa pode ter. Se precisar de mais, peça a eles.",
+      "bodyUnnamed": "Seu provedor define quantos usuários sua empresa pode ter. Se precisar de mais, peça a eles.",
+      "full": "Você atingiu o seu máximo. Para adicionar mais usuários, peça a {{proveedor}}."
     }
   },
   "suscripcion": {

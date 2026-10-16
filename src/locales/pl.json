@@ -6196,6 +6196,12 @@
       "rejectedMsg": "Przejrzeliśmy Twoje zgłoszenie i nie możemy uruchomić bezpłatnego okresu próbnego dla tego konta. Jeśli uważasz, że to pomyłka, napisz do nas, a sprawdzimy je ponownie.",
       "reasonLabel": "Powód",
       "contact": "Napisz do wsparcia"
+    },
+    "partnerSeats": {
+      "label": "Użytkownicy: {{usados}} z {{maximo}}",
+      "body": "{{proveedor}} ustala, ilu użytkowników może mieć Twoja firma. Jeśli potrzebujesz więcej, poproś ich o to.",
+      "bodyUnnamed": "Twój dostawca ustala, ilu użytkowników może mieć Twoja firma. Jeśli potrzebujesz więcej, poproś go o to.",
+      "full": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś {{proveedor}}."
     }
   },
   "brand": {

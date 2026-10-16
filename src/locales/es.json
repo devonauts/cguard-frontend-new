@@ -642,6 +642,12 @@
       "rejectedMsg": "Revisamos tu solicitud y no podemos activar la prueba gratuita de esta cuenta. Si crees que es un error, escríbenos y la revisamos de nuevo.",
       "reasonLabel": "Motivo",
       "contact": "Escribir a soporte"
+    },
+    "partnerSeats": {
+      "label": "Usuarios: {{usados}} de {{maximo}}",
+      "body": "{{proveedor}} fija cuántos usuarios puede tener tu empresa. Si necesitas más, pídeselo a ellos.",
+      "bodyUnnamed": "Tu proveedor fija cuántos usuarios puede tener tu empresa. Si necesitas más, pídeselo a ellos.",
+      "full": "Llegaste a tu máximo. Para agregar más usuarios, pídeselo a {{proveedor}}."
     }
   },
   "categories": {

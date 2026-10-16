@@ -6194,6 +6194,12 @@
       "rejectedMsg": "Nous avons examiné votre demande et ne pouvons pas activer l'essai gratuit pour ce compte. Si vous pensez qu'il s'agit d'une erreur, écrivez-nous et nous la réexaminerons.",
       "reasonLabel": "Motif",
       "contact": "Contacter le support"
+    },
+    "partnerSeats": {
+      "label": "Utilisateurs : {{usados}} sur {{maximo}}",
+      "body": "{{proveedor}} fixe le nombre d'utilisateurs de votre entreprise. S'il vous en faut plus, demandez-le-lui.",
+      "bodyUnnamed": "Votre fournisseur fixe le nombre d'utilisateurs de votre entreprise. S'il vous en faut plus, demandez-le-lui.",
+      "full": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à {{proveedor}}."
     }
   },
   "brand": {

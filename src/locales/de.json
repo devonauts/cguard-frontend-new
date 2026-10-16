@@ -6194,6 +6194,12 @@
       "rejectedMsg": "Wir haben Ihre Anfrage geprüft und können die kostenlose Testphase für dieses Konto nicht freischalten. Wenn Sie glauben, dass es sich um einen Fehler handelt, schreiben Sie uns und wir sehen es uns noch einmal an.",
       "reasonLabel": "Grund",
       "contact": "Support kontaktieren"
+    },
+    "partnerSeats": {
+      "label": "Benutzer: {{usados}} von {{maximo}}",
+      "body": "{{proveedor}} legt fest, wie viele Benutzer Ihr Unternehmen haben kann. Wenn Sie mehr brauchen, wenden Sie sich an sie.",
+      "bodyUnnamed": "Ihr Anbieter legt fest, wie viele Benutzer Ihr Unternehmen haben kann. Wenn Sie mehr brauchen, wenden Sie sich an ihn.",
+      "full": "Sie haben Ihr Maximum erreicht. Um weitere Benutzer hinzuzufügen, wenden Sie sich an {{proveedor}}."
     }
   },
   "brand": {

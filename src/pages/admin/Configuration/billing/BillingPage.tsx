@@ -20,6 +20,7 @@ import PartnerBillingView from "./PartnerBillingView";
 
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
+import PartnerSeatLimit from "@/components/PartnerSeatLimit";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 import { Button } from "@/components/ui/button";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -433,6 +434,14 @@ export default function BillingPage() {
             defaultValue: "Suscripción",
           })}
         />
+        {!loading && esDeProveedor && data?.seatCap != null && (
+          /* The partner sets this company's maximum seats (superadmin switch). */
+          <PartnerSeatLimit
+            partnerName={data.managedBy?.name}
+            seatCap={data.seatCap}
+            seats={data.seats}
+          />
+        )}
         {loading ? (
           <SkeletonCards count={4} />
         ) : esDeProveedor && cobroEnLinea ? (
