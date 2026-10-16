@@ -502,7 +502,10 @@ const casos = (n: number, desde: number) =>
 
 const REAL = planDesdeHorarioReal(demo as any, (demo as any).rotations, demo.base, demo.tz);
 
-describe("Planificador · A · 2000 sesiones sobre la operación real de la demo", () => {
+/* Vitest 3+ also fails a SYNCHRONOUS test that outlives `testTimeout` (5 s);
+   Vitest 2 only timed out async tests. The heaviest seeds take 4-10 s on a
+   loaded machine, so this CPU-bound property suite gets its own ceiling. */
+describe("Planificador · A · 2000 sesiones sobre la operación real de la demo", { timeout: 60_000 }, () => {
   it.each(casos(2000, 10_000))("sesión real %i", (semilla) => {
     const r = azar(semilla);
     const pl = copiar(REAL.plan);

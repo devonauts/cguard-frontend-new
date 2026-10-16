@@ -738,7 +738,10 @@ function secuencia(semilla: number): Plan {
   return pl;
 }
 
-describe("Planificador · 955 secuencias de cambios sobre la operación real", () => {
+/* Vitest 3+ also fails a SYNCHRONOUS test that outlives `testTimeout` (5 s);
+   Vitest 2 only timed out async tests. The heaviest seeds take 4-10 s on a
+   loaded machine, so this CPU-bound property suite gets its own ceiling. */
+describe("Planificador · 955 secuencias de cambios sobre la operación real", { timeout: 60_000 }, () => {
   const semillas = Array.from({ length: 955 }, (_, i) => i + 1);
 
   it.each(semillas)("secuencia %i: tras cada cambio no queda nada imposible", (semilla) => {
