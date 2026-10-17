@@ -461,7 +461,12 @@
       "nota": "Keep the reference handy: it helps support find your case faster.",
       "vistaPrevia": "Preview: you are still signed in.",
       "volverAlPanel": "Back to the dashboard"
-    }
+    },
+    "enterLoginId": "Enter your email or username",
+    "forgotNoMailboxHint": "If your account has no email, ask your supervisor or the office for the link.",
+    "forgotSubtitleLoginId": "Enter your email or username and we'll send you a link to create a new one.",
+    "loginIdLabel": "Email or username",
+    "loginIdPlaceholder": "jmiranda or you@email.com"
   },
   "billing": {
     "title": "Subscription status",
@@ -2326,7 +2331,8 @@
         "invite_error": "Error sending invitations",
         "invites_sent": "Invitations sent",
         "profile_created": "Profile created",
-        "profile_created_sent": "Profile created and sent"
+        "profile_created_sent": "Profile created and sent",
+        "profileCreatedShare": "Profile created. Share their access so they can set their password."
       }
     },
     "notes": {
@@ -8993,7 +8999,11 @@
       "tuProveedorDeSeguridad": "your security provider",
       "vigilantesYPuestosEnTiempoReal": "Real-time guards and posts, GPS patrols, incidents, and reports.",
       "descargarEnGooglePlay": "Get it on Google Play",
-      "iniciaSesionEnLaAppConElCorreo": "Sign in to the app with the email and password you just created."
+      "iniciaSesionEnLaAppConElCorreo": "Sign in to the app with the email and password you just created.",
+      "correoOpcional": "Email (optional)",
+      "correoPlaceholder": "you@email.com",
+      "entraConTuUsuario": "To sign in, use your username: {{usuario}}",
+      "usuarioSinCorreoAyuda": "You'll sign in to the app with this username and the password you create here. If you have an email, you can add it below (optional)."
     },
     "AddressAutocomplete": {
       "miUbicacion": "My location",
@@ -17140,7 +17150,8 @@
       "addressPlaceholder": "Search the supervisor's address...",
       "operacion": "Operations",
       "invitesSent": "Invitations sent",
-      "inviteFailed": "Could not invite: {{emails}}"
+      "inviteFailed": "Could not invite: {{emails}}",
+      "creadoSinCorreo": "Supervisor created. Share their access so they can set their password."
     }
   },
   "coverage": {
@@ -18153,7 +18164,8 @@
       "nameInvalid": "The first name cannot contain numbers or invalid characters",
       "nameRequired": "The first name is required",
       "phoneE164": "Use the format e.g. +12015550123",
-      "phoneE164International": "Use international format, e.g. +12015550123"
+      "phoneE164International": "Use international format, e.g. +12015550123",
+      "emailRequiredOrNoEmail": "Enter their email or check “No email (username only)”"
     },
     "joinByCode": {
       "codeLength": "The code must be 6 digits",
@@ -19215,5 +19227,42 @@
     "back": "Go back",
     "goDashboard": "Go to dashboard",
     "goLogin": "Sign in"
+  },
+  "usuarioDeAcceso": {
+    "altaSinCorreoAyuda": "No email is sent: when you submit, we give you their link to share (by WhatsApp, for example).",
+    "ayuda": "They sign in to the app with this username (or their email). You can change it; the password stays the same.",
+    "cambiado": "Done: they now sign in with “{{usuario}}”.",
+    "cambiar": "Change username",
+    "compartir": {
+      "aviso": "The link is only for this person: with it they set the password of their account. Don't post it in groups.",
+      "copiado": "Copied",
+      "copiarEnlace": "Copy link",
+      "copiarUsuario": "Copy username",
+      "descripcionInvitacion": "Share this link so they can set their password.",
+      "descripcionRestablecer": "They have no email: share this link so they can set their new password.",
+      "enlace": "Link",
+      "listo": "Done",
+      "mensajeInvitacion": "Hi {{nombre}}. Your username for the app is: {{usuario}}. Create your password here: {{enlace}}",
+      "mensajeRestablecer": "Hi {{nombre}}. Your username for the app is: {{usuario}}. Set your new password here: {{enlace}}",
+      "noSeCopio": "Couldn't copy. Select the text and copy it by hand.",
+      "sinEnlace": "No link came back. Try “Resend invitation” from their profile.",
+      "titulo": "Their app access",
+      "tituloVarios": "Access details to share",
+      "usuario": "Username:",
+      "whatsapp": "Share via WhatsApp"
+    },
+    "comprobando": "Checking…",
+    "etiqueta": "Sign-in username",
+    "formato": "3 to 32 characters: letters without accents, numbers, dot, hyphen or underscore. Starts with a letter.",
+    "guardar": "Save username",
+    "libre": "Available",
+    "noSeCambio": "The username couldn't be changed.",
+    "ocupado": "That username is already taken.",
+    "placeholder": "jmiranda",
+    "reservado": "That word is reserved. Choose another.",
+    "sinCorreo": "No email (username only)",
+    "sinCorreoCorto": "No email",
+    "sinCorreoFicha": "No email: the invitation isn't sent; we give you the link to share.",
+    "sinRespuesta": "We couldn't check it now; it will be checked on save."
   }
 }

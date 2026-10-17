@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Mail, Send } from "lucide-react";
+import { ArrowLeft, Send, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -91,8 +91,8 @@ export default function ForgotPassword() {
 
     if (!value) {
       toast.error(
-        t("auth.enter_email", {
-          defaultValue: "Por favor ingresa tu correo electrónico",
+        t("auth.enterLoginId", {
+          defaultValue: "Escribe tu correo o tu usuario",
         }),
       );
 
@@ -123,11 +123,14 @@ export default function ForgotPassword() {
                   })}
             </button>
           }
-          texto={t("auth.signup.enviamosEnlace", {
+          texto={`${t("auth.signup.enviamosEnlace", {
             defaultValue:
               "Si hay una cuenta con {{correo}}, te llegará un enlace para crear una contraseña nueva.",
             correo: enviadoA,
-          })}
+          })} ${t("auth.forgotNoMailboxHint", {
+            defaultValue:
+              "Si tu cuenta no tiene correo, pide el enlace a tu supervisor o a la oficina.",
+          })}`}
           textoBoton={t("auth.back_to_login", {
             defaultValue: "Volver a iniciar sesión",
           })}
@@ -144,34 +147,45 @@ export default function ForgotPassword() {
             })}
           </h1>
           <p className="cg-reg-suave mb-5 mt-1.5 text-sm">
-            {t("auth.forgot_subtitle", {
+            {t("auth.forgotSubtitleLoginId", {
               defaultValue:
-                "Escribe tu correo y te enviamos un enlace para crear una nueva.",
+                "Escribe tu correo o tu usuario y te enviamos un enlace para crear una nueva.",
             })}
           </p>
           <form noValidate className="space-y-4" onSubmit={handleSubmit}>
+            {/* Correo O usuario: el servidor acepta los dos (ver login.tsx). */}
             <Campo
-              Icono={Mail}
+              Icono={UserRound}
               aviso={formError || undefined}
-              etiqueta={t("auth.email_label", {
-                defaultValue: "Correo electrónico",
+              etiqueta={t("auth.loginIdLabel", {
+                defaultValue: "Correo o usuario",
               })}
               htmlFor="email"
             >
               <input
-                autoComplete="email"
+                autoCapitalize="none"
+                autoComplete="username"
+                autoCorrect="off"
                 className={CAMPO}
                 disabled={isLoading}
                 id="email"
-                inputMode="email"
-                placeholder={t("auth.email_placeholder", {
-                  defaultValue: "tu@correo.com",
+                inputMode="text"
+                name="username"
+                placeholder={t("auth.loginIdPlaceholder", {
+                  defaultValue: "jmiranda o tu@correo.com",
                 })}
-                type="email"
+                spellCheck={false}
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Campo>
+            <p className="cg-reg-suave -mt-1 text-xs">
+              {t("auth.forgotNoMailboxHint", {
+                defaultValue:
+                  "Si tu cuenta no tiene correo, pide el enlace a tu supervisor o a la oficina.",
+              })}
+            </p>
 
             <BotonDeAccion estado={accion.estado} type="submit">
               <Send className="h-4 w-4" />

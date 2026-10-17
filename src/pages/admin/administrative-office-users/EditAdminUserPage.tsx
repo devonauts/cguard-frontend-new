@@ -58,6 +58,7 @@ import {
   IconTile,
 } from "@/components/kit";
 import { roleDisplayDescription } from "@/config/roleLabels";
+import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import {
   UserCog,
   ShieldCheck,
@@ -341,6 +342,7 @@ export default function EditAdminUserPage() {
         setApellidos(user.lastName ?? a0.join(" ") ?? "");
         setNombreOriginal({ first: user.firstName ?? "", last: user.lastName ?? "" });
         setValue("email", user.email || "");
+        setAlias(user.username || null);
         // Prefill the optional office location (self-attendance geofence).
         setOffice({
           address: user.officeAddress || "",
@@ -613,6 +615,8 @@ export default function EditAdminUserPage() {
     );
   };
 
+  // El usuario para entrar (alias): se cambia aparte, con efecto inmediato.
+  const [alias, setAlias] = useState<string | null>(null);
   const [nombres, setNombres] = useState("");
   const [apellidos, setApellidos] = useState("");
   const [nombreOriginal, setNombreOriginal] = useState<{ first: string; last: string } | null>(null);
@@ -821,6 +825,14 @@ export default function EditAdminUserPage() {
                     </FormItem>
                   )}
                 />
+
+                {id && (
+                  <UsuarioDeAccesoEditable
+                    userId={String(id)}
+                    username={alias}
+                    onCambiado={setAlias}
+                  />
+                )}
               </div>
 
               {/* ── QUÉ PUEDE HACER ──────────────────────────────────── */}

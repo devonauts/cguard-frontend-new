@@ -151,12 +151,20 @@ export const createProfileSchema = z.object({
     .or(z.literal("")),
 
   // ── Contact ────────────────────────────────────────────────────────────
+  // El correo es obligatorio SALVO con «Sin correo (sólo usuario)»: esa regla
+  // cruza dos campos y vive en `exigirCorreoSalvoSinCorreo` (abajo).
   email: z
     .string()
     .trim()
     .email({
       error: msg("validation.common.emailInvalid", "Ingrese un correo válido"),
-    }),
+    })
+    .optional()
+    .or(z.literal("")),
+  /** Alta sin correo: la persona entra sólo con su usuario (alias). */
+  sinCorreo: z.boolean().optional(),
+  /** El usuario para entrar que eligió la empresa (lo valida el servidor). */
+  username: z.string().trim().max(32, maxChars(32)).optional().or(z.literal("")),
   phone: z
     .string()
     .trim()
@@ -202,3 +210,32 @@ export const createProfileSchema = z.object({
 });
 
 export type CreateProfileValues = z.infer<typeof createProfileSchema>;
+
+/**
+ * Correo obligatorio salvo «Sin correo (sólo usuario)». Va como refinamiento
+ * aparte —y no dentro del objeto— porque zod 4 no deja hacer `.omit()` /
+ * `.extend()` sobre un objeto con refinamientos, y el alta de supervisor parte
+ * de este mismo esquema:
+ *
+ *   createProfileSchema.superRefine(exigirCorreoSalvoSinCorreo)
+ */
+export function exigirCorreoSalvoSinCorreo(
+  v: { email?: string; sinCorreo?: boolean },
+  ctx: z.RefinementCtx,
+) {
+  if (!v.sinCorreo && !String(v.email || "").trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["email"],
+      message: i18n.t(
+        "validation.common.emailRequiredOrNoEmail",
+        "Escribe su correo o marca «Sin correo (sólo usuario)»",
+      ),
+    });
+  }
+}
+
+/** El esquema del alta de vigilante («Crear perfil»), con la regla del correo. */
+export const createProfileFormSchema = createProfileSchema.superRefine(
+  exigirCorreoSalvoSinCorreo,
+);

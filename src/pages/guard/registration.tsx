@@ -14,6 +14,7 @@ import userService from "@/lib/api/userService";
 import { AuthService } from "@/services/auth/authService";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import { InfoNote } from "@/components/kit";
+import { correoVisible } from "@/lib/correoVisible";
 import i18n from "@/i18n";
 
 /**
@@ -87,6 +88,15 @@ export default function GuardRegistration() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [lockedEmail, setLockedEmail] = useState(false);
+  /* CUENTA SIN BUZÓN: la empresa la dio de alta «sin correo» (o por teléfono)
+     y la persona entra con su USUARIO (`jmiranda`). El servidor manda entonces
+     `guard.email = null` y `guard.username`: se enseña el usuario, de sólo
+     lectura, y el correo deja de ser obligatorio (si escribe uno de verdad,
+     se guarda como siempre). */
+  const [sinBuzon, setSinBuzon] = useState(false);
+  const [usuarioParaEntrar, setUsuarioParaEntrar] = useState<string | null>(
+    null,
+  );
   const [lockedPhone, setLockedPhone] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -194,7 +204,12 @@ export default function GuardRegistration() {
           (data.fullName
             ? String(data.fullName).split(" ").slice(1).join(" ")
             : undefined);
-        const emailCandidate = data.email || data.guard?.email || undefined;
+        // Un correo inventado (`…@sin-correo.local`, `…@phone.local`) no se
+        // enseña ni se bloquea: no es de la persona.
+        const emailCandidate =
+          correoVisible(data.guard?.email) ||
+          correoVisible(data.email) ||
+          undefined;
         const phoneCandidate =
           data.guard?.phoneNumber ||
           data.phoneNumber ||
@@ -221,6 +236,9 @@ export default function GuardRegistration() {
         if (emailCandidate) {
           setEmail(emailCandidate);
           setLockedEmail(true);
+        } else if (data.guard) {
+          setSinBuzon(true);
+          setUsuarioParaEntrar(data.guard.username || null);
         }
         if (phoneCandidate) {
           setPhone(phoneCandidate);
@@ -367,12 +385,14 @@ export default function GuardRegistration() {
             "invite.val.lastname_required",
             "El apellido es obligatorio",
           );
-        if (!email?.trim())
-          nextErrors.email = t(
-            "invite.val.email_required",
-            "El correo electrónico es obligatorio",
-          );
-        else if (!validateEmail(email))
+        // Sin buzón el correo es opcional: sólo se valida si lo escribe.
+        if (!email?.trim()) {
+          if (!sinBuzon)
+            nextErrors.email = t(
+              "invite.val.email_required",
+              "El correo electrónico es obligatorio",
+            );
+        } else if (!validateEmail(email.trim()))
           nextErrors.email = t(
             "invite.val.email_invalid",
             "Correo electrónico inválido",
@@ -481,12 +501,14 @@ export default function GuardRegistration() {
             "invite.val.lastname_required",
             "El apellido es obligatorio",
           );
-        if (!email?.trim())
-          nextErrors.email = t(
-            "invite.val.email_required",
-            "El correo electrónico es obligatorio",
-          );
-        else if (!validateEmail(email))
+        // Sin buzón el correo es opcional: sólo se valida si lo escribe.
+        if (!email?.trim()) {
+          if (!sinBuzon)
+            nextErrors.email = t(
+              "invite.val.email_required",
+              "El correo electrónico es obligatorio",
+            );
+        } else if (!validateEmail(email.trim()))
           nextErrors.email = t(
             "invite.val.email_invalid",
             "Correo electrónico inválido",
@@ -621,6 +643,15 @@ export default function GuardRegistration() {
           phone || payload.guard.phoneNumber || payload.phoneNumber || null;
         // Include password if user provided one so backend can set it on create
         if (password) payload.password = password;
+        // Sin buzón y sin correo escrito: no se manda ninguno (la cuenta
+        // conserva el suyo sin buzón; nunca se pisa con un vacío).
+        if (sinBuzon && !email.trim()) {
+          delete payload.email;
+          delete payload.guard.email;
+        } else if (email.trim()) {
+          payload.email = email.trim();
+          payload.guard.email = email.trim();
+        }
       } else {
         payload = {
           firstName: firstName || undefined,
@@ -1047,6 +1078,14 @@ export default function GuardRegistration() {
                     "Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.",
                   )}
                 </p>
+                {sinBuzon && usuarioParaEntrar && (
+                  <p className="mt-1 text-xs text-foreground">
+                    {t("ui.registration.entraConTuUsuario", {
+                      defaultValue: "Para entrar usa tu usuario: {{usuario}}",
+                      usuario: usuarioParaEntrar,
+                    })}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -1150,20 +1189,52 @@ export default function GuardRegistration() {
                   </div>
                 )}
               </div>
+              {sinBuzon && (
+                <div className="md:col-span-2">
+                  <label className={labelClass}>
+                    {t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                  </label>
+                  <Input
+                    readOnly
+                    className={`${formControl} font-mono`}
+                    value={usuarioParaEntrar || "—"}
+                  />
+                  <p
+                    className="mt-1 text-xs"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t(
+                      "ui.registration.usuarioSinCorreoAyuda",
+                      "Con este usuario y la contraseña que crees aquí entrarás a la app. Si tienes un correo, puedes añadirlo abajo (es opcional).",
+                    )}
+                  </p>
+                </div>
+              )}
               <div className="md:col-span-2">
                 <label className={labelClass}>
-                  {t("ui.registration.correoElectronico", "Correo electrónico")}
-                  <span aria-hidden style={{ color: "var(--brand-text)" }}>
-                    *
-                  </span>
+                  {sinBuzon
+                    ? t(
+                        "ui.registration.correoOpcional",
+                        "Correo electrónico (opcional)",
+                      )
+                    : t("ui.registration.correoElectronico", "Correo electrónico")}
+                  {!sinBuzon && (
+                    <span aria-hidden style={{ color: "var(--brand-text)" }}>
+                      *
+                    </span>
+                  )}
                 </label>
                 <Input
                   className={formControl}
                   disabled={isLoading || lockedEmail}
-                  placeholder={t(
-                    "ui.registration.correoElectronico2",
-                    "Correo electrónico*",
-                  )}
+                  placeholder={
+                    sinBuzon
+                      ? t("ui.registration.correoPlaceholder", "tu@correo.com")
+                      : t(
+                          "ui.registration.correoElectronico2",
+                          "Correo electrónico*",
+                        )
+                  }
                   style={errorStyle("email")}
                   type="email"
                   value={email}

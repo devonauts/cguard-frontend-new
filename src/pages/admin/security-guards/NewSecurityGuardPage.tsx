@@ -43,6 +43,12 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CampoUsuarioDeAcceso } from "@/components/usuarioDeAcceso/CampoUsuarioDeAcceso";
+import {
+  type AccesoParaCompartir,
+  useCompartirAcceso,
+} from "@/components/usuarioDeAcceso/CompartirAcceso";
 
 import {
   inviteByOptions,
@@ -61,7 +67,7 @@ import {
   type InviteByLinkFormValues,
 } from "@/lib/validators/invite-by-link.schema";
 import {
-  createProfileSchema,
+  createProfileFormSchema,
   type CreateProfileValues,
   BLOOD_TYPES,
   GENDER_OPTIONS,
@@ -211,11 +217,30 @@ export default function NewSecurityGuardPage() {
   } = useFieldArray({ control: inviteCtrl, name: "entries" });
   const inviteEntries = useWatch({ control: inviteCtrl, name: "entries" });
 
+  // La ventana «Usuario: jmiranda · comparte este enlace» de las altas sin correo.
+  const compartir = useCompartirAcceso();
+
   const onSubmitInvite = async (v: SecurityGuardsFormValues) => {
+    /* UNO A UNO. El servidor atiende una invitación por llamada (de `entries`
+       toma la primera), y cada alta sin correo devuelve SU usuario y SU
+       enlace, que hay que enseñar. Lo que ya salió se quita del formulario si
+       otro falla, para que reintentar no lo duplique. */
+    const accesos: AccesoParaCompartir[] = [];
+    const hechos: number[] = [];
+
     try {
       console.log("[NewSecurityGuardPage] invite payload ->", v.entries);
       // Normalize entries so backend receives explicit phoneNumber/email fields
-      const payload = v.entries.map((e) => ({
+      const payload = v.entries.map((e) => e.inviteBy === "Sin correo" ? ({
+        firstName: e.firstName,
+        lastName: e.lastName,
+        // Ni correo ni teléfono: entra con su usuario (alias). El servidor le
+        // pone un correo sin buzón y devuelve el enlace para compartirlo.
+        sinCorreo: true,
+        ...((e as any).username?.trim()
+          ? { username: (e as any).username.trim() }
+          : {}),
+      }) : ({
         firstName: e.firstName,
         lastName: e.lastName,
         // send arrays and keep single-value compatibility
@@ -238,13 +263,32 @@ export default function NewSecurityGuardPage() {
         // Do not include `roles` here — backend sets securityGuard role server-side
         inviteBy: e.inviteBy,
       }));
-      await securityGuardService.invite(payload);
+      for (let i = 0; i < payload.length; i++) {
+        const r: any = await securityGuardService.invite([payload[i]]);
+        const e = v.entries[i];
+
+        hechos.push(i);
+        // Sin buzón (sin correo, o por SMS, que el servidor no envía): el
+        // enlace vuelve aquí y es la única forma de hacérselo llegar.
+        if (e.inviteBy !== "Correo Electrónico" && r?.invitationLink) {
+          accesos.push({
+            nombre: `${e.firstName} ${e.lastName}`.trim(),
+            username: r?.username || null,
+            link: r.invitationLink,
+          });
+        }
+      }
       console.log("[NewSecurityGuardPage] invite response: sent");
       toast.success(t("guards.new.toasts.invites_sent"));
       // After successful invite, navigate back to the security guards list
-      navigate("/security-guards");
+      // (después de compartir los accesos, si los hay).
+      compartir.abrir(accesos, "invitacion", () => navigate("/security-guards"));
     } catch (e: any) {
       console.error("[NewSecurityGuardPage] invite error <-", e);
+      if (hechos.length) {
+        inviteRemove(hechos);
+        compartir.abrir(accesos, "invitacion");
+      }
       try {
         const { applyValidationErrorsToForm } = await import(
           "@/lib/utils/formErrorMapper"
@@ -363,7 +407,7 @@ export default function NewSecurityGuardPage() {
   /* ============== TAB 4: CREAR PERFIL ============== */
   const createIntentRef = useRef<"create" | "create_send">("create");
   const createForm = useForm<CreateProfileValues>({
-    resolver: zodResolver(createProfileSchema),
+    resolver: zodResolver(createProfileFormSchema),
     defaultValues: {
       firstName: "",
       middleName: "",
@@ -376,6 +420,8 @@ export default function NewSecurityGuardPage() {
       hiringContractDate: "",
       guardCredentials: "",
       email: "",
+      sinCorreo: false,
+      username: "",
       phone: "",
       homeAddress: "",
       homeAddressLat: undefined,
@@ -534,6 +580,16 @@ export default function NewSecurityGuardPage() {
           ? [rest.stationId]
           : [];
       delete rest.stationId;
+      /* SIN CORREO: no viaja ningún correo y sí `sinCorreo: true`; la persona
+         entra con su usuario y la contraseña la pone desde el enlace que
+         devuelve el alta (`invitationLink`), que se comparte aquí mismo. */
+      if (rest.sinCorreo) {
+        delete rest.email;
+        rest.sinCorreo = true;
+      } else {
+        delete rest.sinCorreo;
+      }
+      if (!String(rest.username || "").trim()) delete rest.username;
       const payload = {
         ...rest,
         ...(stationIds.length ? { stationIds } : {}),
@@ -565,7 +621,16 @@ export default function NewSecurityGuardPage() {
       };
 
       const creado: any = await securityGuardService.create(payload);
-      toast.success(t("guards.new.toasts.profile_created_sent"));
+      const enlace: string | null =
+        creado?.invitationLink || creado?.data?.invitationLink || null;
+      toast.success(
+        enlace
+          ? t(
+              "guards.new.toasts.profileCreatedShare",
+              "Perfil creado. Comparte su acceso para que ponga su contraseña.",
+            )
+          : t("guards.new.toasts.profile_created_sent"),
+      );
 
       // La hoja de vida que se importó queda ARCHIVADA en el expediente. Va
       // después de crear porque hasta aquí no existe el vigilante al que
@@ -609,7 +674,20 @@ export default function NewSecurityGuardPage() {
       createForm.reset();
       setGuardDocs(emptyDocs());
       setHojaDeVida(null);
-      navigate("/security-guards");
+      compartir.abrir(
+        enlace
+          ? [
+              {
+                nombre: `${v.firstName} ${v.lastName}`.trim(),
+                username:
+                  creado?.username || creado?.data?.username || v.username || null,
+                link: enlace,
+              },
+            ]
+          : [],
+        "invitacion",
+        () => navigate("/security-guards"),
+      );
     } catch (e: any) {
       console.error("[NewSecurityGuardPage] createProfile error <-", e);
       try {
@@ -678,7 +756,13 @@ export default function NewSecurityGuardPage() {
   const translateInviteByLabel = (val: string) =>
     val === "SMS"
       ? t("guards.new.form.contactSms")
-      : t("guards.new.form.contactEmail");
+      : val === "Sin correo"
+        ? t("usuarioDeAcceso.sinCorreo", "Sin correo (sólo usuario)")
+        : t("guards.new.form.contactEmail");
+
+  const createSinCorreo = useWatch({ control: createCtrl, name: "sinCorreo" });
+  const createNombre = useWatch({ control: createCtrl, name: "firstName" });
+  const createApellido = useWatch({ control: createCtrl, name: "lastName" });
 
   return (
     <AppLayout>
@@ -799,6 +883,38 @@ export default function NewSecurityGuardPage() {
                         </div>
 
                         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+                          {inviteBy === "Sin correo" ? (
+                            <FormField
+                              control={inviteCtrl}
+                              name={`entries.${idx}.username` as any}
+                              render={({ field }) => (
+                                <FormItem className="md:col-span-2">
+                                  <FormLabel>
+                                    {t(
+                                      "usuarioDeAcceso.etiqueta",
+                                      "Usuario para entrar",
+                                    )}
+                                  </FormLabel>
+                                  <FormControl>
+                                    <CampoUsuarioDeAcceso
+                                      sugerir
+                                      firstName={inviteEntries?.[idx]?.firstName}
+                                      lastName={inviteEntries?.[idx]?.lastName}
+                                      value={String(field.value || "")}
+                                      onChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                  <FormDescription>
+                                    {t(
+                                      "usuarioDeAcceso.altaSinCorreoAyuda",
+                                      "No le llega ningún correo: al enviar te damos su enlace para que lo compartas (por WhatsApp, por ejemplo).",
+                                    )}
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          ) : (
                           <FormField
                             control={inviteCtrl}
                             name={`entries.${idx}.contact`}
@@ -817,6 +933,7 @@ export default function NewSecurityGuardPage() {
                               </FormItem>
                             )}
                           />
+                          )}
                           {/* Client + station selectors removed: guards are created
                               independently and assigned to a station later (everything
                               is station-based). Use "Asignar a estación" on the guards
@@ -1318,17 +1435,46 @@ export default function NewSecurityGuardPage() {
                                 "ui.NewSecurityGuard.correoElectronico",
                                 "Correo Electrónico",
                               )}{" "}
-                              <span className="text-destructive">*</span>
+                              {!createSinCorreo && (
+                                <span className="text-destructive">*</span>
+                              )}
                             </FormLabel>
                             <FormControl>
                               <Input
                                 type="email"
+                                disabled={!!createSinCorreo}
                                 placeholder={t(
                                   "ui.NewSecurityGuardPage.vigilanteEjemploCom",
                                 )}
                                 {...field}
+                                value={createSinCorreo ? "" : field.value || ""}
                               />
                             </FormControl>
+                            {/* Sin correo: entra sólo con su usuario y la
+                                contraseña la pone desde el enlace que se
+                                comparte al terminar el alta. */}
+                            <FormField
+                              control={createCtrl}
+                              name="sinCorreo"
+                              render={({ field: f }) => (
+                                <label className="mt-2 flex cursor-pointer items-center gap-2 text-sm">
+                                  <Checkbox
+                                    checked={!!f.value}
+                                    onCheckedChange={(c) => {
+                                      f.onChange(c === true);
+                                      if (c === true)
+                                        setCreateValue("email", "", {
+                                          shouldValidate: true,
+                                        });
+                                    }}
+                                  />
+                                  {t(
+                                    "usuarioDeAcceso.sinCorreo",
+                                    "Sin correo (sólo usuario)",
+                                  )}
+                                </label>
+                              )}
+                            />
                             <FormMessage />
                           </FormItem>
                         )}
@@ -1348,6 +1494,33 @@ export default function NewSecurityGuardPage() {
                               <PhoneInput
                                 value={field.value || ""}
                                 onChange={(val: string) => field.onChange(val)}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <FormField
+                        control={createCtrl}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {t(
+                                "usuarioDeAcceso.etiqueta",
+                                "Usuario para entrar",
+                              )}
+                            </FormLabel>
+                            <FormControl>
+                              <CampoUsuarioDeAcceso
+                                sugerir
+                                firstName={createNombre}
+                                lastName={createApellido}
+                                value={field.value || ""}
+                                onChange={field.onChange}
                               />
                             </FormControl>
                             <FormMessage />
@@ -1617,6 +1790,7 @@ export default function NewSecurityGuardPage() {
             </>
           )}
         </GuardTabsHeader>
+        {compartir.dialogo}
       </PageContainer>
     </AppLayout>
   );

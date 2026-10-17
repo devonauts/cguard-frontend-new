@@ -331,7 +331,12 @@
       "nota": "Halten Sie die Referenz bereit: Damit findet der Support Ihren Fall schneller.",
       "vistaPrevia": "Vorschau: Sie sind weiterhin angemeldet.",
       "volverAlPanel": "Zurück zum Dashboard"
-    }
+    },
+    "enterLoginId": "Geben Sie Ihre E-Mail oder Ihren Benutzernamen ein",
+    "forgotNoMailboxHint": "Hat Ihr Konto keine E-Mail, bitten Sie Ihre Aufsicht oder das Büro um den Link.",
+    "forgotSubtitleLoginId": "Geben Sie Ihre E-Mail oder Ihren Benutzernamen ein und wir senden Ihnen einen Link für ein neues Passwort.",
+    "loginIdLabel": "E-Mail oder Benutzername",
+    "loginIdPlaceholder": "jmiranda oder sie@email.com"
   },
   "client": {
     "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig.",
@@ -2120,7 +2125,8 @@
         "invite_error": "Die Einladungen konnten nicht gesendet werden",
         "invites_sent": "Einladungen gesendet",
         "profile_created": "Profil angelegt",
-        "profile_created_sent": "Profil angelegt und gesendet"
+        "profile_created_sent": "Profil angelegt und gesendet",
+        "profileCreatedShare": "Profil erstellt. Teilen Sie den Zugang, damit die Person ihr Passwort setzt."
       }
     },
     "notes": {
@@ -8977,7 +8983,8 @@
       "addressPlaceholder": "Adresse des Supervisors suchen...",
       "operacion": "Einsatz",
       "invitesSent": "Einladungen gesendet",
-      "inviteFailed": "Einladung fehlgeschlagen: {{emails}}"
+      "inviteFailed": "Einladung fehlgeschlagen: {{emails}}",
+      "creadoSinCorreo": "Aufsicht erstellt. Teilen Sie den Zugang, damit die Person ihr Passwort setzt."
     }
   },
   "suscripcion": {
@@ -9527,7 +9534,11 @@
       "tuProveedorDeSeguridad": "Ihrem Sicherheitsdienstleister",
       "vigilantesYPuestosEnTiempoReal": "Sicherheitskräfte und Posten in Echtzeit, GPS-Rundgänge, Vorfälle und Berichte.",
       "descargarEnGooglePlay": "Jetzt bei Google Play",
-      "iniciaSesionEnLaAppConElCorreo": "Melden Sie sich in der App mit der E-Mail-Adresse und dem Passwort an, die Sie gerade erstellt haben."
+      "iniciaSesionEnLaAppConElCorreo": "Melden Sie sich in der App mit der E-Mail-Adresse und dem Passwort an, die Sie gerade erstellt haben.",
+      "correoOpcional": "E-Mail (optional)",
+      "correoPlaceholder": "sie@email.com",
+      "entraConTuUsuario": "Zum Anmelden verwenden Sie Ihren Benutzernamen: {{usuario}}",
+      "usuarioSinCorreoAyuda": "Mit diesem Benutzernamen und dem hier erstellten Passwort melden Sie sich in der App an. Haben Sie eine E-Mail, können Sie sie unten angeben (optional)."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mein Standort",
@@ -18153,7 +18164,8 @@
       "nameInvalid": "Der Vorname darf keine Ziffern oder ungültigen Zeichen enthalten",
       "nameRequired": "Der Vorname ist erforderlich",
       "phoneE164": "Format verwenden, z. B. +12015550123",
-      "phoneE164International": "Internationales Format verwenden, z. B. +12015550123"
+      "phoneE164International": "Internationales Format verwenden, z. B. +12015550123",
+      "emailRequiredOrNoEmail": "Geben Sie die E-Mail ein oder wählen Sie „Ohne E-Mail (nur Benutzername)“"
     },
     "joinByCode": {
       "codeLength": "Der Code muss 6 Ziffern haben",
@@ -19215,5 +19227,42 @@
     "back": "Zurück",
     "goDashboard": "Zum Dashboard",
     "goLogin": "Anmelden"
+  },
+  "usuarioDeAcceso": {
+    "altaSinCorreoAyuda": "Es wird keine E-Mail gesendet: Beim Absenden erhalten Sie den Link zum Weitergeben (z. B. per WhatsApp).",
+    "ayuda": "Mit diesem Benutzernamen (oder der E-Mail) meldet sich die Person in der App an. Sie können ihn ändern; das Passwort bleibt gleich.",
+    "cambiado": "Fertig: Die Anmeldung erfolgt jetzt mit „{{usuario}}“.",
+    "cambiar": "Benutzernamen ändern",
+    "compartir": {
+      "aviso": "Der Link ist nur für diese Person: Damit setzt sie das Passwort ihres Kontos. Nicht in Gruppen posten.",
+      "copiado": "Kopiert",
+      "copiarEnlace": "Link kopieren",
+      "copiarUsuario": "Benutzernamen kopieren",
+      "descripcionInvitacion": "Teilen Sie diesen Link, damit die Person ihr Passwort setzt.",
+      "descripcionRestablecer": "Keine E-Mail: Teilen Sie diesen Link, damit die Person ihr neues Passwort setzt.",
+      "enlace": "Link",
+      "listo": "Fertig",
+      "mensajeInvitacion": "Hallo {{nombre}}. Ihr Benutzername für die App ist: {{usuario}}. Erstellen Sie Ihr Passwort hier: {{enlace}}",
+      "mensajeRestablecer": "Hallo {{nombre}}. Ihr Benutzername für die App ist: {{usuario}}. Setzen Sie Ihr neues Passwort hier: {{enlace}}",
+      "noSeCopio": "Kopieren nicht möglich. Markieren Sie den Text und kopieren Sie ihn von Hand.",
+      "sinEnlace": "Es kam kein Link zurück. Versuchen Sie „Einladung erneut senden“ in der Akte.",
+      "titulo": "Zugang zur App",
+      "tituloVarios": "Zugänge zum Teilen",
+      "usuario": "Benutzername:",
+      "whatsapp": "Per WhatsApp teilen"
+    },
+    "comprobando": "Wird geprüft…",
+    "etiqueta": "Anmeldename",
+    "formato": "3 bis 32 Zeichen: Buchstaben ohne Akzente, Ziffern, Punkt, Bindestrich oder Unterstrich. Beginnt mit einem Buchstaben.",
+    "guardar": "Benutzernamen speichern",
+    "libre": "Verfügbar",
+    "noSeCambio": "Der Benutzername konnte nicht geändert werden.",
+    "ocupado": "Dieser Benutzername ist bereits vergeben.",
+    "placeholder": "jmiranda",
+    "reservado": "Dieses Wort ist reserviert. Wählen Sie ein anderes.",
+    "sinCorreo": "Ohne E-Mail (nur Benutzername)",
+    "sinCorreoCorto": "Ohne E-Mail",
+    "sinCorreoFicha": "Ohne E-Mail: Die Einladung wird nicht gesendet; Sie erhalten den Link zum Teilen.",
+    "sinRespuesta": "Konnte jetzt nicht geprüft werden; wird beim Speichern geprüft."
   }
 }

@@ -10,6 +10,7 @@
  */
 import {
   EllipsisVertical,
+  LogIn,
   Mail,
   Phone,
   MapPin,
@@ -87,6 +88,8 @@ export interface GuardRow {
   id: string;
   name?: string;
   email?: string;
+  /** Usuario para entrar (alias). */
+  username?: string;
   phone?: string;
   status?: string;
   raw?: GuardCardRaw;
@@ -278,6 +281,15 @@ export default function GuardCardsGrid({
                 <p className="flex items-center gap-1.5 truncate">
                   <Mail className="h-3.5 w-3.5 shrink-0" />
                   <span className="truncate">{g.email}</span>
+                </p>
+              )}
+              {g.username && (
+                <p
+                  className="flex items-center gap-1.5 truncate"
+                  title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                >
+                  <LogIn className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate font-mono">{g.username}</span>
                 </p>
               )}
               {g.phone && (

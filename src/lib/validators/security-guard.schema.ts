@@ -13,7 +13,9 @@ const e164 = /^\+[1-9]\d{7,14}$/;
 // Nombre/Apellido: permitir letras Unicode, espacios, apóstrofe y guiones. No números.
 const nameRegex = /^[\p{L} '\-]+$/u;
 
-export const inviteByOptions = ["SMS", "Correo Electrónico"] as const;
+// «Sin correo»: ni correo ni teléfono, sólo el usuario para entrar (alias).
+// El valor viaja sólo en el formulario; al API va `sinCorreo: true`.
+export const inviteByOptions = ["SMS", "Correo Electrónico", "Sin correo"] as const;
 
 const baseEntry = {
   firstName: z
@@ -73,9 +75,18 @@ const entryEmail = z.object({
     }),
 });
 
+const entrySinCorreo = z.object({
+  inviteBy: z.literal("Sin correo"),
+  contact: z.string().trim().optional().or(z.literal("")),
+  /** El usuario para entrar que eligió la empresa (lo valida el servidor). */
+  username: z.string().trim().max(32).optional().or(z.literal("")),
+});
+
 export const guardEntrySchema = z
   .object(baseEntry)
-  .and(z.discriminatedUnion("inviteBy", [entrySMS, entryEmail]));
+  .and(
+    z.discriminatedUnion("inviteBy", [entrySMS, entryEmail, entrySinCorreo]),
+  );
 
 export type GuardEntryValues = z.infer<typeof guardEntrySchema>;
 

@@ -5,7 +5,13 @@
  * desde la página (mismos handlers que la tabla) según el estado del usuario.
  */
 import { useTranslation } from "react-i18next";
-import { EllipsisVertical, Mail, ShieldCheck, UserCog } from "lucide-react";
+import {
+  EllipsisVertical,
+  LogIn,
+  Mail,
+  ShieldCheck,
+  UserCog,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -43,6 +49,8 @@ export interface AdminUserRow {
   lastName?: string;
   name?: string;
   email?: string;
+  /** Usuario para entrar (alias). */
+  username?: string;
   avatars?: PhotoLike | PhotoLike[];
   avatar?: PhotoLike | PhotoLike[];
   profileImage?: PhotoLike | PhotoLike[];
@@ -245,6 +253,15 @@ export default function AdminUserCardsGrid({
                 <p className="flex items-center gap-1.5 truncate">
                   <Mail className="h-3.5 w-3.5 shrink-0" />
                   <span className="truncate">{u.email}</span>
+                </p>
+              )}
+              {u.username && (
+                <p
+                  className="flex items-center gap-1.5 truncate"
+                  title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                >
+                  <LogIn className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate font-mono">{u.username}</span>
                 </p>
               )}
             </div>

@@ -461,7 +461,12 @@
       "nota": "Ten a mano la referencia: con ella soporte encuentra tu caso más rápido.",
       "vistaPrevia": "Vista previa: tu sesión sigue abierta.",
       "volverAlPanel": "Volver al panel"
-    }
+    },
+    "enterLoginId": "Escribe tu correo o tu usuario",
+    "forgotNoMailboxHint": "Si tu cuenta no tiene correo, pide el enlace a tu supervisor o a la oficina.",
+    "forgotSubtitleLoginId": "Escribe tu correo o tu usuario y te enviamos un enlace para crear una nueva.",
+    "loginIdLabel": "Correo o usuario",
+    "loginIdPlaceholder": "jmiranda o tu@correo.com"
   },
   "billing": {
     "title": "Estado de la suscripción",
@@ -2326,7 +2331,8 @@
         "invite_error": "Error al enviar invitaciones",
         "invites_sent": "Invitaciones enviadas",
         "profile_created": "Perfil creado",
-        "profile_created_sent": "Perfil creado y enviado"
+        "profile_created_sent": "Perfil creado y enviado",
+        "profileCreatedShare": "Perfil creado. Comparte su acceso para que ponga su contraseña."
       }
     },
     "notes": {
@@ -8993,7 +8999,11 @@
       "tuProveedorDeSeguridad": "tu proveedor de seguridad",
       "vigilantesYPuestosEnTiempoReal": "Vigilantes y puestos en tiempo real, rondas con GPS, incidentes y reportes.",
       "descargarEnGooglePlay": "Descargar en Google Play",
-      "iniciaSesionEnLaAppConElCorreo": "Inicia sesión en la app con el correo y la contraseña que acabas de crear."
+      "iniciaSesionEnLaAppConElCorreo": "Inicia sesión en la app con el correo y la contraseña que acabas de crear.",
+      "correoOpcional": "Correo electrónico (opcional)",
+      "correoPlaceholder": "tu@correo.com",
+      "entraConTuUsuario": "Para entrar usa tu usuario: {{usuario}}",
+      "usuarioSinCorreoAyuda": "Con este usuario y la contraseña que crees aquí entrarás a la app. Si tienes un correo, puedes añadirlo abajo (es opcional)."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mi ubicación",
@@ -17140,7 +17150,8 @@
       "addressPlaceholder": "Buscar dirección del supervisor...",
       "operacion": "Operación",
       "invitesSent": "Invitaciones enviadas",
-      "inviteFailed": "No se pudo invitar a: {{emails}}"
+      "inviteFailed": "No se pudo invitar a: {{emails}}",
+      "creadoSinCorreo": "Supervisor creado. Comparte su acceso para que ponga su contraseña."
     }
   },
   "coverage": {
@@ -18153,7 +18164,8 @@
       "nameInvalid": "El nombre no debe contener números ni caracteres inválidos",
       "nameRequired": "El nombre es requerido",
       "phoneE164": "Use formato e.g. +12015550123",
-      "phoneE164International": "Use formato internacional, e.g. +12015550123"
+      "phoneE164International": "Use formato internacional, e.g. +12015550123",
+      "emailRequiredOrNoEmail": "Escribe su correo o marca «Sin correo (sólo usuario)»"
     },
     "joinByCode": {
       "codeLength": "El código debe tener 6 dígitos",
@@ -19215,5 +19227,42 @@
     "back": "Volver",
     "goDashboard": "Ir al panel",
     "goLogin": "Iniciar sesión"
+  },
+  "usuarioDeAcceso": {
+    "altaSinCorreoAyuda": "No le llega ningún correo: al enviar te damos su enlace para que lo compartas (por WhatsApp, por ejemplo).",
+    "ayuda": "Con este usuario (o su correo) entra a la app. Lo puedes cambiar; la contraseña no cambia.",
+    "cambiado": "Listo: ahora entra con «{{usuario}}».",
+    "cambiar": "Cambiar usuario",
+    "compartir": {
+      "aviso": "El enlace es sólo para esta persona: con él pone la contraseña de su cuenta. No lo publiques en grupos.",
+      "copiado": "Copiado",
+      "copiarEnlace": "Copiar enlace",
+      "copiarUsuario": "Copiar usuario",
+      "descripcionInvitacion": "Comparte este enlace para que ponga su contraseña.",
+      "descripcionRestablecer": "No tiene correo: comparte este enlace para que ponga su nueva contraseña.",
+      "enlace": "Enlace",
+      "listo": "Listo",
+      "mensajeInvitacion": "Hola {{nombre}}. Tu usuario para entrar a la app es: {{usuario}}. Crea tu contraseña aquí: {{enlace}}",
+      "mensajeRestablecer": "Hola {{nombre}}. Tu usuario para entrar a la app es: {{usuario}}. Pon tu nueva contraseña aquí: {{enlace}}",
+      "noSeCopio": "No se pudo copiar. Selecciona el texto y cópialo a mano.",
+      "sinEnlace": "No llegó un enlace. Prueba «Reenviar invitación» desde su ficha.",
+      "titulo": "Su acceso a la app",
+      "tituloVarios": "Accesos para compartir",
+      "usuario": "Usuario:",
+      "whatsapp": "Compartir por WhatsApp"
+    },
+    "comprobando": "Comprobando…",
+    "etiqueta": "Usuario para entrar",
+    "formato": "De 3 a 32 caracteres: letras sin tildes, números, punto, guion o guion bajo. Empieza por una letra.",
+    "guardar": "Guardar usuario",
+    "libre": "Disponible",
+    "noSeCambio": "No se pudo cambiar el usuario.",
+    "ocupado": "Ese usuario ya lo tiene otra persona.",
+    "placeholder": "jmiranda",
+    "reservado": "Esa palabra está reservada. Elige otra.",
+    "sinCorreo": "Sin correo (sólo usuario)",
+    "sinCorreoCorto": "Sin correo",
+    "sinCorreoFicha": "Sin correo: la invitación no se envía, te damos el enlace para compartirlo.",
+    "sinRespuesta": "No pudimos comprobarlo ahora; lo revisamos al guardar."
   }
 }

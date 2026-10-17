@@ -14,6 +14,7 @@ import {
   List as ListIcon,
   Search,
   Mail,
+  LogIn,
   Phone,
   MoreVertical,
   Send,
@@ -51,6 +52,8 @@ import {
 } from "@/lib/api/supervisorService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import { correoVisible } from "@/lib/correoVisible";
+import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso";
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
@@ -60,13 +63,20 @@ export default function SupervisorsPage() {
   const navigate = useNavigate();
   const [rows, setRows] = useState<Supervisor[]>([]);
   const [loading, setLoading] = useState(true);
+  // «Usuario: jmiranda · comparte este enlace» (cuentas sin correo).
+  const compartir = useCompartirAcceso();
 
 
   const load = useCallback(() => {
     setLoading(true);
     supervisorService
       .list()
-      .then((r) => setRows(r.rows || []))
+      // Un correo inventado (cuenta sin buzón) no se enseña: queda en null.
+      .then((r) =>
+        setRows(
+          (r.rows || []).map((s) => ({ ...s, email: correoVisible(s.email) })),
+        ),
+      )
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -99,7 +109,7 @@ export default function SupervisorsPage() {
 
     if (q) {
       list = list.filter((r) =>
-        `${r.fullName || ""} ${r.zone || ""} ${r.email || ""} ${r.assignedVehicle || ""}`
+        `${r.fullName || ""} ${r.zone || ""} ${r.email || ""} ${r.username || ""} ${r.assignedVehicle || ""}`
           .toLowerCase()
           .includes(q),
       );
@@ -125,6 +135,22 @@ export default function SupervisorsPage() {
     try {
       const r = await supervisorService.resendInvite(s.id);
       const email = r?.email || s.email || "";
+
+      // Sin buzón: no hay correo que mandar; el enlace se comparte en mano.
+      if (!r?.email && r?.link) {
+        compartir.abrir(
+          [
+            {
+              nombre: s.fullName,
+              username: r.username || s.username || null,
+              link: r.link,
+            },
+          ],
+          "invitacion",
+        );
+
+        return;
+      }
 
       /* Se dice lo que PASÓ con el correo, sin copiar nada al portapapeles:
          «enlace copiado» al pedir un reenvío no tenía sentido (2026-10-08). */
@@ -175,6 +201,22 @@ export default function SupervisorsPage() {
   const sendPasswordReset = async (s: Supervisor) => {
     try {
       const r = await supervisorService.sendPasswordReset(s.id);
+
+      // Sin buzón el servidor devuelve el enlace: es la única forma de dárselo.
+      if (r?.link) {
+        compartir.abrir(
+          [
+            {
+              nombre: s.fullName,
+              username: r.username || s.username || null,
+              link: r.link,
+            },
+          ],
+          "restablecer",
+        );
+
+        return;
+      }
 
       const via = [
         r?.emailed && t("ui.SupervisorsPage.viaCorreo", "correo"),
@@ -281,7 +323,18 @@ export default function SupervisorsPage() {
       key: "fullName",
       header: t("comun.nombre", "Nombre"),
       render: (_v, r) => (
-        <span className="font-medium text-foreground">{r.fullName}</span>
+        <span className="font-medium text-foreground">
+          {r.fullName}
+          {r.username && (
+            <span
+              className="block font-mono text-xs font-normal"
+              style={{ color: "var(--ink-soft)" }}
+              title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+            >
+              {r.username}
+            </span>
+          )}
+        </span>
       ),
     },
     {
@@ -319,7 +372,7 @@ export default function SupervisorsPage() {
       header: t("comun.correo", "Correo"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
-          {r.email || "—"}
+          {r.email || t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")}
         </span>
       ),
     },
@@ -595,6 +648,15 @@ export default function SupervisorsPage() {
                           <span className="truncate">{s.email}</span>
                         </div>
                       )}
+                      {s.username && (
+                        <div
+                          className="flex items-center gap-1.5"
+                          title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                        >
+                          <LogIn className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate font-mono">{s.username}</span>
+                        </div>
+                      )}
                       {s.phoneNumber && (
                         <div className="flex items-center gap-1.5">
                           <Phone className="h-3.5 w-3.5 shrink-0" />
@@ -610,6 +672,7 @@ export default function SupervisorsPage() {
         </PageContainer>
       </div>
 
+      {compartir.dialogo}
     </AppLayout>
   );
 }

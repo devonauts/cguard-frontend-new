@@ -331,7 +331,12 @@
       "nota": "Houd de referentie bij de hand: daarmee vindt support uw zaak sneller.",
       "vistaPrevia": "Voorbeeld: u bent nog steeds aangemeld.",
       "volverAlPanel": "Terug naar het dashboard"
-    }
+    },
+    "enterLoginId": "Vul je e-mail of gebruikersnaam in",
+    "forgotNoMailboxHint": "Heeft je account geen e-mail, vraag dan de link aan je leidinggevende of het kantoor.",
+    "forgotSubtitleLoginId": "Vul je e-mail of gebruikersnaam in en we sturen je een link om een nieuw wachtwoord te maken.",
+    "loginIdLabel": "E-mail of gebruikersnaam",
+    "loginIdPlaceholder": "jmiranda of jij@email.com"
   },
   "client": {
     "invite_not_found": "Uitnodiging niet gevonden of ongeldig.",
@@ -2120,7 +2125,8 @@
         "invite_error": "Uitnodigingen versturen mislukt",
         "invites_sent": "Uitnodigingen verstuurd",
         "profile_created": "Profiel aangemaakt",
-        "profile_created_sent": "Profiel aangemaakt en verstuurd"
+        "profile_created_sent": "Profiel aangemaakt en verstuurd",
+        "profileCreatedShare": "Profiel aangemaakt. Deel de toegang zodat de persoon een wachtwoord instelt."
       }
     },
     "notes": {
@@ -8977,7 +8983,8 @@
       "addressPlaceholder": "Adres van de supervisor zoeken...",
       "operacion": "Operatie",
       "invitesSent": "Uitnodigingen verzonden",
-      "inviteFailed": "Kon niet uitnodigen: {{emails}}"
+      "inviteFailed": "Kon niet uitnodigen: {{emails}}",
+      "creadoSinCorreo": "Leidinggevende aangemaakt. Deel de toegang zodat de persoon een wachtwoord instelt."
     }
   },
   "suscripcion": {
@@ -9527,7 +9534,11 @@
       "tuProveedorDeSeguridad": "je beveiligingsbedrijf",
       "vigilantesYPuestosEnTiempoReal": "Beveiligers en posten in realtime, rondes met gps, incidenten en rapporten.",
       "descargarEnGooglePlay": "Ontdek het op Google Play",
-      "iniciaSesionEnLaAppConElCorreo": "Meld je aan in de app met het e-mailadres en wachtwoord dat je net hebt aangemaakt."
+      "iniciaSesionEnLaAppConElCorreo": "Meld je aan in de app met het e-mailadres en wachtwoord dat je net hebt aangemaakt.",
+      "correoOpcional": "E-mail (optioneel)",
+      "correoPlaceholder": "jij@email.com",
+      "entraConTuUsuario": "Log in met je gebruikersnaam: {{usuario}}",
+      "usuarioSinCorreoAyuda": "Met deze gebruikersnaam en het wachtwoord dat je hier maakt, log je in op de app. Heb je een e-mail, dan kun je die hieronder toevoegen (optioneel)."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mijn positie",
@@ -18153,7 +18164,8 @@
       "nameInvalid": "De naam mag geen cijfers of ongeldige tekens bevatten",
       "nameRequired": "De naam is verplicht",
       "phoneE164": "Gebruik deze notatie, bijv. +12015550123",
-      "phoneE164International": "Gebruik de internationale notatie, bijv. +12015550123"
+      "phoneE164International": "Gebruik de internationale notatie, bijv. +12015550123",
+      "emailRequiredOrNoEmail": "Vul het e-mailadres in of vink “Zonder e-mail (alleen gebruikersnaam)” aan"
     },
     "joinByCode": {
       "codeLength": "De code moet 6 cijfers hebben",
@@ -19215,5 +19227,42 @@
     "back": "Terug",
     "goDashboard": "Naar het dashboard",
     "goLogin": "Inloggen"
+  },
+  "usuarioDeAcceso": {
+    "altaSinCorreoAyuda": "Er wordt geen e-mail gestuurd: bij het verzenden krijg je de link om te delen (bijvoorbeeld via WhatsApp).",
+    "ayuda": "Met deze gebruikersnaam (of het e-mailadres) logt de persoon in op de app. Je kunt hem wijzigen; het wachtwoord verandert niet.",
+    "cambiado": "Klaar: inloggen gaat nu met “{{usuario}}”.",
+    "cambiar": "Gebruikersnaam wijzigen",
+    "compartir": {
+      "aviso": "De link is alleen voor deze persoon: hiermee stelt hij het wachtwoord van zijn account in. Plaats hem niet in groepen.",
+      "copiado": "Gekopieerd",
+      "copiarEnlace": "Link kopiëren",
+      "copiarUsuario": "Gebruikersnaam kopiëren",
+      "descripcionInvitacion": "Deel deze link zodat de persoon een wachtwoord instelt.",
+      "descripcionRestablecer": "Geen e-mail: deel deze link zodat de persoon een nieuw wachtwoord instelt.",
+      "enlace": "Link",
+      "listo": "Klaar",
+      "mensajeInvitacion": "Hoi {{nombre}}. Je gebruikersnaam voor de app is: {{usuario}}. Maak hier je wachtwoord: {{enlace}}",
+      "mensajeRestablecer": "Hoi {{nombre}}. Je gebruikersnaam voor de app is: {{usuario}}. Stel hier je nieuwe wachtwoord in: {{enlace}}",
+      "noSeCopio": "Kopiëren mislukt. Selecteer de tekst en kopieer hem handmatig.",
+      "sinEnlace": "Er kwam geen link terug. Probeer “Uitnodiging opnieuw sturen” vanuit het profiel.",
+      "titulo": "Toegang tot de app",
+      "tituloVarios": "Toegangen om te delen",
+      "usuario": "Gebruikersnaam:",
+      "whatsapp": "Delen via WhatsApp"
+    },
+    "comprobando": "Controleren…",
+    "etiqueta": "Inlognaam",
+    "formato": "3 tot 32 tekens: letters zonder accenten, cijfers, punt, koppelteken of underscore. Begint met een letter.",
+    "guardar": "Gebruikersnaam opslaan",
+    "libre": "Beschikbaar",
+    "noSeCambio": "De gebruikersnaam kon niet worden gewijzigd.",
+    "ocupado": "Die gebruikersnaam is al in gebruik.",
+    "placeholder": "jmiranda",
+    "reservado": "Dat woord is gereserveerd. Kies een ander.",
+    "sinCorreo": "Zonder e-mail (alleen gebruikersnaam)",
+    "sinCorreoCorto": "Geen e-mail",
+    "sinCorreoFicha": "Zonder e-mail: de uitnodiging wordt niet verstuurd; je krijgt de link om te delen.",
+    "sinRespuesta": "Kon nu niet worden gecontroleerd; dat gebeurt bij het opslaan."
   }
 }

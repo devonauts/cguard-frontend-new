@@ -14,6 +14,10 @@ import { ApiService } from "@/services/api/apiService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Section, Field, StatusBadge } from "@/components/kit";
+import { usePermissions } from "@/hooks/usePermissions";
+import { correoVisible } from "@/lib/correoVisible";
+import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso";
+import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import GuardsLayout from "@/layouts/GuardsLayout";
 import AppLayout from "@/layouts/app-layout";
 import i18n from "@/i18n";
@@ -25,6 +29,8 @@ interface ProfileUser {
   firstName?: string;
   lastName?: string;
   email?: string;
+  /** Usuario para entrar (alias). */
+  username?: string;
   status?: string;
   hasPassword?: boolean;
   invitationTokenExpiresAt?: string;
@@ -218,6 +224,9 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
   const { t } = useTranslation();
 
   const [data, setData] = useState<ProfileGuard>({ ...guard });
+  const { hasPermission } = usePermissions();
+  // «Usuario: jmiranda · comparte este enlace» (cuenta sin correo).
+  const compartir = useCompartirAcceso();
   const [form, setForm] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -362,6 +371,9 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
     })();
   }, [id]);
 
+  // El correo de verdad, o null si la cuenta no tiene buzón (entra con su usuario).
+  const correoGuardia = correoVisible(data?.guard?.email);
+
   const handleSendAppAccess = async () => {
     if (!id) return;
     setSendingInvite(true);
@@ -369,13 +381,30 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
       const payload: Record<string, unknown> = { securityGuardId: id };
 
       if (data?.guard?.id) payload.guard = data.guard.id;
-      else if (data?.guard?.email) payload.contact = data.guard.email;
+      else if (correoGuardia) payload.contact = correoGuardia;
       if (data?.guard?.firstName) payload.firstName = data.guard.firstName;
       if (data?.guard?.lastName) payload.lastName = data.guard.lastName;
-      await securityGuardService.resendInvite(payload);
-      toast.success(
-        t("guards.profile.access.inviteSent") || "Invitación enviada",
-      );
+      // Sin correo: el servidor devuelve el enlace para dárselo en mano.
+      if (!correoGuardia) payload.compartir = true;
+      const r: any = await securityGuardService.resendInvite(payload);
+      const enlace = r?.invitationLink || r?.link || null;
+
+      if (!correoGuardia && enlace) {
+        compartir.abrir(
+          [
+            {
+              nombre: fullName,
+              username: r?.username || data?.guard?.username || null,
+              link: enlace,
+            },
+          ],
+          "invitacion",
+        );
+      } else {
+        toast.success(
+          t("guards.profile.access.inviteSent") || "Invitación enviada",
+        );
+      }
       const refreshed = (await securityGuardService.get(id)) as ProfileGuard & {
         data?: ProfileGuard;
       };
@@ -930,7 +959,20 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                       </span>
                     </div>
                   )}
-                  {data?.guard?.email && (
+                  {data?.guard?.id && (
+                    <UsuarioDeAccesoEditable
+                      puedeEditar={hasPermission("securityGuardEdit")}
+                      userId={data.guard.id}
+                      username={data.guard.username}
+                      onCambiado={(username) =>
+                        setData((prev) => ({
+                          ...prev,
+                          guard: { ...(prev.guard || {}), username },
+                        }))
+                      }
+                    />
+                  )}
+                  {correoGuardia ? (
                     <div
                       className="text-xs"
                       style={{ color: "var(--ink-soft)" }}
@@ -940,11 +982,23 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                         className="font-medium"
                         style={{ color: "var(--ink)" }}
                       >
-                        {data.guard.email}
+                        {correoGuardia}
                       </span>
                     </div>
+                  ) : (
+                    data?.guard?.id && (
+                      <div
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {t(
+                          "usuarioDeAcceso.sinCorreoFicha",
+                          "Sin correo: la invitación no se envía, te damos el enlace para compartirlo.",
+                        )}
+                      </div>
+                    )
                   )}
-                  {data?.guard?.email && (
+                  {(correoGuardia || data?.guard?.id) && (
                     <Button
                       className="mt-1 w-full"
                       disabled={sendingInvite}
@@ -1039,6 +1093,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
             </div>
           </div>
         </div>
+        {compartir.dialogo}
       </GuardsLayout>
     </AppLayout>
   );

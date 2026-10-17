@@ -36,6 +36,8 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import RegistroDeIntentos from "@/components/RegistroDeIntentos";
+import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
+import { usePermissions } from "@/hooks/usePermissions";
 import type { AdminUser, RoleRef, TenantUser } from "./adminUserTypes";
 
 import { localeActual } from "@/lib/localeActual";
@@ -91,6 +93,7 @@ const fmtDate = (v: string | number | Date | null | undefined) =>
 
 export default function AdminUserDetailPage() {
   const { t } = useTranslation();
+  const { hasPermission } = usePermissions();
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -367,6 +370,16 @@ export default function AdminUserDetailPage() {
                       "Correo electrónico",
                     )}
                     value={user.email}
+                  />
+                  {/* Se cambia aparte (efecto inmediato); el correo sigue
+                      siendo obligatorio para el personal de oficina. */}
+                  <UsuarioDeAccesoEditable
+                    puedeEditar={hasPermission("userEdit")}
+                    userId={user.id ? String(user.id) : null}
+                    username={user.username}
+                    onCambiado={(username) =>
+                      setUser((prev) => (prev ? { ...prev, username } : prev))
+                    }
                   />
                   <Field
                     label={t("ui.AdminUserDetail.telefono", "Teléfono")}

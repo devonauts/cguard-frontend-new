@@ -18,7 +18,10 @@ const tid = (): string => {
 export interface Supervisor {
   id: string; // the supervisor's USER id — the stable identifier
   profileId: string | null;
+  /** Puede ser un correo sin buzón (`…@sin-correo.local`): ver lib/correoVisible. */
   email: string | null;
+  /** Usuario para entrar (alias), p. ej. `jmiranda`. */
+  username?: string | null;
   fullName: string;
   firstName?: string | null;
   lastName?: string | null;
@@ -57,10 +60,18 @@ export interface Supervisor {
   /** Sólo en la respuesta de create: el correo ya tenía cuenta activa (trabaja
    *  con otra empresa) y el alta la ENLAZÓ — entra con su contraseña actual. */
   linkedExistingAccount?: boolean;
+  /** Sólo en la respuesta de create SIN buzón: el enlace para que cree su
+   *  contraseña (no hay correo al que mandarlo; se comparte en mano). */
+  invitationLink?: string | null;
 }
 
 export interface CreateSupervisorBody {
-  email: string;
+  /** Obligatorio salvo con `sinCorreo: true`. */
+  email?: string;
+  /** Alta sin correo: entra sólo con su usuario (alias). */
+  sinCorreo?: boolean;
+  /** El usuario para entrar que eligió la empresa (lo valida el servidor). */
+  username?: string;
   firstName?: string;
   lastName?: string;
   governmentId?: string;
@@ -134,8 +145,10 @@ export const supervisorService = {
   ): Promise<{
     resent: boolean;
     emailed: boolean;
-    email: string;
-    link: string;
+    /** null si la cuenta no tiene buzón: entonces llega `link` para compartir. */
+    email: string | null;
+    username?: string | null;
+    link?: string;
     /** Si el freno de 10 min lo paró: cuándo salió la anterior. */
     recentlySentAt?: string | null;
   }> =>
@@ -145,10 +158,13 @@ export const supervisorService = {
     userId: string,
   ): Promise<{
     success: boolean;
-    email: string;
+    /** null si la cuenta no tiene buzón: entonces llega `link` para compartir. */
+    email: string | null;
+    username?: string | null;
     emailed: boolean;
     pushed: number;
-    link: string;
+    /** SÓLO sin buzón: es una credencial, para dársela a esa persona. */
+    link?: string;
   }> =>
     ApiService.post(
       `/tenant/${tid()}/supervisors/${userId}/send-password-reset`,

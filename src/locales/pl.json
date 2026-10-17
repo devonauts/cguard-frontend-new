@@ -331,7 +331,12 @@
       "nota": "Miej numer referencyjny pod ręką: dzięki niemu pomoc techniczna szybciej znajdzie Twoją sprawę.",
       "vistaPrevia": "Podgląd: nadal jesteś zalogowany.",
       "volverAlPanel": "Wróć do panelu"
-    }
+    },
+    "enterLoginId": "Wpisz swój e-mail lub nazwę użytkownika",
+    "forgotNoMailboxHint": "Jeśli Twoje konto nie ma e-maila, poproś przełożonego lub biuro o link.",
+    "forgotSubtitleLoginId": "Wpisz swój e-mail lub nazwę użytkownika, a wyślemy Ci link do utworzenia nowego hasła.",
+    "loginIdLabel": "E-mail lub nazwa użytkownika",
+    "loginIdPlaceholder": "jmiranda lub ty@email.com"
   },
   "client": {
     "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieprawidłowe.",
@@ -2122,7 +2127,8 @@
         "invite_error": "Nie udało się wysłać zaproszeń",
         "invites_sent": "Zaproszenia wysłane",
         "profile_created": "Profil utworzony",
-        "profile_created_sent": "Profil utworzony i wysłany"
+        "profile_created_sent": "Profil utworzony i wysłany",
+        "profileCreatedShare": "Profil utworzony. Udostępnij dostęp, aby osoba ustawiła hasło."
       }
     },
     "notes": {
@@ -8987,7 +8993,8 @@
       "addressPlaceholder": "Szukaj adresu supervisora...",
       "operacion": "Operacje",
       "invitesSent": "Zaproszenia wysłane",
-      "inviteFailed": "Nie udało się zaprosić: {{emails}}"
+      "inviteFailed": "Nie udało się zaprosić: {{emails}}",
+      "creadoSinCorreo": "Przełożony utworzony. Udostępnij dostęp, aby ustawił hasło."
     }
   },
   "suscripcion": {
@@ -9549,7 +9556,11 @@
       "tuProveedorDeSeguridad": "Twoim dostawcą usług ochrony",
       "vigilantesYPuestosEnTiempoReal": "Pracownicy ochrony i posterunki w czasie rzeczywistym, obchody z GPS, incydenty i raporty.",
       "descargarEnGooglePlay": "Pobierz z Google Play",
-      "iniciaSesionEnLaAppConElCorreo": "Zaloguj się w aplikacji, używając adresu e-mail i hasła, które właśnie utworzyłeś."
+      "iniciaSesionEnLaAppConElCorreo": "Zaloguj się w aplikacji, używając adresu e-mail i hasła, które właśnie utworzyłeś.",
+      "correoOpcional": "E-mail (opcjonalnie)",
+      "correoPlaceholder": "ty@email.com",
+      "entraConTuUsuario": "Aby się zalogować, użyj nazwy użytkownika: {{usuario}}",
+      "usuarioSinCorreoAyuda": "Tą nazwą użytkownika i utworzonym tu hasłem zalogujesz się do aplikacji. Jeśli masz e-mail, możesz go dodać poniżej (opcjonalnie)."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Moja lokalizacja",
@@ -18437,7 +18448,8 @@
       "nameInvalid": "Imię nie może zawierać cyfr ani niedozwolonych znaków",
       "nameRequired": "Imię jest wymagane",
       "phoneE164": "Proszę użyć formatu, np. +12015550123",
-      "phoneE164International": "Proszę użyć formatu międzynarodowego, np. +12015550123"
+      "phoneE164International": "Proszę użyć formatu międzynarodowego, np. +12015550123",
+      "emailRequiredOrNoEmail": "Wpisz e-mail lub zaznacz „Bez e-maila (tylko nazwa użytkownika)”"
     },
     "joinByCode": {
       "codeLength": "Kod musi mieć 6 cyfr",
@@ -19503,5 +19515,42 @@
     "back": "Wróć",
     "goDashboard": "Przejdź do panelu",
     "goLogin": "Zaloguj się"
+  },
+  "usuarioDeAcceso": {
+    "altaSinCorreoAyuda": "Nie wysyłamy e-maila: po wysłaniu dostaniesz link do udostępnienia (np. przez WhatsApp).",
+    "ayuda": "Tą nazwą użytkownika (lub e-mailem) osoba loguje się do aplikacji. Możesz ją zmienić; hasło się nie zmienia.",
+    "cambiado": "Gotowe: logowanie odbywa się teraz przez „{{usuario}}”.",
+    "cambiar": "Zmień nazwę użytkownika",
+    "compartir": {
+      "aviso": "Link jest tylko dla tej osoby: ustawia nim hasło do swojego konta. Nie publikuj go w grupach.",
+      "copiado": "Skopiowano",
+      "copiarEnlace": "Kopiuj link",
+      "copiarUsuario": "Kopiuj nazwę użytkownika",
+      "descripcionInvitacion": "Udostępnij ten link, aby osoba ustawiła hasło.",
+      "descripcionRestablecer": "Brak e-maila: udostępnij ten link, aby osoba ustawiła nowe hasło.",
+      "enlace": "Link",
+      "listo": "Gotowe",
+      "mensajeInvitacion": "Cześć {{nombre}}. Twoja nazwa użytkownika w aplikacji to: {{usuario}}. Utwórz hasło tutaj: {{enlace}}",
+      "mensajeRestablecer": "Cześć {{nombre}}. Twoja nazwa użytkownika w aplikacji to: {{usuario}}. Ustaw nowe hasło tutaj: {{enlace}}",
+      "noSeCopio": "Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie.",
+      "sinEnlace": "Nie otrzymano linku. Spróbuj „Wyślij zaproszenie ponownie” z karty osoby.",
+      "titulo": "Dostęp do aplikacji",
+      "tituloVarios": "Dostępy do udostępnienia",
+      "usuario": "Nazwa użytkownika:",
+      "whatsapp": "Udostępnij przez WhatsApp"
+    },
+    "comprobando": "Sprawdzanie…",
+    "etiqueta": "Nazwa logowania",
+    "formato": "Od 3 do 32 znaków: litery bez akcentów, cyfry, kropka, myślnik lub podkreślnik. Zaczyna się od litery.",
+    "guardar": "Zapisz nazwę użytkownika",
+    "libre": "Dostępna",
+    "noSeCambio": "Nie udało się zmienić nazwy użytkownika.",
+    "ocupado": "Ta nazwa użytkownika jest już zajęta.",
+    "placeholder": "jmiranda",
+    "reservado": "To słowo jest zarezerwowane. Wybierz inne.",
+    "sinCorreo": "Bez e-maila (tylko nazwa użytkownika)",
+    "sinCorreoCorto": "Bez e-maila",
+    "sinCorreoFicha": "Bez e-maila: zaproszenie nie jest wysyłane, dostajesz link do udostępnienia.",
+    "sinRespuesta": "Nie udało się teraz sprawdzić; sprawdzimy przy zapisie."
   }
 }

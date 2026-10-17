@@ -1,5 +1,5 @@
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
-import { Lock, Mail, ArrowRight } from "lucide-react";
+import { Lock, UserRound, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -68,7 +68,7 @@ export default function Login() {
     setPassword,
     toggleShowPassword,
     setIsLoading,
-    validateEmail,
+    validateLoginId,
     validatePassword,
   } = useAuthForm();
 
@@ -139,7 +139,7 @@ export default function Login() {
     setCuentaElegida(realm);
     setIsLoading(true);
     empezarEntradaAlCrm();
-    const result = await signIn({ email, password, realm });
+    const result = await signIn({ email: email.trim(), password, realm });
 
     setIsLoading(false);
     if (result.success) {
@@ -162,14 +162,19 @@ export default function Login() {
       return;
     }
     if (e) e.preventDefault();
-    // use validation helpers from the hook (they show localized toasts)
-    if (!validateEmail() || !validatePassword(6)) return;
+    // use validation helpers from the hook (they show localized toasts).
+    // Correo O usuario: sin validar formato de correo (ver validateLoginId).
+    if (!validateLoginId() || !validatePassword(6)) return;
     const ok = await accion.ejecutar(async () => {
       setIsLoading(true);
       // Antes de pedir la sesión: que la guarda no salte al panel todavía.
       empezarEntradaAlCrm();
+      /* `email` puede traer el USUARIO para entrar (`jmiranda`): el servidor
+         lo distingue por la `@`. Sus errores (`auth.invalidCredentials`,
+         `auth.passwordNotSetNoMailbox`…) llegan ya traducidos y se muestran
+         tal cual, igual que «contraseña incorrecta». */
       const result = await signIn({
-        email,
+        email: email.trim(),
         password,
         realm: cuentaElegida || undefined,
       });
@@ -257,7 +262,7 @@ export default function Login() {
             <p className="text-xs">
               {t(
                 "auth.chooseAccountHint",
-                "Este correo tiene una cuenta en cada una. Elige la que quieres usar ahora.",
+                "Esta cuenta existe en cada una. Elige la que quieres usar ahora.",
               )}
             </p>
             {cuentas.map((c) => (
@@ -288,16 +293,30 @@ export default function Login() {
             </button>
           </div>
         )}
-        <form className="space-y-4" onSubmit={handleLogin}>
-          <Campo Icono={Mail} etiqueta={t("auth.email_label")} htmlFor="email">
+        <form noValidate className="space-y-4" onSubmit={handleLogin}>
+          {/* Correo O usuario para entrar: quien se dio de alta sin correo
+              sólo tiene su usuario (`jmiranda`). Por eso es texto y no
+              `type="email"`, que el navegador rechazaría sin la `@`. */}
+          <Campo
+            Icono={UserRound}
+            etiqueta={t("auth.loginIdLabel", "Correo o usuario")}
+            htmlFor="email"
+          >
             <input
-              autoComplete="email"
+              autoCapitalize="none"
+              autoComplete="username"
+              autoCorrect="off"
               className={CAMPO}
               disabled={isLoading}
               id="email"
-              inputMode="email"
-              placeholder={t("auth.email_placeholder")}
-              type="email"
+              inputMode="text"
+              name="username"
+              placeholder={t(
+                "auth.loginIdPlaceholder",
+                "jmiranda o tu@correo.com",
+              )}
+              spellCheck={false}
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />

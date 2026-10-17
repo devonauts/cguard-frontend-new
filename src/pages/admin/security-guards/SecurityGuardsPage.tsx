@@ -93,6 +93,8 @@ import securityGuardService from "@/lib/api/securityGuardService";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { correoVisible } from "@/lib/correoVisible";
+import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 import {
   eliminarVigilantes,
@@ -132,7 +134,10 @@ type GuardStatus = "Activo" | "Pendiente" | "Archivado" | "Invitado";
 interface SecurityGuard {
   id: string;
   name: string;
+  /** Vacío si no tiene correo de verdad (ver lib/correoVisible). */
   email: string;
+  /** Su usuario para entrar (alias), p. ej. `jmiranda`. */
+  username?: string;
   phone: string;
   status: GuardStatus;
   station?: string;
@@ -155,7 +160,9 @@ function normalizeGuard(item: any): SecurityGuard {
       ? `${guardObj.firstName} ${guardObj.lastName}`
       : (item.fullName ??
         `${guardObj.firstName ?? ""} ${guardObj.lastName ?? ""}`.trim());
-  const email = guardObj.email ?? item.email ?? "";
+  // Un correo inventado (cuenta sin buzón, alta por teléfono) no se enseña.
+  const email = correoVisible(guardObj.email ?? item.email) ?? "";
+  const username = guardObj.username ?? item.username ?? "";
   const phone =
     guardObj.phone ??
     guardObj.phoneNumber ??
@@ -179,6 +186,7 @@ function normalizeGuard(item: any): SecurityGuard {
     id,
     name: name || "-",
     email,
+    username,
     phone,
     status,
     raw: item,
@@ -219,6 +227,8 @@ export default function SecurityGuardsPage() {
 
   // Estado principal SIN datos de prueba
   const [guards, setGuards] = useState<SecurityGuard[]>([]);
+  // «Usuario: jmiranda · comparte este enlace» (cuentas sin correo).
+  const compartir = useCompartirAcceso();
   // Per-guard client-review level (keyed by securityGuard id = the /guards/:id
   // route param). Loaded once the roster is known; badges click → Perfil › Reseñas.
   const [ratings, setRatings] = useState<
@@ -744,6 +754,7 @@ export default function SecurityGuardsPage() {
       (g) =>
         g.name.toLowerCase().includes(lowerQuery) ||
         g.email.toLowerCase().includes(lowerQuery) ||
+        (g.username || "").toLowerCase().includes(lowerQuery) ||
         g.phone.includes(searchQuery),
     );
   }, [guardsWithStation, searchQuery, filterStatus]);
@@ -864,6 +875,10 @@ export default function SecurityGuardsPage() {
         const apellido = guard.raw?.guard?.lastName || guard.raw?.lastName;
         if (nombre) payload.firstName = nombre;
         if (apellido) payload.lastName = apellido;
+        // Sin correo de verdad no hay a dónde mandarla: `compartir` pide al
+        // servidor el enlace para dárselo en mano (copiar / WhatsApp).
+        const sinBuzon = !correoVisible(guard.email);
+        if (sinBuzon) payload.compartir = true;
 
         if (!payload.guard && !payload.contact) {
           toast.error(
@@ -875,10 +890,24 @@ export default function SecurityGuardsPage() {
           return;
         }
 
-        await securityGuardService.resendInvite(payload);
-        toast.success(
-          t("guards.list.toasts.inviteResent", "Invitación reenviada"),
-        );
+        const r: any = await securityGuardService.resendInvite(payload);
+        const enlace = r?.invitationLink || r?.link || null;
+        if (sinBuzon && enlace) {
+          compartir.abrir(
+            [
+              {
+                nombre: guard.name,
+                username: r?.username || guard.username || null,
+                link: enlace,
+              },
+            ],
+            "invitacion",
+          );
+        } else {
+          toast.success(
+            t("guards.list.toasts.inviteResent", "Invitación reenviada"),
+          );
+        }
         // La fecha de caducidad del enlace cambia con el reenvío: se recarga para
         // que la ficha no siga diciendo «caducada» con el enlace ya renovado.
         try {
@@ -900,7 +929,68 @@ export default function SecurityGuardsPage() {
         );
       }
     },
-    [t],
+    [t, compartir.abrir],
+  );
+
+  /**
+   * «Restablecer contraseña». Una sola vez para las tres entradas (tarjeta,
+   * fila y menú). Sin buzón el servidor devuelve el `link` —es la única forma
+   * de hacérselo llegar— y se ofrece para copiar o compartir por WhatsApp.
+   */
+  const restablecerContrasena = useCallback(
+    async (guard: any) => {
+      try {
+        const realId = guard.raw?.id || guard.id;
+        const r: any = await securityGuardService.sendPasswordReset(realId);
+        if (r?.link) {
+          compartir.abrir(
+            [
+              {
+                nombre: guard.name,
+                username: r?.username || guard.username || null,
+                link: r.link,
+              },
+            ],
+            "restablecer",
+          );
+          if (r?.pushed)
+            toast.success(
+              t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
+                defaultValue: "Enlace de restablecimiento enviado por {{via}}",
+                via: "push",
+              }),
+            );
+          return;
+        }
+        const via = [
+          r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"),
+          r?.pushed && "push",
+        ]
+          .filter(Boolean)
+          .join(" + ");
+        toast.success(
+          via
+            ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
+                defaultValue:
+                  "Enlace de restablecimiento enviado por {{via}}",
+                via,
+              })
+            : t(
+                "ui.SecurityGuardsPage.enlaceCopiado",
+                "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
+              ),
+        );
+      } catch (err: any) {
+        toast.error(
+          err?.message ||
+            t(
+              "guards.list.toasts.resetError",
+              "No se pudo restablecer la contraseña",
+            ),
+        );
+      }
+    },
+    [t, compartir.abrir],
   );
 
   // Acciones del menú de cada tarjeta (mismos handlers que la tabla).
@@ -943,32 +1033,7 @@ export default function SecurityGuardsPage() {
         acts.push({
           label: t("guards.list.actions.resetPassword", "Restablecer contraseña"),
           icon: <KeyRound className="h-4 w-4" />,
-          onClick: async () => {
-            try {
-              const r: any =
-                await securityGuardService.sendPasswordReset(realId);
-              const via = [r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"), r?.pushed && "push"]
-                .filter(Boolean)
-                .join(" + ");
-              toast.success(
-                via
-                  ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
-                      defaultValue:
-                        "Enlace de restablecimiento enviado por {{via}}",
-                      via,
-                    })
-                  : t(
-                      "ui.SecurityGuardsPage.enlaceCopiado",
-                      "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
-                    ),
-              );
-            } catch (err: any) {
-              toast.error(
-                err?.message ||
-                  t("guards.list.toasts.resetError", "No se pudo restablecer la contraseña"),
-              );
-            }
-          },
+          onClick: () => restablecerContrasena(guard),
         });
       }
       if (hasPermission("securityGuardEdit")) {
@@ -1005,7 +1070,7 @@ export default function SecurityGuardsPage() {
       }
       return acts;
     },
-    [hasPermission, navigate, t],
+    [hasPermission, navigate, t, restablecerContrasena],
   );
 
   return (
@@ -1542,7 +1607,22 @@ export default function SecurityGuardsPage() {
                                     ) : null;
                                   })()}
                                 </td>
-                                <td className="px-4 py-3">{guard.email}</td>
+                                <td className="px-4 py-3">
+                                  {guard.email || (
+                                    <span style={{ color: "var(--ink-faint)" }}>
+                                      {t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")}
+                                    </span>
+                                  )}
+                                  {guard.username && (
+                                    <div
+                                      className="font-mono text-xs"
+                                      style={{ color: "var(--ink-soft)" }}
+                                      title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                                    >
+                                      {guard.username}
+                                    </div>
+                                  )}
+                                </td>
                                 <td className="px-4 py-3">{guard.phone}</td>
                                 <td className="px-4 py-3 text-sm">
                                   {guard.station || (
@@ -1600,42 +1680,7 @@ export default function SecurityGuardsPage() {
                                           </DropdownMenuItem>
 
                                           <DropdownMenuItem
-                                            onClick={async () => {
-                                              try {
-                                                const realId =
-                                                  guard.raw?.id || guard.id;
-                                                const r: any =
-                                                  await securityGuardService.sendPasswordReset(
-                                                    realId,
-                                                  );
-                                                const via = [
-                                                  r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"),
-                                                  r?.pushed && "push",
-                                                ]
-                                                  .filter(Boolean)
-                                                  .join(" + ");
-                                                toast.success(
-                                                  via
-                  ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
-                      defaultValue:
-                        "Enlace de restablecimiento enviado por {{via}}",
-                      via,
-                    })
-                  : t(
-                      "ui.SecurityGuardsPage.enlaceCopiado",
-                      "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
-                    ),
-                                                );
-                                              } catch (err: any) {
-                                                toast.error(
-                                                  err?.message ||
-                                                    t(
-                                                      "guards.list.toasts.resetError",
-                                                      "No se pudo restablecer la contraseña",
-                                                    ),
-                                                );
-                                              }
-                                            }}
+                                            onClick={() => restablecerContrasena(guard)}
                                           >
                                             <KeyRound className="mr-2 h-4 w-4" />{" "}
                                             {t(
@@ -1750,42 +1795,7 @@ export default function SecurityGuardsPage() {
                                             "securityGuardEdit",
                                           ) && (
                                             <DropdownMenuItem
-                                              onClick={async () => {
-                                                try {
-                                                  const realId =
-                                                    guard.raw?.id || guard.id;
-                                                  const r: any =
-                                                    await securityGuardService.sendPasswordReset(
-                                                      realId,
-                                                    );
-                                                  const via = [
-                                                    r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"),
-                                                    r?.pushed && "push",
-                                                  ]
-                                                    .filter(Boolean)
-                                                    .join(" + ");
-                                                  toast.success(
-                                                    via
-                  ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
-                      defaultValue:
-                        "Enlace de restablecimiento enviado por {{via}}",
-                      via,
-                    })
-                  : t(
-                      "ui.SecurityGuardsPage.enlaceCopiado",
-                      "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
-                    ),
-                                                  );
-                                                } catch (err: any) {
-                                                  toast.error(
-                                                    err?.message ||
-                                                      t(
-                                                        "guards.list.toasts.resetError",
-                                                        "No se pudo restablecer la contraseña",
-                                                      ),
-                                                  );
-                                                }
-                                              }}
+                                              onClick={() => restablecerContrasena(guard)}
                                             >
                                               <KeyRound className="mr-2 h-4 w-4" />{" "}
                                               {t(
@@ -2682,7 +2692,14 @@ export default function SecurityGuardsPage() {
             />
             <Field
               label={t("guards.list.details.fields.email", "Correo")}
-              value={detailsGuard.raw?.guard?.email ?? detailsGuard.email}
+              value={
+                correoVisible(detailsGuard.raw?.guard?.email ?? detailsGuard.email) ||
+                t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")
+              }
+            />
+            <Field
+              label={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+              value={detailsGuard.raw?.guard?.username ?? detailsGuard.username}
             />
             <Field
               label={t("guards.list.details.fields.phone", "Teléfono")}
@@ -3315,7 +3332,10 @@ export default function SecurityGuardsPage() {
                             (item.fullName ??
                               `${guardObj.firstName ?? ""} ${guardObj.lastName ?? ""}`.trim()) ||
                             "-";
-                          const email = guardObj.email ?? item.email ?? "";
+                          const email =
+                            correoVisible(guardObj.email ?? item.email) ?? "";
+                          const username =
+                            guardObj.username ?? item.username ?? "";
                           const phone =
                             guardObj.phone ??
                             guardObj.phoneNumber ??
@@ -3338,7 +3358,15 @@ export default function SecurityGuardsPage() {
                               return "Archivado";
                             return "Pendiente";
                           })();
-                          return { id, name, email, phone, status, raw: item };
+                          return {
+                            id,
+                            name,
+                            email,
+                            username,
+                            phone,
+                            status,
+                            raw: item,
+                          };
                         };
                         setGuards(data.map(normalize));
                       }
@@ -3431,6 +3459,7 @@ export default function SecurityGuardsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {compartir.dialogo}
     </AppLayout>
   );
 }

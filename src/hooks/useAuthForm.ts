@@ -16,6 +16,7 @@ interface UseAuthFormReturn {
   setIsLoading: (loading: boolean) => void;
   resetForm: () => void;
   validateEmail: () => boolean;
+  validateLoginId: () => boolean;
   validatePassword: (minLength?: number) => boolean;
   validateStrongPassword: () => boolean;
   validatePasswordMatch: () => boolean;
@@ -52,6 +53,25 @@ export const useAuthForm = (): UseAuthFormReturn => {
     if (!emailRegex.test(email)) {
       toast.error(
         t("auth.invalid_email", { defaultValue: "Invalid email address" }),
+      );
+
+      return false;
+    }
+
+    return true;
+  };
+
+  /**
+   * El campo de acceso del login: correo O usuario para entrar (`jmiranda`).
+   * Sólo se exige que no esté vacío. Validar formato de correo aquí dejaba
+   * fuera a quien no tiene correo; el servidor distingue por la `@`.
+   */
+  const validateLoginId = (): boolean => {
+    if (!email.trim()) {
+      toast.error(
+        t("auth.enterLoginId", {
+          defaultValue: "Escribe tu correo o tu usuario",
+        }),
       );
 
       return false;
@@ -131,6 +151,7 @@ export const useAuthForm = (): UseAuthFormReturn => {
     setIsLoading,
     resetForm,
     validateEmail,
+    validateLoginId,
     validatePassword,
     validateStrongPassword,
     validatePasswordMatch,

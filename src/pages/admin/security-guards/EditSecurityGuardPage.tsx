@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { usePermissions } from "@/hooks/usePermissions";
+import { correoVisible } from "@/lib/correoVisible";
+import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import {
   PageContainer,
   PageHeader,
@@ -83,6 +85,8 @@ export default function EditSecurityGuardPage() {
     guardCredentials: "",
   });
   const [fetchedData, setFetchedData] = useState<any>(null);
+  // ¿Tenía un correo de verdad? Si no (entra con su usuario), es opcional.
+  const tieneCorreo = !!correoVisible(fetchedData?.guard?.email ?? fetchedData?.email);
 
   useEffect(() => {
     if (hasFetched.current) return;
@@ -97,7 +101,8 @@ export default function EditSecurityGuardPage() {
         setForm({
           firstName: g.firstName ?? "",
           lastName: g.lastName ?? "",
-          email: g.email ?? "",
+          // Un correo inventado (cuenta sin buzón) no se enseña ni se reenvía.
+          email: correoVisible(g.email) ?? "",
           phoneNumber: g.phoneNumber ?? "",
           address: data.address ?? "",
           birthDate: data.birthDate ?? "",
@@ -205,7 +210,6 @@ export default function EditSecurityGuardPage() {
         const payload: any = {
           firstName: orNull(form.firstName),
           lastName: orNull(form.lastName),
-          email: orNull(form.email),
           phoneNumber: orNull(form.phoneNumber),
           governmentId: orNull(form.governmentId),
           address: orNull(form.address),
@@ -216,6 +220,10 @@ export default function EditSecurityGuardPage() {
           maritalStatus: orNull(form.maritalStatus),
           academicInstruction: orNull(form.academicInstruction),
         };
+        // El correo sólo viaja si hay uno: una cuenta sin correo (entra con
+        // su usuario) no puede quedar con `email: null`, y el inventado que
+        // ya tiene no se toca.
+        if (form.email.trim()) payload.email = form.email.trim();
         // Dates: only send when present (avoid clearing with empty string).
         if (form.birthDate) payload.birthDate = form.birthDate;
         if (form.hiringContractDate)
@@ -420,16 +428,26 @@ export default function EditSecurityGuardPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    {t(
-                      "ui.EditSecurityGuard.correoElectronico",
-                      "Correo Electrónico *",
-                    )}
+                    {tieneCorreo
+                      ? t(
+                          "ui.EditSecurityGuard.correoElectronico",
+                          "Correo Electrónico *",
+                        )
+                      : t(
+                          "ui.registration.correoOpcional",
+                          "Correo electrónico (opcional)",
+                        )}
                   </label>
                   <Input
                     name="email"
+                    placeholder={
+                      tieneCorreo
+                        ? undefined
+                        : t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")
+                    }
                     value={form.email}
                     onChange={handleChange}
-                    required
+                    required={tieneCorreo}
                     type="email"
                   />
                 </div>
@@ -444,6 +462,14 @@ export default function EditSecurityGuardPage() {
                     required
                   />
                 </div>
+                {/* El usuario para entrar se guarda APARTE (tiene efecto en
+                    el acto): ver UsuarioDeAccesoEditable. */}
+                <UsuarioDeAccesoEditable
+                  className="md:col-span-2"
+                  puedeEditar={hasPermission("securityGuardEdit")}
+                  userId={fetchedData?.guard?.id ?? null}
+                  username={fetchedData?.guard?.username ?? null}
+                />
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-1">
                     {t("ui.EditSecurityGuard.direccion", "Dirección")}

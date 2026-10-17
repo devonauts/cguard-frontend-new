@@ -331,7 +331,12 @@
       "nota": "Gardez la référence à portée de main : elle aide le support à retrouver votre dossier plus vite.",
       "vistaPrevia": "Aperçu : votre session reste ouverte.",
       "volverAlPanel": "Retour au tableau de bord"
-    }
+    },
+    "enterLoginId": "Saisissez votre e-mail ou votre identifiant",
+    "forgotNoMailboxHint": "Si votre compte n'a pas d'e-mail, demandez le lien à votre superviseur ou au bureau.",
+    "forgotSubtitleLoginId": "Saisissez votre e-mail ou votre identifiant et nous vous enverrons un lien pour en créer un nouveau.",
+    "loginIdLabel": "E-mail ou identifiant",
+    "loginIdPlaceholder": "jmiranda ou vous@email.com"
   },
   "client": {
     "invite_not_found": "Invitation introuvable ou non valide.",
@@ -2120,7 +2125,8 @@
         "invite_error": "Impossible d'envoyer les invitations",
         "invites_sent": "Invitations envoyées",
         "profile_created": "Fiche créée",
-        "profile_created_sent": "Fiche créée et envoyée"
+        "profile_created_sent": "Fiche créée et envoyée",
+        "profileCreatedShare": "Profil créé. Partagez son accès pour qu'il définisse son mot de passe."
       }
     },
     "notes": {
@@ -8977,7 +8983,8 @@
       "addressPlaceholder": "Rechercher l'adresse du superviseur...",
       "operacion": "Opérations",
       "invitesSent": "Invitations envoyées",
-      "inviteFailed": "Impossible d'inviter : {{emails}}"
+      "inviteFailed": "Impossible d'inviter : {{emails}}",
+      "creadoSinCorreo": "Superviseur créé. Partagez son accès pour qu'il définisse son mot de passe."
     }
   },
   "suscripcion": {
@@ -9527,7 +9534,11 @@
       "tuProveedorDeSeguridad": "votre prestataire de sécurité",
       "vigilantesYPuestosEnTiempoReal": "Agents et postes en temps réel, rondes GPS, incidents et rapports.",
       "descargarEnGooglePlay": "Disponible sur Google Play",
-      "iniciaSesionEnLaAppConElCorreo": "Connectez-vous à l'application avec l'e-mail et le mot de passe que vous venez de créer."
+      "iniciaSesionEnLaAppConElCorreo": "Connectez-vous à l'application avec l'e-mail et le mot de passe que vous venez de créer.",
+      "correoOpcional": "E-mail (facultatif)",
+      "correoPlaceholder": "vous@email.com",
+      "entraConTuUsuario": "Pour vous connecter, utilisez votre identifiant : {{usuario}}",
+      "usuarioSinCorreoAyuda": "Vous vous connecterez à l'app avec cet identifiant et le mot de passe créé ici. Si vous avez un e-mail, ajoutez-le ci-dessous (facultatif)."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Ma position",
@@ -18153,7 +18164,8 @@
       "nameInvalid": "Le prénom ne doit contenir ni chiffres ni caractères non valides",
       "nameRequired": "Le prénom est obligatoire",
       "phoneE164": "Utilisez le format +12015550123",
-      "phoneE164International": "Utilisez le format international, par ex. +12015550123"
+      "phoneE164International": "Utilisez le format international, par ex. +12015550123",
+      "emailRequiredOrNoEmail": "Saisissez son e-mail ou cochez « Sans e-mail (identifiant seulement) »"
     },
     "joinByCode": {
       "codeLength": "Le code doit comporter 6 chiffres",
@@ -19215,5 +19227,42 @@
     "back": "Retour",
     "goDashboard": "Aller au tableau de bord",
     "goLogin": "Se connecter"
+  },
+  "usuarioDeAcceso": {
+    "altaSinCorreoAyuda": "Aucun e-mail n'est envoyé : à l'envoi, nous vous donnons son lien à partager (par WhatsApp, par exemple).",
+    "ayuda": "Avec cet identifiant (ou son e-mail), la personne se connecte à l'app. Vous pouvez le changer ; le mot de passe ne change pas.",
+    "cambiado": "C'est fait : la connexion se fait maintenant avec « {{usuario}} ».",
+    "cambiar": "Changer l'identifiant",
+    "compartir": {
+      "aviso": "Le lien est réservé à cette personne : il permet de définir le mot de passe de son compte. Ne le publiez pas dans des groupes.",
+      "copiado": "Copié",
+      "copiarEnlace": "Copier le lien",
+      "copiarUsuario": "Copier l'identifiant",
+      "descripcionInvitacion": "Partagez ce lien pour que la personne définisse son mot de passe.",
+      "descripcionRestablecer": "Pas d'e-mail : partagez ce lien pour que la personne définisse son nouveau mot de passe.",
+      "enlace": "Lien",
+      "listo": "Terminé",
+      "mensajeInvitacion": "Bonjour {{nombre}}. Votre identifiant pour l'app est : {{usuario}}. Créez votre mot de passe ici : {{enlace}}",
+      "mensajeRestablecer": "Bonjour {{nombre}}. Votre identifiant pour l'app est : {{usuario}}. Définissez votre nouveau mot de passe ici : {{enlace}}",
+      "noSeCopio": "Impossible de copier. Sélectionnez le texte et copiez-le à la main.",
+      "sinEnlace": "Aucun lien reçu. Essayez « Renvoyer l'invitation » depuis sa fiche.",
+      "titulo": "Son accès à l'app",
+      "tituloVarios": "Accès à partager",
+      "usuario": "Identifiant :",
+      "whatsapp": "Partager par WhatsApp"
+    },
+    "comprobando": "Vérification…",
+    "etiqueta": "Identifiant de connexion",
+    "formato": "De 3 à 32 caractères : lettres sans accent, chiffres, point, tiret ou tiret bas. Commence par une lettre.",
+    "guardar": "Enregistrer l'identifiant",
+    "libre": "Disponible",
+    "noSeCambio": "L'identifiant n'a pas pu être modifié.",
+    "ocupado": "Cet identifiant est déjà pris.",
+    "placeholder": "jmiranda",
+    "reservado": "Ce mot est réservé. Choisissez-en un autre.",
+    "sinCorreo": "Sans e-mail (identifiant seulement)",
+    "sinCorreoCorto": "Sans e-mail",
+    "sinCorreoFicha": "Sans e-mail : l'invitation n'est pas envoyée, nous vous donnons le lien à partager.",
+    "sinRespuesta": "Impossible de vérifier maintenant ; ce sera vérifié à l'enregistrement."
   }
 }

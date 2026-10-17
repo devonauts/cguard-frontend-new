@@ -447,7 +447,9 @@ export default function AdminOfficeUsersPage() {
       out = out.filter((r) => {
         const name = (r.firstName || r.name || "").toString().toLowerCase();
         const email = (r.email || "").toString().toLowerCase();
-        return name.includes(q) || email.includes(q);
+        // También por su usuario para entrar (alias).
+        const alias = (r.username || "").toString().toLowerCase();
+        return name.includes(q) || email.includes(q) || alias.includes(q);
       });
     }
 
@@ -1256,7 +1258,18 @@ export default function AdminOfficeUsersPage() {
                               u.name ||
                               "-"}
                           </td>
-                          <td className="px-4 py-3">{u.email || "-"}</td>
+                          <td className="px-4 py-3">
+                            {u.email || "-"}
+                            {u.username && (
+                              <div
+                                className="font-mono text-xs"
+                                style={{ color: "var(--ink-soft)" }}
+                                title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                              >
+                                {u.username}
+                              </div>
+                            )}
+                          </td>
                           <td className="px-4 py-3">
                             {(() => {
                               if (u._rolesDisplay) return u._rolesDisplay;
@@ -1569,6 +1582,9 @@ export default function AdminOfficeUsersPage() {
                         style={{ color: "var(--ink-soft)" }}
                       >
                         {u.email || "-"}
+                        {u.username && (
+                          <span className="ml-1.5 font-mono">· {u.username}</span>
+                        )}
                       </div>
                       <div
                         className="mt-1 text-xs"

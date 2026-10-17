@@ -30,6 +30,8 @@ import {
   supervisorService,
   type Supervisor,
 } from "@/lib/api/supervisorService";
+import { usePermissions } from "@/hooks/usePermissions";
+import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import { postSiteService } from "@/lib/api/postSiteService";
 import userService from "@/lib/api/userService";
 import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
@@ -326,6 +328,7 @@ export default function SupervisorDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const [sup, setSup] = useState<Supervisor | null>(null);
+  const { hasPermission } = usePermissions();
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -626,6 +629,17 @@ export default function SupervisorDetailPage() {
                         </>
                       )}
                     </div>
+                    {/* El usuario para entrar se cambia aparte: tiene efecto
+                        en el acto (ver UsuarioDeAccesoEditable). */}
+                    <UsuarioDeAccesoEditable
+                      className="mt-4"
+                      puedeEditar={hasPermission("userEdit")}
+                      userId={sup.id}
+                      username={sup.username}
+                      onCambiado={(username) =>
+                        setSup((prev) => (prev ? { ...prev, username } : prev))
+                      }
+                    />
                   </Section>
 
                   <Section

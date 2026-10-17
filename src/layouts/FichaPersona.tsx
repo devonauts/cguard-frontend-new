@@ -4,6 +4,7 @@ import { Outlet, useParams } from "react-router-dom";
 
 import securityGuardService from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
+import { correoVisible } from "@/lib/correoVisible";
 import { fileUrlFromFile } from "@/lib/fileUrl";
 import guardRatingService from "@/lib/api/guardRatingService";
 
@@ -90,7 +91,8 @@ export function useDatosDeFicha(
               i18n.t("adminOfficeUsers.roleNames.supervisor", "Supervisor"),
             photo: s.photoUrl || null,
             onDuty: !!s.isOnDuty,
-            email: s.email,
+            // Los correos inventados (cuenta sin buzón) no se enseñan.
+            email: correoVisible(s.email),
             phone: s.phoneNumber,
             code: s.governmentId,
             role: "Supervisor",
@@ -116,7 +118,7 @@ export function useDatosDeFicha(
             photo,
             onDuty: !!g?.isOnDuty,
             activated: !!g?.hasPassword && g?.status === "active",
-            email: g?.email,
+            email: correoVisible(g?.email),
             phone: g?.phoneNumber || g?.phone,
             code: d?.employeeCode || d?.guardNumber || g?.guardNumber || null,
             role: g?.role || null,

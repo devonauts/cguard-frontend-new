@@ -331,7 +331,12 @@
       "nota": "Tieni a portata di mano il riferimento: aiuta il supporto a trovare il tuo caso più in fretta.",
       "vistaPrevia": "Anteprima: la tua sessione è ancora aperta.",
       "volverAlPanel": "Torna al pannello"
-    }
+    },
+    "enterLoginId": "Inserisci la tua e-mail o il tuo nome utente",
+    "forgotNoMailboxHint": "Se il tuo account non ha e-mail, chiedi il link al tuo supervisore o all'ufficio.",
+    "forgotSubtitleLoginId": "Inserisci la tua e-mail o il tuo nome utente e ti invieremo un link per crearne una nuova.",
+    "loginIdLabel": "E-mail o nome utente",
+    "loginIdPlaceholder": "jmiranda o tu@email.com"
   },
   "client": {
     "invite_not_found": "Invito non trovato o non valido.",
@@ -2120,7 +2125,8 @@
         "invite_error": "Errore nell'invio degli inviti",
         "invites_sent": "Inviti inviati",
         "profile_created": "Profilo creato",
-        "profile_created_sent": "Profilo creato e inviato"
+        "profile_created_sent": "Profilo creato e inviato",
+        "profileCreatedShare": "Profilo creato. Condividi l'accesso perché imposti la password."
       }
     },
     "notes": {
@@ -8977,7 +8983,8 @@
       "addressPlaceholder": "Cerca l'indirizzo del supervisore...",
       "operacion": "Operatività",
       "invitesSent": "Inviti inviati",
-      "inviteFailed": "Impossibile invitare: {{emails}}"
+      "inviteFailed": "Impossibile invitare: {{emails}}",
+      "creadoSinCorreo": "Supervisore creato. Condividi l'accesso perché imposti la password."
     }
   },
   "suscripcion": {
@@ -9527,7 +9534,11 @@
       "tuProveedorDeSeguridad": "il tuo fornitore di sicurezza",
       "vigilantesYPuestosEnTiempoReal": "Guardie e postazioni in tempo reale, ronde con GPS, incidenti e rapporti.",
       "descargarEnGooglePlay": "Disponibile su Google Play",
-      "iniciaSesionEnLaAppConElCorreo": "Accedi all'app con l'email e la password che hai appena creato."
+      "iniciaSesionEnLaAppConElCorreo": "Accedi all'app con l'email e la password che hai appena creato.",
+      "correoOpcional": "E-mail (facoltativa)",
+      "correoPlaceholder": "tu@email.com",
+      "entraConTuUsuario": "Per accedere usa il tuo nome utente: {{usuario}}",
+      "usuarioSinCorreoAyuda": "Con questo nome utente e la password che crei qui entrerai nell'app. Se hai un'e-mail, puoi aggiungerla sotto (facoltativo)."
     },
     "AddressAutocomplete": {
       "miUbicacion": "La mia posizione",
@@ -18153,7 +18164,8 @@
       "nameInvalid": "Il nome non deve contenere numeri né caratteri non validi",
       "nameRequired": "Il nome è obbligatorio",
       "phoneE164": "Usa il formato es. +12015550123",
-      "phoneE164International": "Usa il formato internazionale, es. +12015550123"
+      "phoneE164International": "Usa il formato internazionale, es. +12015550123",
+      "emailRequiredOrNoEmail": "Inserisci l'e-mail o seleziona «Senza e-mail (solo nome utente)»"
     },
     "joinByCode": {
       "codeLength": "Il codice deve avere 6 cifre",
@@ -19215,5 +19227,42 @@
     "back": "Indietro",
     "goDashboard": "Vai al pannello",
     "goLogin": "Accedi"
+  },
+  "usuarioDeAcceso": {
+    "altaSinCorreoAyuda": "Non riceve nessuna e-mail: all'invio ti diamo il suo link da condividere (ad esempio via WhatsApp).",
+    "ayuda": "Con questo nome utente (o la sua e-mail) la persona entra nell'app. Puoi cambiarlo; la password non cambia.",
+    "cambiado": "Fatto: ora accede con «{{usuario}}».",
+    "cambiar": "Cambia nome utente",
+    "compartir": {
+      "aviso": "Il link è solo per questa persona: con esso imposta la password del suo account. Non pubblicarlo nei gruppi.",
+      "copiado": "Copiato",
+      "copiarEnlace": "Copia link",
+      "copiarUsuario": "Copia nome utente",
+      "descripcionInvitacion": "Condividi questo link perché la persona imposti la password.",
+      "descripcionRestablecer": "Non ha e-mail: condividi questo link perché imposti la nuova password.",
+      "enlace": "Link",
+      "listo": "Fatto",
+      "mensajeInvitacion": "Ciao {{nombre}}. Il tuo nome utente per l'app è: {{usuario}}. Crea la tua password qui: {{enlace}}",
+      "mensajeRestablecer": "Ciao {{nombre}}. Il tuo nome utente per l'app è: {{usuario}}. Imposta la nuova password qui: {{enlace}}",
+      "noSeCopio": "Impossibile copiare. Seleziona il testo e copialo a mano.",
+      "sinEnlace": "Non è arrivato un link. Prova «Reinvia invito» dalla sua scheda.",
+      "titulo": "Il suo accesso all'app",
+      "tituloVarios": "Accessi da condividere",
+      "usuario": "Nome utente:",
+      "whatsapp": "Condividi su WhatsApp"
+    },
+    "comprobando": "Controllo…",
+    "etiqueta": "Nome utente di accesso",
+    "formato": "Da 3 a 32 caratteri: lettere senza accenti, numeri, punto, trattino o trattino basso. Inizia con una lettera.",
+    "guardar": "Salva nome utente",
+    "libre": "Disponibile",
+    "noSeCambio": "Impossibile cambiare il nome utente.",
+    "ocupado": "Questo nome utente è già in uso.",
+    "placeholder": "jmiranda",
+    "reservado": "Questa parola è riservata. Scegline un'altra.",
+    "sinCorreo": "Senza e-mail (solo nome utente)",
+    "sinCorreoCorto": "Senza e-mail",
+    "sinCorreoFicha": "Senza e-mail: l'invito non viene inviato, ti diamo il link da condividere.",
+    "sinRespuesta": "Non è stato possibile controllare ora; lo verifichiamo al salvataggio."
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { User, Phone, FileCheck, Car, UserPlus } from "lucide-react";
@@ -31,6 +31,12 @@ import { FormBlock } from "@/components/app/form-block";
 import { AddBlockButton, RemoveBlockButton } from "@/components/app/add-remove";
 import { SubmitBar } from "@/components/app/submit-bar";
 import AddressAutocomplete from "@/components/maps/AddressAutocomplete";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CampoUsuarioDeAcceso } from "@/components/usuarioDeAcceso/CampoUsuarioDeAcceso";
+import {
+  type AccesoParaCompartir,
+  useCompartirAcceso,
+} from "@/components/usuarioDeAcceso/CompartirAcceso";
 import i18n from "@/i18n";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
@@ -40,6 +46,7 @@ import {
 } from "@/lib/api/supervisorService";
 import {
   createProfileSchema,
+  exigirCorreoSalvoSinCorreo,
   BLOOD_TYPES,
   GENDER_OPTIONS,
   MARITAL_STATUS_OPTIONS,
@@ -108,8 +115,14 @@ const inviteSchema = z.object({
           .trim()
           .email({
             error: msj("validation.common.emailInvalid", "Ingrese un correo válido"),
-          }),
-      }),
+          })
+          .optional()
+          .or(z.literal("")),
+        /** Sin correo: entra sólo con su usuario (alias). */
+        sinCorreo: z.boolean().optional(),
+        username: z.string().trim().max(32).optional().or(z.literal("")),
+      })
+      .superRefine(exigirCorreoSalvoSinCorreo),
     )
     .min(1),
 });
@@ -132,11 +145,34 @@ const profileSchema = createProfileSchema
   .extend({
     zone: z.string().trim().max(120).optional().or(z.literal("")),
     assignedVehicle: z.string().trim().max(120).optional().or(z.literal("")),
-  });
+  })
+  .superRefine(exigirCorreoSalvoSinCorreo);
 
 type ProfileValues = z.infer<typeof profileSchema>;
 
-const blankInvite = () => ({ firstName: "", lastName: "", email: "" });
+const blankInvite = () => ({
+  firstName: "",
+  lastName: "",
+  email: "",
+  sinCorreo: false,
+  username: "",
+});
+
+type EntradaDeInvitacion = InviteValues["entries"][number];
+
+/** El cuerpo del alta: sin correo viaja `sinCorreo: true` y ningún correo. */
+const cuerpoDeAcceso = (e: {
+  email?: string;
+  sinCorreo?: boolean;
+  username?: string;
+}) => ({
+  ...(e.sinCorreo
+    ? { sinCorreo: true }
+    : { email: String(e.email || "").trim() }),
+  ...(String(e.username || "").trim()
+    ? { username: String(e.username).trim() }
+    : {}),
+});
 
 type TabKey = "invite" | "create_profile";
 
@@ -170,24 +206,44 @@ export default function NewSupervisorPage() {
     append: inviteAppend,
     remove: inviteRemove,
   } = useFieldArray({ control: inviteCtrl, name: "entries" });
+  const inviteEntries = useWatch({ control: inviteCtrl, name: "entries" });
+  // «Usuario: jmiranda · comparte este enlace» de las altas sin correo.
+  const compartir = useCompartirAcceso();
+
+  /** Cómo se nombra una fila en los avisos: su correo, o su nombre si no tiene. */
+  const etiquetaDe = (e: EntradaDeInvitacion) =>
+    e.sinCorreo
+      ? `${e.firstName} ${e.lastName}`.trim()
+      : String(e.email || "").trim();
 
   const onSubmitInvite = async (v: InviteValues) => {
     // Uno a uno: si un correo falla, los demás siguen y se dice cuál no salió.
     const fallidos: string[] = [];
+    const motivos = new Set<string>();
     const enlazados: string[] = [];
+    // Las altas sin correo devuelven su enlace: no hay buzón al que mandarlo.
+    const accesos: AccesoParaCompartir[] = [];
 
     for (const e of v.entries) {
       try {
         const sup = await supervisorService.create({
-          email: e.email.trim(),
+          ...cuerpoDeAcceso(e),
           firstName: e.firstName.trim(),
           lastName: e.lastName.trim(),
         });
 
-        if ((sup as any)?.linkedExistingAccount) enlazados.push(e.email.trim());
+        if ((sup as any)?.linkedExistingAccount) enlazados.push(etiquetaDe(e));
+        if (sup?.invitationLink)
+          accesos.push({
+            nombre: `${e.firstName} ${e.lastName}`.trim(),
+            username: sup.username || e.username || null,
+            link: sup.invitationLink,
+          });
       } catch (err: any) {
         console.error("[NewSupervisorPage] invite error <-", err);
-        fallidos.push(e.email.trim());
+        fallidos.push(etiquetaDe(e));
+        // El motivo del servidor (p. ej. «ese usuario ya está en uso»).
+        if (err?.message) motivos.add(String(err.message));
       }
     }
 
@@ -203,16 +259,18 @@ export default function NewSupervisorPage() {
           emails: fallidos.join(", "),
           defaultValue: "No se pudo invitar a: {{emails}}",
         }),
+        motivos.size ? { description: [...motivos].join(" · ") } : undefined,
       );
       // Se queda en pantalla sólo con los que fallaron, para reintentar.
       inviteForm.reset({
-        entries: v.entries.filter((e) => fallidos.includes(e.email.trim())),
+        entries: v.entries.filter((e) => fallidos.includes(etiquetaDe(e))),
       });
+      compartir.abrir(accesos, "invitacion");
 
       return;
     }
     toast.success(t("supervisors.new.invitesSent", "Invitaciones enviadas"));
-    navigate("/supervisors");
+    compartir.abrir(accesos, "invitacion", () => navigate("/supervisors"));
   };
 
   /* ============== CREAR PERFIL ============== */
@@ -229,6 +287,8 @@ export default function NewSupervisorPage() {
       hiringContractDate: "",
       guardCredentials: "",
       email: "",
+      sinCorreo: false,
+      username: "",
       homeAddress: "",
       homeAddressLat: undefined,
       homeAddressLng: undefined,
@@ -245,12 +305,15 @@ export default function NewSupervisorPage() {
     formState: createState,
     setValue: setCreateValue,
   } = createForm;
+  const createSinCorreo = useWatch({ control: createCtrl, name: "sinCorreo" });
+  const createNombre = useWatch({ control: createCtrl, name: "firstName" });
+  const createApellido = useWatch({ control: createCtrl, name: "lastName" });
 
   const onSubmitCreate = async (v: ProfileValues) => {
     // Los vacíos no viajan: una fecha "" rompe la columna DATEONLY.
     const opt = (s?: string) => (s && s.trim() ? s.trim() : undefined);
     const body: CreateSupervisorBody = {
-      email: v.email.trim(),
+      ...cuerpoDeAcceso(v),
       firstName: v.firstName.trim(),
       lastName: v.lastName.trim(),
       governmentId: opt(v.identificationNumber),
@@ -279,10 +342,29 @@ export default function NewSupervisorPage() {
           t("ui.SupervisorsPage.esteCorreoYaTeniaCuenta", { marca: nombreDeMarca }),
           { duration: 8000 },
         );
+      } else if (sup?.invitationLink) {
+        toast.success(
+          t(
+            "supervisors.new.creadoSinCorreo",
+            "Supervisor creado. Comparte su acceso para que ponga su contraseña.",
+          ),
+        );
       } else {
         toast.success(t("ui.SupervisorsPage.supervisorCreadoYEnviadaLa"));
       }
-      navigate(`/supervisors/${sup.id}`);
+      compartir.abrir(
+        sup?.invitationLink
+          ? [
+              {
+                nombre: `${v.firstName} ${v.lastName}`.trim(),
+                username: sup.username || v.username || null,
+                link: sup.invitationLink,
+              },
+            ]
+          : [],
+        "invitacion",
+        () => navigate(`/supervisors/${sup.id}`),
+      );
     } catch (e: any) {
       console.error("[NewSupervisorPage] create error <-", e);
       toast.error(
@@ -367,27 +449,67 @@ export default function NewSupervisorPage() {
                             </FormItem>
                           )}
                         />
-                        <FormField
-                          control={inviteCtrl}
-                          name={`entries.${idx}.email`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t("guards.new.form.contactEmail")}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder={t(
-                                    "supervisors.new.emailPlaceholder",
-                                    "supervisor@ejemplo.com",
-                                  )}
-                                  type="email"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        {inviteEntries?.[idx]?.sinCorreo ? (
+                          <FormField
+                            control={inviteCtrl}
+                            name={`entries.${idx}.username`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  {t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                                </FormLabel>
+                                <FormControl>
+                                  <CampoUsuarioDeAcceso
+                                    sugerir
+                                    ayuda={false}
+                                    firstName={inviteEntries?.[idx]?.firstName}
+                                    lastName={inviteEntries?.[idx]?.lastName}
+                                    value={field.value || ""}
+                                    onChange={field.onChange}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        ) : (
+                          <FormField
+                            control={inviteCtrl}
+                            name={`entries.${idx}.email`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>{t("guards.new.form.contactEmail")}</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder={t(
+                                      "supervisors.new.emailPlaceholder",
+                                      "supervisor@ejemplo.com",
+                                    )}
+                                    type="email"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
                       </div>
+                      {/* Sin correo: no le llega invitación; al enviar te damos
+                          su usuario y el enlace para compartirlo. */}
+                      <FormField
+                        control={inviteCtrl}
+                        name={`entries.${idx}.sinCorreo`}
+                        render={({ field }) => (
+                          <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm">
+                            <Checkbox
+                              checked={!!field.value}
+                              onCheckedChange={(c) => field.onChange(c === true)}
+                            />
+                            {t("usuarioDeAcceso.sinCorreo", "Sin correo (sólo usuario)")}
+                          </label>
+                        )}
+                      />
 
                       <div className="mt-4 flex items-center gap-3">
                         <AddBlockButton onClick={() => inviteAppend(blankInvite())} />
@@ -672,24 +794,75 @@ export default function NewSupervisorPage() {
                               "ui.NewSecurityGuard.correoElectronico",
                               "Correo Electrónico",
                             )}{" "}
-                            {required}
+                            {!createSinCorreo && required}
                           </FormLabel>
                           <FormControl>
                             <Input
+                              disabled={!!createSinCorreo}
                               placeholder={t(
                                 "supervisors.new.emailPlaceholder",
                                 "supervisor@ejemplo.com",
                               )}
                               type="email"
                               {...field}
+                              value={createSinCorreo ? "" : field.value || ""}
                             />
                           </FormControl>
-                          <FormDescription>
-                            {t(
-                              "supervisors.new.emailHint",
-                              "Aquí le llegará la invitación para entrar a la app de supervisor.",
+                          <FormField
+                            control={createCtrl}
+                            name="sinCorreo"
+                            render={({ field: f }) => (
+                              <label className="mt-2 flex cursor-pointer items-center gap-2 text-sm">
+                                <Checkbox
+                                  checked={!!f.value}
+                                  onCheckedChange={(c) => {
+                                    f.onChange(c === true);
+                                    if (c === true)
+                                      setCreateValue("email", "", {
+                                        shouldValidate: true,
+                                      });
+                                  }}
+                                />
+                                {t(
+                                  "usuarioDeAcceso.sinCorreo",
+                                  "Sin correo (sólo usuario)",
+                                )}
+                              </label>
                             )}
+                          />
+                          <FormDescription>
+                            {createSinCorreo
+                              ? t(
+                                  "usuarioDeAcceso.altaSinCorreoAyuda",
+                                  "No le llega ningún correo: al enviar te damos su enlace para que lo compartas (por WhatsApp, por ejemplo).",
+                                )
+                              : t(
+                                  "supervisors.new.emailHint",
+                                  "Aquí le llegará la invitación para entrar a la app de supervisor.",
+                                )}
                           </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={createCtrl}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem className="mt-4 max-w-xl">
+                          <FormLabel>
+                            {t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                          </FormLabel>
+                          <FormControl>
+                            <CampoUsuarioDeAcceso
+                              sugerir
+                              firstName={createNombre}
+                              lastName={createApellido}
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -875,6 +1048,7 @@ export default function NewSupervisorPage() {
             </>
           )}
         </GuardTabsHeader>
+        {compartir.dialogo}
       </PageContainer>
     </AppLayout>
   );
