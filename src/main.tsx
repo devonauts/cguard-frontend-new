@@ -17,7 +17,6 @@ instalarBlindajeDom();
 // que sea (la raíz, /login, /register): navegar dentro de la app la perdía.
 guardarAtribucionWeb();
 
-// import { Provider } from "./provider.tsx";
 // Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede
 // caerse o estar bloqueado). Una sola familia variable para todo el CRM:
 // Urbanist (elegida por el dueño, 2026-10-03; antes Inter para el texto y Saira

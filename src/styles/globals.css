@@ -100,6 +100,23 @@
 
 
 @layer base {
+  /* Root canvas and native color scheme. The HeroUI Tailwind plugin used to set
+     these (it was removed); kept as they were so nothing visible changes:
+     color-scheme drives native scrollbars, date inputs and form controls, and
+     the root background is what shows past the body (overscroll, short pages). */
+  :root {
+    color-scheme: light;
+    background-color: #fff;
+  }
+  :root.dark {
+    background-color: #000;
+  }
+  .light {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
   * {
     @apply border-border outline-ring/50;
   }
