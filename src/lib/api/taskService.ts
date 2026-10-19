@@ -104,16 +104,28 @@ const taskService = {
       await api.post(`/tenant/${t}/task/${id}/reject`, { data: { notes } }),
     );
   },
-  /** Staff create — auto-approved by the backend. */
-  async create(data: {
-    taskToDo: string;
-    dateToDoTheTask: string;
-    taskBelongsToStation: string;
-    priority?: "alta" | "media" | "baja";
-  }) {
+  /** Staff create — auto-approved by the backend. With `idempotencyKey`, a
+   *  repeated submission returns the first task instead of a second one. */
+  async create(
+    data: {
+      taskToDo: string;
+      dateToDoTheTask: string;
+      taskBelongsToStation: string;
+      priority?: "alta" | "media" | "baja";
+    },
+    opts: { idempotencyKey?: string } = {},
+  ) {
     const t = getTenantId();
 
-    return unwrap(await api.post(`/tenant/${t}/task`, { data }));
+    return unwrap(
+      await api.post(
+        `/tenant/${t}/task`,
+        { data },
+        opts.idempotencyKey
+          ? { headers: { "Idempotency-Key": opts.idempotencyKey } }
+          : undefined,
+      ),
+    );
   },
   /** Station options for the staff "new task" picker. */
   async stations(query = "") {

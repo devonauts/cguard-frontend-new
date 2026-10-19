@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, type ReactNode } from "react";
+import { useEffect, useState, useCallback, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CheckSquare, Plus, ListChecks } from "lucide-react";
@@ -38,6 +38,7 @@ import taskService, {
   type TaskImage,
 } from "@/lib/api/taskService";
 import { localeActual } from "@/lib/localeActual";
+import { newIdempotencyKey } from "@/lib/idempotencyKey";
 import { zonaDeLaEmpresa, desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
@@ -149,6 +150,10 @@ export default function TaskTracking() {
     priority: "media",
   });
   const [saving, setSaving] = useState(false);
+  // QA-97: set synchronously (state is not, and a double click created two
+  // tasks), plus one idempotency key per dialog so the server dedupes too.
+  const savingRef = useRef(false);
+  const submitKeyRef = useRef(newIdempotencyKey());
 
   // Task detail dialog
   const [selected, setSelected] = useState<TaskRow | null>(null);
@@ -187,6 +192,7 @@ export default function TaskTracking() {
 
   const openDialog = async () => {
     setForm({ taskToDo: "", stationId: "", deadline: "", priority: "media" });
+    submitKeyRef.current = newIdempotencyKey();
     setOpen(true);
     try {
       const r = await taskService.stations();
@@ -220,11 +226,13 @@ export default function TaskTracking() {
   };
 
   const submit = async () => {
+    if (savingRef.current) return;
     if (!form.taskToDo.trim() || !form.stationId || !form.deadline) {
       toast.error(t("ui.TaskTracking.completaTareaPuestoYFecha"));
 
       return;
     }
+    savingRef.current = true;
     setSaving(true);
     try {
       await taskService.create({
@@ -235,13 +243,15 @@ export default function TaskTracking() {
         // así que el mismo dato se guardaba corrido según quién lo escribiera.
         dateToDoTheTask: desdeInputFechaHora(form.deadline),
         priority: form.priority as "alta" | "media" | "baja",
-      });
+      }, { idempotencyKey: submitKeyRef.current });
       toast.success(t("ui.TaskTracking.tareaCreadaYEnviadaA"));
+      submitKeyRef.current = newIdempotencyKey();
       setOpen(false);
       load();
     } catch (e: any) {
       toast.error(e?.message || t("ui.TaskTracking.error", "Error"));
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   };

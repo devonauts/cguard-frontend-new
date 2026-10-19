@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -118,6 +118,11 @@ export default function SupervisorPositionsPage() {
     stationIds: [] as string[],
   });
   const [assignSel, setAssignSel] = useState<Record<string, string>>({});
+  // QA-97: a double click created the position / the assignment twice. Refs
+  // are set synchronously, before the first await; state only re-renders.
+  const creatingRef = useRef(false);
+  const assigningRef = useRef<Set<string>>(new Set());
+  const [assigning, setAssigning] = useState<Record<string, boolean>>({});
   const [offsetSel, setOffsetSel] = useState<Record<string, string>>({});
   const [stationEdit, setStationEdit] = useState<string | null>(null);
 
@@ -222,11 +227,13 @@ export default function SupervisorPositionsPage() {
   };
 
   const create = async () => {
+    if (creatingRef.current) return;
     if (!form.name.trim()) {
       toast.error(t("comun.elNombreEsObligatorio"));
 
       return;
     }
+    creatingRef.current = true;
     setSaving(true);
     try {
       await supervisorPositionService.create({
@@ -257,6 +264,7 @@ export default function SupervisorPositionsPage() {
         e?.message || t("supervisorPositions.createError", "No se pudo crear"),
       );
     } finally {
+      creatingRef.current = false;
       setSaving(false);
     }
   };
@@ -264,7 +272,9 @@ export default function SupervisorPositionsPage() {
   const assign = async (posId: string) => {
     const uid = assignSel[posId];
 
-    if (!uid) return;
+    if (!uid || assigningRef.current.has(posId)) return;
+    assigningRef.current.add(posId);
+    setAssigning((s) => ({ ...s, [posId]: true }));
     try {
       const updated = await supervisorPositionService.assign(posId, {
         supervisorUserId: uid,
@@ -280,6 +290,9 @@ export default function SupervisorPositionsPage() {
         e?.message ||
           t("supervisorPositions.assignError", "No se pudo asignar"),
       );
+    } finally {
+      assigningRef.current.delete(posId);
+      setAssigning((s) => ({ ...s, [posId]: false }));
     }
   };
 
@@ -494,7 +507,7 @@ export default function SupervisorPositionsPage() {
                       />
                     </div>
                     <Button
-                      disabled={!assignSel[p.id]}
+                      disabled={!assignSel[p.id] || !!assigning[p.id]}
                       size="sm"
                       variant="outline"
                       onClick={() => assign(p.id)}

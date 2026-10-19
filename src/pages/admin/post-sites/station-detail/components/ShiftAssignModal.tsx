@@ -7,7 +7,7 @@ import {
   shortRestLabel,
   type RotationCycle,
 } from "@/lib/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CalendarRange,
   Check,
@@ -149,6 +149,9 @@ export default function ShiftAssignModal({
   >([]);
   const [loadingGuards, setLoadingGuards] = useState(false);
   const [saving, setSaving] = useState(false);
+  // QA-97: the one-off shift awaited the current shifts BEFORE marking itself
+  // as saving, so a double click sent two requests. Set synchronously.
+  const savingRef = useRef(false);
   // The rotation PHASE comes from the station position (staggered), not a date —
   // so we don't ask for one (no date input). Shifts simply begin today.
   const [rotationStartDate, setRotationStartDate] = useState(() =>
@@ -663,6 +666,11 @@ export default function ShiftAssignModal({
       }
     })()}`;
 
+    // The backend now answers a slot collision as a 409 «already exists»
+    // without naming the index: same benign case (the shift is there).
+    if (e?.status === 409 && e?.data?.messageCode === "server.common.alreadyExists")
+      return true;
+
     return /uniq_shift_slot/i.test(blob);
   };
 
@@ -707,6 +715,16 @@ export default function ShiftAssignModal({
   };
 
   const saveShift = async () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    try {
+      await saveShiftOnce();
+    } finally {
+      savingRef.current = false;
+    }
+  };
+
+  const saveShiftOnce = async () => {
     if (!shiftGuard) {
       toast.error(t("ui.ShiftAssignModal.seleccioneUnVigilante"));
       return;
