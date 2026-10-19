@@ -392,7 +392,7 @@ export default function ClientesPage() {
 
     if (action === "mover") {
       if (selectedIds.length === 0) {
-        // user-visible warnings/errors are handled by backend
+        toast.error(t("clients.selectAtLeastOne"));
         setBulkKey((k) => k + 1);
         return;
       }
@@ -403,7 +403,7 @@ export default function ClientesPage() {
     }
 
     if (selectedIds.length === 0) {
-      // backend will notify user
+      toast.error(t("clients.selectAtLeastOne"));
       setBulkKey((k) => k + 1);
       return;
     }
@@ -414,7 +414,8 @@ export default function ClientesPage() {
         return !c || c.active === false;
       });
       if (invalid.length > 0) {
-        // backend will notify user
+        // Say why nothing happened instead of silently clearing the selection.
+        toast.error(t("clients.selectOnlyActiveToArchive"));
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
         return;
@@ -437,7 +438,8 @@ export default function ClientesPage() {
         return !c || c.active === true;
       });
       if (invalid.length > 0) {
-        // backend will notify user
+        // Say why nothing happened instead of silently clearing the selection.
+        toast.error(t("clients.selectOnlyArchivedToRestore"));
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
         return;
@@ -453,7 +455,8 @@ export default function ClientesPage() {
         return !c || c.active === true;
       });
       if (invalid.length > 0) {
-        // backend will notify user
+        // Say why nothing happened instead of silently clearing the selection.
+        toast.error(t("clients.selectOnlyArchivedToDelete"));
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
         return;
