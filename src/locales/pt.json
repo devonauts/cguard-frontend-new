@@ -207,7 +207,8 @@
       "rutas": "Rotas",
       "patrulla-board": "Patrulha veicular",
       "patrulla-rutas": "Rotas de supervisão",
-      "patrulla-live": "Rastreamento ao vivo"
+      "patrulla-live": "Rastreamento ao vivo",
+      "patrulla-vehiculos": "Veículos"
     },
     "parking": {
       "label": "Gerenciador de estacionamento",
@@ -11492,7 +11493,9 @@
       "plantillaHint": "Cada parada pode definir o seu no detalhe.",
       "plantillaPorDefecto": "Modelo de inspeção",
       "salidaPrevista": "Saída prevista",
-      "salidaPrevistaHint": "Base para calcular “atrasada” e “em risco”. Vazio: usa-se a hora real de início."
+      "salidaPrevistaHint": "Base para calcular “atrasada” e “em risco”. Vazio: usa-se a hora real de início.",
+      "aunNoHayVehiculos": "Ainda não há veículos cadastrados.",
+      "agregarVehiculo": "Adicionar veículo"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Em velocidade de trânsito urbano, sem contar a permanência em cada parada",

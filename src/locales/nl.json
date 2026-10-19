@@ -4705,7 +4705,8 @@
       "vehiculo": "Voertuig",
       "patrulla-board": "Mobiele surveillance",
       "patrulla-rutas": "Surveillanceroutes",
-      "patrulla-live": "Live volgen"
+      "patrulla-live": "Live volgen",
+      "patrulla-vehiculos": "Voertuigen"
     },
     "postSites": {
       "action": "Actie",
@@ -12027,7 +12028,9 @@
       "plantillaHint": "Elke stop kan in de details een eigen sjabloon instellen.",
       "plantillaPorDefecto": "Inspectiesjabloon",
       "salidaPrevista": "Gepland vertrek",
-      "salidaPrevistaHint": "Basis voor het berekenen van “vertraagd” en “risico”. Leeg: de werkelijke starttijd wordt gebruikt."
+      "salidaPrevistaHint": "Basis voor het berekenen van “vertraagd” en “risico”. Leeg: de werkelijke starttijd wordt gebruikt.",
+      "aunNoHayVehiculos": "Nog geen voertuigen geregistreerd.",
+      "agregarVehiculo": "Voertuig toevoegen"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Op stadssnelheid, exclusief de tijd bij elke halte",

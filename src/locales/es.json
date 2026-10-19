@@ -5171,7 +5171,8 @@
       "vehiculo": "Vehículo",
       "patrulla-board": "Patrulla vehicular",
       "patrulla-rutas": "Rutas de supervisión",
-      "patrulla-live": "Seguimiento en vivo"
+      "patrulla-live": "Seguimiento en vivo",
+      "patrulla-vehiculos": "Vehículos"
     },
     "postSites": {
       "action": "Acción",
@@ -11492,7 +11493,9 @@
       "plantillaHint": "Cada parada puede definir la suya en su detalle.",
       "plantillaPorDefecto": "Plantilla de inspección",
       "salidaPrevista": "Salida prevista",
-      "salidaPrevistaHint": "Base para calcular «retrasada» y «en riesgo». Vacío: se usa la hora real de inicio."
+      "salidaPrevistaHint": "Base para calcular «retrasada» y «en riesgo». Vacío: se usa la hora real de inicio.",
+      "aunNoHayVehiculos": "Aún no hay vehículos registrados.",
+      "agregarVehiculo": "Agregar vehículo"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A marcha de tráfico urbano, sin contar la permanencia en cada parada",

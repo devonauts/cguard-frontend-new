@@ -5170,7 +5170,8 @@
       "vehiculo": "Vehicle",
       "patrulla-board": "Vehicle patrol",
       "patrulla-rutas": "Supervision routes",
-      "patrulla-live": "Live tracking"
+      "patrulla-live": "Live tracking",
+      "patrulla-vehiculos": "Vehicles"
     },
     "postSites": {
       "action": "Action",
@@ -11492,7 +11493,9 @@
       "plantillaHint": "Each stop can set its own in its details.",
       "plantillaPorDefecto": "Inspection template",
       "salidaPrevista": "Scheduled departure",
-      "salidaPrevistaHint": "Used to calculate “delayed” and “at risk”. Empty: the actual start time is used."
+      "salidaPrevistaHint": "Used to calculate “delayed” and “at risk”. Empty: the actual start time is used.",
+      "aunNoHayVehiculos": "No vehicles registered yet.",
+      "agregarVehiculo": "Add vehicle"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "At city traffic speed, not counting time spent at each stop",

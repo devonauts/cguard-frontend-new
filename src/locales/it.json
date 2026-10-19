@@ -4705,7 +4705,8 @@
       "vehiculo": "Veicolo",
       "patrulla-board": "Pattuglia veicolare",
       "patrulla-rutas": "Percorsi di supervisione",
-      "patrulla-live": "Monitoraggio in diretta"
+      "patrulla-live": "Monitoraggio in diretta",
+      "patrulla-vehiculos": "Veicoli"
     },
     "postSites": {
       "action": "Azione",
@@ -12027,7 +12028,9 @@
       "plantillaHint": "Ogni fermata può definire il proprio nel suo dettaglio.",
       "plantillaPorDefecto": "Modello di ispezione",
       "salidaPrevista": "Partenza prevista",
-      "salidaPrevistaHint": "Base per calcolare «in ritardo» e «a rischio». Vuoto: si usa l'ora reale di inizio."
+      "salidaPrevistaHint": "Base per calcolare «in ritardo» e «a rischio». Vuoto: si usa l'ora reale di inizio.",
+      "aunNoHayVehiculos": "Non ci sono ancora veicoli registrati.",
+      "agregarVehiculo": "Aggiungi veicolo"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A velocità di traffico urbano, senza contare la sosta a ogni fermata",

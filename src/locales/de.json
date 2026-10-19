@@ -4705,7 +4705,8 @@
       "vehiculo": "Fahrzeug",
       "patrulla-board": "Fahrzeugstreife",
       "patrulla-rutas": "Streifenrouten",
-      "patrulla-live": "Live-Verfolgung"
+      "patrulla-live": "Live-Verfolgung",
+      "patrulla-vehiculos": "Fahrzeuge"
     },
     "postSites": {
       "action": "Aktion",
@@ -12027,7 +12028,9 @@
       "plantillaHint": "Jeder Haltepunkt kann in seinen Details eine eigene festlegen.",
       "plantillaPorDefecto": "Inspektionsvorlage",
       "salidaPrevista": "Geplante Abfahrt",
-      "salidaPrevistaHint": "Grundlage für „verspätet“ und „gefährdet“. Leer: Es wird die tatsächliche Startzeit verwendet."
+      "salidaPrevistaHint": "Grundlage für „verspätet“ und „gefährdet“. Leer: Es wird die tatsächliche Startzeit verwendet.",
+      "aunNoHayVehiculos": "Noch keine Fahrzeuge erfasst.",
+      "agregarVehiculo": "Fahrzeug hinzufügen"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Bei Stadtverkehrstempo, ohne die Standzeit an jedem Halt",

@@ -202,6 +202,11 @@
         ]
       },
       {
+        "id": "patrulla-vehiculos",
+        "name": "Vehículos",
+        "path": "/vehicle-patrol/vehicles"
+      },
+      {
         "id": "patrulla-live",
         "name": "Seguimiento en vivo",
         "path": "/live-tracking"

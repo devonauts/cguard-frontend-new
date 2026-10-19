@@ -4707,7 +4707,8 @@
       "vehiculo": "Pojazd",
       "patrulla-board": "Patrol zmotoryzowany",
       "patrulla-rutas": "Trasy nadzoru",
-      "patrulla-live": "Śledzenie na żywo"
+      "patrulla-live": "Śledzenie na żywo",
+      "patrulla-vehiculos": "Pojazdy"
     },
     "postSites": {
       "action": "Akcja",
@@ -12099,7 +12100,9 @@
       "plantillaHint": "Każdy przystanek może ustawić własny w swoich szczegółach.",
       "plantillaPorDefecto": "Szablon inspekcji",
       "salidaPrevista": "Planowany wyjazd",
-      "salidaPrevistaHint": "Podstawa do wyliczenia „opóźniona” i „zagrożona”. Puste: używana jest rzeczywista godzina rozpoczęcia."
+      "salidaPrevistaHint": "Podstawa do wyliczenia „opóźniona” i „zagrożona”. Puste: używana jest rzeczywista godzina rozpoczęcia.",
+      "aunNoHayVehiculos": "Nie zarejestrowano jeszcze pojazdów.",
+      "agregarVehiculo": "Dodaj pojazd"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",

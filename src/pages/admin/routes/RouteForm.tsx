@@ -16,7 +16,9 @@ import {
   Milestone,
   SlidersHorizontal,
   ClipboardList,
+  Plus,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import RouteMap, { type RouteMapStop } from "./RouteMap";
 import ExtremoRutaField from "./ExtremoRutaField";
@@ -267,6 +269,7 @@ export default function RouteForm({
   const [vehicles, setVehicles] = useState<
     { id: string; name: string; licensePlate?: string }[]
   >([]);
+  const [vehiclesLoaded, setVehiclesLoaded] = useState(false);
   const [fallbackVehicle, setFallbackVehicle] = useState<{
     id: string;
     name: string;
@@ -827,9 +830,11 @@ export default function RouteForm({
 
           return merged;
         });
+        setVehiclesLoaded(true);
       } catch (e) {
         console.warn("vehicleService.list failed", e);
         setVehicles([]);
+        if (mounted) setVehiclesLoaded(true);
         try {
           toast.error(
             String(
@@ -853,6 +858,35 @@ export default function RouteForm({
       mounted = false;
     };
   }, [fallbackSupervisor]);
+
+  const noVehicles = vehiclesLoaded && vehicles.length === 0;
+
+  // The "add vehicle" link opens in a new tab so the half-filled route is not
+  // lost; when the user comes back, pick up the vehicle they just created.
+  useEffect(() => {
+    if (!noVehicles) return;
+    const refresh = async () => {
+      try {
+        const res: any = await vehicleService.list({ limit: 100 });
+        const rows = res && res.rows ? res.rows : Array.isArray(res) ? res : [];
+
+        if (rows.length)
+          setVehicles(
+            rows.map((v: any) => ({
+              id: String(v.id),
+              name: v.name || "",
+              licensePlate: v.licensePlate || "",
+            })),
+          );
+      } catch {
+        /* the empty-state link stays visible */
+      }
+    };
+
+    window.addEventListener("focus", refresh);
+
+    return () => window.removeEventListener("focus", refresh);
+  }, [noVehicles]);
 
   const daysText = useMemo(() => {
     const d = watchedDays ?? [];
@@ -2232,6 +2266,24 @@ export default function RouteForm({
                     ))}
                   </SelectContent>
                 </Select>
+                {noVehicles && (
+                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {t(
+                      "ui.RouteForm.aunNoHayVehiculos",
+                      "Aún no hay vehículos registrados.",
+                    )}{" "}
+                    <Link
+                      className="cg-focus inline-flex items-center gap-1 font-semibold hover:underline"
+                      rel="noopener"
+                      style={{ color: "var(--brand-text)" }}
+                      target="_blank"
+                      to="/vehicle-patrol/vehicles/add-vehicle"
+                    >
+                      <Plus className="h-3 w-3" />
+                      {t("ui.RouteForm.agregarVehiculo", "Agregar vehículo")}
+                    </Link>
+                  </p>
+                )}
                 <FormMessage />
               </FormItem>
             )}
