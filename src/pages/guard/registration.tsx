@@ -16,6 +16,13 @@ import { PhoneInput } from "@/components/phone/PhoneInput";
 import { InfoNote } from "@/components/kit";
 import { correoVisible } from "@/lib/correoVisible";
 import i18n from "@/i18n";
+import { GENDER_OPTIONS, type Gender } from "@/lib/validators/create-profile.schema";
+
+/** Same values the rest of the CRM (and the securityGuard model) accept. */
+const GENDER_LABEL_KEY: Record<Gender, string> = {
+  Masculino: "invite.guard.male",
+  Femenino: "invite.guard.female",
+};
 
 /**
  * Mirror the BACKEND password policy (securityGuardCreate.isStrongPassword):
@@ -1364,15 +1371,11 @@ export default function GuardRegistration() {
                   onChange={(e) => setGender(e.target.value)}
                 >
                   <option value="">{t("invite.select", "Seleccione")}</option>
-                  <option value="Masculino">
-                    {t("invite.guard.male", "Masculino")}
-                  </option>
-                  <option value="Femenino">
-                    {t("invite.guard.female", "Femenino")}
-                  </option>
-                  <option value="Otro">
-                    {t("invite.guard.other", "Otro")}
-                  </option>
+                  {GENDER_OPTIONS.map((g) => (
+                    <option key={g} value={g}>
+                      {t(GENDER_LABEL_KEY[g], g)}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
