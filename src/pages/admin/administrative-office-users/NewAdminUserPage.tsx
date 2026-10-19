@@ -180,13 +180,24 @@ export default function NewAdminUserPage() {
   };
 
   // Los supervisores de seguridad NO se crean desde oficina administrativa —
-  // tienen su propia página (Equipo de seguridad › Supervisores).
-  const isSecuritySupervisorRole = (role: RoleOption) => {
+  // tienen su propia página (Equipo de seguridad › Supervisores). Tampoco los
+  // roles que no son de oficina: vigilante y cliente tienen su propia alta, y
+  // el operador de central nunca se asigna a mano (sale de tener la central
+  // asignada). Ofrecerlos creaba «usuarios de oficina» con rol de cliente o de
+  // vigilante, y el de central salía con su clave cruda (QA-138).
+  const NON_OFFICE_ROLES = new Set([
+    "securitysupervisor",
+    "securityguard",
+    "customer",
+    "centraloperator",
+    "superadmin",
+  ]);
+  const isNonOfficeRole = (role: RoleOption) => {
     const norm = (v: any) => (v || "").toString().toLowerCase();
     return (
-      norm(role.id) === "securitysupervisor" ||
-      norm(role.slug) === "securitysupervisor" ||
-      norm(role.name) === "securitysupervisor"
+      NON_OFFICE_ROLES.has(norm(role.id)) ||
+      NON_OFFICE_ROLES.has(norm(role.slug)) ||
+      NON_OFFICE_ROLES.has(norm(role.name))
     );
   };
 
@@ -354,7 +365,7 @@ export default function NewAdminUserPage() {
         });
 
         const withoutSecuritySupervisor = mappedRoles.filter(
-          (r: RoleOption) => !isSecuritySupervisorRole(r),
+          (r: RoleOption) => !isNonOfficeRole(r),
         );
         const adminRole =
           findAdminRole(withoutSecuritySupervisor) ?? DEFAULT_ADMIN_ROLE;
