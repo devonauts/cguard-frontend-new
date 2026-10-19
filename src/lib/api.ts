@@ -198,12 +198,33 @@ api.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  async (error) => {
     const cfg = (error.config || {}) as any as MutableConfig & { toast?: any };
 
     if (cfg.__toastId) {
       toast.dismiss(cfg.__toastId);
       (cfg as MutableConfig).__toastId = undefined;
+    }
+    // Downloads ask for a Blob, so their error body arrives as a Blob too and
+    // the user read "Request failed with status code 403". Read it first.
+    const blobBody = error?.response?.data;
+
+    if (
+      typeof Blob !== "undefined" &&
+      blobBody instanceof Blob &&
+      /json|text/i.test(blobBody.type)
+    ) {
+      try {
+        const text = await blobBody.text();
+
+        try {
+          error.response.data = JSON.parse(text);
+        } catch {
+          error.response.data = text;
+        }
+      } catch {
+        /* keep the generic message */
+      }
     }
     const apiError = normalizeError(error as AxiosError);
 

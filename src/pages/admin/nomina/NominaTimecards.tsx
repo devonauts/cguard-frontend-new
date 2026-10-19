@@ -709,16 +709,22 @@ export default function NominaTimecards() {
               defaultValue: "Aprobar ({{count}})",
             })}
           </Button>
-          <Button
-            variant="outline"
-            onClick={reabrir}
-            disabled={trabajando || !hayAprobadas}
-          >
-            <RotateCcw size={15} /> {t("ui.NominaTimecards.reabrir", "Reabrir")}
-          </Button>
-          <Button variant="outline" onClick={exportar} disabled={trabajando || !sel.length}>
-            <Download size={15} /> {t("ui.NominaRecords.exportar", "Exportar")}
-          </Button>
+          {/* Reopening and exporting release pay: the backend takes them only
+              with attendanceSettingsEdit (payrollGate), same as closing. */}
+          {puedeCerrar && (
+            <Button
+              variant="outline"
+              onClick={reabrir}
+              disabled={trabajando || !hayAprobadas}
+            >
+              <RotateCcw size={15} /> {t("ui.NominaTimecards.reabrir", "Reabrir")}
+            </Button>
+          )}
+          {puedeCerrar && (
+            <Button variant="outline" onClick={exportar} disabled={trabajando || !sel.length}>
+              <Download size={15} /> {t("ui.NominaRecords.exportar", "Exportar")}
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={exportarDetalle}
