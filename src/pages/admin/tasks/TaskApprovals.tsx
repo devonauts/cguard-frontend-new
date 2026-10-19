@@ -65,19 +65,20 @@ export default function TaskApprovals() {
   };
 
   const reject = async (r: TaskRow) => {
-    const notes =
-      (await promptDialog({
-        title: t("tasks.approvals.rejectReasonTitle", "Motivo del rechazo"),
-        message: t("clients.form.optional", "Opcional"),
-        placeholder: t(
-          "ui.TaskApprovals.ejFaltaLaFotoDeEvidencia",
-          "Ej.: falta la foto de evidencia",
-        ),
-      })) ?? undefined;
+    const notes = await promptDialog({
+      title: t("tasks.approvals.rejectReasonTitle", "Motivo del rechazo"),
+      message: t("clients.form.optional", "Opcional"),
+      placeholder: t(
+        "ui.TaskApprovals.ejFaltaLaFotoDeEvidencia",
+        "Ej.: falta la foto de evidencia",
+      ),
+    });
+    // null = the operator cancelled the dialog: nothing gets rejected.
+    if (notes === null) return;
 
     setBusy(true);
     try {
-      await taskService.reject(r.id, notes);
+      await taskService.reject(r.id, notes.trim() || undefined);
       toast.success(t("ui.TaskTracking.tareaRechazada", "Tarea rechazada"));
       load();
     } catch (e: any) {
