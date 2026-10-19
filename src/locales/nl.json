@@ -16481,7 +16481,9 @@
       "nEstaciones": "{{count}} stations",
       "nEstaciones_one": "{{count}} station",
       "nEstaciones_other": "{{count}} stations",
-      "agregarEstacion": "Post toevoegen"
+      "agregarEstacion": "Post toevoegen",
+      "errorAlCargar": "De posten konden niet worden geladen",
+      "errorAlCargarAyuda": "Controleer je verbinding en probeer het opnieuw. Je posten zijn er nog: maak ze niet opnieuw aan."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Dit dashboard is alleen voor administratief personeel. Je werk beheer je via de mobiele app.",

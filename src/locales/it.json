@@ -16481,7 +16481,9 @@
       "nEstaciones": "{{count}} stazioni",
       "nEstaciones_one": "{{count}} stazione",
       "nEstaciones_other": "{{count}} stazioni",
-      "agregarEstacion": "Aggiungi postazione"
+      "agregarEstacion": "Aggiungi postazione",
+      "errorAlCargar": "Impossibile caricare le postazioni",
+      "errorAlCargarAyuda": "Controlla la connessione e riprova. Le tue postazioni sono ancora lì: non crearle di nuovo."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Questo pannello è riservato al personale amministrativo. Il tuo lavoro si gestisce dall'app mobile.",

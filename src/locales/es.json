@@ -15946,7 +15946,9 @@
       "nEstaciones": "{{count}} estaciones",
       "nEstaciones_one": "{{count}} estación",
       "nEstaciones_other": "{{count}} estaciones",
-      "agregarEstacion": "Agregar estación"
+      "agregarEstacion": "Agregar estación",
+      "errorAlCargar": "No se pudieron cargar las estaciones",
+      "errorAlCargarAyuda": "Revisa tu conexión y vuelve a intentarlo. Tus estaciones siguen ahí: no las crees de nuevo."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Este panel es solo para el personal administrativo. Tu trabajo se gestiona desde la aplicación móvil.",

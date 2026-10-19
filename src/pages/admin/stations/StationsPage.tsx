@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, RadioTower } from "lucide-react";
+import { AlertCircle, Plus, RadioTower, RotateCcw } from "lucide-react";
 
 import StationCardsGrid from "./StationCardsGrid";
 
@@ -22,6 +22,7 @@ import {
   Toolbar,
   SearchInput,
   IconTile,
+  EmptyState,
 } from "@/components/kit";
 import { stationService, type StationCard } from "@/lib/api/stationService";
 
@@ -37,6 +38,9 @@ export default function StationsPage() {
 
   const [stations, setStations] = useState<StationCard[]>([]);
   const [loading, setLoading] = useState(true);
+  // A failed load must not read as "no stations — create one" (duplicates).
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [query, setQuery] = useState("");
   // «Agregar estación»: primero de qué cliente y sede, luego el formulario.
   const [eligiendo, setEligiendo] = useState(false);
@@ -45,13 +49,17 @@ export default function StationsPage() {
     let alive = true;
 
     setLoading(true);
+    setLoadError(false);
     stationService
       .getStationCards()
       .then((rows) => {
         if (alive) setStations(rows);
       })
       .catch(() => {
-        if (alive) setStations([]);
+        if (alive) {
+          setStations([]);
+          setLoadError(true);
+        }
       })
       .finally(() => {
         if (alive) setLoading(false);
@@ -60,7 +68,7 @@ export default function StationsPage() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [reloadKey]);
 
   const filtered = useMemo(() => {
     const q = sinAcentos(query.trim().toLowerCase());
@@ -106,7 +114,7 @@ export default function StationsPage() {
             </Button>
           }
           badges={
-            !loading ? (
+            !loading && !loadError ? (
               <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {t("ui.StationsPage.nEstaciones", {
                   defaultValue: "{{count}} estaciones",
@@ -138,12 +146,35 @@ export default function StationsPage() {
           />
         </Toolbar>
 
-        <StationCardsGrid
-          loading={loading}
-          stations={filtered}
-          onOpen={openStation}
-          onOpenTab={openStationTab}
-        />
+        {loadError && !loading ? (
+          <EmptyState
+            action={
+              <Button
+                variant="outline"
+                onClick={() => setReloadKey((k) => k + 1)}
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                {t("ui.shared.reintentar", "Reintentar")}
+              </Button>
+            }
+            description={t(
+              "ui.StationsPage.errorAlCargarAyuda",
+              "Revisa tu conexión y vuelve a intentarlo. Tus estaciones siguen ahí: no las crees de nuevo.",
+            )}
+            icon={<AlertCircle style={{ color: "var(--bad-text)" }} />}
+            title={t(
+              "ui.StationsPage.errorAlCargar",
+              "No se pudieron cargar las estaciones",
+            )}
+          />
+        ) : (
+          <StationCardsGrid
+            loading={loading}
+            stations={filtered}
+            onOpen={openStation}
+            onOpenTab={openStationTab}
+          />
+        )}
         <ElegirSedeParaEstacion open={eligiendo} onOpenChange={setEligiendo} />
       </PageContainer>
     </AppLayout>

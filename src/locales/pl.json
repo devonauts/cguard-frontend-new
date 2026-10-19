@@ -16699,7 +16699,9 @@
       "nEstaciones_other": "{{count}} stanowisk",
       "nEstaciones_few": "{{count}} stanowiska",
       "nEstaciones_many": "{{count}} stanowisk",
-      "agregarEstacion": "Dodaj posterunek"
+      "agregarEstacion": "Dodaj posterunek",
+      "errorAlCargar": "Nie udało się wczytać stanowisk",
+      "errorAlCargarAyuda": "Sprawdź połączenie i spróbuj ponownie. Twoje stanowiska nadal istnieją: nie twórz ich ponownie."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Ten panel jest przeznaczony wyłącznie dla personelu administracyjnego. Swoją pracą zarządzasz w aplikacji mobilnej.",

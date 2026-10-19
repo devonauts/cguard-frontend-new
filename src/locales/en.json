@@ -15946,7 +15946,9 @@
       "nEstaciones": "{{count}} stations",
       "nEstaciones_one": "{{count}} station",
       "nEstaciones_other": "{{count}} stations",
-      "agregarEstacion": "Add station"
+      "agregarEstacion": "Add station",
+      "errorAlCargar": "Stations could not be loaded",
+      "errorAlCargarAyuda": "Check your connection and try again. Your stations are still there: do not create them again."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "This dashboard is only for administrative staff. Your work is managed from the mobile app.",

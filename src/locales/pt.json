@@ -15946,7 +15946,9 @@
       "nEstaciones": "{{count}} estações",
       "nEstaciones_one": "{{count}} estação",
       "nEstaciones_other": "{{count}} estações",
-      "agregarEstacion": "Adicionar posto"
+      "agregarEstacion": "Adicionar posto",
+      "errorAlCargar": "Não foi possível carregar as estações",
+      "errorAlCargarAyuda": "Verifique sua conexão e tente novamente. Suas estações continuam lá: não as crie de novo."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Este painel é apenas para a equipe administrativa. Seu trabalho é gerenciado pelo aplicativo móvel.",

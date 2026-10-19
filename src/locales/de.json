@@ -16481,7 +16481,9 @@
       "nEstaciones": "{{count}} Stationen",
       "nEstaciones_one": "{{count}} Station",
       "nEstaciones_other": "{{count}} Stationen",
-      "agregarEstacion": "Posten hinzufügen"
+      "agregarEstacion": "Posten hinzufügen",
+      "errorAlCargar": "Die Stationen konnten nicht geladen werden",
+      "errorAlCargarAyuda": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut. Ihre Stationen sind noch da: Legen Sie sie nicht neu an."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Dieses Dashboard ist nur für Verwaltungspersonal. Ihre Arbeit wird über die mobile App verwaltet.",

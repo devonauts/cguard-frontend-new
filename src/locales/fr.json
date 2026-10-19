@@ -16481,7 +16481,9 @@
       "nEstaciones": "{{count}} stations",
       "nEstaciones_one": "{{count}} station",
       "nEstaciones_other": "{{count}} stations",
-      "agregarEstacion": "Ajouter un poste"
+      "agregarEstacion": "Ajouter un poste",
+      "errorAlCargar": "Impossible de charger les stations",
+      "errorAlCargarAyuda": "Vérifiez votre connexion et réessayez. Vos stations sont toujours là : ne les recréez pas."
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Ce tableau de bord est réservé au personnel administratif. Votre travail se gère depuis l'application mobile.",
