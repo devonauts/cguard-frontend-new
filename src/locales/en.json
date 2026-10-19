@@ -9982,7 +9982,12 @@
       "solicitudes": "Requests",
       "mensaje": "Message",
       "marcarComoAtendida": "Mark as handled",
-      "reabrir": "Reopen"
+      "reabrir": "Reopen",
+      "revisaTuConexionYVuelve": "Check your connection and try again.",
+      "tipo": "Type",
+      "tipoVigilanteAdicional": "Extra guard",
+      "tipoCotizacion": "Quote",
+      "tipoServicio": "Service"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "App colour",

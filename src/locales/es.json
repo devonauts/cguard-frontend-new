@@ -9982,7 +9982,12 @@
       "solicitudes": "Solicitudes",
       "mensaje": "Mensaje",
       "marcarComoAtendida": "Marcar como atendida",
-      "reabrir": "Reabrir"
+      "reabrir": "Reabrir",
+      "revisaTuConexionYVuelve": "Revisa tu conexión y vuelve a intentarlo.",
+      "tipo": "Tipo",
+      "tipoVigilanteAdicional": "Vigilante adicional",
+      "tipoCotizacion": "Cotización",
+      "tipoServicio": "Servicio"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Color de la aplicación",

@@ -3,11 +3,13 @@ import api from "../api";
 
 /**
  * Customer-originated service requests (callerType='client'), posted by the
- * Mi Seguridad customer app into the shared `request` model and read by the CRM.
+ * Mi Seguridad customer app into the `request` table.
  *
- * Reuses the existing tenant request endpoints:
- *   GET /tenant/:tenantId/request            (list — filtered client-side by callerType)
- *   PUT /tenant/:tenantId/request/:id        (triage — update status / mark attended)
+ *   GET /tenant/:tenantId/client-requests              (filtered + paged on the server)
+ *   PUT /tenant/:tenantId/client-requests/:id/status   (triage — attended / reopened)
+ *
+ * NOT `/tenant/:tenantId/request`: that endpoint lists INCIDENTS, so customer
+ * requests never showed up here (QA-14).
  */
 
 const getTenantId = (): string => {
@@ -59,36 +61,54 @@ export interface CustomerRequestRecord {
   dateTime: string | null;
   createdAt: string | null;
   station?: { id: string; stationName?: string } | null;
+  /** extra_guard | service | quote — what the customer asked for. */
+  type?: string | null;
+  requestedDate?: string | null;
+}
+
+export interface CustomerRequestStats {
+  open: number;
+  closed: number;
+  total: number;
+}
+
+export interface CustomerRequestListParams {
+  status?: "abierto" | "cerrado";
+  query?: string;
+  limit: number;
+  offset: number;
 }
 
 const customerRequestService = {
-  async list(
-    params?: Record<string, unknown>,
-  ): Promise<{ rows: CustomerRequestRecord[]; count: number }> {
+  async list(params: CustomerRequestListParams): Promise<{
+    rows: CustomerRequestRecord[];
+    count: number;
+    stats: CustomerRequestStats;
+  }> {
     const tenantId = getTenantId();
-    const qs = buildQuery(params);
-    const resp = await api.get(`/tenant/${tenantId}/request${qs}`);
+    const qs = buildQuery(params as unknown as Record<string, unknown>);
+    const resp = await api.get(`/tenant/${tenantId}/client-requests${qs}`);
     const payload = resp.data ?? resp;
-    const rows: CustomerRequestRecord[] = Array.isArray(payload)
-      ? payload
-      : Array.isArray(payload?.rows)
-        ? payload.rows
-        : [];
-    const count = Array.isArray(payload)
-      ? payload.length
-      : (payload?.count ?? rows.length);
+    const rows: CustomerRequestRecord[] = Array.isArray(payload?.rows)
+      ? payload.rows
+      : [];
 
-    return { rows, count };
+    return {
+      rows,
+      count: Number(payload?.count ?? rows.length),
+      stats: payload?.stats ?? { open: 0, closed: 0, total: 0 },
+    };
   },
 
   async updateStatus(
     id: string,
-    status: string,
+    status: "abierto" | "cerrado",
   ): Promise<CustomerRequestRecord> {
     const tenantId = getTenantId();
-    const resp = await api.put(`/tenant/${tenantId}/request/${id}`, {
-      data: { status },
-    });
+    const resp = await api.put(
+      `/tenant/${tenantId}/client-requests/${id}/status`,
+      { data: { status } },
+    );
 
     return resp.data ?? resp;
   },

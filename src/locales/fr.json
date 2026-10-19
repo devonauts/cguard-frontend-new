@@ -10517,7 +10517,12 @@
       "solicitudes": "Demandes",
       "mensaje": "Message",
       "marcarComoAtendida": "Marquer comme traitée",
-      "reabrir": "Rouvrir"
+      "reabrir": "Rouvrir",
+      "revisaTuConexionYVuelve": "Vérifiez votre connexion et réessayez.",
+      "tipo": "Type",
+      "tipoVigilanteAdicional": "Agent supplémentaire",
+      "tipoCotizacion": "Devis",
+      "tipoServicio": "Service"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Couleur de l'application",

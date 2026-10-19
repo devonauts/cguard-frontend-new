@@ -10517,7 +10517,12 @@
       "solicitudes": "Anfragen",
       "mensaje": "Nachricht",
       "marcarComoAtendida": "Als erledigt markieren",
-      "reabrir": "Wieder öffnen"
+      "reabrir": "Wieder öffnen",
+      "revisaTuConexionYVuelve": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "tipo": "Art",
+      "tipoVigilanteAdicional": "Zusätzlicher Wachmann",
+      "tipoCotizacion": "Angebot",
+      "tipoServicio": "Dienstleistung"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Farbe der App",

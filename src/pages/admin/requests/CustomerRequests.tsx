@@ -39,7 +39,9 @@ import {
 } from "lucide-react";
 import customerRequestService, {
   CustomerRequestRecord,
+  CustomerRequestStats,
 } from "@/lib/api/customerRequestService";
+import { useDebouncedValue } from "@/hooks/useDebounce";
 import {
   PageContainer,
   PageHeader,
@@ -68,74 +70,65 @@ function formatDate(iso: string | null) {
   });
 }
 
-// The customer app posts requests with callerType='client'.
-const isCustomerRequest = (r: CustomerRequestRecord) =>
-  String(r.callerType ?? "").toLowerCase() === "client";
-
 // ── component ────────────────────────────────────────────────────────────────
 
 export default function CustomerRequests() {
   const { t } = useTranslation();
   const [records, setRecords] = useState<CustomerRequestRecord[]>([]);
+  const [count, setCount] = useState(0);
+  const [stats, setStats] = useState<CustomerRequestStats>({
+    open: 0,
+    closed: 0,
+    total: 0,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(searchQuery.trim(), 350);
   const [statusFilter, setStatusFilter] = useState<
     "all" | "abierto" | "cerrado"
   >("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
-  // ── fetch ─────────────────────────────────────────────────────────────────
+  // ── fetch (filtered and paged on the server) ─────────────────────────────
   const fetchRecords = useCallback(async () => {
     setLoading(true);
     setError(false);
     try {
-      const { rows } = await customerRequestService.list({ limit: 500 });
-      // Only customer-originated requests (callerType='client').
-      setRecords((rows || []).filter(isCustomerRequest));
+      const res = await customerRequestService.list({
+        status: statusFilter === "all" ? undefined : statusFilter,
+        query: debouncedQuery || undefined,
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+      });
+
+      setRecords(res.rows);
+      setCount(res.count);
+      setStats(res.stats);
     } catch (err) {
       console.error("Failed to fetch customer requests", err);
+      setRecords([]);
+      setCount(0);
       setError(true);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [statusFilter, debouncedQuery, page, pageSize]);
 
   useEffect(() => {
     fetchRecords();
   }, [fetchRecords]);
 
-  // ── stats ─────────────────────────────────────────────────────────────────
-  const stats = {
-    open: records.filter((r) => r.status === "abierto").length,
-    closed: records.filter((r) => r.status === "cerrado").length,
-    total: records.length,
-  };
-
-  // ── filter + paginate ─────────────────────────────────────────────────────
-  const q = searchQuery.toLowerCase().trim();
-  const filtered = records.filter((r) => {
-    if (statusFilter !== "all" && r.status !== statusFilter) return false;
-    if (!q) return true;
-    return (
-      (r.subject ?? "").toLowerCase().includes(q) ||
-      (r.content ?? "").toLowerCase().includes(q) ||
-      (r.callerName ?? "").toLowerCase().includes(q) ||
-      (r.station?.stationName ?? "").toLowerCase().includes(q)
-    );
-  });
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const totalPages = Math.max(1, Math.ceil(count / pageSize));
 
   // ── handlers ──────────────────────────────────────────────────────────────
   const handleSetStatus = async (id: string, status: "abierto" | "cerrado") => {
     try {
       await customerRequestService.updateStatus(id, status);
-      setRecords((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status } : r)),
-      );
+      // Refetch: the row may leave the current status filter and the
+      // counters change.
+      fetchRecords();
       toast.success(
         status === "cerrado"
           ? t(
@@ -147,6 +140,20 @@ export default function CustomerRequests() {
     } catch (err) {
       console.error("Failed to update request status", err);
       toast.error(t("ui.CustomerRequests.errorAlActualizarLaSolicitud"));
+    }
+  };
+
+  // What the customer asked for (stored by the app in comments[0].type).
+  const requestTypeLabel = (type: string | null | undefined) => {
+    switch (type) {
+      case "extra_guard":
+        return t("ui.CustomerRequests.tipoVigilanteAdicional", "Vigilante adicional");
+      case "quote":
+        return t("ui.CustomerRequests.tipoCotizacion", "Cotización");
+      case "service":
+        return t("ui.CustomerRequests.tipoServicio", "Servicio");
+      default:
+        return "—";
     }
   };
 
@@ -249,7 +256,28 @@ export default function CustomerRequests() {
         <Section
           title={t("ui.CustomerRequests.solicitudes", "Solicitudes")}
           icon={<Inbox />}>
-          {/* Tabla */}
+          {error && (
+            <EmptyState
+              className="mb-4"
+              icon={<AlertCircle style={{ color: "var(--bad-text)" }} />}
+              title={t(
+                "ui.CustomerRequests.ocurrioUnErrorAlObtener",
+                "Ocurrió un error al obtener las solicitudes.",
+              )}
+              description={t(
+                "ui.CustomerRequests.revisaTuConexionYVuelve",
+                "Revisa tu conexión y vuelve a intentarlo.",
+              )}
+              action={
+                <Button size="sm" variant="outline" onClick={fetchRecords}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  {t("ui.shared.reintentar", "Reintentar")}
+                </Button>
+              }
+            />
+          )}
+          {/* Tabla — hidden on error: an empty table would read as "no requests". */}
+          {!error && (
           <div
             className="overflow-hidden rounded-2xl"
             style={{ border: "1px solid var(--hairline)" }}
@@ -282,6 +310,11 @@ export default function CustomerRequests() {
                   render: (_v: any, row: any) => row.subject ?? "—",
                 },
                 {
+                  key: "type",
+                  header: t("ui.CustomerRequests.tipo", "Tipo"),
+                  render: (_v: any, row: any) => requestTypeLabel(row.type),
+                },
+                {
                   key: "content",
                   header: t("ui.CustomerRequests.mensaje", "Mensaje"),
                   render: (_v: any, row: any) => (
@@ -302,7 +335,21 @@ export default function CustomerRequests() {
                 },
               ]}
               containerless
-              data={paginated as any}
+              data={records as any}
+              emptyState={
+                <EmptyState
+                  variant="inline"
+                  icon={<Inbox />}
+                  title={t(
+                    "ui.CustomerRequests.noHaySolicitudesDeClientes",
+                    "No hay solicitudes de clientes",
+                  )}
+                  description={t(
+                    "ui.CustomerRequests.lasSolicitudesEnviadasDesdeLa",
+                    "Las solicitudes enviadas desde la app de clientes aparecerán aquí.",
+                  )}
+                />
+              }
               loading={loading}
               rowActions={(row: any) =>
                 row.status !== "cerrado"
@@ -330,6 +377,7 @@ export default function CustomerRequests() {
               }
             />
           </div>
+          )}
 
           {/* Pagination */}
           <div className="flex flex-wrap items-center justify-center gap-2 py-4 sm:justify-end">
@@ -359,13 +407,13 @@ export default function CustomerRequests() {
               className="text-sm tabular-nums sm:mx-4"
               style={{ color: "var(--ink-soft)" }}
             >
-              {filtered.length === 0
+              {count === 0
                 ? t("guards.list.pagination.emptyRange", "0 – 0 de 0")
                 : t("guards.list.pagination.range", {
                     defaultValue: "{{start}} - {{end}} de {{total}}",
                     start: (page - 1) * pageSize + 1,
-                    end: Math.min(page * pageSize, filtered.length),
-                    total: filtered.length,
+                    end: Math.min(page * pageSize, count),
+                    total: count,
                   })}
             </div>
             <div className="flex items-center space-x-2">

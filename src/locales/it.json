@@ -10517,7 +10517,12 @@
       "solicitudes": "Richieste",
       "mensaje": "Messaggio",
       "marcarComoAtendida": "Segna come gestita",
-      "reabrir": "Riapri"
+      "reabrir": "Riapri",
+      "revisaTuConexionYVuelve": "Controlla la connessione e riprova.",
+      "tipo": "Tipo",
+      "tipoVigilanteAdicional": "Guardia aggiuntiva",
+      "tipoCotizacion": "Preventivo",
+      "tipoServicio": "Servizio"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Colore dell'applicazione",

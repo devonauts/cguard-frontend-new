@@ -10517,7 +10517,12 @@
       "solicitudes": "Verzoeken",
       "mensaje": "Bericht",
       "marcarComoAtendida": "Markeren als afgehandeld",
-      "reabrir": "Heropenen"
+      "reabrir": "Heropenen",
+      "revisaTuConexionYVuelve": "Controleer je verbinding en probeer het opnieuw.",
+      "tipo": "Type",
+      "tipoVigilanteAdicional": "Extra beveiliger",
+      "tipoCotizacion": "Offerte",
+      "tipoServicio": "Dienst"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Kleur van de applicatie",

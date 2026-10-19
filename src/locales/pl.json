@@ -10553,7 +10553,12 @@
       "solicitudes": "Zgłoszenia",
       "mensaje": "Wiadomość",
       "marcarComoAtendida": "Oznacz jako obsłużone",
-      "reabrir": "Otwórz ponownie"
+      "reabrir": "Otwórz ponownie",
+      "revisaTuConexionYVuelve": "Sprawdź połączenie i spróbuj ponownie.",
+      "tipo": "Typ",
+      "tipoVigilanteAdicional": "Dodatkowy ochroniarz",
+      "tipoCotizacion": "Wycena",
+      "tipoServicio": "Usługa"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Kolor aplikacji",
