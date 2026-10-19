@@ -5,7 +5,6 @@ import {
   ChevronUp,
   Plus,
   X,
-  Mail,
   MessageCircle,
   ChevronLeft,
   ChevronRight,
@@ -1006,26 +1005,6 @@ export default function GuardIndicators({ guard }: Props) {
                                         </div>
                                       </button>
 
-                                      <button
-                                        onClick={() => {
-                                          toast.success(
-                                            t(
-                                              "guards.KPI.emailNotImplemented",
-                                              "Email report not implemented",
-                                            ),
-                                          );
-                                          setMenuOpenId(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 hover:bg-muted"
-                                      >
-                                        <div className="flex items-center gap-2 text-sm text-foreground">
-                                          <Mail size={16} />{" "}
-                                          {t(
-                                            "guards.KPI.menu.email",
-                                            "Email Report",
-                                          )}
-                                        </div>
-                                      </button>
                                     </div>
                                   )}
                                 </div>

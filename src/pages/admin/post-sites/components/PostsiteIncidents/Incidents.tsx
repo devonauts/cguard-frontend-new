@@ -38,10 +38,7 @@ import {
   EllipsisVertical,
   Eye,
   Edit,
-  Printer,
   FileDown,
-  FileSpreadsheet,
-  Mail,
   Search,
   Filter,
   ExternalLink,
@@ -140,7 +137,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [openFilter, setOpenFilter] = useState(false);
-  const [actionSelectValue, setActionSelectValue] = useState("");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -865,35 +861,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             la barra empujaba la página entera hacia la derecha en un teléfono. */}
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            <Select
-              value={actionSelectValue}
-              onValueChange={(v) => {
-                setActionSelectValue(v);
-                if (v === "eliminar") {
-                  if (!selectedIds || selectedIds.length === 0) {
-                    toast.error(t("ui.Incidents.seleccioneAlMenosUnElemento"));
-                    setActionSelectValue("");
-                    return;
-                  }
-                  toast(
-                    t(
-                      "ui.Incidents.accionEliminarNoImplementada",
-                      "Acción eliminar no implementada aquí",
-                    ),
-                  );
-                  setActionSelectValue("");
-                }
-              }}
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue
-                  placeholder={t("incidents.actionsPlaceholder") || "Actions"}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="eliminar">{t("actions.delete")}</SelectItem>
-              </SelectContent>
-            </Select>
 
             <div className="relative min-w-48 flex-1">
               <Search
@@ -1220,57 +1187,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             </Sheet>
           </div>
           <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t("ui.Incidents.masAcciones", "Más acciones")}
-                >
-                  <EllipsisVertical className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem
-                  onClick={() =>
-                    toast(
-                      t("ui.Incidents.noImplementado", {
-                        defaultValue: "{{accion}}: no implementado",
-                        accion: t("incidents.export"),
-                      }),
-                    )
-                  }
-                >
-                  <FileSpreadsheet className="mr-2 h-4 w-4" />{" "}
-                  {t("incidents.export")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    toast(
-                      t("ui.Incidents.noImplementado", {
-                        defaultValue: "{{accion}}: no implementado",
-                        accion: t("incidents.filters"),
-                      }),
-                    )
-                  }
-                >
-                  <Printer className="mr-2 h-4 w-4" /> {t("incidents.filters")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    toast(
-                      t("ui.Incidents.noImplementado", {
-                        defaultValue: "{{accion}}: no implementado",
-                        accion: t("incidents.email"),
-                      }),
-                    )
-                  }
-                >
-                  <Mail className="mr-2 h-4 w-4" /> {t("incidents.email")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             <Button
               variant="brand"
               onClick={() =>

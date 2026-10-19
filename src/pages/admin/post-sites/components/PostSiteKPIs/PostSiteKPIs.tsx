@@ -5,7 +5,6 @@ import {
   ChevronUp,
   Plus,
   X,
-  Mail,
   MessageCircle,
   ChevronLeft,
   ChevronRight,
@@ -789,26 +788,6 @@ export default function PostSiteKPIs({ site }: Props) {
                                   {t(
                                     "postSites.KPI.exportExcel",
                                     "Export as Excel",
-                                  )}
-                                </div>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  toast.success(
-                                    t(
-                                      "postSites.KPI.emailNotImplemented",
-                                      "Email report not implemented",
-                                    ),
-                                  );
-                                  setMenuOpenId(null);
-                                }}
-                                className="w-full text-left px-4 py-2 hover:bg-muted"
-                              >
-                                <div className="flex items-center gap-2 text-sm text-foreground">
-                                  <Mail size={16} />{" "}
-                                  {t(
-                                    "postSites.KPI.emailReport",
-                                    "Email Report",
                                   )}
                                 </div>
                               </button>

@@ -2,11 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  Filter as FilterIcon,
-  Plus,
-  Route as RouteIcon,
-} from "lucide-react";
+import { Plus, Route as RouteIcon } from "lucide-react";
 
 import RouteDetailModal from "./RouteDetailModal";
 import { InsigniaOptimizada } from "./OptimizacionPanel";
@@ -17,7 +13,6 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -26,13 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import {
   PageContainer,
   PageHeader,
@@ -43,22 +31,19 @@ import {
   SkeletonCards,
   SearchInput,
 } from "@/components/kit";
-import {
-  type RouteFilters,
-  defaultRouteFilters,
-} from "@/lib/validators/route-filters";
+import { defaultRouteFilters } from "@/lib/validators/route-filters";
 import { enLotes } from "@/lib/enLotes";
 
 export default function RoutesPage() {
-  const [openFilter, setOpenFilter] = useState(false);
-  const [filters, setFilters] = useState<RouteFilters>(defaultRouteFilters);
 
   const [rows, setRows] = useState<any[]>([]);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
   const { t } = useTranslation();
 
-  const [limit, setLimit] = useState<number>(Number(filters.perPage || 25));
+  const [limit, setLimit] = useState<number>(
+    Number(defaultRouteFilters.perPage || 25),
+  );
   const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -300,90 +285,6 @@ export default function RoutesPage() {
               value={searchInput}
               onChange={(v) => setSearchInput(v)}
             />
-
-            <Sheet open={openFilter} onOpenChange={setOpenFilter}>
-              <SheetTrigger asChild>
-                <Button
-                  style={{
-                    borderColor: "var(--brand-line)",
-                    color: "var(--brand-text)",
-                  }}
-                  variant="outline"
-                >
-                  <FilterIcon className="mr-2 h-4 w-4" />
-                  {t("ui.RoutesPage.filtros", "Filtros")}
-                </Button>
-              </SheetTrigger>
-
-              <SheetContent
-                className="w-full overflow-y-auto sm:w-[460px]"
-                side="right"
-              >
-                <SheetHeader>
-                  <SheetTitle>{t("ui.RoutesPage.filtros", "Filtros")}</SheetTitle>
-                </SheetHeader>
-
-                <div className="mt-6 space-y-5">
-                  <div className="space-y-2">
-                    <Label>{t("ui.RoutesPage.sectores", "Sectores")}</Label>
-                    <Select
-                      value={filters.categoryId ?? ""}
-                      onValueChange={(v) =>
-                        setFilters((s) => ({ ...s, categoryId: v }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("ui.RoutesPage.default", "Default")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="default">{t("ui.RoutesPage.default", "Default")}</SelectItem>
-                        <SelectItem value="turno-dia">
-                          {t("ui.Routes.turnoDia", "Turno día")}
-                        </SelectItem>
-                        <SelectItem value="turno-noche">
-                          {t("ui.RoutesPage.turnoNoche")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>{t("comun.estado")}</Label>
-                    <Select
-                      value={filters.status}
-                      onValueChange={(v) =>
-                        setFilters((s) => ({
-                          ...s,
-                          status: v as RouteFilters["status"],
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("common.active")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="activo">
-                          {t("common.active")}
-                        </SelectItem>
-                        <SelectItem value="inactivo">
-                          {t("common.inactive")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground">
-                    {t(
-                      "ui.RoutesPage.filtrosProximamente",
-                      "Los filtros por sector y estado estarán disponibles próximamente. Usa el buscador para filtrar rutas por nombre.",
-                    )}
-                  </p>
-                  <Button disabled className="w-full" variant="brand">
-                    {t("ui.RoutesPage.filtro", "Filtro")}
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
           </div>
         </Toolbar>
 
