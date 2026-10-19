@@ -1327,10 +1327,23 @@ export default function PostSiteWizard({
 
   // ── build payload ────────────────────────────────────────────────────────────
   const buildPayload = () => {
+    /* A site that already has its OWN name keeps it: the wizard used to
+       rename it to the address, and selects, stations and the Planificador
+       lost the name everyone knew it by (QA-98). The address is only the
+       fallback — and a name that was just the old address follows the new one. */
+    const nombreGuardado = String(
+      sedeGuardada?.companyName ?? sedeGuardada?.name ?? "",
+    ).trim();
+    const nombrePropio =
+      nombreGuardado &&
+      nombreGuardado !== String(sedeGuardada?.address ?? "").trim()
+        ? nombreGuardado
+        : "";
     const autoName =
       esEventoSel && nombreEvento.trim()
         ? nombreEvento.trim()
-        : address.trim() ||
+        : nombrePropio ||
+          address.trim() ||
           (resolvedClientName
             ? `Sitio de ${resolvedClientName}`
             : "Sitio sin nombre");
