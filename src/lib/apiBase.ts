@@ -55,7 +55,14 @@ export function resolveApiBase(): string | undefined {
     const { protocol, hostname, origin } = window.location;
     if (!/^https?:$/.test(protocol) || (window as any).cguardDesktop)
       return configurada;
-    if (esAnfitrionDePlataforma(hostname, configurada)) return configurada;
+    if (esAnfitrionDePlataforma(hostname, configurada)) {
+      // A build made without VITE_API_URL (2026-10-19: a worktree with no
+      // `.env`) left axios with no base at all, so every call went to
+      // `/auth/...` on the SPA and nginx answered 405 on EVERY host, partners
+      // included. nginx proxies `/api` same-origin everywhere, so that is the
+      // floor: a bundle can be misconfigured, never dead.
+      return configurada || `${origin}/api`;
+    }
     return `${origin}/api`;
   } catch {
     return configurada;

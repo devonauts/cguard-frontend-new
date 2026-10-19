@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { esAnfitrionDePlataforma } from "./apiBase";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { esAnfitrionDePlataforma, resolveApiBase } from "./apiBase";
 
 const API = "https://api.cguardpro.com/api";
 
@@ -32,5 +32,34 @@ describe("which hosts keep our API and which go same-origin", () => {
     expect(esAnfitrionDePlataforma("admin.vanderbluedesign.com", "/api")).toBe(
       true,
     );
+  });
+});
+
+describe("a bundle without VITE_API_URL still reaches the API", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+  const en = (hostname: string) =>
+    vi.stubGlobal("window", {
+      location: { protocol: "https:", hostname, origin: `https://${hostname}` },
+    });
+
+  it("falls back to same-origin /api on our planes (the 2026-10-19 outage)", () => {
+    vi.stubEnv("VITE_API_URL", "");
+    en("app.cguardpro.com");
+    expect(resolveApiBase()).toBe("https://app.cguardpro.com/api");
+  });
+  it("and on a partner domain", () => {
+    vi.stubEnv("VITE_API_URL", "");
+    en("portal.entecdigital.mx");
+    expect(resolveApiBase()).toBe("https://portal.entecdigital.mx/api");
+  });
+  it("keeps the configured API on our planes when there is one", () => {
+    vi.stubEnv("VITE_API_URL", "https://api.mainconnector.com/api");
+    en("app.cguardpro.com");
+    expect(resolveApiBase()).toBe("https://api.mainconnector.com/api");
+    en("portal.entecdigital.mx");
+    expect(resolveApiBase()).toBe("https://portal.entecdigital.mx/api");
   });
 });
