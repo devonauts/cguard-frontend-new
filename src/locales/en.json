@@ -8210,7 +8210,7 @@
     "loadError": "Couldn't load preferences",
     "saved": "Preferences saved",
     "saveError": "Error saving",
-    "intro": "Customize the color of your emails and turn each notification on or off. Emails marked as \\",
+    "intro": "Customize the color of your emails and turn each notification on or off. Emails marked as “Always on” cannot be turned off for security reasons.",
     "save": "Save",
     "branding": "Brand customization",
     "brandColor": "Brand color",

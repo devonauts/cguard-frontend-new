@@ -1470,7 +1470,7 @@
     "loadError": "De voorkeuren konden niet worden geladen",
     "saved": "Voorkeuren opgeslagen",
     "saveError": "Fout bij het opslaan",
-    "intro": "Pas de kleur van je e-mails aan en zet elke melding aan of uit. E-mails die zijn gemarkeerd als \\",
+    "intro": "Pas de kleur van je e-mails aan en zet elke melding aan of uit. E-mails die zijn gemarkeerd als ‘Altijd actief’ kun je om veiligheidsredenen niet uitzetten.",
     "save": "Opslaan",
     "branding": "Merkinstellingen",
     "brandColor": "Merkkleur",

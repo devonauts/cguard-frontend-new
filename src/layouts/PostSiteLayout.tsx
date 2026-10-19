@@ -26,6 +26,7 @@ import { eventoTerminado } from "@/lib/eventos";
 import { needsOperationSetup } from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
 import AppLayout from "@/layouts/app-layout";
 import i18n from "@/i18n";
+import { conEtiqueta } from "@/lib/i18nLabel";
 
 type Props = { title?: string; children: ReactNode; site?: any };
 
@@ -33,67 +34,19 @@ type Props = { title?: string; children: ReactNode; site?: any };
 // vista/agregado sobre sus estaciones; el detalle y la gestión por-estación
 // (consignas, geocerca, checklists, config) vive dentro de cada estación.
 // Solo se exponen secciones REALES conectadas a la base de datos.
+// `conEtiqueta`: the label is a getter, so it follows the CURRENT language;
+// `i18n.t()` here ran once at import and froze the tabs in the first one (QA-128).
 const TAB_DEFS: Array<{ id: string; seg: string; label: string; icon: any }> = [
-  {
-    id: "overview",
-    seg: "overview",
-    label: i18n.t("postSites.tabs.overview"),
-    icon: LayoutGrid,
-  },
-  {
-    id: "stations",
-    seg: "stations",
-    label: i18n.t("postSites.tabs.stations"),
-    icon: Building2,
-  },
-  {
-    id: "assign-guards",
-    seg: "assign-guards",
-    label: i18n.t("postSites.tabs.guards"),
-    icon: Users,
-  },
-  {
-    id: "site-tours",
-    seg: "site-tours",
-    label: i18n.t("postSites.tabs.tours"),
-    icon: RouteIcon,
-  },
-  {
-    id: "incidents",
-    seg: "incidents",
-    label: i18n.t("postSites.tabs.incidents"),
-    icon: AlertTriangle,
-  },
-  {
-    id: "inventory",
-    seg: "inventory",
-    label: i18n.t("postSites.tabs.inventory"),
-    icon: Package,
-  },
-  {
-    id: "kpis",
-    seg: "kpis",
-    label: i18n.t("postSites.tabs.kpis"),
-    icon: FileBarChart,
-  },
-  {
-    id: "contacts",
-    seg: "contacts",
-    label: i18n.t("postSites.tabs.contacts"),
-    icon: Contact,
-  },
-  {
-    id: "notes",
-    seg: "notes",
-    label: i18n.t("postSites.tabs.notes"),
-    icon: StickyNote,
-  },
-  {
-    id: "profile",
-    seg: "profile",
-    label: i18n.t("postSites.tabs.profile"),
-    icon: IdCard,
-  },
+  conEtiqueta("postSites.tabs.overview", { id: "overview", seg: "overview", icon: LayoutGrid }),
+  conEtiqueta("postSites.tabs.stations", { id: "stations", seg: "stations", icon: Building2 }),
+  conEtiqueta("postSites.tabs.guards", { id: "assign-guards", seg: "assign-guards", icon: Users }),
+  conEtiqueta("postSites.tabs.tours", { id: "site-tours", seg: "site-tours", icon: RouteIcon }),
+  conEtiqueta("postSites.tabs.incidents", { id: "incidents", seg: "incidents", icon: AlertTriangle }),
+  conEtiqueta("postSites.tabs.inventory", { id: "inventory", seg: "inventory", icon: Package }),
+  conEtiqueta("postSites.tabs.kpis", { id: "kpis", seg: "kpis", icon: FileBarChart }),
+  conEtiqueta("postSites.tabs.contacts", { id: "contacts", seg: "contacts", icon: Contact }),
+  conEtiqueta("postSites.tabs.notes", { id: "notes", seg: "notes", icon: StickyNote }),
+  conEtiqueta("postSites.tabs.profile", { id: "profile", seg: "profile", icon: IdCard }),
 ];
 
 export default function PostSiteLayout({ title, children, site }: Props) {

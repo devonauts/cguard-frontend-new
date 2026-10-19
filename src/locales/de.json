@@ -1470,7 +1470,7 @@
     "loadError": "Die Einstellungen konnten nicht geladen werden",
     "saved": "Einstellungen gespeichert",
     "saveError": "Fehler beim Speichern",
-    "intro": "Passen Sie die Farbe Ihrer E-Mails an und schalten Sie jede Benachrichtigung einzeln ein oder aus. Die E-Mails, die gekennzeichnet sind als \\",
+    "intro": "Passen Sie die Farbe Ihrer E-Mails an und schalten Sie jede Benachrichtigung einzeln ein oder aus. Die E-Mails, die als „Immer aktiv“ gekennzeichnet sind, lassen sich aus Sicherheitsgründen nicht abschalten.",
     "save": "Speichern",
     "branding": "Markenanpassung",
     "brandColor": "Farbe der Marke",

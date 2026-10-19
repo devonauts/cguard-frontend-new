@@ -160,10 +160,12 @@ export default function AuthShell({
   const bajada =
     subtitle ??
     (esCampo
-      ? t("auth.fieldLanding.desc", {
-          defaultValue:
-            "Vuelve a entrar a la app C-Guard Pro con tu nueva contraseña.",
-        })
+      ? /* The phrase has a `{{marca}}` slot in the eight languages; without
+           the value it printed «{{marca}}» literally (QA-128). Same rule as
+           below: the host's brand, or no phrase at all. */
+        nombreDeMarca
+        ? t("auth.fieldLanding.desc", { marca: nombreDeMarca })
+        : ""
       : /* ── EL NOMBRE DEL PRODUCTO LO PONE EL ANFITRIÓN ────────────────────
          La frase ya venía con un hueco `{{product}}` en los ocho idiomas —con
          la estructura de cada lengua intacta—, pero aquí se rellenaba con

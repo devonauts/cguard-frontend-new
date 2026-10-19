@@ -1470,7 +1470,7 @@
     "loadError": "Impossible de charger les préférences",
     "saved": "Préférences enregistrées",
     "saveError": "Erreur lors de l'enregistrement",
-    "intro": "Personnalisez la couleur de vos e-mails et activez ou désactivez chaque notification. Les e-mails marqués comme \\",
+    "intro": "Personnalisez la couleur de vos e-mails et activez ou désactivez chaque notification. Les e-mails marqués comme « Toujours actif » ne peuvent pas être désactivés, pour des raisons de sécurité.",
     "save": "Enregistrer",
     "branding": "Personnalisation de la marque",
     "brandColor": "Couleur de la marque",

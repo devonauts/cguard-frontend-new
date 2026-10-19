@@ -1470,7 +1470,7 @@
     "loadError": "Impossibile caricare le preferenze",
     "saved": "Preferenze salvate",
     "saveError": "Errore durante il salvataggio",
-    "intro": "Personalizza il colore delle tue email e attiva o disattiva ogni notifica. Le email contrassegnate come \\",
+    "intro": "Personalizza il colore delle tue email e attiva o disattiva ogni notifica. Le email contrassegnate come «Sempre attivo» non si possono disattivare per motivi di sicurezza.",
     "save": "Salva",
     "branding": "Personalizzazione del marchio",
     "brandColor": "Colore del marchio",

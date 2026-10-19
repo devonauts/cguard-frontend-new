@@ -8210,7 +8210,7 @@
     "loadError": "No se pudieron cargar las preferencias",
     "saved": "Preferencias guardadas",
     "saveError": "Error al guardar",
-    "intro": "Personaliza el color de tus correos y activa o desactiva cada notificación. Los correos marcados como \\",
+    "intro": "Personaliza el color de tus correos y activa o desactiva cada notificación. Los correos marcados como «Siempre activo» no se pueden desactivar por seguridad.",
     "save": "Guardar",
     "branding": "Personalización de marca",
     "brandColor": "Color de la marca",

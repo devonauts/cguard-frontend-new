@@ -1470,7 +1470,7 @@
     "loadError": "Nie udało się wczytać preferencji",
     "saved": "Preferencje zapisane",
     "saveError": "Błąd podczas zapisu",
-    "intro": "Dostosuj kolor swoich wiadomości e-mail oraz włącz lub wyłącz każde powiadomienie. Wiadomości oznaczone jako \\",
+    "intro": "Dostosuj kolor swoich wiadomości e-mail oraz włącz lub wyłącz każde powiadomienie. Wiadomości oznaczone jako „Zawsze aktywne” nie mogą zostać wyłączone ze względów bezpieczeństwa.",
     "save": "Zapisz",
     "branding": "Personalizacja marki",
     "brandColor": "Kolor marki",

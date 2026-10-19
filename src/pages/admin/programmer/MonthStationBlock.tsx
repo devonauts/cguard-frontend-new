@@ -117,6 +117,14 @@ export type MonthGridHandlers = {
   pickAssignment: (assignmentId: string) => void;
 };
 
+/** Translated label of a station's schedule type (it used to print «12H DAY»). */
+const SCHEDULE_TYPE_KEY: Record<string, string> = {
+  "12h-day": "supervisorPositions.scheduleType.12hDay",
+  "12h-night": "supervisorPositions.scheduleType.12hNight",
+  "24h": "supervisorPositions.scheduleType.24h",
+  custom: "supervisorPositions.scheduleType.custom",
+};
+
 const EMPTY_ASG: GuardAssignment[] = [];
 
 /** Una persona cubriendo algo en una estación un día, tal y como la resume
@@ -802,7 +810,9 @@ function MonthStationBlockInner({
               onClick={() => h.configureStation(station)}
             >
               {station.scheduleType
-                ? station.scheduleType.replace("-", " ").toUpperCase()
+                ? SCHEDULE_TYPE_KEY[station.scheduleType]
+                  ? t(SCHEDULE_TYPE_KEY[station.scheduleType])
+                  : station.scheduleType
                 : t("ui.MonthStationBlock.sinConfigurar", "Sin configurar")}
             </button>
             {stationAlert && (

@@ -391,7 +391,7 @@ export default function EmailPreferencesPage() {
             })}
             subtitle={t("emailPreferences.intro", {
               defaultValue:
-                'Personaliza el color de tus correos y activa o desactiva cada notificación. Los correos marcados como "Requerido" no se pueden desactivar por seguridad.',
+                'Personaliza el color de tus correos y activa o desactiva cada notificación. Los correos marcados como «Siempre activo» no se pueden desactivar por seguridad.',
             })}
             badges={
               !loading && catalog.length ? (
