@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Megaphone, X, AlertTriangle, Info } from "lucide-react";
+import { Megaphone, X, AlertTriangle, Info, Wrench, ExternalLink } from "lucide-react";
 
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
-import { acusar, cargarAvisos, conMarca, EVENTO } from "@/lib/anuncios/anuncios";
+import {
+  acusar,
+  cargarAvisos,
+  conMarca,
+  EVENTO,
+  faseDeMantenimiento,
+  type Aviso as AvisoDelServidor,
+  type FaseDeMantenimiento,
+} from "@/lib/anuncios/anuncios";
+import { fechaYHora, soloHora } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -17,18 +26,19 @@ import { acusar, cargarAvisos, conMarca, EVENTO } from "@/lib/anuncios/anuncios"
  * por id en este navegador. Obligar a leer cada mañana el mismo aviso de
  * novedades es la forma más rápida de que dejen de leerse todos.
  *
+ * ── CARTAS DE MANTENIMIENTO ───────────────────────────────────────────────
+ * Un aviso de tipo `maintenance` no trae texto: trae la ventana (inicio y
+ * fin), las piezas afectadas y el motivo. Aquí se redacta en el idioma de
+ * quien mira y en la hora de SU empresa, y cambia solo de fase con el reloj:
+ * programado → empieza en N min → en curso → terminado. Cada fase se puede
+ * cerrar por separado (cerrar «programado» no esconde «en curso»).
+ *
  * Falla en silencio: si la plataforma no responde, aquí no se pinta nada. Un
  * aviso roto no puede estropearle la pantalla a nadie.
  * ════════════════════════════════════════════════════════════════════════════
  */
 
-interface Aviso {
-  id: string;
-  title: string;
-  body: string;
-  level: "info" | "warning" | "critical" | string;
-  dismissible: boolean;
-}
+type Aviso = AvisoDelServidor;
 
 const DESCARTADOS = "cg_avisos_descartados";
 
@@ -40,9 +50,16 @@ const leerDescartados = (): string[] => {
   }
 };
 
+/** La llave con la que se recuerda un cierre: por fase en las cartas de mantenimiento. */
+const llaveDeCierre = (a: Aviso, fase?: FaseDeMantenimiento) =>
+  a.kind === "maintenance" ? `${a.id}:${fase || a.phase || ""}` : a.id;
+
 export default function PlatformAnnouncements() {
   const { t } = useTranslation();
   const [avisos, setAvisos] = useState<Aviso[]>([]);
+  const [cerrados, setCerrados] = useState<string[]>(() => leerDescartados());
+  // El reloj de las cartas: la fase y la cuenta atrás se recalculan cada 30 s.
+  const [ahora, setAhora] = useState(() => Date.now());
 
   // La marca del anfitrión: en el dominio de un socio, su nombre (nunca el nuestro).
   const marca = useWhiteLabel()?.platformName || "";
@@ -52,47 +69,83 @@ export default function PlatformAnnouncements() {
     const cargar = async () => {
       const rows = (await cargarAvisos()).filter((a) => a.format !== "popup");
       if (!vivo) return;
-      const fuera = leerDescartados();
-      setAvisos(rows.filter((a) => !a.dismissible || !fuera.includes(a.id)) as any);
+      setAvisos(rows as Aviso[]);
     };
     void cargar();
     // «Enviar ahora» desde el superadmin: aparece sin recargar.
     const alLlegar = () => void cargar();
     window.addEventListener(EVENTO, alLlegar);
+    const reloj = window.setInterval(() => setAhora(Date.now()), 30_000);
 
     return () => {
       vivo = false;
       window.removeEventListener(EVENTO, alLlegar);
+      window.clearInterval(reloj);
     };
   }, []);
 
-  const cerrar = (id: string) => {
-    setAvisos((prev) => prev.filter((a) => a.id !== id));
-    // En el servidor: así no vuelve en otro equipo, y el superadmin sabe quién lo cerró.
-    acusar(id, "dismissed");
+  const cerrar = (a: Aviso, llave: string) => {
+    setCerrados((prev) => [...new Set([...prev, llave])].slice(-80));
+    // En el servidor: así no vuelve en otro equipo, y el superadmin sabe quién
+    // lo cerró. Una carta de mantenimiento no: tiene más fases por delante.
+    if (a.kind !== "maintenance") acusar(a.id, "dismissed");
     try {
       const fuera = leerDescartados();
 
       localStorage.setItem(
         DESCARTADOS,
-        JSON.stringify([...new Set([...fuera, id])].slice(-50)),
+        JSON.stringify([...new Set([...fuera, llave])].slice(-80)),
       );
     } catch {
       /* privado */
     }
   };
 
-  if (!avisos.length) return null;
+  const visibles = avisos
+    .map((a) => {
+      if (a.kind !== "maintenance") {
+        const llave = llaveDeCierre(a);
+        return a.dismissible && cerrados.includes(llave) ? null : { a, llave, fase: undefined as FaseDeMantenimiento | undefined };
+      }
+      const fase = faseDeMantenimiento(a.startsAt, a.endsAt, new Date(ahora));
+      if (fase === "expired") return null;
+      const llave = llaveDeCierre(a, fase);
+      // En curso no se cierra: es lo único que explica por qué algo falla.
+      const cerrable = fase !== "in_progress" && a.dismissible;
+      return cerrable && cerrados.includes(llave) ? null : { a, llave, fase, cerrable };
+    })
+    .filter(Boolean) as Array<{ a: Aviso; llave: string; fase?: FaseDeMantenimiento; cerrable?: boolean }>;
+
+  if (!visibles.length) return null;
+
+  const textoDeCarta = (a: Aviso, fase: FaseDeMantenimiento) => {
+    const inicio = fechaYHora(a.startsAt);
+    const fin = soloHora(a.endsAt);
+    const finLargo = fechaYHora(a.endsAt);
+    const duracion = a.startsAt && a.endsAt
+      ? Math.max(1, Math.round((new Date(a.endsAt).getTime() - new Date(a.startsAt).getTime()) / 60_000))
+      : 0;
+    const minutos = a.startsAt ? Math.max(1, Math.ceil((new Date(a.startsAt).getTime() - ahora) / 60_000)) : 0;
+    if (fase === "scheduled") return t("anuncios.mantenimiento.programado", { inicio, fin, duracion });
+    if (fase === "starting") return t("anuncios.mantenimiento.empiezaPronto", { minutos, inicio: soloHora(a.startsAt), fin });
+    if (fase === "in_progress") return t("anuncios.mantenimiento.enCurso", { fin });
+    return t("anuncios.mantenimiento.terminado", { fin: finLargo });
+  };
+
+  const piezas = (a: Aviso) =>
+    (a.affects || []).map((p) => t(`anuncios.mantenimiento.piezas.${p}`)).join(", ");
 
   return (
     <div className="mb-4 space-y-2">
-      {avisos.map((a) => {
-        const critico = a.level === "critical";
-        const aviso = a.level === "warning";
+      {visibles.map(({ a, llave, fase, cerrable }) => {
+        const esCarta = a.kind === "maintenance" && !!fase;
+        const critico = a.level === "critical" || (esCarta && fase === "in_progress");
+        const aviso = a.level === "warning" || (esCarta && fase === "starting");
+        const puedeCerrar = esCarta ? !!cerrable : a.dismissible;
 
         return (
           <div
-            key={a.id}
+            key={llave}
             className="flex items-start gap-3 rounded-xl border px-4 py-3"
             role={critico ? "alert" : "status"}
             style={{
@@ -109,7 +162,9 @@ export default function PlatformAnnouncements() {
             }}
           >
             <span className="mt-0.5 shrink-0">
-              {critico ? (
+              {esCarta ? (
+                <Wrench size={16} />
+              ) : critico ? (
                 <AlertTriangle size={16} />
               ) : aviso ? (
                 <Info size={16} />
@@ -119,13 +174,34 @@ export default function PlatformAnnouncements() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold">{conMarca(a.title, marca)}</p>
-              <p className="whitespace-pre-wrap text-sm opacity-80">{conMarca(a.body, marca)}</p>
+              {esCarta ? (
+                <p className="text-sm opacity-80">
+                  {textoDeCarta(a, fase!)}
+                  {a.affects?.length ? ` ${t("anuncios.mantenimiento.afecta", { piezas: piezas(a) })}` : ""}
+                  {a.reason ? ` ${t("anuncios.mantenimiento.motivo", { motivo: conMarca(a.reason, marca) })}` : ""}
+                  {a.statusUrl && (
+                    <>
+                      {" "}
+                      <a
+                        href={a.statusUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 underline opacity-90 hover:opacity-100"
+                      >
+                        {t("anuncios.mantenimiento.verEstado")} <ExternalLink size={12} />
+                      </a>
+                    </>
+                  )}
+                </p>
+              ) : (
+                <p className="whitespace-pre-wrap text-sm opacity-80">{conMarca(a.body, marca)}</p>
+              )}
             </div>
-            {a.dismissible && (
+            {puedeCerrar && (
               <button
                 aria-label={t("ui.PlatformAnnouncements.cerrarAviso", "Cerrar aviso")}
                 className="cg-focus shrink-0 rounded p-1 opacity-60 hover:opacity-100"
-                onClick={() => cerrar(a.id)}
+                onClick={() => cerrar(a, llave)}
               >
                 <X size={15} />
               </button>

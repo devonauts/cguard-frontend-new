@@ -18648,7 +18648,28 @@
   "anuncios": {
     "eyebrow": "Nouveautés de {{marca}}",
     "entendido": "Compris",
-    "cerrar": "Fermer"
+    "cerrar": "Fermer",
+    "mantenimiento": {
+      "programado": "Maintenance programmée : {{inicio}} à {{fin}} ({{duracion}} min).",
+      "empiezaPronto": "Maintenance dans {{minutos}} min ({{inicio}} à {{fin}}). Enregistrez votre travail.",
+      "enCurso": "Maintenance en cours jusqu'à {{fin}}. Les applications des agents continuent de pointer hors ligne.",
+      "terminado": "Maintenance terminée à {{fin}}. Tout fonctionne normalement.",
+      "afecta": "Concerne : {{piezas}}.",
+      "motivo": "Motif : {{motivo}}.",
+      "verEstado": "Voir l'état de la plateforme",
+      "piezas": {
+        "crm": "le CRM",
+        "api": "les applications mobiles",
+        "cliente": "le portail client",
+        "socios": "le panneau partenaires",
+        "radio": "la radio en direct",
+        "web": "le site web"
+      },
+      "cartel": {
+        "titulo": "Maintenance en cours",
+        "texto": "La plateforme est en cours de mise à jour. Cela prend généralement quelques minutes ; cette page reviendra d'elle-même."
+      }
+    }
   },
   "vigiaPro": {
     "titulo": "{{agente}} Pro",

@@ -19,6 +19,7 @@ import TrialBanner from "@/components/TrialBanner";
 import DemoDataBanner from "@/components/DemoDataBanner";
 import PlatformAnnouncements from "@/components/PlatformAnnouncements";
 import AnuncioEmergente from "@/components/AnuncioEmergente";
+import CartelDeMantenimiento from "@/components/CartelDeMantenimiento";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
 import RadioPasePopup from "@/components/radio/RadioPasePopup";
@@ -481,6 +482,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
             <TrialBanner />
             <DemoDataBanner />
             {/* Lo que la plataforma quiere decirle a ESTA empresa. */}
+            <CartelDeMantenimiento />
             <PlatformAnnouncements />
             {/* La ventana con imagen y botón (avisos «popup» del superadmin). */}
             <AnuncioEmergente />

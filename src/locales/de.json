@@ -18648,7 +18648,28 @@
   "anuncios": {
     "eyebrow": "Neuigkeiten von {{marca}}",
     "entendido": "Verstanden",
-    "cerrar": "Schließen"
+    "cerrar": "Schließen",
+    "mantenimiento": {
+      "programado": "Geplante Wartung: {{inicio}} bis {{fin}} ({{duracion}} Min.).",
+      "empiezaPronto": "Wartung in {{minutos}} Min. ({{inicio}} bis {{fin}}). Bitte Arbeit speichern.",
+      "enCurso": "Wartung läuft bis {{fin}}. Die Wächter-Apps stempeln weiter offline.",
+      "terminado": "Wartung um {{fin}} abgeschlossen. Alles läuft wieder normal.",
+      "afecta": "Betrifft: {{piezas}}.",
+      "motivo": "Grund: {{motivo}}.",
+      "verEstado": "Plattformstatus ansehen",
+      "piezas": {
+        "crm": "das CRM",
+        "api": "die mobilen Apps",
+        "cliente": "das Kundenportal",
+        "socios": "das Partnerpanel",
+        "radio": "den Live-Funk",
+        "web": "die Website"
+      },
+      "cartel": {
+        "titulo": "Wartung läuft",
+        "texto": "Die Plattform wird aktualisiert. Das dauert meist nur wenige Minuten; diese Seite kehrt von selbst zurück."
+      }
+    }
   },
   "vigiaPro": {
     "titulo": "{{agente}} Pro",

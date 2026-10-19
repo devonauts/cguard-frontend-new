@@ -18648,7 +18648,28 @@
   "anuncios": {
     "eyebrow": "Novedades de {{marca}}",
     "entendido": "Entendido",
-    "cerrar": "Cerrar"
+    "cerrar": "Cerrar",
+    "mantenimiento": {
+      "programado": "Mantenimiento programado: {{inicio}} a {{fin}} ({{duracion}} min).",
+      "empiezaPronto": "Mantenimiento en {{minutos}} min ({{inicio}} a {{fin}}). Guarda tu trabajo.",
+      "enCurso": "Estamos en mantenimiento hasta las {{fin}}. Las apps de vigilante siguen fichando sin conexión.",
+      "terminado": "Mantenimiento terminado a las {{fin}}. Todo funciona con normalidad.",
+      "afecta": "Afecta a: {{piezas}}.",
+      "motivo": "Motivo: {{motivo}}.",
+      "verEstado": "Ver estado de la plataforma",
+      "piezas": {
+        "crm": "el CRM",
+        "api": "las apps móviles",
+        "cliente": "el portal del cliente",
+        "socios": "el panel de socios",
+        "radio": "la radio en vivo",
+        "web": "el sitio web"
+      },
+      "cartel": {
+        "titulo": "Estamos en mantenimiento",
+        "texto": "La plataforma se está actualizando. Suele tardar unos minutos; esta página volverá sola."
+      }
+    }
   },
   "vigiaPro": {
     "titulo": "{{agente}} Pro",

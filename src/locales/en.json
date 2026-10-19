@@ -18648,7 +18648,28 @@
   "anuncios": {
     "eyebrow": "News from {{marca}}",
     "entendido": "Got it",
-    "cerrar": "Close"
+    "cerrar": "Close",
+    "mantenimiento": {
+      "programado": "Scheduled maintenance: {{inicio}} to {{fin}} ({{duracion}} min).",
+      "empiezaPronto": "Maintenance in {{minutos}} min ({{inicio}} to {{fin}}). Save your work.",
+      "enCurso": "We are under maintenance until {{fin}}. Guard apps keep clocking in offline.",
+      "terminado": "Maintenance finished at {{fin}}. Everything is back to normal.",
+      "afecta": "Affects: {{piezas}}.",
+      "motivo": "Reason: {{motivo}}.",
+      "verEstado": "View platform status",
+      "piezas": {
+        "crm": "the CRM",
+        "api": "the mobile apps",
+        "cliente": "the client portal",
+        "socios": "the partner panel",
+        "radio": "live radio",
+        "web": "the website"
+      },
+      "cartel": {
+        "titulo": "We are under maintenance",
+        "texto": "The platform is being updated. It usually takes a few minutes; this page will come back on its own."
+      }
+    }
   },
   "vigiaPro": {
     "titulo": "{{agente}} Pro",

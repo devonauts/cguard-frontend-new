@@ -18648,7 +18648,28 @@
   "anuncios": {
     "eyebrow": "Novità di {{marca}}",
     "entendido": "Ho capito",
-    "cerrar": "Chiudi"
+    "cerrar": "Chiudi",
+    "mantenimiento": {
+      "programado": "Manutenzione programmata: {{inicio}} alle {{fin}} ({{duracion}} min).",
+      "empiezaPronto": "Manutenzione tra {{minutos}} min ({{inicio}} alle {{fin}}). Salva il tuo lavoro.",
+      "enCurso": "Siamo in manutenzione fino alle {{fin}}. Le app delle guardie continuano a timbrare offline.",
+      "terminado": "Manutenzione terminata alle {{fin}}. Tutto funziona regolarmente.",
+      "afecta": "Riguarda: {{piezas}}.",
+      "motivo": "Motivo: {{motivo}}.",
+      "verEstado": "Vedi lo stato della piattaforma",
+      "piezas": {
+        "crm": "il CRM",
+        "api": "le app mobili",
+        "cliente": "il portale del cliente",
+        "socios": "il pannello partner",
+        "radio": "la radio in diretta",
+        "web": "il sito web"
+      },
+      "cartel": {
+        "titulo": "Siamo in manutenzione",
+        "texto": "La piattaforma si sta aggiornando. Di solito richiede pochi minuti; questa pagina tornerà da sola."
+      }
+    }
   },
   "vigiaPro": {
     "titulo": "{{agente}} Pro",

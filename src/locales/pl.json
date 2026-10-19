@@ -18934,7 +18934,28 @@
   "anuncios": {
     "eyebrow": "Nowości od {{marca}}",
     "entendido": "Rozumiem",
-    "cerrar": "Zamknij"
+    "cerrar": "Zamknij",
+    "mantenimiento": {
+      "programado": "Zaplanowana konserwacja: {{inicio}} do {{fin}} ({{duracion}} min).",
+      "empiezaPronto": "Konserwacja za {{minutos}} min ({{inicio}} do {{fin}}). Zapisz swoją pracę.",
+      "enCurso": "Trwa konserwacja do {{fin}}. Aplikacje strażników nadal rejestrują czas pracy offline.",
+      "terminado": "Konserwacja zakończona o {{fin}}. Wszystko działa normalnie.",
+      "afecta": "Dotyczy: {{piezas}}.",
+      "motivo": "Powód: {{motivo}}.",
+      "verEstado": "Zobacz status platformy",
+      "piezas": {
+        "crm": "CRM",
+        "api": "aplikacji mobilnych",
+        "cliente": "portalu klienta",
+        "socios": "panelu partnerów",
+        "radio": "radia na żywo",
+        "web": "strony internetowej"
+      },
+      "cartel": {
+        "titulo": "Trwa konserwacja",
+        "texto": "Platforma jest aktualizowana. Zwykle zajmuje to kilka minut; ta strona wróci sama."
+      }
+    }
   },
   "vigiaPro": {
     "titulo": "{{agente}} Pro",

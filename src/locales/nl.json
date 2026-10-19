@@ -18648,7 +18648,28 @@
   "anuncios": {
     "eyebrow": "Nieuws van {{marca}}",
     "entendido": "Begrepen",
-    "cerrar": "Sluiten"
+    "cerrar": "Sluiten",
+    "mantenimiento": {
+      "programado": "Gepland onderhoud: {{inicio}} tot {{fin}} ({{duracion}} min).",
+      "empiezaPronto": "Onderhoud over {{minutos}} min ({{inicio}} tot {{fin}}). Sla je werk op.",
+      "enCurso": "We zijn in onderhoud tot {{fin}}. De bewaker-apps blijven offline inklokken.",
+      "terminado": "Onderhoud afgerond om {{fin}}. Alles werkt weer normaal.",
+      "afecta": "Betreft: {{piezas}}.",
+      "motivo": "Reden: {{motivo}}.",
+      "verEstado": "Platformstatus bekijken",
+      "piezas": {
+        "crm": "het CRM",
+        "api": "de mobiele apps",
+        "cliente": "het klantportaal",
+        "socios": "het partnerpaneel",
+        "radio": "de live radio",
+        "web": "de website"
+      },
+      "cartel": {
+        "titulo": "We zijn in onderhoud",
+        "texto": "Het platform wordt bijgewerkt. Dit duurt meestal enkele minuten; deze pagina komt vanzelf terug."
+      }
+    }
   },
   "vigiaPro": {
     "titulo": "{{agente}} Pro",

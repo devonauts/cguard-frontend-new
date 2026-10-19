@@ -34,6 +34,32 @@ export interface Aviso {
   } | null;
   requireAck: boolean;
   dismissible: boolean;
+  /** 'notice' (texto) | 'maintenance' (carta de datos: el CRM la redacta). */
+  kind?: "notice" | "maintenance";
+  /** Sólo en una carta de mantenimiento. La fase la recalcula el CRM con el reloj. */
+  phase?: FaseDeMantenimiento;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  affects?: PiezaAfectada[];
+  reason?: string | null;
+  /** Página de estado pública. Nunca llega a un cliente de socio. */
+  statusUrl?: string | null;
+}
+
+export type FaseDeMantenimiento = "scheduled" | "starting" | "in_progress" | "completed" | "expired";
+export type PiezaAfectada = "crm" | "api" | "cliente" | "socios" | "radio" | "web";
+
+const ULTIMA_HORA_MS = 60 * 60 * 1000;
+const COLA_MS = 30 * 60 * 1000;
+
+/** La misma regla que el servidor: la fase sale del reloj, aquí con el del navegador. */
+export function faseDeMantenimiento(startsAt?: string | null, endsAt?: string | null, ahora = new Date()): FaseDeMantenimiento {
+  const s = startsAt ? new Date(startsAt).getTime() : NaN;
+  const e = endsAt ? new Date(endsAt).getTime() : NaN;
+  const t = ahora.getTime();
+  if (!Number.isNaN(e) && t > e) return t - e <= COLA_MS ? "completed" : "expired";
+  if (!Number.isNaN(s) && t < s) return s - t <= ULTIMA_HORA_MS ? "starting" : "scheduled";
+  return "in_progress";
 }
 
 export type EventoDeAcuse = "shown" | "seen" | "dismissed" | "cta";
