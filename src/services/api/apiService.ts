@@ -252,6 +252,31 @@ export class ApiService {
         } catch {
           /* ignore */
         }
+        // Subscription paywall (trial over / last payment failed). The screens
+        // that use this client catch the error and print their own generic
+        // «Error guardando…», so the reason would be lost: say it once, with
+        // the server's text (the axios client does the same). Only writes get
+        // these 402s, so a background poll never raises it.
+        const codigo402 = data?.code;
+
+        if (
+          codigo402 === "subscription_required" ||
+          codigo402 === "payment_past_due"
+        ) {
+          try {
+            toast.error(
+              typeof msg === "string" && msg
+                ? msg
+                : i18n.t(
+                    "ui.api.activaTuSuscripcionParaContinuar",
+                    "Activa tu suscripción para continuar",
+                  ),
+              { id: `suscripcion:${codigo402}` },
+            );
+          } catch {
+            /* ignore */
+          }
+        }
       }
       // Lanzar ApiError para que la UI decida mostrar toast
       throw new ApiError(msg, response.status, fullResponse);
