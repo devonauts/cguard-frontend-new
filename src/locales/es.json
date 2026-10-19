@@ -13273,7 +13273,10 @@
       "puestosBajoProteccion_other": "Puestos bajo protección ({{count}})",
       "supervisoresAsignados": "Supervisores asignados",
       "supervisoresPorTurno": "Supervisores por turno",
-      "zonaSector": "Zona / sector"
+      "zonaSector": "Zona / sector",
+      "noSePudieronCargarLasEstaciones": "No se pudieron cargar las estaciones. Recarga la página.",
+      "aunNoHayEstaciones": "Aún no hay estaciones. Créalas en cada sede para poder asignarlas.",
+      "sinSede": "Sin sede"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nuevo supervisor",

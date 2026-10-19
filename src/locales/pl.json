@@ -13936,7 +13936,10 @@
       "puestosBajoProteccion_other": "Chronione posterunki ({{count}})",
       "supervisoresAsignados": "Przydzieleni przełożeni",
       "supervisoresPorTurno": "Przełożeni na zmianę",
-      "zonaSector": "Strefa / sektor"
+      "zonaSector": "Strefa / sektor",
+      "noSePudieronCargarLasEstaciones": "Nie udało się wczytać stanowisk. Odśwież stronę.",
+      "aunNoHayEstaciones": "Nie ma jeszcze stanowisk. Utwórz je w każdym obiekcie, aby móc je przypisać.",
+      "sinSede": "Bez obiektu"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nowy nadzorca",

@@ -13808,7 +13808,10 @@
       "puestosBajoProteccion_other": "Beschermde posten ({{count}})",
       "supervisoresAsignados": "Toegewezen supervisors",
       "supervisoresPorTurno": "Supervisors per dienst",
-      "zonaSector": "Zone / sector"
+      "zonaSector": "Zone / sector",
+      "noSePudieronCargarLasEstaciones": "De posten konden niet worden geladen. Laad de pagina opnieuw.",
+      "aunNoHayEstaciones": "Er zijn nog geen posten. Maak ze aan op elke locatie om ze toe te wijzen.",
+      "sinSede": "Zonder locatie"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",

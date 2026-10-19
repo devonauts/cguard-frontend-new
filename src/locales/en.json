@@ -13273,7 +13273,10 @@
       "puestosBajoProteccion_other": "Protected posts ({{count}})",
       "supervisoresAsignados": "Assigned supervisors",
       "supervisoresPorTurno": "Supervisors per shift",
-      "zonaSector": "Zone / sector"
+      "zonaSector": "Zone / sector",
+      "noSePudieronCargarLasEstaciones": "Stations could not be loaded. Reload the page.",
+      "aunNoHayEstaciones": "There are no stations yet. Create them in each site to assign them.",
+      "sinSede": "No site"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "New supervisor",

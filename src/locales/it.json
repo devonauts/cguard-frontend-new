@@ -13808,7 +13808,10 @@
       "puestosBajoProteccion_other": "Postazioni protette ({{count}})",
       "supervisoresAsignados": "Supervisori assegnati",
       "supervisoresPorTurno": "Supervisori per turno",
-      "zonaSector": "Zona / settore"
+      "zonaSector": "Zona / settore",
+      "noSePudieronCargarLasEstaciones": "Impossibile caricare le postazioni. Ricarica la pagina.",
+      "aunNoHayEstaciones": "Non ci sono ancora postazioni. Creale in ogni sede per poterle assegnare.",
+      "sinSede": "Senza sede"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nuovo supervisore",

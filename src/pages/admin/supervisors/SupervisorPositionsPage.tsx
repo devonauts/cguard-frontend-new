@@ -1,6 +1,4 @@
-import type { PostSite } from "@/types";
-
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -55,6 +53,19 @@ const SCHEDULE_TYPES = [
   conEtiqueta("supervisorPositions.scheduleType.custom", { value: "custom" }),
 ];
 
+interface StationOption {
+  id: string;
+  name: string;
+  postSiteId: string;
+  postSiteName: string;
+}
+
+interface StationGroup {
+  key: string;
+  name: string;
+  stations: StationOption[];
+}
+
 // No es un componente: se entra por i18n.t DENTRO de la función, que es donde
 // se evalúa al llamarla (precedente AppErrorBoundary).
 function rotationSummary(p: SupervisorPosition): string {
@@ -89,7 +100,10 @@ export default function SupervisorPositionsPage() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<SupervisorPosition[]>([]);
   const [sups, setSups] = useState<Supervisor[]>([]);
-  const [stations, setStations] = useState<{ id: string; name: string }[]>([]);
+  const [stations, setStations] = useState<StationOption[]>([]);
+  const [stationsState, setStationsState] = useState<
+    "loading" | "ready" | "error"
+  >("loading");
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -126,19 +140,64 @@ export default function SupervisorPositionsPage() {
       .then((r) => setSups(r.rows || []))
       .catch(() => {});
   }, []);
+  // A position covers STATIONS (the backend checks the ids against
+  // db.station). The old picker listed post sites, so every save was a 400.
   useEffect(() => {
     stationService
-      .list({}, { limit: 300, offset: 0 })
-      .then((r) =>
+      .getStationCards()
+      .then((cards) => {
         setStations(
-          (r.rows || []).map((s: PostSite) => ({
-            id: String(s.id),
-            name: s.name || s.companyName || "—",
+          cards.map((c) => ({
+            id: String(c.id),
+            name: c.nickname || c.stationName || "—",
+            postSiteId: c.postSiteId ? String(c.postSiteId) : "",
+            postSiteName: c.postSiteName || "",
           })),
-        ),
-      )
-      .catch(() => setStations([]));
+        );
+        setStationsState("ready");
+      })
+      .catch(() => {
+        setStations([]);
+        setStationsState("error");
+      });
   }, []);
+
+  const stationGroups = useMemo(() => {
+    const groups = new Map<string, StationGroup>();
+
+    for (const s of stations) {
+      const g = groups.get(s.postSiteId) ?? {
+        key: s.postSiteId,
+        name: s.postSiteName,
+        stations: [],
+      };
+
+      g.stations.push(s);
+      groups.set(s.postSiteId, g);
+    }
+
+    return [...groups.values()]
+      .map((g) => ({
+        ...g,
+        stations: g.stations.sort((a, b) => a.name.localeCompare(b.name)),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [stations]);
+
+  const stationListNotice =
+    stationsState === "ready" && stations.length > 0
+      ? null
+      : stationsState === "loading"
+        ? t("ui.SupervisorPositionsPage.cargandoPuestos")
+        : stationsState === "error"
+          ? t(
+              "ui.SupervisorPositionsPage.noSePudieronCargarLasEstaciones",
+              "No se pudieron cargar las estaciones. Recarga la página.",
+            )
+          : t(
+              "ui.SupervisorPositionsPage.aunNoHayEstaciones",
+              "Aún no hay estaciones. Créalas en cada sede para poder asignarlas.",
+            );
 
   const toggleStationOnPuesto = async (
     pos: SupervisorPosition,
@@ -484,15 +543,18 @@ export default function SupervisorPositionsPage() {
                     </div>
                     {stationEdit === p.id ? (
                       <div className="max-h-56 space-y-1 overflow-y-auto pr-1">
-                        {stations.length === 0 && (
+                        {stationListNotice && (
                           <p
                             className="text-xs"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            {t("ui.SupervisorPositionsPage.cargandoPuestos")}
+                            {stationListNotice}
                           </p>
                         )}
-                        {stations.map((s) => {
+                        {stationGroups.map((g) => (
+                          <div key={g.key} className="space-y-1">
+                            <StationGroupHeading name={g.name} />
+                        {g.stations.map((s) => {
                           const on = p.stationIds.includes(s.id);
 
                           return (
@@ -535,6 +597,8 @@ export default function SupervisorPositionsPage() {
                             </button>
                           );
                         })}
+                          </div>
+                        ))}
                       </div>
                     ) : p.stationIds.length ? (
                       <div className="flex flex-wrap gap-1.5">
@@ -672,15 +736,18 @@ export default function SupervisorPositionsPage() {
               })}
             </label>
             <div className="glass-sunken max-h-48 space-y-1 overflow-y-auto p-1">
-              {stations.length === 0 && (
+              {stationListNotice && (
                 <p
                   className="p-2 text-xs"
                   style={{ color: "var(--ink-faint)" }}
                 >
-                  {t("ui.SupervisorPositionsPage.cargandoPuestos")}
+                  {stationListNotice}
                 </p>
               )}
-              {stations.map((s) => {
+              {stationGroups.map((g) => (
+                <div key={g.key} className="space-y-1">
+                  <StationGroupHeading name={g.name} />
+              {g.stations.map((s) => {
                 const on = form.stationIds.includes(s.id);
 
                 return (
@@ -724,10 +791,29 @@ export default function SupervisorPositionsPage() {
                   </button>
                 );
               })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </Modal>
     </AppLayout>
+  );
+}
+
+/** Post-site label above its stations in the pickers. */
+function StationGroupHeading({ name }: { name: string }) {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      className="cg-eyebrow flex items-center gap-1.5 px-2 pt-2"
+      style={{ color: "var(--ink-faint)" }}
+    >
+      <MapPin className="h-3 w-3" />
+      <span className="truncate">
+        {name || t("ui.SupervisorPositionsPage.sinSede", "Sin sede")}
+      </span>
+    </div>
   );
 }
