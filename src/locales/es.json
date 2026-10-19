@@ -8098,7 +8098,9 @@
     },
     "select": {
       "placeholder": "Seleccionar",
-      "empty": "Sin resultados"
+      "empty": "Sin resultados",
+      "search": "Buscar…",
+      "searching": "Buscando…"
     },
     "table": {
       "selectAll": "Seleccionar todo",

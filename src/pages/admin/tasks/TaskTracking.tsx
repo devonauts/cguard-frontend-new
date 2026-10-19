@@ -40,6 +40,10 @@ import taskService, {
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa, desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import {
+  AsyncCombobox,
+  type AsyncOption,
+} from "@/components/app/async-combobox";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
@@ -129,6 +133,30 @@ const FILTERS: Array<{
   },
 ];
 
+/* Puestos for the "new task" picker, searched on the server: the autocomplete
+   returns at most 50, so a fixed list left every post after the 50th out of
+   reach in a large company. A post name is NOT unique across clients (four
+   identical «Caseta Principal»), so the internal nickname (P-011, P-091…)
+   that the autocomplete already returns is shown next to it. */
+async function searchStations(query: string): Promise<AsyncOption[]> {
+  const r = await taskService.stations(query);
+  const rows = (r?.rows || r || []) as Array<{
+    id: string;
+    label?: string;
+    stationName?: string;
+    nickname?: string | null;
+  }>;
+
+  return rows.map((s) => {
+    const nombre = s.label || s.stationName || s.id;
+
+    return {
+      value: s.id,
+      label: s.nickname && s.nickname !== nombre ? `${nombre} · ${s.nickname}` : nombre,
+    };
+  });
+}
+
 export default function TaskTracking() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<TaskRow[]>([]);
@@ -139,9 +167,6 @@ export default function TaskTracking() {
 
   // New-task dialog
   const [open, setOpen] = useState(false);
-  const [stations, setStations] = useState<
-    Array<{ id: string; label: string }>
-  >([]);
   const [form, setForm] = useState({
     taskToDo: "",
     stationId: "",
@@ -185,38 +210,9 @@ export default function TaskTracking() {
 
   useEffect(load, [load]);
 
-  const openDialog = async () => {
+  const openDialog = () => {
     setForm({ taskToDo: "", stationId: "", deadline: "", priority: "media" });
     setOpen(true);
-    try {
-      const r = await taskService.stations();
-      /* El nombre de un puesto NO es único entre clientes: en el listado salían
-         cuatro «Caseta Principal» idénticas y quien asignaba la tarea no podía
-         saber cuál era cuál. El autocompletado ya trae el apodo interno
-         (P-011, P-091…), que sí distingue; sólo había que pintarlo. */
-      const opts = (r.rows || r || []).map(
-        (s: {
-          id: string;
-          label?: string;
-          stationName?: string;
-          nickname?: string;
-        }) => {
-          const nombre = s.label || s.stationName || s.id;
-
-          return {
-            id: s.id,
-            label:
-              s.nickname && s.nickname !== nombre
-                ? `${nombre} · ${s.nickname}`
-                : nombre,
-          };
-        },
-      );
-
-      setStations(opts);
-    } catch {
-      /* silent */
-    }
   };
 
   const submit = async () => {
@@ -393,21 +389,13 @@ export default function TaskTracking() {
                 setForm((f) => ({ ...f, taskToDo: e.target.value }))
               }
             />
-            <Select
+            <AsyncCombobox
+              aria-label={t("comun.puesto")}
+              placeholder={t("comun.puesto")}
+              search={searchStations}
               value={form.stationId}
-              onValueChange={(v) => setForm((f) => ({ ...f, stationId: v }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t("comun.puesto")} />
-              </SelectTrigger>
-              <SelectContent>
-                {stations.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={(v) => setForm((f) => ({ ...f, stationId: v }))}
+            />
             <div className="grid grid-cols-2 gap-3">
               <Input
                 type="datetime-local"
