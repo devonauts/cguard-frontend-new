@@ -112,6 +112,12 @@ export default function GuardRegistration() {
   const [isLoading, setIsLoading] = useState(false);
   const [fetched, setFetched] = useState<any>(null);
   const [inviteNotFound, setInviteNotFound] = useState(false);
+  // What the server said about a link it could not open (used, expired,
+  // already accepted), in the person's language (QA-135).
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  // QA-99: the office already completed this profile («Crear perfil»). The
+  // guard does not retype it: they only choose their password.
+  const [passwordOnly, setPasswordOnly] = useState(false);
   const [done, setDone] = useState(false);
   // Completing an invitation accepts it on the server (password set, account
   // active): the guard can sign in right away, nobody has to "activate" it.
@@ -199,6 +205,10 @@ export default function GuardRegistration() {
         }
 
         setFetched(data);
+        if (data.profileComplete) {
+          setPasswordOnly(true);
+          setStep(totalSteps);
+        }
         // Invitation users should start at step 1 and complete the full form
         // Only set step if not already set by user navigation
         // Default to step 1 for new invitation flows
@@ -371,6 +381,8 @@ export default function GuardRegistration() {
           return;
         }
 
+        if (typeof err?.data?.message === "string" && err.data.message)
+          setInviteError(err.data.message);
         setInviteNotFound(true);
       } finally {
         setIsLoading(false);
@@ -494,8 +506,67 @@ export default function GuardRegistration() {
     setStep((s: number) => Math.max(1, s - 1));
   };
 
+  // QA-99: profile already complete → only the password goes to the server,
+  // which accepts the invitation without touching the profile.
+  const submitPasswordOnly = async () => {
+    const nextErrors: Record<string, string> = {};
+
+    if (!password)
+      nextErrors.password = t(
+        "invite.val.password_required",
+        "La contraseña es obligatoria",
+      );
+    else {
+      const pe = passwordPolicyError(password);
+
+      if (pe) nextErrors.password = pe;
+    }
+    if (!confirm)
+      nextErrors.confirm = t(
+        "invite.val.confirm_required",
+        "Confirme la contraseña",
+      );
+    if (password && confirm && password !== confirm)
+      nextErrors.confirm = t(
+        "invite.val.mismatch",
+        "Las contraseñas no coinciden",
+      );
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) return;
+
+    setIsLoading(true);
+    try {
+      await ApiService.patch(
+        `/security-guard/public`,
+        { token: inviteToken, password },
+        { skipAuth: true },
+      );
+      setCuentaActiva(true);
+      toast.success(
+        t("guard.registration_success", {
+          defaultValue: "¡Registro completado!",
+        }),
+      );
+      setDone(true);
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message ||
+          err?.message ||
+          t("invite.error.register", "Error al registrar"),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
+    if (passwordOnly) {
+      await submitPasswordOnly();
+
+      return;
+    }
     // Validate all steps and show combined errors
     const collect = (stepNum: number): Record<string, string> => {
       const nextErrors: Record<string, string> = {};
@@ -1134,14 +1205,24 @@ export default function GuardRegistration() {
         <form className="space-y-3" onSubmit={handleSubmit}>
           {inviteNotFound && (
             <InfoNote tone="warn">
-              {t("guard.invite_not_found", {
+              {inviteError ||
+                t("guard.invite_not_found", {
+                  defaultValue:
+                    "Invitation not found or invalid — you can complete the form manually.",
+                })}
+            </InfoNote>
+          )}
+
+          {passwordOnly && (
+            <InfoNote tone="info">
+              {t("guard.profile_already_complete", {
                 defaultValue:
-                  "Invitation not found or invalid — you can complete the form manually.",
+                  "Tu empresa ya cargó tus datos. Solo falta que elijas tu contraseña para entrar a la app.",
               })}
             </InfoNote>
           )}
 
-          <div className="mb-5">
+          <div className={passwordOnly ? "hidden" : "mb-5"}>
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("invite.step_of", "Paso {{step}} de {{total}}", {
@@ -1476,6 +1557,8 @@ export default function GuardRegistration() {
 
           {step === 3 && (
             <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
+              {!passwordOnly && (
+                <>
               <div>
                 <label className={labelClass}>
                   {t("ui.registration.grupoSanguineo", "Grupo sanguíneo")}
@@ -1570,6 +1653,9 @@ export default function GuardRegistration() {
                   onChange={(e) => setAddress(e.target.value)}
                 />
               </div>
+
+                </>
+              )}
 
               <div>
                 <label className={labelClass}>
@@ -1677,7 +1763,7 @@ export default function GuardRegistration() {
 
           <div className="flex items-center justify-between gap-3 pt-4">
             <div>
-              {step > 1 && (
+              {step > 1 && !passwordOnly && (
                 <button
                   className="cg-btn-glass cg-focus rounded-full px-5 py-2.5 text-sm font-medium transition-colors motion-reduce:transition-none"
                   type="button"
