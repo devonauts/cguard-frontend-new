@@ -212,14 +212,21 @@ export default function VigiaProPage() {
           title={t("vigiaPro.titulo", a)}
         />
 
-        {info.isLoading || !borrador ? (
-          <SkeletonCards count={3} />
-        ) : info.isError || !info.data ? (
+        {/* The error goes FIRST: a failed read never fills `borrador`, so the
+            skeleton branch used to spin forever (QA-87). */}
+        {info.isError ? (
           <EmptyState
+            action={
+              <Button variant="outline" onClick={() => info.refetch()}>
+                {t("ui.shared.reintentar", "Reintentar")}
+              </Button>
+            }
             description={t("vigiaPro.errorCarga")}
             icon={<Sparkles />}
             title={t("vigiaPro.titulo", a)}
           />
+        ) : info.isLoading || !borrador || !info.data ? (
+          <SkeletonCards count={3} />
         ) : (
           <div className="space-y-4">
             {/* Sin el módulo: se ENSEÑA cómo trabaja, y el botón lleva a probarlo. */}
