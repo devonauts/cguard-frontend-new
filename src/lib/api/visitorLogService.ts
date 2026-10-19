@@ -164,14 +164,9 @@ export const visitorLogService = {
   async delete(ids: string[]) {
     if (!ids || ids.length === 0) return;
     const tenantId = getTenantId();
-    // Try JSON body delete first
-    try {
-      await api.delete(`/tenant/${tenantId}/visitor-log`, { data: { ids } });
-      return;
-    } catch (e) {
-      // fallback endpoints
-    }
-    await api.post(`/tenant/${tenantId}/visitor-log/delete`, { ids });
+    // No fallback: POST /visitor-log/delete does not exist, and falling back
+    // to it replaced the real reason (permission, in use…) with a 404 (QA-132).
+    await api.delete(`/tenant/${tenantId}/visitor-log`, { data: { ids } });
   },
 
   async import(data: unknown, importHash?: string) {

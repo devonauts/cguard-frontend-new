@@ -430,6 +430,10 @@ export default function UserRolesPage() {
 
       return;
     }
+    // Roles already deleted when one in the middle fails: they must leave the
+    // table too, or they stay as ghost rows (QA-132).
+    const deleted: string[] = [];
+
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
 
@@ -438,6 +442,7 @@ export default function UserRolesPage() {
         );
       for (const id of idsToDelete) {
         await ApiService.delete(`/tenant/${tenantId}/role/${id}`);
+        deleted.push(id);
       }
       setRows((s) => s.filter((r) => !idsToDelete.includes(r.id)));
       setChecked({});
@@ -447,6 +452,16 @@ export default function UserRolesPage() {
         }),
       );
     } catch (err: any) {
+      if (deleted.length) {
+        setRows((s) => s.filter((r) => !deleted.includes(r.id)));
+        setChecked((c) => {
+          const next = { ...c };
+
+          deleted.forEach((id) => delete next[id]);
+
+          return next;
+        });
+      }
       let message = t("settings.userRoles.rolesDeleteError", {
         defaultValue: "Error eliminando roles",
       });
