@@ -507,8 +507,10 @@ export default function ClientForm({
       basePayload.postalCode = values.postalCode;
     if (values.city !== undefined) basePayload.city = values.city;
     if (values.country !== undefined) basePayload.country = values.country;
+    // A landline left with just the country prefix is "no landline", not
+    // «+593» (QA-140) — same rule as the main phone.
     if (values.faxNumber !== undefined)
-      basePayload.faxNumber = values.faxNumber;
+      basePayload.faxNumber = telefonoDeVerdad(values.faxNumber) || null;
     if (values.website !== undefined && String(values.website).trim() !== "")
       basePayload.website = values.website;
     if (values.latitude !== undefined) {
