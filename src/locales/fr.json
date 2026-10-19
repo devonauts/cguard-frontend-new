@@ -6673,7 +6673,8 @@
     "timeOff": {
       "title": "Mes congés",
       "pickDates": "Sélectionnez les dates de début et de fin"
-    }
+    },
+    "profile_already_complete": "Votre entreprise a déjà saisi vos informations. Il ne vous reste qu'à choisir votre mot de passe pour accéder à l'application."
   },
   "header": {
     "account": "Compte utilisateur",
@@ -8094,7 +8095,10 @@
       "taxIdInvalid": "Le format du {{doc}} n’est pas valide. {{ayuda}}",
       "taxIdPlaceholder": "{{doc}} de l’entreprise",
       "timezoneEmpty": "Aucun fuseau horaire ne correspond à cette recherche.",
-      "tzFromDevice": "Le fuseau horaire de cet appareil a été appliqué : {{tz}}. Si ton entreprise opère dans un autre, choisis-le dans la liste."
+      "tzFromDevice": "Le fuseau horaire de cet appareil a été appliqué : {{tz}}. Si ton entreprise opère dans un autre, choisis-le dans la liste.",
+      "deleteDocTitle": "Supprimer le document ?",
+      "docDeletedOk": "Document supprimé",
+      "docDeleteError": "Impossible de supprimer le document."
     },
     "security": {
       "loadError": "Impossible de charger la politique de sécurité.",
@@ -13186,7 +13190,8 @@
       "rechazadas": "Refusées",
       "rechazar": "Refuser",
       "todos": "Tous",
-      "vacaciones": "Congés"
+      "vacaciones": "Congés",
+      "eligeAlVigilante": "Choisissez la personne concernée par cette absence."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",

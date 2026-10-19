@@ -6677,7 +6677,8 @@
     "timeOff": {
       "title": "Moje urlopy",
       "pickDates": "Prosimy wybrać datę początkową i końcową"
-    }
+    },
+    "profile_already_complete": "Twoja firma już wprowadziła Twoje dane. Wystarczy wybrać hasło, aby zalogować się do aplikacji."
   },
   "header": {
     "account": "Konto użytkownika",
@@ -8104,7 +8105,10 @@
       "taxIdInvalid": "Format {{doc}} jest nieprawidłowy. {{ayuda}}",
       "taxIdPlaceholder": "{{doc}} firmy",
       "timezoneEmpty": "Żadna strefa czasowa nie pasuje do wyszukiwania.",
-      "tzFromDevice": "Zastosowano strefę czasową tego urządzenia: {{tz}}. Jeśli Twoja firma działa w innej, wybierz ją z listy."
+      "tzFromDevice": "Zastosowano strefę czasową tego urządzenia: {{tz}}. Jeśli Twoja firma działa w innej, wybierz ją z listy.",
+      "deleteDocTitle": "Usunąć dokument?",
+      "docDeletedOk": "Dokument usunięty",
+      "docDeleteError": "Nie udało się usunąć dokumentu."
     },
     "security": {
       "loadError": "Nie udało się wczytać polityki bezpieczeństwa.",
@@ -13294,7 +13298,8 @@
       "rechazadas": "Odrzucone",
       "rechazar": "Odrzuć",
       "todos": "Wszystkie",
-      "vacaciones": "Urlop"
+      "vacaciones": "Urlop",
+      "eligeAlVigilante": "Wybierz, kogo dotyczy ta nieobecność."
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
