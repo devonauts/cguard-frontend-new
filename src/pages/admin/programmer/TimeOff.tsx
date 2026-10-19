@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -67,7 +67,7 @@ import {
 import timeOffRequestService, {
   TimeOffRecord,
 } from "@/lib/api/timeOffRequestService";
-import { securityGuardService } from "@/lib/api/securityGuardService";
+import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -90,23 +90,6 @@ function formatDate(iso: string | null) {
   });
 }
 
-interface GuardOption {
-  userId: string;
-  fullName: string;
-}
-
-// Raw guard row as returned by securityGuardService.list.
-interface GuardListItem {
-  guard?: {
-    id?: string;
-    firstName?: string;
-    lastName?: string;
-    fullName?: string;
-  };
-  guardId?: string;
-  fullName?: string;
-}
-
 // ── component ────────────────────────────────────────────────────────────────
 
 export default function TimeOff() {
@@ -122,8 +105,11 @@ export default function TimeOff() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
-  // Guards for the form
-  const [guards, setGuards] = useState<GuardOption[]>([]);
+  // QA-85: the guard is picked with the server-side search (the old select
+  // only ever held the first 200 guards) and it is required.
+  const [guardPick, setGuardPick] = useState<GuardPick | null>(null);
+  // Set synchronously: a double click must not send the request twice.
+  const savingRef = useRef(false);
 
   // New Request Form
   const [form, setForm] = useState({
@@ -157,34 +143,6 @@ export default function TimeOff() {
     fetchRecords();
   }, [fetchRecords]);
 
-  // Load guards when form opens
-  useEffect(() => {
-    if (!isNewRequestOpen) return;
-    if (guards.length > 0) return;
-    (async () => {
-      try {
-        const resp = await securityGuardService.list({ limit: 200, offset: 0 });
-        const items: GuardListItem[] = Array.isArray(resp)
-          ? resp
-          : (resp.rows ?? []);
-        const opts: GuardOption[] = items
-          .map((item: GuardListItem) => {
-            const userId = item.guard?.id ?? item.guardId ?? null;
-            const fullName =
-              item.fullName ??
-              (item.guard?.firstName && item.guard?.lastName
-                ? `${item.guard.firstName} ${item.guard.lastName}`
-                : (item.guard?.fullName ?? ""));
-            return userId ? { userId, fullName } : null;
-          })
-          .filter(Boolean) as GuardOption[];
-        setGuards(opts);
-      } catch (e) {
-        console.error("Failed to load guards", e);
-      }
-    })();
-  }, [isNewRequestOpen, guards.length]);
-
   // ── derived ───────────────────────────────────────────────────────────────
   const stats = {
     pending: records.filter((r) => r.status === "pending").length,
@@ -213,7 +171,8 @@ export default function TimeOff() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   // ── handlers ──────────────────────────────────────────────────────────────
-  const resetForm = () =>
+  const resetForm = () => {
+    setGuardPick(null);
     setForm({
       guard: "",
       type: "",
@@ -225,12 +184,21 @@ export default function TimeOff() {
       comment: "",
       isPaid: false,
     });
+  };
 
   const handleCreate = async () => {
+    if (savingRef.current) return;
+    if (!guardPick) {
+      toast.error(
+        t("ui.TimeOff.eligeAlVigilante", "Elige a quién corresponde el permiso."),
+      );
+      return;
+    }
     if (!form.type || !form.startDate || !form.endDate || !form.reason) {
       toast.error(t("ui.TimeOff.faltanCamposTipoDesdeHasta"));
       return;
     }
+    savingRef.current = true;
     setSaving(true);
     try {
       await timeOffRequestService.create({
@@ -240,7 +208,7 @@ export default function TimeOff() {
         endDate: form.endDate,
         endTime: form.endTime || undefined,
         reason: form.reason,
-        guard: form.guard || undefined,
+        guard: guardPick.guardId,
         comment: form.comment || undefined,
         isPaid: form.isPaid,
       });
@@ -251,6 +219,7 @@ export default function TimeOff() {
       console.error("Failed to create time-off request", err);
       toast.error(t("comun.errorAlCrearLaSolicitud"));
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   };
@@ -439,24 +408,14 @@ export default function TimeOff() {
                   <div className="grid gap-6 py-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>{t("comun.vigilante")}</Label>
-                        <Select
-                          value={form.guard}
-                          onValueChange={(v) => setForm({ ...form, guard: v })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={t("kit.select.placeholder")}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {guards.map((g) => (
-                              <SelectItem key={g.userId} value={g.userId}>
-                                {g.fullName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label>
+                          {t("comun.vigilante")}
+                          <span aria-hidden className="ml-0.5">*</span>
+                        </Label>
+                        <GuardTypeahead
+                          value={guardPick}
+                          onSelect={setGuardPick}
+                        />
                       </div>
                       <div className="grid gap-2">
                         <Label>{t("ui.TimeOff.tipo")}</Label>
