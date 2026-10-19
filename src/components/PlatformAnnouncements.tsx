@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Megaphone, X, AlertTriangle, Info, Wrench, ExternalLink } from "lucide-react";
+import { Megaphone, X, AlertTriangle, Info, Wrench, ExternalLink, Activity } from "lucide-react";
 
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import {
@@ -50,9 +50,11 @@ const leerDescartados = (): string[] => {
   }
 };
 
-/** La llave con la que se recuerda un cierre: por fase en las cartas de mantenimiento. */
+/** La llave con la que se recuerda un cierre: por fase en las cartas de mantenimiento, por línea en los incidentes. */
 const llaveDeCierre = (a: Aviso, fase?: FaseDeMantenimiento) =>
-  a.kind === "maintenance" ? `${a.id}:${fase || a.phase || ""}` : a.id;
+  a.kind === "maintenance" ? `${a.id}:${fase || a.phase || ""}`
+    : a.kind === "incident" ? `${a.id}:${a.lastUpdate?.at || a.status || ""}`
+      : a.id;
 
 export default function PlatformAnnouncements() {
   const { t } = useTranslation();
@@ -87,8 +89,9 @@ export default function PlatformAnnouncements() {
   const cerrar = (a: Aviso, llave: string) => {
     setCerrados((prev) => [...new Set([...prev, llave])].slice(-80));
     // En el servidor: así no vuelve en otro equipo, y el superadmin sabe quién
-    // lo cerró. Una carta de mantenimiento no: tiene más fases por delante.
-    if (a.kind !== "maintenance") acusar(a.id, "dismissed");
+    // lo cerró. Una carta de mantenimiento o un incidente no: tienen más
+    // fases o líneas por delante, y cada una vuelve a salir.
+    if (a.kind !== "maintenance" && a.kind !== "incident") acusar(a.id, "dismissed");
     try {
       const fuera = leerDescartados();
 
@@ -103,6 +106,11 @@ export default function PlatformAnnouncements() {
 
   const visibles = avisos
     .map((a) => {
+      if (a.kind === "incident") {
+        // Cada línea nueva vuelve a salir; la resuelta se puede cerrar y se va sola a la media hora.
+        const llave = llaveDeCierre(a);
+        return cerrados.includes(llave) ? null : { a, llave, fase: undefined as FaseDeMantenimiento | undefined, cerrable: true };
+      }
       if (a.kind !== "maintenance") {
         const llave = llaveDeCierre(a);
         return a.dismissible && cerrados.includes(llave) ? null : { a, llave, fase: undefined as FaseDeMantenimiento | undefined };
@@ -135,13 +143,24 @@ export default function PlatformAnnouncements() {
   const piezas = (a: Aviso) =>
     (a.affects || []).map((p) => t(`anuncios.mantenimiento.piezas.${p}`)).join(", ");
 
+  /** El incidente: el paso, qué se afecta y la última línea escrita por la casa. */
+  const textoDeIncidente = (a: Aviso) => {
+    const partes: string[] = [];
+    if (a.status === "resolved") partes.push(t("anuncios.incidente.resuelto", { fecha: fechaYHora(a.resolvedAt || a.lastUpdate?.at) }));
+    else partes.push(a.affects?.length ? t("anuncios.incidente.texto", { piezas: piezas(a) }) : t("anuncios.incidente.textoGeneral"));
+    if (a.lastUpdate?.text) partes.push(t("anuncios.incidente.linea", { hora: soloHora(a.lastUpdate.at), texto: conMarca(a.lastUpdate.text, marca) }));
+    return partes.join(" ");
+  };
+
   return (
     <div className="mb-4 space-y-2">
       {visibles.map(({ a, llave, fase, cerrable }) => {
         const esCarta = a.kind === "maintenance" && !!fase;
-        const critico = a.level === "critical" || (esCarta && fase === "in_progress");
-        const aviso = a.level === "warning" || (esCarta && fase === "starting");
-        const puedeCerrar = esCarta ? !!cerrable : a.dismissible;
+        const esIncidente = a.kind === "incident";
+        const incidenteAbierto = esIncidente && a.status !== "resolved";
+        const critico = a.level === "critical" || (esCarta && fase === "in_progress") || incidenteAbierto;
+        const aviso = a.level === "warning" || (esCarta && fase === "starting") || (esIncidente && !incidenteAbierto);
+        const puedeCerrar = esCarta || esIncidente ? !!cerrable : a.dismissible;
 
         return (
           <div
@@ -164,6 +183,8 @@ export default function PlatformAnnouncements() {
             <span className="mt-0.5 shrink-0">
               {esCarta ? (
                 <Wrench size={16} />
+              ) : esIncidente ? (
+                <Activity size={16} />
               ) : critico ? (
                 <AlertTriangle size={16} />
               ) : aviso ? (
@@ -173,8 +194,32 @@ export default function PlatformAnnouncements() {
               )}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold">{conMarca(a.title, marca)}</p>
-              {esCarta ? (
+              <p className="text-sm font-semibold">
+                {conMarca(a.title, marca)}
+                {esIncidente && (
+                  <span className="ml-2 rounded-full border px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide opacity-80">
+                    {t(`anuncios.incidente.estado.${a.status || "investigating"}`)}
+                  </span>
+                )}
+              </p>
+              {esIncidente ? (
+                <p className="text-sm opacity-80">
+                  {textoDeIncidente(a)}
+                  {a.statusUrl && (
+                    <>
+                      {" "}
+                      <a
+                        href={a.statusUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 underline opacity-90 hover:opacity-100"
+                      >
+                        {t("anuncios.mantenimiento.verEstado")} <ExternalLink size={12} />
+                      </a>
+                    </>
+                  )}
+                </p>
+              ) : esCarta ? (
                 <p className="text-sm opacity-80">
                   {textoDeCarta(a, fase!)}
                   {a.affects?.length ? ` ${t("anuncios.mantenimiento.afecta", { piezas: piezas(a) })}` : ""}

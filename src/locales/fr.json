@@ -18669,6 +18669,18 @@
         "titulo": "Maintenance en cours",
         "texto": "La plateforme est en cours de mise à jour. Cela prend généralement quelques minutes ; cette page reviendra d'elle-même."
       }
+    },
+    "incidente": {
+      "texto": "Nous traitons un problème sur {{piezas}}.",
+      "textoGeneral": "Nous traitons un problème.",
+      "linea": "{{hora}} : {{texto}}",
+      "resuelto": "Résolu le {{fecha}}. Tout fonctionne normalement.",
+      "estado": {
+        "investigating": "En cours d'analyse",
+        "identified": "Cause identifiée",
+        "monitoring": "Sous surveillance",
+        "resolved": "Résolu"
+      }
     }
   },
   "vigiaPro": {

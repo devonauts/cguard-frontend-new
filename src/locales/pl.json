@@ -18955,6 +18955,18 @@
         "titulo": "Trwa konserwacja",
         "texto": "Platforma jest aktualizowana. Zwykle zajmuje to kilka minut; ta strona wróci sama."
       }
+    },
+    "incidente": {
+      "texto": "Pracujemy nad problemem z: {{piezas}}.",
+      "textoGeneral": "Pracujemy nad problemem.",
+      "linea": "{{hora}}: {{texto}}",
+      "resuelto": "Rozwiązano {{fecha}}. Wszystko działa normalnie.",
+      "estado": {
+        "investigating": "Badamy",
+        "identified": "Zidentyfikowano",
+        "monitoring": "Obserwujemy",
+        "resolved": "Rozwiązano"
+      }
     }
   },
   "vigiaPro": {

@@ -34,8 +34,12 @@ export interface Aviso {
   } | null;
   requireAck: boolean;
   dismissible: boolean;
-  /** 'notice' (texto) | 'maintenance' (carta de datos: el CRM la redacta). */
-  kind?: "notice" | "maintenance";
+  /** 'notice' (texto) | 'maintenance' (carta de datos: el CRM la redacta) | 'incident' (pasos escritos a mano). */
+  kind?: "notice" | "maintenance" | "incident";
+  /** Sólo en un incidente: el paso actual, cuándo se resolvió y la última línea escrita. */
+  status?: EstadoDeIncidente;
+  resolvedAt?: string | null;
+  lastUpdate?: { at: string; status: EstadoDeIncidente; text: string } | null;
   /** Sólo en una carta de mantenimiento. La fase la recalcula el CRM con el reloj. */
   phase?: FaseDeMantenimiento;
   startsAt?: string | null;
@@ -47,6 +51,7 @@ export interface Aviso {
 }
 
 export type FaseDeMantenimiento = "scheduled" | "starting" | "in_progress" | "completed" | "expired";
+export type EstadoDeIncidente = "investigating" | "identified" | "monitoring" | "resolved";
 export type PiezaAfectada = "crm" | "api" | "cliente" | "socios" | "radio" | "web";
 
 const ULTIMA_HORA_MS = 60 * 60 * 1000;

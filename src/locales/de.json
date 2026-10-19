@@ -18669,6 +18669,18 @@
         "titulo": "Wartung läuft",
         "texto": "Die Plattform wird aktualisiert. Das dauert meist nur wenige Minuten; diese Seite kehrt von selbst zurück."
       }
+    },
+    "incidente": {
+      "texto": "Wir arbeiten an einem Problem mit {{piezas}}.",
+      "textoGeneral": "Wir arbeiten an einem Problem.",
+      "linea": "{{hora}}: {{texto}}",
+      "resuelto": "Behoben am {{fecha}}. Alles läuft wieder normal.",
+      "estado": {
+        "investigating": "Wird untersucht",
+        "identified": "Ursache gefunden",
+        "monitoring": "Wird beobachtet",
+        "resolved": "Behoben"
+      }
     }
   },
   "vigiaPro": {

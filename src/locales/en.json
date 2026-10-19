@@ -18669,6 +18669,18 @@
         "titulo": "We are under maintenance",
         "texto": "The platform is being updated. It usually takes a few minutes; this page will come back on its own."
       }
+    },
+    "incidente": {
+      "texto": "We are working on a problem with {{piezas}}.",
+      "textoGeneral": "We are working on a problem.",
+      "linea": "{{hora}}: {{texto}}",
+      "resuelto": "Resolved on {{fecha}}. Everything is back to normal.",
+      "estado": {
+        "investigating": "Investigating",
+        "identified": "Identified",
+        "monitoring": "Monitoring",
+        "resolved": "Resolved"
+      }
     }
   },
   "vigiaPro": {

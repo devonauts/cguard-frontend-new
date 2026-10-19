@@ -18669,6 +18669,18 @@
         "titulo": "We zijn in onderhoud",
         "texto": "Het platform wordt bijgewerkt. Dit duurt meestal enkele minuten; deze pagina komt vanzelf terug."
       }
+    },
+    "incidente": {
+      "texto": "We werken aan een probleem met {{piezas}}.",
+      "textoGeneral": "We werken aan een probleem.",
+      "linea": "{{hora}}: {{texto}}",
+      "resuelto": "Opgelost op {{fecha}}. Alles werkt weer normaal.",
+      "estado": {
+        "investigating": "In onderzoek",
+        "identified": "Oorzaak gevonden",
+        "monitoring": "Onder observatie",
+        "resolved": "Opgelost"
+      }
     }
   },
   "vigiaPro": {
