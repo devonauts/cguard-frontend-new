@@ -876,32 +876,10 @@ export default function DispatcherPage() {
 
       setSelectedIds([]);
 
-      // refresh rows using same logic as initial load
-      const mine = ++loadSeqRef.current;
-      try {
-        const resp = await api.get(`/tenant/${tenantId}/request`);
-        const payload = resp && resp.data ? resp.data : resp;
-
-        let rowsData: DispatchRow[] = [];
-        let count = 0;
-
-        if (payload && Array.isArray(payload.rows)) {
-          rowsData = payload.rows;
-        } else if (Array.isArray(payload)) {
-          rowsData = payload;
-        }
-        // Client-side pagination: total derives from loaded rows.
-        count = rowsData.length;
-
-        // Apply only if still the latest load (don't clobber a newer one), but
-        // let the delete toast below run regardless.
-        if (mine === loadSeqRef.current) {
-          setRows(rowsData);
-          setTotalCount(count);
-        }
-      } catch (e) {
-        console.error("Error recargando Incidentes:", e);
-      }
+      // Reload with the filters on screen (status, client, site, dates…) and
+      // the same fetch limit: the old reload dropped them all, so the table no
+      // longer matched what the filter bar said (QA-127).
+      await aplicarFiltros();
 
       if (lastErrorMessage) {
         toast.error(
