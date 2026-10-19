@@ -4,6 +4,7 @@ import { Avatar } from "@/components/kit";
 import React, { useEffect, useState } from 'react';
 import { clientDisplayName } from '@/lib/clientName';
 import { useParams, Link } from 'react-router-dom';
+import { usePermissions } from "@/hooks/usePermissions";
 import AppLayout from '@/layouts/app-layout';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,9 @@ export function DispatchDetailsContent({
   const [newComment, setNewComment] = useState("");
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
+  const { hasPermission } = usePermissions();
+  // The backend takes comments only with requestEdit.
+  const canComment = hasPermission("requestEdit");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileUploading, setFileUploading] = useState(false);
 
@@ -243,24 +247,11 @@ export function DispatchDetailsContent({
         setShowCommentModal(false);
         toast.success(t("dispatcher.comment.added", "Comentario agregado"));
       } catch (e) {
-        setComments((c) => [
-          ...c,
-          {
-            id: Date.now(),
-            text: newComment,
-            createdAt: new Date().toISOString(),
-            author:
-              typeof author !== "undefined" && author
-                ? author
-                : { name: t("dispatcher.comment.you", "Tú") },
-            attachment,
-          },
-        ]);
-        setNewComment("");
-        setSelectedFile(null);
-        setShowCommentModal(false);
-        toast.success(
-          t("dispatcher.comment.added_local", "Comentario agregado (local)"),
+        // Not saved: say so and keep the text in the box. Showing it as
+        // "added" lost the note on the next reload (QA-78).
+        toast.error(
+          (e as { message?: string })?.message ||
+            t("ui.DispatchDetailsPage.noSePudoAgregarComentario"),
         );
       }
     } catch (err) {
@@ -980,15 +971,17 @@ export function DispatchDetailsContent({
           </div>
         </div>
       </div>
-      <Button
-        variant="brand"
-        className="text-sm"
-        onClick={() => setShowCommentModal((s) => !s)}
-      >
-        {showCommentModal
-          ? t("dispatcher.close")
-          : t("dispatcher.add_comment_button")}
-      </Button>
+      {canComment && (
+        <Button
+          variant="brand"
+          className="text-sm"
+          onClick={() => setShowCommentModal((s) => !s)}
+        >
+          {showCommentModal
+            ? t("dispatcher.close")
+            : t("dispatcher.add_comment_button")}
+        </Button>
+      )}
     </div>
   );
 }
