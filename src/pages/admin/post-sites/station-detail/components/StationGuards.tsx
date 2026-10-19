@@ -718,7 +718,7 @@ export default function StationGuards({
           <p className="-mt-2 text-xs text-muted-foreground">
             {t(
               "station.guards.hint",
-              "El fijo cubre la rotación; el sacafranco se coloca a mano en Programador › Horario (o con Optimizar Sacafrancos).",
+              "El fijo cubre la rotación; el sacafranco se coloca a mano en Programador › Horario.",
             )}
           </p>
           {rows.length > 0 && (

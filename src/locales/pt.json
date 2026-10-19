@@ -7425,7 +7425,7 @@
       "changed": "Vigilante atualizado",
       "empty": "Não há vigilantes atribuídos. Atribua um vigilante fixo para começar.",
       "guard": "Vigilante",
-      "hint": "O fixo cobre a rotação; o folguista é colocado manualmente em Programador › Horário (ou com Otimizar folguistas).",
+      "hint": "O fixo cobre a rotação; o folguista é colocado manualmente em Programador › Horário.",
       "pickGuard": "Selecione um vigilante",
       "removeFailed": "Não foi possível remover",
       "removed": "Vigilante removido do posto e dos turnos",

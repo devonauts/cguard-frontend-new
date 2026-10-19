@@ -6612,7 +6612,7 @@
       "changed": "Vigilante actualizado",
       "empty": "No hay vigilantes asignados. Asigna un vigilante fijo para empezar.",
       "guard": "Vigilante",
-      "hint": "El fijo cubre la rotación; el sacafranco se coloca a mano en Programador › Horario (o con Optimizar Sacafrancos).",
+      "hint": "El fijo cubre la rotación; el sacafranco se coloca a mano en Programador › Horario.",
       "pickGuard": "Selecciona un vigilante",
       "removeFailed": "No se pudo quitar",
       "removed": "Vigilante removido del puesto y de los turnos",

@@ -8752,7 +8752,7 @@
       "changed": "Pracownik ochrony zaktualizowany",
       "empty": "Brak przypisanych pracowników ochrony. Prosimy przypisać stałego pracownika, aby zacząć.",
       "guard": "Ochroniarz",
-      "hint": "Stały pracownik obsługuje rotację; zmiennika przypisuje się ręcznie w Planowanie › Grafik (albo przez Optymalizację zmienników).",
+      "hint": "Stały pracownik obsługuje rotację; zmiennika przypisuje się ręcznie w Planowanie › Grafik.",
       "pickGuard": "Proszę wybrać pracownika ochrony",
       "removeFailed": "Nie udało się usunąć",
       "removed": "Pracownik ochrony usunięty z posterunku i ze zmian",

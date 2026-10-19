@@ -8742,7 +8742,7 @@
       "changed": "Wachkraft aktualisiert",
       "empty": "Es sind keine Wachkräfte zugewiesen. Weisen Sie zunächst eine feste Wachkraft zu.",
       "guard": "Sicherheitskraft",
-      "hint": "Die feste Wachkraft deckt die Rotation ab; die Vertretung wird von Hand unter Planer › Dienstplan eingesetzt (oder mit „Vertretungen optimieren“).",
+      "hint": "Die feste Wachkraft deckt die Rotation ab; die Vertretung wird von Hand unter Planer › Dienstplan eingesetzt.",
       "pickGuard": "Sicherheitskraft auswählen",
       "removeFailed": "Entfernen nicht möglich",
       "removed": "Wachkraft aus dem Objekt und den Schichten entfernt",

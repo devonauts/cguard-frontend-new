@@ -8742,7 +8742,7 @@
       "changed": "Agent mis à jour",
       "empty": "Aucun agent assigné. Assignez un agent titulaire pour commencer.",
       "guard": "Agent",
-      "hint": "Le titulaire couvre la rotation ; l'agent volant se place à la main dans Planificateur › Planning (ou avec Optimiser les agents volants).",
+      "hint": "Le titulaire couvre la rotation ; l'agent volant se place à la main dans Planificateur › Planning.",
       "pickGuard": "Sélectionnez un agent",
       "removeFailed": "Impossible de retirer",
       "removed": "Agent retiré du poste et des vacations",

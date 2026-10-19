@@ -8742,7 +8742,7 @@
       "changed": "Beveiliger bijgewerkt",
       "empty": "Er zijn geen beveiligers toegewezen. Wijs een vaste beveiliger toe om te beginnen.",
       "guard": "Beveiliger",
-      "hint": "De vaste beveiliger draait de rotatie; de invaller wordt handmatig ingepland bij Planning › Rooster (of met Invallers optimaliseren).",
+      "hint": "De vaste beveiliger draait de rotatie; de invaller wordt handmatig ingepland bij Planning › Rooster.",
       "pickGuard": "Selecteer een beveiliger",
       "removeFailed": "Verwijderen mislukt",
       "removed": "Beveiliger van de post en uit de diensten gehaald",

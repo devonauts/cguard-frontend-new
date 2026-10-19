@@ -6612,7 +6612,7 @@
       "changed": "Guard updated",
       "empty": "No guards assigned. Assign a permanent guard to get started.",
       "guard": "Guard",
-      "hint": "The permanent guard covers the rotation; the relief guard is placed by hand in Scheduler › Schedule (or with Optimise relief guards).",
+      "hint": "The permanent guard covers the rotation; the relief guard is placed by hand in Scheduler › Schedule.",
       "pickGuard": "Choose a guard",
       "removeFailed": "It could not be removed",
       "removed": "Guard removed from the post and its shifts",

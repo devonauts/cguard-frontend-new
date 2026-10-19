@@ -8742,7 +8742,7 @@
       "changed": "Guardia aggiornata",
       "empty": "Nessuna guardia assegnata. Assegna una guardia fissa per iniziare.",
       "guard": "Guardia",
-      "hint": "La guardia fissa copre la rotazione; il sostituto si inserisce a mano in Programmazione › Turni (o con Ottimizza sostituti).",
+      "hint": "La guardia fissa copre la rotazione; il sostituto si inserisce a mano in Programmazione › Turni.",
       "pickGuard": "Seleziona una guardia",
       "removeFailed": "Impossibile rimuovere",
       "removed": "Guardia rimossa dal posto e dai turni",
