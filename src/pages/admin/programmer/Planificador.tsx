@@ -1025,9 +1025,13 @@ export default function Planificador() {
             </div>
 
             <div ref={rejillaRef} className="glass overflow-x-auto">
+              {/* `table-fixed` + an explicit width: with the automatic layout a
+                  long client name widened the first column over the days and
+                  `truncate` never kicked in (QA-94). */}
               <table
-                className="border-separate border-spacing-0 text-sm tabular-nums"
+                className="table-fixed border-separate border-spacing-0 text-sm tabular-nums"
                 style={{
+                  width: `calc(13rem + ${diasVista.length * ANCHO_DIA}px)`,
                   minWidth: `calc(13rem + ${(ANTES + DESPUES) * ANCHO_DIA}px)`,
                 }}
               >
