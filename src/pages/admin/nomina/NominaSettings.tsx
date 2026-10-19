@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
-  Loader2,
   SlidersHorizontal,
   Timer,
   MapPinned,
@@ -17,6 +16,7 @@ import SettingsLayout from "@/layouts/SettingsLayout";
 import { Button } from "@/components/ui/button";
 import attendanceService from "@/lib/api/attendanceService";
 import { Section, FadeIn, SkeletonCards } from "@/components/kit";
+import { SaveBar } from "@/pages/admin/Configuration/components/SettingsForm";
 
 interface NominaSettings {
   general?: {
@@ -769,18 +769,14 @@ export default function NominaSettings() {
               </label>
             </SettingsSection>
 
-            <div className="fixed bottom-6 right-6 z-10">
-              <Button
-                className="brand-glow"
-                disabled={saving}
-                size="lg"
-                variant="brand"
-                onClick={save}
-              >
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t("ui.NominaSettings.guardarConfiguracion", "Guardar configuración")}
-              </Button>
-            </div>
+            {/* In the page flow like every other settings page: a fixed button
+                at bottom-6 sat under the phone's bottom bar and under the VigIA
+                bubble (QA-96). */}
+            <SaveBar
+              label={t("ui.NominaSettings.guardarConfiguracion", "Guardar configuración")}
+              saving={saving}
+              onSave={save}
+            />
           </FadeIn>
         )}
       </SettingsLayout>
