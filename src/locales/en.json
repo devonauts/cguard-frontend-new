@@ -7595,7 +7595,10 @@
       "timezoneTruthEmphasis": "single source of truth",
       "timezoneTruthSuffix": " for schedules: it determines how shifts, records and reports are shown and calculated — for everyone (administrators and guards), regardless of the device's zone.",
       "saveAdminOnlyTitle": "Only administrators can save changes",
-      "saveBtn": "Save"
+      "saveBtn": "Save",
+      "deleteDocTitle": "Delete the document?",
+      "docDeletedOk": "Document deleted",
+      "docDeleteError": "The document could not be deleted."
     },
     "security": {
       "loadError": "The security policy could not be loaded.",
@@ -8472,7 +8475,8 @@
     "timeOff": {
       "title": "My time off",
       "pickDates": "Pick a start and an end date"
-    }
+    },
+    "profile_already_complete": "Your company already entered your details. Just choose your password to sign in to the app."
   },
   "notes": {
     "deleteError": "The notes could not be deleted",
@@ -12653,7 +12657,8 @@
       "rechazadas": "Rejected",
       "rechazar": "Reject",
       "todos": "All",
-      "vacaciones": "Vacation"
+      "vacaciones": "Vacation",
+      "eligeAlVigilante": "Choose who this time off is for."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",

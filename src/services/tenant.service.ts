@@ -205,23 +205,52 @@ const tenantService = {
       publicUrl: creds.uploadCredentials?.publicUrl ?? null,
     };
 
-    // Actualizar documentos legales del tenant (agregar)
+    // QA-86: the backend REPLACES the list with what it receives, so sending
+    // only the new file deleted every earlier document. The current list is
+    // read right before writing (not from the screen's state, which may be
+    // stale) and the new file is appended to it.
+    const current = await tenantService.listLegalDocuments(tenantId);
+
     olvidarEmpresa(tenantId);
 
     return ApiService.put(`/tenant/${tenantId}/settings`, {
-      settings: { legalDocuments: [fileObj] },
+      settings: {
+        legalDocuments: [
+          ...current.map((doc: { id: string }) => ({ id: doc.id })),
+          fileObj,
+        ],
+      },
     });
   },
 
   /**
-   * Lista todos los documentos legales de un tenant (empresa).
-   * Asume que el backend retorna un array 'legalDocuments' en el objeto tenant.
+   * Removes ONE legal document: the list is written back without it (the
+   * backend deletes whatever is no longer listed).
+   */
+  removeLegalDocument: async function (tenantId: string, documentId: string) {
+    const current = await tenantService.listLegalDocuments(tenantId);
+
+    olvidarEmpresa(tenantId);
+
+    return ApiService.put(`/tenant/${tenantId}/settings`, {
+      settings: {
+        legalDocuments: current
+          .filter((doc: { id: string }) => doc.id !== documentId)
+          .map((doc: { id: string }) => ({ id: doc.id })),
+      },
+    });
+  },
+
+  /**
+   * The company's legal documents. They hang from the tenant's SETTINGS
+   * (`/settings` fills them with their download URL); the tenant record
+   * itself never carried them, so the list always came back empty (QA-86).
    */
   listLegalDocuments: async function (tenantId: string) {
-    const res: any = await ApiService.get(`/tenant/${tenantId}`);
+    const res: any = await ApiService.get(`/tenant/${tenantId}/settings`);
+    const data = res && res.data && !Array.isArray(res.data) ? res.data : res;
 
-    // Devuelve array vacío si no existe
-    return res?.legalDocuments || [];
+    return Array.isArray(data?.legalDocuments) ? data.legalDocuments : [];
   },
 };
 

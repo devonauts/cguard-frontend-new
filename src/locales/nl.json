@@ -6673,7 +6673,8 @@
     "timeOff": {
       "title": "Mijn verlof",
       "pickDates": "Kies een begin- en einddatum"
-    }
+    },
+    "profile_already_complete": "Je bedrijf heeft je gegevens al ingevuld. Kies alleen nog je wachtwoord om in de app in te loggen."
   },
   "header": {
     "account": "Gebruikersaccount",
@@ -8096,7 +8097,10 @@
       "taxIdInvalid": "Het formaat van {{doc}} is ongeldig. {{ayuda}}",
       "taxIdPlaceholder": "{{doc}} van het bedrijf",
       "timezoneEmpty": "Geen tijdzone komt overeen met die zoekopdracht.",
-      "tzFromDevice": "De tijdzone van dit apparaat is toegepast: {{tz}}. Werkt je bedrijf in een andere, kies die dan in de lijst."
+      "tzFromDevice": "De tijdzone van dit apparaat is toegepast: {{tz}}. Werkt je bedrijf in een andere, kies die dan in de lijst.",
+      "deleteDocTitle": "Document verwijderen?",
+      "docDeletedOk": "Document verwijderd",
+      "docDeleteError": "Het document kon niet worden verwijderd."
     },
     "security": {
       "loadError": "Het beveiligingsbeleid kon niet worden geladen.",
@@ -13188,7 +13192,8 @@
       "rechazadas": "Afgewezen",
       "rechazar": "Afwijzen",
       "todos": "Alle",
-      "vacaciones": "Vakantie"
+      "vacaciones": "Vakantie",
+      "eligeAlVigilante": "Kies voor wie dit verlof is."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",

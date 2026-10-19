@@ -7595,7 +7595,10 @@
       "timezoneTruthEmphasis": "única fuente de verdad",
       "timezoneTruthSuffix": " para los horarios: determina cómo se muestran y calculan turnos, registros e informes — para todos (administradores y vigilantes), sin importar la zona del dispositivo.",
       "saveAdminOnlyTitle": "Sólo los administradores pueden guardar cambios",
-      "saveBtn": "Guardar"
+      "saveBtn": "Guardar",
+      "deleteDocTitle": "¿Eliminar el documento?",
+      "docDeletedOk": "Documento eliminado",
+      "docDeleteError": "No se pudo eliminar el documento."
     },
     "security": {
       "loadError": "No se pudo cargar la política de seguridad.",
@@ -8472,7 +8475,8 @@
     "timeOff": {
       "title": "Mis Permisos",
       "pickDates": "Selecciona fechas de inicio y fin"
-    }
+    },
+    "profile_already_complete": "Tu empresa ya cargó tus datos. Solo falta que elijas tu contraseña para entrar a la app."
   },
   "notes": {
     "deleteError": "No se pudieron eliminar las notas",
@@ -12653,7 +12657,8 @@
       "rechazadas": "Rechazadas",
       "rechazar": "Rechazar",
       "todos": "Todos",
-      "vacaciones": "Vacaciones"
+      "vacaciones": "Vacaciones",
+      "eligeAlVigilante": "Elige a quién corresponde el permiso."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",

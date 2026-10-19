@@ -33,6 +33,7 @@ import {
 } from "@/components/kit";
 import { useAuth } from "@/contexts/AuthContext";
 import tenantService from "@/services/tenant.service";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import { invalidateTenantBranding } from "@/lib/tenantBranding";
 import AddressAutocomplete, {
   AddressComponents,
@@ -244,6 +245,27 @@ export default function ProfileCompanyForm() {
       ? user.tenants[0].tenantId ||
         (user.tenants[0].tenant && user.tenants[0].tenant.id)
       : null);
+
+  // The company's legal documents, read from the settings (QA-86).
+  const refreshDocuments = useCallback(async () => {
+    if (!resolvedTenantId) return;
+    try {
+      const docs: TenantLegalDoc[] = await tenantService.listLegalDocuments(
+        String(resolvedTenantId),
+      );
+
+      setCompanyDocuments(
+        docs.map((doc) => ({
+          id: doc.id,
+          name: doc.name,
+          url: doc.downloadUrl || doc.publicUrl || "",
+          type: doc.type || doc.mimeType || "",
+        })),
+      );
+    } catch (err) {
+      console.warn("Could not load legal documents:", err);
+    }
+  }, [resolvedTenantId]);
   const isPhoneValid = (() => {
     if (!phoneE164) return false;
     try {
@@ -445,19 +467,9 @@ export default function ProfileCompanyForm() {
           // ignore
         }
 
-        // Load company legal documents if present
-        if (Array.isArray(t.legalDocuments)) {
-          setCompanyDocuments(
-            t.legalDocuments.map((doc: TenantLegalDoc) => ({
-              id: doc.id,
-              name: doc.name,
-              url: doc.downloadUrl || doc.publicUrl || "",
-              type: doc.type || doc.mimeType || "",
-            })),
-          );
-        } else {
-          setCompanyDocuments([]);
-        }
+        // Company legal documents live on the settings, not on the tenant
+        // record (QA-86).
+        await refreshDocuments();
       } catch (err) {
         console.warn("No se pudo cargar datos del tenant:", err);
       }
@@ -556,21 +568,7 @@ export default function ProfileCompanyForm() {
             defaultValue: "Documento subido correctamente",
           }),
         );
-        // Refresh document list
-        const res = (await tenantService.findById(
-          String(resolvedTenantId),
-        )) as TenantResponse;
-
-        if (Array.isArray(res.legalDocuments)) {
-          setCompanyDocuments(
-            res.legalDocuments.map((doc: TenantLegalDoc) => ({
-              id: doc.id,
-              name: doc.name,
-              url: doc.downloadUrl || doc.publicUrl || "",
-              type: doc.type || doc.mimeType || "",
-            })),
-          );
-        }
+        await refreshDocuments();
       } catch (err) {
         toast.error(
           t("settings.companyProfile.docUploadError", {
@@ -584,15 +582,41 @@ export default function ProfileCompanyForm() {
     [resolvedTenantId],
   );
 
-  // Handler to delete a document (future implementation)
-  const handleDeleteDocument = useCallback(async (id: string) => {
-    // TODO: Implement backend endpoint and logic for deleting a document
-    toast.info(
-      t("settings.companyProfile.deletePending", {
-        defaultValue: "Funcionalidad de eliminación pendiente",
-      }),
-    );
-  }, []);
+  // Deletes ONE document (QA-86: «Eliminar» used to do nothing).
+  const handleDeleteDocument = useCallback(
+    async (id: string) => {
+      if (!resolvedTenantId || uploadingDoc) return;
+      const doc = companyDocuments.find((d) => d.id === id);
+      const ok = await confirmDialog({
+        title: t("settings.companyProfile.deleteDocTitle", {
+          defaultValue: "¿Eliminar el documento?",
+        }),
+        message: doc?.name || "",
+        tone: "danger",
+      });
+
+      if (!ok) return;
+      setUploadingDoc(true);
+      try {
+        await tenantService.removeLegalDocument(String(resolvedTenantId), id);
+        toast.success(
+          t("settings.companyProfile.docDeletedOk", {
+            defaultValue: "Documento eliminado",
+          }),
+        );
+      } catch (err) {
+        toast.error(
+          t("settings.companyProfile.docDeleteError", {
+            defaultValue: "No se pudo eliminar el documento.",
+          }),
+        );
+      } finally {
+        await refreshDocuments();
+        setUploadingDoc(false);
+      }
+    },
+    [resolvedTenantId, uploadingDoc, companyDocuments],
+  );
 
   // If there's no tenant assigned, force admins to create one
   if (!resolvedTenantId) {

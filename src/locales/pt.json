@@ -3244,7 +3244,10 @@
       "taxIdHintPE": "11 dígitos que começam por 10, 15, 17 ou 20.",
       "taxIdHintGeneric": "Entre 5 e 20 letras ou números.",
       "timezoneEmpty": "Nenhum fuso corresponde a essa busca.",
-      "tzFromDevice": "Foi aplicado o fuso horário deste equipamento: {{tz}}. Se a sua empresa opera em outro, escolha-o na lista."
+      "tzFromDevice": "Foi aplicado o fuso horário deste equipamento: {{tz}}. Se a sua empresa opera em outro, escolha-o na lista.",
+      "deleteDocTitle": "Excluir o documento?",
+      "docDeletedOk": "Documento excluído",
+      "docDeleteError": "Não foi possível excluir o documento."
     },
     "security": {
       "loadError": "Não foi possível carregar a política de segurança.",
@@ -8472,7 +8475,8 @@
     "timeOff": {
       "title": "Minhas folgas",
       "pickDates": "Selecione as datas de início e fim"
-    }
+    },
+    "profile_already_complete": "Sua empresa já cadastrou seus dados. Só falta escolher sua senha para entrar no app."
   },
   "notes": {
     "deleteError": "Não foi possível excluir as notas",
@@ -12653,7 +12657,8 @@
       "rechazadas": "Recusadas",
       "rechazar": "Recusar",
       "todos": "Todos",
-      "vacaciones": "Férias"
+      "vacaciones": "Férias",
+      "eligeAlVigilante": "Escolha a quem corresponde a ausência."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",

@@ -6673,7 +6673,8 @@
     "timeOff": {
       "title": "I miei permessi",
       "pickDates": "Seleziona le date di inizio e di fine"
-    }
+    },
+    "profile_already_complete": "La tua azienda ha già inserito i tuoi dati. Manca solo che scegli la password per entrare nell'app."
   },
   "header": {
     "account": "Account utente",
@@ -8096,7 +8097,10 @@
       "taxIdInvalid": "Il formato di {{doc}} non è valido. {{ayuda}}",
       "taxIdPlaceholder": "{{doc}} dell’azienda",
       "timezoneEmpty": "Nessun fuso orario corrisponde a questa ricerca.",
-      "tzFromDevice": "È stato applicato il fuso orario di questo dispositivo: {{tz}}. Se la tua azienda opera in un altro, scegliilo dall’elenco."
+      "tzFromDevice": "È stato applicato il fuso orario di questo dispositivo: {{tz}}. Se la tua azienda opera in un altro, scegliilo dall’elenco.",
+      "deleteDocTitle": "Eliminare il documento?",
+      "docDeletedOk": "Documento eliminato",
+      "docDeleteError": "Impossibile eliminare il documento."
     },
     "security": {
       "loadError": "Impossibile caricare le regole di sicurezza.",
@@ -13188,7 +13192,8 @@
       "rechazadas": "Rifiutate",
       "rechazar": "Rifiuta",
       "todos": "Tutti",
-      "vacaciones": "Ferie"
+      "vacaciones": "Ferie",
+      "eligeAlVigilante": "Scegli a chi si riferisce il permesso."
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",

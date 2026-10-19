@@ -6673,7 +6673,8 @@
     "timeOff": {
       "title": "Meine Abwesenheiten",
       "pickDates": "Wählen Sie Beginn und Ende"
-    }
+    },
+    "profile_already_complete": "Dein Unternehmen hat deine Daten bereits eingetragen. Wähle nur noch dein Passwort, um dich in der App anzumelden."
   },
   "header": {
     "account": "Benutzerkonto",
@@ -8096,7 +8097,10 @@
       "taxIdInvalid": "Das Format von {{doc}} ist ungültig. {{ayuda}}",
       "taxIdPlaceholder": "{{doc}} des Unternehmens",
       "timezoneEmpty": "Keine Zeitzone passt zu dieser Suche.",
-      "tzFromDevice": "Die Zeitzone dieses Geräts wurde übernommen: {{tz}}. Arbeitet dein Unternehmen in einer anderen, wähle sie in der Liste."
+      "tzFromDevice": "Die Zeitzone dieses Geräts wurde übernommen: {{tz}}. Arbeitet dein Unternehmen in einer anderen, wähle sie in der Liste.",
+      "deleteDocTitle": "Dokument löschen?",
+      "docDeletedOk": "Dokument gelöscht",
+      "docDeleteError": "Das Dokument konnte nicht gelöscht werden."
     },
     "security": {
       "loadError": "Die Sicherheitsrichtlinie konnte nicht geladen werden.",
@@ -13188,7 +13192,8 @@
       "rechazadas": "Abgelehnt",
       "rechazar": "Ablehnen",
       "todos": "Alle",
-      "vacaciones": "Urlaub"
+      "vacaciones": "Urlaub",
+      "eligeAlVigilante": "Wähle, für wen diese Abwesenheit gilt."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
