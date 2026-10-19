@@ -113,6 +113,9 @@ export default function GuardRegistration() {
   const [fetched, setFetched] = useState<any>(null);
   const [inviteNotFound, setInviteNotFound] = useState(false);
   const [done, setDone] = useState(false);
+  // Completing an invitation accepts it on the server (password set, account
+  // active): the guard can sign in right away, nobody has to "activate" it.
+  const [cuentaActiva, setCuentaActiva] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
@@ -936,6 +939,7 @@ export default function GuardRegistration() {
               "[registration] invite flow: sent password to backend; skipping client-side user update to avoid 403",
             );
           }
+          if (createResp) setCuentaActiva(true);
         } catch (e) {
           // rethrow to be handled below
           throw e;
@@ -1043,33 +1047,54 @@ export default function GuardRegistration() {
                   nombre: firstName,
                 })
               : t("ui.GuardRegistration.gracias", "Gracias.")}{" "}
-            <Trans
-              components={{ b: <strong className="text-foreground" /> }}
-              defaults="Tu información fue enviada a <b>{{empresa}}</b>. El equipo revisará tu registro y se pondrá en contacto contigo con las instrucciones para empezar."
-              i18nKey="ui.GuardRegistration.tuInformacionFueEnviadaA"
-              values={{
-                empresa:
-                  fetched?.tenantName ||
-                  fetched?.tenant?.name ||
-                  t("ui.GuardRegistration.tuEmpresa", "tu empresa"),
-              }}
-            />
+            {cuentaActiva ? (
+              <Trans
+                components={{ b: <strong className="text-foreground" /> }}
+                defaults="Tu cuenta en <b>{{empresa}}</b> ya está activa."
+                i18nKey="ui.GuardRegistration.tuCuentaYaEstaActiva"
+                values={{
+                  empresa:
+                    fetched?.tenantName ||
+                    fetched?.tenant?.name ||
+                    t("ui.GuardRegistration.tuEmpresa", "tu empresa"),
+                }}
+              />
+            ) : (
+              <Trans
+                components={{ b: <strong className="text-foreground" /> }}
+                defaults="Tu información fue enviada a <b>{{empresa}}</b>. El equipo revisará tu registro y se pondrá en contacto contigo con las instrucciones para empezar."
+                i18nKey="ui.GuardRegistration.tuInformacionFueEnviadaA"
+                values={{
+                  empresa:
+                    fetched?.tenantName ||
+                    fetched?.tenant?.name ||
+                    t("ui.GuardRegistration.tuEmpresa", "tu empresa"),
+                }}
+              />
+            )}
           </p>
           <div className="mt-6 space-y-3 text-left">
             <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-3.5">
               <Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
                 <p className="text-sm font-semibold text-foreground">
-                  {t(
-                    "ui.registration.esperaLaConfirmacion",
-                    "Espera la confirmación",
-                  )}
+                  {cuentaActiva
+                    ? t("ui.registration.yaPuedesEntrar", "Ya puedes entrar")
+                    : t(
+                        "ui.registration.esperaLaConfirmacion",
+                        "Espera la confirmación",
+                      )}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {t(
-                    "ui.registration.tuEmpresaActivaraTuCuenta",
-                    "Tu empresa activará tu cuenta y te asignará a un puesto.",
-                  )}
+                  {cuentaActiva
+                    ? t(
+                        "ui.registration.tuEmpresaTeAsignaraAUnPuesto",
+                        "Tu empresa te asignará a un puesto.",
+                      )
+                    : t(
+                        "ui.registration.tuEmpresaActivaraTuCuenta",
+                        "Tu empresa activará tu cuenta y te asignará a un puesto.",
+                      )}
                 </p>
               </div>
             </div>
@@ -1080,10 +1105,15 @@ export default function GuardRegistration() {
                   {t("ui.registration.descargaLaAppDeVigilante")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {t(
-                    "ui.registration.googlePlayAppStoreInicia",
-                    "Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.",
-                  )}
+                  {cuentaActiva
+                    ? t(
+                        "ui.registration.googlePlayAppStoreIniciaYa",
+                        "Google Play · App Store. Inicia sesión con tu usuario y contraseña.",
+                      )
+                    : t(
+                        "ui.registration.googlePlayAppStoreInicia",
+                        "Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.",
+                      )}
                 </p>
                 {sinBuzon && usuarioParaEntrar && (
                   <p className="mt-1 text-xs text-foreground">

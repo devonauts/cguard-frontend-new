@@ -9539,7 +9539,10 @@
       "correoOpcional": "E-mail (optioneel)",
       "correoPlaceholder": "jij@email.com",
       "entraConTuUsuario": "Log in met je gebruikersnaam: {{usuario}}",
-      "usuarioSinCorreoAyuda": "Met deze gebruikersnaam en het wachtwoord dat je hier maakt, log je in op de app. Heb je een e-mail, dan kun je die hieronder toevoegen (optioneel)."
+      "usuarioSinCorreoAyuda": "Met deze gebruikersnaam en het wachtwoord dat je hier maakt, log je in op de app. Heb je een e-mail, dan kun je die hieronder toevoegen (optioneel).",
+      "yaPuedesEntrar": "Je kunt nu inloggen",
+      "tuEmpresaTeAsignaraAUnPuesto": "Je bedrijf wijst je een post toe.",
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Log in met je gebruikersnaam en wachtwoord."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mijn positie",
@@ -16509,7 +16512,8 @@
       "tuInformacionFueEnviadaA": "Je gegevens zijn naar <b>{{empresa}}</b> gestuurd. Het team beoordeelt je registratie en neemt contact met je op met instructies om te beginnen.",
       "tuEmpresa": "je bedrijf",
       "volver": "Terug",
-      "registrarse": "Registreren"
+      "registrarse": "Registreren",
+      "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief."
     },
     "InspectionPreview": {
       "alerta": "Waarschuwing",

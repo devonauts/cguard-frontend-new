@@ -9539,7 +9539,10 @@
       "correoOpcional": "E-mail (facoltativa)",
       "correoPlaceholder": "tu@email.com",
       "entraConTuUsuario": "Per accedere usa il tuo nome utente: {{usuario}}",
-      "usuarioSinCorreoAyuda": "Con questo nome utente e la password che crei qui entrerai nell'app. Se hai un'e-mail, puoi aggiungerla sotto (facoltativo)."
+      "usuarioSinCorreoAyuda": "Con questo nome utente e la password che crei qui entrerai nell'app. Se hai un'e-mail, puoi aggiungerla sotto (facoltativo).",
+      "yaPuedesEntrar": "Puoi già accedere",
+      "tuEmpresaTeAsignaraAUnPuesto": "La tua azienda ti assegnerà a una postazione.",
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password."
     },
     "AddressAutocomplete": {
       "miUbicacion": "La mia posizione",
@@ -16509,7 +16512,8 @@
       "tuInformacionFueEnviadaA": "Le tue informazioni sono state inviate a <b>{{empresa}}</b>. Il team esaminerà la tua registrazione e ti contatterà con le istruzioni per iniziare.",
       "tuEmpresa": "la tua azienda",
       "volver": "Indietro",
-      "registrarse": "Registrati"
+      "registrarse": "Registrati",
+      "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo."
     },
     "InspectionPreview": {
       "alerta": "Allerta",

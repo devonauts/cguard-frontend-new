@@ -9561,7 +9561,10 @@
       "correoOpcional": "E-mail (opcjonalnie)",
       "correoPlaceholder": "ty@email.com",
       "entraConTuUsuario": "Aby się zalogować, użyj nazwy użytkownika: {{usuario}}",
-      "usuarioSinCorreoAyuda": "Tą nazwą użytkownika i utworzonym tu hasłem zalogujesz się do aplikacji. Jeśli masz e-mail, możesz go dodać poniżej (opcjonalnie)."
+      "usuarioSinCorreoAyuda": "Tą nazwą użytkownika i utworzonym tu hasłem zalogujesz się do aplikacji. Jeśli masz e-mail, możesz go dodać poniżej (opcjonalnie).",
+      "yaPuedesEntrar": "Możesz już się zalogować",
+      "tuEmpresaTeAsignaraAUnPuesto": "Twoja firma przydzieli cię do stanowiska.",
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Zaloguj się swoją nazwą użytkownika i hasłem."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Moja lokalizacja",
@@ -16727,7 +16730,8 @@
       "tuInformacionFueEnviadaA": "Twoje dane zostały wysłane do <b>{{empresa}}</b>. Zespół sprawdzi rejestrację i skontaktuje się z Tobą z instrukcjami, jak zacząć.",
       "tuEmpresa": "Twojej firmy",
       "volver": "Wstecz",
-      "registrarse": "Zarejestruj się"
+      "registrarse": "Zarejestruj się",
+      "tuCuentaYaEstaActiva": "Twoje konto w <b>{{empresa}}</b> jest już aktywne."
     },
     "InspectionPreview": {
       "alerta": "Alert",
