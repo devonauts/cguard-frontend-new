@@ -316,14 +316,36 @@ export default function GuardRatings() {
             containerless
             data={paginated as any}
             emptyState={
-              <EmptyState
-                className="border-0"
-                description={t(
-                  "ui.GuardRatings.lasCalificacionesEnviadasPorLos",
-                )}
-                icon={<Star />}
-                title={t("ui.GuardRatings.noHayCalificaciones")}
-              />
+              // A failed load is not "no ratings yet" (QA-130).
+              error ? (
+                <EmptyState
+                  action={
+                    <Button size="sm" variant="outline" onClick={fetchRecords}>
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      {t("ui.shared.reintentar", "Reintentar")}
+                    </Button>
+                  }
+                  className="border-0"
+                  description={t(
+                    "ui.shared.revisaTuConexionYVuelve",
+                    "Revisa tu conexión y vuelve a intentarlo.",
+                  )}
+                  icon={<AlertCircle style={{ color: "var(--bad-text)" }} />}
+                  title={t(
+                    "ui.GuardRatings.noSePudieronCargar",
+                    "No se pudieron cargar las calificaciones",
+                  )}
+                />
+              ) : (
+                <EmptyState
+                  className="border-0"
+                  description={t(
+                    "ui.GuardRatings.lasCalificacionesEnviadasPorLos",
+                  )}
+                  icon={<Star />}
+                  title={t("ui.GuardRatings.noHayCalificaciones")}
+                />
+              )
             }
             loading={loading}
             onRowClick={(row: any) =>

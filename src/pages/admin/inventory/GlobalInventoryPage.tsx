@@ -185,8 +185,18 @@ export default function GlobalInventoryPage() {
         limit: PAGE_SIZE,
         offset: page * PAGE_SIZE,
       });
-      setItems(res.rows || []);
-      setTotal(res.count || 0);
+      const rows = res.rows || [];
+      const count = res.count || 0;
+
+      // Deleting the last item of the last page left an empty page that read
+      // as "no items": step back to the last page that has rows (QA-130).
+      if (!rows.length && page > 0 && count > 0) {
+        setPage(Math.max(0, Math.ceil(count / PAGE_SIZE) - 1));
+
+        return;
+      }
+      setItems(rows);
+      setTotal(count);
     } catch (e) {
       toast.error((e as ApiError)?.message ||
           t(

@@ -10767,7 +10767,8 @@
       "nDe5": "{{value}} z 5",
       "promedioGeneral": "Średnia ogólna",
       "calificaciones": "Oceny",
-      "calificacionesAPersonal": "Oceny personelu"
+      "calificacionesAPersonal": "Oceny personelu",
+      "noSePudieronCargar": "Nie udało się wczytać ocen"
     },
     "GuardReviews": {
       "distribucion": "Rozkład",
@@ -13696,7 +13697,8 @@
       "periodoRango_few": "Okres: {{start}} → {{end}} · {{count}} dni",
       "periodoRango_many": "Okres: {{start}} → {{end}} · {{count}} dni",
       "buscar": "Szukaj…",
-      "cargandoMas": "Wczytywanie kolejnych…"
+      "cargandoMas": "Wczytywanie kolejnych…",
+      "revisaTuConexionYVuelve": "Sprawdź połączenie i spróbuj ponownie."
     },
     "tabkit": {
       "paginaAnterior": "Poprzednia strona",

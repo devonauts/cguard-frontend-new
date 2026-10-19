@@ -10194,7 +10194,8 @@
       "nDe5": "{{value}} de 5",
       "promedioGeneral": "Promedio general",
       "calificaciones": "Calificaciones",
-      "calificacionesAPersonal": "Calificaciones a personal"
+      "calificacionesAPersonal": "Calificaciones a personal",
+      "noSePudieronCargar": "No se pudieron cargar las calificaciones"
     },
     "GuardReviews": {
       "distribucion": "Distribución",
@@ -13041,7 +13042,8 @@
       "periodoRango_one": "Período: {{start}} → {{end}} · {{count}} día",
       "periodoRango_other": "Período: {{start}} → {{end}} · {{count}} días",
       "buscar": "Buscar…",
-      "cargandoMas": "Cargando más…"
+      "cargandoMas": "Cargando más…",
+      "revisaTuConexionYVuelve": "Revisa tu conexión y vuelve a intentarlo."
     },
     "tabkit": {
       "paginaAnterior": "Página anterior",

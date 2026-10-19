@@ -10194,7 +10194,8 @@
       "nDe5": "{{value}} out of 5",
       "promedioGeneral": "Overall average",
       "calificaciones": "Ratings",
-      "calificacionesAPersonal": "Staff ratings"
+      "calificacionesAPersonal": "Staff ratings",
+      "noSePudieronCargar": "Ratings could not be loaded"
     },
     "GuardReviews": {
       "distribucion": "Distribution",
@@ -13041,7 +13042,8 @@
       "periodoRango_one": "Period: {{start}} → {{end}} · {{count}} day",
       "periodoRango_other": "Period: {{start}} → {{end}} · {{count}} days",
       "buscar": "Search…",
-      "cargandoMas": "Loading more…"
+      "cargandoMas": "Loading more…",
+      "revisaTuConexionYVuelve": "Check your connection and try again."
     },
     "tabkit": {
       "paginaAnterior": "Previous page",

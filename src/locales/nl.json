@@ -10729,7 +10729,8 @@
       "nDe5": "{{value}} van 5",
       "promedioGeneral": "Algemeen gemiddelde",
       "calificaciones": "Beoordelingen",
-      "calificacionesAPersonal": "Beoordelingen van personeel"
+      "calificacionesAPersonal": "Beoordelingen van personeel",
+      "noSePudieronCargar": "De beoordelingen konden niet worden geladen"
     },
     "GuardReviews": {
       "distribucion": "Verdeling",
@@ -13576,7 +13577,8 @@
       "periodoRango_one": "Periode: {{start}} → {{end}} · {{count}} dag",
       "periodoRango_other": "Periode: {{start}} → {{end}} · {{count}} dagen",
       "buscar": "Zoeken…",
-      "cargandoMas": "Meer laden…"
+      "cargandoMas": "Meer laden…",
+      "revisaTuConexionYVuelve": "Controleer je verbinding en probeer het opnieuw."
     },
     "tabkit": {
       "paginaAnterior": "Vorige pagina",
