@@ -75,6 +75,7 @@ import {
 import sidebarMenuData from "../data/sidebar-menu.json";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { makeMenuGate } from "@/lib/menuPermissions";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useMessagesUnread } from "@/hooks/useMessagesUnread";
 import { useRostrosPendientes } from "@/hooks/useRostrosPendientes";
@@ -95,6 +96,8 @@ type SubMenuItem = {
   gusto?: boolean;
   /** Sólo si la empresa tiene este módulo de pago (Reconocimiento facial…). Falla cerrado. */
   modulo?: string;
+  /** Backend permission ids the page needs (any one). See lib/menuPermissions. */
+  permission?: string[];
 };
 type MenuItem = {
   id: string;
@@ -110,6 +113,8 @@ type MenuItem = {
   tienda?: boolean;
   /** Sólo si la empresa tiene este módulo de pago (VigIA Pro…). Falla cerrado. */
   modulo?: string;
+  /** Backend permission ids the page needs (any one). See lib/menuPermissions. */
+  permission?: string[];
 };
 
 // Mapa de nombres de iconos a componentes de iconos
@@ -571,7 +576,7 @@ export default function Sidebar({
   // Without a company name, the HOST's brand (the partner's on their subdomain), never ours.
   const { platformName: nombreDeMarca } = useWhiteLabel();
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, hasAny } = useAuth();
   const { theme, toggleTheme } = useThemeContext();
   const location = useLocation();
   const navigate = useNavigate();
@@ -705,11 +710,15 @@ export default function Sidebar({
   // Nómina › Gusto: sólo empresas de EE. UU. con la integración disponible.
   const { disponible: hayGusto } = useGusto();
 
-  // Visibilidad por rol — misma regla que antes, sin cambios de permisos.
-  const visibleItems = useMemo(
-    () =>
-      menuItems.filter((item) => {
+  // Visibilidad por rol y por permiso: una entrada cuya página el backend le
+  // negaría a este usuario no se ofrece (QA-82).
+  const visibleItems = useMemo(() => {
+    const allowed = makeMenuGate(hasAny);
+
+    return menuItems
+      .filter((item) => {
         if ((item as any).disabled) return false;
+        if (!allowed(item)) return false;
         if (item.tienda && !hayTienda) return false;
         if (item.modulo && !hasFeature(user, item.modulo)) return false;
         if (!item.allowedRoles || item.allowedRoles.length === 0) return true;
@@ -730,20 +739,22 @@ export default function Sidebar({
           normalized.includes(ar.toLowerCase()),
         );
       })
-        .map((item) =>
-          item.subItems?.some((s) => s.gusto || s.modulo)
-            ? {
-                ...item,
-                subItems: item.subItems.filter(
-                  (s) =>
-                    (!s.gusto || hayGusto) &&
-                    (!s.modulo || hasFeature(user, s.modulo)),
-                ),
-              }
-            : item,
-        ),
-    [menuItems, user, isGlobalAdmin, hayTienda, hayGusto],
-  );
+      .map((item) =>
+        item.subItems?.some((s) => s.gusto || s.modulo || s.permission)
+          ? {
+              ...item,
+              subItems: item.subItems.filter(
+                (s) =>
+                  (!s.gusto || hayGusto) &&
+                  (!s.modulo || hasFeature(user, s.modulo)) &&
+                  allowed(s),
+              ),
+            }
+          : item,
+      )
+      // A group whose every page was filtered out is not offered empty.
+      .filter((item) => !item.expandable || (item.subItems?.length ?? 0) > 0);
+  }, [menuItems, user, isGlobalAdmin, hayTienda, hayGusto, hasAny]);
 
   // Etiquetas i18n — mismo orden de resolución que la versión anterior.
   // `agente`: el nombre del asistente de ESTA empresa («VigIA» o el del socio);
