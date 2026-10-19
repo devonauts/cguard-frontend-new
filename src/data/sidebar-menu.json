@@ -16,31 +16,46 @@
     "id": "emergencias",
     "name": "Centro de Emergencias",
     "icon": "Siren",
-    "path": "/alarm/queue"
+    "path": "/alarm/queue",
+    "permission": [
+      "businessInfoRead"
+    ]
   },
   {
     "id": "estaciones",
     "name": "Estaciones",
     "icon": "Radio",
-    "path": "/stations"
+    "path": "/stations",
+    "permission": [
+      "stationRead"
+    ]
   },
   {
     "id": "pases-de-turno",
     "name": "Pases de turno",
     "icon": "ClipboardSignature",
-    "path": "/passdowns"
+    "path": "/passdowns",
+    "permission": [
+      "taskRead"
+    ]
   },
   {
     "id": "clientes",
     "name": "Clientes",
     "icon": "Users",
-    "path": "/clients"
+    "path": "/clients",
+    "permission": [
+      "clientAccountRead"
+    ]
   },
   {
     "id": "inventario",
     "name": "Inventario",
     "icon": "Package",
-    "path": "/inventory"
+    "path": "/inventory",
+    "permission": [
+      "inventoryItemRead"
+    ]
   },
   {
     "id": "entrenamiento",
@@ -51,12 +66,18 @@
       {
         "id": "training-courses",
         "name": "Cursos",
-        "path": "/training/courses"
+        "path": "/training/courses",
+        "permission": [
+          "trainingCourseRead"
+        ]
       },
       {
         "id": "training-catalog",
         "name": "Catálogo de la plataforma",
-        "path": "/training/catalog"
+        "path": "/training/catalog",
+        "permission": [
+          "trainingCourseRead"
+        ]
       }
     ]
   },
@@ -69,23 +90,35 @@
       {
         "id": "guardias",
         "name": "security-guards",
-        "path": "/security-guards"
+        "path": "/security-guards",
+        "permission": [
+          "securityGuardRead"
+        ]
       },
       {
         "id": "caras-registradas",
         "name": "Caras registradas",
         "path": "/security-guards/rostros",
-        "modulo": "reconocimiento_facial"
+        "modulo": "reconocimiento_facial",
+        "permission": [
+          "attendanceRead"
+        ]
       },
       {
         "id": "supervisores",
         "name": "Supervisores",
-        "path": "/supervisors"
+        "path": "/supervisors",
+        "permission": [
+          "securityGuardRead"
+        ]
       },
       {
         "id": "usuarios",
         "name": "Usuarios de Oficina Administrativa",
-        "path": "/back-office"
+        "path": "/back-office",
+        "permission": [
+          "userRead"
+        ]
       }
     ]
   },
@@ -98,22 +131,36 @@
       {
         "id": "informe",
         "name": "Informe",
-        "path": "/analytics/reporting"
+        "path": "/analytics/reporting",
+        "permission": [
+          "businessInfoRead",
+          "securityGuardRead"
+        ]
       },
       {
         "id": "horario",
         "name": "Planificación",
-        "path": "/analytics/scheduling"
+        "path": "/analytics/scheduling",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "sitios-publicacion",
         "name": "Sitios de Servicio",
-        "path": "/analytics/postsite"
+        "path": "/analytics/postsite",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "guardias",
         "name": "Guardias",
-        "path": "/analytics/guard"
+        "path": "/analytics/guard",
+        "permission": [
+          "businessInfoRead",
+          "securityGuardRead"
+        ]
       }
     ]
   },
@@ -126,22 +173,34 @@
       {
         "id": "video-monitoreo",
         "name": "Monitoreo",
-        "path": "/video/monitoring"
+        "path": "/video/monitoring",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "video-dispositivos",
         "name": "Dispositivos",
-        "path": "/video/devices"
+        "path": "/video/devices",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "video-relays",
         "name": "Sitios remotos",
-        "path": "/video/relays"
+        "path": "/video/relays",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "video-eventos",
         "name": "Eventos",
-        "path": "/video/events"
+        "path": "/video/events",
+        "permission": [
+          "businessInfoRead"
+        ]
       }
     ]
   },
@@ -154,22 +213,34 @@
       {
         "id": "alarm-panels",
         "name": "Paneles",
-        "path": "/alarm/panels"
+        "path": "/alarm/panels",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "alarm-signals",
         "name": "Señales",
-        "path": "/alarm/signals"
+        "path": "/alarm/signals",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "alarm-reports",
         "name": "Reportes",
-        "path": "/alarm/reports"
+        "path": "/alarm/reports",
+        "permission": [
+          "businessInfoRead"
+        ]
       },
       {
         "id": "alarm-analitica",
         "name": "Análisis",
-        "path": "/alarm/analytics"
+        "path": "/alarm/analytics",
+        "permission": [
+          "businessInfoRead"
+        ]
       }
     ]
   },
@@ -199,17 +270,27 @@
             "label": "Plantillas de inspección",
             "path": "/vehicle-patrol/templates"
           }
+        ],
+        "permission": [
+          "routeRead"
         ]
       },
       {
         "id": "patrulla-vehiculos",
         "name": "Vehículos",
-        "path": "/vehicle-patrol/vehicles"
+        "path": "/vehicle-patrol/vehicles",
+        "permission": [
+          "vehicleRead"
+        ]
       },
       {
         "id": "patrulla-live",
         "name": "Seguimiento en vivo",
-        "path": "/live-tracking"
+        "path": "/live-tracking",
+        "permission": [
+          "routeRead",
+          "guardShiftRead"
+        ]
       }
     ]
   },
@@ -222,12 +303,18 @@
       {
         "id": "msg-operativos",
         "name": "Mensajes Operativos",
-        "path": "/messenger/operativos"
+        "path": "/messenger/operativos",
+        "permission": [
+          "messageRead"
+        ]
       },
       {
         "id": "msg-clientes",
         "name": "Mensajes de Clientes",
-        "path": "/messenger/clientes"
+        "path": "/messenger/clientes",
+        "permission": [
+          "messageRead"
+        ]
       }
     ]
   },
@@ -240,17 +327,26 @@
       {
         "id": "radio-despacho",
         "name": "Despacho",
-        "path": "/radio"
+        "path": "/radio",
+        "permission": [
+          "radioCheckRead"
+        ]
       },
       {
         "id": "radio-canales",
         "name": "Canales",
-        "path": "/radio/channels"
+        "path": "/radio/channels",
+        "permission": [
+          "radioChannelRead"
+        ]
       },
       {
         "id": "radio-dispositivos",
         "name": "Radios IP",
-        "path": "/radio/devices"
+        "path": "/radio/devices",
+        "permission": [
+          "radioDeviceRead"
+        ]
       }
     ]
   },
@@ -269,37 +365,58 @@
       {
         "id": "horario",
         "name": "Horario",
-        "path": "/schedule"
+        "path": "/schedule",
+        "permission": [
+          "stationRead"
+        ]
       },
       {
         "id": "planificador",
         "name": "Planificador",
-        "path": "/planificador"
+        "path": "/planificador",
+        "permission": [
+          "stationRead"
+        ]
       },
       {
         "id": "cobertura",
         "name": "Cobertura en vivo",
-        "path": "/coverage"
+        "path": "/coverage",
+        "permission": [
+          "coverageRead"
+        ]
       },
       {
         "id": "estado",
         "name": "Estado de Turno",
-        "path": "/shift-status"
+        "path": "/shift-status",
+        "permission": [
+          "shiftRead"
+        ]
       },
       {
         "id": "turnos-abiertos",
         "name": "Turnos Abiertos",
-        "path": "/open-shifts"
+        "path": "/open-shifts",
+        "permission": [
+          "shiftRead"
+        ]
       },
       {
         "id": "intercambio",
         "name": "Intercambio de Turno",
-        "path": "/shift-exchange"
+        "path": "/shift-exchange",
+        "permission": [
+          "shiftExchangeRequestRead"
+        ]
       },
       {
         "id": "tiempo-libre",
         "name": "Tiempo Libre",
-        "path": "/time-off"
+        "path": "/time-off",
+        "permission": [
+          "timeOffRequestRead"
+        ]
       }
     ]
   },
@@ -312,7 +429,10 @@
       {
         "id": "nomina-dashboard",
         "name": "Dashboard",
-        "path": "/nomina/dashboard"
+        "path": "/nomina/dashboard",
+        "permission": [
+          "attendanceRead"
+        ]
       },
       {
         "id": "nomina-time-clock",
@@ -322,7 +442,10 @@
       {
         "id": "nomina-records",
         "name": "Registros de Asistencia",
-        "path": "/nomina/records"
+        "path": "/nomina/records",
+        "permission": [
+          "attendanceRead"
+        ]
       },
       {
         "id": "nomina-gusto",
@@ -333,22 +456,34 @@
       {
         "id": "nomina-exceptions",
         "name": "Excepciones",
-        "path": "/nomina/exceptions"
+        "path": "/nomina/exceptions",
+        "permission": [
+          "attendanceRead"
+        ]
       },
       {
         "id": "nomina-approvals",
         "name": "Aprobaciones",
-        "path": "/nomina/approvals"
+        "path": "/nomina/approvals",
+        "permission": [
+          "attendanceRead"
+        ]
       },
       {
         "id": "nomina-timecards",
         "name": "Tarjetas de Nómina",
-        "path": "/nomina/timecards"
+        "path": "/nomina/timecards",
+        "permission": [
+          "attendanceRead"
+        ]
       },
       {
         "id": "nomina-settings",
         "name": "Configuración de Asistencia",
-        "path": "/nomina/settings"
+        "path": "/nomina/settings",
+        "permission": [
+          "attendanceSettingsRead"
+        ]
       }
     ]
   },
@@ -361,12 +496,18 @@
       {
         "id": "tareas-seguimiento",
         "name": "Seguimiento",
-        "path": "/tasks"
+        "path": "/tasks",
+        "permission": [
+          "taskEdit"
+        ]
       },
       {
         "id": "tareas-aprobaciones",
         "name": "Aprobaciones",
-        "path": "/tasks/approvals"
+        "path": "/tasks/approvals",
+        "permission": [
+          "taskEdit"
+        ]
       }
     ]
   },
@@ -374,7 +515,10 @@
     "id": "despachador",
     "name": "Despachador",
     "icon": "MessageSquare",
-    "path": "/dispatch-tickets"
+    "path": "/dispatch-tickets",
+    "permission": [
+      "requestRead"
+    ]
   },
   {
     "id": "vigia-pro",
@@ -387,19 +531,28 @@
     "id": "solicitudes-clientes",
     "name": "Solicitudes de clientes",
     "icon": "FileText",
-    "path": "/customer-requests"
+    "path": "/customer-requests",
+    "permission": [
+      "requestRead"
+    ]
   },
   {
     "id": "control-de-calidad",
     "name": "Control de Calidad",
     "icon": "Star",
-    "path": "/guard-ratings"
+    "path": "/guard-ratings",
+    "permission": [
+      "securityGuardRead"
+    ]
   },
   {
     "id": "seguridad-auditoria",
     "name": "Registro de Seguridad",
     "icon": "Shield",
-    "path": "/security/audit"
+    "path": "/security/audit",
+    "permission": [
+      "businessInfoRead"
+    ]
   },
   {
     "id": "modulos-adicionales",

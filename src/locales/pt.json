@@ -5914,7 +5914,9 @@
     },
     "select": {
       "placeholder": "Selecionar",
-      "empty": "Sem resultados"
+      "empty": "Sem resultados",
+      "search": "Pesquisar…",
+      "searching": "Pesquisando…"
     },
     "table": {
       "selectAll": "Selecionar tudo",

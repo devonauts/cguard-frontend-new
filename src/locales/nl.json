@@ -6775,7 +6775,9 @@
     },
     "select": {
       "placeholder": "Selecteren",
-      "empty": "Geen resultaten"
+      "empty": "Geen resultaten",
+      "search": "Zoeken…",
+      "searching": "Bezig met zoeken…"
     },
     "table": {
       "selectAll": "Alles selecteren",

@@ -4,6 +4,10 @@ import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { ApiService, ApiError } from "@/services/api/apiService";
 import AppLayout from "@/layouts/app-layout";
+import {
+  AsyncCombobox,
+  type AsyncOption,
+} from "@/components/app/async-combobox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -90,6 +94,32 @@ type MemoItem = {
   createdById?: string | null;
 };
 
+/* Guards for the memo pickers, searched by name on the server. Same list
+   endpoint as before (so the ids are the ones memos store), one page per query
+   instead of a fixed first 200. */
+async function searchGuards(query: string): Promise<AsyncOption[]> {
+  const tenantId = localStorage.getItem("tenantId") || "";
+  if (!tenantId) return [];
+  const params = new URLSearchParams({ limit: "50", offset: "0" });
+
+  if (query) params.set("filter[fullName]", query);
+  const res = await ApiService.get(
+    `/tenant/${tenantId}/security-guard?${params.toString()}`,
+  );
+  const rows = Array.isArray(res) ? res : res.rows || res.data?.rows || [];
+
+  return rows
+    .map((guard: any) => ({
+      value: String(guard.id || guard.securityGuardId || guard.guardId || ""),
+      label:
+        guard.fullName ||
+        guard.name ||
+        guard.guardName ||
+        `${guard.firstName || ""} ${guard.lastName || ""}`.trim(),
+    }))
+    .filter((o: AsyncOption) => o.value);
+}
+
 export default function MemosPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -122,7 +152,12 @@ export default function MemosPage() {
   const [viewMemo, setViewMemo] = useState<MemoItem | null>(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [memoToDelete, setMemoToDelete] = useState<MemoItem | null>(null);
-  const [guards, setGuards] = useState<{ id: string; name: string }[]>([]);
+  /* Guard pickers search on the server (AsyncCombobox): the old fixed list
+     stopped at the first 200 guards. Labels of picked guards are kept here. */
+  const [guardLabels, setGuardLabels] = useState<Record<string, string>>({});
+  const rememberGuard = (o: AsyncOption | null) => {
+    if (o) setGuardLabels((m) => ({ ...m, [o.value]: o.label }));
+  };
   const [guardId, setGuardId] = useState<string>("");
   const [wasAccepted, setWasAccepted] = useState(false);
   const [subject, setSubject] = useState("");
@@ -160,32 +195,6 @@ export default function MemosPage() {
     };
     load();
 
-    const loadGuards = async () => {
-      try {
-        const tenantId = localStorage.getItem("tenantId") || "";
-        if (!tenantId) return;
-        const res = await ApiService.get(
-          `/tenant/${tenantId}/security-guard?limit=200&offset=0`,
-        );
-        const rows = Array.isArray(res)
-          ? res
-          : res.rows || res.data?.rows || [];
-        const mappedGuards = rows
-          .map((guard: any) => ({
-            id: guard.id || guard.securityGuardId || guard.guardId,
-            name:
-              guard.fullName ||
-              guard.name ||
-              guard.guardName ||
-              `${guard.firstName || ""} ${guard.lastName || ""}`.trim(),
-          }))
-          .filter((guard: any) => guard.id);
-        if (mounted) setGuards(mappedGuards);
-      } catch (err) {
-        console.error("Error cargando vigilantes:", err);
-      }
-    };
-
     const loadCreatedByUsers = async () => {
       try {
         const users = await userService.listUsersByRoles([
@@ -210,7 +219,6 @@ export default function MemosPage() {
       }
     };
 
-    loadGuards();
     loadCreatedByUsers();
 
     return () => {
@@ -310,7 +318,7 @@ export default function MemosPage() {
       const resolvedGuardName =
         res.guardName && typeof res.guardName === "object"
           ? normalizePerson(res.guardName)
-          : guards.find((g) => String(g.id) === String(guardId))?.name || "-";
+          : guardLabels[guardId] || "-";
       const currentUserName =
         res.createdBy && typeof res.createdBy === "object"
           ? normalizePerson(res.createdBy)
@@ -644,29 +652,19 @@ export default function MemosPage() {
                 <div className="mt-6 space-y-4">
                   <div className="space-y-2">
                     <Label>{t("comun.vigilante")}</Label>
-                    <Select
-                      value={filters.guardId ?? undefined}
-                      onValueChange={(value) =>
-                        setFilters({
-                          ...filters,
-                          guardId: value === "all" ? undefined : value,
-                        })
+                    <AsyncCombobox
+                      clearOption={t("ui.MemosPage.todos")}
+                      placeholder={t("ui.MemosPage.todos")}
+                      search={searchGuards}
+                      value={filters.guardId ?? ""}
+                      valueLabel={
+                        filters.guardId ? guardLabels[filters.guardId] : undefined
                       }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("ui.MemosPage.todos")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">
-                          {t("ui.MemosPage.todos")}
-                        </SelectItem>
-                        {guards.map((guard) => (
-                          <SelectItem key={guard.id} value={guard.id}>
-                            {guard.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onChange={(value, o) => {
+                        rememberGuard(o);
+                        setFilters({ ...filters, guardId: value || undefined });
+                      }}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>{t("ui.MemosPage.creadoPor")}</Label>
@@ -774,23 +772,16 @@ export default function MemosPage() {
             <div className="grid gap-4 py-4">
               <div>
                 <Label className="mb-2 block">{t("comun.vigilante")}</Label>
-                <Select
+                <AsyncCombobox
+                  placeholder={t("ui.MemosPage.seleccionaUnaVigilante")}
+                  search={searchGuards}
                   value={guardId}
-                  onValueChange={(value) => setGuardId(value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={t("ui.MemosPage.seleccionaUnaVigilante")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {guards.map((guard) => (
-                      <SelectItem key={guard.id} value={guard.id}>
-                        {guard.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  valueLabel={guardLabels[guardId]}
+                  onChange={(value, o) => {
+                    rememberGuard(o);
+                    setGuardId(value);
+                  }}
+                />
               </div>
               <div>
                 <Label className="mb-2 block">{t("comun.estado")}</Label>

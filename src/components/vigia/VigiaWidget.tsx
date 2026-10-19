@@ -15,7 +15,7 @@
  */
 import { iconoDe, siluetaDe } from "@/lib/formasDelAgente";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Send,
@@ -272,8 +272,43 @@ function LogoVigia({
   );
 }
 
+/** What counts as "a control the bubble must not swallow the click of". */
+const CONTROL_SELECTOR =
+  'button, a[href], input, textarea, select, [role="button"], [role="combobox"], [role="tab"], [role="checkbox"], [role="switch"]';
+
+/**
+ * True when an interactive control of the page sits under the bubble.
+ *
+ * Probes a few points inside the bubble's box and looks at the first element
+ * below it (the bubble itself and other floating widgets are skipped). A
+ * control there means a click aimed at «Save» / «Send» would open the chat.
+ */
+function coversAControl(bubble: HTMLElement): boolean {
+  const r = bubble.getBoundingClientRect();
+
+  if (!r.width || !r.height) return false;
+  const points: Array<[number, number]> = [
+    [0.5, 0.5],
+    [0.3, 0.35],
+    [0.7, 0.35],
+    [0.3, 0.75],
+    [0.7, 0.75],
+  ];
+
+  for (const [fx, fy] of points) {
+    const below = document
+      .elementsFromPoint(r.left + r.width * fx, r.top + r.height * fy)
+      .find((el) => !bubble.contains(el) && !el.closest("[data-flotante]"));
+
+    if (below?.closest(CONTROL_SELECTOR)) return true;
+  }
+
+  return false;
+}
+
 export default function VigiaWidget() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   /* La burbuja se APARTA mientras se desplaza la página. Flota sobre la esquina
@@ -328,6 +363,58 @@ export default function VigiaWidget() {
       if (temporizador) clearTimeout(temporizador);
     };
   }, [open]);
+
+  /* STEP ASIDE FROM CONTROLS. The bubble floats over the bottom-right corner,
+     which is exactly where the CRM right-aligns «Save», «Send» and «Create»:
+     a form that ends there had its main button swallowed by the bubble and
+     the click opened the chat instead (QA-95). `apartarDelWidget` fixed that
+     screen by screen; this covers every screen. When a control sits under
+     the bubble, the bubble goes translucent and lets clicks through — the
+     same state it already takes while the page scrolls — and comes back as
+     soon as the spot is clear. Re-checked when the page stops scrolling,
+     changes, resizes or navigates. */
+  const burbujaRef = useRef<HTMLButtonElement | null>(null);
+  const [tapaControl, setTapaControl] = useState(false);
+
+  useEffect(() => {
+    if (open || desplazando) return;
+    let frame = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const check = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const b = burbujaRef.current;
+
+        setTapaControl(b ? coversAControl(b) : false);
+      });
+    };
+    // Mutations come in bursts (a list rendering, a form opening) and some
+    // pages never stop mutating (clocks, live maps): at most one check every
+    // 300 ms, never postponed indefinitely.
+    const soon = () => {
+      if (timer) return;
+      timer = setTimeout(() => {
+        timer = undefined;
+        check();
+      }, 300);
+    };
+    const lienzo = document.querySelector("main");
+    const obs =
+      lienzo && typeof MutationObserver !== "undefined"
+        ? new MutationObserver(soon)
+        : null;
+
+    obs?.observe(lienzo!, { childList: true, subtree: true });
+    window.addEventListener("resize", soon);
+    soon();
+
+    return () => {
+      obs?.disconnect();
+      window.removeEventListener("resize", soon);
+      if (timer) clearTimeout(timer);
+      cancelAnimationFrame(frame);
+    };
+  }, [open, desplazando, pathname]);
   const [ocupado, setOcupado] = useState(false);
   const [propuesta, setPropuesta] = useState<Propuesta | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -784,7 +871,8 @@ export default function VigiaWidget() {
           }}
           onClick={() => setOpen(true)}
           className="vigia-burbuja cg-focus transition-transform hover:scale-105"
-          data-apartada={desplazando || undefined}
+          ref={burbujaRef}
+          data-apartada={desplazando || tapaControl || undefined}
           /* `data-flotante`: así `apartarDelWidget` puede MEDIR lo que ocupa en
              vez de suponerlo. La onda animada hace que su caja real sean 83 px
              de alto arrancando a 159 del borde, bastante más que los 56 de la

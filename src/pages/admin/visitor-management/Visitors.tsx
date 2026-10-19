@@ -64,6 +64,10 @@ import { clientService } from '@/lib/api/clientService';
 import { postSiteService, type PostSiteFilters } from '@/lib/api/postSiteService';
 import { stationService } from '@/lib/api/stationService';
 import securityGuardService from '@/lib/api/securityGuardService';
+import {
+  AsyncCombobox,
+  type AsyncOption,
+} from "@/components/app/async-combobox";
 import { toast } from "sonner";
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { VisitorLogFilters } from "@/lib/api/visitorLogService";
@@ -228,6 +232,52 @@ function acompanantesEnLinea(bruto: unknown): string {
     .join(" · ");
 }
 
+/* Server-side searches for the client / site / guard pickers. */
+async function searchClients(query: string): Promise<AsyncOption[]> {
+  const rows = await clientService.autocomplete(query, 50);
+
+  return (rows || []).map((c) => ({ value: String(c.id), label: c.label }));
+}
+
+async function searchPostSites(
+  clientId: string,
+  query: string,
+): Promise<AsyncOption[]> {
+  if (!clientId) return [];
+  const resp = await postSiteService.list(
+    { clientId, ...(query ? { name: query } : {}) },
+    { limit: 50, offset: 0 },
+  );
+
+  return (resp.rows || []).map((p: PostSiteLike) => ({
+    value: String(p.id),
+    label:
+      p.companyName ||
+      p.name ||
+      (p.company && (p.company.name || p.company.companyName)) ||
+      String(p.id),
+  }));
+}
+
+async function searchGuardsOfClient(
+  clientId: string,
+  query: string,
+): Promise<AsyncOption[]> {
+  if (!clientId) return [];
+  const resp = await securityGuardService.list({
+    "filter[clientId]": clientId,
+    ...(query ? { "filter[fullName]": query } : {}),
+    limit: 50,
+    offset: 0,
+  });
+  const list: GuardOption[] = Array.isArray(resp) ? resp : resp.rows || [];
+
+  return list.map((g) => ({
+    value: String(g.id),
+    label: g.fullName || g.displayName || g.name || String(g.id),
+  }));
+}
+
 export default function Visitors() {
   const [openFilter, setOpenFilter] = useState(false);
   const [openAddVisitor, setOpenAddVisitor] = useState(false);
@@ -270,17 +320,18 @@ export default function Visitors() {
   const [confirmDeleteIds, setConfirmDeleteIds] = useState<string[]>([]);
   const [clients, setClients] = useState<ClientLike[]>([]);
   const [postSites, setPostSites] = useState<PostSiteLike[]>([]);
-  const [postSitesForFilter, setPostSitesForFilter] = useState<PostSiteLike[]>(
-    [],
-  );
-  const [postSitesForNewVisitor, setPostSitesForNewVisitor] = useState<
-    PostSiteLike[]
-  >([]);
+  /* Client / site / guard pickers search on the server (AsyncCombobox): a
+     fixed first page (100 clients, 200 sites or guards per client) left the
+     rest out of reach in a large company. This keeps the label of whatever
+     was picked so a reopened sheet still shows it. */
+  const [pickedLabels, setPickedLabels] = useState<Record<string, string>>({});
+  const rememberLabel = (o: AsyncOption | null) => {
+    if (o) setPickedLabels((m) => ({ ...m, [o.value]: o.label }));
+  };
   const [stationsForNewVisitor, setStationsForNewVisitor] = useState<
     StationOption[]
   >([]);
   const [guards, setGuards] = useState<GuardOption[]>([]);
-  const [guardsForFilter, setGuardsForFilter] = useState<GuardOption[]>([]);
   const [guardsForNewVisitor, setGuardsForNewVisitor] = useState<GuardOption[]>(
     [],
   );
@@ -782,78 +833,17 @@ export default function Visitors() {
   const dentro = logs.filter((l) => !salidaDe(l)).length;
   const conSalida = logs.length - dentro;
 
-  // when filter client changes, load postSites for that client
+  // when the filter client changes, clear the pickers that depend on it
   useEffect(() => {
-    const load = async () => {
-      try {
-        if (!filters.client) {
-          // no client selected -> empty list
-          setPostSitesForFilter([]);
-
-          return;
-        }
-        const resp = await postSiteService.list(
-          { clientId: filters.client },
-          { limit: 200, offset: 0 },
-        );
-        setPostSitesForFilter(resp.rows || []);
-        // clear dependent selects when client changes
-        setFilters((s) => ({ ...s, site: "", guard: "" }));
-      } catch (e) {
-        console.error("Failed to load post sites for filter", e);
-      }
-    };
-
-    load();
+    if (!filters.client) return;
+    setFilters((s) => ({ ...s, site: "", guard: "" }));
   }, [filters.client]);
 
-  // when newVisitor.client changes, load postSites for that client (used in add visitor form)
+  // when newVisitor.client changes, clear the pickers that depend on it
   useEffect(() => {
-    const load = async () => {
-      try {
-        if (!newVisitor.client) {
-          setPostSitesForNewVisitor([]);
-
-          return;
-        }
-        const resp = await postSiteService.list(
-          { clientId: newVisitor.client },
-          { limit: 200, offset: 0 },
-        );
-        setPostSitesForNewVisitor(resp.rows || []);
-        setNewVisitor((s) => ({ ...s, site: "", guard: "" }));
-      } catch (e) {
-        console.error("Failed to load post sites for new visitor form", e);
-      }
-    };
-
-    load();
+    if (!newVisitor.client) return;
+    setNewVisitor((s) => ({ ...s, site: "", guard: "" }));
   }, [newVisitor.client]);
-
-  // when filter client changes, load guards for that client
-  useEffect(() => {
-    const loadGuards = async () => {
-      try {
-        if (!filters.client) {
-          setGuardsForFilter([]);
-
-          return;
-        }
-        const resp = await securityGuardService.list({
-          "filter[clientId]": filters.client,
-          limit: 200,
-          offset: 0,
-        });
-        const list = Array.isArray(resp) ? resp : resp.rows || [];
-
-        setGuardsForFilter(list || []);
-      } catch (e) {
-        console.error("Failed to load guards for filter", e);
-      }
-    };
-
-    loadGuards();
-  }, [filters.client]);
 
   // when newVisitor.site changes, load stations for that post site (used in add visitor form)
   useEffect(() => {
@@ -926,9 +916,6 @@ export default function Visitors() {
         const rows = pResp.rows || [];
 
         setPostSites(rows);
-        // Do not preload per-client lists — keep them empty until a client is selected
-        setPostSitesForFilter([]);
-        setPostSitesForNewVisitor([]);
       } catch (e) {
         console.error("Failed to load post sites", e);
       }
@@ -942,8 +929,6 @@ export default function Visitors() {
         const guardsList = Array.isArray(gResp) ? gResp : gResp.rows || [];
 
         setGuards(guardsList || []);
-        // Do not preload per-client guard lists
-        setGuardsForFilter([]);
         setGuardsForNewVisitor([]);
       } catch (e) {
         console.error("Failed to load guards", e);
@@ -1242,87 +1227,56 @@ export default function Visitors() {
                 <form className="mt-6 space-y-5" onSubmit={onSubmitFilters}>
                   <div className="space-y-2">
                     <Label>{t("visitantes.client") || "Cliente*"}</Label>
-                    <Select
-                      value={filters.client}
-                      onValueChange={(v) =>
-                        setFilters((s) => ({ ...s, client: v }))
+                    <AsyncCombobox
+                      placeholder={
+                        t("visitantes.selectClient") || "Selecciona un cliente"
                       }
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            t("visitantes.selectClient") ||
-                            "Selecciona un cliente"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {clients.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {clientDisplayName(c)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      search={searchClients}
+                      value={filters.client}
+                      valueLabel={pickedLabels[filters.client]}
+                      onChange={(v, o) => {
+                        rememberLabel(o);
+                        setFilters((s) => ({ ...s, client: v }));
+                      }}
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label>
                       {t("visitantes.site") || "Puesto de seguridad*"}
                     </Label>
-                    <Select
-                      value={filters.site}
-                      onValueChange={(v) =>
-                        setFilters((s) => ({ ...s, site: v }))
+                    <AsyncCombobox
+                      disabled={!filters.client}
+                      placeholder={
+                        t("visitantes.selectSite") || "Selecciona un sitio"
                       }
-                      disabled={postSitesForFilter.length === 0}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            t("visitantes.selectSite") || "Selecciona un sitio"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {postSitesForFilter.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.companyName ||
-                              p.name ||
-                              (p.company &&
-                                (p.company.name || p.company.companyName)) ||
-                              String(p.id)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      scope={filters.client}
+                      search={(q) => searchPostSites(filters.client, q)}
+                      value={filters.site}
+                      valueLabel={pickedLabels[filters.site]}
+                      onChange={(v, o) => {
+                        rememberLabel(o);
+                        setFilters((s) => ({ ...s, site: v }));
+                      }}
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label>{t("visitantes.guard") || "Vigilante"}</Label>
-                    <Select
-                      value={filters.guard}
-                      onValueChange={(v) =>
-                        setFilters((s) => ({ ...s, guard: v }))
+                    <AsyncCombobox
+                      disabled={!filters.client}
+                      placeholder={
+                        t("visitantes.selectGuard") || "Selecciona un vigilante"
                       }
-                      disabled={guardsForFilter.length === 0}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            t("visitantes.selectGuard") ||
-                            "Selecciona un vigilante"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {guardsForFilter.map((g) => (
-                          <SelectItem key={g.id} value={g.id}>
-                            {g.fullName || g.displayName || g.name || g.id}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      scope={filters.client}
+                      search={(q) => searchGuardsOfClient(filters.client, q)}
+                      value={filters.guard}
+                      valueLabel={pickedLabels[filters.guard]}
+                      onChange={(v, o) => {
+                        rememberLabel(o);
+                        setFilters((s) => ({ ...s, guard: v }));
+                      }}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>
@@ -1921,29 +1875,19 @@ export default function Visitors() {
                     {t("visitantes.client") || "Cliente"}
                     <span style={{ color: "var(--bad-text)" }}>*</span>
                   </Label>
-                  <Select
-                    value={newVisitor.client}
-                    onValueChange={(v) =>
-                      setNewVisitor((s) => ({ ...s, client: v }))
-                    }
+                  <AsyncCombobox
                     aria-required="true"
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          t("visitantes.selectClient") ||
-                          "Selecciona un cliente"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {clients.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {clientDisplayName(c)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder={
+                      t("visitantes.selectClient") || "Selecciona un cliente"
+                    }
+                    search={searchClients}
+                    value={newVisitor.client}
+                    valueLabel={pickedLabels[newVisitor.client]}
+                    onChange={(v, o) => {
+                      rememberLabel(o);
+                      setNewVisitor((s) => ({ ...s, client: v }));
+                    }}
+                  />
                 </div>
 
                 <div className="space-y-1.5">
@@ -1951,29 +1895,21 @@ export default function Visitors() {
                     {t("visitantes.site") || "Puesto de seguridad"}
                     <span style={{ color: "var(--bad-text)" }}>*</span>
                   </Label>
-                  <Select
+                  <AsyncCombobox
                     aria-required="true"
-                                disabled={postSitesForNewVisitor.length === 0}
-                                value={newVisitor.site}
-                                onValueChange={(v) =>
-                                    setNewVisitor((s) => ({ ...s, site: v }))
-                                }
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          t("visitantes.selectSite") || "Selecciona un sitio"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {postSitesForNewVisitor.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.companyName || p.name || p.id}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    disabled={!newVisitor.client}
+                    placeholder={
+                      t("visitantes.selectSite") || "Selecciona un sitio"
+                    }
+                    scope={newVisitor.client}
+                    search={(q) => searchPostSites(newVisitor.client, q)}
+                    value={newVisitor.site}
+                    valueLabel={pickedLabels[newVisitor.site]}
+                    onChange={(v, o) => {
+                      rememberLabel(o);
+                      setNewVisitor((s) => ({ ...s, site: v }));
+                    }}
+                  />
                 </div>
 
                 <div className="space-y-1.5">

@@ -49,6 +49,7 @@ import {
   radioResume,
 } from "@/lib/radioVoiceManager";
 import { useAuth } from "@/contexts/AuthContext";
+import { makeMenuGate } from "@/lib/menuPermissions";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { alarmService } from "@/lib/api/alarmService";
 import { ApiService } from "@/services/api/apiService";
@@ -223,7 +224,7 @@ export default function Header({
   sidebarOpen = true,
   notificationsCount = 1,
 }: HeaderProps) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, hasAny } = useAuth();
   /* El nombre del anfitrión. En el de la plataforma es «C-Guard Pro»; en el de
      un socio, el suyo — y por eso estos textos no lo llevan escrito. */
   const { platformName: nombreDeMarca } = useWhiteLabel();
@@ -432,9 +433,13 @@ export default function Header({
       return "";
     };
     const out: Destino[] = [];
+    // Same permission gate as the side menu: never offer a page the backend
+    // would refuse this user.
+    const allowed = makeMenuGate(hasAny);
 
     for (const item of MENU as any[]) {
       if (item.tienda && !hayTienda) continue;
+      if (!allowed(item)) continue;
       // Un módulo de pago que la empresa no tiene: el menú lo esconde, aquí tampoco.
       if (item.modulo && !hasFeature(user, item.modulo)) continue;
       const nombre =
@@ -449,6 +454,7 @@ export default function Header({
         });
       for (const sub of (item.subItems ?? []) as any[]) {
         if (sub.modulo && !hasFeature(user, sub.modulo)) continue;
+        if (!allowed(sub)) continue;
         const subNombre =
           etiqueta(`sidebar.${item.id}.${sub.id}`, `sidebar.${sub.id}`) ||
           sub.name;
@@ -495,7 +501,7 @@ export default function Header({
     /* `agente.nombre` en las dependencias: sin él, el índice del buscador se
        calcula una vez con «VigIA» y se queda así aunque luego llegue el nombre
        del socio — y buscarlo por su nombre no encontraría su propia pantalla. */
-  }, [t, agente.nombre, hayTienda, user]);
+  }, [t, agente.nombre, hayTienda, user, hasAny]);
 
   const resultados = useMemo(() => {
     const q = plano(consulta.trim());
