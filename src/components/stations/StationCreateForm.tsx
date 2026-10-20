@@ -1474,11 +1474,7 @@ export default function StationCreateForm({
                                 }
                                 title={`${idx + 1}`}
                               >
-                                {ch === "L"
-                                  ? t("ui.plazas.letraLibre", "L")
-                                  : ch === "N"
-                                    ? t("ui.StationCreateForm.tramo.N", NOMBRE_TRAMO.N).charAt(0).toUpperCase()
-                                    : t("ui.StationCreateForm.tramo.D", NOMBRE_TRAMO.D).charAt(0).toUpperCase()}
+                                {ch === "L" ? t("ui.plazas.letraLibre", "L") : ch}
                               </span>
                             ))}
                           </div>

@@ -134,18 +134,36 @@ describe("Publicar · del borrador a llamadas", () => {
     expect(pub.noPublicables.join("\n")).toMatch(/sin plaza/);
   });
 
+  it("un ciclo con dos bloques de trabajo (1-2-2-2) se publica como secuencia libre", () => {
+    const { plan, enlace } = base();
+    const b = copiar(plan);
+
+    // Lunes 24 h, dos libres, dos días, dos libres: no cabe en tres números.
+    b.personas[0].patron = ["D", F, F, "D", "D", F, F];
+    b.personas[0].desfase = 0;
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+    const rot = pub.cambios.find((c) => c.tipo === "rotacion")!;
+
+    expect(pub.noPublicables).toEqual([]);
+    expect(rot.llamadas[0].cuerpo.data).toMatchObject({ sequence: "DLLDDLL", name: "1-2-2-2", reuseIfExists: true });
+    expect(rot.llamadas[0].cuerpo.data.dayShifts).toBeUndefined();
+    // El día 0 de la secuencia: el primer día ≥ hoy donde el patrón arranca (índice 7 % 7 = 0).
+    expect(rot.llamadas[1].cuerpo.data).toMatchObject({ rotationStyleId: "$ROTACION", startDate: "2026-10-12" });
+  });
+
   it("lo que el horario real no sabe hacer se dice, no se escribe", () => {
     const { plan, enlace } = base();
     const b = copiar(plan);
 
-    b.personas[0].patron = ["D", F, "D", "D", F];
+    // Un tercer código que no es franja del puesto: ni tres números ni secuencia.
+    b.personas[0].patron = ["D", F, "X", "D", F];
     b.puestos[0].pide.D = [2, 2, 2, 2, 2, 2, 2];
     b.personas.push({ id: "nuevo-1", nombre: "Nuevo", puesto: null, patron: [L], desfase: 0, manual: {}, fijos: ["st1"], ausencias: [] });
     const pub = planificarPublicacion(plan, b, enlace, ctx);
 
     expect(pub.cambios).toEqual([]);
     expect(pub.noPublicables).toHaveLength(3);
-    expect(pub.noPublicables.join("\n")).toMatch(/rotación no es/);
+    expect(pub.noPublicables.join("\n")).toMatch(/más de dos tramos/);
     expect(pub.noPublicables.join("\n")).toMatch(/una persona por turno/);
     expect(pub.noPublicables.join("\n")).toMatch(/persona nueva/);
   });
