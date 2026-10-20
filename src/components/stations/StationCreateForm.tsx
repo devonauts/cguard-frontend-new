@@ -1603,9 +1603,10 @@ export default function StationCreateForm({
                                 defaultValue:
                                   "2 vigilantes: uno con {{a}} y otro con el complemento {{b}} (trabaja los días que el primero libra), sin sacafranco",
                                 a: r.nombre,
-                                b: nombreDeSecuencia(
-                                  necesitaComplemento({ sequence: r.secuencia }) || "",
-                                ),
+                                b: (necesitaComplemento({ sequence: r.secuencia }) || "")
+                                  .split("")
+                                  .map((ch) => letraVisibleDeTramo(ch, franjas))
+                                  .join(" "),
                               })}`
                           : personasQueSeTurnan(r) > 1
                             ? ` · ${t("ui.StationCreateForm.seTurnan", {
