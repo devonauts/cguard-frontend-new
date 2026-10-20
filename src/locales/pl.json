@@ -12000,7 +12000,8 @@
       "yNLibres_many": " i {{count}} dni wolnych",
       "yNLibres_one": " i {{count}} dzień wolny",
       "yNLibres_other": " i {{count}} dnia wolnego",
-      "fijoSinDescanso": "Stały bez dni wolnych"
+      "fijoSinDescanso": "Stały bez dni wolnych",
+      "secuencia": "sekwencja {{s}}"
     },
     "RouteForm": {
       "asignacion": "Przypisanie",
@@ -15610,7 +15611,9 @@
       "eligeCadaCuantosDiasLibra": "Wybierz, co ile dni ma wolne…",
       "laSecuenciaNecesitaAlMenos": "Sekwencja wymaga co najmniej jednego dnia pracy.",
       "noSePudoCrearLaSecuencia": "Nie udało się utworzyć sekwencji",
-      "nuevaSecuencia": "Nowa sekwencja"
+      "nuevaSecuencia": "Nowa sekwencja",
+      "oSecuencia": "Lub wpisz całą sekwencję (1-2-2-2 albo litery D/N/L): ma pierwszeństwo przed licznikami",
+      "secuenciaInvalida": "Wpisz sekwencję jako 1-2-2-2 lub literami D, N i L"
     },
     "codeTones": {
       "diurno": "Dzienna",
@@ -17178,7 +17181,11 @@
         "todoElHorario": "Cały czas ({{h}} h)",
         "relevosDe": "Zmiany po {{h}} h",
         "relevosResumen": "{{n}} zmian: {{tramos}}. Każdy pracownik ochrony obejmuje tylko swoją zmianę."
-      }
+      },
+      "secuenciaLibre": "Wpisz sekwencję (1-2-2-2)",
+      "secuenciaAyuda": "Bloki pracy i wolnego, zaczynając od pracy: 1-2-2-2 = jeden dzień 24 h, dwa wolne, dwa dni, dwa wolne. Także literami: D pracuje, N drugi blok, L wolne. Dzień 1 sekwencji to data rozpoczęcia każdego strażnika.",
+      "secuenciaInvalida": "Wpisz sekwencję jako 1-2-2-2 lub literami D, N i L (N tylko przy dwóch blokach)",
+      "secuenciaComplemento": "2 strażników: jeden z {{a}}, drugi z dopełnieniem {{b}} (pracuje w dni wolne pierwszego), bez zastępcy"
     },
     "Planificador": {
       "noSePudoCargar": "Nie udało się wczytać grafiku.",

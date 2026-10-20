@@ -11928,7 +11928,8 @@
       "yNLibres": " und {{count}} freie Tage",
       "yNLibres_one": " und {{count}} freier Tag",
       "yNLibres_other": " und {{count}} freie Tage",
-      "fijoSinDescanso": "Fest ohne Ruhetag"
+      "fijoSinDescanso": "Fest ohne Ruhetag",
+      "secuencia": "Sequenz {{s}}"
     },
     "RouteForm": {
       "asignacion": "Zuweisung",
@@ -15424,7 +15425,9 @@
       "eligeCadaCuantosDiasLibra": "Wähle, wie oft frei ist…",
       "laSecuenciaNecesitaAlMenos": "Die Abfolge braucht mindestens einen Arbeitstag.",
       "noSePudoCrearLaSecuencia": "Die Abfolge konnte nicht erstellt werden",
-      "nuevaSecuencia": "Neue Abfolge"
+      "nuevaSecuencia": "Neue Abfolge",
+      "oSecuencia": "Oder die ganze Sequenz eingeben (1-2-2-2 oder Buchstaben D/N/L): sie hat Vorrang vor den Zählern",
+      "secuenciaInvalida": "Sequenz als 1-2-2-2 oder mit den Buchstaben D, N und L eingeben"
     },
     "codeTones": {
       "diurno": "Tag",
@@ -16952,7 +16955,11 @@
         "todoElHorario": "Die ganze Zeit ({{h}} h)",
         "relevosDe": "{{h}}-h-Schichten",
         "relevosResumen": "{{n}} Schichten: {{tramos}}. Jede Wachperson deckt nur ihre Schicht ab."
-      }
+      },
+      "secuenciaLibre": "Sequenz eingeben (1-2-2-2)",
+      "secuenciaAyuda": "Blöcke aus Arbeit und Frei, beginnend mit Arbeit: 1-2-2-2 = ein 24-h-Tag, zwei frei, zwei Tage, zwei frei. Auch mit Buchstaben: D arbeitet, N der andere Block, L frei. Tag 1 der Sequenz ist das Startdatum jeder Wache.",
+      "secuenciaInvalida": "Sequenz als 1-2-2-2 oder mit den Buchstaben D, N und L eingeben (N nur bei zwei Blöcken)",
+      "secuenciaComplemento": "2 Wachen: eine mit {{a}} und eine mit dem Gegenstück {{b}} (arbeitet an den freien Tagen der ersten), ohne Springer"
     },
     "Planificador": {
       "noSePudoCargar": "Der Dienstplan konnte nicht geladen werden.",

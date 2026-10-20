@@ -5,6 +5,8 @@ export interface RotationStyle {
   dayShifts: number;
   nightShifts: number;
   restDays: number;
+  /** Secuencia libre (una letra por día: D/N/L); nula en los patrones de tres números. */
+  sequence?: string | null;
   isSystem: boolean;
 }
 export interface StationPosition {

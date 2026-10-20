@@ -11393,7 +11393,8 @@
       "yNLibres": " y {{count}} libres",
       "yNLibres_one": " y {{count}} libre",
       "yNLibres_other": " y {{count}} libres",
-      "fijoSinDescanso": "Fijo sin descanso"
+      "fijoSinDescanso": "Fijo sin descanso",
+      "secuencia": "secuencia {{s}}"
     },
     "RouteForm": {
       "asignacion": "Asignación",
@@ -14889,7 +14890,9 @@
       "eligeCadaCuantosDiasLibra": "Elige cada cuántos días libra…",
       "laSecuenciaNecesitaAlMenos": "La secuencia necesita al menos un día de trabajo.",
       "noSePudoCrearLaSecuencia": "No se pudo crear la secuencia",
-      "nuevaSecuencia": "Nueva secuencia"
+      "nuevaSecuencia": "Nueva secuencia",
+      "oSecuencia": "O escribe la secuencia completa (1-2-2-2, o letras D/N/L): manda sobre los contadores",
+      "secuenciaInvalida": "Escribe la secuencia como 1-2-2-2 o con letras D, N y L"
     },
     "codeTones": {
       "diurno": "Diurno",
@@ -16417,7 +16420,11 @@
         "todoElHorario": "Todo el horario ({{h}} h)",
         "relevosDe": "Relevos de {{h}} h",
         "relevosResumen": "{{n}} relevos: {{tramos}}. Cada vigilante cubre sólo su relevo."
-      }
+      },
+      "secuenciaLibre": "Escribir la secuencia (1-2-2-2)",
+      "secuenciaAyuda": "Bloques de trabajo y libre, empezando por trabajo: 1-2-2-2 = un día de 24 h, dos libres, dos días, dos libres. También con letras: D trabaja, N el otro tramo, L libra. El día 1 de la secuencia es la fecha de inicio de cada vigilante.",
+      "secuenciaInvalida": "Escribe la secuencia como 1-2-2-2 o con letras D, N y L (la N sólo con dos tramos)",
+      "secuenciaComplemento": "2 vigilantes: uno con {{a}} y otro con el complemento {{b}} (trabaja los días que el primero libra), sin sacafranco"
     },
     "Planificador": {
       "noSePudoCargar": "No se pudo cargar el horario.",

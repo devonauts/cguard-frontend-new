@@ -11393,7 +11393,8 @@
       "yNLibres": " e {{count}} folgas",
       "yNLibres_one": " e {{count}} folga",
       "yNLibres_other": " e {{count}} folgas",
-      "fijoSinDescanso": "Fixo sem folga"
+      "fijoSinDescanso": "Fixo sem folga",
+      "secuencia": "sequência {{s}}"
     },
     "RouteForm": {
       "asignacion": "Atribuição",
@@ -14889,7 +14890,9 @@
       "eligeCadaCuantosDiasLibra": "Escolha a cada quantos dias folga…",
       "laSecuenciaNecesitaAlMenos": "A sequência precisa de pelo menos um dia de trabalho.",
       "noSePudoCrearLaSecuencia": "Não foi possível criar a sequência",
-      "nuevaSecuencia": "Nova sequência"
+      "nuevaSecuencia": "Nova sequência",
+      "oSecuencia": "Ou escreva a sequência completa (1-2-2-2, ou letras D/N/L): manda sobre os contadores",
+      "secuenciaInvalida": "Escreva a sequência como 1-2-2-2 ou com as letras D, N e L"
     },
     "codeTones": {
       "diurno": "Diurno",
@@ -16417,7 +16420,11 @@
         "todoElHorario": "O horário todo ({{h}} h)",
         "relevosDe": "Turnos de {{h}} h",
         "relevosResumen": "{{n}} turnos: {{tramos}}. Cada vigilante cobre só o seu turno."
-      }
+      },
+      "secuenciaLibre": "Escrever a sequência (1-2-2-2)",
+      "secuenciaAyuda": "Blocos de trabalho e folga, começando pelo trabalho: 1-2-2-2 = um dia de 24 h, dois de folga, dois dias, dois de folga. Também com letras: D trabalha, N o outro turno, L folga. O dia 1 da sequência é a data de início de cada vigilante.",
+      "secuenciaInvalida": "Escreva a sequência como 1-2-2-2 ou com as letras D, N e L (N só com dois turnos)",
+      "secuenciaComplemento": "2 vigilantes: um com {{a}} e outro com o complemento {{b}} (trabalha nos dias em que o primeiro folga), sem folguista"
     },
     "Planificador": {
       "noSePudoCargar": "Não foi possível carregar a escala.",

@@ -16,6 +16,7 @@
  * Es cálculo puro hasta `ejecutar`: la lista de cambios se puede enseñar, probar
  * y rechazar sin tocar el servidor.
  */
+import { nombreDeSecuencia, secuenciaLimpia } from "@/lib/secuenciaDeRotacion";
 import {
   FRANCO,
   clave,
@@ -308,9 +309,64 @@ export function planificarPublicacion(
         const franjas = pu.franjas;
         const esDia = (c: string) => franjas.indexOf(c) === 0;
 
-        if (!f)
+        /* Lo que no es «tantos de día, tantos de noche, tantos de franco» se
+           publica como SECUENCIA LIBRE: una letra por día (D primera franja,
+           N segunda, L franco). El día 0 de la secuencia es el primer día del
+           patrón del borrador. */
+        const secuencia = f
+          ? null
+          : secuenciaLimpia(
+              p.patron
+                .map((c) =>
+                  c === FRANCO
+                    ? "L"
+                    : c === franjas[0]
+                      ? "D"
+                      : c === franjas[1]
+                        ? "N"
+                        : "?",
+                )
+                .join(""),
+            );
+
+        if (!f && secuencia && !p.patron.some((c) => c !== FRANCO && c !== franjas[0] && c !== franjas[1])) {
+          const inicio = proximoArranque(p, d0);
+          const nombre = `${nombreDeSecuencia(secuencia)}${p.francoDobleDomingo ? " · dom" : ""}`;
+
+          cambios.push(
+            llamada(
+              "rotacion",
+              `${nombreDe(p)}: secuencia ${nombre} desde el ${ctx.fechaDe(inicio)}`,
+              [
+                {
+                  metodo: "post",
+                  ruta: `${t}/rotation-style`,
+                  cuerpo: {
+                    data: {
+                      name: nombre,
+                      sequence: secuencia,
+                      sundayDoubleRest: !!p.francoDobleDomingo,
+                      reuseIfExists: true,
+                    },
+                  },
+                },
+                {
+                  metodo: "put",
+                  ruta: `${t}/guard-assignment/${en.assignmentId}`,
+                  cuerpo: {
+                    data: {
+                      rotationStyleId: "$ROTACION",
+                      startDate: ctx.fechaDe(inicio),
+                    },
+                  },
+                },
+              ],
+              nombreDe(p),
+            ),
+          );
+        } else if (!f)
           no.push(
-            `${nombreDe(p)}: su rotación no es «tantos de día, tantos de noche, tantos de franco», y el horario real sólo genera ésas. Se queda en el borrador.`,
+            `${nombreDe(p)}: su rotación mezcla más de dos tramos, y el horario real sólo genera hasta dos. Se queda en el borrador.`,
           );
         else {
           // El motor real cuenta «día» como la primera franja del puesto y «noche» como la segunda.

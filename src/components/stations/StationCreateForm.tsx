@@ -14,6 +14,13 @@ import { InfoNote } from "@/components/kit";
 import { esEvento } from "@/lib/serviceTypes";
 import { rangoDelEvento, vigenciaDe } from "@/lib/eventos";
 import { horaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  cicloDe,
+  necesitaComplemento,
+  nombreDeSecuencia,
+  personasQueSeTurnanCon,
+  secuenciaDeTexto,
+} from "@/lib/secuenciaDeRotacion";
 
 import { AvisosDeRelevos } from "./AvisosDeRelevos";
 
@@ -194,6 +201,36 @@ export interface Rotacion {
   largo: number;
   /** Tres tramos con días: el servidor sólo guarda dos. */
   noRepresentable: boolean;
+  /** La secuencia libre (D/N/L por día), cuando el ciclo se escribió así. */
+  secuencia?: string | null;
+}
+
+/**
+ * Un ciclo escrito como SECUENCIA («1-2-2-2» o letras D/N/L) → lo que entiende
+ * el servidor. Con un solo tramo no cabe la N (no hay «otro tramo»).
+ */
+export function rotacionDeSecuencia(
+  texto: string,
+  tramos: string[],
+  dominical: boolean,
+): Rotacion | null {
+  const seq = secuenciaDeTexto(texto);
+
+  if (!seq) return null;
+  if (tramos.length < 2 && seq.includes("N")) return null;
+  const c = cicloDe({ sequence: seq });
+
+  return {
+    dayShifts: c.dias,
+    nightShifts: c.noches,
+    restDays: c.libres,
+    alterna: false,
+    dominical,
+    nombre: nombreDeSecuencia(seq),
+    largo: c.largo,
+    noRepresentable: false,
+    secuencia: seq,
+  };
 }
 
 /** Un ciclo de contadores → lo que entiende el servidor (o null si está vacío). */
@@ -245,6 +282,7 @@ export function rotacionDe(
     tapa sus libres. El servidor crea una plaza por persona (teselado). */
 export function personasQueSeTurnan(r: Rotacion | null): number {
   if (!r) return 1;
+  if (r.secuencia) return personasQueSeTurnanCon({ sequence: r.secuencia });
   const trabajo = r.dayShifts + r.nightShifts;
 
   return trabajo > 0 && r.largo % trabajo === 0
@@ -448,6 +486,10 @@ export default function StationCreateForm({
   const [ciclos, setCiclos] = useState<Record<string, Ciclo>>({});
   const [alterna, setAlterna] = useState(false);
   const [dominical, setDominical] = useState(false);
+  /* LA SECUENCIA LIBRE: el ciclo escrito día a día («1-2-2-2») en vez de con
+     contadores, para lo que no cabe en «tantos, tantos, tantos libres». */
+  const [secuenciaLibre, setSecuenciaLibre] = useState(false);
+  const [secuenciaTexto, setSecuenciaTexto] = useState("");
   const cicloDe = (k: string): Ciclo => ciclos[k] || CICLO_VACIO;
   const ponerCiclo = (k: string, l: keyof Ciclo, v: number) =>
     setCiclos((cs) => ({
@@ -455,8 +497,11 @@ export default function StationCreateForm({
       [k]: { ...cicloDe(k), [l]: Math.max(0, Math.min(30, v)) },
     }));
   const rotacion = useMemo(
-    () => rotacionDe(cicloDe("*"), tramos, alterna, dominical),
-    [ciclos, tramos, alterna, dominical],
+    () =>
+      secuenciaLibre
+        ? rotacionDeSecuencia(secuenciaTexto, tramos, dominical)
+        : rotacionDe(cicloDe("*"), tramos, alterna, dominical),
+    [ciclos, tramos, alterna, dominical, secuenciaLibre, secuenciaTexto],
   ); // eslint-disable-line react-hooks/exhaustive-deps
   const rotacionesPorPlaza = useMemo(
     () =>
@@ -473,9 +518,8 @@ export default function StationCreateForm({
   );
   /* Cuánta gente fija pide el puesto con estos ciclos: por asiento, k que se
      turnan (ciclo que cierra exacto) o 1 fijo cuyos libres tapa el sacafranco. */
-  const rotacionesEfectivas = porPlaza
-    ? rotacionesPorPlaza
-    : plazas.map(() => rotacion);
+  const rotacionesEfectivas =
+    porPlaza && !secuenciaLibre ? rotacionesPorPlaza : plazas.map(() => rotacion);
   const necesarios = rotacionesEfectivas.some(Boolean)
     ? rotacionesEfectivas.reduce((acc, r) => acc + personasQueSeTurnan(r), 0)
     : 0;
@@ -608,6 +652,7 @@ export default function StationCreateForm({
                 restDays: r.restDays,
                 alternatesDayNight: r.alterna,
                 sundayDoubleRest: r.dominical,
+                sequence: r.secuencia || undefined,
                 reuseIfExists: true,
               },
             },
@@ -623,7 +668,7 @@ export default function StationCreateForm({
       let rotationStyleId = "";
       let positionRotationStyleIds: string[] | undefined;
 
-      if (porPlaza) {
+      if (porPlaza && !secuenciaLibre) {
         positionRotationStyleIds = [];
         for (const r of rotacionesPorPlaza)
           positionRotationStyleIds.push(await crearPatron(r));
@@ -1320,7 +1365,10 @@ export default function StationCreateForm({
                           }
                     }
                     type="button"
-                    onClick={() => setPorPlaza(pp)}
+                    onClick={() => {
+                      setPorPlaza(pp);
+                      setSecuenciaLibre(false);
+                    }}
                   >
                     {pp
                       ? t(
@@ -1333,8 +1381,36 @@ export default function StationCreateForm({
                         )}
                   </button>
                 ))}
+                {/* Lo que no cabe en contadores: dos bloques de trabajo en el
+                    mismo ciclo (1-2-2-2). Se escribe día a día. */}
+                <button
+                  className="cg-focus rounded-full border px-3 py-1 text-xs font-semibold"
+                  style={
+                    secuenciaLibre
+                      ? {
+                          background: "var(--brand)",
+                          color: "var(--brand-ink)",
+                          borderColor: "var(--brand)",
+                        }
+                      : {
+                          background: "var(--glass)",
+                          color: "var(--ink)",
+                          borderColor: "var(--hairline)",
+                        }
+                  }
+                  type="button"
+                  onClick={() => {
+                    setSecuenciaLibre(true);
+                    setPorPlaza(false);
+                  }}
+                >
+                  {t(
+                    "ui.StationCreateForm.secuenciaLibre",
+                    "Escribir la secuencia (1-2-2-2)",
+                  )}
+                </button>
               </div>
-              {(porPlaza
+              {(porPlaza && !secuenciaLibre
                 ? plazas.map((f, i) => ({ k: String(i), f, i }))
                 : [{ k: "*", f: null, i: -1 }]
               ).map(({ k, f, i }) => {
@@ -1362,7 +1438,54 @@ export default function StationCreateForm({
                         </span>
                       </span>
                     )}
-                    {[...tramos, "L"].map((l) => {
+                    {secuenciaLibre && (
+                      <div className="flex w-full flex-col gap-2">
+                        <input
+                          className="cg-input cg-focus h-9 w-56 px-3 text-sm font-semibold"
+                          placeholder="1-2-2-2"
+                          type="text"
+                          value={secuenciaTexto}
+                          onChange={(e) => setSecuenciaTexto(e.target.value)}
+                        />
+                        <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                          {t(
+                            "ui.StationCreateForm.secuenciaAyuda",
+                            "Bloques de trabajo y libre, empezando por trabajo: 1-2-2-2 = un día de 24 h, dos libres, dos días, dos libres. También con letras: D trabaja, N el otro tramo, L libra. El día 1 de la secuencia es la fecha de inicio de cada vigilante.",
+                          )}
+                        </p>
+                        {secuenciaTexto.trim() && !r && (
+                          <p className="text-xs font-semibold" style={{ color: "var(--danger-text, #b91c1c)" }}>
+                            {t(
+                              "ui.StationCreateForm.secuenciaInvalida",
+                              "Escribe la secuencia como 1-2-2-2 o con letras D, N y L (la N sólo con dos tramos)",
+                            )}
+                          </p>
+                        )}
+                        {r?.secuencia && (
+                          <div className="flex flex-wrap gap-1" aria-label={r.secuencia}>
+                            {r.secuencia.split("").map((ch, idx) => (
+                              <span
+                                key={idx}
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold"
+                                style={
+                                  ch === "L"
+                                    ? { background: "var(--glass)", color: "var(--ink-soft)" }
+                                    : { background: "var(--brand)", color: "var(--brand-ink)" }
+                                }
+                                title={`${idx + 1}`}
+                              >
+                                {ch === "L"
+                                  ? t("ui.plazas.letraLibre", "L")
+                                  : ch === "N"
+                                    ? t("ui.StationCreateForm.tramo.N", NOMBRE_TRAMO.N).charAt(0).toUpperCase()
+                                    : t("ui.StationCreateForm.tramo.D", NOMBRE_TRAMO.D).charAt(0).toUpperCase()}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {!secuenciaLibre && [...tramos, "L"].map((l) => {
                       const esLibre = l === "L";
                       const n = c[l as keyof Ciclo] || 0;
                       const fr = esLibre
@@ -1444,6 +1567,15 @@ export default function StationCreateForm({
                         })}
                         {r.noRepresentable
                           ? ` · ${t("ui.StationCreateForm.tresTramosEnPlanificador", "con tres tramos se cuadra al asignar / en el Planificador")}`
+                          : r.secuencia && necesitaComplemento({ sequence: r.secuencia })
+                            ? ` · ${t("ui.StationCreateForm.secuenciaComplemento", {
+                                defaultValue:
+                                  "2 vigilantes: uno con {{a}} y otro con el complemento {{b}} (trabaja los días que el primero libra), sin sacafranco",
+                                a: r.nombre,
+                                b: nombreDeSecuencia(
+                                  necesitaComplemento({ sequence: r.secuencia }) || "",
+                                ),
+                              })}`
                           : personasQueSeTurnan(r) > 1
                             ? ` · ${t("ui.StationCreateForm.seTurnan", {
                                 defaultValue:

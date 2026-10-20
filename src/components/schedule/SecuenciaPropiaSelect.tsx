@@ -4,6 +4,10 @@ import { toast } from "sonner";
 import { Loader2, Plus, X } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
+import {
+  nombreDeSecuencia,
+  secuenciaDeTexto,
+} from "@/lib/secuenciaDeRotacion";
 
 export type RotationStyle = {
   id: string;
@@ -11,6 +15,8 @@ export type RotationStyle = {
   dayShifts: number;
   nightShifts: number;
   restDays: number;
+  /** Secuencia libre (D/N/L por día), cuando el patrón se escribió así. */
+  sequence?: string | null;
   isSystem?: boolean;
 };
 
@@ -69,6 +75,9 @@ export default function SecuenciaPropiaSelect({
   const [cWork, setCWork] = useState("2");
   const [cNight, setCNight] = useState("2");
   const [cRest, setCRest] = useState("2");
+  /* O la secuencia entera, día a día («1-2-2-2»): para lo que no cabe en
+     tres números. Si se escribe, manda sobre los contadores. */
+  const [cSeq, setCSeq] = useState("");
 
   useEffect(() => {
     let vivo = true;
@@ -97,6 +106,11 @@ export default function SecuenciaPropiaSelect({
   }, [tenantId]);
 
   const describir = (s: RotationStyle) => {
+    if (s.sequence)
+      return `${s.name} — ${t("ui.RotationStyleSelect.secuencia", {
+        defaultValue: "secuencia {{s}}",
+        s: s.sequence,
+      })}`;
     const descanso =
       s.restDays === 0
         ? t("ui.RotationStyleSelect.sinDescanso", "sin descanso")
@@ -120,7 +134,7 @@ export default function SecuenciaPropiaSelect({
     const vistos = new Set<string>();
 
     return styles.filter((s) => {
-      const k = `${s.dayShifts}|${s.nightShifts}|${s.restDays}`;
+      const k = `${s.dayShifts}|${s.nightShifts}|${s.restDays}|${s.sequence || ""}`;
 
       if (vistos.has(k) && s.id !== value) return false;
       vistos.add(k);
@@ -130,6 +144,55 @@ export default function SecuenciaPropiaSelect({
   }, [styles, value]);
 
   const crear = async () => {
+    if (cSeq.trim()) {
+      const seq = secuenciaDeTexto(cSeq);
+
+      if (!seq) {
+        toast.error(
+          t(
+            "ui.SecuenciaPropiaSelect.secuenciaInvalida",
+            "Escribe la secuencia como 1-2-2-2 o con letras D, N y L",
+          ),
+        );
+
+        return;
+      }
+      const igualSeq = styles.find((s) => s.sequence === seq);
+
+      if (igualSeq) {
+        onChange(igualSeq.id);
+        setAbierto(false);
+
+        return;
+      }
+      setCreating(true);
+      try {
+        const res: any = await ApiService.post(
+          `/tenant/${tenantId}/rotation-style`,
+          { data: { name: nombreDeSecuencia(seq), sequence: seq } },
+        );
+        const creado = res?.data ?? res;
+
+        if (creado?.id) {
+          setStyles((prev) => [...prev, creado]);
+          onChange(creado.id);
+          setAbierto(false);
+        }
+      } catch (e: any) {
+        toast.error(
+          e?.data?.message ||
+            e?.message ||
+            t(
+              "ui.SecuenciaPropiaSelect.noSePudoCrearLaSecuencia",
+              "No se pudo crear la secuencia",
+            ),
+        );
+      } finally {
+        setCreating(false);
+      }
+
+      return;
+    }
     const work = Math.max(0, parseInt(cWork, 10) || 0);
     const night = Math.max(0, parseInt(cNight, 10) || 0);
     const rest = Math.max(0, parseInt(cRest, 10) || 0);
@@ -314,6 +377,20 @@ export default function SecuenciaPropiaSelect({
               />
             </label>
           </div>
+          <label className="mt-2 block text-[11px] text-muted-foreground">
+            {t(
+              "ui.SecuenciaPropiaSelect.oSecuencia",
+              "O escribe la secuencia completa (1-2-2-2, o letras D/N/L): manda sobre los contadores",
+            )}
+            <input
+              className={`${campo} mt-1`}
+              placeholder="1-2-2-2"
+              style={estiloCampo}
+              type="text"
+              value={cSeq}
+              onChange={(e) => setCSeq(e.target.value)}
+            />
+          </label>
           <button
             className="cg-focus mt-2 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
             disabled={creating}

@@ -1,6 +1,7 @@
 import { aHHMM, aMinutos, nombreDeTramo } from "./tramos";
 
 import i18n from "@/i18n";
+import { cicloDe, personasQueSeTurnanCon } from "@/lib/secuenciaDeRotacion";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -34,6 +35,8 @@ export interface CicloRotacion {
    * exactamente lo que este fichero existe para evitar.
    */
   alternatesDayNight?: boolean | null;
+  /** La secuencia libre (D/N/L por día), cuando el ciclo se escribió así. */
+  sequence?: string | null;
 }
 
 export interface PlazaPrevista {
@@ -77,11 +80,7 @@ export function minutosDeVentana(inicio: string, fin: string): number {
  * error que no se entendía. Mejor decirlo antes de pulsarlo.
  */
 export function porQueNoSePuede(e: EntradaDePlazas): string | null {
-  const dia = Math.max(0, Number(e.ciclo?.dayShifts) || 0);
-  const noche = Math.max(0, Number(e.ciclo?.nightShifts) || 0);
-  const libres = Math.max(0, Number(e.ciclo?.restDays) || 0);
-  const trabajo = dia + noche;
-  const largo = trabajo + libres;
+  const { trabajo, largo, libres } = cicloDe(e.ciclo);
 
   if (e.scheduleType === "custom" && e.restCoverage === "alternate") {
     if (trabajo <= 0)
@@ -104,11 +103,7 @@ export function porQueNoSePuede(e: EntradaDePlazas): string | null {
 export function plazasPrevistas(e: EntradaDePlazas): PlazaPrevista[] {
   const inicio = e.inicio || "07:00";
   const fin = e.fin || "19:00";
-  const dia = Math.max(0, Number(e.ciclo?.dayShifts) || 0);
-  const noche = Math.max(0, Number(e.ciclo?.nightShifts) || 0);
-  const libres = Math.max(0, Number(e.ciclo?.restDays) || 0);
-  const trabajo = dia + noche;
-  const largo = trabajo + libres;
+  const { noches: noche, trabajo, largo } = cicloDe(e.ciclo);
 
   const plaza = (
     indice: number,
@@ -151,8 +146,8 @@ export function plazasPrevistas(e: EntradaDePlazas): PlazaPrevista[] {
   if (e.scheduleType === "12h-day" || e.scheduleType === "12h-night") {
     // Cuando los días de trabajo TESELAN el ciclo (un 3-3 son dos personas que
     // se turnan) se crean tantas plazas como turnos hagan falta para cubrirlo.
-    const teselan =
-      trabajo > 0 && largo % trabajo === 0 ? Math.min(4, largo / trabajo) : 1;
+    // …y una secuencia de un tramo que no tesela son dos: ella y su complemento.
+    const teselan = personasQueSeTurnanCon(e.ciclo);
 
     return Array.from({ length: teselan }, (_, i) => plaza(i, inicio, fin));
   }
@@ -246,10 +241,25 @@ export function secuenciaDelCiclo(
   etiquetaSiguiente: string,
 ): { letra: string; nombre: string; tipo: "propio" | "siguiente" | "libre" }[] {
   if (!ciclo) return [];
-  const dia = Math.max(0, Number(ciclo.dayShifts) || 0);
-  const noche = Math.max(0, Number(ciclo.nightShifts) || 0);
-  const libres = Math.max(0, Number(ciclo.restDays) || 0);
+  const leido = cicloDe(ciclo);
+  const dia = leido.dias;
+  const noche = leido.noches;
+  const libres = leido.libres;
   const inicial = (s: string) => (s || "?").charAt(0).toUpperCase();
+
+  // Con secuencia libre, la semana es la secuencia tal cual, letra a letra.
+  if (leido.secuencia)
+    return leido.secuencia.split("").map((ch) =>
+      ch === "D"
+        ? { letra: inicial(etiquetaPropia), nombre: etiquetaPropia, tipo: "propio" as const }
+        : ch === "N"
+          ? { letra: inicial(etiquetaSiguiente), nombre: etiquetaSiguiente, tipo: "siguiente" as const }
+          : {
+              letra: i18n.t("ui.plazas.letraLibre", "L"),
+              nombre: i18n.t("ui.plazas.libre", "libre"),
+              tipo: "libre" as const,
+            },
+    );
 
   return [
     ...Array.from({ length: dia }, () => ({

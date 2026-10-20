@@ -17,6 +17,7 @@
  * enseña — si es bajo, el borrador no se parece al horario real y hay que
  * saberlo antes de fiarse.
  */
+import { cicloDe as leerCiclo } from "@/lib/secuenciaDeRotacion";
 import {
   FRANCO,
   LIBRE,
@@ -348,10 +349,9 @@ export function planDesdeHorarioReal(
     // cada asiento lo cubren k = largo ÷ trabajo plazas que se alternan. El
     // puesto pide n ÷ k, no n.
     const rotSt = rotPorId.get(String(st.rotationStyleId || ""));
-    const trabajo = rotSt
-      ? diasDeCiclo(rotSt.dayShifts) + diasDeCiclo(rotSt.nightShifts)
-      : 0;
-    const largo = trabajo + (rotSt ? diasDeCiclo(rotSt.restDays) : 0);
+    const { trabajo, largo } = rotSt
+      ? leerCiclo(rotSt)
+      : { trabajo: 0, largo: 0 };
     const k = trabajo > 0 && largo % trabajo === 0 ? largo / trabajo : 1;
 
     if (k > 1)
@@ -619,7 +619,16 @@ export function planDesdeHorarioReal(
       }
     // 2) Si no hay patrón claro, el ciclo declarado, arrancando donde más acierta.
     if (!patron) {
-      if (
+      // Una secuencia libre (D/N/L por día) se lee letra a letra.
+      const secuencia = rot ? leerCiclo(rot).secuencia : null;
+
+      if (secuencia) {
+        patron = secuencia
+          .split("")
+          .map((ch) =>
+            ch === "L" ? FRANCO : relevo ? LIBRE : ch === "N" ? d2 : d1,
+          );
+      } else if (
         rot &&
         diasDeCiclo(rot.dayShifts) + diasDeCiclo(rot.nightShifts) > 0
       ) {

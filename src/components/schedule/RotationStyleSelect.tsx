@@ -13,6 +13,8 @@ export type RotationStyle = {
   restDays: number;
   alternatesDayNight?: boolean;
   sundayDoubleRest?: boolean;
+  /** Secuencia libre (D/N/L por día), cuando el patrón se escribió así. */
+  sequence?: string | null;
   isSystem?: boolean;
 };
 
@@ -363,6 +365,12 @@ export default function RotationStyleSelect({
   }, [value, styles]);
 
   const describe = (s: RotationStyle) => {
+    // Una secuencia libre se enseña tal cual: su nombre ya dice los bloques.
+    if (s.sequence)
+      return `${s.name} — ${t("ui.RotationStyleSelect.secuencia", {
+        defaultValue: "secuencia {{s}}",
+        s: s.sequence,
+      })}`;
     // `restDays: 0` es un patrón legítimo —el vigilante trabaja todos los días—
     // y "0 descanso" se lee como un dato a medio escribir. Se nombra.
     const descanso =

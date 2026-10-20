@@ -11928,7 +11928,8 @@
       "yNLibres": " e {{count}} giorni di riposo",
       "yNLibres_one": " e {{count}} giorno di riposo",
       "yNLibres_other": " e {{count}} giorni di riposo",
-      "fijoSinDescanso": "Fisso senza riposo"
+      "fijoSinDescanso": "Fisso senza riposo",
+      "secuencia": "sequenza {{s}}"
     },
     "RouteForm": {
       "asignacion": "Assegnazione",
@@ -15424,7 +15425,9 @@
       "eligeCadaCuantosDiasLibra": "Scegli ogni quanti giorni riposa…",
       "laSecuenciaNecesitaAlMenos": "La sequenza richiede almeno un giorno lavorativo.",
       "noSePudoCrearLaSecuencia": "Impossibile creare la sequenza",
-      "nuevaSecuencia": "Nuova sequenza"
+      "nuevaSecuencia": "Nuova sequenza",
+      "oSecuencia": "Oppure scrivi la sequenza completa (1-2-2-2, o lettere D/N/L): prevale sui contatori",
+      "secuenciaInvalida": "Scrivi la sequenza come 1-2-2-2 o con le lettere D, N e L"
     },
     "codeTones": {
       "diurno": "Diurno",
@@ -16952,7 +16955,11 @@
         "todoElHorario": "Tutto l’orario ({{h}} h)",
         "relevosDe": "Turni di {{h}} h",
         "relevosResumen": "{{n}} turni: {{tramos}}. Ogni guardia copre solo il suo turno."
-      }
+      },
+      "secuenciaLibre": "Scrivere la sequenza (1-2-2-2)",
+      "secuenciaAyuda": "Blocchi di lavoro e riposo, iniziando dal lavoro: 1-2-2-2 = un giorno di 24 h, due liberi, due giorni, due liberi. Anche con lettere: D lavora, N l'altra fascia, L libero. Il giorno 1 della sequenza è la data di inizio di ogni guardia.",
+      "secuenciaInvalida": "Scrivi la sequenza come 1-2-2-2 o con le lettere D, N e L (la N solo con due fasce)",
+      "secuenciaComplemento": "2 guardie: una con {{a}} e una con il complemento {{b}} (lavora nei giorni liberi della prima), senza jolly"
     },
     "Planificador": {
       "noSePudoCargar": "Impossibile caricare l'orario.",

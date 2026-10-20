@@ -11928,7 +11928,8 @@
       "yNLibres": " et {{count}} jours de repos",
       "yNLibres_one": " et {{count}} jour de repos",
       "yNLibres_other": " et {{count}} jours de repos",
-      "fijoSinDescanso": "Fixe sans repos"
+      "fijoSinDescanso": "Fixe sans repos",
+      "secuencia": "séquence {{s}}"
     },
     "RouteForm": {
       "asignacion": "Affectation",
@@ -15424,7 +15425,9 @@
       "eligeCadaCuantosDiasLibra": "Choisissez la fréquence des repos…",
       "laSecuenciaNecesitaAlMenos": "La séquence nécessite au moins un jour de travail.",
       "noSePudoCrearLaSecuencia": "Impossible de créer la séquence",
-      "nuevaSecuencia": "Nouvelle séquence"
+      "nuevaSecuencia": "Nouvelle séquence",
+      "oSecuencia": "Ou écrivez la séquence complète (1-2-2-2, ou lettres D/N/L) : elle prime sur les compteurs",
+      "secuenciaInvalida": "Écrivez la séquence comme 1-2-2-2 ou avec les lettres D, N et L"
     },
     "codeTones": {
       "diurno": "Jour",
@@ -16952,7 +16955,11 @@
         "todoElHorario": "Toute la plage ({{h}} h)",
         "relevosDe": "Relèves de {{h}} h",
         "relevosResumen": "{{n}} relèves : {{tramos}}. Chaque agent ne couvre que sa relève."
-      }
+      },
+      "secuenciaLibre": "Écrire la séquence (1-2-2-2)",
+      "secuenciaAyuda": "Blocs de travail et de repos, en commençant par le travail : 1-2-2-2 = un jour de 24 h, deux de repos, deux jours, deux de repos. Aussi avec des lettres : D travaille, N l'autre tranche, L repos. Le jour 1 de la séquence est la date de début de chaque agent.",
+      "secuenciaInvalida": "Écrivez la séquence comme 1-2-2-2 ou avec les lettres D, N et L (N seulement avec deux tranches)",
+      "secuenciaComplemento": "2 agents : un avec {{a}} et un avec le complément {{b}} (travaille les jours de repos du premier), sans remplaçant"
     },
     "Planificador": {
       "noSePudoCargar": "Impossible de charger le planning.",

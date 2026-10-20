@@ -11928,7 +11928,8 @@
       "yNLibres": " en {{count}} vrije dagen",
       "yNLibres_one": " en {{count}} vrije dag",
       "yNLibres_other": " en {{count}} vrije dagen",
-      "fijoSinDescanso": "Vast zonder rustdag"
+      "fijoSinDescanso": "Vast zonder rustdag",
+      "secuencia": "reeks {{s}}"
     },
     "RouteForm": {
       "asignacion": "Toewijzing",
@@ -15424,7 +15425,9 @@
       "eligeCadaCuantosDiasLibra": "Kies hoe vaak er een vrije dag is…",
       "laSecuenciaNecesitaAlMenos": "De reeks heeft minstens één werkdag nodig.",
       "noSePudoCrearLaSecuencia": "De reeks kon niet worden aangemaakt",
-      "nuevaSecuencia": "Nieuwe reeks"
+      "nuevaSecuencia": "Nieuwe reeks",
+      "oSecuencia": "Of schrijf de volledige reeks (1-2-2-2, of letters D/N/L): die gaat vóór de tellers",
+      "secuenciaInvalida": "Schrijf de reeks als 1-2-2-2 of met de letters D, N en L"
     },
     "codeTones": {
       "diurno": "Dag",
@@ -16952,7 +16955,11 @@
         "todoElHorario": "De hele tijd ({{h}} u)",
         "relevosDe": "Diensten van {{h}} u",
         "relevosResumen": "{{n}} diensten: {{tramos}}. Elke beveiliger dekt alleen zijn eigen dienst."
-      }
+      },
+      "secuenciaLibre": "Reeks invoeren (1-2-2-2)",
+      "secuenciaAyuda": "Blokken werk en vrij, beginnend met werk: 1-2-2-2 = één dag van 24 u, twee vrij, twee dagen, twee vrij. Ook met letters: D werkt, N het andere blok, L vrij. Dag 1 van de reeks is de startdatum van elke bewaker.",
+      "secuenciaInvalida": "Schrijf de reeks als 1-2-2-2 of met de letters D, N en L (N alleen bij twee blokken)",
+      "secuenciaComplemento": "2 bewakers: één met {{a}} en één met het complement {{b}} (werkt op de vrije dagen van de eerste), zonder invaller"
     },
     "Planificador": {
       "noSePudoCargar": "Het rooster kon niet worden geladen.",

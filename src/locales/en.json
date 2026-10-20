@@ -11393,7 +11393,8 @@
       "yNLibres": " and {{count}} days off",
       "yNLibres_one": " and {{count}} day off",
       "yNLibres_other": " and {{count}} days off",
-      "fijoSinDescanso": "Fixed, no rest days"
+      "fijoSinDescanso": "Fixed, no rest days",
+      "secuencia": "sequence {{s}}"
     },
     "RouteForm": {
       "asignacion": "Assignment",
@@ -14889,7 +14890,9 @@
       "eligeCadaCuantosDiasLibra": "Choose how often they get a day off…",
       "laSecuenciaNecesitaAlMenos": "The sequence needs at least one working day.",
       "noSePudoCrearLaSecuencia": "The sequence could not be created",
-      "nuevaSecuencia": "New sequence"
+      "nuevaSecuencia": "New sequence",
+      "oSecuencia": "Or write the full sequence (1-2-2-2, or letters D/N/L): it overrides the counters",
+      "secuenciaInvalida": "Write the sequence as 1-2-2-2 or with the letters D, N and L"
     },
     "codeTones": {
       "diurno": "Day",
@@ -16417,7 +16420,11 @@
         "todoElHorario": "The whole time ({{h}} h)",
         "relevosDe": "{{h}} h shifts",
         "relevosResumen": "{{n}} shifts: {{tramos}}. Each guard covers only their shift."
-      }
+      },
+      "secuenciaLibre": "Write the sequence (1-2-2-2)",
+      "secuenciaAyuda": "Blocks of work and rest, starting with work: 1-2-2-2 = one 24-hour day, two off, two days, two off. Letters also work: D works, N the other block, L off. Day 1 of the sequence is each guard's start date.",
+      "secuenciaInvalida": "Write the sequence as 1-2-2-2 or with the letters D, N and L (N only with two blocks)",
+      "secuenciaComplemento": "2 guards: one on {{a}} and one on the complement {{b}} (works the days the first one is off), no relief guard"
     },
     "Planificador": {
       "noSePudoCargar": "The schedule couldn't be loaded.",
