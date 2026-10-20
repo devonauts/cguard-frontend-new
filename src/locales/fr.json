@@ -6110,6 +6110,8 @@
       "cardError": "Impossible d'enregistrer la carte. Vérifiez les informations.",
       "cardExpires": "Expire {{mm}}/{{aa}}",
       "cardModalDesc": "Elle servira aux prélèvements mensuels. Tout montant en attente est prélevé à l'enregistrement.",
+      "payModalDesc": "Saisissez votre carte pour régler le montant dû maintenant. Votre abonnement mensuel ne change pas.",
+      "subscriptionNext": "Prélèvement automatique le {{fecha}} de {{importe}}.",
       "cardNote": "Votre carte est conservée en toute sécurité par la passerelle de paiement de votre fournisseur ; son numéro n'est jamais stocké ici.",
       "cardSaved": "Carte enregistrée.",
       "cardTitle": "Moyen de paiement",
@@ -6120,7 +6122,8 @@
       "kind": {
         "asientos": "Utilisateurs ajoutés",
         "inicio": "Mise en service et premier mois",
-        "renovacion": "Renouvellement mensuel"
+        "renovacion": "Renouvellement mensuel",
+        "anticipo": "Paiement anticipé"
       },
       "loadingForm": "Chargement du formulaire sécurisé…",
       "monthlyFee": "Mensualité",

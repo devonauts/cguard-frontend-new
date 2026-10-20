@@ -27,11 +27,25 @@ export const TONO_DEL_RECIBO: Record<string, TonoDelAviso> = {
 };
 
 /**
- * Sólo Stripe tiene hoy formulario de tarjeta. Con otra pasarela se dice con
- * su nombre que todavía no se puede, en vez de enseñar un botón que no hace nada.
+ * Stripe (Elements) y Mercado Pago (Card Payment Brick) tienen formulario de
+ * tarjeta. Con otra pasarela se dice con su nombre que todavía no se puede, en
+ * vez de enseñar un botón que no hace nada.
  */
 export function pasarelaConFormulario(d: CobroDelSocioActivo): boolean {
-  return d.gateway?.provider === "stripe" && !!d.gateway?.publicKey;
+  return (
+    (d.gateway?.provider === "stripe" ||
+      d.gateway?.provider === "mercadopago") &&
+    !!d.gateway?.publicKey
+  );
+}
+
+/**
+ * «Pagar ahora» pide la tarjeta otra vez (Mercado Pago): la pasarela guarda la
+ * tarjeta dentro de la suscripción y el servidor no puede cobrarla él; el
+ * token de un uso de la tarjeta tecleada paga lo pendiente.
+ */
+export function pagoConTarjetaTecleada(d: CobroDelSocioActivo): boolean {
+  return d.payment?.payNowWithCard === true && pasarelaConFormulario(d);
 }
 
 /** `add` sin tarjeta, `replace` con ella, `unsupported` si la pasarela aún no tiene formulario. */

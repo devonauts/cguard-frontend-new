@@ -6110,6 +6110,8 @@
       "cardError": "De kaart kon niet worden opgeslagen. Controleer de gegevens.",
       "cardExpires": "Verloopt {{mm}}/{{aa}}",
       "cardModalDesc": "Deze wordt gebruikt voor de maandelijkse afschrijvingen. Openstaande bedragen worden bij het opslaan afgeschreven.",
+      "payModalDesc": "Voer uw kaart in om het openstaande bedrag nu te betalen. Uw maandabonnement verandert niet.",
+      "subscriptionNext": "Automatische afschrijving op {{fecha}} van {{importe}}.",
       "cardNote": "Je kaart wordt veilig bewaard door de betaalprovider van je leverancier; het kaartnummer wordt hier nooit opgeslagen.",
       "cardSaved": "Kaart opgeslagen.",
       "cardTitle": "Betaalmethode",
@@ -6120,7 +6122,8 @@
       "kind": {
         "asientos": "Toegevoegde gebruikers",
         "inicio": "Activering en eerste maand",
-        "renovacion": "Maandelijkse verlenging"
+        "renovacion": "Maandelijkse verlenging",
+        "anticipo": "Vooruitbetaling"
       },
       "loadingForm": "Beveiligd formulier laden…",
       "monthlyFee": "Maandelijkse kosten",

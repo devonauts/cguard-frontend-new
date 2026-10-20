@@ -6110,6 +6110,8 @@
       "cardError": "Impossibile salvare la carta. Controlla i dati.",
       "cardExpires": "Scade {{mm}}/{{aa}}",
       "cardModalDesc": "Verrà usata per gli addebiti mensili. Eventuali importi in sospeso vengono addebitati al salvataggio.",
+      "payModalDesc": "Inserisci la tua carta per pagare subito l'importo dovuto. Il tuo abbonamento mensile non cambia.",
+      "subscriptionNext": "Addebito automatico il {{fecha}} di {{importe}}.",
       "cardNote": "La tua carta è custodita in modo sicuro dal gateway di pagamento del tuo fornitore; il numero non viene mai memorizzato qui.",
       "cardSaved": "Carta salvata.",
       "cardTitle": "Metodo di pagamento",
@@ -6120,7 +6122,8 @@
       "kind": {
         "asientos": "Utenti aggiunti",
         "inicio": "Attivazione e primo mese",
-        "renovacion": "Rinnovo mensile"
+        "renovacion": "Rinnovo mensile",
+        "anticipo": "Pagamento anticipato"
       },
       "loadingForm": "Caricamento del modulo sicuro…",
       "monthlyFee": "Canone mensile",

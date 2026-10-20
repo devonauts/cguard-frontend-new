@@ -7,6 +7,7 @@ import {
   accionDeTarjeta,
   desgloseDelPlan,
   esDiaCivil,
+  pagoConTarjetaTecleada,
   puedePagarAhora,
   resumenDelCobro,
   desafioDeMercadoPago,
@@ -57,20 +58,55 @@ describe("decisiones de la vista", () => {
     });
   });
 
-  it("tarjeta: añadir sin ella, cambiar con ella, no disponible fuera de Stripe", () => {
+  it("tarjeta: añadir sin ella, cambiar con ella; Stripe y Mercado Pago tienen formulario, otra pasarela no", () => {
     expect(accionDeTarjeta(base({ card: null }))).toBe("add");
     expect(accionDeTarjeta(base())).toBe("replace");
+    const mp = {
+      provider: "mercadopago",
+      name: "Mercado Pago",
+      publicKey: "APP_USR-x",
+    };
+
+    expect(accionDeTarjeta(base({ gateway: mp, card: null }))).toBe("add");
     expect(
       accionDeTarjeta(
-        base({
-          gateway: {
-            provider: "mercadopago",
-            name: "Mercado Pago",
-            publicKey: "x",
-          },
-        }),
+        base({ gateway: { provider: "kushki", name: "Kushki", publicKey: "x" } }),
       ),
     ).toBe("unsupported");
+  });
+
+  it("«Pagar ahora» teclea la tarjeta otra vez sólo cuando la pasarela lo pide (Mercado Pago)", () => {
+    const mp = {
+      provider: "mercadopago",
+      name: "Mercado Pago",
+      publicKey: "APP_USR-x",
+    };
+
+    expect(
+      pagoConTarjetaTecleada(
+        base({
+          gateway: mp,
+          payment: { mode: "subscription", payNowWithCard: true },
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      pagoConTarjetaTecleada(
+        base({ payment: { mode: "card", payNowWithCard: false } }),
+      ),
+    ).toBe(false);
+    expect(pagoConTarjetaTecleada(base())).toBe(false);
+    // Con suscripción y deuda, «Pagar ahora» sigue saliendo (con la tarjeta puesta).
+    expect(
+      puedePagarAhora(
+        base({
+          gateway: mp,
+          amountDueCents: 4500,
+          payment: { mode: "subscription", payNowWithCard: true },
+          subscription: { status: "authorized", amountCents: 4500, nextChargeAt: "2026-11-20T00:00:00.000Z" },
+        }),
+      ),
+    ).toBe(true);
   });
 
   it("«Pagar ahora» sólo con deuda Y tarjeta", () => {

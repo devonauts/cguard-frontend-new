@@ -7017,7 +7017,8 @@
       "kind": {
         "inicio": "Ativação e primeiro mês",
         "renovacion": "Renovação mensal",
-        "asientos": "Usuários adicionados"
+        "asientos": "Usuários adicionados",
+        "anticipo": "Pagamento adiantado"
       },
       "paidOk": "Pagamento realizado. Obrigado!",
       "authFailed": "Seu banco não confirmou o pagamento. Tente novamente ou use outro cartão.",
@@ -7067,6 +7068,8 @@
       "receiptsEmptyDesc": "Quando sua primeira cobrança for gerada, ela aparecerá aqui.",
       "receiptsEmpty": "Ainda não há recibos",
       "cardModalDesc": "Será usado nas cobranças mensais. Se houver algo pendente, é cobrado ao salvar.",
+      "payModalDesc": "Digite seu cartão para pagar o pendente agora mesmo. Sua assinatura mensal não muda.",
+      "subscriptionNext": "Cobrança automática em {{fecha}} de {{importe}}.",
       "cardError": "Não foi possível salvar o cartão. Verifique os dados.",
       "loadingForm": "Carregando o formulário seguro…",
       "saveCard": "Salvar cartão",

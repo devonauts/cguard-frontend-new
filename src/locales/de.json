@@ -6110,6 +6110,8 @@
       "cardError": "Die Karte konnte nicht gespeichert werden. Prüfen Sie die Angaben.",
       "cardExpires": "Gültig bis {{mm}}/{{aa}}",
       "cardModalDesc": "Sie wird für die monatlichen Abbuchungen verwendet. Offene Beträge werden beim Speichern abgebucht.",
+      "payModalDesc": "Geben Sie Ihre Karte ein, um den offenen Betrag jetzt zu bezahlen. Ihr Monatsabo ändert sich nicht.",
+      "subscriptionNext": "Automatische Abbuchung am {{fecha}} über {{importe}}.",
       "cardNote": "Ihre Karte wird sicher vom Zahlungsanbieter Ihres Anbieters gespeichert; die Kartennummer wird hier nie gespeichert.",
       "cardSaved": "Karte gespeichert.",
       "cardTitle": "Zahlungsmethode",
@@ -6120,7 +6122,8 @@
       "kind": {
         "asientos": "Hinzugefügte Benutzer",
         "inicio": "Einrichtung und erster Monat",
-        "renovacion": "Monatliche Verlängerung"
+        "renovacion": "Monatliche Verlängerung",
+        "anticipo": "Vorauszahlung"
       },
       "loadingForm": "Sicheres Formular wird geladen…",
       "monthlyFee": "Monatliche Gebühr",

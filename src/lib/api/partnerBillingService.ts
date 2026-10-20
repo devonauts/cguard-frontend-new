@@ -100,6 +100,19 @@ export interface CobroDelSocioActivo {
   seatsNow: number;
   nextChargeCents: number;
   card: TarjetaGuardada | null;
+  /**
+   * Cómo cobra esta pasarela. `subscription` (Mercado Pago): la pasarela cobra
+   * sola cada mes con la tarjeta que guarda; `card` (Stripe): el servidor cobra
+   * la tarjeta guardada. Con `payNowWithCard`, «Pagar ahora» pide la tarjeta
+   * otra vez y su token de un uso paga lo pendiente.
+   */
+  payment?: { mode: "subscription" | "card"; payNowWithCard: boolean };
+  /** La suscripción en la pasarela del socio, cuando la hay. */
+  subscription?: {
+    status: string;
+    amountCents: number;
+    nextChargeAt: string | null;
+  } | null;
   amountDueCents: number;
   invoices: ReciboDelSocio[];
 }
@@ -175,9 +188,20 @@ export const partnerBillingService = {
       { token },
     );
   },
-  /** Cobra ya los recibos abiertos, con la empresa delante (puede pedir 3-D Secure). */
-  pagar(): Promise<ResultadoDelCobro> {
-    return ApiService.post(`/tenant/${tenantId()}/partner-billing/pay`, {});
+  /**
+   * Cobra ya los recibos abiertos, con la empresa delante (puede pedir 3-D Secure).
+   * Con `token` (el del Brick de Mercado Pago, con su método y emisor) paga con
+   * la tarjeta recién tecleada.
+   */
+  pagar(datos?: {
+    token: string;
+    paymentMethodId?: string;
+    issuerId?: string;
+  }): Promise<ResultadoDelCobro> {
+    return ApiService.post(
+      `/tenant/${tenantId()}/partner-billing/pay`,
+      datos ?? {},
+    );
   },
   /**
    * Tras `confirmCardPayment` (`cargo` = el id del PaymentIntent) o tras el

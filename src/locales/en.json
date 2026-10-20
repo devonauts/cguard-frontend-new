@@ -539,7 +539,8 @@
       "kind": {
         "inicio": "Setup and first month",
         "renovacion": "Monthly renewal",
-        "asientos": "Users added"
+        "asientos": "Users added",
+        "anticipo": "Advance payment"
       },
       "paidOk": "Payment received. Thank you!",
       "authFailed": "Your bank did not confirm the payment. Try again or use another card.",
@@ -589,6 +590,8 @@
       "receiptsEmptyDesc": "Your first charge will appear here once it is generated.",
       "receiptsEmpty": "No receipts yet",
       "cardModalDesc": "It will be used for monthly charges. Anything pending is charged when you save it.",
+      "payModalDesc": "Enter your card to pay what is due right now. Your monthly subscription does not change.",
+      "subscriptionNext": "Automatic charge on {{fecha}} for {{importe}}.",
       "cardError": "The card could not be saved. Check the details.",
       "loadingForm": "Loading the secure form…",
       "saveCard": "Save card",

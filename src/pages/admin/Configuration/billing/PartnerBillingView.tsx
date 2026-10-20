@@ -24,6 +24,7 @@ import {
   desafioDeMercadoPago,
   desgloseDelPlan,
   esDiaCivil,
+  pagoConTarjetaTecleada,
   puedePagarAhora,
   resumenDelCobro,
 } from "./cobroDelSocio";
@@ -134,7 +135,10 @@ export default function PartnerBillingView({
   onRefresh: () => Promise<void> | void;
 }) {
   const { t } = useTranslation();
-  const [formularioAbierto, setFormularioAbierto] = useState(false);
+  /** El formulario de tarjeta: para guardarla (o cambiarla) o para pagar ya con ella (Mercado Pago). */
+  const [formularioAbierto, setFormularioAbierto] = useState<
+    false | "guardar" | "pagar"
+  >(false);
   const [pagando, setPagando] = useState(false);
   /** Mercado Pago 3-D Secure waiting for the holder (only ever with the owner on screen). */
   const [desafio, setDesafio] = useState<ReturnType<typeof desafioDeMercadoPago>>(null);
@@ -166,6 +170,10 @@ export default function PartnerBillingView({
     }),
     asientos: t("billing.partner.kind.asientos", {
       defaultValue: "Usuarios añadidos",
+    }),
+    // La pasarela cobró antes de tiempo (al validar la tarjeta): queda a favor.
+    anticipo: t("billing.partner.kind.anticipo", {
+      defaultValue: "Pago adelantado",
     }),
   };
   const estadosDeRecibo: Record<string, string> = {
@@ -307,6 +315,12 @@ export default function PartnerBillingView({
   };
 
   const pagarAhora = async () => {
+    // Mercado Pago guarda la tarjeta dentro de la suscripción: para pagar ya se teclea otra vez.
+    if (pagoConTarjetaTecleada(data)) {
+      setFormularioAbierto("pagar");
+
+      return;
+    }
     setPagando(true);
     try {
       await atenderResultado(await partnerBillingService.pagar());
@@ -556,6 +570,17 @@ export default function PartnerBillingView({
                   })}
                 </div>
               )}
+              {data.subscription?.nextChargeAt &&
+                data.subscription.amountCents > 0 && (
+                  <div className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {t("billing.partner.subscriptionNext", {
+                      defaultValue:
+                        "Cobro automático el {{fecha}} por {{importe}}.",
+                      fecha: fecha(data.subscription.nextChargeAt),
+                      importe: dinero(data.subscription.amountCents, moneda),
+                    })}
+                  </div>
+                )}
             </div>
           ) : (
             <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
@@ -568,7 +593,7 @@ export default function PartnerBillingView({
           {accion !== "unsupported" && (
             <Button
               variant={data.card ? "outline" : "brand"}
-              onClick={() => setFormularioAbierto(true)}
+              onClick={() => setFormularioAbierto("guardar")}
             >
               <CreditCard className="mr-2" size={16} />
               {accion === "replace"
@@ -692,23 +717,38 @@ export default function PartnerBillingView({
       </Section>
 
       <Modal
-        description={t("billing.partner.cardModalDesc", {
-          defaultValue:
-            "Se usará para los cobros mensuales. Si tienes algo pendiente, se cobra al guardarla.",
-        })}
-        icon={<CreditCard />}
-        open={formularioAbierto}
-        title={
-          accion === "replace"
-            ? t("billing.partner.replaceCard", {
-                defaultValue: "Cambiar tarjeta",
+        description={
+          formularioAbierto === "pagar"
+            ? t("billing.partner.payModalDesc", {
+                defaultValue:
+                  "Teclea tu tarjeta para pagar lo pendiente ahora mismo. Tu suscripción mensual no cambia.",
               })
-            : t("billing.partner.addCard", { defaultValue: "Añadir tarjeta" })
+            : t("billing.partner.cardModalDesc", {
+                defaultValue:
+                  "Se usará para los cobros mensuales. Si tienes algo pendiente, se cobra al guardarla.",
+              })
         }
-        onOpenChange={setFormularioAbierto}
+        icon={formularioAbierto === "pagar" ? <Wallet /> : <CreditCard />}
+        open={!!formularioAbierto}
+        title={
+          formularioAbierto === "pagar"
+            ? t("billing.partner.payNow", { defaultValue: "Pagar ahora" })
+            : accion === "replace"
+              ? t("billing.partner.replaceCard", {
+                  defaultValue: "Cambiar tarjeta",
+                })
+              : t("billing.partner.addCard", {
+                  defaultValue: "Añadir tarjeta",
+                })
+        }
+        onOpenChange={(abierto) => {
+          if (!abierto) setFormularioAbierto(false);
+        }}
       >
         {formularioAbierto && (
           <FormularioDeTarjeta
+            amountCents={data.amountDueCents}
+            modo={formularioAbierto}
             onCancel={() => setFormularioAbierto(false)}
             onSaved={async (r) => {
               setFormularioAbierto(false);
@@ -765,9 +805,14 @@ export default function PartnerBillingView({
  * por nuestro servidor: Stripe devuelve un `pm_…` y eso es lo que se guarda.
  */
 function FormularioDeTarjeta({
+  modo = "guardar",
+  amountCents = 0,
   onSaved,
   onCancel,
 }: {
+  /** Mercado Pago: guardar la tarjeta (suscripción) o pagar ya con ella. Stripe sólo guarda. */
+  modo?: "guardar" | "pagar";
+  amountCents?: number;
   onSaved: (r: ResultadoDelCobro) => Promise<void>;
   onCancel: () => void;
 }) {
@@ -880,7 +925,15 @@ function FormularioDeTarjeta({
   };
 
   if (mp)
-    return <FormularioMercadoPago prep={mp} onCancel={onCancel} onSaved={onSaved} />;
+    return (
+      <FormularioMercadoPago
+        amountCents={amountCents}
+        modo={modo}
+        prep={mp}
+        onCancel={onCancel}
+        onSaved={onSaved}
+      />
+    );
 
   return (
     <div className="space-y-4">

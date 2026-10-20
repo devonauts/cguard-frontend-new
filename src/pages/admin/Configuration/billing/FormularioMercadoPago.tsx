@@ -13,8 +13,10 @@ import {
 /**
  * EL CAMPO DE TARJETA DE MERCADO PAGO (Card Payment Brick), con la public key
  * DEL SOCIO. Igual que con Stripe, el número nunca pasa por nuestro servidor:
- * Mercado Pago devuelve un token de un solo uso y el servidor lo guarda como
- * tarjeta del cliente en la cuenta del socio (`/v1/customers/:id/cards`).
+ * Mercado Pago devuelve un token de un solo uso y con él el servidor:
+ *   · `guardar`: abre la SUSCRIPCIÓN de la empresa en la cuenta del socio
+ *     (Mercado Pago la cobra solo cada mes), o le cambia la tarjeta;
+ *   · `pagar`: paga lo pendiente ahora mismo con esa tarjeta («Pagar ahora»).
  *
  * El SDK (`sdk.mercadopago.com/js/v2`) se carga sólo al abrir este formulario.
  */
@@ -44,10 +46,15 @@ let contador = 0;
 
 export default function FormularioMercadoPago({
   prep,
+  modo = "guardar",
+  amountCents = 0,
   onSaved,
   onCancel,
 }: {
   prep: PreparacionDeTarjeta;
+  modo?: "guardar" | "pagar";
+  /** Lo pendiente, en centavos: el Brick lo enseña al pagar. */
+  amountCents?: number;
   onSaved: (r: ResultadoDelCobro) => Promise<void>;
   onCancel: () => void;
 }) {
@@ -68,14 +75,19 @@ export default function FormularioMercadoPago({
           locale: String(i18n.language || "es").startsWith("en") ? "en-US" : "es-MX",
         });
         brick = await mp.bricks().create("cardPayment", idHueco.current, {
-          // El Brick pide un importe; aquí sólo se GUARDA la tarjeta (lo que se
-          // cobre lo decide el servidor con lo pendiente).
-          initialization: { amount: 1 },
+          // El Brick pide un importe. Al pagar es lo pendiente; al guardar la
+          // tarjeta da igual (lo que se cobre lo decide el servidor).
+          initialization: {
+            amount: modo === "pagar" && amountCents > 0 ? amountCents / 100 : 1,
+          },
           customization: {
             paymentMethods: { maxInstallments: 1 },
             visual: {
               texts: {
-                formSubmit: t("billing.partner.saveCard", { defaultValue: "Guardar tarjeta" }),
+                formSubmit:
+                  modo === "pagar"
+                    ? t("billing.partner.payNow", { defaultValue: "Pagar ahora" })
+                    : t("billing.partner.saveCard", { defaultValue: "Guardar tarjeta" }),
               },
             },
           },
@@ -88,11 +100,24 @@ export default function FormularioMercadoPago({
                   defaultValue: "No se pudo guardar la tarjeta. Revisa los datos.",
                 }),
               ),
-            onSubmit: async (datos: { token?: string }) => {
+            onSubmit: async (datos: {
+              token?: string;
+              payment_method_id?: string;
+              issuer_id?: string | number;
+            }) => {
               if (!datos?.token) throw new Error("sin-token");
               setError(null);
               try {
-                await onSaved(await partnerBillingService.confirmarTarjeta(datos.token));
+                await onSaved(
+                  modo === "pagar"
+                    ? await partnerBillingService.pagar({
+                        token: datos.token,
+                        paymentMethodId: datos.payment_method_id,
+                        issuerId:
+                          datos.issuer_id === undefined ? undefined : String(datos.issuer_id),
+                      })
+                    : await partnerBillingService.confirmarTarjeta(datos.token),
+                );
               } catch (e: any) {
                 setError(
                   e?.message ||
@@ -124,7 +149,7 @@ export default function FormularioMercadoPago({
         /* ya desmontado */
       }
     };
-  }, [prep.publicKey]);
+  }, [prep.publicKey, modo, amountCents]);
 
   return (
     <div className="space-y-4">

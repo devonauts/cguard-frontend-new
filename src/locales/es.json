@@ -539,7 +539,8 @@
       "kind": {
         "inicio": "Alta y primer mes",
         "renovacion": "Renovación mensual",
-        "asientos": "Usuarios añadidos"
+        "asientos": "Usuarios añadidos",
+        "anticipo": "Pago adelantado"
       },
       "paidOk": "Pago realizado. ¡Gracias!",
       "authFailed": "Tu banco no confirmó el pago. Inténtalo de nuevo o usa otra tarjeta.",
@@ -589,6 +590,8 @@
       "receiptsEmptyDesc": "Cuando se genere tu primer cobro aparecerá aquí.",
       "receiptsEmpty": "Aún no hay recibos",
       "cardModalDesc": "Se usará para los cobros mensuales. Si tienes algo pendiente, se cobra al guardarla.",
+      "payModalDesc": "Teclea tu tarjeta para pagar lo pendiente ahora mismo. Tu suscripción mensual no cambia.",
+      "subscriptionNext": "Cobro automático el {{fecha}} por {{importe}}.",
       "cardError": "No se pudo guardar la tarjeta. Revisa los datos.",
       "loadingForm": "Cargando el formulario seguro…",
       "saveCard": "Guardar tarjeta",

@@ -6112,6 +6112,8 @@
       "cardError": "Nie udało się zapisać karty. Sprawdź dane.",
       "cardExpires": "Ważna do {{mm}}/{{aa}}",
       "cardModalDesc": "Będzie używana do comiesięcznych opłat. Zaległe kwoty zostaną pobrane po jej zapisaniu.",
+      "payModalDesc": "Wpisz dane karty, aby od razu zapłacić zaległość. Twoja miesięczna subskrypcja się nie zmienia.",
+      "subscriptionNext": "Automatyczne obciążenie {{fecha}} na kwotę {{importe}}.",
       "cardNote": "Twoja karta jest bezpiecznie przechowywana przez bramkę płatniczą Twojego dostawcy; numer karty nigdy nie jest tu zapisywany.",
       "cardSaved": "Karta zapisana.",
       "cardTitle": "Metoda płatności",
@@ -6122,7 +6124,8 @@
       "kind": {
         "asientos": "Dodani użytkownicy",
         "inicio": "Aktywacja i pierwszy miesiąc",
-        "renovacion": "Odnowienie miesięczne"
+        "renovacion": "Odnowienie miesięczne",
+        "anticipo": "Przedpłata"
       },
       "loadingForm": "Wczytywanie bezpiecznego formularza…",
       "monthlyFee": "Opłata miesięczna",
