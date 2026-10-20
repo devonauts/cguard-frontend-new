@@ -79,6 +79,8 @@ interface OnboardingWizardProps {
   tenant: OnboardingTenant | null;
   /** Re-fetch auth profile after a successful save. */
   onRefresh: () => Promise<any>;
+  /** The company was saved as set up: the provider must not reopen the wizard on a stale profile. */
+  onCompleted?: (tenantId: string) => void;
   /** Default email to pre-fill (user email at signup). */
   defaultEmail?: string;
   /**
@@ -230,6 +232,7 @@ export default function OnboardingWizard({
   onOpenChange,
   tenant,
   onRefresh,
+  onCompleted,
   defaultEmail,
   obligatorio = false,
 }: OnboardingWizardProps) {
@@ -591,6 +594,8 @@ export default function OnboardingWizard({
       } catch (e) {
         // non-fatal: the business is set up; backend may auto-complete too.
       }
+      // Saved: from here on a late, stale /auth/me must not reopen the wizard.
+      onCompleted?.(tenant.id);
 
       // Datos de ejemplo, sólo si se pidieron y DESPUÉS de guardar la dirección
       // (el servidor los coloca alrededor de ella). Si falla, se entra vacío.

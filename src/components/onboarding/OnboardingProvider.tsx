@@ -26,6 +26,18 @@ import { useAuth } from "@/contexts/AuthContext";
    abre. */
 const OnboardingWizard = lazy(() => import("./OnboardingWizard"));
 
+const CLAVE_COMPLETADAS = "cg_onboarding_completadas";
+
+function leerCompletadas(): Set<string> {
+  try {
+    const v = JSON.parse(sessionStorage.getItem(CLAVE_COMPLETADAS) || "[]");
+
+    return new Set(Array.isArray(v) ? v.map(String) : []);
+  } catch {
+    return new Set();
+  }
+}
+
 interface OnboardingContextValue {
   tenant: OnboardingTenant | null;
   openWizard: () => void;
@@ -92,7 +104,24 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const tenant = useMemo(() => extractOnboardingTenant(user), [user]);
   const isSuper = useMemo(() => userIsSuperadmin(user), [user]);
 
-  const incomplete = !isSuper && needsOnboarding(tenant);
+  /* Companies whose wizard was finished and saved IN THIS TAB. Several
+     /auth/me requests run at once without ordering, and one that left before
+     the save could land after it and bring back the old company (no phone, no
+     address, not completed): the wizard reopened on «Contact» and the owner
+     had to fill it twice (2026-10-19). A finished save is the truth here. */
+  const [completadas, setCompletadas] = useState<Set<string>>(() => leerCompletadas());
+  const marcarCompletada = (id: string) => {
+    setCompletadas((s) => {
+      if (s.has(id)) return s;
+      const n = new Set(s);
+      n.add(id);
+      try { sessionStorage.setItem(CLAVE_COMPLETADAS, JSON.stringify([...n])); } catch {}
+      return n;
+    });
+  };
+  const completadaAqui = !!tenant?.id && completadas.has(tenant.id);
+
+  const incomplete = !isSuper && !completadaAqui && needsOnboarding(tenant);
   /* ── OBLIGATORIO, PERO SÓLO PARA QUIEN PUEDE GUARDARLO ──────────────────
      Pedido del dueño (2026-10-03): con «Completar más tarde» casi nadie
      volvía. Pero guardar la empresa exige `tenantEdit`: obligar a un
@@ -147,7 +176,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
   return (
     <OnboardingContext.Provider value={value}>
-      {!isSuper && tenant?.id && (
+      {!isSuper && tenant?.id && !completadaAqui && (
         <OnboardingBanner
           isSuperadmin={isSuper}
           tenant={tenant}
@@ -163,6 +192,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             obligatorio={obligatorio}
             open={wizardOpen}
             tenant={tenant}
+            onCompleted={marcarCompletada}
             onOpenChange={setWizardOpen}
             onRefresh={refreshProfile}
           />
