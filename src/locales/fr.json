@@ -16959,7 +16959,8 @@
       "secuenciaLibre": "Écrire la séquence (1-2-2-2)",
       "secuenciaAyuda": "Blocs de travail et de repos, en commençant par le travail : 1-2-2-2 = un jour de 24 h, deux de repos, deux jours, deux de repos. Aussi avec des lettres : D travaille, N l'autre tranche, L repos. Le jour 1 de la séquence est la date de début de chaque agent.",
       "secuenciaInvalida": "Écrivez la séquence comme 1-2-2-2 ou avec les lettres D, N et L (N seulement avec deux tranches)",
-      "secuenciaComplemento": "2 agents : un avec {{a}} et un avec le complément {{b}} (travaille les jours de repos du premier), sans remplaçant"
+      "secuenciaComplemento": "2 agents : un avec {{a}} et un avec le complément {{b}} (travaille les jours de repos du premier), sans remplaçant",
+      "secuenciaAyudaDiaCompleto": "Blocs de travail et de repos, en commençant par le travail : 1-2-2-2 = une journée complète de 24 h, deux de repos, deux journées complètes, deux de repos. Aussi avec des lettres : F journée complète, L repos. Le jour 1 de la séquence est la date de début de chaque agent."
     },
     "Planificador": {
       "noSePudoCargar": "Impossible de charger le planning.",

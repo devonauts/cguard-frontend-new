@@ -188,6 +188,34 @@ export function letraDeFranja(f: Pick<Franja, "start">): "D" | "T" | "N" {
   return "N";
 }
 
+/**
+ * LA LETRA QUE SE ENSEÑA. Por dentro el tramo propio sigue siendo «D», pero
+ * una franja de 24 h no es «día»: es el día COMPLETO, y verla como D confundía
+ * (Mike, 2026-10-20). Se enseña «F» (full day) siempre que la franja dure 24 h.
+ */
+export function letraVisible(f: Pick<Franja, "start" | "end">): string {
+  return duracion(f) === 1440 ? "F" : letraDeFranja(f);
+}
+
+/** La letra del tramo `l` tal como se enseña en ESTA estación. */
+export function letraVisibleDeTramo(
+  l: string,
+  franjas: Pick<Franja, "start" | "end">[],
+): string {
+  if (l === "L") return "L";
+  const f = franjas.find((x) => letraDeFranja(x) === l);
+
+  return f ? letraVisible(f) : l;
+}
+
+/** El nombre de un ciclo con las letras visibles («1F 2L» en un 24 h, no «1D 2L»). */
+export function nombreVisible(
+  nombre: string,
+  franjas: Pick<Franja, "start" | "end">[],
+): string {
+  return nombre.replace(/(\d)D\b/g, (m, n) => `${n}${letraVisibleDeTramo("D", franjas)}`);
+}
+
 export type Ciclo = { D: number; T: number; N: number; L: number };
 export const CICLO_VACIO: Ciclo = { D: 0, T: 0, N: 0, L: 0 };
 
@@ -1131,7 +1159,7 @@ export default function StationCreateForm({
                               color: "var(--brand-text)",
                             }}
                           >
-                            {letraDeFranja(f)}
+                            {letraVisible(f)}
                           </span>
                           {i + 1} · {f.start}–{f.end} · ×{f.guards}
                         </span>
@@ -1434,7 +1462,7 @@ export default function StationCreateForm({
                           className="block font-mono text-[10px]"
                           style={{ color: "var(--ink-faint)" }}
                         >
-                          {letraDeFranja(f)} · {f.start}–{f.end}
+                          {letraVisible(f)} · {f.start}–{f.end}
                         </span>
                       </span>
                     )}
@@ -1448,10 +1476,15 @@ export default function StationCreateForm({
                           onChange={(e) => setSecuenciaTexto(e.target.value)}
                         />
                         <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                          {t(
-                            "ui.StationCreateForm.secuenciaAyuda",
-                            "Bloques de trabajo y libre, empezando por trabajo: 1-2-2-2 = un día de 24 h, dos libres, dos días, dos libres. También con letras: D trabaja, N el otro tramo, L libra. El día 1 de la secuencia es la fecha de inicio de cada vigilante.",
-                          )}
+                          {letraVisibleDeTramo("D", franjas) === "F"
+                            ? t(
+                                "ui.StationCreateForm.secuenciaAyudaDiaCompleto",
+                                "Bloques de trabajo y libre, empezando por trabajo: 1-2-2-2 = un día completo de 24 h, dos libres, dos días completos, dos libres. También con letras: F día completo, L libra. El día 1 de la secuencia es la fecha de inicio de cada vigilante.",
+                              )
+                            : t(
+                                "ui.StationCreateForm.secuenciaAyuda",
+                                "Bloques de trabajo y libre, empezando por trabajo: 1-2-2-2 = un día de 24 h, dos libres, dos días, dos libres. También con letras: D trabaja, N el otro tramo, L libra. El día 1 de la secuencia es la fecha de inicio de cada vigilante.",
+                              )}
                         </p>
                         {secuenciaTexto.trim() && !r && (
                           <p className="text-xs font-semibold" style={{ color: "var(--danger-text, #b91c1c)" }}>
@@ -1474,7 +1507,9 @@ export default function StationCreateForm({
                                 }
                                 title={`${idx + 1}`}
                               >
-                                {ch === "L" ? t("ui.plazas.letraLibre", "L") : ch}
+                                {ch === "L"
+                                  ? t("ui.plazas.letraLibre", "L")
+                                  : letraVisibleDeTramo(ch, franjas)}
                               </span>
                             ))}
                           </div>
@@ -1503,7 +1538,7 @@ export default function StationCreateForm({
                           >
                             {esLibre
                               ? t("ui.StationCreateForm.libres", "L · libres")
-                              : `${l} · ${rotuloDeTramo(l, franjas) === "24 h" ? "24 h" : t(`ui.StationCreateForm.tramo.${l}`, NOMBRE_TRAMO[l])}`}
+                              : `${letraVisibleDeTramo(l, franjas)} · ${rotuloDeTramo(l, franjas) === "24 h" ? "24 h" : t(`ui.StationCreateForm.tramo.${l}`, NOMBRE_TRAMO[l])}`}
                           </span>
                           {fr && !f && (
                             <span
@@ -1556,7 +1591,7 @@ export default function StationCreateForm({
                         className="text-xs"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        = {r.nombre} ·{" "}
+                        = {nombreVisible(r.nombre, franjas)} ·{" "}
                         {t("ui.StationCreateForm.cicloDeN", {
                           defaultValue: "ciclo de {{n}} días",
                           n: r.largo,

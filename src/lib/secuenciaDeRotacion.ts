@@ -67,7 +67,10 @@ export function secuenciaDeBloques(texto: unknown): string | null {
 
 /** Lo que escriba la persona, en cualquiera de las dos formas. */
 export function secuenciaDeTexto(texto: unknown): string | null {
-  const t = String(texto ?? "").trim();
+  // «F» (día completo) es el tramo propio: se escribe F y se guarda D.
+  const t = String(texto ?? "")
+    .trim()
+    .replace(/[fF]/g, "D");
 
   if (!t) return null;
 

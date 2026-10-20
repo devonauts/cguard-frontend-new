@@ -16959,7 +16959,8 @@
       "secuenciaLibre": "Scrivere la sequenza (1-2-2-2)",
       "secuenciaAyuda": "Blocchi di lavoro e riposo, iniziando dal lavoro: 1-2-2-2 = un giorno di 24 h, due liberi, due giorni, due liberi. Anche con lettere: D lavora, N l'altra fascia, L libero. Il giorno 1 della sequenza è la data di inizio di ogni guardia.",
       "secuenciaInvalida": "Scrivi la sequenza come 1-2-2-2 o con le lettere D, N e L (la N solo con due fasce)",
-      "secuenciaComplemento": "2 guardie: una con {{a}} e una con il complemento {{b}} (lavora nei giorni liberi della prima), senza jolly"
+      "secuenciaComplemento": "2 guardie: una con {{a}} e una con il complemento {{b}} (lavora nei giorni liberi della prima), senza jolly",
+      "secuenciaAyudaDiaCompleto": "Blocchi di lavoro e riposo, iniziando dal lavoro: 1-2-2-2 = un giorno intero di 24 h, due liberi, due giorni interi, due liberi. Anche con lettere: F giorno intero, L libero. Il giorno 1 della sequenza è la data di inizio di ogni guardia."
     },
     "Planificador": {
       "noSePudoCargar": "Impossibile caricare l'orario.",

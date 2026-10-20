@@ -16424,7 +16424,8 @@
       "secuenciaLibre": "Write the sequence (1-2-2-2)",
       "secuenciaAyuda": "Blocks of work and rest, starting with work: 1-2-2-2 = one 24-hour day, two off, two days, two off. Letters also work: D works, N the other block, L off. Day 1 of the sequence is each guard's start date.",
       "secuenciaInvalida": "Write the sequence as 1-2-2-2 or with the letters D, N and L (N only with two blocks)",
-      "secuenciaComplemento": "2 guards: one on {{a}} and one on the complement {{b}} (works the days the first one is off), no relief guard"
+      "secuenciaComplemento": "2 guards: one on {{a}} and one on the complement {{b}} (works the days the first one is off), no relief guard",
+      "secuenciaAyudaDiaCompleto": "Blocks of work and rest, starting with work: 1-2-2-2 = one full 24-hour day, two off, two full days, two off. Letters also work: F full day, L off. Day 1 of the sequence is each guard's start date."
     },
     "Planificador": {
       "noSePudoCargar": "The schedule couldn't be loaded.",

@@ -17185,7 +17185,8 @@
       "secuenciaLibre": "Wpisz sekwencję (1-2-2-2)",
       "secuenciaAyuda": "Bloki pracy i wolnego, zaczynając od pracy: 1-2-2-2 = jeden dzień 24 h, dwa wolne, dwa dni, dwa wolne. Także literami: D pracuje, N drugi blok, L wolne. Dzień 1 sekwencji to data rozpoczęcia każdego strażnika.",
       "secuenciaInvalida": "Wpisz sekwencję jako 1-2-2-2 lub literami D, N i L (N tylko przy dwóch blokach)",
-      "secuenciaComplemento": "2 strażników: jeden z {{a}}, drugi z dopełnieniem {{b}} (pracuje w dni wolne pierwszego), bez zastępcy"
+      "secuenciaComplemento": "2 strażników: jeden z {{a}}, drugi z dopełnieniem {{b}} (pracuje w dni wolne pierwszego), bez zastępcy",
+      "secuenciaAyudaDiaCompleto": "Bloki pracy i wolnego, zaczynając od pracy: 1-2-2-2 = jeden pełny dzień 24 h, dwa wolne, dwa pełne dni, dwa wolne. Także literami: F pełny dzień, L wolne. Dzień 1 sekwencji to data rozpoczęcia każdego strażnika."
     },
     "Planificador": {
       "noSePudoCargar": "Nie udało się wczytać grafiku.",

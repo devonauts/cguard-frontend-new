@@ -16959,7 +16959,8 @@
       "secuenciaLibre": "Reeks invoeren (1-2-2-2)",
       "secuenciaAyuda": "Blokken werk en vrij, beginnend met werk: 1-2-2-2 = één dag van 24 u, twee vrij, twee dagen, twee vrij. Ook met letters: D werkt, N het andere blok, L vrij. Dag 1 van de reeks is de startdatum van elke bewaker.",
       "secuenciaInvalida": "Schrijf de reeks als 1-2-2-2 of met de letters D, N en L (N alleen bij twee blokken)",
-      "secuenciaComplemento": "2 bewakers: één met {{a}} en één met het complement {{b}} (werkt op de vrije dagen van de eerste), zonder invaller"
+      "secuenciaComplemento": "2 bewakers: één met {{a}} en één met het complement {{b}} (werkt op de vrije dagen van de eerste), zonder invaller",
+      "secuenciaAyudaDiaCompleto": "Blokken werk en vrij, beginnend met werk: 1-2-2-2 = één volle dag van 24 u, twee vrij, twee volle dagen, twee vrij. Ook met letters: F volle dag, L vrij. Dag 1 van de reeks is de startdatum van elke bewaker."
     },
     "Planificador": {
       "noSePudoCargar": "Het rooster kon niet worden geladen.",

@@ -16424,7 +16424,8 @@
       "secuenciaLibre": "Escrever a sequência (1-2-2-2)",
       "secuenciaAyuda": "Blocos de trabalho e folga, começando pelo trabalho: 1-2-2-2 = um dia de 24 h, dois de folga, dois dias, dois de folga. Também com letras: D trabalha, N o outro turno, L folga. O dia 1 da sequência é a data de início de cada vigilante.",
       "secuenciaInvalida": "Escreva a sequência como 1-2-2-2 ou com as letras D, N e L (N só com dois turnos)",
-      "secuenciaComplemento": "2 vigilantes: um com {{a}} e outro com o complemento {{b}} (trabalha nos dias em que o primeiro folga), sem folguista"
+      "secuenciaComplemento": "2 vigilantes: um com {{a}} e outro com o complemento {{b}} (trabalha nos dias em que o primeiro folga), sem folguista",
+      "secuenciaAyudaDiaCompleto": "Blocos de trabalho e folga, começando pelo trabalho: 1-2-2-2 = um dia completo de 24 h, dois de folga, dois dias completos, dois de folga. Também com letras: F dia completo, L folga. O dia 1 da sequência é a data de início de cada vigilante."
     },
     "Planificador": {
       "noSePudoCargar": "Não foi possível carregar a escala.",
