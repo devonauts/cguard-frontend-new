@@ -1,3 +1,5 @@
+import { cicloDe } from "@/lib/secuenciaDeRotacion";
+
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * LAS JORNADAS DE UN PUESTO, SACADAS DE SUS PLAZAS — ESPEJO DEL SERVIDOR
@@ -63,9 +65,37 @@ export function minutosDeVentana(inicio: string, fin: string): number {
  * Un SACAFRANCO no declara jornada: tapa descansos ajenos. Por eso sólo cuentan
  * los fijos.
  */
+/** La rotación del puesto, para saber cuántas de sus plazas están a la vez. */
+export interface RotacionDelPuesto {
+  dayShifts?: number | null;
+  nightShifts?: number | null;
+  restDays?: number | null;
+  sequence?: string | null;
+}
+
+/**
+ * CUÁNTAS DE ESAS N PLAZAS ESTÁN A LA VEZ — espejo de `aLaVezSegunLaRotacion`
+ * del servidor. Dos plazas con la misma ventana no son dos personas a la vez
+ * en cuanto hay rotación: son dos FASES de un mismo asiento (un 1-1, o una
+ * secuencia y su complemento). a la vez = plazas × díasDeTrabajo ÷ ciclo.
+ * Sin rotación conocida se deja la suma tal cual, como siempre.
+ */
+export function aLaVezSegunLaRotacion(
+  plazas: number,
+  rot?: RotacionDelPuesto | null,
+): number {
+  if (!rot) return plazas;
+  const { trabajo, largo } = cicloDe(rot);
+
+  if (!(largo > 0) || !(trabajo > 0)) return plazas;
+
+  return Math.max(1, Math.round((plazas * trabajo) / largo));
+}
+
 export function jornadasDePlazas(
   plazas: PlazaDeHorario[] | null | undefined,
   scheduleType?: string | null,
+  rotacion?: RotacionDelPuesto | null,
 ): JornadaDePuesto[] {
   if (!Array.isArray(plazas) || !plazas.length) return [];
 
@@ -117,6 +147,11 @@ export function jornadasDePlazas(
   }
 
   const jornadas = Array.from(porVentana.values());
+
+  // Con rotación, las plazas que comparten ventana se reparten el ciclo.
+  if (rotacion) {
+    for (const j of jornadas) j.guardsCount = aLaVezSegunLaRotacion(j.guardsCount, rotacion);
+  }
 
   /* ── UN PUESTO DE 24 H SIEMPRE TIENE DOS MITADES ────────────────────────
      Cuando el patrón ALTERNA día y noche, las dos plazas de un 24 h comparten

@@ -267,6 +267,34 @@ export default function StationShifts({
   // Load positions from scheduler API — positions are the source of truth for
   // the coverage sketch, so they must re-fetch whenever the horario changes.
   const [positions, setPositions] = useState<PositionRow[]>([]);
+  /* LA ROTACIÓN DEL PUESTO: dos plazas que se turnan (un 1-1, o una secuencia
+     y su complemento) son UNA persona al día, no dos. Sin ella la ficha pedía
+     «1/2» en rojo todos los días a un puesto perfectamente cubierto. */
+  const [rotacionDelPuesto, setRotacionDelPuesto] = useState<any>(null);
+  useEffect(() => {
+    const rid = (station as any)?.rotationStyleId;
+
+    if (!rid || !tenantId) {
+      setRotacionDelPuesto(null);
+
+      return;
+    }
+    let vivo = true;
+
+    ApiService.get(`/tenant/${tenantId}/rotation-styles`)
+      .then((res: any) => {
+        const rows = Array.isArray(res) ? res : (res?.rows ?? []);
+
+        if (vivo) setRotacionDelPuesto(rows.find((r: any) => String(r.id) === String(rid)) || null);
+      })
+      .catch(() => {});
+
+    return () => {
+      vivo = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tenantId, (station as any)?.rotationStyleId]);
+
   const loadPositions = useCallback(() => {
     if (!stationId || !tenantId) return;
     ApiService.get(`/tenant/${tenantId}/station/${stationId}/positions`)
@@ -380,12 +408,12 @@ export default function StationShifts({
      que una estación recién creada no salga en blanco. */
   const jornadas: Jornada[] = useMemo(() => {
     const tipoDeHorario = (station as any)?.scheduleType as string | undefined;
-    const desdePlazas = jornadasDePlazas(positions as any[], tipoDeHorario);
+    const desdePlazas = jornadasDePlazas(positions as any[], tipoDeHorario, rotacionDelPuesto);
 
     return (
       desdePlazas.length ? desdePlazas : jornadasPorTipo(tipoDeHorario)
     ) as any;
-  }, [station, positions]);
+  }, [station, positions, rotacionDelPuesto]);
 
   // Guard color assignment
   const guardColorMap = useMemo(() => {

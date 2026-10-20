@@ -10540,6 +10540,7 @@ export default function Schedule() {
                     const jornadas = jornadasDePlazas(
                       delPuesto as any,
                       (estacionDelAsignado as any)?.scheduleType,
+                      rotationStylesById.get(String((estacionDelAsignado as any)?.rotationStyleId || "")) || null,
                     );
                     const lista = (
                       jornadas.length
@@ -11904,6 +11905,7 @@ export default function Schedule() {
           const deLasPlazas = jornadasDePlazas(
             plazasDestino as any,
             (estacionDestino as any)?.scheduleType,
+            rotationStylesById.get(String((estacionDestino as any)?.rotationStyleId || "")) || null,
           );
           const turnos = (
             deLasPlazas.length

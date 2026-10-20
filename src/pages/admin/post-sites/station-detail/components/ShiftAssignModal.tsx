@@ -1,3 +1,4 @@
+import { cicloDe as leerCiclo } from "@/lib/secuenciaDeRotacion";
 import { useTranslation } from "react-i18next";
 import {
   localToday,
@@ -335,7 +336,7 @@ export default function ShiftAssignModal({
     );
 
     if (!style) return null;
-    const cycle = style.dayShifts + style.nightShifts + style.restDays;
+    const cycle = leerCiclo(style).largo;
 
     if (cycle <= 0 || !rotationStartDate) return null;
     const start = new Date(rotationStartDate + "T12:00:00");
@@ -411,6 +412,19 @@ export default function ShiftAssignModal({
     // bloques son trabajo seguido en la misma ventana.
     const unSoloTramo = propio === espejo;
     const trabajo = (style.dayShifts || 0) + (style.nightShifts || 0);
+    const leido = leerCiclo(style);
+
+    // Secuencia libre: un día por letra, tal cual está escrita.
+    if (leido.secuencia)
+      return leido.secuencia.split("").map((ch, idx) => ({
+        k: idx,
+        label:
+          ch === "L"
+            ? `${t("ui.ShiftAssignModal.libre", "Libre")} ${idx + 1} de ${leido.largo}`
+            : unSoloTramo || ch === "D"
+              ? `${unSoloTramo ? t("ui.ShiftAssignModal.trabajo", "Trabajo") : cap(propio)} ${idx + 1} de ${leido.largo}`
+              : `${cap(espejo)} ${idx + 1} de ${leido.largo}`,
+      }));
 
     for (let i = 0; i < (style.dayShifts || 0); i++, k++)
       out.push({

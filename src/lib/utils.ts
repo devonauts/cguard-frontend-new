@@ -1,3 +1,4 @@
+import { cicloDe as leerCiclo, secuenciaLimpia } from "./secuenciaDeRotacion";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 export function getServerErrorMessage(
@@ -56,6 +57,20 @@ export interface RotationCycle {
   dayShifts: number;
   nightShifts: number;
   restDays: number;
+  /** Secuencia libre (D/N/L por día); nula en los patrones de tres números. */
+  sequence?: string | null;
+}
+
+/** Las reglas de un patrón, con su secuencia si la tiene. */
+export function reglasDelPatron(
+  style: RotationCycle & ReglasDeRotacion & { alternatesDayNight?: any; sundayDoubleRest?: any },
+  extra?: ReglasDeRotacion | null,
+): ReglasDeRotacion {
+  return {
+    alternatesDayNight: extra?.alternatesDayNight ?? style.alternatesDayNight,
+    sundayDoubleRest: extra?.sundayDoubleRest ?? style.sundayDoubleRest,
+    secuencia: extra?.secuencia ?? style.sequence ?? null,
+  };
 }
 
 /** Days since the 2024-01-01 rotation epoch (UTC-safe, matches getGlobalEpoch). */
@@ -88,6 +103,8 @@ export function rotationDseOf(d: Date): number {
 export interface ReglasDeRotacion {
   alternatesDayNight?: boolean | null;
   sundayDoubleRest?: boolean | null;
+  /** La secuencia libre del patrón (D/N/L por día): cuando viene, manda. */
+  secuencia?: string | null;
 }
 
 /** ¿Ese día es domingo? `dse` cuenta desde la época 2024-01-01, que fue lunes. */
@@ -134,11 +151,17 @@ export function estadoDeRotacionCliente(
   restDays: number,
   reglas?: ReglasDeRotacion | null,
 ): "day" | "night" | "rest" {
-  const ciclo = dayShifts + nightShifts + restDays;
+  const secuencia = secuenciaLimpia(reglas?.secuencia);
+  const ciclo = secuencia ? secuencia.length : dayShifts + nightShifts + restDays;
   if (ciclo <= 0) return "rest";
 
   const crudo = (d: number): "day" | "night" | "rest" => {
     const a = (((d - platoonOffset) % ciclo) + ciclo) % ciclo;
+    if (secuencia) {
+      const ch = secuencia.charAt(a);
+
+      return ch === "D" ? "day" : ch === "N" ? "night" : "rest";
+    }
     if (a < dayShifts) return "day";
     if (a < dayShifts + nightShifts) return "night";
 
@@ -192,7 +215,7 @@ export function rotationStatusOn(
   reglas?: ReglasDeRotacion | null,
   anclaDse?: number,
 ): "day" | "night" | "rest" {
-  const cycle = style.dayShifts + style.nightShifts + style.restDays;
+  const cycle = leerCiclo(style).largo;
   if (cycle <= 0) return "rest";
 
   return estadoDeRotacionCliente(
@@ -204,7 +227,7 @@ export function rotationStatusOn(
     style.dayShifts,
     style.nightShifts,
     style.restDays,
-    reglas,
+    reglasDelPatron(style as any, reglas),
   );
 }
 
@@ -219,7 +242,7 @@ export function nextRestDates(
   anclaDse?: number,
 ): Date[] {
   const out: Date[] = [];
-  const cycle = style.dayShifts + style.nightShifts + style.restDays;
+  const cycle = leerCiclo(style).largo;
 
   if (cycle <= 0) return out;
   const d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
@@ -239,10 +262,23 @@ export function offsetForRestStart(
   style: RotationCycle,
   restStartDate: Date,
 ): number {
-  const cycle = style.dayShifts + style.nightShifts + style.restDays;
+  const leido = leerCiclo(style);
+  const cycle = leido.largo;
 
   if (cycle <= 0) return 0;
-  const restStartIdx = style.dayShifts + style.nightShifts;
+  let restStartIdx = style.dayShifts + style.nightShifts;
+
+  if (leido.secuencia) {
+    // El primer L que viene tras un día de trabajo (cíclicamente).
+    const q = leido.secuencia;
+
+    for (let i = 0; i < q.length; i++) {
+      if (q.charAt(i) === "L" && q.charAt((i - 1 + q.length) % q.length) !== "L") {
+        restStartIdx = i;
+        break;
+      }
+    }
+  }
 
   return (
     (((rotationDseOf(restStartDate) - restStartIdx) % cycle) + cycle) % cycle
@@ -256,7 +292,7 @@ export function weeklyRestWeekday(
   platoonOffset: number,
   reglas?: ReglasDeRotacion | null,
 ): string | null {
-  const cycle = style.dayShifts + style.nightShifts + style.restDays;
+  const cycle = leerCiclo(style).largo;
   if (cycle <= 0 || cycle % 7 !== 0) return null;
 
   /* CON DESCANSO DOMINICAL NO HAY DÍA FIJO. La regla corre el ciclo un día cada

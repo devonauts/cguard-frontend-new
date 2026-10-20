@@ -1,3 +1,4 @@
+import { cicloDe as leerCiclo } from "@/lib/secuenciaDeRotacion";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -235,10 +236,7 @@ export default function AsignacionEditModal({
     );
 
     if (!estilo || !inicio) return null;
-    const ciclo =
-      (estilo.dayShifts || 0) +
-      (estilo.nightShifts || 0) +
-      (estilo.restDays || 0);
+    const ciclo = leerCiclo(estilo).largo;
 
     if (ciclo <= 0) return null;
     const d = new Date(`${inicio}T12:00:00`);
