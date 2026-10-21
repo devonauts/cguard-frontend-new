@@ -18775,8 +18775,20 @@
       "cancelarActivo": "Nothing more will be charged. You keep {{nombre}} until {{fecha}}.",
       "noSeRenovara": "Done: it won’t renew.",
       "paraSeguir": "To keep {{nombre}} after the trial, first complete your implementation payment.",
-      "masDeVigilantes": "More than {{n}} officers"
-    }
+      "masDeVigilantes": "More than {{n}} officers",
+      "verComoFunciona": "See how it works",
+      "ocultarDemo": "Hide the demo",
+      "pruebaSinSeguir": "Trial until {{fecha}} · won’t continue afterwards",
+      "sinTarjeta": "No card needed. You decide when it ends.",
+      "cuotaMensual": "Monthly fee",
+      "tramoSiguiente": "More than {{n}} officers: {{precio}}{{periodo}}",
+      "pruebaHasta": "Free trial until {{fecha}} · no card",
+      "anualCorto": "Yearly",
+      "mesesGratis": "Yearly: {{n}} months free",
+      "demo": "Demo"
+    },
+    "interruptor": "Turn {{nombre}} on or off",
+    "paraSiempre": "One-time payment · yours forever"
   },
   "sucursales": {
     "titulo": "Branches",

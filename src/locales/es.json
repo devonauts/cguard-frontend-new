@@ -18775,8 +18775,20 @@
       "cancelarActivo": "No se cobra nada más. Seguirás con {{nombre}} hasta el {{fecha}}.",
       "noSeRenovara": "Listo: no se renovará.",
       "paraSeguir": "Para seguir con {{nombre}} al terminar la prueba, primero completa el pago de tu implementación.",
-      "masDeVigilantes": "Más de {{n}} vigilantes"
-    }
+      "masDeVigilantes": "Más de {{n}} vigilantes",
+      "verComoFunciona": "Ver cómo funciona",
+      "ocultarDemo": "Ocultar la demostración",
+      "pruebaSinSeguir": "Prueba hasta el {{fecha}} · al terminar no seguirá",
+      "sinTarjeta": "Sin tarjeta. Al terminar decides si sigues.",
+      "cuotaMensual": "Cuota mensual",
+      "tramoSiguiente": "Más de {{n}} vigilantes: {{precio}}{{periodo}}",
+      "pruebaHasta": "Prueba gratis hasta el {{fecha}} · sin tarjeta",
+      "anualCorto": "Anual",
+      "mesesGratis": "Anual: {{n}} meses gratis",
+      "demo": "Demo"
+    },
+    "interruptor": "Activar o desactivar {{nombre}}",
+    "paraSiempre": "Pago único · es tuyo para siempre"
   },
   "sucursales": {
     "titulo": "Sucursales",

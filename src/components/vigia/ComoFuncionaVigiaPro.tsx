@@ -90,7 +90,10 @@ const nota = (s: Estado, h: string, k: string, tono: Tono = "") => {
 /* El puesto vive aquí, en % del centro. El relevo elegido camina hasta él. */
 const PUESTO = { x: 50, y: 68 };
 
-const ESCENAS: Record<Escena, { dur: number; inicio: () => Estado; pasos: [number, Paso][] }> = {
+const ESCENAS: Record<
+  Escena,
+  { dur: number; inicio: () => Estado; pasos: [number, Paso][] }
+> = {
   faltas: {
     dur: 15500,
     inicio: () => ({
@@ -111,27 +114,97 @@ const ESCENAS: Record<Escena, { dur: number; inicio: () => Estado; pasos: [numbe
       pulso: null,
     }),
     pasos: [
-      [700, (s) => { s.hora = "06:10"; s.tono = "bad"; s.estado = "estado.sinMarcar"; nota(s, "06:10", "pasos.noFicho", "bad"); }],
-      [1700, (s, id) => { s.late = id; s.pensar = "pensar.escribe"; s.pulso = { id, de: "orbe", a: "a" }; }],
+      [
+        700,
+        (s) => {
+          s.hora = "06:10";
+          s.tono = "bad";
+          s.estado = "estado.sinMarcar";
+          nota(s, "06:10", "pasos.noFicho", "bad");
+        },
+      ],
+      [
+        1700,
+        (s, id) => {
+          s.late = id;
+          s.pensar = "pensar.escribe";
+          s.pulso = { id, de: "orbe", a: "a" };
+        },
+      ],
       [2300, (s) => escribe(s.a)],
-      [3100, (s) => { msg(s.a, { lado: "in", k: "chat.luis1", h: "06:10" }); nota(s, "06:10", "pasos.escribe", "brand"); }],
-      [4700, (s, id) => { msg(s.a, { lado: "out", k: "chat.luis2", h: "06:11" }); s.pulso = { id, de: "a", a: "orbe" }; }],
-      [5700, (s, id) => { s.late = id; s.pensar = "pensar.noViene"; s.tono = "warn"; s.estado = "estado.buscando"; nota(s, "06:11", "pasos.falta", "warn"); }],
-      [6500, (s) => { s.libres = s.libres.map((l) => ({ ...l, ve: true })); nota(s, "06:12", "pasos.buscaRelevo", "brand"); }],
-      [7300, (s, id) => { s.pulso = { id, de: "orbe", a: "b" }; }],
+      [
+        3100,
+        (s) => {
+          msg(s.a, { lado: "in", k: "chat.luis1", h: "06:10" });
+          nota(s, "06:10", "pasos.escribe", "brand");
+        },
+      ],
+      [
+        4700,
+        (s, id) => {
+          msg(s.a, { lado: "out", k: "chat.luis2", h: "06:11" });
+          s.pulso = { id, de: "a", a: "orbe" };
+        },
+      ],
+      [
+        5700,
+        (s, id) => {
+          s.late = id;
+          s.pensar = "pensar.noViene";
+          s.tono = "warn";
+          s.estado = "estado.buscando";
+          nota(s, "06:11", "pasos.falta", "warn");
+        },
+      ],
+      [
+        6500,
+        (s) => {
+          s.libres = s.libres.map((l) => ({ ...l, ve: true }));
+          nota(s, "06:12", "pasos.buscaRelevo", "brand");
+        },
+      ],
+      [
+        7300,
+        (s, id) => {
+          s.pulso = { id, de: "orbe", a: "b" };
+        },
+      ],
       [7900, (s) => escribe(s.b)],
       [8600, (s) => msg(s.b, { lado: "in", k: "chat.pedro1", h: "06:12" })],
-      [10000, (s, id) => { s.hora = "06:16"; msg(s.b, { lado: "out", k: "chat.pedro2", h: "06:16" }); s.pulso = { id, de: "b", a: "orbe" }; }],
-      [11000, (s, id) => {
-        s.late = id;
-        s.pensar = null;
-        s.tono = "ok";
-        s.estado = "estado.cubierto";
-        s.libres = s.libres.map((l, i) => (i === 1 ? { ...l, ...PUESTO, elegido: true } : { ...l, ve: false }));
-        nota(s, "06:16", "pasos.relevo", "ok");
-      }],
-      [12100, (s) => { nota(s, "06:16", "pasos.supervisor"); msg(s.b, { lado: "in", k: "chat.gracias", h: "06:16" }); }],
-      [12700, (s) => { s.resultado = true; }],
+      [
+        10000,
+        (s, id) => {
+          s.hora = "06:16";
+          msg(s.b, { lado: "out", k: "chat.pedro2", h: "06:16" });
+          s.pulso = { id, de: "b", a: "orbe" };
+        },
+      ],
+      [
+        11000,
+        (s, id) => {
+          s.late = id;
+          s.pensar = null;
+          s.tono = "ok";
+          s.estado = "estado.cubierto";
+          s.libres = s.libres.map((l, i) =>
+            i === 1 ? { ...l, ...PUESTO, elegido: true } : { ...l, ve: false },
+          );
+          nota(s, "06:16", "pasos.relevo", "ok");
+        },
+      ],
+      [
+        12100,
+        (s) => {
+          nota(s, "06:16", "pasos.supervisor");
+          msg(s.b, { lado: "in", k: "chat.gracias", h: "06:16" });
+        },
+      ],
+      [
+        12700,
+        (s) => {
+          s.resultado = true;
+        },
+      ],
     ],
   },
   partes: {
@@ -150,16 +223,69 @@ const ESCENAS: Record<Escena, { dur: number; inicio: () => Estado; pasos: [numbe
       pulso: null,
     }),
     pasos: [
-      [300, (s) => { if (s.a.tipo === "parte") s.a.desde = 300; }],
-      [2600, (s) => { if (s.a.tipo === "parte") s.a.enviar = true; }],
-      [3000, (s, id) => { s.pulso = { id, de: "a", a: "orbe" }; nota(s, "03:14", "pasos.sube"); }],
-      [3900, (s, id) => { s.late = id; s.pensar = "pensar.corrige"; }],
+      [
+        300,
+        (s) => {
+          if (s.a.tipo === "parte") s.a.desde = 300;
+        },
+      ],
+      [
+        2600,
+        (s) => {
+          if (s.a.tipo === "parte") s.a.enviar = true;
+        },
+      ],
+      [
+        3000,
+        (s, id) => {
+          s.pulso = { id, de: "a", a: "orbe" };
+          nota(s, "03:14", "pasos.sube");
+        },
+      ],
+      [
+        3900,
+        (s, id) => {
+          s.late = id;
+          s.pensar = "pensar.corrige";
+        },
+      ],
       [4900, (s) => nota(s, "03:14", "pasos.corrige", "brand")],
-      [5800, (s) => { s.pensar = "pensar.traduce"; nota(s, "03:14", "pasos.faltaDato", "warn"); }],
-      [6800, (s, id) => { s.late = id; s.pulso = { id, de: "orbe", a: "b" }; s.tono = "ok"; s.estado = "estado.enviado"; }],
-      [7700, (s) => { if (s.b.tipo === "portal") s.b.ficha = true; nota(s, "03:15", "pasos.traduce", "ok"); }],
-      [9200, (s) => { s.pensar = null; nota(s, "mes", "pasos.resumen"); }],
-      [9900, (s) => { s.resultado = true; }],
+      [
+        5800,
+        (s) => {
+          s.pensar = "pensar.traduce";
+          nota(s, "03:14", "pasos.faltaDato", "warn");
+        },
+      ],
+      [
+        6800,
+        (s, id) => {
+          s.late = id;
+          s.pulso = { id, de: "orbe", a: "b" };
+          s.tono = "ok";
+          s.estado = "estado.enviado";
+        },
+      ],
+      [
+        7700,
+        (s) => {
+          if (s.b.tipo === "portal") s.b.ficha = true;
+          nota(s, "03:15", "pasos.traduce", "ok");
+        },
+      ],
+      [
+        9200,
+        (s) => {
+          s.pensar = null;
+          nota(s, "mes", "pasos.resumen");
+        },
+      ],
+      [
+        9900,
+        (s) => {
+          s.resultado = true;
+        },
+      ],
     ],
   },
   vigilantes: {
@@ -178,22 +304,82 @@ const ESCENAS: Record<Escena, { dur: number; inicio: () => Estado; pasos: [numbe
       pulso: null,
     }),
     pasos: [
-      [500, (s, id) => { msg(s.a, { lado: "out", k: "chat.ana1", h: "21:40" }); s.pulso = { id, de: "a", a: "orbe" }; }],
-      [1500, (s, id) => { s.late = id; s.pensar = "pensar.horario"; }],
+      [
+        500,
+        (s, id) => {
+          msg(s.a, { lado: "out", k: "chat.ana1", h: "21:40" });
+          s.pulso = { id, de: "a", a: "orbe" };
+        },
+      ],
+      [
+        1500,
+        (s, id) => {
+          s.late = id;
+          s.pensar = "pensar.horario";
+        },
+      ],
       [2200, (s) => escribe(s.a)],
-      [2900, (s) => { msg(s.a, { lado: "in", k: "chat.ana2", h: "21:40" }); s.tono = "ok"; s.estado = "estado.ok"; nota(s, "21:40", "pasos.suHorario", "brand"); }],
-      [4500, (s, id) => { msg(s.a, { lado: "out", voz: "0:04", h: "21:41" }); s.pulso = { id, de: "a", a: "orbe" }; }],
-      [5500, (s, id) => { s.late = id; s.pensar = "pensar.voz"; nota(s, "21:41", "pasos.voz"); }],
+      [
+        2900,
+        (s) => {
+          msg(s.a, { lado: "in", k: "chat.ana2", h: "21:40" });
+          s.tono = "ok";
+          s.estado = "estado.ok";
+          nota(s, "21:40", "pasos.suHorario", "brand");
+        },
+      ],
+      [
+        4500,
+        (s, id) => {
+          msg(s.a, { lado: "out", voz: "0:04", h: "21:41" });
+          s.pulso = { id, de: "a", a: "orbe" };
+        },
+      ],
+      [
+        5500,
+        (s, id) => {
+          s.late = id;
+          s.pensar = "pensar.voz";
+          nota(s, "21:41", "pasos.voz");
+        },
+      ],
       [6300, (s) => escribe(s.a)],
-      [7000, (s) => { msg(s.a, { lado: "in", k: "chat.ana4", h: "21:41" }); nota(s, "21:41", "pasos.pideSi", "warn"); }],
-      [8500, (s, id) => { msg(s.a, { lado: "out", k: "chat.ana5", h: "21:42" }); s.pulso = { id, de: "a", a: "orbe" }; }],
-      [9400, (s, id) => { s.late = id; s.pensar = null; s.pulso = { id, de: "orbe", a: "b" }; }],
-      [10300, (s) => {
-        if (s.b.tipo === "supervisor") s.b.ficha = true;
-        msg(s.a, { lado: "in", k: "chat.ana6", h: "21:42" });
-        nota(s, "21:42", "pasos.enviada", "ok");
-      }],
-      [11200, (s) => { s.resultado = true; }],
+      [
+        7000,
+        (s) => {
+          msg(s.a, { lado: "in", k: "chat.ana4", h: "21:41" });
+          nota(s, "21:41", "pasos.pideSi", "warn");
+        },
+      ],
+      [
+        8500,
+        (s, id) => {
+          msg(s.a, { lado: "out", k: "chat.ana5", h: "21:42" });
+          s.pulso = { id, de: "a", a: "orbe" };
+        },
+      ],
+      [
+        9400,
+        (s, id) => {
+          s.late = id;
+          s.pensar = null;
+          s.pulso = { id, de: "orbe", a: "b" };
+        },
+      ],
+      [
+        10300,
+        (s) => {
+          if (s.b.tipo === "supervisor") s.b.ficha = true;
+          msg(s.a, { lado: "in", k: "chat.ana6", h: "21:42" });
+          nota(s, "21:42", "pasos.enviada", "ok");
+        },
+      ],
+      [
+        11200,
+        (s) => {
+          s.resultado = true;
+        },
+      ],
     ],
   },
 };
@@ -209,12 +395,18 @@ function placaDe(agente: string, idioma: string): string {
   return /^(es|pt|fr|it)/i.test(idioma) ? "IA" : "AI";
 }
 const TIC = 100;
+/** Líneas de bitácora a la vista: la caja mide SIEMPRE estas cuatro, llenas o no.
+    Antes crecía de 0 a 7 filas y se vaciaba con cada escena, y la tarjeta de la
+    tienda cambiaba de alto cada pocos segundos. */
+const FILAS_BITACORA = 4;
 
 /** El estado de la escena con sus `k` primeros pasos aplicados. */
 function aplicar(escena: Escena, k: number): Estado {
   const s = ESCENAS[escena].inicio();
 
-  ESCENAS[escena].pasos.slice(0, k).forEach(([, paso], i) => paso(s, `${escena}-${i}`));
+  ESCENAS[escena].pasos
+    .slice(0, k)
+    .forEach(([, paso], i) => paso(s, `${escena}-${i}`));
 
   return s;
 }
@@ -241,25 +433,65 @@ function Plano() {
     }
 
     return cols.flatMap(([x, w], ci) =>
-      filas.map(([y, h], fi) => ({ x, y, w, h, parque: ci % 7 === 4 && fi % 5 === 2 })),
+      filas.map(([y, h], fi) => ({
+        x,
+        y,
+        w,
+        h,
+        parque: ci % 7 === 4 && fi % 5 === 2,
+      })),
     );
   }, []);
 
   return (
-    <svg aria-hidden className="cfv-mapa" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1000 620">
+    <svg
+      aria-hidden
+      className="cfv-mapa"
+      preserveAspectRatio="xMidYMid slice"
+      viewBox="0 0 1000 620"
+    >
       <g transform="rotate(-9 500 310)">
-        <rect fill="var(--cfv-road)" height="1860" width="3000" x="-1000" y="-620" />
+        <rect
+          fill="var(--cfv-road)"
+          height="1860"
+          width="3000"
+          x="-1000"
+          y="-620"
+        />
         {manzanas.map((m, i) => (
-          <rect key={i} fill={m.parque ? "var(--cfv-park)" : "var(--cfv-block)"} height={m.h} rx={5} width={m.w} x={m.x} y={m.y} />
+          <rect
+            key={i}
+            fill={m.parque ? "var(--cfv-park)" : "var(--cfv-block)"}
+            height={m.h}
+            rx={5}
+            width={m.w}
+            x={m.x}
+            y={m.y}
+          />
         ))}
-        <path d="M -200 570 C 250 430, 550 650, 1200 480" fill="none" stroke="var(--cfv-water)" strokeLinecap="round" strokeWidth={26} />
-        <path d="M -100 60 L 1100 370" fill="none" stroke="var(--cfv-road)" strokeWidth={14} />
+        <path
+          d="M -200 570 C 250 430, 550 650, 1200 480"
+          fill="none"
+          stroke="var(--cfv-water)"
+          strokeLinecap="round"
+          strokeWidth={26}
+        />
+        <path
+          d="M -100 60 L 1100 370"
+          fill="none"
+          stroke="var(--cfv-road)"
+          strokeWidth={14}
+        />
       </g>
     </svg>
   );
 }
 
-export default function ComoFuncionaVigiaPro({ className }: { className?: string }) {
+export default function ComoFuncionaVigiaPro({
+  className,
+}: {
+  className?: string;
+}) {
   const { t, i18n } = useTranslation();
   const agente = useAgente().nombre;
   const placa = placaDe(agente, i18n.language || "");
@@ -321,11 +553,13 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
     const svg = hilos.current;
     const caja = stage.current?.getBoundingClientRect();
     const sitio = (p: Punto): [number, number] | null => {
-      const el = p === "orbe" ? orbe.current : p === "a" ? telA.current : telB.current;
+      const el =
+        p === "orbe" ? orbe.current : p === "a" ? telA.current : telB.current;
       const r = el?.getBoundingClientRect();
 
       if (!r || !caja) return null;
-      const x = p === "orbe" ? r.left + r.width / 2 : p === "a" ? r.right : r.left;
+      const x =
+        p === "orbe" ? r.left + r.width / 2 : p === "a" ? r.right : r.left;
       const y = p === "orbe" ? r.top + r.height / 2 : r.top + r.height * 0.45;
 
       return [x - caja.left, y - caja.top];
@@ -340,7 +574,10 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
     const bola = document.createElementNS(NS, "circle");
     const cy = Math.min(desde[1], hasta[1]) - 60;
 
-    curva.setAttribute("d", `M ${desde[0]} ${desde[1]} Q ${(desde[0] + hasta[0]) / 2} ${cy} ${hasta[0]} ${hasta[1]}`);
+    curva.setAttribute(
+      "d",
+      `M ${desde[0]} ${desde[1]} Q ${(desde[0] + hasta[0]) / 2} ${cy} ${hasta[0]} ${hasta[1]}`,
+    );
     curva.setAttribute("fill", "none");
     curva.setAttribute("stroke", "var(--brand)");
     curva.setAttribute("stroke-width", "2");
@@ -373,23 +610,34 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
       curva.remove();
       bola.remove();
     };
-  }, [pulso?.id, quieto]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pulso?.id, quieto]);
 
   const T = (k: string) => t(`vigiaPro.demo.${escena}.${k}`, { agente });
 
   return (
     <div className={`cfv ${className ?? ""}`}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--ink-faint)" }}>
+        <div
+          className="text-xs font-semibold uppercase tracking-wide"
+          style={{ color: "var(--ink-faint)" }}
+        >
           {t("vigiaPro.demo.titulo", { agente })}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
             {t("vigiaPro.demo.horaDelPuesto")}{" "}
-            <b className="text-base tabular-nums" style={{ color: "var(--ink)" }}>{s.hora}</b>
+            <b
+              className="text-base tabular-nums"
+              style={{ color: "var(--ink)" }}
+            >
+              {s.hora}
+            </b>
           </span>
           <Segmented<Escena>
-            options={ORDEN.map((e) => ({ value: e, label: t(`vigiaPro.demo.escenas.${e}`) }))}
+            options={ORDEN.map((e) => ({
+              value: e,
+              label: t(`vigiaPro.demo.escenas.${e}`),
+            }))}
             value={escena}
             onChange={cambiar}
           />
@@ -401,14 +649,26 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
         <div className="cfv-cuadro">
           <figure className="cfv-lado">
             <div ref={telA} className="cfv-tel">
-              <Telefono T={T} agente={agente} enLinea={t("vigiaPro.demo.enLinea")} ms={ms} p={s.a} placa={placa} />
+              <Telefono
+                T={T}
+                agente={agente}
+                enLinea={t("vigiaPro.demo.enLinea")}
+                ms={ms}
+                p={s.a}
+                placa={placa}
+              />
             </div>
             <figcaption>{T("telA")}</figcaption>
           </figure>
 
           <div className="cfv-centro">
             <div className="cfv-nucleo">
-              <div key={s.late ?? "quieto"} ref={orbe} className="cfv-orbe" data-late={s.late && !quieto ? "" : undefined}>
+              <div
+                key={s.late ?? "quieto"}
+                ref={orbe}
+                className="cfv-orbe"
+                data-late={s.late && !quieto ? "" : undefined}
+              >
                 {placa}
               </div>
               <div className="cfv-nombre">{agente}</div>
@@ -427,7 +687,11 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
               </div>
             ))}
 
-            <div className="cfv-puesto" data-tono={s.tono} style={{ left: `${PUESTO.x}%`, top: `${PUESTO.y}%` }}>
+            <div
+              className="cfv-puesto"
+              data-tono={s.tono}
+              style={{ left: `${PUESTO.x}%`, top: `${PUESTO.y}%` }}
+            >
               <div className="cfv-etiqueta">
                 <div className="cfv-lugar">{T("lugar")}</div>
                 <div className="cfv-estado">
@@ -439,14 +703,25 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
               <div className="cfv-halo" />
             </div>
 
-            <div aria-live="polite" className="cfv-resultado" data-ve={s.resultado ? "" : undefined}>
+            <div
+              aria-live="polite"
+              className="cfv-resultado"
+              data-ve={s.resultado ? "" : undefined}
+            >
               {s.resultado && <b>{T("resultado")}</b>}
             </div>
           </div>
 
           <figure className="cfv-lado">
             <div ref={telB} className="cfv-tel">
-              <Telefono T={T} agente={agente} enLinea={t("vigiaPro.demo.enLinea")} ms={ms} p={s.b} placa={placa} />
+              <Telefono
+                T={T}
+                agente={agente}
+                enLinea={t("vigiaPro.demo.enLinea")}
+                ms={ms}
+                p={s.b}
+                placa={placa}
+              />
             </div>
             <figcaption>{T("telB")}</figcaption>
           </figure>
@@ -455,13 +730,18 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
       </div>
 
       <div className="mt-4">
-        <div className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--ink-faint)" }}>
+        <div
+          className="mb-2 text-xs font-semibold uppercase tracking-wide"
+          style={{ color: "var(--ink-faint)" }}
+        >
           {t("vigiaPro.demo.enTuCrm")}
         </div>
         <ol className="cfv-bitacora">
-          {s.bitacora.map((n) => (
+          {s.bitacora.slice(-FILAS_BITACORA).map((n) => (
             <li key={`${escena}-${n.k}`}>
-              <span className="h">{n.h === "mes" ? t("vigiaPro.demo.mes") : n.h}</span>
+              <span className="h">
+                {n.h === "mes" ? t("vigiaPro.demo.mes") : n.h}
+              </span>
               <span className="p" data-tono={n.tono} />
               <span className="min-w-0">{T(n.k)}</span>
             </li>
@@ -503,13 +783,23 @@ function Telefono({
         </div>
         <div className="cfv-chat">
           {p.msgs.map((m, i) => (
-            <div key={`${m.h}-${m.k ?? m.voz}-${i}`} className="cfv-msg" data-lado={m.lado}>
+            <div
+              key={`${m.h}-${m.k ?? m.voz}-${i}`}
+              className="cfv-msg"
+              data-lado={m.lado}
+            >
               {m.voz ? (
                 <span className="flex items-center gap-2">
                   <span aria-hidden>▶</span>
                   <span aria-hidden className="cfv-voz">
                     {Array.from({ length: 20 }, (_, j) => (
-                      <i key={j} style={{ height: 4 + Math.round(Math.abs(Math.sin(j * 1.7)) * 12) }} />
+                      <i
+                        key={j}
+                        style={{
+                          height:
+                            4 + Math.round(Math.abs(Math.sin(j * 1.7)) * 12),
+                        }}
+                      />
                     ))}
                   </span>
                   <span>{m.voz}</span>
@@ -537,7 +827,13 @@ function Telefono({
 
   if (p.tipo === "parte") {
     const texto = T("parte.antes");
-    const n = p.desde === null ? 0 : Math.min(texto.length, Math.round(((ms - p.desde) / 2000) * texto.length));
+    const n =
+      p.desde === null
+        ? 0
+        : Math.min(
+            texto.length,
+            Math.round(((ms - p.desde) / 2000) * texto.length),
+          );
 
     return (
       <div className="cfv-pantalla">

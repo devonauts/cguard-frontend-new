@@ -18775,8 +18775,20 @@
       "cancelarActivo": "Plus rien ne sera prélevé. Vous gardez {{nombre}} jusqu’au {{fecha}}.",
       "noSeRenovara": "C’est fait : il ne sera pas renouvelé.",
       "paraSeguir": "Pour garder {{nombre}} après l’essai, réglez d’abord votre mise en service.",
-      "masDeVigilantes": "Plus de {{n}} agents"
-    }
+      "masDeVigilantes": "Plus de {{n}} agents",
+      "verComoFunciona": "Voir comment ça marche",
+      "ocultarDemo": "Masquer la démonstration",
+      "pruebaSinSeguir": "Essai jusqu’au {{fecha}} · ne continuera pas ensuite",
+      "sinTarjeta": "Sans carte. À la fin, vous décidez de continuer.",
+      "cuotaMensual": "Abonnement mensuel",
+      "tramoSiguiente": "Plus de {{n}} agents : {{precio}}{{periodo}}",
+      "pruebaHasta": "Essai gratuit jusqu’au {{fecha}} · sans carte",
+      "anualCorto": "Annuel",
+      "mesesGratis": "Annuel : {{n}} mois offerts",
+      "demo": "Demo"
+    },
+    "interruptor": "Activer ou désactiver {{nombre}}",
+    "paraSiempre": "Paiement unique · à vous pour toujours"
   },
   "sucursales": {
     "titulo": "Agences",

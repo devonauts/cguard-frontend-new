@@ -18775,8 +18775,20 @@
       "cancelarActivo": "Non si addebita altro. Mantieni {{nombre}} fino al {{fecha}}.",
       "noSeRenovara": "Fatto: non si rinnoverà.",
       "paraSeguir": "Per mantenere {{nombre}} dopo la prova, completa prima il pagamento dell’implementazione.",
-      "masDeVigilantes": "Più di {{n}} guardie"
-    }
+      "masDeVigilantes": "Più di {{n}} guardie",
+      "verComoFunciona": "Guarda come funziona",
+      "ocultarDemo": "Nascondi la dimostrazione",
+      "pruebaSinSeguir": "Prova fino al {{fecha}} · al termine non continuerà",
+      "sinTarjeta": "Senza carta. Alla fine decidi tu se continuare.",
+      "cuotaMensual": "Canone mensile",
+      "tramoSiguiente": "Più di {{n}} guardie: {{precio}}{{periodo}}",
+      "pruebaHasta": "Prova gratuita fino al {{fecha}} · senza carta",
+      "anualCorto": "Annuale",
+      "mesesGratis": "Annuale: {{n}} mesi gratis",
+      "demo": "Demo"
+    },
+    "interruptor": "Attiva o disattiva {{nombre}}",
+    "paraSiempre": "Pagamento unico · è tuo per sempre"
   },
   "sucursales": {
     "titulo": "Filiali",
