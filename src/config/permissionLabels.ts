@@ -300,6 +300,31 @@ const SPECIAL_PERMISSION_LABELS: Record<string, Localized3> = {
     en: 'Connect and manage external payroll (Gusto)',
     pt: 'Conectar e gerenciar a folha externa (Gusto)',
   },
+  payrollSlipRead: {
+    es: 'Ver roles de pago y planillas',
+    en: 'View payslips and payroll sheets',
+    pt: 'Ver holerites e folhas de pagamento',
+  },
+  payrollSlipEdit: {
+    es: 'Editar conceptos, novedades y ajustes de roles de pago',
+    en: 'Edit payslip concepts, adjustments and settings',
+    pt: 'Editar conceitos, lançamentos e ajustes de holerites',
+  },
+  payrollSlipPublish: {
+    es: 'Publicar roles de pago',
+    en: 'Publish payslips',
+    pt: 'Publicar holerites',
+  },
+  payrollProfileRead: {
+    es: 'Ver el perfil de pago (sueldo) de cada persona',
+    en: 'View each person’s pay profile (salary)',
+    pt: 'Ver o perfil de pagamento (salário) de cada pessoa',
+  },
+  payrollProfileEdit: {
+    es: 'Editar el perfil de pago (sueldo) de cada persona',
+    en: 'Edit each person’s pay profile (salary)',
+    pt: 'Editar o perfil de pagamento (salário) de cada pessoa',
+  },
 };
 
 type Localized3 = { es: string; en: string; pt: string };

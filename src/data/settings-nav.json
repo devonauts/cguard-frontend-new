@@ -158,6 +158,15 @@
             "keywords": "asistencia fichaje reloj turno horario atraso tardanza geocerca gps nomina periodo quincena aprobacion selfie extra horas sobretiempo moneda sueldo salario pago inasistencia falta ausencia tarde retraso foto horas extra hora extra"
           },
           {
+            "id": "payroll-slips",
+            "label": "Roles de pago",
+            "path": "/nomina/roles/configuracion",
+            "icon": "FileSpreadsheet",
+            "modulo": "payroll_slips",
+            "desc": "País, sueldo base, jornada, dobladas, renta y numeración del rol de pago.",
+            "keywords": "rol de pago roles de pago nomina planilla sueldo salario recibo boleta liquidacion holerite pago renta impuesto conceptos deducciones aportes prestamo multa bono contratista"
+          },
+          {
             "id": "publishing-sites",
             "label": "Reglas de puestos y geocercas",
             "path": "/setting/publishing-sites",

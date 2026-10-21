@@ -38,6 +38,11 @@ export const PERMISSIONS: string[] = [
   "attendanceSettingsRead","attendanceSettingsEdit",
   // Conectar la nómina externa (Gusto, EE. UU.).
   "payrollIntegrationManage",
+  "payrollSlipRead",
+  "payrollSlipEdit",
+  "payrollSlipPublish",
+  "payrollProfileRead",
+  "payrollProfileEdit",
   "timeOffRequestCreate","timeOffRequestRead","timeOffRequestEdit","timeOffRequestDestroy",
   // ── Programador ──
   "shiftExchangeRequestCreate","shiftExchangeRequestRead","shiftExchangeRequestEdit","shiftExchangeRequestDestroy",

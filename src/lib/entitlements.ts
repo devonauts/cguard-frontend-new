@@ -36,6 +36,7 @@ export const MODULE_KEYS = [
   "sucursales",
   "vigia_pro",
   "reconocimiento_facial",
+  "payroll_slips",
 ] as const;
 
 export type ModuleKey = (typeof MODULE_KEYS)[number];

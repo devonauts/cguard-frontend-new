@@ -25,6 +25,7 @@ import {
   LifeBuoy,
   Map as MapIcon,
   RadioTower,
+  FileSpreadsheet,
   Home,
   Route as RouteIcon,
   CalendarDays,
@@ -67,6 +68,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useEntitlement } from "@/hooks/useEntitlement";
 
 /* ────────────────────────────────────────────────────────────────────────────
    Los colores de abajo NO son estilos del CRM: son DATOS de la empresa. Es el
@@ -105,7 +107,8 @@ type ModuleKey =
   | "timeOff"
   | "backup"
   | "map"
-  | "radioNativa";
+  | "radioNativa"
+  | "payslips";
 
 const MODULE_META: {
   key: ModuleKey;
@@ -155,6 +158,12 @@ const MODULE_META: {
     desc: "Mapa del sitio y ubicaciones.",
     icon: <MapIcon size={16} />,
   },
+  {
+    key: "payslips",
+    label: "Roles de pago",
+    desc: "El trabajador ve y descarga sus roles de pago publicados. Apagado de fábrica; necesita el módulo «Roles de pago».",
+    icon: <FileSpreadsheet size={16} />,
+  },
 ];
 
 const DEFAULTS: MobileAppSettings = {
@@ -172,6 +181,7 @@ const DEFAULTS: MobileAppSettings = {
     backup: true,
     map: true,
     radioNativa: false,
+    payslips: false,
   },
 };
 
@@ -193,6 +203,8 @@ export default function MobileHubPage() {
   const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
+  // «Roles de pago» en la app sólo se puede encender con el módulo activo.
+  const tieneRolesDePago = useEntitlement("payroll_slips");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -639,7 +651,7 @@ export default function MobileHubPage() {
                         </div>
                         <Switch
                           checked={cfg.modules[m.key]}
-                          disabled={!canEdit}
+                          disabled={!canEdit || (m.key === "payslips" && !tieneRolesDePago)}
                           onCheckedChange={(v) =>
                             setCfg((c) => ({
                               ...c,

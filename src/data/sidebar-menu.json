@@ -478,6 +478,24 @@
         ]
       },
       {
+        "id": "nomina-roles",
+        "name": "Roles de pago",
+        "path": "/nomina/roles",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollSlipRead"
+        ]
+      },
+      {
+        "id": "nomina-roles-perfiles",
+        "name": "Perfiles de pago",
+        "path": "/nomina/roles/perfiles",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollProfileRead"
+        ]
+      },
+      {
         "id": "nomina-settings",
         "name": "Configuración de Asistencia",
         "path": "/nomina/settings",

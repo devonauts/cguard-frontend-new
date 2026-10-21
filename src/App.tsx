@@ -384,6 +384,20 @@ const NominaTimecards = lazy(
 const NominaSettings = lazy(
   () => import("./pages/admin/nomina/NominaSettings"),
 );
+// Roles de pago (módulo `payroll_slips`): portada/asistente, configuración,
+// catálogo de conceptos y perfiles de pago.
+const RolesDePagoPage = lazy(
+  () => import("./pages/admin/nomina/roles/RolesDePagoPage"),
+);
+const ConfiguracionDeRoles = lazy(
+  () => import("./pages/admin/nomina/roles/ConfiguracionDeRoles"),
+);
+const CatalogoDeConceptos = lazy(
+  () => import("./pages/admin/nomina/roles/CatalogoDeConceptos"),
+);
+const PerfilesDePago = lazy(
+  () => import("./pages/admin/nomina/roles/PerfilesDePago"),
+);
 const Visitors = lazy(
   () => import("./pages/admin/visitor-management/Visitors"),
 );
@@ -2087,11 +2101,44 @@ export default function App() {
                                 path="/nomina/timecards"
                               />
                               {/* Bookmarks and old notification links must not land on a 404. */}
+                              {/* Roles de pago (módulo): la ruta vieja de 2026-08 vuelve a tener dueño. */}
                               <Route
                                 element={
-                                  <Navigate replace to="/nomina/timecards" />
+                                  <Navigate replace to="/nomina/roles" />
                                 }
                                 path="/nomina/rol-de-pagos"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <RolesDePagoPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <ConfiguracionDeRoles />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles/configuracion"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CatalogoDeConceptos />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles/conceptos"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <PerfilesDePago />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles/perfiles"
                               />
                               <Route
                                 element={
