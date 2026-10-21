@@ -29,7 +29,7 @@ import { currentTenantEntry, getBillingState } from "@/lib/entitlements";
 
 const CADA_MINUTO = 60_000;
 // El mismo buzón que la pantalla de «Acceso bloqueado» (`pages/auth/AccesoBloqueado`).
-const CORREO_DE_SOPORTE = "soporte@cguardpro.com";
+const CORREO_DE_SOPORTE = "support@cguardpro.com";
 
 export default function PruebaEnRevisionScreen({
   variant,
