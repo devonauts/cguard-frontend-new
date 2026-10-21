@@ -248,6 +248,10 @@ export default defineConfig({
           /^\/go2rtc\//,
           /^\/mediamtx\//,
           /^\/rtc\//,
+          // La puerta anti-copia (nginx `location = /verificacion-humana` → el API):
+          // sin esto, quien ya tenía el SW del CRM veía el 404 de la SPA en vez
+          // de la página de las 3 fotos (Mike, 2026-10-20).
+          /^\/verificacion-humana/,
         ],
         // La API JAMÁS se cachea en el SW: es JSON autenticado por usuario y el
         // backend ya manda no-store. Sin runtimeCaching para /api, el SW la
