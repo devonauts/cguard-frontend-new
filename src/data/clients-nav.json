@@ -9,6 +9,8 @@
           { "id": "postSites", "path": "/clients/:id/post-sites", "label": "clients.nav.postSites", "icon": "MapPin" },
           { "id": "contacts", "path": "/clients/:id/contacts", "label": "clients.nav.contacts", "icon": "Contact" },
           { "id": "contrato", "path": "/clients/:id/contract", "label": "clients.nav.contrato", "icon": "FileText" },
+          { "id": "contratoFacturacion", "path": "/clients/:id/billing-contract", "label": "clients.nav.contratoFacturacion", "icon": "FileSignature" },
+          { "id": "facturas", "path": "/clients/:id/invoices", "label": "clients.nav.facturas", "icon": "Receipt" },
           { "id": "coverage", "path": "/clients/:id/coverage", "label": "clients.nav.coverage", "icon": "LayoutGrid" },
           { "id": "staff", "path": "/clients/:id/staff", "label": "clients.nav.staff", "icon": "Users" },
           { "id": "incidents", "path": "/clients/:id/incidents", "label": "clients.nav.incidents", "icon": "AlertTriangle" },

@@ -31,6 +31,8 @@ import {
   Folder,
   KeyRound,
   Mail,
+  Receipt,
+  FileSignature,
 } from "lucide-react";
 
 import clientsNav from "@/data/clients-nav.json";
@@ -54,6 +56,8 @@ const TAB_ICONS: Record<string, any> = {
   Folder,
   KeyRound,
   Mail,
+  Receipt,
+  FileSignature,
 };
 
 import { Button } from "@/components/ui/button";

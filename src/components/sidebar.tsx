@@ -199,6 +199,12 @@ const GROUPS: GroupDef[] = [
     ],
   },
   {
+    id: "facturacion",
+    label: "Facturación",
+    icon: Receipt,
+    ids: ["facturacion"],
+  },
+  {
     id: "analisis",
     label: "Análisis",
     icon: BarChart3,

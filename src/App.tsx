@@ -410,6 +410,13 @@ const CorridaDetalle = lazy(
 const RolIndividual = lazy(
   () => import("./pages/admin/nomina/roles/RolIndividual"),
 );
+// Client billing (what the company charges ITS clients) — /facturacion/*, never /billing.
+const FacturasPage = lazy(() => import("./pages/admin/facturacion/FacturasPage"));
+const FacturaDetallePage = lazy(() => import("./pages/admin/facturacion/FacturaDetallePage"));
+const CorridasPage = lazy(() => import("./pages/admin/facturacion/CorridasPage"));
+const CorridaDetallePage = lazy(() => import("./pages/admin/facturacion/CorridaDetallePage"));
+const AntiguedadPage = lazy(() => import("./pages/admin/facturacion/AntiguedadPage"));
+const AjustesFacturacionPage = lazy(() => import("./pages/admin/facturacion/AjustesFacturacionPage"));
 const Visitors = lazy(
   () => import("./pages/admin/visitor-management/Visitors"),
 );
@@ -1058,6 +1065,8 @@ export default function App() {
                               />
                               {[
                                 "contract",
+                                "billing-contract",
+                                "invoices",
                                 "coverage",
                                 "staff",
                                 "incidents",
@@ -2183,6 +2192,54 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/roles/rol/:id"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <FacturasPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/facturas"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <FacturaDetallePage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/facturas/:id"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CorridasPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/corridas"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CorridaDetallePage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/corridas/:id"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <AntiguedadPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/antiguedad"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <AjustesFacturacionPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/ajustes"
                               />
                               <Route
                                 element={

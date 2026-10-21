@@ -524,6 +524,46 @@
     ]
   },
   {
+    "id": "facturacion",
+    "name": "Facturación",
+    "icon": "Receipt",
+    "expandable": true,
+    "subItems": [
+      {
+        "id": "facturacion-facturas",
+        "name": "Facturas",
+        "path": "/facturacion/facturas",
+        "permission": [
+          "invoiceRead"
+        ]
+      },
+      {
+        "id": "facturacion-corridas",
+        "name": "Corridas de facturación",
+        "path": "/facturacion/corridas",
+        "permission": [
+          "billingRead"
+        ]
+      },
+      {
+        "id": "facturacion-antiguedad",
+        "name": "Antigüedad de saldos",
+        "path": "/facturacion/antiguedad",
+        "permission": [
+          "invoiceRead"
+        ]
+      },
+      {
+        "id": "facturacion-ajustes",
+        "name": "Ajustes de facturación",
+        "path": "/facturacion/ajustes",
+        "permission": [
+          "billingRead"
+        ]
+      }
+    ]
+  },
+  {
     "id": "tareas",
     "name": "Tareas",
     "icon": "FileText",

@@ -19,6 +19,8 @@ import ClientStaff from "./components/ClientStaff/ClientStaff";
 import ClientIncidents from "./components/ClientIncidents/ClientIncidents";
 import ClientDocuments from "./components/ClientDocuments/ClientDocuments";
 import ClientReports from "./components/ClientReports/ClientReports";
+import ClientBillingContract from "./components/ClientBillingContract/ClientBillingContract";
+import ClientInvoices from "./components/ClientInvoices/ClientInvoices";
 
 import { clientService } from "@/lib/api/clientService";
 import ClientsLayout from "@/layouts/ClientsLayout";
@@ -81,6 +83,8 @@ export default function ClientsDetails() {
       "email-reports",
       "projects",
       "contract",
+      "billing-contract",
+      "invoices",
       "coverage",
       "staff",
       "incidents",
@@ -97,6 +101,8 @@ export default function ClientsDetails() {
         portal: "clientPortal",
         projects: "projects",
         contract: "contrato",
+        "billing-contract": "contratoFacturacion",
+        invoices: "facturas",
         coverage: "coverage",
         staff: "staff",
         incidents: "incidents",
@@ -226,6 +232,12 @@ export default function ClientsDetails() {
               )}
               {activeTab === "contrato" && (
                 <ClientContract client={clienteVigente} />
+              )}
+              {activeTab === "contratoFacturacion" && (
+                <ClientBillingContract client={clienteVigente} />
+              )}
+              {activeTab === "facturas" && (
+                <ClientInvoices client={clienteVigente} />
               )}
               {activeTab === "coverage" && (
                 <ClientCoverage client={clienteVigente} />
