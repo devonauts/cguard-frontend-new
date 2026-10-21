@@ -7814,7 +7814,8 @@
       "saveBtn": "Guardar",
       "vehicleOverstayLabel": "Vehículo con permanencia excedida",
       "vehicleOverstayHint": "Un vehículo lleva dentro más de los minutos que fijaste en Control vehicular › Reglas del puesto. Se avisa una sola vez por vehículo",
-      "columnPush": "Teléfono"
+      "columnPush": "Teléfono",
+      "payslipPublishedLabel": "Rol de pago publicado"
     },
     "festivos": {
       "loadError": "No se pudieron cargar los festivos.",
@@ -18055,7 +18056,8 @@
       "licenseExpiry": "Credenciales por vencer",
       "panicButton": "Botón de pánico",
       "ptoRequest": "Solicitudes de tiempo libre",
-      "taskCompleted": "Tareas completadas"
+      "taskCompleted": "Tareas completadas",
+      "payslipPublished": "Rol de pago publicado"
     },
     "hint": {
       "coverageUncovered": "Nadie llegó al puesto",

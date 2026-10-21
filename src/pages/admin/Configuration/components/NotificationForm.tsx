@@ -252,6 +252,13 @@ export default function NotificationMatrix() {
         default: { dashboard: true },
       },
       {
+        id: "payslip-published",
+        label: t("settings.notificationForm.payslipPublishedLabel", {
+          defaultValue: "Rol de pago publicado",
+        }),
+        default: { dashboard: true, push: true },
+      },
+      {
         id: "license-expiry",
         label: t("settings.notificationForm.licenseExpiryLabel", {
           defaultValue: "Expiración de Licencia",

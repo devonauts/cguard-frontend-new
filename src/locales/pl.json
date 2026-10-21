@@ -8326,7 +8326,8 @@
       "saveBtn": "Zapisz",
       "vehicleOverstayLabel": "Pojazd z przekroczonym czasem postoju",
       "vehicleOverstayHint": "Pojazd przebywa wewnątrz dłużej niż liczba minut ustawiona w Kontrola pojazdów › Zasady posterunku. Powiadomienie wysyłane jest raz na pojazd",
-      "columnPush": "Telefon"
+      "columnPush": "Telefon",
+      "payslipPublishedLabel": "Opublikowano pasek wypłaty"
     },
     "festivos": {
       "loadError": "Nie udało się wczytać dni świątecznych.",
@@ -18335,7 +18336,8 @@
       "licenseExpiry": "Kończące się licencje",
       "panicButton": "Alarm napadowy",
       "ptoRequest": "Wnioski o wolne",
-      "taskCompleted": "Wykonane zadania"
+      "taskCompleted": "Wykonane zadania",
+      "payslipPublished": "Opublikowano pasek wypłaty"
     },
     "hint": {
       "coverageUncovered": "Nikt nie stawił się na posterunku",

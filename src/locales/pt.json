@@ -3460,7 +3460,8 @@
       "saveBtn": "Guardar",
       "vehicleOverstayLabel": "Veículo com permanência excedida",
       "vehicleOverstayHint": "Um veículo está há mais tempo do que os minutos definidos em Controle veicular › Regras do posto. Avisa uma única vez por veículo",
-      "columnPush": "Telefone"
+      "columnPush": "Telefone",
+      "payslipPublishedLabel": "Holerite publicado"
     },
     "festivos": {
       "loadError": "Não foi possível carregar os feriados.",
@@ -18055,7 +18056,8 @@
       "licenseExpiry": "Credenciais a vencer",
       "panicButton": "Botão de pânico",
       "ptoRequest": "Solicitações de folga",
-      "taskCompleted": "Tarefas concluídas"
+      "taskCompleted": "Tarefas concluídas",
+      "payslipPublished": "Holerite publicado"
     },
     "hint": {
       "coverageUncovered": "Ninguém chegou ao posto",

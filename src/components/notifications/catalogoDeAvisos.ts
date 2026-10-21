@@ -495,6 +495,12 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
+    evento: "payslip.published",
+    familia: "generic",
+    prioridad: "normal",
+    catalogado: true,
+  },
+  {
     evento: "relevo.auto_entrada",
     familia: "shift",
     prioridad: "normal",

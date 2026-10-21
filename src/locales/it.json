@@ -8316,7 +8316,8 @@
       "saveBtn": "Salva",
       "vehicleOverstayLabel": "Veicolo con permanenza superata",
       "vehicleOverstayHint": "Un veicolo è dentro da più minuti di quelli che hai fissato in Controllo veicoli › Regole del posto. Si avvisa una sola volta per veicolo",
-      "columnPush": "Telefono"
+      "columnPush": "Telefono",
+      "payslipPublishedLabel": "Busta paga pubblicata"
     },
     "festivos": {
       "loadError": "Impossibile caricare le festività.",
@@ -18055,7 +18056,8 @@
       "licenseExpiry": "Abilitazioni in scadenza",
       "panicButton": "Pulsante antipanico",
       "ptoRequest": "Richieste di permesso",
-      "taskCompleted": "Attività completate"
+      "taskCompleted": "Attività completate",
+      "payslipPublished": "Busta paga pubblicata"
     },
     "hint": {
       "coverageUncovered": "Nessuno è arrivato al posto",

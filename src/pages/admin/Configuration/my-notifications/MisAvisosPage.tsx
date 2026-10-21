@@ -111,6 +111,11 @@ const FILAS: {
     label: "Solicitudes de tiempo libre",
   },
   {
+    id: "payslip-published",
+    labelKey: "misAvisos.fila.payslipPublished",
+    label: "Rol de pago publicado",
+  },
+  {
     id: "license-expiry",
     labelKey: "misAvisos.fila.licenseExpiry",
     label: "Credenciales por vencer",

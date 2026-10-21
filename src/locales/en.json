@@ -7814,7 +7814,8 @@
       "saveBtn": "Save",
       "vehicleOverstayLabel": "Vehicle staying too long",
       "vehicleOverstayHint": "A vehicle has been inside longer than the minutes you set in Vehicle control › Post rules. Notified once per vehicle",
-      "columnPush": "Phone"
+      "columnPush": "Phone",
+      "payslipPublishedLabel": "Payslip published"
     },
     "festivos": {
       "loadError": "The holidays couldn't be loaded.",
@@ -18055,7 +18056,8 @@
       "licenseExpiry": "Credentials about to expire",
       "panicButton": "Panic button",
       "ptoRequest": "Time-off requests",
-      "taskCompleted": "Tasks completed"
+      "taskCompleted": "Tasks completed",
+      "payslipPublished": "Payslip published"
     },
     "hint": {
       "coverageUncovered": "Nobody showed up at the post",

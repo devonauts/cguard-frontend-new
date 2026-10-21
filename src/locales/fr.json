@@ -8316,7 +8316,8 @@
       "saveBtn": "Enregistrer",
       "vehicleOverstayLabel": "Véhicule en dépassement de durée",
       "vehicleOverstayHint": "Un véhicule est à l'intérieur depuis plus longtemps que les minutes fixées dans Contrôle véhicules › Règles du poste. L'avis n'est envoyé qu'une fois par véhicule",
-      "columnPush": "Téléphone"
+      "columnPush": "Téléphone",
+      "payslipPublishedLabel": "Bulletin de paie publié"
     },
     "festivos": {
       "loadError": "Impossible de charger les jours fériés.",
@@ -18055,7 +18056,8 @@
       "licenseExpiry": "Habilitations bientôt expirées",
       "panicButton": "Bouton panique",
       "ptoRequest": "Demandes de congé",
-      "taskCompleted": "Tâches terminées"
+      "taskCompleted": "Tâches terminées",
+      "payslipPublished": "Bulletin de paie publié"
     },
     "hint": {
       "coverageUncovered": "Personne n'est arrivé au poste",

@@ -8316,7 +8316,8 @@
       "saveBtn": "Opslaan",
       "vehicleOverstayLabel": "Voertuig staat te lang binnen",
       "vehicleOverstayHint": "Een voertuig staat langer binnen dan het aantal minuten dat u heeft ingesteld bij Voertuigcontrole › Regels van de post. Er volgt één melding per voertuig",
-      "columnPush": "Telefoon"
+      "columnPush": "Telefoon",
+      "payslipPublishedLabel": "Loonstrook gepubliceerd"
     },
     "festivos": {
       "loadError": "De feestdagen konden niet worden geladen.",
@@ -18055,7 +18056,8 @@
       "licenseExpiry": "Aflopende passen",
       "panicButton": "Paniekknop",
       "ptoRequest": "Verlofaanvragen",
-      "taskCompleted": "Afgeronde taken"
+      "taskCompleted": "Afgeronde taken",
+      "payslipPublished": "Loonstrook gepubliceerd"
     },
     "hint": {
       "coverageUncovered": "Er is niemand op de post verschenen",

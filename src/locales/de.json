@@ -8316,7 +8316,8 @@
       "saveBtn": "Speichern",
       "vehicleOverstayLabel": "Fahrzeug überschreitet Aufenthaltsdauer",
       "vehicleOverstayHint": "Ein Fahrzeug befindet sich länger auf dem Gelände als die unter Fahrzeugkontrolle › Objektregeln festgelegten Minuten. Es wird nur einmal pro Fahrzeug benachrichtigt",
-      "columnPush": "Telefon"
+      "columnPush": "Telefon",
+      "payslipPublishedLabel": "Lohnabrechnung veröffentlicht"
     },
     "festivos": {
       "loadError": "Die Feiertage konnten nicht geladen werden.",
@@ -18055,7 +18056,8 @@
       "licenseExpiry": "Ablaufende Ausweise",
       "panicButton": "Notruftaste",
       "ptoRequest": "Abwesenheitsanträge",
-      "taskCompleted": "Erledigte Aufgaben"
+      "taskCompleted": "Erledigte Aufgaben",
+      "payslipPublished": "Lohnabrechnung veröffentlicht"
     },
     "hint": {
       "coverageUncovered": "Niemand ist am Objekt erschienen",
