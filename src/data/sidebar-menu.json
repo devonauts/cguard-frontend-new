@@ -487,6 +487,24 @@
         ]
       },
       {
+        "id": "nomina-roles-planillas",
+        "name": "Planillas de pago",
+        "path": "/nomina/roles/planillas",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollSlipRead"
+        ]
+      },
+      {
+        "id": "nomina-roles-novedades",
+        "name": "Novedades de nómina",
+        "path": "/nomina/roles/novedades",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollSlipRead"
+        ]
+      },
+      {
         "id": "nomina-roles-perfiles",
         "name": "Perfiles de pago",
         "path": "/nomina/roles/perfiles",

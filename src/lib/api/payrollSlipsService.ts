@@ -5,6 +5,7 @@ import i18n from "@/i18n";
  * siguiente entrega del módulo. Ver `backend/api/payrollSlips`.
  */
 import api from "../api";
+import { descargarInforme } from "@/lib/export/serverDownload";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
@@ -194,6 +195,100 @@ export interface SetupStatus {
   ready: boolean;
 }
 
+
+export type RunStatus = "generating" | "review" | "published" | "voided" | "error";
+export type SlipStatus = "draft" | "published" | "voided";
+export type AdjustmentKind = "bonus" | "fine" | "advance" | "deduction" | "refund" | "custom" | "loan_installment";
+
+export interface SlipLine {
+  code: string;
+  officialCode: string | null;
+  kind: ConceptKind;
+  name: string;
+  qty: number | null;
+  rate: number | null;
+  amountCents: number;
+  base?: string | null;
+  flags: { ss: boolean; tax: boolean };
+  source: "recurring" | "hours" | "adjustment" | "loan" | "tax" | "manual" | "fixed" | "contractor";
+  adjustmentId?: string | null;
+  loanId?: string | null;
+  note?: string | null;
+}
+
+export interface SlipAlert { code: string; message: string; severity: "info" | "warn" | "bad" }
+
+export interface PayrollRun {
+  id: string;
+  number: string;
+  periodFrom: string;
+  periodTo: string;
+  frequency: PayFrequency;
+  population: { roles: Population[]; userIds: string[] | null } | null;
+  currency: string;
+  status: RunStatus;
+  countryCode: string | null;
+  totals: { gross?: number; deductions?: number; net?: number; employer?: number; people?: number; alerts?: number; withoutTimecard?: number; jobId?: string; error?: string; computedAt?: string } | null;
+  settingsSnapshot?: SlipSettings | null;
+  generatedAt: string | null;
+  publishedAt: string | null;
+  voidedAt: string | null;
+  voidReason: string | null;
+}
+
+export interface PayrollSlipRow {
+  id: string;
+  runId: string;
+  userId: string;
+  number: string | null;
+  timecardId: string | null;
+  employmentType: "employee" | "contractor";
+  profileSnapshot: { name: string; population: Population; jobTitle: string | null; employeeNumber: string | null; payBasis: string; baseSalaryCents: number } & Record<string, unknown>;
+  lines?: SlipLine[];
+  grossCents: number | string;
+  deductionsCents: number | string;
+  netCents: number | string;
+  employerCostCents: number | string;
+  bases: { hourlyRateCents: number; baseSalaryCents: number; ssBaseCents: number; taxBaseCents: number; paidDays: number; hours: Record<HoursOf, number>; manualLines?: Array<{ code: string; amountCents: number; name?: string; kind?: ConceptKind; note?: string | null }> } | null;
+  alerts: SlipAlert[] | null;
+  status: SlipStatus;
+  hash: string | null;
+  publishedAt: string | null;
+  viewedAt: string | null;
+  run?: Pick<PayrollRun, "id" | "number" | "periodFrom" | "periodTo" | "currency" | "frequency">;
+}
+
+export interface PayrollAdjustment {
+  id: string;
+  userId: string;
+  conceptId: string | null;
+  kind: AdjustmentKind;
+  amountCents: number | string;
+  quantity: number | string | null;
+  periodFrom: string | null;
+  periodTo: string | null;
+  loanId: string | null;
+  runId: string | null;
+  note: string | null;
+  createdAt: string;
+  persona?: { id: string; fullName?: string; firstName?: string; lastName?: string } | null;
+  concept?: { id: string; code: string; name: Record<string, string>; kind: ConceptKind } | null;
+}
+
+export interface PayrollLoan {
+  id: string;
+  userId: string;
+  principalCents: number | string;
+  installments: number;
+  installmentCents: number | string;
+  paidInstallments: number;
+  balanceCents: number | string;
+  startsOn: string;
+  status: "active" | "paused" | "settled" | "cancelled";
+  note: string | null;
+  persona?: { id: string; fullName?: string; firstName?: string; lastName?: string } | null;
+}
+
 const base = () => `/tenant/${getTenantId()}/payroll/slips`;
 
 const payrollSlipsService = {
@@ -261,6 +356,93 @@ const payrollSlipsService = {
 
   async saveProfiles(rows: Array<Partial<PayrollProfile> & { userId: string }>): Promise<{ saved: number; errors: Array<{ userId: string; message: string }> }> {
     return unwrap(await api.put(`${base()}/profiles/bulk`, { data: { rows } }));
+  },
+
+  // ── Novedades y préstamos ─────────────────────────────────────────────────
+  async adjustments(filtro: { userId?: string; pending?: boolean; runId?: string } = {}): Promise<{ rows: PayrollAdjustment[]; count: number }> {
+    const q = new URLSearchParams();
+
+    if (filtro.userId) q.set("userId", filtro.userId);
+    if (filtro.pending) q.set("pending", "1");
+    if (filtro.runId) q.set("runId", filtro.runId);
+    const qs = q.toString();
+
+    return unwrap(await api.get(`${base()}/adjustments${qs ? `?${qs}` : ""}`));
+  },
+
+  async createAdjustment(a: Partial<PayrollAdjustment>): Promise<PayrollAdjustment> {
+    return unwrap(await api.post(`${base()}/adjustments`, { data: a }));
+  },
+
+  async updateAdjustment(id: string, a: Partial<PayrollAdjustment>): Promise<PayrollAdjustment> {
+    return unwrap(await api.put(`${base()}/adjustments/${encodeURIComponent(id)}`, { data: a }));
+  },
+
+  async deleteAdjustment(id: string): Promise<{ deleted: boolean }> {
+    return unwrap(await api.delete(`${base()}/adjustments/${encodeURIComponent(id)}`));
+  },
+
+  async loans(filtro: { userId?: string; status?: string } = {}): Promise<{ rows: PayrollLoan[]; count: number }> {
+    const q = new URLSearchParams();
+
+    if (filtro.userId) q.set("userId", filtro.userId);
+    if (filtro.status) q.set("status", filtro.status);
+    const qs = q.toString();
+
+    return unwrap(await api.get(`${base()}/loans${qs ? `?${qs}` : ""}`));
+  },
+
+  async createLoan(l: Partial<PayrollLoan>): Promise<PayrollLoan> {
+    return unwrap(await api.post(`${base()}/loans`, { data: l }));
+  },
+
+  async updateLoan(id: string, l: Partial<PayrollLoan>): Promise<PayrollLoan> {
+    return unwrap(await api.put(`${base()}/loans/${encodeURIComponent(id)}`, { data: l }));
+  },
+
+  // ── Corridas y roles ──────────────────────────────────────────────────────
+  async runs(): Promise<{ rows: PayrollRun[]; count: number }> {
+    return unwrap(await api.get(`${base()}/runs`));
+  },
+
+  async createRun(body: { from: string; to?: string; populations?: Population[]; userIds?: string[] }): Promise<PayrollRun> {
+    return unwrap(await api.post(`${base()}/runs`, { data: body }));
+  },
+
+  async run(id: string): Promise<{ run: PayrollRun; slips: PayrollSlipRow[] }> {
+    return unwrap(await api.get(`${base()}/runs/${encodeURIComponent(id)}`));
+  },
+
+  async recompute(id: string): Promise<{ run: PayrollRun; slips: PayrollSlipRow[] }> {
+    return unwrap(await api.post(`${base()}/runs/${encodeURIComponent(id)}/recompute`, { data: {} }));
+  },
+
+  async publish(id: string): Promise<{ run: PayrollRun; slips: PayrollSlipRow[] }> {
+    return unwrap(await api.post(`${base()}/runs/${encodeURIComponent(id)}/publish`, { data: {} }));
+  },
+
+  async void(id: string, reason: string): Promise<PayrollRun> {
+    return unwrap(await api.post(`${base()}/runs/${encodeURIComponent(id)}/void`, { data: { reason } }));
+  },
+
+  async downloadSheet(run: PayrollRun, format: "pdf" | "xlsx"): Promise<void> {
+    await descargarInforme(`${base()}/runs/${encodeURIComponent(run.id)}/download?format=${format}`, { format: format === "pdf" ? "pdf" : "excel", nombreBase: `${run.number}_${run.periodFrom}_${run.periodTo}` });
+  },
+
+  async slip(id: string): Promise<{ slip: PayrollSlipRow; run: PayrollRun | null }> {
+    return unwrap(await api.get(`${base()}/slips/${encodeURIComponent(id)}`));
+  },
+
+  async slipsOf(userId: string, all = false): Promise<{ rows: PayrollSlipRow[]; count: number }> {
+    return unwrap(await api.get(`${base()}/slips?userId=${encodeURIComponent(userId)}${all ? "&all=1" : ""}`));
+  },
+
+  async setLine(slipId: string, line: { code: string; amountCents?: number; name?: string; kind?: ConceptKind; note?: string | null; remove?: boolean }): Promise<{ slip: PayrollSlipRow; run: PayrollRun | null }> {
+    return unwrap(await api.put(`${base()}/slips/${encodeURIComponent(slipId)}/line`, { data: line }));
+  },
+
+  async downloadSlip(slip: PayrollSlipRow): Promise<void> {
+    await descargarInforme(`${base()}/slips/${encodeURIComponent(slip.id)}/download`, { format: "pdf", nombreBase: `${slip.number || "borrador"}_${slip.profileSnapshot?.name || ""}` });
   },
 };
 

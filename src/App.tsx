@@ -398,6 +398,18 @@ const CatalogoDeConceptos = lazy(
 const PerfilesDePago = lazy(
   () => import("./pages/admin/nomina/roles/PerfilesDePago"),
 );
+const NovedadesDeNomina = lazy(
+  () => import("./pages/admin/nomina/roles/NovedadesDeNomina"),
+);
+const CorridasDePago = lazy(
+  () => import("./pages/admin/nomina/roles/CorridasDePago"),
+);
+const CorridaDetalle = lazy(
+  () => import("./pages/admin/nomina/roles/CorridaDetalle"),
+);
+const RolIndividual = lazy(
+  () => import("./pages/admin/nomina/roles/RolIndividual"),
+);
 const Visitors = lazy(
   () => import("./pages/admin/visitor-management/Visitors"),
 );
@@ -2139,6 +2151,38 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/roles/perfiles"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <NovedadesDeNomina />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles/novedades"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CorridasDePago />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles/planillas"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CorridaDetalle />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles/planillas/:id"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <RolIndividual />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/roles/rol/:id"
                               />
                               <Route
                                 element={

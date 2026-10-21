@@ -9,17 +9,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Building2, CheckCircle2, FileSpreadsheet, Globe2, ListChecks, Settings2, Users } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
-import { PageContainer, PageHeader, Section, SkeletonCards, InfoNote, StatCard, FormField, FIELD_CLS } from "@/components/kit";
+import { PageContainer, PageHeader, Section, SkeletonCards, InfoNote, StatCard, FormField, FIELD_CLS, ListRow, StatusBadge } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type SlipSettings, type PayFrequency, type DoubleShiftMode } from "@/lib/api/payrollSlipsService";
 import { PresentacionDelModulo, useModuloRoles, nombreDePais, nombreDeConcepto, dinero, useEtiquetas, MoneyInput } from "./comun";
 import { TablaDePerfiles } from "./TablaDePerfiles";
+import { NuevaCorrida, useEstadoDeCorrida } from "./CorridasDePago";
 
 type Paso = "pais" | "empresa" | "personas" | "listo";
 
@@ -81,11 +82,7 @@ function Portada({ datos }: { datos: Awaited<ReturnType<typeof payrollSlipsServi
         </InfoNote>
       )}
 
-      <Section icon={<FileSpreadsheet />} title={t("ui.RolesDePago.portada.corridas", "Planillas del periodo")}>
-        <InfoNote tone="info">
-          {t("ui.RolesDePago.portada.corridasPronto", "La generación de la planilla y de los roles individuales se habilita en la siguiente actualización del módulo. Mientras tanto deja listos los conceptos y los perfiles de pago.")}
-        </InfoNote>
-      </Section>
+      <UltimasPlanillas decimals={2} />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Acceso to="/nomina/roles/configuracion" icon={<Settings2 />} titulo={t("ui.RolesDePago.portada.configurar", "Configuración")} desc={t("ui.RolesDePago.portada.configurarDesc", "País, sueldo base, jornada, dobladas, renta y documento.")} />
@@ -93,6 +90,44 @@ function Portada({ datos }: { datos: Awaited<ReturnType<typeof payrollSlipsServi
         <Acceso to="/nomina/roles/perfiles" icon={<Users />} titulo={t("ui.RolesDePago.portada.perfiles", "Perfiles de pago")} desc={t("ui.RolesDePago.portada.perfilesDesc", "Sueldo, vínculo y datos legales de cada persona.")} />
       </div>
     </div>
+  );
+}
+
+/** Las últimas planillas y el botón de crear una (la lista completa está en Planillas). */
+function UltimasPlanillas({ decimals }: { decimals: 0 | 2 }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { hasPermission } = usePermissions();
+  const estado = useEstadoDeCorrida();
+  const [nueva, setNueva] = useState(false);
+  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false });
+  const corridas = useQuery({ queryKey: ["payroll-slips", "runs"], queryFn: () => payrollSlipsService.runs(), retry: false });
+  const filas = (corridas.data?.rows ?? []).slice(0, 5);
+
+  return (
+    <Section
+      icon={<FileSpreadsheet />}
+      title={t("ui.RolesDePago.portada.corridas", "Planillas del periodo")}
+      action={hasPermission("payrollSlipEdit") ? <Button size="sm" variant="brand" onClick={() => setNueva(true)}>{t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}</Button> : undefined}
+    >
+      {!filas.length ? (
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.RolesDePago.corridas.vacioDesc", "Crea la primera eligiendo el día en que empieza el periodo.")}</p>
+      ) : (
+        <div className="space-y-2">
+          {filas.map((r) => (
+            <ListRow
+              key={r.id}
+              title={`${r.number} · ${r.periodFrom} → ${r.periodTo}`}
+              subtitle={r.totals?.people ? t("ui.RolesDePago.corridas.resumen", "{{n}} personas · neto {{neto}}", { n: r.totals.people, neto: dinero(r.totals.net || 0, r.currency, decimals) }) : undefined}
+              badges={<StatusBadge tone={estado.tone[r.status]}>{estado.label[r.status]}</StatusBadge>}
+              onClick={() => navigate(`/nomina/roles/planillas/${r.id}`)}
+            />
+          ))}
+          <div className="cg-acciones justify-end"><Button size="sm" variant="ghost" onClick={() => navigate("/nomina/roles/planillas")}>{t("ui.RolesDePago.portada.todasLasPlanillas", "Ver todas las planillas")}</Button></div>
+        </div>
+      )}
+      {nueva && vista.data && <NuevaCorrida frequency={vista.data.settings.frequency} onClose={() => setNueva(false)} onCreated={(r) => { setNueva(false); navigate(`/nomina/roles/planillas/${r.id}`); }} />}
+    </Section>
   );
 }
 
