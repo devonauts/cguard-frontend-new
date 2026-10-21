@@ -18502,8 +18502,14 @@
       "cancelarActivo": "Er wordt niets meer afgeschreven. U houdt {{nombre}} tot {{fecha}}.",
       "noSeRenovara": "Klaar: wordt niet verlengd.",
       "paraSeguir": "Om {{nombre}} na de proef te houden, rond eerst de betaling van de implementatie af.",
-      "masDeVigilantes": "Meer dan {{n}} beveiligers"
-    }
+      "masDeVigilantes": "Meer dan {{n}} beveiligers",
+      "verComoFunciona": "Bekijk hoe het werkt",
+      "ocultarDemo": "Demo verbergen",
+      "pruebaSinSeguir": "Proef tot {{fecha}} · loopt daarna niet door",
+      "sinTarjeta": "Geen kaart nodig. Aan het einde beslis je of je doorgaat."
+    },
+    "interruptor": "{{nombre}} in- of uitschakelen",
+    "paraSiempre": "Eenmalige betaling · voor altijd van jou"
   },
   "sucursales": {
     "titulo": "Vestigingen",

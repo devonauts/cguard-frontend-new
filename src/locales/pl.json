@@ -18786,8 +18786,14 @@
       "cancelarActivo": "Nic więcej nie pobierzemy. {{nombre}} działa do {{fecha}}.",
       "noSeRenovara": "Gotowe: nie zostanie odnowiony.",
       "paraSeguir": "Aby zachować {{nombre}} po próbie, najpierw opłać wdrożenie.",
-      "masDeVigilantes": "Ponad {{n}} pracowników"
-    }
+      "masDeVigilantes": "Ponad {{n}} pracowników",
+      "verComoFunciona": "Zobacz, jak to działa",
+      "ocultarDemo": "Ukryj prezentację",
+      "pruebaSinSeguir": "Okres próbny do {{fecha}} · potem nie będzie kontynuowany",
+      "sinTarjeta": "Bez karty. Na koniec decydujesz, czy kontynuować."
+    },
+    "interruptor": "Włącz lub wyłącz {{nombre}}",
+    "paraSiempre": "Płatność jednorazowa · na zawsze Twoje"
   },
   "sucursales": {
     "titulo": "Oddziały",

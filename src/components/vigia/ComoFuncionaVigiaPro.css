@@ -54,7 +54,8 @@
 .cfv-orbe[data-late]::after { animation: cfv-onda 0.9s ease-out; }
 @keyframes cfv-onda { from { opacity: 0.8; transform: scale(1); } to { opacity: 0; transform: scale(1.7); } }
 .cfv-nombre { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); background: var(--float); border: 1px solid var(--hairline); border-radius: 999px; padding: 4px 9px; }
-.cfv-pensando { font-size: 12px; color: var(--brand-text); min-height: 18px; text-align: center; max-width: 260px; }
+/* Una sola línea, siempre de 18 px: un pensamiento largo se recorta en vez de empujar lo de abajo. */
+.cfv-pensando { font-size: 12px; color: var(--brand-text); height: 18px; line-height: 18px; text-align: center; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── El puesto en el mapa ───────────────────────────────────────── */
 .cfv-puesto { position: absolute; left: 50%; top: 68%; transform: translate(-50%, -100%); display: grid; justify-items: center; gap: 6px; }
@@ -125,8 +126,12 @@
 .cfv-vacio { margin: auto; text-align: center; font-size: 12px; color: var(--ink-faint); }
 
 /* ── Bitácora ───────────────────────────────────────────────────── */
-.cfv-bitacora { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.cfv-bitacora li { display: grid; grid-template-columns: 44px 10px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 7px 12px; border: 1px solid var(--hairline); border-radius: 12px; font-size: 13px; animation: cfv-entra 0.35s both; }
+/* ALTO FIJO: cuatro filas de 38 px pegadas abajo; las nuevas entran por abajo y
+   las viejas salen por arriba. Así la caja —y la tarjeta de la tienda— mide lo
+   mismo en el segundo 0 y en el 12, en las tres escenas. */
+.cfv-bitacora { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; grid-auto-rows: 38px; align-content: end; height: calc(4 * 38px + 3 * 6px); overflow: hidden; }
+.cfv-bitacora li { display: grid; grid-template-columns: 44px 10px minmax(0, 1fr); gap: 10px; align-items: center; height: 38px; padding: 0 12px; border: 1px solid var(--hairline); border-radius: 12px; font-size: 13px; animation: cfv-entra 0.35s both; }
+.cfv-bitacora li > span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cfv-bitacora .h { font-size: 12px; font-weight: 600; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
 .cfv-bitacora .p { width: 8px; height: 8px; border-radius: 50%; align-self: center; background: var(--ink-faint); }
 .cfv-bitacora .p[data-tono="bad"] { background: var(--bad); }

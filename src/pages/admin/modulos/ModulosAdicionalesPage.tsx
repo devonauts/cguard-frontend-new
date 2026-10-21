@@ -5,8 +5,11 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Puzzle, CheckCircle2, ExternalLink } from "lucide-react";
 
+import TarjetaModuloMensual from "./TarjetaModuloMensual";
+
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import {
   PageContainer,
@@ -15,6 +18,7 @@ import {
   StatusBadge,
   EmptyState,
   SkeletonCards,
+  FadeIn,
 } from "@/components/kit";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
@@ -22,7 +26,6 @@ import {
   modulosAdicionalesService,
   type ModuloEnTienda,
 } from "@/lib/api/modulosAdicionalesService";
-import TarjetaModuloMensual from "./TarjetaModuloMensual";
 
 /**
  * MÓDULOS ADICIONALES — lo que la empresa compra aparte.
@@ -33,12 +36,25 @@ import TarjetaModuloMensual from "./TarjetaModuloMensual";
  * pide verificación, se abre el pago de Stripe y el módulo se activa al
  * completarlo.
  *
+ * ── FORMA DE LA PÁGINA (2026-10-20) ─────────────────────────────────────
+ * Cada módulo tiene un INTERRUPTOR en la cabecera: encender es contratar
+ * (prueba, compra o suscripción, con su confirmación cuando hay dinero) y
+ * apagar es dejar de renovar. Un pago único no se apaga —es suyo para
+ * siempre— y su interruptor queda encendido y bloqueado.
+ *
+ * Las tarjetas van en una rejilla de dos columnas (una en el teléfono) con la
+ * misma altura por fila; la del módulo mensual ocupa el ancho entero porque
+ * lleva los tramos de precio. Entran escalonadas (`FadeIn`) y una tarjeta que
+ * crece —al abrir la demostración— mueve a las demás con `layout`, sin saltos.
+ *
  * Nombre y descripción llegan ya traducidos del servidor; todo lo demás sale
  * de `modulosAdicionales.*` en los 8 idiomas del CRM.
  */
 function precio(cents: number, currency: string, lang: string) {
   try {
-    return new Intl.NumberFormat(lang, { style: "currency", currency }).format(cents / 100);
+    return new Intl.NumberFormat(lang, { style: "currency", currency }).format(
+      cents / 100,
+    );
   } catch {
     return `$${(cents / 100).toFixed(2)}`;
   }
@@ -63,8 +79,13 @@ export default function ModulosAdicionalesPage() {
       m.status === "pending_payment" ||
       (await confirmDialog({
         title: t("modulosAdicionales.confirmar.titulo", { nombre: m.name }),
-        message: t("modulosAdicionales.confirmar.mensaje", { nombre: m.name, precio: cuanto }),
-        confirmText: t("modulosAdicionales.confirmar.boton", { precio: cuanto }),
+        message: t("modulosAdicionales.confirmar.mensaje", {
+          nombre: m.name,
+          precio: cuanto,
+        }),
+        confirmText: t("modulosAdicionales.confirmar.boton", {
+          precio: cuanto,
+        }),
         cancelText: t("common.cancel", { defaultValue: "Cancelar" }),
       }));
 
@@ -96,10 +117,18 @@ export default function ModulosAdicionalesPage() {
   };
 
   const esDeSocio = data?.reason === "la_factura_el_socio";
+  /* Los mensuales primero y a lo ancho; los de pago único después, de dos en dos. */
+  const modulos = data
+    ? [...data.modules].sort(
+        (a, b) =>
+          Number(b.billingType === "monthly_tiers") -
+          Number(a.billingType === "monthly_tiers"),
+      )
+    : [];
 
   return (
     <AppLayout>
-      <PageContainer width="narrow">
+      <PageContainer>
         <PageHeader
           icon={<Puzzle />}
           subtitle={t("modulosAdicionales.subtitulo")}
@@ -117,94 +146,144 @@ export default function ModulosAdicionalesPage() {
         ) : (
           <div className="space-y-4">
             {esDeSocio && (
-              <Section title={t("modulosAdicionales.socio.titulo")}>
-                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  {t("modulosAdicionales.socio.desc")}
-                </p>
-              </Section>
-            )}
-            {!data.canPurchase && !esDeSocio && data.reason && data.modules.some((m) => m.billingType !== "monthly_tiers") && (
-              <Section>
-                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  {textoDeMotivo(data.reason)}{" "}
-                  <Link className="underline" to="/setting/billing">
-                    {t("modulosAdicionales.irAFacturacion")}
-                  </Link>
-                </p>
-              </Section>
-            )}
-
-            {data.modules.map((m) => {
-              // Los mensuales (VigIA Pro) tienen su propia tarjeta: tramos, prueba y renovación.
-              if (m.billingType === "monthly_tiers") {
-                return (
-                  <TarjetaModuloMensual
-                    key={m.key}
-                    canPurchase={data.canPurchase}
-                    esDeSocio={esDeSocio}
-                    m={m}
-                    reason={data.reason}
-                  />
-                );
-              }
-              const tiene = m.owned;
-              const pendiente = m.status === "pending_payment";
-
-              return (
-                <Section
-                  key={m.key}
-                  action={
-                    tiene ? (
-                      <StatusBadge tone="ok">{t("modulosAdicionales.activo")}</StatusBadge>
-                    ) : pendiente ? (
-                      <StatusBadge tone="warn">{t("modulosAdicionales.pendiente")}</StatusBadge>
-                    ) : undefined
-                  }
-                  icon={<Puzzle />}
-                  title={m.name}
-                >
+              <FadeIn>
+                <Section title={t("modulosAdicionales.socio.titulo")}>
                   <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                    {m.description}
+                    {t("modulosAdicionales.socio.desc")}
                   </p>
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm">
-                      <span className="text-lg font-semibold">
-                        {precio(m.priceCents, m.currency, i18n.language)}
-                      </span>{" "}
-                      <span style={{ color: "var(--ink-faint)" }}>
-                        · {t("modulosAdicionales.pagoUnico")}
-                      </span>
-                    </p>
-                    {tiene ? (
-                      <span className="inline-flex items-center gap-1.5 text-sm" style={{ color: "var(--ink-soft)" }}>
-                        <CheckCircle2 className="h-4 w-4" /> {t("modulosAdicionales.yaEsTuyo")}
-                      </span>
-                    ) : esDeSocio ? null : pendiente ? (
-                      <Button
-                        disabled={comprando === m.key}
-                        type="button"
-                        variant="outline"
-                        onClick={() => comprar(m)}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        {t("modulosAdicionales.completarPago")}
-                      </Button>
-                    ) : data.canPurchase ? (
-                      <Button
-                        disabled={comprando === m.key}
-                        type="button"
-                        variant="brand"
-                        onClick={() => comprar(m)}
-                      >
-                        {comprando === m.key
-                          ? t("modulosAdicionales.comprando")
-                          : t("modulosAdicionales.comprar")}
-                      </Button>
-                    ) : null}
-                  </div>
                 </Section>
-              );
-            })}
+              </FadeIn>
+            )}
+            {!data.canPurchase &&
+              !esDeSocio &&
+              data.reason &&
+              data.modules.some((m) => m.billingType !== "monthly_tiers") && (
+                <FadeIn>
+                  <Section>
+                    <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                      {textoDeMotivo(data.reason)}{" "}
+                      <Link className="underline" to="/setting/billing">
+                        {t("modulosAdicionales.irAFacturacion")}
+                      </Link>
+                    </p>
+                  </Section>
+                </FadeIn>
+              )}
+
+            <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
+              {modulos.map((m, i) => {
+                // Los mensuales (VigIA Pro) tienen su propia tarjeta: tramos, prueba y renovación.
+                if (m.billingType === "monthly_tiers") {
+                  return (
+                    <FadeIn
+                      key={m.key}
+                      layout
+                      className="sm:col-span-2"
+                      delay={i * 0.06}
+                    >
+                      <TarjetaModuloMensual
+                        canPurchase={data.canPurchase}
+                        esDeSocio={esDeSocio}
+                        m={m}
+                        reason={data.reason}
+                      />
+                    </FadeIn>
+                  );
+                }
+                const tiene = m.owned;
+                const pendiente = m.status === "pending_payment";
+                const ocupado = comprando === m.key;
+                /* Encender = comprar. Un pago único no se apaga: es suyo para siempre. */
+                const puedeEncender =
+                  !tiene && !esDeSocio && (pendiente || data.canPurchase);
+
+                return (
+                  <FadeIn
+                    key={m.key}
+                    layout
+                    className="flex flex-col"
+                    delay={i * 0.06}
+                  >
+                    <Section
+                      action={
+                        <div className="flex items-center gap-3">
+                          {tiene ? (
+                            <StatusBadge tone="ok">
+                              {t("modulosAdicionales.activo")}
+                            </StatusBadge>
+                          ) : pendiente ? (
+                            <StatusBadge tone="warn">
+                              {t("modulosAdicionales.pendiente")}
+                            </StatusBadge>
+                          ) : null}
+                          <Switch
+                            aria-label={t("modulosAdicionales.interruptor", {
+                              nombre: m.name,
+                            })}
+                            checked={tiene}
+                            disabled={ocupado || tiene || !puedeEncender}
+                            onCheckedChange={(on) => {
+                              if (on) void comprar(m);
+                            }}
+                          />
+                        </div>
+                      }
+                      className="flex flex-1 flex-col"
+                      contentClassName="flex flex-1 flex-col"
+                      icon={<Puzzle />}
+                      title={m.name}
+                    >
+                      <p
+                        className="text-sm"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {m.description}
+                      </p>
+                      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-4">
+                        <p className="text-sm">
+                          <span className="text-lg font-semibold">
+                            {precio(m.priceCents, m.currency, i18n.language)}
+                          </span>{" "}
+                          <span style={{ color: "var(--ink-faint)" }}>
+                            · {t("modulosAdicionales.pagoUnico")}
+                          </span>
+                        </p>
+                        {tiene ? (
+                          <span
+                            className="inline-flex items-center gap-1.5 text-sm"
+                            style={{ color: "var(--ink-soft)" }}
+                          >
+                            <CheckCircle2 className="h-4 w-4" />{" "}
+                            {t("modulosAdicionales.paraSiempre")}
+                          </span>
+                        ) : esDeSocio ? null : pendiente ? (
+                          <Button
+                            disabled={ocupado}
+                            type="button"
+                            variant="outline"
+                            onClick={() => comprar(m)}
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            {t("modulosAdicionales.completarPago")}
+                          </Button>
+                        ) : data.canPurchase ? (
+                          <Button
+                            disabled={ocupado}
+                            type="button"
+                            variant="brand"
+                            onClick={() => comprar(m)}
+                          >
+                            {ocupado
+                              ? t("modulosAdicionales.comprando")
+                              : t("modulosAdicionales.comprar")}
+                          </Button>
+                        ) : null}
+                      </div>
+                    </Section>
+                  </FadeIn>
+                );
+              })}
+            </div>
           </div>
         )}
       </PageContainer>

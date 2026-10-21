@@ -18502,8 +18502,14 @@
       "cancelarActivo": "Es wird nichts mehr abgebucht. Sie behalten {{nombre}} bis {{fecha}}.",
       "noSeRenovara": "Erledigt: wird nicht verlängert.",
       "paraSeguir": "Um {{nombre}} nach dem Test zu behalten, schließen Sie zuerst die Zahlung der Einrichtung ab.",
-      "masDeVigilantes": "Mehr als {{n}} Wachpersonen"
-    }
+      "masDeVigilantes": "Mehr als {{n}} Wachpersonen",
+      "verComoFunciona": "So funktioniert es",
+      "ocultarDemo": "Demo ausblenden",
+      "pruebaSinSeguir": "Testphase bis {{fecha}} · läuft danach nicht weiter",
+      "sinTarjeta": "Ohne Karte. Am Ende entscheiden Sie, ob es weitergeht."
+    },
+    "interruptor": "{{nombre}} ein- oder ausschalten",
+    "paraSiempre": "Einmalzahlung · gehört Ihnen für immer"
   },
   "sucursales": {
     "titulo": "Niederlassungen",
