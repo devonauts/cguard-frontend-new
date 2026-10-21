@@ -18506,7 +18506,13 @@
       "verComoFunciona": "Voir comment ça marche",
       "ocultarDemo": "Masquer la démonstration",
       "pruebaSinSeguir": "Essai jusqu’au {{fecha}} · ne continuera pas ensuite",
-      "sinTarjeta": "Sans carte. À la fin, vous décidez de continuer."
+      "sinTarjeta": "Sans carte. À la fin, vous décidez de continuer.",
+      "cuotaMensual": "Abonnement mensuel",
+      "tramoSiguiente": "Plus de {{n}} agents : {{precio}}{{periodo}}",
+      "pruebaHasta": "Essai gratuit jusqu’au {{fecha}} · sans carte",
+      "anualCorto": "Annuel",
+      "mesesGratis": "Annuel : {{n}} mois offerts",
+      "demo": "Demo"
     },
     "interruptor": "Activer ou désactiver {{nombre}}",
     "paraSiempre": "Paiement unique · à vous pour toujours"

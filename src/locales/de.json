@@ -18506,7 +18506,13 @@
       "verComoFunciona": "So funktioniert es",
       "ocultarDemo": "Demo ausblenden",
       "pruebaSinSeguir": "Testphase bis {{fecha}} · läuft danach nicht weiter",
-      "sinTarjeta": "Ohne Karte. Am Ende entscheiden Sie, ob es weitergeht."
+      "sinTarjeta": "Ohne Karte. Am Ende entscheiden Sie, ob es weitergeht.",
+      "cuotaMensual": "Monatsgebühr",
+      "tramoSiguiente": "Mehr als {{n}} Wachleute: {{precio}}{{periodo}}",
+      "pruebaHasta": "Kostenlose Testphase bis {{fecha}} · ohne Karte",
+      "anualCorto": "Jährlich",
+      "mesesGratis": "Jährlich: {{n}} Monate gratis",
+      "demo": "Demo"
     },
     "interruptor": "{{nombre}} ein- oder ausschalten",
     "paraSiempre": "Einmalzahlung · gehört Ihnen für immer"

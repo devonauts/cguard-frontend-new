@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Puzzle, CheckCircle2, ExternalLink } from "lucide-react";
 
+import TarjetaModulo, { Cifra } from "./TarjetaModulo";
 import TarjetaModuloMensual from "./TarjetaModuloMensual";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import {
   PageContainer,
@@ -31,30 +31,29 @@ import {
  * MÓDULOS ADICIONALES — lo que la empresa compra aparte.
  *
  * Un módulo de pago ÚNICO queda para siempre; uno MENSUAL (VigIA Pro) tiene
- * su propia tarjeta (`TarjetaModuloMensual`). Se cobra a la tarjeta que
- * la empresa ya tiene en su suscripción: aquí sólo se confirma. Si el banco
- * pide verificación, se abre el pago de Stripe y el módulo se activa al
- * completarlo.
+ * su propia lógica (`TarjetaModuloMensual`). Se cobra a la tarjeta que la
+ * empresa ya tiene en su suscripción: aquí sólo se confirma. Si el banco pide
+ * verificación, se abre el pago de Stripe y el módulo se activa al completarlo.
  *
- * ── FORMA DE LA PÁGINA (2026-10-20) ─────────────────────────────────────
- * Cada módulo tiene un INTERRUPTOR en la cabecera: encender es contratar
- * (prueba, compra o suscripción, con su confirmación cuando hay dinero) y
- * apagar es dejar de renovar. Un pago único no se apaga —es suyo para
- * siempre— y su interruptor queda encendido y bloqueado.
- *
- * Las tarjetas van en una rejilla de dos columnas (una en el teléfono) con la
- * misma altura por fila; la del módulo mensual ocupa el ancho entero porque
- * lleva los tramos de precio. Entran escalonadas (`FadeIn`) y una tarjeta que
- * crece —al abrir la demostración— mueve a las demás con `layout`, sin saltos.
+ * ── FORMA DE LA PÁGINA (2026-10-21) ─────────────────────────────────────
+ * Todos los módulos van en la MISMA tarjeta (`TarjetaModulo`), del mismo
+ * tamaño, en una rejilla de hasta tres columnas (una en el teléfono). Cada
+ * tarjeta lleva un INTERRUPTOR: encender es contratar (prueba, compra o
+ * suscripción, con su confirmación cuando hay dinero) y apagar es dejar de
+ * renovar. Un pago único no se apaga —es suyo para siempre— y su interruptor
+ * queda encendido y bloqueado. Las tarjetas entran escalonadas y se elevan al
+ * pasar el ratón.
  *
  * Nombre y descripción llegan ya traducidos del servidor; todo lo demás sale
  * de `modulosAdicionales.*` en los 8 idiomas del CRM.
  */
 function precio(cents: number, currency: string, lang: string) {
   try {
-    return new Intl.NumberFormat(lang, { style: "currency", currency }).format(
-      cents / 100,
-    );
+    return new Intl.NumberFormat(lang, {
+      style: "currency",
+      currency,
+      maximumFractionDigits: cents % 100 ? 2 : 0,
+    }).format(cents / 100);
   } catch {
     return `$${(cents / 100).toFixed(2)}`;
   }
@@ -117,7 +116,7 @@ export default function ModulosAdicionalesPage() {
   };
 
   const esDeSocio = data?.reason === "la_factura_el_socio";
-  /* Los mensuales primero y a lo ancho; los de pago único después, de dos en dos. */
+  /* Los mensuales primero; luego los de pago único. */
   const modulos = data
     ? [...data.modules].sort(
         (a, b) =>
@@ -136,7 +135,7 @@ export default function ModulosAdicionalesPage() {
         />
 
         {isLoading ? (
-          <SkeletonCards count={2} />
+          <SkeletonCards count={3} />
         ) : isError || !data || !data.modules.length ? (
           <EmptyState
             description={t("modulosAdicionales.vacio.desc")}
@@ -170,24 +169,18 @@ export default function ModulosAdicionalesPage() {
                 </FadeIn>
               )}
 
-            <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {modulos.map((m, i) => {
-                // Los mensuales (VigIA Pro) tienen su propia tarjeta: tramos, prueba y renovación.
                 if (m.billingType === "monthly_tiers") {
                   return (
-                    <FadeIn
+                    <TarjetaModuloMensual
                       key={m.key}
-                      layout
-                      className="sm:col-span-2"
-                      delay={i * 0.06}
-                    >
-                      <TarjetaModuloMensual
-                        canPurchase={data.canPurchase}
-                        esDeSocio={esDeSocio}
-                        m={m}
-                        reason={data.reason}
-                      />
-                    </FadeIn>
+                      canPurchase={data.canPurchase}
+                      delay={i * 0.08}
+                      esDeSocio={esDeSocio}
+                      m={m}
+                      reason={data.reason}
+                    />
                   );
                 }
                 const tiene = m.owned;
@@ -196,65 +189,43 @@ export default function ModulosAdicionalesPage() {
                 /* Encender = comprar. Un pago único no se apaga: es suyo para siempre. */
                 const puedeEncender =
                   !tiene && !esDeSocio && (pendiente || data.canPurchase);
+                const situacionTexto = tiene
+                  ? t("modulosAdicionales.paraSiempre")
+                  : pendiente
+                    ? t("modulosAdicionales.pendienteAviso")
+                    : null;
 
                 return (
-                  <FadeIn
+                  <TarjetaModulo
                     key={m.key}
-                    layout
-                    className="flex flex-col"
-                    delay={i * 0.06}
-                  >
-                    <Section
-                      action={
-                        <div className="flex items-center gap-3">
-                          {tiene ? (
-                            <StatusBadge tone="ok">
-                              {t("modulosAdicionales.activo")}
-                            </StatusBadge>
-                          ) : pendiente ? (
-                            <StatusBadge tone="warn">
-                              {t("modulosAdicionales.pendiente")}
-                            </StatusBadge>
-                          ) : null}
-                          <Switch
-                            aria-label={t("modulosAdicionales.interruptor", {
-                              nombre: m.name,
-                            })}
-                            checked={tiene}
-                            disabled={ocupado || tiene || !puedeEncender}
-                            onCheckedChange={(on) => {
-                              if (on) void comprar(m);
-                            }}
-                          />
-                        </div>
-                      }
-                      className="flex flex-1 flex-col"
-                      contentClassName="flex flex-1 flex-col"
-                      icon={<Puzzle />}
-                      title={m.name}
-                    >
-                      <p
-                        className="text-sm"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        {m.description}
-                      </p>
-                      <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-4">
-                        <p className="text-sm">
-                          <span className="text-lg font-semibold">
-                            {precio(m.priceCents, m.currency, i18n.language)}
-                          </span>{" "}
-                          <span style={{ color: "var(--ink-faint)" }}>
-                            · {t("modulosAdicionales.pagoUnico")}
-                          </span>
-                        </p>
+                    delay={i * 0.08}
+                    description={m.description}
+                    icon={<Puzzle />}
+                    interruptor={{
+                      checked: tiene,
+                      disabled: ocupado || tiene || !puedeEncender,
+                      onChange: (on) => {
+                        if (on) void comprar(m);
+                      },
+                      label: t("modulosAdicionales.interruptor", {
+                        nombre: m.name,
+                      }),
+                    }}
+                    kicker={t("modulosAdicionales.pagoUnico")}
+                    name={m.name}
+                    pie={
+                      <>
+                        <span />
                         {tiene ? (
                           <span
                             className="inline-flex items-center gap-1.5 text-sm"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            <CheckCircle2 className="h-4 w-4" />{" "}
-                            {t("modulosAdicionales.paraSiempre")}
+                            <CheckCircle2
+                              className="h-4 w-4"
+                              style={{ color: "var(--ok)" }}
+                            />{" "}
+                            {t("modulosAdicionales.yaEsTuyo")}
                           </span>
                         ) : esDeSocio ? null : pendiente ? (
                           <Button
@@ -278,9 +249,57 @@ export default function ModulosAdicionalesPage() {
                               : t("modulosAdicionales.comprar")}
                           </Button>
                         ) : null}
+                      </>
+                    }
+                    precio={
+                      <div>
+                        <div className="flex items-baseline gap-1">
+                          <Cifra
+                            className="text-2xl font-semibold tabular-nums"
+                            k={m.priceCents}
+                          >
+                            {precio(m.priceCents, m.currency, i18n.language)}
+                          </Cifra>
+                          <span
+                            className="text-xs"
+                            style={{ color: "var(--ink-faint)" }}
+                          >
+                            · {t("modulosAdicionales.pagoUnico")}
+                          </span>
+                          {tiene ? (
+                            <span className="ml-auto">
+                              <StatusBadge tone="ok">
+                                {t("modulosAdicionales.activo")}
+                              </StatusBadge>
+                            </span>
+                          ) : pendiente ? (
+                            <span className="ml-auto">
+                              <StatusBadge tone="warn">
+                                {t("modulosAdicionales.pendiente")}
+                              </StatusBadge>
+                            </span>
+                          ) : null}
+                        </div>
+                        <div
+                          className="mt-1 truncate text-xs"
+                          style={{ color: "var(--brand-text, var(--brand))" }}
+                        >
+                          {tiene ? t("modulosAdicionales.yaEsTuyo") : " "}
+                        </div>
+                        <div
+                          className="truncate text-xs"
+                          style={{ color: "var(--ink-faint)" }}
+                        >
+                          {" "}
+                        </div>
                       </div>
-                    </Section>
-                  </FadeIn>
+                    }
+                    situacion={
+                      situacionTexto ? (
+                        <span className="block truncate">{situacionTexto}</span>
+                      ) : undefined
+                    }
+                  />
                 );
               })}
             </div>

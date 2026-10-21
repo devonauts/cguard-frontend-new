@@ -18506,7 +18506,13 @@
       "verComoFunciona": "Guarda come funziona",
       "ocultarDemo": "Nascondi la dimostrazione",
       "pruebaSinSeguir": "Prova fino al {{fecha}} · al termine non continuerà",
-      "sinTarjeta": "Senza carta. Alla fine decidi tu se continuare."
+      "sinTarjeta": "Senza carta. Alla fine decidi tu se continuare.",
+      "cuotaMensual": "Canone mensile",
+      "tramoSiguiente": "Più di {{n}} guardie: {{precio}}{{periodo}}",
+      "pruebaHasta": "Prova gratuita fino al {{fecha}} · senza carta",
+      "anualCorto": "Annuale",
+      "mesesGratis": "Annuale: {{n}} mesi gratis",
+      "demo": "Demo"
     },
     "interruptor": "Attiva o disattiva {{nombre}}",
     "paraSiempre": "Pagamento unico · è tuo per sempre"

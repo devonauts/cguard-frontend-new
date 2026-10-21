@@ -18506,7 +18506,13 @@
       "verComoFunciona": "Bekijk hoe het werkt",
       "ocultarDemo": "Demo verbergen",
       "pruebaSinSeguir": "Proef tot {{fecha}} · loopt daarna niet door",
-      "sinTarjeta": "Geen kaart nodig. Aan het einde beslis je of je doorgaat."
+      "sinTarjeta": "Geen kaart nodig. Aan het einde beslis je of je doorgaat.",
+      "cuotaMensual": "Maandelijks tarief",
+      "tramoSiguiente": "Meer dan {{n}} beveiligers: {{precio}}{{periodo}}",
+      "pruebaHasta": "Gratis proef tot {{fecha}} · geen kaart",
+      "anualCorto": "Jaarlijks",
+      "mesesGratis": "Jaarlijks: {{n}} maanden gratis",
+      "demo": "Demo"
     },
     "interruptor": "{{nombre}} in- of uitschakelen",
     "paraSiempre": "Eenmalige betaling · voor altijd van jou"
