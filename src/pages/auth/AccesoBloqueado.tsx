@@ -10,7 +10,7 @@ import { fechaYHora } from "@/lib/horaDeLaEmpresa";
 import { nuevaReferencia, referenciaValida } from "@/lib/accesoBloqueado";
 
 /** El soporte de la plataforma; en el anfitrión de un socio manda el del socio. */
-const SOPORTE_DE_PLATAFORMA = "soporte@cguardpro.com";
+const SOPORTE_DE_PLATAFORMA = "support@cguardpro.com";
 
 /**
  * «ACCESO BLOQUEADO» — adonde llega quien la plataforma echó.
