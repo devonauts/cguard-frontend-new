@@ -17,11 +17,11 @@ import { PageContainer, PageHeader, Section, EmptyState, Modal, FormField, FIELD
 import { usePermissions } from "@/hooks/usePermissions";
 import { soloFecha, soloFechaCivil, hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { balanceCents, INVOICE_STATUSES, type Invoice, type InvoiceFilterStatus, type ManualInvoiceInput } from "@/lib/api/clientBillingService";
-import { QK, dinero, nombreDelCliente, useEtiquetasDeFacturacion, useClientesParaFacturar, useContratos, mensajeDeError } from "./comun";
+import { QK, dinero, nombreDelCliente, useEtiquetasDeFacturacion, useClientesParaFacturar, useContratos, mensajeDeError, conModuloDeFacturacion } from "./comun";
 
 type Filtro = InvoiceFilterStatus | "all";
 
-export default function FacturasPage() {
+function FacturasPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -246,3 +246,5 @@ export function NuevaFacturaManual({ clientAccountId: fijo, onClose, onCreated }
     </Modal>
   );
 }
+
+export default conModuloDeFacturacion(FacturasPage);

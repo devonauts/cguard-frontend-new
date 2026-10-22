@@ -417,6 +417,9 @@ const CorridasPage = lazy(() => import("./pages/admin/facturacion/CorridasPage")
 const CorridaDetallePage = lazy(() => import("./pages/admin/facturacion/CorridaDetallePage"));
 const AntiguedadPage = lazy(() => import("./pages/admin/facturacion/AntiguedadPage"));
 const AjustesFacturacionPage = lazy(() => import("./pages/admin/facturacion/AjustesFacturacionPage"));
+const CotizacionesPage = lazy(() => import("./pages/admin/facturacion/CotizacionesPage"));
+const CotizacionEditorPage = lazy(() => import("./pages/admin/facturacion/CotizacionEditorPage"));
+const CotizacionDetallePage = lazy(() => import("./pages/admin/facturacion/CotizacionDetallePage"));
 const Visitors = lazy(
   () => import("./pages/admin/visitor-management/Visitors"),
 );
@@ -2192,6 +2195,38 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/roles/rol/:id"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CotizacionesPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/cotizaciones"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CotizacionEditorPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/cotizaciones/nueva"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CotizacionEditorPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/cotizaciones/:id/editar"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CotizacionDetallePage />
+                                  </ProtectedRoute>
+                                }
+                                path="/facturacion/cotizaciones/:id"
                               />
                               <Route
                                 element={

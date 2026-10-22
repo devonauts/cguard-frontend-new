@@ -13,9 +13,9 @@ import { DataTable, type Column } from "@/components/table/DataTable";
 import { PageContainer, PageHeader, Section, EmptyState, StatsStrip, StatCard, SkeletonCards } from "@/components/kit";
 import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { type AgingBucketKey, type AgingClientRow } from "@/lib/api/clientBillingService";
-import { QK, dinero } from "./comun";
+import { QK, dinero, conModuloDeFacturacion } from "./comun";
 
-export default function AntiguedadPage() {
+function AntiguedadPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const informe = useQuery({ queryKey: [QK, "aging"], queryFn: () => clientBillingService.aging() });
@@ -75,3 +75,5 @@ export default function AntiguedadPage() {
     </AppLayout>
   );
 }
+
+export default conModuloDeFacturacion(AntiguedadPage);

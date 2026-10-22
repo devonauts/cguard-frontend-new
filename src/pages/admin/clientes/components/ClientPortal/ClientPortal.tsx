@@ -34,6 +34,7 @@ import {
   ClipboardList,
   MapPin,
   Bell,
+  Receipt,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -142,6 +143,14 @@ const MODULOS: {
     descKey: "clients.portal.modules.visitors.desc",
     desc: "Registro y pre-autorización de visitantes",
   },
+  {
+    key: "invoices",
+    icon: Receipt,
+    labelKey: "clients.portal.modules.invoices.label",
+    label: "Facturas",
+    descKey: "clients.portal.modules.invoices.desc",
+    desc: "Facturas, estados de cuenta y revisión de horas. Requiere el módulo Facturación a clientes.",
+  },
 ];
 
 type Tono = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
@@ -233,7 +242,7 @@ export default function ClientPortal({ client }: Props) {
   }, [client]);
 
   /**
-   * Se guarda al instante, sin botón. Son ocho casillas independientes: un
+   * Se guarda al instante, sin botón. Son casillas independientes: un
    * «Guardar» aparte sólo añade la posibilidad de tocarlas y salirse sin
    * aplicarlas — y el fallo se nota enseguida, porque el cliente llama.
    */

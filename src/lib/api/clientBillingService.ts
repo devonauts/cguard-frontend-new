@@ -2,6 +2,7 @@ import i18n from "@/i18n";
 /**
  * CLIENT BILLING — what the company charges ITS clients: contracts with
  * rates → billing runs from approved shifts → invoices → payments.
+ * Also the quotes (proposals to prospects) that become a client + contract.
  * See `backend/api/clientBilling` and `docs/facturacion-clientes.md`.
  *
  * Every amount is in integer CENTS; tax rates and late fees in basis points
@@ -113,6 +114,12 @@ export interface BillingSettings {
   billingPhone: string | null;
   w9DocumentUrl: string | null;
   attachShiftDetail: boolean;
+  /** Quote numbering: `QUO-YYYY-NNNNN`. */
+  quotePrefix?: string | null;
+  /** Days a new quote stays valid (default 30). */
+  quoteValidityDays?: number | null;
+  /** Default terms text of new quotes. */
+  quoteTerms?: string | null;
 }
 
 export interface TaxRate {
@@ -452,6 +459,185 @@ export interface GatewayStatus {
 
 export interface GatewayView { gateway: GatewayStatus; eventsUrl: string | null }
 
+// ── Quotes to prospects ─────────────────────────────────────────────────────
+export type QuoteStatus = "draft" | "sent" | "viewed" | "accepted" | "rejected" | "expired" | "converted" | "cancelled";
+/** `open` is a server-side alias: draft · sent · viewed. */
+export type QuoteFilterStatus = QuoteStatus | "open";
+export type QuoteLineKind = "hourly" | "fixed" | "recurring" | "patrol" | "dispatch" | "oneTime";
+export type QuoteLanguage = "en" | "es";
+export type QuoteEventType = "created" | "edited" | "revised" | "sent" | "viewed" | "accepted" | "rejected" | "expired" | "cancelled" | "converted";
+
+export const QUOTE_STATUSES: QuoteStatus[] = ["draft", "sent", "viewed", "accepted", "rejected", "expired", "converted", "cancelled"];
+export const QUOTE_LINE_KINDS: QuoteLineKind[] = ["hourly", "fixed", "recurring", "patrol", "dispatch", "oneTime"];
+/** Statuses a quote can still be edited in (editing a sent one starts a new revision). */
+export const QUOTE_EDITABLE: QuoteStatus[] = ["draft", "sent", "viewed", "rejected", "expired"];
+
+export interface QuoteProspect {
+  company: string | null;
+  contactName: string | null;
+  title: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  /** Two letters (US state). */
+  state: string | null;
+  postalCode: string | null;
+  country: string | null;
+}
+
+export interface QuoteLine {
+  id?: string;
+  position?: number;
+  kind: QuoteLineKind;
+  description: string;
+  siteLabel?: string | null;
+  /** Hourly lines only; the server stores `any` for the rest. */
+  shiftType?: ShiftType;
+  /** Hourly: hours per WEEK; oneTime: quantity; others: units per MONTH — all in hundredths. */
+  quantityHundredths: number;
+  unitCents: number;
+  monthlyCents?: number;
+  oneTimeCents?: number;
+  taxable?: boolean;
+}
+
+export interface QuoteEvent {
+  id: string;
+  type: QuoteEventType | string;
+  actorType: "user" | "client" | "system";
+  actorId: string | null;
+  detail: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+export interface Quote {
+  id: string;
+  number: string;
+  revision: number;
+  title: string;
+  status: QuoteStatus;
+  clientAccountId: string | null;
+  prospect: QuoteProspect | null;
+  currency: string;
+  language: QuoteLanguage;
+  validUntil: string | null;
+  startDate: string | null;
+  billingCycle: BillingCycle;
+  paymentTermsDays: number;
+  intro: string | null;
+  terms: string | null;
+  monthlySubtotalCents: number;
+  oneTimeCents: number;
+  taxCents: number;
+  monthlyTotalCents: number;
+  taxBreakdown: TaxBreakdownRow[] | null;
+  sentAt: string | null;
+  viewedAt: string | null;
+  acceptedAt: string | null;
+  rejectedAt: string | null;
+  rejectReason: string | null;
+  signerName: string | null;
+  signerTitle: string | null;
+  signerEmail: string | null;
+  /** PNG data URL of the drawn signature. */
+  signature: string | null;
+  /** SHA-256 of exactly what was signed. */
+  contentHash: string | null;
+  contractId: string | null;
+  setupInvoiceId: string | null;
+  convertedAt: string | null;
+  lines?: QuoteLine[];
+  events?: QuoteEvent[];
+  clientAccount?: (ClientAccountRef & { state?: string | null; zipCode?: string | null; taxExempt?: boolean | null }) | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface QuotePipeline {
+  byStatus: Partial<Record<QuoteStatus, { count: number; monthlyCents: number }>>;
+  /** 0-100, or null while nothing has been won or lost. */
+  winRate: number | null;
+  openMonthlyCents: number;
+}
+
+export interface QuoteInput {
+  prospect?: Partial<QuoteProspect>;
+  clientAccountId?: string;
+  title?: string;
+  language?: QuoteLanguage;
+  currency?: string;
+  validUntil?: string | null;
+  startDate?: string | null;
+  billingCycle?: BillingCycle;
+  paymentTermsDays?: number;
+  intro?: string | null;
+  terms?: string | null;
+  lines?: Array<Pick<QuoteLine, "kind" | "description" | "siteLabel" | "shiftType" | "quantityHundredths" | "unitCents" | "taxable">>;
+}
+
+export interface QuoteDetail { quote: Quote; publicUrl: string | null }
+
+export interface QuoteConversion { quote: Quote; contractId: string; clientAccountId: string; setupInvoiceId: string | null }
+
+/**
+ * Monthly and one-time cents of one quote line — the SAME arithmetic as the
+ * server (`quoteMath.lineTotals`): hourly = hours/week × rate × 52 / 12,
+ * oneTime apart, everything else units/month × price. The server's numbers
+ * are the ones that count once the quote is saved.
+ */
+export function quoteLineTotals(l: Pick<QuoteLine, "kind" | "quantityHundredths" | "unitCents">): { monthlyCents: number; oneTimeCents: number } {
+  const q = Math.max(0, Math.round(Number(l.quantityHundredths) || 0));
+  const u = Math.max(0, Math.round(Number(l.unitCents) || 0));
+
+  if (l.kind === "oneTime") return { monthlyCents: 0, oneTimeCents: Math.round((q * u) / 100) };
+  if (l.kind === "hourly") return { monthlyCents: Math.round((q * u * 52) / (100 * 12)), oneTimeCents: 0 };
+
+  return { monthlyCents: Math.round((q * u) / 100), oneTimeCents: 0 };
+}
+
+const normTax = (v: unknown) => String(v ?? "").trim().toUpperCase();
+
+/** The company's tax rates that apply at an address (mirror of the server's `ratesForAddress`). */
+export function taxRatesForAddress(rates: TaxRate[], address: { state?: string | null; postalCode?: string | null } | null): TaxRate[] {
+  const state = normTax(address?.state);
+  const postal = normTax(address?.postalCode);
+
+  return rates.filter((r) => {
+    if (r.active === false || !(r.rateBps > 0)) return false;
+    if (r.jurisdiction === "custom") return true;
+    if (r.jurisdiction === "postal") return !!r.postalCodePrefix && !!postal && postal.startsWith(normTax(r.postalCodePrefix)) && (!r.state || normTax(r.state) === state);
+
+    return !!r.state && normTax(r.state) === state;
+  });
+}
+
+/** Totals of a quote as the server computes them: the tax is the MONTHLY estimate at the prospect's address. */
+export function quoteTotalsPreview(
+  lines: Array<Pick<QuoteLine, "kind" | "quantityHundredths" | "unitCents" | "taxable">>,
+  rates: TaxRate[],
+  address: { state?: string | null; postalCode?: string | null } | null,
+  taxExempt = false,
+): { monthlySubtotalCents: number; oneTimeCents: number; taxCents: number; monthlyTotalCents: number; taxBreakdown: TaxBreakdownRow[] } {
+  let monthly = 0;
+  let oneTime = 0;
+  let taxableBase = 0;
+
+  for (const l of lines) {
+    const t = quoteLineTotals(l);
+
+    monthly += t.monthlyCents;
+    oneTime += t.oneTimeCents;
+    if (l.taxable !== false && t.monthlyCents > 0) taxableBase += t.monthlyCents;
+  }
+  const taxBreakdown: TaxBreakdownRow[] = taxExempt || !taxableBase
+    ? []
+    : taxRatesForAddress(rates, address).map((r) => ({ name: r.name, rateBps: r.rateBps, baseCents: taxableBase, taxCents: Math.round((taxableBase * r.rateBps) / 10_000) }));
+  const taxCents = taxBreakdown.reduce((s, b) => s + b.taxCents, 0);
+
+  return { monthlySubtotalCents: monthly, oneTimeCents: oneTime, taxCents, monthlyTotalCents: monthly + taxCents, taxBreakdown };
+}
+
 /** Balance = total − paid − credited. Same arithmetic as the server. */
 export const balanceCents = (i: Pick<Invoice, "totalCents" | "paidCents" | "creditedCents">): number =>
   Math.max(0, Number(i.totalCents || 0) - Number(i.paidCents || 0) - Number(i.creditedCents || 0));
@@ -634,6 +820,54 @@ const clientBillingService = {
 
   async disconnectGateway(): Promise<GatewayView | { ok: boolean }> {
     return unwrap(await api.delete(`${base()}/gateway`));
+  },
+
+  // ── Quotes to prospects ───────────────────────────────────────────────────
+  async quotes(filter: { status?: QuoteFilterStatus; q?: string } = {}): Promise<{ quotes: Quote[]; pipeline: QuotePipeline }> {
+    return unwrap(await api.get(`${base()}/quotes${qs(filter)}`));
+  },
+
+  async createQuote(body: QuoteInput): Promise<QuoteDetail> {
+    return unwrap(await api.post(`${base()}/quotes`, { data: body }));
+  },
+
+  async quote(id: string): Promise<QuoteDetail> {
+    return unwrap(await api.get(`${base()}/quotes/${enc(id)}`));
+  },
+
+  /** Editing a quote already sent starts a new revision with a new link (the old one dies). */
+  async updateQuote(id: string, body: QuoteInput): Promise<QuoteDetail> {
+    return unwrap(await api.put(`${base()}/quotes/${enc(id)}`, { data: body }));
+  },
+
+  /** E-mails the PDF and the signing link. */
+  async sendQuote(id: string, body: { to?: string[]; message?: string } = {}): Promise<{ quote: Quote; sent: boolean; to: string[]; reason?: string | null; publicUrl: string | null }> {
+    return unwrap(await api.post(`${base()}/quotes/${enc(id)}/send`, { data: body }));
+  },
+
+  /** Sent without e-mail: the company shares the link itself. */
+  async markQuoteSent(id: string): Promise<QuoteDetail> {
+    return unwrap(await api.post(`${base()}/quotes/${enc(id)}/mark-sent`, { data: {} }));
+  },
+
+  async downloadQuotePdf(q: Pick<Quote, "id" | "number" | "revision">): Promise<void> {
+    await descargarInforme(`${base()}/quotes/${enc(q.id)}/pdf?download=1`, {
+      format: "pdf",
+      nombreBase: q.revision > 1 ? `${q.number}-r${q.revision}` : q.number,
+    });
+  },
+
+  async duplicateQuote(id: string): Promise<{ quote: Quote }> {
+    return unwrap(await api.post(`${base()}/quotes/${enc(id)}/duplicate`, { data: {} }));
+  },
+
+  async cancelQuote(id: string): Promise<{ quote: Quote }> {
+    return unwrap(await api.post(`${base()}/quotes/${enc(id)}/cancel`, { data: {} }));
+  },
+
+  /** Accepted quote → client (when a prospect) + draft contract + draft invoice for the one-time items. */
+  async convertQuote(id: string): Promise<QuoteConversion> {
+    return unwrap(await api.post(`${base()}/quotes/${enc(id)}/convert`, { data: {} }));
   },
 };
 

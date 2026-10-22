@@ -23,10 +23,10 @@ import { postSiteService } from "@/lib/api/postSiteService";
 import { stationService } from "@/lib/api/stationService";
 import { soloFechaCivil, hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { BILLING_CYCLES, RATE_KINDS, RATE_UNITS, SHIFT_TYPES, type Contract, type ContractInput, type ContractRate, type ContractStatus, type PremiumRule, type RateInput, type RateKind, type RateUnit, type ShiftType, type BillingCycle } from "@/lib/api/clientBillingService";
-import { QK, dinero, porcentaje, useEtiquetasDeFacturacion, mensajeDeError, NuevaCorridaModal } from "@/pages/admin/facturacion/comun";
+import { QK, dinero, porcentaje, useEtiquetasDeFacturacion, mensajeDeError, NuevaCorridaModal, conModuloDeFacturacion } from "@/pages/admin/facturacion/comun";
 import { ReglaDeRecargo } from "@/pages/admin/facturacion/ReglaDeRecargo";
 
-export default function ClientBillingContract({ client }: { client: Client }) {
+function ClientBillingContract({ client }: { client: Client }) {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -476,3 +476,5 @@ function TarifaModal({ contrato, clientId, inicial, onClose, onSaved }: { contra
     </Modal>
   );
 }
+
+export default conModuloDeFacturacion(ClientBillingContract, { pagina: false });

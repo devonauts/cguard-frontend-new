@@ -528,11 +528,22 @@
     "name": "Facturación",
     "icon": "Receipt",
     "expandable": true,
+    "modulo": "client_billing",
     "subItems": [
+      {
+        "id": "facturacion-cotizaciones",
+        "name": "Cotizaciones",
+        "path": "/facturacion/cotizaciones",
+        "modulo": "client_billing",
+        "permission": [
+          "estimateRead"
+        ]
+      },
       {
         "id": "facturacion-facturas",
         "name": "Facturas",
         "path": "/facturacion/facturas",
+        "modulo": "client_billing",
         "permission": [
           "invoiceRead"
         ]
@@ -541,6 +552,7 @@
         "id": "facturacion-corridas",
         "name": "Corridas de facturación",
         "path": "/facturacion/corridas",
+        "modulo": "client_billing",
         "permission": [
           "billingRead"
         ]
@@ -549,6 +561,7 @@
         "id": "facturacion-antiguedad",
         "name": "Antigüedad de saldos",
         "path": "/facturacion/antiguedad",
+        "modulo": "client_billing",
         "permission": [
           "invoiceRead"
         ]
@@ -557,6 +570,7 @@
         "id": "facturacion-ajustes",
         "name": "Ajustes de facturación",
         "path": "/facturacion/ajustes",
+        "modulo": "client_billing",
         "permission": [
           "billingRead"
         ]

@@ -19,10 +19,10 @@ import { Section, EmptyState, StatusBadge, StatsStrip, StatCard } from "@/compon
 import { usePermissions } from "@/hooks/usePermissions";
 import { soloFecha, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { balanceCents, type Invoice } from "@/lib/api/clientBillingService";
-import { QK, dinero, useEtiquetasDeFacturacion, NuevaCorridaModal } from "@/pages/admin/facturacion/comun";
+import { QK, dinero, useEtiquetasDeFacturacion, NuevaCorridaModal, conModuloDeFacturacion } from "@/pages/admin/facturacion/comun";
 import { NuevaFacturaManual } from "@/pages/admin/facturacion/FacturasPage";
 
-export default function ClientInvoices({ client }: { client: Client }) {
+function ClientInvoices({ client }: { client: Client }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
@@ -91,3 +91,5 @@ export default function ClientInvoices({ client }: { client: Client }) {
     </div>
   );
 }
+
+export default conModuloDeFacturacion(ClientInvoices, { pagina: false });

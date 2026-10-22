@@ -18,7 +18,7 @@ import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shar
 import { usePermissions } from "@/hooks/usePermissions";
 import { soloFechaCivil, fechaYHora } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { type BillingRun, type Discrepancy, type DiscrepancySeverity, type RunItem } from "@/lib/api/clientBillingService";
-import { QK, dinero, horas, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError } from "./comun";
+import { QK, dinero, horas, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
 
 /** What the engine wrote about a discrepancy, as a sentence (it comes as an object). */
 function detalleLegible(t: (k: string, d: string, o?: Record<string, unknown>) => string, detail: Discrepancy["detail"], moneda?: string): string | null {
@@ -38,7 +38,7 @@ function detalleLegible(t: (k: string, d: string, o?: Record<string, unknown>) =
   return partes.join(" · ") || null;
 }
 
-export default function CorridaDetallePage() {
+function CorridaDetallePage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
@@ -388,3 +388,4 @@ function EditarLineaModal({ item, moneda, trabajando, onClose, onSave }: { item:
   );
 }
 
+export default conModuloDeFacturacion(CorridaDetallePage);

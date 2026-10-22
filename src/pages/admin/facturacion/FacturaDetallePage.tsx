@@ -19,11 +19,11 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { fechaYHora, soloFecha, soloFechaCivil, hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
 import clientBillingService, { balanceCents, PAYMENT_METHODS, type Invoice, type InvoiceLine, type PaymentMethod } from "@/lib/api/clientBillingService";
-import { QK, dinero, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError } from "./comun";
+import { QK, dinero, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
 
 type Modal_ = null | "enviar" | "pago" | "credito" | "anular" | "disputa";
 
-export default function FacturaDetallePage() {
+function FacturaDetallePage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
   const navigate = useNavigate();
@@ -506,3 +506,5 @@ function MotivoModal({ titulo, descripcion, trabajando, tono, onClose, onSave }:
     </Modal>
   );
 }
+
+export default conModuloDeFacturacion(FacturaDetallePage);

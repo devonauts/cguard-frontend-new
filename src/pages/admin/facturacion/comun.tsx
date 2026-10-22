@@ -1,15 +1,21 @@
 /**
- * CLIENT BILLING — shared pieces of the module: the closed-set labels and
- * their badge tones, money/hours helpers, the client list, and the
- * «Nueva corrida» modal that both the runs page and the client tab open.
+ * CLIENT BILLING — shared pieces of the module: the paid-module gate, the
+ * closed-set labels and their badge tones, money/hours helpers, the client
+ * list, and the «Nueva corrida» modal that both the runs page and the client
+ * tab open.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { Receipt } from "lucide-react";
 
+import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
-import { Modal, FormField, FIELD_CLS, InfoNote } from "@/components/kit";
+import { Modal, FormField, FIELD_CLS, InfoNote, PageContainer, PageHeader, Section } from "@/components/kit";
+import { useEntitlement } from "@/hooks/useEntitlement";
+import { faltaElModulo } from "@/lib/rostro";
 import { clientService } from "@/lib/api/clientService";
 import { formatMoney } from "@/lib/formatMoney";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -25,6 +31,9 @@ import clientBillingService, {
   type InvoiceStatus,
   type PaymentMethod,
   type PremiumKind,
+  type QuoteEventType,
+  type QuoteLineKind,
+  type QuoteStatus,
   type RateKind,
   type RateUnit,
   type RuleMode,
@@ -35,11 +44,123 @@ import clientBillingService, {
 
 export const QK = "client-billing";
 
+/* ── The paid module ──────────────────────────────────────────────────────── */
+/** Everything under /facturacion (and the client tabs) belongs to this module. */
+export const MODULO_FACTURACION = "client_billing";
+
+const hay402 = (qc: QueryClient): boolean =>
+  qc.getQueryCache().findAll({ queryKey: [QK] }).some((q) => faltaElModulo(q.state.error));
+
+/**
+ * Whether the company lacks the module: the entitlement says so up front (no
+ * request is made), and a 402 `addon_required` from any billing query says so
+ * too (a session older than the purchase or the cancellation).
+ */
+export function useSinModuloDeFacturacion(): boolean {
+  const tiene = useEntitlement(MODULO_FACTURACION);
+  const qc = useQueryClient();
+  const [dio402, setDio402] = useState(() => hay402(qc));
+
+  useEffect(
+    () =>
+      qc.getQueryCache().subscribe((ev) => {
+        if (ev.type === "updated" && ev.query.queryKey[0] === QK && faltaElModulo(ev.query.state.error)) setDio402(true);
+      }),
+    [qc],
+  );
+
+  return !tiene || dio402;
+}
+
+/** Without the module: what it does, in three steps, and where to get it. */
+export function PresentacionDeFacturacion() {
+  const { t } = useTranslation();
+  const pasos = [
+    t("ui.Facturacion.modulo.paso1", "Cotizas a un prospecto y la firma en línea; con un clic pasa a cliente con su contrato y tarifas."),
+    t("ui.Facturacion.modulo.paso2", "Los turnos del periodo se convierten en una corrida: revisas las discrepancias y, si el contrato lo pide, el cliente aprueba las horas."),
+    t("ui.Facturacion.modulo.paso3", "Emites y envías la factura con su enlace de pago, registras cobros y ves la antigüedad de saldos de cada cliente."),
+  ];
+
+  return (
+    <Section icon={<Receipt />} title={t("ui.Facturacion.modulo.titulo", "El módulo Facturación a clientes no está activo")}>
+      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+        {t(
+          "ui.Facturacion.modulo.desc",
+          "Con «Facturación a clientes», lo que tus vigilantes ya trabajan se convierte en cotizaciones, contratos y facturas para tus clientes. Actívalo en Módulos adicionales.",
+        )}
+      </p>
+      <ol className="mt-4 space-y-2">
+        {pasos.map((p, i) => (
+          <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
+            <span
+              className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
+              style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
+            >
+              {i + 1}
+            </span>
+            <span>{p}</span>
+          </li>
+        ))}
+      </ol>
+      <div className="cg-acciones mt-4 justify-end">
+        <Button asChild variant="brand">
+          <Link to="/modulos-adicionales">{t("ui.Facturacion.modulo.enlace", "Activar en Módulos adicionales")}</Link>
+        </Button>
+      </div>
+    </Section>
+  );
+}
+
+/**
+ * Wraps a billing screen: without the module it shows the presentation
+ * instead of the screen, so no request is made and no red error appears.
+ * `pagina` = a full page (with the app layout); otherwise a tab inside one.
+ */
+export function conModuloDeFacturacion<P extends object>(Pantalla: ComponentType<P>, { pagina = true }: { pagina?: boolean } = {}) {
+  function ConModuloDeFacturacion(props: P) {
+    const { t } = useTranslation();
+    const sinModulo = useSinModuloDeFacturacion();
+
+    if (!sinModulo) return <Pantalla {...props} />;
+    if (!pagina) return <PresentacionDeFacturacion />;
+
+    return (
+      <AppLayout>
+        <PageContainer>
+          <PageHeader icon={<Receipt />} title={t("ui.Facturacion.modulo.nombre", "Facturación a clientes")} />
+          <PresentacionDeFacturacion />
+        </PageContainer>
+      </AppLayout>
+    );
+  }
+
+  ConModuloDeFacturacion.displayName = `ConModuloDeFacturacion(${Pantalla.displayName || Pantalla.name || "Pantalla"})`;
+
+  return ConModuloDeFacturacion;
+}
+
 /** The name a client is billed under: trade name first, then person name. */
 export function nombreDelCliente(c?: ClientAccountRef | { name?: string | null; lastName?: string | null; commercialName?: string | null } | null): string {
   if (!c) return "—";
 
   return c.commercialName || [c.name, c.lastName].filter(Boolean).join(" ") || "—";
+}
+
+/** Who a quote is for: the existing client, else the prospect's company or contact. */
+export function destinatarioDeCotizacion(q: { clientAccount?: ClientAccountRef | null; prospect?: { company?: string | null; contactName?: string | null } | null }): string {
+  if (q.clientAccount) return nombreDelCliente(q.clientAccount);
+
+  return q.prospect?.company || q.prospect?.contactName || "—";
+}
+
+/** One row of a totals card. */
+export function FilaTotal({ label, value, fuerte, suave }: { label: string; value: string; fuerte?: boolean; suave?: boolean }) {
+  return (
+    <div className={`flex items-baseline justify-between gap-3 ${fuerte ? "font-semibold" : ""}`} style={suave ? { color: "var(--ink-soft)" } : undefined}>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </div>
+  );
 }
 
 export const dinero = (cents: number | null | undefined, currency?: string | null) => formatMoney(cents ?? 0, currency || "USD");
@@ -184,7 +305,41 @@ export function useEtiquetasDeFacturacion() {
       reminderSent: t("ui.Facturacion.evento.reminderSent", "Recordatorio enviado"),
     };
 
-    return { invoiceStatus, invoiceTone, runStatus, runTone, contractStatus, contractTone, cycle, rateKind, shiftType, unit, premium, premiumTone, ruleMode, discrepancy, severity, severityTone, paymentMethod, jurisdiction, event };
+    const quoteStatus: Record<QuoteStatus, string> = {
+      draft: t("ui.Cotizaciones.estado.draft", "Borrador"),
+      sent: t("ui.Cotizaciones.estado.sent", "Enviada"),
+      viewed: t("ui.Cotizaciones.estado.viewed", "Vista"),
+      accepted: t("ui.Cotizaciones.estado.accepted", "Aceptada"),
+      rejected: t("ui.Cotizaciones.estado.rejected", "Rechazada"),
+      expired: t("ui.Cotizaciones.estado.expired", "Vencida"),
+      converted: t("ui.Cotizaciones.estado.converted", "Convertida"),
+      cancelled: t("ui.Cotizaciones.estado.cancelled", "Cancelada"),
+    };
+    const quoteTone: Record<QuoteStatus, string> = {
+      draft: "neutral", sent: "info", viewed: "info", accepted: "ok", converted: "ok", rejected: "bad", expired: "bad", cancelled: "neutral",
+    };
+    const quoteKind: Record<QuoteLineKind, string> = {
+      hourly: t("ui.Cotizaciones.tipoLinea.hourly", "Por hora"),
+      fixed: t("ui.Cotizaciones.tipoLinea.fixed", "Cuota mensual"),
+      recurring: t("ui.Cotizaciones.tipoLinea.recurring", "Recurrente"),
+      patrol: t("ui.Cotizaciones.tipoLinea.patrol", "Ronda"),
+      dispatch: t("ui.Cotizaciones.tipoLinea.dispatch", "Despacho"),
+      oneTime: t("ui.Cotizaciones.tipoLinea.oneTime", "Único"),
+    };
+    const quoteEvent: Record<QuoteEventType, string> = {
+      created: t("ui.Cotizaciones.evento.created", "Creada"),
+      edited: t("ui.Cotizaciones.evento.edited", "Editada"),
+      revised: t("ui.Cotizaciones.evento.revised", "Nueva revisión"),
+      sent: t("ui.Cotizaciones.evento.sent", "Enviada"),
+      viewed: t("ui.Cotizaciones.evento.viewed", "Vista por el prospecto"),
+      accepted: t("ui.Cotizaciones.evento.accepted", "Aceptada y firmada"),
+      rejected: t("ui.Cotizaciones.evento.rejected", "Rechazada"),
+      expired: t("ui.Cotizaciones.evento.expired", "Vencida"),
+      cancelled: t("ui.Cotizaciones.evento.cancelled", "Cancelada"),
+      converted: t("ui.Cotizaciones.evento.converted", "Convertida en cliente y contrato"),
+    };
+
+    return { invoiceStatus, invoiceTone, runStatus, runTone, contractStatus, contractTone, cycle, rateKind, shiftType, unit, premium, premiumTone, ruleMode, discrepancy, severity, severityTone, paymentMethod, jurisdiction, event, quoteStatus, quoteTone, quoteKind, quoteEvent };
   }, [t]);
 }
 

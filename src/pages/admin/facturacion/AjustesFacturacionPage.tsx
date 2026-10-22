@@ -17,13 +17,13 @@ import { PageContainer, PageHeader, Section, SkeletonCards, Modal, FormField, FI
 import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import clientBillingService, { BILLING_CYCLES, type BillingSettings, type TaxJurisdiction, type TaxRate, type UsState } from "@/lib/api/clientBillingService";
-import { QK, porcentaje, useEtiquetasDeFacturacion, mensajeDeError } from "./comun";
+import { QK, porcentaje, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
 import { ReglaDeRecargo } from "./ReglaDeRecargo";
 import { CobrosGateway } from "./CobrosGateway";
 
 type Pestana = "empresa" | "numeracion" | "reglas" | "impuestos" | "cobros" | "documento";
 
-export default function AjustesFacturacionPage() {
+function AjustesFacturacionPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const { hasPermission } = usePermissions();
@@ -164,6 +164,18 @@ export default function AjustesFacturacionPage() {
               </FormField>
               <FormField label={t("ui.Facturacion.ajustes.redondeo", "Redondeo de minutos")} hint={t("ui.Facturacion.ajustes.redondeoHint", "Las horas facturables se redondean al múltiplo más cercano (15 = cuartos de hora). 0 = sin redondeo.")}>
                 <input className={FIELD_CLS} disabled={!canEdit} max={60} min={0} type="number" value={form.roundingMinutes} onChange={(e) => set("roundingMinutes", num(e.target.value))} />
+              </FormField>
+            </div>
+            <div className="cg-eyebrow mb-2 mt-5">{t("ui.Facturacion.ajustes.cotizaciones", "Cotizaciones")}</div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <FormField label={t("ui.Facturacion.ajustes.prefijoCotizacion", "Prefijo de cotización")} hint={t("ui.Facturacion.ajustes.prefijoCotizacionHint", "Ej.: QUO-2026-00001")}>
+                <input className={FIELD_CLS} disabled={!canEdit} value={form.quotePrefix ?? ""} onChange={(e) => set("quotePrefix", e.target.value)} />
+              </FormField>
+              <FormField label={t("ui.Facturacion.ajustes.validezCotizacion", "Validez de la cotización (días)")} hint={t("ui.Facturacion.ajustes.validezCotizacionHint", "Pasado ese plazo sin firma, la cotización vence sola.")}>
+                <input className={FIELD_CLS} disabled={!canEdit} max={365} min={1} type="number" value={form.quoteValidityDays ?? 30} onChange={(e) => set("quoteValidityDays", num(e.target.value))} />
+              </FormField>
+              <FormField className="sm:col-span-3" label={t("ui.Facturacion.ajustes.terminosCotizacion", "Términos por defecto de las cotizaciones")} hint={t("ui.Facturacion.ajustes.terminosCotizacionHint", "Se copian en cada cotización nueva; puedes cambiarlos en cada una.")}>
+                <textarea className={`${FIELD_CLS} h-32`} disabled={!canEdit} value={form.quoteTerms ?? ""} onChange={(e) => set("quoteTerms", e.target.value)} />
               </FormField>
             </div>
           </Section>
@@ -325,3 +337,5 @@ function TasaModal({ inicial, usStates, onClose, onSaved }: { inicial: Partial<T
     </Modal>
   );
 }
+
+export default conModuloDeFacturacion(AjustesFacturacionPage);

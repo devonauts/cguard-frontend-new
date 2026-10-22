@@ -16,11 +16,11 @@ import { PageContainer, PageHeader, Section, EmptyState, StatusBadge, Toolbar } 
 import { usePermissions } from "@/hooks/usePermissions";
 import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { type BillingRun, type RunStatus } from "@/lib/api/clientBillingService";
-import { QK, dinero, nombreDelCliente, useEtiquetasDeFacturacion, useClientesParaFacturar, NuevaCorridaModal } from "./comun";
+import { QK, dinero, nombreDelCliente, useEtiquetasDeFacturacion, useClientesParaFacturar, NuevaCorridaModal, conModuloDeFacturacion } from "./comun";
 
 const ESTADOS: RunStatus[] = ["draft", "clientReview", "approved", "invoiced", "cancelled"];
 
-export default function CorridasPage() {
+function CorridasPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -96,3 +96,5 @@ export default function CorridasPage() {
     </AppLayout>
   );
 }
+
+export default conModuloDeFacturacion(CorridasPage);

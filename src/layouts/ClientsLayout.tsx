@@ -63,6 +63,8 @@ const TAB_ICONS: Record<string, any> = {
 import { Button } from "@/components/ui/button";
 import { StatusBadge, SmartImage } from "@/components/kit";
 import { clientService } from "@/lib/api/clientService";
+import { useAuth } from "@/contexts/AuthContext";
+import { hasFeature } from "@/lib/entitlements";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
 
@@ -200,7 +202,16 @@ export default function ClientsLayout({
     };
   }, [client?.id]);
 
-  const hiddenIds = ["profile", "notes", "files", "userAccess", "emailReports"];
+  const { user } = useAuth();
+  // The client-billing tabs belong to the paid module: without it they are not offered.
+  const hiddenIds = [
+    "profile",
+    "notes",
+    "files",
+    "userAccess",
+    "emailReports",
+    ...(hasFeature(user, "client_billing") ? [] : ["contratoFacturacion", "facturas"]),
+  ];
   const resolvePathWithId = (path: string) =>
     id && path.includes(":id") ? path.replace(":id", id) : path;
   const allItems: any[] = (cfg?.sections || []).flatMap(
