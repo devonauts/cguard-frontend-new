@@ -386,6 +386,97 @@ function urlsDelContexto(): string[] {
   return [fijo];
 }
 
+/* ── What `index.html` already did ────────────────────────────────────────
+   The inline script in `index.html` runs before the bundle. On a host that is
+   not ours it starts `/api/platform/context` right away and reads the
+   partner's last-known brand from this browser. Before, the request only left
+   once the whole bundle had downloaded and run (6.3 s into a cold load on
+   portal.entecdigital.mx, 2026-10-22), and the partner's logo after that. */
+
+interface MarcaTemprana {
+  /** The inline script's verdict: is this one of OUR hosts? */
+  ours: boolean;
+  /** The partner's last-known brand on this host, raw (validate before use). */
+  cached: unknown;
+  /** The brand request the HTML already started, or null. */
+  request: Promise<unknown> | null;
+}
+
+function marcaTemprana(): MarcaTemprana | null {
+  try {
+    const m = (window as any).__cgMarca;
+    return m && typeof m === "object" ? (m as MarcaTemprana) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The request the HTML started, taken ONCE (a second caller asks again). */
+function tomarPeticionTemprana(): Promise<unknown> | null {
+  const m = marcaTemprana();
+  if (!m?.request) return null;
+  const p = m.request;
+  m.request = null;
+  return p;
+}
+
+const CLAVE_GUARDADA = "cg-marca:";
+
+function claveDeEsteAnfitrion(): string | null {
+  try {
+    const h = String(window.location.hostname || "").toLowerCase();
+    return h ? CLAVE_GUARDADA + h : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The partner's last-known brand on THIS host, validated like a fresh answer.
+ * `null` on our own hosts, in preview mode, or when nothing is stored.
+ *
+ * It is a warm start, never the authority: the fresh answer replaces it as
+ * soon as it arrives. It lives in this origin's storage, so a partner's brand
+ * can only ever come back on the host that served it.
+ */
+export function marcaGuardada(): ContextoDeMarca | null {
+  if (tokenDeVistaPrevia()) return null;
+  const m = marcaTemprana();
+  if (m?.ours) return null;
+  let crudo: unknown = m?.cached ?? null;
+  if (!crudo) {
+    try {
+      const clave = claveDeEsteAnfitrion();
+      const g = clave ? JSON.parse(localStorage.getItem(clave) || "null") : null;
+      crudo = g && g.v === 1 ? g.ctx : null;
+    } catch {
+      crudo = null;
+    }
+  }
+  if (!crudo) return null;
+  const ctx = normalizarContexto(crudo);
+  /* Only a partner's brand is worth keeping: the platform's is the default
+     and needs no cache. A stored value that no longer reads as a partner's is
+     ignored. */
+  return ctx.resellerPublicId ? ctx : null;
+}
+
+/** Remember (or forget) this host's brand for the next cold load. */
+export function recordarMarca(ctx: ContextoDeMarca): void {
+  if (tokenDeVistaPrevia()) return; // a draft is not the published brand
+  try {
+    const clave = claveDeEsteAnfitrion();
+    if (!clave) return;
+    if (ctx.resellerPublicId) {
+      localStorage.setItem(clave, JSON.stringify({ v: 1, at: Date.now(), ctx }));
+    } else {
+      localStorage.removeItem(clave);
+    }
+  } catch {
+    /* Private mode or full storage: the next load just starts cold. */
+  }
+}
+
 /**
  * Pide el contexto. Nunca lanza y nunca se queda colgada.
  *
@@ -399,6 +490,19 @@ export async function pedirContexto(): Promise<{ ctx: ContextoDeMarca; degradado
   const reloj = setTimeout(() => control.abort(), TIEMPO_MAXIMO_MS);
 
   try {
+    /* The request `index.html` already started, under the same time budget. */
+    const temprana = tokenDeVistaPrevia() ? null : tomarPeticionTemprana();
+    if (temprana) {
+      const crudo = await Promise.race([
+        temprana,
+        new Promise<null>((resolve) => {
+          control.signal.addEventListener("abort", () => resolve(null));
+        }),
+      ]);
+      if (crudo && typeof crudo === "object") {
+        return { ctx: normalizarContexto(crudo), degradado: false };
+      }
+    }
     /* Se prueban en orden bajo UN SOLO presupuesto de tiempo: el mismo origen
        primero, y el anfitrión fijo sólo si aquél no está (escritorio, móvil, o
        un despliegue sin `/api` delante). */
@@ -419,12 +523,24 @@ export async function pedirContexto(): Promise<{ ctx: ContextoDeMarca; degradado
         /* Este camino no está; se prueba el siguiente. */
       }
     }
-    return { ctx: MARCA_DE_PLATAFORMA, degradado: true };
+    return { ctx: respaldoSinRed(), degradado: true };
   } catch {
-    return { ctx: MARCA_DE_PLATAFORMA, degradado: true };
+    return { ctx: respaldoSinRed(), degradado: true };
   } finally {
     clearTimeout(reloj);
   }
+}
+
+/**
+ * What to paint when the brand service cannot be reached.
+ *
+ * Still the platform as the last resort — someone who only wants to punch in
+ * must be able to sign in — but a partner's host whose brand this browser has
+ * already seen keeps THAT brand. A slow mobile network on a partner's login
+ * used to show our logo exactly when the partner could least explain it.
+ */
+export function respaldoSinRed(): ContextoDeMarca {
+  return marcaGuardada() ?? MARCA_DE_PLATAFORMA;
 }
 
 /* ── El proveedor ────────────────────────────────────────────────────────── */
@@ -473,7 +589,14 @@ export function EsqueletoNeutro() {
 }
 
 export function WhiteLabelProvider({ children }: { children: ReactNode }) {
-  const [ctx, setCtx] = useState<ContextoDeMarca | null>(null);
+  /* A partner's host this browser already knows paints ITS brand from the
+     first frame (stale-while-revalidate); everyone else waits on the neutral
+     skeleton exactly as before. */
+  const [ctx, setCtx] = useState<ContextoDeMarca | null>(() => {
+    const guardada = marcaGuardada();
+    if (guardada) aplicarMarca(guardada);
+    return guardada;
+  });
   const [degradado, setDegradado] = useState(false);
   const montado = useRef(true);
 
@@ -482,6 +605,8 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
     (async () => {
       const r = await pedirContexto();
       if (!montado.current) return;
+      /* Only an answer from the server is remembered; a fallback is not. */
+      if (!r.degradado) recordarMarca(r.ctx);
       aplicarMarca(r.ctx);
       /* La medición del socio, en cuanto se sabe de quién es este anfitrión.
          Antes no: cargarla con el contexto de plataforma metería las visitas
