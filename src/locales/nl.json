@@ -19961,7 +19961,8 @@
       "cargando": "Personeel laden…",
       "vacio": "Er is geen kantoorpersoneel om te beperken.",
       "admin": "Beheerder: ziet altijd alle vestigingen.",
-      "todas": "Alle"
+      "todas": "Alle",
+      "gerenteSinSucursal": "Vestigingsmanager zonder vestiging: ziet niets tot je er een toewijst."
     },
     "sede": {
       "campo": "Vestiging",
@@ -19973,6 +19974,29 @@
       "boton": "Radiokanaal",
       "hecho": "Radiokanaal klaar: {{estaciones}} posten en {{personas}} personen.",
       "error": "Het radiokanaal kon niet worden ingericht."
+    },
+    "principal": "Hoofdkantoor",
+    "identidad": {
+      "titulo": "Eigen identiteit (optioneel)",
+      "ayuda": "Laat leeg als de vestiging de bedrijfsnaam en het fiscale nummer van het bedrijf gebruikt.",
+      "razonSocial": "Statutaire naam",
+      "pais": "Land",
+      "paisDeLaEmpresa": "Dat van het bedrijf",
+      "identificador": "Fiscaal nummer",
+      "identificadorMalo": "Dit {{documento}} is niet geldig voor het gekozen land.",
+      "establecimiento": "Vestigingscode",
+      "correo": "E-mail van de vestiging",
+      "direccion": "Fiscaal adres",
+      "revisa": "Controleer het fiscale nummer van de vestiging."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "Dit regelt het hoofdkantoor",
+      "soloPrincipalDesc": "Als vestigingsmanager beheer je je vestiging, maar betalingen, modules en het account regelt een beheerder van het hoofdkantoor."
+    },
+    "cliente": {
+      "campo": "Vestiging van de klant",
+      "todaLaEmpresa": "Hele bedrijf (gedeeld)",
+      "ayuda": "Een klant van het hele bedrijf is in elke vestiging zichtbaar; een van een vestiging alleen daar."
     }
   },
   "soporte": {

@@ -1,11 +1,17 @@
 "use client";
 
+import type { AdminUser, TenantUser } from "./adminUserTypes";
+
 import { useForm, useWatch } from "react-hook-form";
-import { clientDisplayName } from "@/lib/clientName";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { Copy, UserPlus, Ticket } from "lucide-react";
 
+import { clientDisplayName } from "@/lib/clientName";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,33 +30,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { ApiService } from "@/services/api/apiService";
 import userService from "@/lib/api/userService";
-import type { AdminUser, TenantUser } from "./adminUserTypes";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
 import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
-
 import {
   newAdminUserSchema,
   type NewAdminUserValues,
 } from "@/lib/validators/new-admin-user.schema";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandGroup,
-  CommandItem,
-} from "@/components/ui/command";
 import {
   Dialog,
   DialogTrigger,
@@ -59,11 +46,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
-import { Copy, UserPlus, Ticket } from "lucide-react";
 import { PageContainer, PageHeader, Section } from "@/components/kit";
-import { roleDisplayDescription } from "@/config/roleLabels";
+import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
 
 /* dynamic options loaded from API */
 const CLIENT_OPTIONS_PLACEHOLDER: Array<{ id: string; name: string }> = [];
@@ -93,6 +78,7 @@ export default function NewAdminUserPage() {
     getValues,
     reset,
   } = form;
+
   type RoleOption = { id: string; name: string; slug?: string };
 
   const [clientOptions, setClientOptions] = useState<
@@ -106,8 +92,7 @@ export default function NewAdminUserPage() {
   >([]);
   const [roleOptions, setRoleOptions] = useState<RoleOption[]>([]);
   const accessLevelValue = useWatch({ control, name: "accessLevel" }) as
-    | string
-    | undefined;
+    string | undefined;
   const [aclAllowedStationIds, setAclAllowedStationIds] = useState<
     string[] | null
   >(null);
@@ -117,6 +102,7 @@ export default function NewAdminUserPage() {
       const id = (role.id || "").toString().toLowerCase();
       const name = (role.name || "").toString();
       const slug = (role.slug || "").toString().toLowerCase();
+
       // Office roles seeded from DB have proper Spanish names — use them directly
       if (
         id === "administrativesupervisor" ||
@@ -156,6 +142,8 @@ export default function NewAdminUserPage() {
         return t("adminOfficeUsers.roleNames.hrManager", {
           defaultValue: "Gerente de RRHH",
         });
+      if (id === "branchmanager" || slug === "branchmanager")
+        return roleDisplayName("branchManager");
       if (id === "operationsmanager" || slug === "operationsmanager")
         return t("adminOfficeUsers.roleNames.operationsManager", {
           defaultValue: "Gerente de Operaciones",
@@ -168,6 +156,7 @@ export default function NewAdminUserPage() {
         return t("adminOfficeUsers.roleNames.clientAccountManager", {
           defaultValue: "Gestor de Cuentas",
         });
+
       return name || id || "";
     },
     [t],
@@ -194,6 +183,7 @@ export default function NewAdminUserPage() {
   ]);
   const isNonOfficeRole = (role: RoleOption) => {
     const norm = (v: any) => (v || "").toString().toLowerCase();
+
     return (
       NON_OFFICE_ROLES.has(norm(role.id)) ||
       NON_OFFICE_ROLES.has(norm(role.slug)) ||
@@ -206,6 +196,7 @@ export default function NewAdminUserPage() {
       const id = (role.id || "").toString().toLowerCase();
       const name = (role.name || "").toString().toLowerCase();
       const slug = (role.slug || "").toString().toLowerCase();
+
       return id === "admin" || slug === "admin" || name === "admin";
     });
   }, []);
@@ -258,6 +249,7 @@ export default function NewAdminUserPage() {
     const conSedes =
       (watchedPostSiteIds || []).length > 0 ||
       (watchedClientIds || []).length > 0;
+
     if (conSedes) setAcotado(true);
   }, [watchedPostSiteIds, watchedClientIds]);
 
@@ -266,11 +258,13 @@ export default function NewAdminUserPage() {
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
+
         if (!tenantId) return;
 
         // Try to load current user for ACL first
         try {
           const me = await userService.fetchCurrentUser();
+
           setCurrentUser(me);
         } catch (e) {
           // ignore, we'll try tenant user later if needed
@@ -288,6 +282,7 @@ export default function NewAdminUserPage() {
           id: c.id ?? c._id ?? String(c.id),
           name: clientDisplayName(c, c.label ?? c.clientAccountName ?? ""),
         }));
+
         setClientOptions(mappedClients);
 
         const sitesResp = await ApiService.get(
@@ -304,11 +299,13 @@ export default function NewAdminUserPage() {
           clientIds:
             s.clientIds || (s.clientAccountId ? [s.clientAccountId] : []),
         }));
+
         setSiteOptions(mappedSites);
 
         // preload stations for these sites (optional): attempt to fetch stations endpoint and map them
         try {
           const tenantId = localStorage.getItem("tenantId") || "";
+
           if (tenantId) {
             const stationsResp: any = await ApiService.get(
               `/tenant/${tenantId}/station`,
@@ -324,6 +321,7 @@ export default function NewAdminUserPage() {
               postSiteId:
                 st.postSiteId ?? st.businessInfoId ?? st.businessInfo ?? null,
             }));
+
             setStationOptions(mappedStations);
           }
         } catch (e) {
@@ -357,6 +355,7 @@ export default function NewAdminUserPage() {
           );
           const name = r.name ?? r.label ?? r.slug ?? r.value ?? r.role ?? "";
           const slug = r.slug ?? r.role ?? r.value ?? r.name ?? undefined;
+
           return {
             id: id || name || slug || "",
             name: name || slug || id || "",
@@ -387,6 +386,7 @@ export default function NewAdminUserPage() {
   useEffect(() => {
     if (!accessLevelValue && roleOptions.length > 0) {
       const adminRole = findAdminRole(roleOptions) ?? roleOptions[0];
+
       setValue("accessLevel", adminRole.id);
     }
   }, [accessLevelValue, roleOptions, setValue, findAdminRole]);
@@ -402,6 +402,7 @@ export default function NewAdminUserPage() {
       setSiteOptions([]);
       setValue("postSiteIds", []);
       prevClientIdsRef.current = current;
+
       return;
     }
 
@@ -427,8 +428,10 @@ export default function NewAdminUserPage() {
                   r.clientAccountId ??
                   r.clientId ??
                   null;
+
                 return rowClientId === cid;
               });
+
               return filtered.map((r: any) => ({
                 id: r.id,
                 name: r.companyName ?? r.name ?? "",
@@ -436,6 +439,7 @@ export default function NewAdminUserPage() {
               }));
             } catch (e) {
               console.error("Error cargando sitios para cliente", cid, e);
+
               return [] as Array<{
                 id: string;
                 name: string;
@@ -460,6 +464,7 @@ export default function NewAdminUserPage() {
                 clientIds: new Set<string>(),
               };
             acc[cur.id].clientIds.add(cur.clientId);
+
             return acc;
           },
           {} as Record<
@@ -473,6 +478,7 @@ export default function NewAdminUserPage() {
           name: v.name,
           clientIds: Array.from(v.clientIds),
         }));
+
         setSiteOptions(uniqueSites);
 
         // now update selected postSiteIds so they always belong to currently selected clients
@@ -490,11 +496,13 @@ export default function NewAdminUserPage() {
 
         // ensure final selected sites are subset of available uniqueSites
         const allowedIds = new Set(uniqueSites.map((s) => s.id));
+
         for (const sid of Array.from(selectedSet)) {
           if (!allowedIds.has(sid)) selectedSet.delete(sid);
         }
 
         const newSelected = Array.from(selectedSet);
+
         setValue("postSiteIds", newSelected);
       } catch (err) {
         console.error("Error cargando sitios para clientes seleccionados", err);
@@ -512,18 +520,22 @@ export default function NewAdminUserPage() {
   // Load stations when selected postSiteIds change (filter stations by postSiteId)
   useEffect(() => {
     let mounted = true;
+
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
+
         if (!tenantId) return;
 
         // try server-side filtered call first
         let rows: any[] = [];
+
         try {
           if (watchedPostSiteIds && watchedPostSiteIds.length === 1) {
             const resp = await ApiService.get(`/tenant/${tenantId}/station`, {
               postSiteId: watchedPostSiteIds[0],
             } as any);
+
             rows = Array.isArray(resp)
               ? resp
               : resp && resp.rows
@@ -531,6 +543,7 @@ export default function NewAdminUserPage() {
                 : [];
           } else {
             const resp = await ApiService.get(`/tenant/${tenantId}/station`);
+
             rows = Array.isArray(resp)
               ? resp
               : resp && resp.rows
@@ -557,12 +570,14 @@ export default function NewAdminUserPage() {
                 watchedPostSiteIds.includes(String(m.postSiteId)),
               )
             : mapped;
+
         setStationOptions(filtered);
       } catch (e) {
         console.error("Error cargando estaciones", e);
         setStationOptions([]);
       }
     })();
+
     return () => {
       mounted = false;
     };
@@ -573,9 +588,11 @@ export default function NewAdminUserPage() {
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
+
         if (!tenantId) return;
 
         let me = currentUser;
+
         if (!me) {
           try {
             me = await ApiService.get(`/auth/me`);
@@ -586,6 +603,7 @@ export default function NewAdminUserPage() {
         }
 
         let tenantUser = null;
+
         if (me && me.tenants) {
           tenantUser = Array.isArray(me.tenants)
             ? me.tenants.find(
@@ -599,8 +617,10 @@ export default function NewAdminUserPage() {
           // attempt tenant user endpoint (may return assignedClients)
           try {
             const curId = me?.id || me?._id || null;
+
             if (curId) {
               const tu = await userService.fetchUser(curId);
+
               tenantUser = tu;
             }
           } catch (e) {
@@ -617,6 +637,7 @@ export default function NewAdminUserPage() {
           setAclAllowedClientIds(null);
           setAclAllowedPostSiteIds(null);
           setAclAllowedStationIds(null);
+
           return;
         }
 
@@ -627,6 +648,7 @@ export default function NewAdminUserPage() {
           tenantUser?.assignedPostSites || tenantUser?.postSiteIds || [];
         const assignedStations =
           tenantUser?.assignedStations || tenantUser?.stationIds || [];
+
         setAclAllowedClientIds(
           Array.isArray(assignedClients) ? assignedClients : [],
         );
@@ -678,8 +700,11 @@ export default function NewAdminUserPage() {
       setLoading(true);
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
+
         if (!tenantId)
-          throw new Error(t("ui.NewAdminUser.tenantNoConfigurado", "Tenant no configurado"));
+          throw new Error(
+            t("ui.NewAdminUser.tenantNoConfigurado", "Tenant no configurado"),
+          );
         const resp = await userService.fetchUser(editUserId);
         // resp may include tenants array, search by tenant
         const tenantObj = resp?.tenants
@@ -738,6 +763,7 @@ export default function NewAdminUserPage() {
   const onSubmit = async (values: NewAdminUserValues) => {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
+
       if (!tenantId)
         throw new Error(
           t(
@@ -758,12 +784,14 @@ export default function NewAdminUserPage() {
       const invalidStation = (values.stationIds || []).find(
         (id: string) => !uuidRegex.test(id),
       );
+
       if (invalidClient || invalidSite) {
         toast.error(
           t("adminOfficeUsers.newUser.errors.invalidIds", {
             defaultValue: "IDs inválidos detectados en asignaciones",
           }),
         );
+
         return;
       }
       if (invalidStation) {
@@ -772,6 +800,7 @@ export default function NewAdminUserPage() {
             defaultValue: "IDs inválidos detectados en asignaciones",
           }),
         );
+
         return;
       }
 
@@ -791,6 +820,7 @@ export default function NewAdminUserPage() {
       } as any;
 
       let resp: any;
+
       if (editUserId) {
         resp = await userService.updateUser(editUserId, payload);
       } else {
@@ -809,14 +839,15 @@ export default function NewAdminUserPage() {
       navigate("/back-office");
     } catch (err) {
       const e = err as any;
+
       // use helper to map backend validation errors to form fields
       try {
         // lazy import to avoid cycles
-        const { applyValidationErrorsToForm } = await import(
-          "@/lib/utils/formErrorMapper"
-        );
+        const { applyValidationErrorsToForm } =
+          await import("@/lib/utils/formErrorMapper");
         const result = applyValidationErrorsToForm(e, setError as any);
         const msgs = Array.isArray(result) ? result : result.messages;
+
         if (msgs && msgs.length > 0) msgs.forEach((m) => toast.error(m));
         else {
           const backendErrors =
@@ -824,6 +855,7 @@ export default function NewAdminUserPage() {
             e?.response?.data?.user?.errors ||
             e?.response?.data ||
             null;
+
           if (backendErrors?.message) toast.error(backendErrors.message);
           else
             toast.error(
@@ -840,6 +872,7 @@ export default function NewAdminUserPage() {
           t("adminOfficeUsers.newUser.errors.unknown", {
             defaultValue: "Error desconocido",
           });
+
         toast.error(`${msg}`);
       }
     }
@@ -848,6 +881,7 @@ export default function NewAdminUserPage() {
   const createInvitationToken = async () => {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
+
       if (!tenantId)
         throw new Error(
           t(
@@ -880,6 +914,7 @@ export default function NewAdminUserPage() {
         resp?.invitationTokenExpiresAt ||
         resp?.data?.expiresAt ||
         null;
+
       if (!token) {
         throw new Error(
           t("adminOfficeUsers.newUser.errors.createCode", {
@@ -933,10 +968,13 @@ export default function NewAdminUserPage() {
 
   return (
     <AppLayout>
-
       <PageContainer width="wide">
         <PageHeader
           icon={<UserPlus />}
+          subtitle={t("adminOfficeUsers.newUser.subtitle", {
+            defaultValue:
+              "Define la identidad, el nivel de acceso y las asignaciones del usuario",
+          })}
           title={
             editUserId
               ? t("adminOfficeUsers.editUser.breadcrumb.edit", {
@@ -946,20 +984,16 @@ export default function NewAdminUserPage() {
                   defaultValue: "Nuevo Usuario",
                 })
           }
-          subtitle={t("adminOfficeUsers.newUser.subtitle", {
-            defaultValue:
-              "Define la identidad, el nivel de acceso y las asignaciones del usuario",
-          })}
         />
 
         <Section
+          icon={<UserPlus />}
           title={t("adminOfficeUsers.newUser.sectionTitle", {
             defaultValue: "Datos del usuario",
           })}
-          icon={<UserPlus />}
         >
           <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
+            <form className="grid gap-6" onSubmit={handleSubmit(onSubmit)}>
               {/* ── QUIÉN ES ─────────────────────────────────────────── */}
               <div>
                 <p className="cg-eyebrow mb-2">
@@ -1034,7 +1068,9 @@ export default function NewAdminUserPage() {
                     name="accessLevel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("ui.EditAdminUser.rolReq", "Rol*")}</FormLabel>
+                        <FormLabel>
+                          {t("ui.EditAdminUser.rolReq", "Rol*")}
+                        </FormLabel>
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
@@ -1105,12 +1141,6 @@ export default function NewAdminUserPage() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       <button
-                        type="button"
-                        onClick={() => {
-                          setAcotado(false);
-                          setValue("clientIds", []);
-                          setValue("postSiteIds", []);
-                        }}
                         className="cg-focus rounded-xl border px-4 py-3 text-left transition"
                         style={{
                           borderColor: !acotado
@@ -1119,6 +1149,12 @@ export default function NewAdminUserPage() {
                           background: !acotado
                             ? "color-mix(in oklab, var(--brand) 8%, transparent)"
                             : "transparent",
+                        }}
+                        type="button"
+                        onClick={() => {
+                          setAcotado(false);
+                          setValue("clientIds", []);
+                          setValue("postSiteIds", []);
                         }}
                       >
                         <span className="block text-sm font-semibold">
@@ -1138,8 +1174,6 @@ export default function NewAdminUserPage() {
                         </span>
                       </button>
                       <button
-                        type="button"
-                        onClick={() => setAcotado(true)}
                         className="cg-focus rounded-xl border px-4 py-3 text-left transition"
                         style={{
                           borderColor: acotado
@@ -1149,6 +1183,8 @@ export default function NewAdminUserPage() {
                             ? "color-mix(in oklab, var(--brand) 8%, transparent)"
                             : "transparent",
                         }}
+                        type="button"
+                        onClick={() => setAcotado(true)}
                       >
                         <span className="block text-sm font-semibold">
                           {t("comun.soloLoQueYoElija")}
@@ -1175,7 +1211,9 @@ export default function NewAdminUserPage() {
                           name="postSiteIds"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t("ui.EditAdminUser.sedes", "Sedes")}</FormLabel>
+                              <FormLabel>
+                                {t("ui.EditAdminUser.sedes", "Sedes")}
+                              </FormLabel>
                               <p
                                 className="mb-1.5 text-xs"
                                 style={{ color: "var(--ink-soft)" }}
@@ -1187,12 +1225,12 @@ export default function NewAdminUserPage() {
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes
+                                  options={siteOptions}
+                                  placeholder={t("comun.elegirSedes")}
                                   value={(field.value as string[]) || []}
                                   onChange={(ids: string[]) =>
                                     field.onChange(ids)
                                   }
-                                  options={siteOptions}
-                                  placeholder={t("comun.elegirSedes")}
                                 />
                               </FormControl>
                               {(!field.value ||
@@ -1225,7 +1263,10 @@ export default function NewAdminUserPage() {
                                   className="font-normal"
                                   style={{ color: "var(--ink-soft)" }}
                                 >
-                                  {t("ui.EditAdminUser.opcionalParentesis", "(opcional)")}
+                                  {t(
+                                    "ui.EditAdminUser.opcionalParentesis",
+                                    "(opcional)",
+                                  )}
                                 </span>
                               </FormLabel>
                               <p
@@ -1239,12 +1280,12 @@ export default function NewAdminUserPage() {
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes
+                                  options={clientOptions}
+                                  placeholder={t("comun.elegirClientes")}
                                   value={(field.value as string[]) || []}
                                   onChange={(ids: string[]) =>
                                     field.onChange(ids)
                                   }
-                                  options={clientOptions}
-                                  placeholder={t("comun.elegirClientes")}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1261,11 +1302,11 @@ export default function NewAdminUserPage() {
                 <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
                   <DialogTrigger asChild>
                     <Button
-                      variant="outline"
                       style={{
                         borderColor: "var(--brand-line)",
                         color: "var(--brand-text)",
                       }}
+                      variant="outline"
                     >
                       <Ticket className="mr-2 h-4 w-4" />
                       {t("adminOfficeUsers.newUser.invite.createTrigger", {
@@ -1334,9 +1375,9 @@ export default function NewAdminUserPage() {
 
                     <DialogFooter>
                       <Button
+                        disabled={inviteLoading}
                         variant="brand"
                         onClick={createInvitationToken}
-                        disabled={inviteLoading}
                       >
                         {inviteLoading
                           ? t("adminOfficeUsers.newUser.invite.generating", {
@@ -1354,9 +1395,9 @@ export default function NewAdminUserPage() {
                   </DialogContent>
                 </Dialog>
                 <Button
-                  variant="brand"
-                  type="submit"
                   disabled={formState.isSubmitting}
+                  type="submit"
+                  variant="brand"
                 >
                   {formState.isSubmitting
                     ? t("adminOfficeUsers.newUser.form.creating", {

@@ -19961,7 +19961,8 @@
       "cargando": "Personal wird geladen…",
       "vacio": "Kein Büropersonal zum Einschränken.",
       "admin": "Administrator: sieht immer alle Niederlassungen.",
-      "todas": "Alle"
+      "todas": "Alle",
+      "gerenteSinSucursal": "Leitung ohne Niederlassung: sieht nichts, bis Sie eine zuweisen."
     },
     "sede": {
       "campo": "Niederlassung",
@@ -19973,6 +19974,29 @@
       "boton": "Funkkanal",
       "hecho": "Funkkanal bereit: {{estaciones}} Posten und {{personas}} Personen.",
       "error": "Der Funkkanal konnte nicht eingerichtet werden."
+    },
+    "principal": "Hauptsitz",
+    "identidad": {
+      "titulo": "Eigene Identität (optional)",
+      "ayuda": "Leer lassen, wenn die Niederlassung Firmenname und Steuernummer des Unternehmens nutzt.",
+      "razonSocial": "Firmenname",
+      "pais": "Land",
+      "paisDeLaEmpresa": "Das des Unternehmens",
+      "identificador": "Steuernummer",
+      "identificadorMalo": "Diese {{documento}} ist für das gewählte Land nicht gültig.",
+      "establecimiento": "Betriebsstättencode",
+      "correo": "E-Mail der Niederlassung",
+      "direccion": "Steueradresse",
+      "revisa": "Prüfen Sie die Steuernummer der Niederlassung."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "Das macht der Hauptsitz",
+      "soloPrincipalDesc": "Als Niederlassungsleitung führen Sie Ihre Niederlassung; Zahlungen, Module und das Konto verwaltet eine Administration des Hauptsitzes."
+    },
+    "cliente": {
+      "campo": "Niederlassung des Kunden",
+      "todaLaEmpresa": "Ganzes Unternehmen (gemeinsam)",
+      "ayuda": "Ein Kunde des ganzen Unternehmens ist in allen Niederlassungen sichtbar, einer einer Niederlassung nur dort."
     }
   },
   "soporte": {

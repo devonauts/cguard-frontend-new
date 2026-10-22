@@ -5,8 +5,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   MARCA_DE_PLATAFORMA,
+  marcaGuardada,
   normalizarContexto,
   pedirContexto,
+  recordarMarca,
+  respaldoSinRed,
 } from "./WhiteLabelContext";
 
 /**
@@ -661,5 +664,95 @@ describe("Etapa E.1 · el tono y el título los pone el anfitrión", () => {
 
   it("el proveedor publica el nombre en el <html> para que el título lo lea", () => {
     expect(WL).toMatch(/dataset\.nombreDeMarca = ctx\.platformName/);
+  });
+});
+
+/* ── 2026-10-22 · ENTEC: our shield and logo showed first on a partner's host ── */
+
+function navegadorDeSocio(opts: { guardada?: unknown; temprana?: Promise<unknown> | null; ours?: boolean } = {}) {
+  const almacen = new Map<string, string>();
+  if (opts.guardada) {
+    almacen.set("cg-marca:portal.socio.example", JSON.stringify({ v: 1, at: 1, ctx: opts.guardada }));
+  }
+  const localStorage = {
+    getItem: (k: string) => almacen.get(k) ?? null,
+    setItem: (k: string, v: string) => { almacen.set(k, v); },
+    removeItem: (k: string) => { almacen.delete(k); },
+  };
+  vi.stubGlobal("localStorage", localStorage);
+  vi.stubGlobal("window", {
+    location: { hostname: "portal.socio.example", protocol: "https:", search: "" },
+    __cgMarca: { ours: !!opts.ours, cached: null, request: opts.temprana ?? null },
+  });
+  return almacen;
+}
+
+describe("2026-10-22 · la marca del socio desde el primer instante", () => {
+  it("el HTML ya no trae nuestros iconos fuera del script que decide por anfitrión", () => {
+    const html = leer("index.html");
+    const servido = html.replace(/<!--[\s\S]*?-->/g, " ");
+    const fueraDeScripts = servido.replace(/<script[\s\S]*?<\/script>/g, " ");
+    expect(fueraDeScripts).not.toMatch(/favicon-escudo|c-guard-app-logo|icon-192/);
+    expect(fueraDeScripts).toMatch(/<link rel="icon" href="data:," \/>/);
+    // The platform icons are only set on OUR hosts, inside the script.
+    const script = /var d = document[\s\S]*?\}\)\(\);/.exec(servido)![0];
+    expect(script).toMatch(/if \(ours\) \{\s*icons\('\/favicon-escudo\.ico/);
+  });
+
+  it("la petición que empezó el HTML se usa y no se repite", async () => {
+    navegadorDeSocio({ temprana: Promise.resolve(RESELLER) });
+    const f = vi.fn();
+    vi.stubGlobal("fetch", f);
+    const r = await pedirContexto();
+    expect(f).not.toHaveBeenCalled();
+    expect(r.degradado).toBe(false);
+    expect(r.ctx.platformName).toBe("Sentinel Security Cloud");
+  });
+
+  it("si la temprana falla, se pregunta otra vez como siempre", async () => {
+    navegadorDeSocio({ temprana: Promise.resolve(null) });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve(RESELLER) }));
+    const r = await pedirContexto();
+    expect(r.ctx.resellerPublicId).toBe("RSL-ALFA");
+  });
+
+  it("LA QUE IMPORTA · sin red, un anfitrión de socio conocido conserva SU marca", async () => {
+    navegadorDeSocio({ guardada: RESELLER });
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+    const r = await pedirContexto();
+    expect(r.degradado).toBe(true);
+    expect(r.ctx.platformName).toBe("Sentinel Security Cloud");
+    expect(r.ctx.platformName).not.toBe(MARCA_DE_PLATAFORMA.platformName);
+  });
+
+  it("sin red y sin nada guardado, sigue entrando con la de plataforma", async () => {
+    navegadorDeSocio();
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+    expect((await pedirContexto()).ctx).toEqual(MARCA_DE_PLATAFORMA);
+  });
+
+  it("lo guardado se valida como una respuesta fresca", () => {
+    navegadorDeSocio({ guardada: { ...RESELLER, brandHue: 9999, logoUrl: 42 } });
+    const g = marcaGuardada()!;
+    expect(g.brandHue).toBeNull();
+    expect(g.logoUrl).toBeNull();
+  });
+
+  it("un anfitrión NUESTRO nunca usa una marca guardada", () => {
+    navegadorDeSocio({ guardada: RESELLER, ours: true });
+    expect(marcaGuardada()).toBeNull();
+    expect(respaldoSinRed()).toEqual(MARCA_DE_PLATAFORMA);
+  });
+
+  it("se recuerda la de un socio y se olvida al volver a plataforma", () => {
+    const almacen = navegadorDeSocio();
+    recordarMarca(normalizarContexto(RESELLER));
+    expect(JSON.parse(almacen.get("cg-marca:portal.socio.example")!).ctx.resellerPublicId).toBe("RSL-ALFA");
+    recordarMarca(MARCA_DE_PLATAFORMA);
+    expect(almacen.has("cg-marca:portal.socio.example")).toBe(false);
+  });
+
+  it("solo se recuerda lo que respondió el servidor, nunca un respaldo", () => {
+    expect(CODIGO).toMatch(/if \(!r\.degradado\) recordarMarca\(r\.ctx\);/);
   });
 });

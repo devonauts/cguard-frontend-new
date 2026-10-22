@@ -56,12 +56,18 @@ export function AccesoDelPersonal({
   const fijar = async (p: AccesoDePersona, acceso: string[] | null) => {
     // Quitar la última sucursal de alguien lo dejaría sin ver nada: se
     // interpreta como volver a «Todas», que es lo que se quiere casi siempre.
-    const valor = acceso && acceso.length === 0 ? null : acceso;
+    // Salvo para un gerente: «todas» no existe para él (eso es el admin).
+    const esGerente = p.roles.includes("branchManager");
+    const valor = acceso && acceso.length === 0 && !esGerente ? null : acceso;
 
     setGuardando(p.userId);
     try {
       await accesoService.fijar(p.userId, valor);
-      setFilas((fs) => (fs || []).map((f) => (f.userId === p.userId ? { ...f, acceso: valor } : f)));
+      setFilas((fs) =>
+        (fs || []).map((f) =>
+          f.userId === p.userId ? { ...f, acceso: valor } : f,
+        ),
+      );
     } catch {
       toast.error(t("sucursales.errores.guardar"));
     } finally {
@@ -88,7 +94,11 @@ export function AccesoDelPersonal({
       disabled={disabled}
       style={
         activa
-          ? { background: color || "var(--brand)", borderColor: color || "var(--brand)", color: "#fff" }
+          ? {
+              background: color || "var(--brand)",
+              borderColor: color || "var(--brand)",
+              color: "#fff",
+            }
           : undefined
       }
       type="button"
@@ -123,24 +133,41 @@ export function AccesoDelPersonal({
                 <div className="flex flex-wrap items-baseline justify-between gap-x-3">
                   <span className="text-sm font-medium">{p.nombre}</span>
                   {p.email && (
-                    <span className="truncate text-xs" style={{ color: "var(--ink-faint)" }}>
+                    <span
+                      className="truncate text-xs"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
                       {p.email}
                     </span>
                   )}
                 </div>
                 {p.esAdmin ? (
-                  <p className="mt-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+                  <p
+                    className="mt-1.5 text-xs"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
                     {t("sucursales.acceso.admin")}
                   </p>
                 ) : (
                   <div className="mt-2 flex flex-wrap gap-1.5">
-                    <Pastilla
-                      activa={p.acceso === null}
-                      disabled={guardando === p.userId}
-                      onClick={() => fijar(p, null)}
-                    >
-                      {t("sucursales.acceso.todas")}
-                    </Pastilla>
+                    {p.roles.includes("branchManager") &&
+                      !(p.acceso || []).length && (
+                        <p
+                          className="w-full text-xs"
+                          style={{ color: "var(--warn)" }}
+                        >
+                          {t("sucursales.acceso.gerenteSinSucursal")}
+                        </p>
+                      )}
+                    {!p.roles.includes("branchManager") && (
+                      <Pastilla
+                        activa={p.acceso === null}
+                        disabled={guardando === p.userId}
+                        onClick={() => fijar(p, null)}
+                      >
+                        {t("sucursales.acceso.todas")}
+                      </Pastilla>
+                    )}
                     {sucursales.map((b) => {
                       const tiene = !!p.acceso?.includes(b.id);
 

@@ -22,7 +22,12 @@ export function InvitacionADividir() {
   return (
     <Panel
       action={
-        <Button size="sm" type="button" variant="brand" onClick={() => setAbierto(true)}>
+        <Button
+          size="sm"
+          type="button"
+          variant="brand"
+          onClick={() => setAbierto(true)}
+        >
           {t("sucursales.invitacion.boton")}
         </Button>
       }

@@ -19961,7 +19961,8 @@
       "cargando": "Carregando a equipe…",
       "vacio": "Não há equipe de escritório para limitar.",
       "admin": "Administrador: vê sempre todas as filiais.",
-      "todas": "Todas"
+      "todas": "Todas",
+      "gerenteSinSucursal": "Gerente sem filial: não vê nada até você atribuir uma."
     },
     "sede": {
       "campo": "Filial",
@@ -19973,6 +19974,29 @@
       "boton": "Canal de rádio",
       "hecho": "Canal de rádio pronto: {{estaciones}} postos e {{personas}} pessoas.",
       "error": "Não foi possível preparar o canal de rádio."
+    },
+    "principal": "Matriz",
+    "identidad": {
+      "titulo": "Identidade própria (opcional)",
+      "ayuda": "Deixe vazio se a filial usa a razão social e a identificação fiscal da empresa.",
+      "razonSocial": "Razão social",
+      "pais": "País",
+      "paisDeLaEmpresa": "O da empresa",
+      "identificador": "Identificação fiscal",
+      "identificadorMalo": "Este {{documento}} não é válido para o país escolhido.",
+      "establecimiento": "Cód. de estabelecimento",
+      "correo": "E-mail da filial",
+      "direccion": "Endereço fiscal",
+      "revisa": "Revise a identificação fiscal da filial."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "Isso é com a matriz",
+      "soloPrincipalDesc": "Como gerente de filial você administra sua filial, mas pagamentos, módulos e a conta são geridos por um administrador da matriz."
+    },
+    "cliente": {
+      "campo": "Filial do cliente",
+      "todaLaEmpresa": "Toda a empresa (compartilhado)",
+      "ayuda": "Um cliente da empresa toda aparece em todas as filiais; um de uma filial, só nela."
     }
   },
   "soporte": {

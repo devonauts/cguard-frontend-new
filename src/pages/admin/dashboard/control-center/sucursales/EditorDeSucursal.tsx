@@ -11,6 +11,13 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import {
+  IDENTIDAD_VACIA,
+  IdentidadDeSucursal,
+  identidadValida,
+  type Identidad,
+} from "./IdentidadDeSucursal";
+
+import {
   Dialog,
   DialogContent,
   DialogFooter,
@@ -22,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { sucursalesService, type Sucursal } from "@/lib/api/sucursalesService";
+import { getTenantCountry } from "@/utils/tenantLocation";
 
 export const COLORES = [
   "#2563eb",
@@ -52,6 +60,8 @@ export function EditorDeSucursal({
   const [color, setColor] = useState(COLORES[0]);
   const [ciudades, setCiudades] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [identidad, setIdentidad] = useState<Identidad>(IDENTIDAD_VACIA);
+  const paisDeLaEmpresa = String(getTenantCountry() || "");
 
   useEffect(() => {
     if (!abierto) return;
@@ -59,6 +69,14 @@ export function EditorDeSucursal({
     setCodigo(sucursal?.code || "");
     setColor(sucursal?.color || COLORES[0]);
     setCiudades((sucursal?.cities || []).join(", "));
+    setIdentidad({
+      legalName: sucursal?.legalName || "",
+      taxId: sucursal?.taxId || "",
+      country: sucursal?.country || "",
+      establishmentCode: sucursal?.establishmentCode || "",
+      address: sucursal?.address || "",
+      email: sucursal?.email || "",
+    });
   }, [abierto, sucursal]);
 
   const lista = ciudades
@@ -72,6 +90,11 @@ export function EditorDeSucursal({
 
       return;
     }
+    if (!identidadValida(identidad, paisDeLaEmpresa)) {
+      toast.error(t("sucursales.identidad.revisa"));
+
+      return;
+    }
     setGuardando(true);
     try {
       const datos = {
@@ -80,6 +103,12 @@ export function EditorDeSucursal({
         color,
         cities: lista,
         kind: (lista.length > 1 ? "region" : "city") as Sucursal["kind"],
+        legalName: identidad.legalName.trim() || null,
+        taxId: identidad.taxId.trim() || null,
+        country: identidad.country || null,
+        establishmentCode: identidad.establishmentCode.trim() || null,
+        address: identidad.address.trim() || null,
+        email: identidad.email.trim() || null,
       };
 
       if (sucursal) await sucursalesService.actualizar(sucursal.id, datos);
@@ -101,7 +130,12 @@ export function EditorDeSucursal({
     try {
       const r = await sucursalesService.canalDeRadio(sucursal.id);
 
-      toast.success(t("sucursales.radio.hecho", { estaciones: r.estaciones, personas: r.personas }));
+      toast.success(
+        t("sucursales.radio.hecho", {
+          estaciones: r.estaciones,
+          personas: r.personas,
+        }),
+      );
     } catch {
       toast.error(t("sucursales.radio.error"));
     } finally {
@@ -112,7 +146,11 @@ export function EditorDeSucursal({
   const archivar = async () => {
     if (!sucursal) return;
     if (sucursal.sedes.length) {
-      toast.error(t("sucursales.editor.archivarConSedes", { count: sucursal.sedes.length }));
+      toast.error(
+        t("sucursales.editor.archivarConSedes", {
+          count: sucursal.sedes.length,
+        }),
+      );
 
       return;
     }
@@ -136,17 +174,33 @@ export function EditorDeSucursal({
 
   return (
     <Dialog open={abierto} onOpenChange={(v) => !v && onCerrar()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {sucursal ? t("sucursales.editor.editar") : t("sucursales.editor.nueva")}
+          <DialogTitle className="flex items-center gap-2">
+            {sucursal
+              ? t("sucursales.editor.editar")
+              : t("sucursales.editor.nueva")}
+            {sucursal?.isHeadquarters && (
+              <span
+                className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                style={{
+                  background:
+                    "color-mix(in oklab, var(--brand) 16%, transparent)",
+                  color: "var(--brand-text, var(--brand))",
+                }}
+              >
+                {t("sucursales.principal")}
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="grid grid-cols-[1fr_7rem] gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="suc-nombre">{t("sucursales.editor.nombre")}</Label>
+              <Label htmlFor="suc-nombre">
+                {t("sucursales.editor.nombre")}
+              </Label>
               <Input
                 id="suc-nombre"
                 maxLength={120}
@@ -156,7 +210,9 @@ export function EditorDeSucursal({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="suc-codigo">{t("sucursales.editor.codigo")}</Label>
+              <Label htmlFor="suc-codigo">
+                {t("sucursales.editor.codigo")}
+              </Label>
               <Input
                 id="suc-codigo"
                 maxLength={12}
@@ -168,7 +224,9 @@ export function EditorDeSucursal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="suc-ciudades">{t("sucursales.editor.ciudades")}</Label>
+            <Label htmlFor="suc-ciudades">
+              {t("sucursales.editor.ciudades")}
+            </Label>
             <Input
               id="suc-ciudades"
               placeholder={t("sucursales.editor.ciudadesEjemplo")}
@@ -181,6 +239,12 @@ export function EditorDeSucursal({
                 : t("sucursales.editor.ciudadesAyuda")}
             </p>
           </div>
+
+          <IdentidadDeSucursal
+            paisDeLaEmpresa={paisDeLaEmpresa}
+            valor={identidad}
+            onCambio={setIdentidad}
+          />
 
           <div className="space-y-1.5">
             <Label>{t("sucursales.editor.color")}</Label>
@@ -206,10 +270,17 @@ export function EditorDeSucursal({
         <DialogFooter className="gap-2 sm:justify-between">
           {sucursal ? (
             <div className="flex gap-2">
-              <Button type="button" variant="ghost" onClick={archivar}>
-                {t("sucursales.editor.archivar")}
-              </Button>
-              <Button disabled={sincronizando} type="button" variant="outline" onClick={canalDeRadio}>
+              {!sucursal.isHeadquarters && (
+                <Button type="button" variant="ghost" onClick={archivar}>
+                  {t("sucursales.editor.archivar")}
+                </Button>
+              )}
+              <Button
+                disabled={sincronizando}
+                type="button"
+                variant="outline"
+                onClick={canalDeRadio}
+              >
                 {t("sucursales.radio.boton")}
               </Button>
             </div>
@@ -220,7 +291,12 @@ export function EditorDeSucursal({
             <Button type="button" variant="outline" onClick={onCerrar}>
               {t("common.cancel", { defaultValue: "Cancelar" })}
             </Button>
-            <Button disabled={guardando} type="button" variant="brand" onClick={guardar}>
+            <Button
+              disabled={guardando}
+              type="button"
+              variant="brand"
+              onClick={guardar}
+            >
               {t("sucursales.editor.guardar")}
             </Button>
           </div>

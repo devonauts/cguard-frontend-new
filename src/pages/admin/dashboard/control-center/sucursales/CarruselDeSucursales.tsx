@@ -93,7 +93,13 @@ function centroDe(sedes: SedeDeSucursal[], fallback?: MapCenter) {
 }
 
 /** Monta los hijos sólo cuando el elemento entra en pantalla. */
-function AlVerse({ children, alto }: { children: React.ReactNode; alto: number }) {
+function AlVerse({
+  children,
+  alto,
+}: {
+  children: React.ReactNode;
+  alto: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [visto, setVisto] = useState(false);
 
@@ -154,7 +160,10 @@ export function CarruselDeSucursales({
   const { hasPermission } = usePermissions();
   const puedeOrganizar = hasPermission("settingsEdit");
   const [organizando, setOrganizando] = useState(false);
-  const [editor, setEditor] = useState<{ abierto: boolean; sucursal: Sucursal | null }>({
+  const [editor, setEditor] = useState<{
+    abierto: boolean;
+    sucursal: Sucursal | null;
+  }>({
     abierto: false,
     sucursal: null,
   });
@@ -162,16 +171,25 @@ export function CarruselDeSucursales({
 
   const refrescar = () => qc.invalidateQueries({ queryKey: ["sucursales"] });
 
-  const porSucursal = useMemo(() => repartir(entities, lista), [entities, lista]);
+  const porSucursal = useMemo(
+    () => repartir(entities, lista),
+    [entities, lista],
+  );
 
   const tarjetas: Tarjeta[] = useMemo(() => {
     const cifras = new Map(
       (resumen?.porSucursal || []).map((c) => [c.branchId ?? SIN_SUCURSAL, c]),
     );
-    const armar = (clave: string, sucursal: Sucursal | null, sedes: SedeDeSucursal[]): Tarjeta => {
+    const armar = (
+      clave: string,
+      sucursal: Sucursal | null,
+      sedes: SedeDeSucursal[],
+    ): Tarjeta => {
       const ents = porSucursal.get(clave) || [];
       const c = cifras.get(clave);
-      const emergencias = ents.filter((e) => e.kind === "incident" && e.status === "emergency").length;
+      const emergencias = ents.filter(
+        (e) => e.kind === "incident" && e.status === "emergency",
+      ).length;
 
       return {
         clave,
@@ -190,7 +208,10 @@ export function CarruselDeSucursales({
     };
     const lasDeVerdad = lista.sucursales
       .map((b) => armar(b.id, b, b.sedes))
-      .sort((a, b) => b.peso - a.peso || (a.sucursal!.sortOrder - b.sucursal!.sortOrder));
+      .sort(
+        (a, b) =>
+          b.peso - a.peso || a.sucursal!.sortOrder - b.sucursal!.sortOrder,
+      );
     const sueltas = lista.sinSucursal.length
       ? [armar(SIN_SUCURSAL, null, lista.sinSucursal)]
       : [];
@@ -211,7 +232,12 @@ export function CarruselDeSucursales({
       action={
         <div className="flex items-center gap-1.5">
           {organizando && (
-            <Button size="sm" type="button" variant="outline" onClick={() => setAccesos(true)}>
+            <Button
+              size="sm"
+              type="button"
+              variant="outline"
+              onClick={() => setAccesos(true)}
+            >
               <UserCog className="mr-1.5 size-3.5" />
               {t("sucursales.acceso.boton")}
             </Button>
@@ -224,7 +250,9 @@ export function CarruselDeSucursales({
               onClick={() => setOrganizando((v) => !v)}
             >
               <Settings2 className="mr-1.5 size-3.5" />
-              {organizando ? t("sucursales.organizar.listo") : t("sucursales.organizar.boton")}
+              {organizando
+                ? t("sucursales.organizar.listo")
+                : t("sucursales.organizar.boton")}
             </Button>
           )}
           {tarjetas.length > 2 && (
@@ -269,7 +297,9 @@ export function CarruselDeSucursales({
             prefs={prefs}
             tarjeta={tj}
             onEditar={() => setEditor({ abierto: true, sucursal: tj.sucursal })}
-            onExpandir={() => setExpandida(abierta === tj.clave && !unica ? null : tj.clave)}
+            onExpandir={() =>
+              setExpandida(abierta === tj.clave && !unica ? null : tj.clave)
+            }
           />
         ))}
         {organizando && (
@@ -313,13 +343,27 @@ export function CarruselDeSucursales({
   );
 }
 
-function Cifra({ valor, etiqueta, tono }: { valor: React.ReactNode; etiqueta: string; tono?: string }) {
+function Cifra({
+  valor,
+  etiqueta,
+  tono,
+}: {
+  valor: React.ReactNode;
+  etiqueta: string;
+  tono?: string;
+}) {
   return (
     <div className="min-w-0">
-      <div className="text-lg font-semibold leading-tight" style={tono ? { color: tono } : undefined}>
+      <div
+        className="text-lg font-semibold leading-tight"
+        style={tono ? { color: tono } : undefined}
+      >
         {valor}
       </div>
-      <div className="truncate text-[11px]" style={{ color: "var(--ink-faint)" }}>
+      <div
+        className="truncate text-[11px]"
+        style={{ color: "var(--ink-faint)" }}
+      >
         {etiqueta}
       </div>
     </div>
@@ -349,7 +393,10 @@ function TarjetaDeSucursal({
   const color = sucursal?.color || "var(--ink-faint)";
   // El mapa pequeño: sólo sedes y estaciones — lo que dibuja la zona.
   const mini = useMemo(
-    () => tarjeta.entidades.filter((e) => e.kind === "station" || e.kind === "client"),
+    () =>
+      tarjeta.entidades.filter(
+        (e) => e.kind === "station" || e.kind === "client",
+      ),
     [tarjeta.entidades],
   );
   const centro = centroDe(sedes, defaultCenter);
@@ -358,17 +405,38 @@ function TarjetaDeSucursal({
     <div
       className="flex w-[280px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border"
       style={{
-        borderColor: abierta ? color : emergencias ? "var(--bad, #dc2626)" : undefined,
+        borderColor: abierta
+          ? color
+          : emergencias
+            ? "var(--bad, #dc2626)"
+            : undefined,
         boxShadow: abierta ? `0 0 0 1px ${color}` : undefined,
       }}
     >
       <div className="flex items-center gap-2 px-3 pb-2 pt-3">
-        <span className="size-2.5 shrink-0 rounded-full" style={{ background: color }} />
+        <span
+          className="size-2.5 shrink-0 rounded-full"
+          style={{ background: color }}
+        />
         <span className="min-w-0 flex-1 truncate text-sm font-semibold">
           {sucursal ? sucursal.name : t("sucursales.sinSucursal")}
         </span>
+        {sucursal?.isHeadquarters && (
+          <span
+            className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+            style={{
+              background: "color-mix(in oklab, var(--brand) 16%, transparent)",
+              color: "var(--brand-text, var(--brand))",
+            }}
+          >
+            {t("sucursales.principal")}
+          </span>
+        )}
         {sucursal?.code && (
-          <span className="text-[11px] font-medium" style={{ color: "var(--ink-faint)" }}>
+          <span
+            className="text-[11px] font-medium"
+            style={{ color: "var(--ink-faint)" }}
+          >
             {sucursal.code}
           </span>
         )}
@@ -392,20 +460,26 @@ function TarjetaDeSucursal({
                 area="sucursales"
                 defaultCenter={centro}
                 entities={mini}
-                vista={`sucursal:${sucursal.id}`}
                 height={150}
                 hud={false}
                 prefs={prefs}
+                vista={`sucursal:${sucursal.id}`}
               />
             </div>
           ) : (
-            <div className="grid h-full place-items-center text-xs" style={{ color: "var(--ink-faint)" }}>
+            <div
+              className="grid h-full place-items-center text-xs"
+              style={{ color: "var(--ink-faint)" }}
+            >
               {t("sucursales.sinSedesConUbicacion")}
             </div>
           )}
         </AlVerse>
       ) : (
-        <div className="grid place-items-center px-4 text-center text-sm" style={{ height: 150, color: "var(--ink-soft)" }}>
+        <div
+          className="grid place-items-center px-4 text-center text-sm"
+          style={{ height: 150, color: "var(--ink-soft)" }}
+        >
           {t("sucursales.sedesSueltas", { count: sedes.length })}
         </div>
       )}
@@ -413,16 +487,33 @@ function TarjetaDeSucursal({
       <div className="grid grid-cols-3 gap-2 px-3 pt-3">
         <Cifra
           etiqueta={t("sucursales.cifras.cobertura")}
-          tono={cobertura != null && cobertura < 90 ? "var(--warn, #d97706)" : undefined}
+          tono={
+            cobertura != null && cobertura < 90
+              ? "var(--warn, #d97706)"
+              : undefined
+          }
           valor={cobertura == null ? "—" : `${cobertura}%`}
         />
-        <Cifra etiqueta={t("sucursales.cifras.enTurno")} valor={cifras?.enTurno ?? 0} />
-        <Cifra etiqueta={t("sucursales.cifras.estacionesCorto")} valor={cifras?.estaciones ?? 0} />
+        <Cifra
+          etiqueta={t("sucursales.cifras.enTurno")}
+          valor={cifras?.enTurno ?? 0}
+        />
+        <Cifra
+          etiqueta={t("sucursales.cifras.estacionesCorto")}
+          valor={cifras?.estaciones ?? 0}
+        />
       </div>
-      <div className="flex flex-wrap gap-x-3 gap-y-1 px-3 pt-2 text-xs" style={{ color: "var(--ink-soft)" }}>
+      <div
+        className="flex flex-wrap gap-x-3 gap-y-1 px-3 pt-2 text-xs"
+        style={{ color: "var(--ink-soft)" }}
+      >
         {emergencias > 0 && (
-          <span className="inline-flex items-center gap-1 font-semibold" style={{ color: "var(--bad, #dc2626)" }}>
-            <Siren className="size-3.5" /> {t("sucursales.cifras.panicos", { count: emergencias })}
+          <span
+            className="inline-flex items-center gap-1 font-semibold"
+            style={{ color: "var(--bad, #dc2626)" }}
+          >
+            <Siren className="size-3.5" />{" "}
+            {t("sucursales.cifras.panicos", { count: emergencias })}
           </span>
         )}
         {(cifras?.uncovered || 0) > 0 && (
@@ -430,12 +521,26 @@ function TarjetaDeSucursal({
             {t("sucursales.cifras.sinCubrir", { count: cifras!.uncovered })}
           </span>
         )}
-        <span>{t("sucursales.cifras.incidentes", { count: cifras?.incidentesAbiertos ?? 0 })}</span>
+        <span>
+          {t("sucursales.cifras.incidentes", {
+            count: cifras?.incidentesAbiertos ?? 0,
+          })}
+        </span>
       </div>
 
       <div className="mt-auto px-3 pb-3 pt-3">
-        <Button className="w-full" size="sm" type="button" variant="outline" onClick={onExpandir}>
-          {abierta ? <ChevronUp className="mr-1.5 size-4" /> : <ChevronDown className="mr-1.5 size-4" />}
+        <Button
+          className="w-full"
+          size="sm"
+          type="button"
+          variant="outline"
+          onClick={onExpandir}
+        >
+          {abierta ? (
+            <ChevronUp className="mr-1.5 size-4" />
+          ) : (
+            <ChevronDown className="mr-1.5 size-4" />
+          )}
           {abierta
             ? t("sucursales.plegar")
             : sucursal
@@ -475,7 +580,9 @@ function DetalleDeSucursal({
     setMoviendo(true);
     try {
       await sucursalesService.asignarSedes(siteIds, branchId);
-      toast.success(t("sucursales.organizar.movidas", { count: siteIds.length }));
+      toast.success(
+        t("sucursales.organizar.movidas", { count: siteIds.length }),
+      );
       setMarcadas(new Set());
       onCambio();
     } catch {
@@ -494,14 +601,18 @@ function DetalleDeSucursal({
   const asignarSugeridas = async () => {
     const porSucursal = new Map<string, string[]>();
 
-    for (const { s, b } of sugeridas) porSucursal.set(b!, [...(porSucursal.get(b!) || []), s.id]);
+    for (const { s, b } of sugeridas)
+      porSucursal.set(b!, [...(porSucursal.get(b!) || []), s.id]);
     for (const [b, ids] of porSucursal) await mover(ids, b);
   };
 
   return (
     <div className="mt-3 grid gap-4 border-t pt-4 lg:grid-cols-5">
       <div className={verSedes ? "lg:col-span-3" : "lg:col-span-5"}>
-        <div className="relative overflow-hidden rounded-xl [&>div]:!h-full" style={{ height: 460 }}>
+        <div
+          className="relative overflow-hidden rounded-xl [&>div]:!h-full"
+          style={{ height: 460 }}
+        >
           <OperationsMap
             defaultCenter={centroDe(sedes, defaultCenter)}
             entities={tarjeta.entidades}
@@ -518,15 +629,25 @@ function DetalleDeSucursal({
               {t("sucursales.organizar.susSedes", { count: sedes.length })}
             </p>
             {esSueltas && sugeridas.length > 0 && (
-              <Button disabled={moviendo} size="sm" type="button" variant="brand" onClick={asignarSugeridas}>
-                {t("sucursales.organizar.asignarSugeridas", { count: sugeridas.length })}
+              <Button
+                disabled={moviendo}
+                size="sm"
+                type="button"
+                variant="brand"
+                onClick={asignarSugeridas}
+              >
+                {t("sucursales.organizar.asignarSugeridas", {
+                  count: sugeridas.length,
+                })}
               </Button>
             )}
           </div>
 
           {marcadas.size > 0 && (
             <div className="flex items-center gap-2 rounded-lg border px-2 py-1.5 text-xs">
-              <span className="flex-1">{t("sucursales.organizar.marcadas", { count: marcadas.size })}</span>
+              <span className="flex-1">
+                {t("sucursales.organizar.marcadas", { count: marcadas.size })}
+              </span>
               <SelectorDeSucursal
                 disabled={moviendo}
                 excluir={sucursal?.id}
@@ -538,10 +659,15 @@ function DetalleDeSucursal({
 
           <div className="max-h-[400px] space-y-1.5 overflow-y-auto pr-1">
             {sedes.map((s) => {
-              const sugerida = esSueltas ? sucursalSugerida(s.ciudad, lista.sucursales) : null;
+              const sugerida = esSueltas
+                ? sucursalSugerida(s.ciudad, lista.sucursales)
+                : null;
 
               return (
-                <div key={s.id} className="flex items-center gap-2 rounded-lg border px-2 py-1.5">
+                <div
+                  key={s.id}
+                  className="flex items-center gap-2 rounded-lg border px-2 py-1.5"
+                >
                   <Checkbox
                     aria-label={s.nombre}
                     checked={marcadas.has(s.id)}
@@ -557,8 +683,13 @@ function DetalleDeSucursal({
                     }
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{s.nombre || t("sucursales.sedeSinNombre")}</p>
-                    <p className="truncate text-[11px]" style={{ color: "var(--ink-faint)" }}>
+                    <p className="truncate text-sm">
+                      {s.nombre || t("sucursales.sedeSinNombre")}
+                    </p>
+                    <p
+                      className="truncate text-[11px]"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
                       {s.ciudad || t("sucursales.sinCiudad")}
                     </p>
                   </div>
@@ -593,7 +724,9 @@ function SelectorDeSucursal({
   onElegir: (branchId: string | null) => void;
 }) {
   const { t } = useTranslation();
-  const nombre = sugerida ? lista.sucursales.find((b) => b.id === sugerida)?.name : null;
+  const nombre = sugerida
+    ? lista.sucursales.find((b) => b.id === sugerida)?.name
+    : null;
 
   return (
     <Select
@@ -603,7 +736,11 @@ function SelectorDeSucursal({
     >
       <SelectTrigger className="h-8 w-[150px] text-xs">
         <SelectValue
-          placeholder={nombre ? t("sucursales.organizar.aSugerida", { nombre }) : t("sucursales.organizar.moverA")}
+          placeholder={
+            nombre
+              ? t("sucursales.organizar.aSugerida", { nombre })
+              : t("sucursales.organizar.moverA")
+          }
         />
       </SelectTrigger>
       <SelectContent>
@@ -614,7 +751,11 @@ function SelectorDeSucursal({
               {b.name}
             </SelectItem>
           ))}
-        {excluir && <SelectItem value={SIN_SUCURSAL}>{t("sucursales.sinSucursal")}</SelectItem>}
+        {excluir && (
+          <SelectItem value={SIN_SUCURSAL}>
+            {t("sucursales.sinSucursal")}
+          </SelectItem>
+        )}
       </SelectContent>
     </Select>
   );

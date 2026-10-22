@@ -45,11 +45,23 @@ export function useFocoDeSucursal(
   const pastillas: Pastilla[] = useMemo(() => {
     if (!s) return [];
     const por = repartir(entities, s.lista);
-    const cifras = new Map((s.resumen?.porSucursal || []).map((c) => [c.branchId ?? SIN_SUCURSAL, c]));
-    const armar = (clave: string, nombre: string, color: string, sedes: Array<{ lat: number | null; lng: number | null }>): Pastilla => {
+    const cifras = new Map(
+      (s.resumen?.porSucursal || []).map((c) => [
+        c.branchId ?? SIN_SUCURSAL,
+        c,
+      ]),
+    );
+    const armar = (
+      clave: string,
+      nombre: string,
+      color: string,
+      sedes: Array<{ lat: number | null; lng: number | null }>,
+    ): Pastilla => {
       const ents = por.get(clave) || [];
       const c = cifras.get(clave);
-      const emergencias = ents.filter((e) => e.kind === "incident" && e.status === "emergency").length;
+      const emergencias = ents.filter(
+        (e) => e.kind === "incident" && e.status === "emergency",
+      ).length;
       const con = sedes.filter((x) => x.lat != null && x.lng != null);
 
       return {
@@ -58,7 +70,10 @@ export function useFocoDeSucursal(
         color,
         cobertura: coberturaDe(c),
         emergencias,
-        peso: emergencias * 1000 + (c?.uncovered || 0) * 100 + (c?.at_risk || 0) * 10,
+        peso:
+          emergencias * 1000 +
+          (c?.uncovered || 0) * 100 +
+          (c?.at_risk || 0) * 10,
         entidades: ents,
         centro: con.length
           ? {
@@ -73,13 +88,21 @@ export function useFocoDeSucursal(
       .map((b) => armar(b.id, b.name, b.color || "var(--brand)", b.sedes))
       .sort((a, b) => b.peso - a.peso);
     const sueltas = s.lista.sinSucursal.length
-      ? [armar(SIN_SUCURSAL, sinSucursalNombre, "var(--ink-faint)", s.lista.sinSucursal)]
+      ? [
+          armar(
+            SIN_SUCURSAL,
+            sinSucursalNombre,
+            "var(--ink-faint)",
+            s.lista.sinSucursal,
+          ),
+        ]
       : [];
 
     return [...reales, ...sueltas];
   }, [s, entities, sinSucursalNombre]);
 
-  const actual = pastillas.find((p) => p.clave === elegida) || pastillas[0] || null;
+  const actual =
+    pastillas.find((p) => p.clave === elegida) || pastillas[0] || null;
 
   return { pastillas, actual, elegir: setElegida };
 }
@@ -113,19 +136,33 @@ export function PastillasDeSucursal({
             aria-selected={activa}
             className="cg-tarjeta-mapa cg-focus inline-flex min-h-9 shrink-0 items-center gap-1.5 px-3 text-xs font-medium"
             role="tab"
-            style={activa ? { boxShadow: `inset 0 0 0 2px ${p.color}` } : undefined}
+            style={
+              activa ? { boxShadow: `inset 0 0 0 2px ${p.color}` } : undefined
+            }
             type="button"
             onClick={() => onElegir(p.clave)}
           >
-            <span className="size-2 rounded-full" style={{ background: p.color }} />
+            <span
+              className="size-2 rounded-full"
+              style={{ background: p.color }}
+            />
             {p.nombre}
             {p.cobertura != null && (
-              <span className="tabular-nums" style={{ color: "var(--ink-faint)" }}>
+              <span
+                className="tabular-nums"
+                style={{ color: "var(--ink-faint)" }}
+              >
                 {p.cobertura}%
               </span>
             )}
             {p.emergencias > 0 && (
-              <span aria-label={t("sucursales.cifras.panicos", { count: p.emergencias })} className="size-2 rounded-full" style={{ background: "var(--bad, #dc2626)" }} />
+              <span
+                aria-label={t("sucursales.cifras.panicos", {
+                  count: p.emergencias,
+                })}
+                className="size-2 rounded-full"
+                style={{ background: "var(--bad, #dc2626)" }}
+              />
             )}
           </button>
         );
