@@ -3,7 +3,14 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Puzzle, CheckCircle2, ExternalLink } from "lucide-react";
+import { Puzzle, CheckCircle2, ExternalLink, Building2, ScanFace, FileSpreadsheet } from "lucide-react";
+
+/** El icono de cada módulo en la tienda; uno nuevo sin entrada sale con la pieza de puzle. */
+const ICONO_DEL_MODULO: Record<string, React.ReactNode> = {
+  sucursales: <Building2 />,
+  reconocimiento_facial: <ScanFace />,
+  payroll_slips: <FileSpreadsheet />,
+};
 
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";
 import TarjetaModuloMensual from "./TarjetaModuloMensual";
@@ -200,7 +207,7 @@ export default function ModulosAdicionalesPage() {
                     key={m.key}
                     delay={i * 0.08}
                     description={m.description}
-                    icon={<Puzzle />}
+                    icon={ICONO_DEL_MODULO[m.key] ?? <Puzzle />}
                     interruptor={{
                       checked: tiene,
                       disabled: ocupado || tiene || !puedeEncender,
