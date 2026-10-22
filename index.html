@@ -62,6 +62,9 @@
          CGuardPro— en cuanto responde `/api/platform/context`. Lo que se ve
          entretanto es esto: una palabra que no es de nadie. -->
     <title>Acceso</title>
+    <!-- Shell version: changing it makes every installed service worker fetch index.html again. Bumped
+         2026-10-22: the copy precached between 06:44 and 17:39 UTC carried a CSP that blocked the API. -->
+    <meta name="cg-shell" content="2026-10-22b" />
 
     <!-- Poppins is self-hosted (bundled via src/main.tsx) — no render-blocking
          Google Fonts CDN request, and no dependency on a CDN that email/geo
