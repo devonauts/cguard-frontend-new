@@ -206,7 +206,7 @@
             if (typeof c.platformName === 'string' && c.platformName) d.title = c.platformName;
             var ic = local(c.faviconUrl) || local(c.logoUrl);
             /* Home-screen icon: the server renders the partner's art square. */
-            if (ic) icons(ic, '/api/platform/icon/180.png');
+            if (ic) icons(ic, '/api/platform/icon/180');
             var s = d.documentElement.style;
             if (typeof c.brandHue === 'number') {
               s.setProperty('--brand-h', c.brandHue);

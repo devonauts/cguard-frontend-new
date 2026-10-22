@@ -772,7 +772,7 @@ describe("2026-10-22 · la marca que manda el SERVIDOR en el HTML", () => {
   });
 
   it("el icono de inicio del socio lo dibuja el servidor", () => {
-    expect(script).toMatch(/icons\(ic, '\/api\/platform\/icon\/180\.png'\)/);
-    expect(CODIGO).toMatch(/\/api\/platform\/icon\/180\.png/);
+    expect(script).toMatch(/icons\(ic, '\/api\/platform\/icon\/180'\)/);
+    expect(CODIGO).toMatch(/\/api\/platform\/icon\/180"/);
   });
 });
