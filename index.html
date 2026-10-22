@@ -183,13 +183,30 @@
       try { preview = /[?&]vistaPrevia=/.test(location.search); } catch (e) {}
       if (!preview) {
         try {
-          var g = JSON.parse(localStorage.getItem('cg-marca:' + h) || 'null');
-          var c = g && g.v === 1 && g.ctx && g.ctx.scope === 'reseller' ? g.ctx : null;
+          /* The brand the SERVER put in this page for this host (see backend
+             services/whitelabel/brandShell.ts) wins; this browser's copy is
+             the fallback for a page that came without it. */
+          var c = null;
+          try {
+            var el = d.getElementById('cg-marca-servidor');
+            var srv = el ? JSON.parse(el.textContent || 'null') : null;
+            if (srv && srv.scope === 'reseller' && srv.resellerPublicId) {
+              c = srv;
+              try {
+                localStorage.setItem('cg-marca:' + h, JSON.stringify({ v: 1, at: Date.now(), ctx: srv }));
+              } catch (e) {}
+            }
+          } catch (e) {}
+          if (!c) {
+            var g = JSON.parse(localStorage.getItem('cg-marca:' + h) || 'null');
+            c = g && g.v === 1 && g.ctx && g.ctx.scope === 'reseller' ? g.ctx : null;
+          }
           if (c) {
             m.cached = c;
             if (typeof c.platformName === 'string' && c.platformName) d.title = c.platformName;
             var ic = local(c.faviconUrl) || local(c.logoUrl);
-            if (ic) icons(ic, ic);
+            /* Home-screen icon: the server renders the partner's art square. */
+            if (ic) icons(ic, '/api/platform/icon/180.png');
             var s = d.documentElement.style;
             if (typeof c.brandHue === 'number') {
               s.setProperty('--brand-h', c.brandHue);

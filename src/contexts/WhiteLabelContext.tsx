@@ -342,6 +342,16 @@ export function aplicarMarca(ctx: ContextoDeMarca): void {
   const delSocio = ctx.scope === "reseller" ? (ctx.logoUrl || ICONO_VACIO) : null;
   const favicon = ctx.faviconUrl || delSocio || respaldo;
   if (favicon) aplicarFavicon(favicon);
+  /* The home-screen icon of a partner with art: rendered square by the server
+     (`/api/platform/icon/180.png`), so iOS does not fill a transparent logo
+     with black. */
+  if (esMarcaDeSocio(ctx) && (ctx.faviconUrl || ctx.logoUrl)) {
+    try {
+      document.querySelectorAll<HTMLLinkElement>('link[rel="apple-touch-icon"]').forEach((l) => {
+        l.href = "/api/platform/icon/180.png";
+      });
+    } catch { /* idem */ }
+  }
 }
 
 /* ── La petición ─────────────────────────────────────────────────────────── */

@@ -756,3 +756,23 @@ describe("2026-10-22 · la marca del socio desde el primer instante", () => {
     expect(CODIGO).toMatch(/if \(!r\.degradado\) recordarMarca\(r\.ctx\);/);
   });
 });
+
+
+describe("2026-10-22 · la marca que manda el SERVIDOR en el HTML", () => {
+  const html = leer("index.html");
+  const script = /var d = document[\s\S]*?\}\)\(\);/.exec(html)![0];
+
+  it("el arranque lee primero el bloque del servidor y después lo guardado", () => {
+    expect(script).toMatch(/getElementById\('cg-marca-servidor'\)/);
+    expect(script.indexOf("cg-marca-servidor")).toBeLessThan(script.indexOf("localStorage.getItem"));
+  });
+
+  it("solo acepta del bloque la marca de un socio con referencia", () => {
+    expect(script).toMatch(/srv\.scope === 'reseller' && srv\.resellerPublicId/);
+  });
+
+  it("el icono de inicio del socio lo dibuja el servidor", () => {
+    expect(script).toMatch(/icons\(ic, '\/api\/platform\/icon\/180\.png'\)/);
+    expect(CODIGO).toMatch(/\/api\/platform\/icon\/180\.png/);
+  });
+});

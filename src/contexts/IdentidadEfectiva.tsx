@@ -74,6 +74,7 @@ function empresaActiva(user: any, tenantId: string | null) {
   return {
     billingOwnership: t.billingOwnership,
     resellerPublicId: t.resellerPublicId ?? null,
+    brandResellerPublicId: t.brandResellerPublicId ?? null,
     resellerBrandName: t.resellerBrandName ?? null,
   };
 }

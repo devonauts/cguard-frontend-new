@@ -50,6 +50,13 @@ export interface EmpresaParaComparar {
   billingOwnership?: string | null;
   /** La referencia pública del socio dueño (RSL-XXXX), o `null` si es directa. */
   resellerPublicId?: string | null;
+  /**
+   * Whose BRAND the company wears, from `/auth/me` (`brandResellerPublicId`):
+   * the billing partner, or the brand-only tie the platform set for a
+   * partner's own house company (direct, but theirs). Server data, like the
+   * field above.
+   */
+  brandResellerPublicId?: string | null;
 }
 
 /**
@@ -95,6 +102,13 @@ export function compatibilidad(
   }
 
   // A partir de aquí el anfitrión es de un socio.
+  /* A partner's own house company (direct for billing, tied to its brand by
+     the platform) on THAT partner's host wears the partner's brand. ENTEC,
+     2026-10-22: their own company flipped the CRM to our brand. */
+  const deMarca = e.brandResellerPublicId ? String(e.brandResellerPublicId) : null;
+  if (!esDeSocio(e) && deMarca && deMarca === anfitrion.resellerPublicId) {
+    return { identidad: "socio", desajuste: false, motivo: "coinciden" };
+  }
   if (!esDeSocio(e)) {
     return { identidad: "plataforma", desajuste: false, motivo: "empresa-directa-en-anfitrion-de-socio" };
   }

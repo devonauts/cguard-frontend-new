@@ -278,3 +278,30 @@ describe("Etapa E.1 · el subtítulo y la atribución del acceso", () => {
     expect(SHELL).not.toMatch(/compatibilidad\(/);
   });
 });
+
+
+describe("2026-10-22 · la empresa PROPIA de un socio lleva su marca en su anfitrión", () => {
+  const ENTEC = { resellerPublicId: "RSL-F6LK" };
+  const casa = { billingOwnership: "direct", resellerPublicId: null, brandResellerPublicId: "RSL-F6LK" };
+
+  it("LA QUE IMPORTA · directa pero ligada a ENTEC, en el anfitrión de ENTEC → ENTEC", () => {
+    expect(compatibilidad(casa, ENTEC).identidad).toBe("socio");
+  });
+
+  it("en el anfitrión de OTRO socio sigue cerrando en falso", () => {
+    expect(compatibilidad(casa, { resellerPublicId: "RSL-OTRO" }).identidad).toBe("plataforma");
+  });
+
+  it("en nuestro anfitrión sigue siendo plataforma", () => {
+    expect(compatibilidad(casa, { resellerPublicId: null }).identidad).toBe("plataforma");
+  });
+
+  it("una directa SIN ligar sigue siendo plataforma en el anfitrión de un socio", () => {
+    expect(compatibilidad({ billingOwnership: "direct" }, ENTEC).identidad).toBe("plataforma");
+  });
+
+  it("la identidad efectiva pasa el dato del servidor a la regla", () => {
+    const src = fs.readFileSync(path.join(__dirname, "IdentidadEfectiva.tsx"), "utf8");
+    expect(src).toMatch(/brandResellerPublicId: t\.brandResellerPublicId \?\? null/);
+  });
+});

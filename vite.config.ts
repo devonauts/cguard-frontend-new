@@ -121,9 +121,11 @@ export default defineConfig({
       /* MANIFEST NEUTRO (fase 11): un solo artefacto sirve a todos los
          anfitriones y el navegador lee el manifest antes de que corra nada
          nuestro, así que su nombre no puede depender del socio. Un nombre con
-         marca aparecería al INSTALAR desde el anfitrión de un socio. El porqué
-         completo y la salida (manifest por anfitrión) están en
-         `backend/docs/runbooks/phase-a-wildcard.md`. */
+         marca aparecería al INSTALAR desde el anfitrión de un socio.
+         Since 2026-10-22 nginx serves /manifest.webmanifest from the backend
+         per host (partner name + icons, backend services/whitelabel/
+         brandShell.ts) and falls back to THIS file; the service worker
+         precaches whatever its own host served it. */
       manifest: {
         name: "Panel de seguridad",
         short_name: "Panel",
