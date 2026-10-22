@@ -20237,7 +20237,8 @@
       "cargando": "Wczytywanie personelu…",
       "vacio": "Brak personelu biurowego do ograniczenia.",
       "admin": "Administrator: zawsze widzi wszystkie oddziały.",
-      "todas": "Wszystkie"
+      "todas": "Wszystkie",
+      "gerenteSinSucursal": "Kierownik bez oddziału: nic nie widzi, dopóki go nie przypiszesz."
     },
     "sede": {
       "campo": "Oddział",
@@ -20249,6 +20250,29 @@
       "boton": "Kanał radiowy",
       "hecho": "Kanał radiowy gotowy — posterunki: {{estaciones}}, osoby: {{personas}}.",
       "error": "Nie udało się przygotować kanału radiowego."
+    },
+    "principal": "Centrala",
+    "identidad": {
+      "titulo": "Własna tożsamość (opcjonalnie)",
+      "ayuda": "Zostaw puste, jeśli oddział używa nazwy prawnej i identyfikatora podatkowego firmy.",
+      "razonSocial": "Nazwa prawna",
+      "pais": "Kraj",
+      "paisDeLaEmpresa": "Kraj firmy",
+      "identificador": "Identyfikator podatkowy",
+      "identificadorMalo": "Ten {{documento}} jest nieprawidłowy dla wybranego kraju.",
+      "establecimiento": "Kod placówki",
+      "correo": "E-mail oddziału",
+      "direccion": "Adres podatkowy",
+      "revisa": "Sprawdź identyfikator podatkowy oddziału."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "Tym zajmuje się centrala",
+      "soloPrincipalDesc": "Jako kierownik oddziału zarządzasz swoim oddziałem, ale płatności, moduły i konto prowadzi administrator centrali."
+    },
+    "cliente": {
+      "campo": "Oddział klienta",
+      "todaLaEmpresa": "Cała firma (wspólny)",
+      "ayuda": "Klient całej firmy jest widoczny we wszystkich oddziałach; klient oddziału tylko w nim."
     }
   },
   "soporte": {

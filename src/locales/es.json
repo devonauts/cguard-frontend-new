@@ -19953,7 +19953,8 @@
       "cargando": "Cargando al personal…",
       "vacio": "No hay personal de oficina que limitar.",
       "admin": "Administrador: ve siempre todas las sucursales.",
-      "todas": "Todas"
+      "todas": "Todas",
+      "gerenteSinSucursal": "Gerente sin sucursal: no ve nada hasta que le asignes una."
     },
     "sede": {
       "campo": "Sucursal",
@@ -19965,6 +19966,29 @@
       "boton": "Canal de radio",
       "hecho": "Canal de radio listo: {{estaciones}} puestos y {{personas}} personas.",
       "error": "No se pudo preparar el canal de radio."
+    },
+    "principal": "Principal",
+    "identidad": {
+      "titulo": "Identidad propia (opcional)",
+      "ayuda": "Déjalo vacío si la sucursal usa la razón social y la identificación fiscal de la empresa.",
+      "razonSocial": "Razón social",
+      "pais": "País",
+      "paisDeLaEmpresa": "El de la empresa",
+      "identificador": "Identificación fiscal",
+      "identificadorMalo": "Este {{documento}} no es válido para el país elegido.",
+      "establecimiento": "Cód. de establecimiento",
+      "correo": "Correo de la sucursal",
+      "direccion": "Dirección fiscal",
+      "revisa": "Revisa la identificación fiscal de la sucursal."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "Esto lo hace la principal",
+      "soloPrincipalDesc": "Como gerente de sucursal administras tu sucursal, pero los pagos, los módulos y la cuenta los gestiona un administrador de la principal."
+    },
+    "cliente": {
+      "campo": "Sucursal del cliente",
+      "todaLaEmpresa": "Toda la empresa (compartido)",
+      "ayuda": "Un cliente de toda la empresa se ve en todas las sucursales; uno de una sucursal, sólo en ella."
     }
   },
   "soporte": {

@@ -30,7 +30,8 @@ export function repartir(
   for (const b of lista.sucursales) {
     for (const s of b.sedes) {
       sucursalDeSede.set(s.id, b.id);
-      if (s.lat != null && s.lng != null) sedesConPunto.push({ lat: s.lat, lng: s.lng, suc: b.id });
+      if (s.lat != null && s.lng != null)
+        sedesConPunto.push({ lat: s.lat, lng: s.lng, suc: b.id });
     }
   }
   const poner = (k: string, e: MapEntity) => {
@@ -60,7 +61,11 @@ export function repartir(
     let sede: string | null = null;
 
     if (e.kind === "station") sede = (e.meta?.postSiteId as string) || null;
-    else if (e.kind === "client" && e.id.startsWith("cl-") && !e.id.startsWith("cl-acc-"))
+    else if (
+      e.kind === "client" &&
+      e.id.startsWith("cl-") &&
+      !e.id.startsWith("cl-acc-")
+    )
       sede = (e.meta?.entityId as string) || null;
 
     if (sede) poner(sucursalDeSede.get(sede) || SIN_SUCURSAL, e);

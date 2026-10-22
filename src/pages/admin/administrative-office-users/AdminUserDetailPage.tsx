@@ -5,21 +5,12 @@
  * gestionar). La edición real (datos y overrides) vive en el formulario de
  * edición existente para no duplicar lógica sensible.
  */
+import type { LucideIcon } from "lucide-react";
+import type { AdminUser, TenantUser } from "./adminUserTypes";
+
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import AppLayout from "@/layouts/app-layout";
-import userService from "@/lib/api/userService";
-import { Button } from "@/components/ui/button";
-import {
-  Section,
-  EmptyState,
-  Field,
-  GlassPanel,
-  StatusBadge,
-  SkeletonCards,
-  SmartImage,
-} from "@/components/kit";
 import {
   ChevronRight,
   Pencil,
@@ -34,17 +25,28 @@ import {
   XCircle,
   ShieldX,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+
+import AppLayout from "@/layouts/app-layout";
+import userService from "@/lib/api/userService";
+import { Button } from "@/components/ui/button";
+import {
+  Section,
+  EmptyState,
+  Field,
+  GlassPanel,
+  StatusBadge,
+  SkeletonCards,
+  SmartImage,
+} from "@/components/kit";
 import RegistroDeIntentos from "@/components/RegistroDeIntentos";
 import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import { usePermissions } from "@/hooks/usePermissions";
-import type { AdminUser, RoleRef, TenantUser } from "./adminUserTypes";
-
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 const photoOf = (u: AdminUser | null): string | null => {
   const a = u?.avatars ?? u?.avatar ?? u?.profileImage;
   const f = Array.isArray(a) ? a[0] : a;
+
   return (
     f?.downloadUrl ||
     f?.publicUrl ||
@@ -84,7 +86,8 @@ const STATUS_META: Record<
 
 const fmtDate = (v: string | number | Date | null | undefined) =>
   v
-    ? new Date(v).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    ? new Date(v).toLocaleDateString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "short",
         year: "numeric",
@@ -103,6 +106,7 @@ export default function AdminUserDetailPage() {
   useEffect(() => {
     if (!id) return;
     let mounted = true;
+
     setLoading(true);
     userService
       .fetchUser(id)
@@ -115,6 +119,7 @@ export default function AdminUserDetailPage() {
       .finally(() => {
         if (mounted) setLoading(false);
       });
+
     return () => {
       mounted = false;
     };
@@ -126,6 +131,7 @@ export default function AdminUserDetailPage() {
       : null;
   const tenantEntry = useMemo(() => {
     if (!Array.isArray(user?.tenants)) return null;
+
     return (
       user.tenants.find(
         (t: TenantUser) =>
@@ -155,7 +161,9 @@ export default function AdminUserDetailPage() {
         tenantEntry?.role ||
         user?.role ||
         (Array.isArray(user?.roles) ? user.roles[0] : user?.roles);
+
     if (!first) return null;
+
     return typeof first === "object"
       ? first.name || first.slug || first.id
       : String(first);
@@ -163,6 +171,7 @@ export default function AdminUserDetailPage() {
 
   const overrides = (() => {
     const ov = tenantEntry?.permissionOverrides;
+
     return {
       grant: Array.isArray(ov?.grant) ? ov.grant : [],
       deny: Array.isArray(ov?.deny) ? ov.deny : [],
@@ -178,13 +187,25 @@ export default function AdminUserDetailPage() {
     label: string;
     icon: LucideIcon;
   }> = [
-    { id: "perfil", label: t("ui.AdminUserDetailPage.perfil", "Perfil"), icon: IdCard },
-    { id: "permisos", label: t("ui.AdminUserDetailPage.permisos", "Permisos"), icon: KeyRound },
+    {
+      id: "perfil",
+      label: t("ui.AdminUserDetailPage.perfil", "Perfil"),
+      icon: IdCard,
+    },
+    {
+      id: "permisos",
+      label: t("ui.AdminUserDetailPage.permisos", "Permisos"),
+      icon: KeyRound,
+    },
     /* Los fichajes que el reloj le RECHAZÓ. El personal de oficina también
        ficha (`staffShifts`), así que también se le puede quedar en la puerta.
        Misma pantalla que en la ficha del vigilante y en la del supervisor:
        esta ficha no usa rutas, pero el componente es el mismo. */
-    { id: "logs", label: t("logs.tab", { defaultValue: "Registros" }), icon: ShieldX },
+    {
+      id: "logs",
+      label: t("logs.tab", { defaultValue: "Registros" }),
+      icon: ShieldX,
+    },
   ];
 
   return (
@@ -195,20 +216,24 @@ export default function AdminUserDetailPage() {
           className="flex min-w-0 items-center gap-1.5 text-sm"
           style={{ color: "var(--ink-soft)" }}
         >
-          <Link to="/back-office" className="shrink-0 hover:underline">
-            {t("ui.AdminUserDetailPage.usuariosAdministrativos", "Usuarios administrativos")}
+          <Link className="shrink-0 hover:underline" to="/back-office">
+            {t(
+              "ui.AdminUserDetailPage.usuariosAdministrativos",
+              "Usuarios administrativos",
+            )}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           <Link
-            to={`/back-office/${id}`}
             className="max-w-[180px] truncate hover:underline sm:max-w-[240px]"
             title={name}
+            to={`/back-office/${id}`}
           >
             {name}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           <span className="shrink-0 font-medium text-foreground">
-            {TABS.find((x) => x.id === tab)?.label ?? t("ui.AdminUserDetailPage.perfil", "Perfil")}
+            {TABS.find((x) => x.id === tab)?.label ??
+              t("ui.AdminUserDetailPage.perfil", "Perfil")}
           </span>
         </div>
 
@@ -217,11 +242,8 @@ export default function AdminUserDetailPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-4">
               <SmartImage
-                src={photo}
                 alt=""
-                rounded="rounded-2xl"
                 className="h-16 w-16 shrink-0 border"
-                style={{ borderColor: "var(--hairline)" }}
                 fallback={
                   <span
                     className="grid h-full w-full place-items-center text-2xl font-bold"
@@ -233,18 +255,21 @@ export default function AdminUserDetailPage() {
                     {nm.charAt(0).toUpperCase()}
                   </span>
                 }
+                rounded="rounded-2xl"
+                src={photo}
+                style={{ borderColor: "var(--hairline)" }}
               />
               <div className="min-w-0">
                 <h1 className="font-display truncate text-2xl font-bold tracking-tight text-foreground">
                   {name}
                 </h1>
                 <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                  <StatusBadge tone={status.tone} dot={false}>
+                  <StatusBadge dot={false} tone={status.tone}>
                     <ShieldCheck className="h-3 w-3" />{" "}
                     {t(status.labelKey, status.label)}
                   </StatusBadge>
                   {roleName && (
-                    <StatusBadge tone="brand" dot={false}>
+                    <StatusBadge dot={false} tone="brand">
                       {roleName}
                     </StatusBadge>
                   )}
@@ -271,8 +296,8 @@ export default function AdminUserDetailPage() {
               <div className="flex shrink-0 flex-wrap items-center gap-2">
                 {isSupervisor && (
                   <Button
-                    variant="outline"
                     size="sm"
+                    variant="outline"
                     onClick={() => navigate(`/supervisors/${id}`)}
                   >
                     <UserCog className="mr-1 h-4 w-4" />{" "}
@@ -283,11 +308,12 @@ export default function AdminUserDetailPage() {
                   </Button>
                 )}
                 <Button
-                  variant="brand"
                   size="sm"
+                  variant="brand"
                   onClick={() => navigate(`/back-office/edit/${id}`)}
                 >
-                  <Pencil className="mr-1 h-4 w-4" /> {t("actions.edit", "Editar")}
+                  <Pencil className="mr-1 h-4 w-4" />{" "}
+                  {t("actions.edit", "Editar")}
                 </Button>
               </div>
             )}
@@ -303,14 +329,15 @@ export default function AdminUserDetailPage() {
             {TABS.map((it) => {
               const active = tab === it.id;
               const Icon = it.icon;
+
               return (
                 <button
                   key={it.id}
-                  onClick={() => setTab(it.id)}
                   className="cg-focus relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2.5 text-sm font-semibold transition-colors"
                   style={{
                     color: active ? "var(--brand-text)" : "var(--ink-soft)",
                   }}
+                  onClick={() => setTab(it.id)}
                 >
                   <Icon className="h-4 w-4" /> {it.label}
                   {active && (
@@ -333,9 +360,9 @@ export default function AdminUserDetailPage() {
           <SkeletonCards count={2} />
         ) : !user ? (
           <EmptyState
+            description={t("ui.AdminUserDetailPage.noSePudoCargarEste")}
             icon={<UserCog />}
             title={t("ui.AdminUserDetailPage.usuarioNoEncontrado")}
-            description={t("ui.AdminUserDetailPage.noSePudoCargarEste")}
           />
         ) : tab === "logs" ? (
           <RegistroDeIntentos userId={user?.id ? String(user.id) : null} />
@@ -343,15 +370,10 @@ export default function AdminUserDetailPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <Section
-                title={t(
-                  "ui.AdminUserDetail.informacionGeneral",
-                  "Información general",
-                )}
-                icon={<IdCard />}
                 action={
                   <Button
-                    variant="outline"
                     size="sm"
+                    variant="outline"
                     onClick={() => navigate(`/back-office/edit/${id}`)}
                   >
                     <Pencil className="mr-1.5 h-3.5 w-3.5" />{" "}
@@ -361,6 +383,11 @@ export default function AdminUserDetailPage() {
                     )}
                   </Button>
                 }
+                icon={<IdCard />}
+                title={t(
+                  "ui.AdminUserDetail.informacionGeneral",
+                  "Información general",
+                )}
               >
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Field label={t("comun.nombreCompleto")} value={name} />
@@ -402,11 +429,11 @@ export default function AdminUserDetailPage() {
             </div>
             <div>
               <Section
+                icon={<MapPin />}
                 title={t(
                   "ui.AdminUserDetail.ubicacionDeOficina",
                   "Ubicación de oficina",
                 )}
-                icon={<MapPin />}
               >
                 {user.officeAddress ? (
                   <div className="space-y-2 text-sm">
@@ -422,7 +449,10 @@ export default function AdminUserDetailPage() {
                         className="text-xs"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        {t("ui.AdminUserDetailPage.geocercaM", { defaultValue: "Geocerca: {{m}} m", m: user.officeGeofenceRadiusM })}
+                        {t("ui.AdminUserDetailPage.geocercaM", {
+                          defaultValue: "Geocerca: {{m}} m",
+                          m: user.officeGeofenceRadiusM,
+                        })}
                       </div>
                     )}
                   </div>
@@ -439,18 +469,21 @@ export default function AdminUserDetailPage() {
           </div>
         ) : (
           <Section
-            title={t("ui.AdminUserDetailPage.permisos", "Permisos")}
-            icon={<KeyRound />}
             action={
               <Button
-                variant="brand"
                 size="sm"
+                variant="brand"
                 onClick={() => navigate(`/back-office/edit/${id}`)}
               >
                 <KeyRound className="mr-1.5 h-3.5 w-3.5" />{" "}
-                {t("ui.AdminUserDetailPage.gestionarPermisos", "Gestionar permisos")}
+                {t(
+                  "ui.AdminUserDetailPage.gestionarPermisos",
+                  "Gestionar permisos",
+                )}
               </Button>
             }
+            icon={<KeyRound />}
+            title={t("ui.AdminUserDetailPage.permisos", "Permisos")}
           >
             <div className="space-y-4">
               <div className="glass-sunken px-3 py-2.5 text-sm">

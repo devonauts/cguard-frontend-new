@@ -19953,7 +19953,8 @@
       "cargando": "Caricamento del personale…",
       "vacio": "Non c’è personale d’ufficio da limitare.",
       "admin": "Amministratore: vede sempre tutte le filiali.",
-      "todas": "Tutte"
+      "todas": "Tutte",
+      "gerenteSinSucursal": "Responsabile senza filiale: non vede nulla finché non gliene assegni una."
     },
     "sede": {
       "campo": "Filiale",
@@ -19965,6 +19966,29 @@
       "boton": "Canale radio",
       "hecho": "Canale radio pronto: {{estaciones}} postazioni e {{personas}} persone.",
       "error": "Impossibile preparare il canale radio."
+    },
+    "principal": "Sede principale",
+    "identidad": {
+      "titulo": "Identità propria (facoltativa)",
+      "ayuda": "Lascia vuoto se la filiale usa la ragione sociale e l’identificativo fiscale dell’azienda.",
+      "razonSocial": "Ragione sociale",
+      "pais": "Paese",
+      "paisDeLaEmpresa": "Quello dell’azienda",
+      "identificador": "Identificativo fiscale",
+      "identificadorMalo": "Questo {{documento}} non è valido per il paese scelto.",
+      "establecimiento": "Codice di stabilimento",
+      "correo": "E-mail della filiale",
+      "direccion": "Indirizzo fiscale",
+      "revisa": "Controlla l’identificativo fiscale della filiale."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "Se ne occupa la sede principale",
+      "soloPrincipalDesc": "Come responsabile di filiale gestisci la tua filiale, ma pagamenti, moduli e account li gestisce un amministratore della sede principale."
+    },
+    "cliente": {
+      "campo": "Filiale del cliente",
+      "todaLaEmpresa": "Tutta l’azienda (condiviso)",
+      "ayuda": "Un cliente di tutta l’azienda è visibile in tutte le filiali; uno di una filiale, solo lì."
     }
   },
   "soporte": {

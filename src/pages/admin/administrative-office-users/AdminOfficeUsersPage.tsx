@@ -1,9 +1,38 @@
+import type { RoleRef } from "./adminUserTypes";
+
 import { useEffect, useMemo, useState } from "react";
+import {
+  EllipsisVertical,
+  Filter,
+  FileDown,
+  FileSpreadsheet,
+  ArrowDownUp,
+  Search,
+  Send,
+  Archive,
+  Users,
+  LayoutGrid,
+  List as ListIcon,
+  Pencil,
+  RotateCw,
+  Trash,
+  UserCog,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from "react-router-dom";
+
+import AdminUserCardsGrid, {
+  type AdminUserCardAction,
+  type AdminUserRow,
+} from "./AdminUserCardsGrid";
+
 import { clientDisplayName } from "@/lib/clientName";
 import { ApiService } from "@/services/api/apiService";
 import userService from "@/lib/api/userService";
 import AppLayout from "@/layouts/app-layout";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,44 +57,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-import {
-  EllipsisVertical,
-  Filter,
-  FileDown,
-  FileSpreadsheet,
-  ArrowDownUp,
-  Search,
-  Send,
-  Archive,
-  Users,
-  LayoutGrid,
-  List as ListIcon,
-  Pencil,
-  RotateCw,
-  Trash,
-  UserCog,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import AdminUserCardsGrid, {
-  type AdminUserCardAction,
-  type AdminUserRow,
-} from "./AdminUserCardsGrid";
-import type { RoleRef, ClientOption } from "./adminUserTypes";
 import {
   PageContainer,
   PageHeader,
-  Section,
   StatusBadge,
   EmptyState,
   Segmented,
   Toolbar,
   GlassPanel,
 } from "@/components/kit";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
 import { usePermissions } from "@/hooks/usePermissions";
 import { PermissionedButton } from "@/components/permissions/Permissioned";
 import {
@@ -79,17 +79,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import MobileCardList from "@/components/responsive/MobileCardList";
-
 import { localeActual } from "@/lib/localeActual";
-import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 /* Debounce helper */
 function useDebounced<T>(value: T, delay = 400) {
   const [deb, setDeb] = useState(value);
+
   useEffect(() => {
     const id = setTimeout(() => setDeb(value), delay);
+
     return () => clearTimeout(id);
   }, [value, delay]);
+
   return deb;
 }
 
@@ -139,6 +141,7 @@ export default function AdminOfficeUsersPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const formatUserDisplay = (u: AdminUserRow | null) => {
     if (!u) return "";
+
     return (
       u.fullName ||
       [u.firstName, u.lastName].filter(Boolean).join(" ") ||
@@ -156,6 +159,7 @@ export default function AdminOfficeUsersPage() {
         .filter(Boolean)
         .map((s) => String(s).toLowerCase().trim());
     if (typeof roles === "string") return [roles.toLowerCase().trim()];
+
     return [(roles.name || roles.role || "").toString().toLowerCase().trim()];
   };
 
@@ -169,6 +173,7 @@ export default function AdminOfficeUsersPage() {
     const r = normalizeRolesForUser(
       u.roles || u.role || u.rolesList || u._rolesDisplay,
     );
+
     return (
       r.includes("admin") ||
       r.includes("super admin") ||
@@ -199,8 +204,10 @@ export default function AdminOfficeUsersPage() {
         if (typeof roles === "string") return [roles.toLowerCase().trim()];
         if (typeof roles === "object") {
           const candidate = roles.name || roles.role || roles.type || "";
+
           return candidate ? [String(candidate).toLowerCase().trim()] : [];
         }
+
         return [];
       };
 
@@ -220,6 +227,7 @@ export default function AdminOfficeUsersPage() {
               (u as { rolesList?: unknown }).rolesList ||
               u._rolesDisplay,
           );
+
           return (
             !roles.includes("customer") && !roles.includes("securitysupervisor")
           );
@@ -236,6 +244,7 @@ export default function AdminOfficeUsersPage() {
   const loadClients = async () => {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
+
       if (!tenantId) return;
       const resp = await ApiService.get(`/tenant/${tenantId}/client-account`);
       const rows = Array.isArray(resp)
@@ -249,8 +258,10 @@ export default function AdminOfficeUsersPage() {
           c,
           c.label || c.clientAccountName || "",
         );
+
         return { id: c.id ?? c._id ?? String(c.id), name: display };
       });
+
       setClientOptions(mapped);
     } catch (e) {
       console.error("Error cargando clientes para filtros", e);
@@ -279,11 +290,13 @@ export default function AdminOfficeUsersPage() {
                 .trim(),
             ];
         }
+
         return [];
       };
 
       // try multiple locations where backend may put tenant-role info
       let rolesCollected: string[] = [];
+
       rolesCollected = rolesCollected.concat(
         extractRoles(me?.roles || me?.role || me?.rolesList),
       );
@@ -310,6 +323,7 @@ export default function AdminOfficeUsersPage() {
             .map((s) => String(s).toLowerCase().trim()),
         ),
       );
+
       setIsAdminUser(
         rset.includes("admin") ||
           rset.includes("super admin") ||
@@ -337,6 +351,7 @@ export default function AdminOfficeUsersPage() {
       const filename = `usuarios_${hoyEnLaEmpresa()}.${ext}`;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
+
       a.href = url;
       a.download = filename;
       document.body.appendChild(a);
@@ -361,6 +376,7 @@ export default function AdminOfficeUsersPage() {
           defaultValue: "No se puede suspender a un usuario administrador",
         }),
       );
+
       return;
     }
     if (!user.id) return;
@@ -390,6 +406,7 @@ export default function AdminOfficeUsersPage() {
         err?.response?.data?.message ||
         err?.message ||
         (typeof err === "string" ? err : null);
+
       toast.error(
         serverMsg ||
           t("adminOfficeUsers.toasts.errorSuspendingUser", {
@@ -407,12 +424,14 @@ export default function AdminOfficeUsersPage() {
     const row = rows.find(
       (r) => String(r.id || r._id || r.raw?.id) === String(userId),
     );
+
     if (isUserAdmin(row)) {
       toast.error(
         t("adminOfficeUsers.toasts.cannotDeleteAdmin", {
           defaultValue: "No se puede eliminar a un usuario administrador",
         }),
       );
+
       return;
     }
     try {
@@ -444,11 +463,13 @@ export default function AdminOfficeUsersPage() {
     // Apply search query
     if (debouncedQuery) {
       const q = debouncedQuery.toLowerCase();
+
       out = out.filter((r) => {
         const name = (r.firstName || r.name || "").toString().toLowerCase();
         const email = (r.email || "").toString().toLowerCase();
         // También por su usuario para entrar (alias).
         const alias = (r.username || "").toString().toLowerCase();
+
         return name.includes(q) || email.includes(q) || alias.includes(q);
       });
     }
@@ -474,6 +495,7 @@ export default function AdminOfficeUsersPage() {
           } else if (typeof cand === "object") {
             // object or nested shape
             const co = cand as { id?: unknown; _id?: unknown };
+
             if (
               (co.id && String(co.id) === clientIdStr) ||
               (co._id && String(co._id) === clientIdStr)
@@ -483,6 +505,7 @@ export default function AdminOfficeUsersPage() {
             const vals = Object.values(cand).flat
               ? Object.values(cand).flat()
               : Object.values(cand);
+
             if (Array.isArray(vals) && vals.map(String).includes(clientIdStr))
               return true;
           } else if (String(cand) === clientIdStr) {
@@ -499,6 +522,7 @@ export default function AdminOfficeUsersPage() {
               t.clientIds ||
               t.assignedClientIds ||
               null;
+
             if (!asg) continue;
             if (Array.isArray(asg) && asg.map(String).includes(clientIdStr))
               return true;
@@ -516,11 +540,13 @@ export default function AdminOfficeUsersPage() {
     if (filterStatus && filterStatus !== "all") {
       out = out.filter((r) => {
         const status = (r.status || "").toString().toLowerCase();
+
         if (filterStatus === "Activo") {
           // Exclude archived and invitation/pending statuses
           if (status === "archived" || status === "archivado") return false;
           if (status === "invited" || status === "pending") return false;
           if (r.active === false) return false;
+
           return true;
         }
         if (filterStatus === "Inactivo") {
@@ -534,6 +560,7 @@ export default function AdminOfficeUsersPage() {
               (status === "archived" || status === "archivado"))
           );
         }
+
         return true;
       });
     }
@@ -563,6 +590,7 @@ export default function AdminOfficeUsersPage() {
     setSelectedUsers((prev) => {
       if (checked) {
         if (prev.includes(userId)) return prev;
+
         return [...prev, userId];
       } else {
         return prev.filter((id) => id !== userId);
@@ -573,6 +601,7 @@ export default function AdminOfficeUsersPage() {
   const handleSelectAllUsers = (checked: boolean) => {
     if (!checked) {
       setSelectedUsers([]);
+
       return;
     }
     // do not include admin users when selecting all
@@ -582,6 +611,7 @@ export default function AdminOfficeUsersPage() {
       .filter(Boolean)
       .map(String);
     const merged = Array.from(new Set([...selectedUsers, ...idsOnPage]));
+
     setSelectedUsers(merged);
   };
 
@@ -600,8 +630,10 @@ export default function AdminOfficeUsersPage() {
         const r = rows.find(
           (rr) => String(rr.id || rr._id || rr.raw?.id) === String(id),
         );
+
         return !isUserAdmin(r);
       });
+
       if (idsToSuspend.length === 0) {
         toast.error(
           t("adminOfficeUsers.toasts.noValidUsersToSuspend", {
@@ -609,6 +641,7 @@ export default function AdminOfficeUsersPage() {
               "Ningún usuario válido para suspender (los administradores no pueden suspenderse)",
           }),
         );
+
         return;
       }
       if (idsToSuspend.length < ids.length) {
@@ -624,6 +657,7 @@ export default function AdminOfficeUsersPage() {
       setRows((prev) =>
         prev.map((r) => {
           const key = String(r.id || r._id || r.raw?.id);
+
           if (idsToSuspend.includes(key)) {
             return {
               ...r,
@@ -632,6 +666,7 @@ export default function AdminOfficeUsersPage() {
               raw: { ...(r.raw || {}), status: "archived" },
             };
           }
+
           return r;
         }),
       );
@@ -664,6 +699,7 @@ export default function AdminOfficeUsersPage() {
       setRows((prev) =>
         prev.map((r) => {
           const key = String(r.id || r._id || r.raw?.id);
+
           if (ids.includes(key)) {
             return {
               ...r,
@@ -672,6 +708,7 @@ export default function AdminOfficeUsersPage() {
               raw: { ...(r.raw || {}), status: "active" },
             };
           }
+
           return r;
         }),
       );
@@ -699,9 +736,13 @@ export default function AdminOfficeUsersPage() {
   const userCardActions = (u: AdminUserRow): AdminUserCardAction[] => {
     const status = (u.status || "").toString().toLowerCase();
     const acts: AdminUserCardAction[] = [];
+
     if (status === "invited" || status === "pending") {
       acts.push({
-        label: t("adminOfficeUsers.rowActions.resendInvitation", "Reenviar Invitación"),
+        label: t(
+          "adminOfficeUsers.rowActions.resendInvitation",
+          "Reenviar Invitación",
+        ),
         icon: <Send className="h-4 w-4" />,
         disabled: !hasPermission("userEdit"),
         onClick: () => {
@@ -771,6 +812,7 @@ export default function AdminOfficeUsersPage() {
         });
       }
     }
+
     return acts;
   };
 
@@ -781,6 +823,7 @@ export default function AdminOfficeUsersPage() {
       ).includes("securitysupervisor")
     ) {
       navigate(`/supervisors/${u.id}`);
+
       return;
     }
     navigate(`/back-office/${u.id}`);
@@ -788,19 +831,10 @@ export default function AdminOfficeUsersPage() {
 
   return (
     <AppLayout>
-
       <PageContainer width="wide">
         <PageHeader
-          icon={<Users />}
-          title={t("adminOfficeUsers.title", {
-            defaultValue: "Usuarios de Oficina Administrativa",
-          })}
-          subtitle={t("adminOfficeUsers.subtitle", {
-            defaultValue:
-              "Administra el acceso, los roles y los permisos del personal de oficina",
-          })}
           actions={
-            <PermissionedButton permission="userCreate" asChild variant="brand">
+            <PermissionedButton asChild permission="userCreate" variant="brand">
               <Link to="/back-office/new">
                 {t("adminOfficeUsers.newUser.breadcrumb.new", {
                   defaultValue: "Nuevo Usuario",
@@ -808,6 +842,14 @@ export default function AdminOfficeUsersPage() {
               </Link>
             </PermissionedButton>
           }
+          icon={<Users />}
+          subtitle={t("adminOfficeUsers.subtitle", {
+            defaultValue:
+              "Administra el acceso, los roles y los permisos del personal de oficina",
+          })}
+          title={t("adminOfficeUsers.title", {
+            defaultValue: "Usuarios de Oficina Administrativa",
+          })}
         />
 
         <GlassPanel className="p-5">
@@ -820,6 +862,7 @@ export default function AdminOfficeUsersPage() {
                 value={bulkAction ?? undefined}
                 onValueChange={(v) => {
                   const action = v;
+
                   setBulkAction(null);
                   (async () => {
                     if (!selectedUsers || selectedUsers.length === 0) {
@@ -828,16 +871,19 @@ export default function AdminOfficeUsersPage() {
                           defaultValue: "Selecciona al menos un usuario",
                         }),
                       );
+
                       return;
                     }
 
                     if (action === "suspender") {
                       await handleBulkSuspend(selectedUsers);
+
                       return;
                     }
 
                     if (action === "activar") {
                       await handleBulkActivate(selectedUsers);
+
                       return;
                     }
                   })();
@@ -872,6 +918,7 @@ export default function AdminOfficeUsersPage() {
                               "archivado" ||
                             r.active === false),
                       );
+
                       if (anyArchived)
                         return (
                           <SelectItem value="activar">
@@ -880,6 +927,7 @@ export default function AdminOfficeUsersPage() {
                             })}
                           </SelectItem>
                         );
+
                       return null;
                     })()}
                 </SelectContent>
@@ -893,15 +941,15 @@ export default function AdminOfficeUsersPage() {
                   style={{ color: "var(--ink-faint)" }}
                 />
                 <Input
-                  placeholder={t("adminOfficeUsers.searchPlaceholder", {
-                    defaultValue: "Buscar usuario",
-                  })}
-                  className="h-8 w-56 border-0 bg-transparent px-1 shadow-none"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
                   aria-label={t("adminOfficeUsers.searchPlaceholder", {
                     defaultValue: "Buscar usuario",
                   })}
+                  className="h-8 w-56 border-0 bg-transparent px-1 shadow-none"
+                  placeholder={t("adminOfficeUsers.searchPlaceholder", {
+                    defaultValue: "Buscar usuario",
+                  })}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
               </Toolbar>
 
@@ -916,8 +964,8 @@ export default function AdminOfficeUsersPage() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent
-                  side="right"
                   className="w-full max-w-full sm:w-[460px] overflow-y-auto"
+                  side="right"
                 >
                   <SheetHeader>
                     <SheetTitle>
@@ -1038,8 +1086,8 @@ export default function AdminOfficeUsersPage() {
                     </div>
 
                     <Button
-                      variant="brand"
                       className="w-full"
+                      variant="brand"
                       onClick={() => {
                         // aplica filtros y cierra
                         setOpenFilter(false);
@@ -1056,8 +1104,6 @@ export default function AdminOfficeUsersPage() {
               {/* Toggle vista Tarjetas / Lista (desktop) */}
               <Segmented
                 className="hidden md:inline-flex"
-                value={viewMode}
-                onChange={setViewMode}
                 options={[
                   {
                     value: "cards",
@@ -1077,18 +1123,20 @@ export default function AdminOfficeUsersPage() {
                     ),
                   },
                 ]}
+                value={viewMode}
+                onChange={setViewMode}
               />
 
               {/* Menú superior (export/import) */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
-                    size="icon"
                     aria-label={t(
                       "ui.AdminOfficeUsers.masAcciones",
                       "Más acciones",
                     )}
+                    size="icon"
+                    variant="ghost"
                   >
                     <EllipsisVertical className="h-5 w-5" />
                   </Button>
@@ -1140,13 +1188,13 @@ export default function AdminOfficeUsersPage() {
             <div className="md:block hidden overflow-x-auto">
               {viewMode === "cards" ? (
                 <AdminUserCardsGrid
-                  users={pagedRows}
+                  actions={userCardActions}
+                  canSelect={(u) => canManageUsers && !isUserAdmin(u)}
                   loading={loadingUsers}
                   selectedIds={selectedUsers}
-                  canSelect={(u) => canManageUsers && !isUserAdmin(u)}
-                  onSelect={handleSelectUser}
+                  users={pagedRows}
                   onOpen={openUser}
-                  actions={userCardActions}
+                  onSelect={handleSelectUser}
                 />
               ) : (
                 <table className="min-w-full border-collapse text-left text-sm">
@@ -1157,12 +1205,12 @@ export default function AdminOfficeUsersPage() {
                     >
                       <th className="px-4 py-3">
                         <Checkbox
-                          disabled={!canManageUsers}
+                          aria-label={t("comun.seleccionarTodos")}
                           checked={allOnPageSelected}
+                          disabled={!canManageUsers}
                           onCheckedChange={(v) =>
                             handleSelectAllUsers(Boolean(v))
                           }
-                          aria-label={t("comun.seleccionarTodos")}
                         />
                       </th>
                       <th className="px-4 py-3 font-semibold">
@@ -1197,17 +1245,17 @@ export default function AdminOfficeUsersPage() {
                   <tbody>
                     {filteredRows.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="py-12">
+                        <td className="py-12" colSpan={7}>
                           <EmptyState
-                            icon={<Users />}
-                            title={t("adminOfficeUsers.noData.title", {
-                              defaultValue: "No se encontraron resultados",
-                            })}
+                            className="border-0"
                             description={t("adminOfficeUsers.noData.message", {
                               defaultValue:
                                 "No pudimos encontrar ningún elemento que coincida con su búsqueda",
                             })}
-                            className="border-0"
+                            icon={<Users />}
+                            title={t("adminOfficeUsers.noData.title", {
+                              defaultValue: "No se encontraron resultados",
+                            })}
                           />
                         </td>
                       </tr>
@@ -1239,10 +1287,10 @@ export default function AdminOfficeUsersPage() {
                             onClick={(e) => e.stopPropagation()}
                           >
                             <Checkbox
-                              disabled={!canManageUsers || isUserAdmin(u)}
                               checked={selectedUsers.includes(
                                 String(u.id || u._id || u.raw?.id),
                               )}
+                              disabled={!canManageUsers || isUserAdmin(u)}
                               onCheckedChange={(v) =>
                                 handleSelectUser(
                                   String(u.id || u._id || u.raw?.id),
@@ -1264,7 +1312,10 @@ export default function AdminOfficeUsersPage() {
                               <div
                                 className="font-mono text-xs"
                                 style={{ color: "var(--ink-soft)" }}
-                                title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                                title={t(
+                                  "usuarioDeAcceso.etiqueta",
+                                  "Usuario para entrar",
+                                )}
                               >
                                 {u.username}
                               </div>
@@ -1274,6 +1325,7 @@ export default function AdminOfficeUsersPage() {
                             {(() => {
                               if (u._rolesDisplay) return u._rolesDisplay;
                               const roles = u.roles ?? u.role ?? [];
+
                               if (Array.isArray(roles)) {
                                 return roles
                                   .map((r: RoleRef) =>
@@ -1289,6 +1341,7 @@ export default function AdminOfficeUsersPage() {
                               if (typeof roles === "string") return roles;
                               if (roles && typeof roles === "object")
                                 return roles.name || roles.role || "";
+
                               return "-";
                             })()}
                           </td>
@@ -1296,7 +1349,9 @@ export default function AdminOfficeUsersPage() {
                             {u.lastLoginAt
                               ? new Date(
                                   u.lastLoginAt as string,
-                                ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+                                ).toLocaleString(localeActual(), {
+                                  timeZone: zonaDeLaEmpresa(),
+                                })
                               : "-"}
                           </td>
                           <td className="px-4 py-3">
@@ -1304,6 +1359,7 @@ export default function AdminOfficeUsersPage() {
                               const status = (u.status || "")
                                 .toString()
                                 .toLowerCase();
+
                               // archived (backend) or archivado (spanish) => show red Archivado
                               if (
                                 status === "archived" ||
@@ -1356,7 +1412,7 @@ export default function AdminOfficeUsersPage() {
                           >
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button size="icon" variant="ghost">
                                   <EllipsisVertical className="h-5 w-5" />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -1365,6 +1421,7 @@ export default function AdminOfficeUsersPage() {
                                   const status = (u.status || "")
                                     .toString()
                                     .toLowerCase();
+
                                   if (
                                     status === "invited" ||
                                     status === "pending"
@@ -1558,105 +1615,111 @@ export default function AdminOfficeUsersPage() {
 
             <div className="md:hidden">
               <MobileCardList
-                items={pagedRows || []}
-                loading={loadingUsers}
                 emptyMessage={
                   t("adminOfficeUsers.noData.title", {
                     defaultValue: "No se encontraron resultados",
                   }) as string
                 }
+                items={pagedRows || []}
+                loading={loadingUsers}
                 renderCard={(u: AdminUserRow) => (
                   <>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="text-sm font-semibold">
-                        {[u.firstName, u.lastName]
-                          .filter(Boolean)
-                          .join(" ") ||
-                          u.name ||
-                          u.email ||
-                          "-"}
-                      </div>
-                      <div
-                        className="text-xs"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        {u.email || "-"}
-                        {u.username && (
-                          <span className="ml-1.5 font-mono">· {u.username}</span>
-                        )}
-                      </div>
-                      <div
-                        className="mt-1 text-xs"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        {u._rolesDisplay ||
-                          (Array.isArray(u.roles)
-                            ? u.roles
-                                .map((r) =>
-                                  typeof r === "string"
-                                    ? r
-                                    : r?.name || r?.role || "",
-                                )
-                                .join(", ")
-                            : typeof u.roles === "string"
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="text-sm font-semibold">
+                          {[u.firstName, u.lastName]
+                            .filter(Boolean)
+                            .join(" ") ||
+                            u.name ||
+                            u.email ||
+                            "-"}
+                        </div>
+                        <div
+                          className="text-xs"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {u.email || "-"}
+                          {u.username && (
+                            <span className="ml-1.5 font-mono">
+                              · {u.username}
+                            </span>
+                          )}
+                        </div>
+                        <div
+                          className="mt-1 text-xs"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {u._rolesDisplay ||
+                            (Array.isArray(u.roles)
                               ? u.roles
-                              : typeof u.role === "string"
-                                ? u.role
-                                : "-")}
+                                  .map((r) =>
+                                    typeof r === "string"
+                                      ? r
+                                      : r?.name || r?.role || "",
+                                  )
+                                  .join(", ")
+                              : typeof u.roles === "string"
+                                ? u.roles
+                                : typeof u.role === "string"
+                                  ? u.role
+                                  : "-")}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex min-w-0 flex-col items-end gap-1 text-right sm:shrink-0">
-                      {(() => {
-                        const status = (u.status || "")
-                          .toString()
-                          .toLowerCase();
-                        if (status === "archived" || status === "archivado")
+                      <div className="flex min-w-0 flex-col items-end gap-1 text-right sm:shrink-0">
+                        {(() => {
+                          const status = (u.status || "")
+                            .toString()
+                            .toLowerCase();
+
+                          if (status === "archived" || status === "archivado")
+                            return (
+                              <StatusBadge tone="neutral">
+                                {t("adminOfficeUsers.statuses.archived", {
+                                  defaultValue: "Archivado",
+                                })}
+                              </StatusBadge>
+                            );
+                          if (status === "invited" || status === "pending")
+                            return (
+                              <StatusBadge tone="warn">
+                                {t("adminOfficeUsers.statuses.pending", {
+                                  defaultValue: "Pendiente",
+                                })}
+                              </StatusBadge>
+                            );
+                          if (u.active === false)
+                            return (
+                              <StatusBadge tone="bad">
+                                {t("adminOfficeUsers.statuses.inactive", {
+                                  defaultValue: "Inactivo",
+                                })}
+                              </StatusBadge>
+                            );
+
                           return (
-                            <StatusBadge tone="neutral">
-                              {t("adminOfficeUsers.statuses.archived", {
-                                defaultValue: "Archivado",
+                            <StatusBadge tone="ok">
+                              {t("adminOfficeUsers.statuses.active", {
+                                defaultValue: "Activo",
                               })}
                             </StatusBadge>
                           );
-                        if (status === "invited" || status === "pending")
-                          return (
-                            <StatusBadge tone="warn">
-                              {t("adminOfficeUsers.statuses.pending", {
-                                defaultValue: "Pendiente",
-                              })}
-                            </StatusBadge>
-                          );
-                        if (u.active === false)
-                          return (
-                            <StatusBadge tone="bad">
-                              {t("adminOfficeUsers.statuses.inactive", {
-                                defaultValue: "Inactivo",
-                              })}
-                            </StatusBadge>
-                          );
-                        return (
-                          <StatusBadge tone="ok">
-                            {t("adminOfficeUsers.statuses.active", {
-                              defaultValue: "Activo",
-                            })}
-                          </StatusBadge>
-                        );
-                      })()}
-                      <div
-                        /* La fecha completa con segundos mide 149 px y no
+                        })()}
+                        <div
+                          /* La fecha completa con segundos mide 149 px y no
                            parte: en un teléfono empujaba la tarjeta 19 px
                            fuera de la pantalla. Que se parta en dos líneas. */
-                        className="break-words text-xs tabular-nums"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        {u.lastLoginAt
-                          ? new Date(u.lastLoginAt as string).toLocaleString(
-                              localeActual(), { timeZone: zonaDeLaEmpresa() })
-                          : "—"}
+                          className="break-words text-xs tabular-nums"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {u.lastLoginAt
+                            ? new Date(u.lastLoginAt as string).toLocaleString(
+                                localeActual(),
+                                { timeZone: zonaDeLaEmpresa() },
+                              )
+                            : "—"}
+                        </div>
                       </div>
                     </div>
-                  </div>
                   </>
                 )}
               />
@@ -1705,15 +1768,15 @@ export default function AdminOfficeUsersPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage <= 1}
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   aria-label={
                     t("clients.pagination.prev", {
                       defaultValue: "Anterior",
                     }) as string
                   }
+                  disabled={currentPage <= 1}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -1721,16 +1784,16 @@ export default function AdminOfficeUsersPage() {
                   {currentPage} / {pageCount}
                 </span>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage >= pageCount}
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(pageCount, p + 1))
-                  }
                   aria-label={
                     t("clients.pagination.next", {
                       defaultValue: "Siguiente",
                     }) as string
+                  }
+                  disabled={currentPage >= pageCount}
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(pageCount, p + 1))
                   }
                 >
                   <ChevronRight className="h-4 w-4" />

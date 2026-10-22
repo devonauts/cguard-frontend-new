@@ -19953,7 +19953,8 @@
       "cargando": "Chargement du personnel…",
       "vacio": "Aucun personnel de bureau à limiter.",
       "admin": "Administrateur : voit toujours toutes les agences.",
-      "todas": "Toutes"
+      "todas": "Toutes",
+      "gerenteSinSucursal": "Responsable sans agence : ne voit rien tant que vous ne lui en attribuez pas une."
     },
     "sede": {
       "campo": "Agence",
@@ -19965,6 +19966,29 @@
       "boton": "Canal radio",
       "hecho": "Canal radio prêt : {{estaciones}} postes et {{personas}} personnes.",
       "error": "Impossible de préparer le canal radio."
+    },
+    "principal": "Siège",
+    "identidad": {
+      "titulo": "Identité propre (facultatif)",
+      "ayuda": "Laissez vide si l’agence utilise la raison sociale et l’identifiant fiscal de l’entreprise.",
+      "razonSocial": "Raison sociale",
+      "pais": "Pays",
+      "paisDeLaEmpresa": "Celui de l’entreprise",
+      "identificador": "Identifiant fiscal",
+      "identificadorMalo": "Ce {{documento}} n’est pas valide pour le pays choisi.",
+      "establecimiento": "Code d’établissement",
+      "correo": "E-mail de l’agence",
+      "direccion": "Adresse fiscale",
+      "revisa": "Vérifiez l’identifiant fiscal de l’agence."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "C’est le siège qui s’en charge",
+      "soloPrincipalDesc": "En tant que responsable d’agence, vous gérez votre agence, mais les paiements, les modules et le compte relèvent d’un administrateur du siège."
+    },
+    "cliente": {
+      "campo": "Agence du client",
+      "todaLaEmpresa": "Toute l’entreprise (partagé)",
+      "ayuda": "Un client de toute l’entreprise est visible dans toutes les agences ; celui d’une agence, seulement dans celle-ci."
     }
   },
   "soporte": {

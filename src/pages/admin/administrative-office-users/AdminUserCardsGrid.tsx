@@ -105,13 +105,29 @@ function statusOf(u: AdminUserRow): {
   const s = (u.status || "").toString().toLowerCase();
 
   if (s === "archived" || s === "archivado")
-    return { label: "Archivado", labelKey: "adminOfficeUsers.statuses.archived", tone: "bad" };
+    return {
+      label: "Archivado",
+      labelKey: "adminOfficeUsers.statuses.archived",
+      tone: "bad",
+    };
   if (s === "invited" || s === "pending")
-    return { label: "Pendiente", labelKey: "adminOfficeUsers.statuses.pending", tone: "warn" };
+    return {
+      label: "Pendiente",
+      labelKey: "adminOfficeUsers.statuses.pending",
+      tone: "warn",
+    };
   if (u.active === false)
-    return { label: "Inactivo", labelKey: "adminOfficeUsers.statuses.inactive", tone: "neutral" };
+    return {
+      label: "Inactivo",
+      labelKey: "adminOfficeUsers.statuses.inactive",
+      tone: "neutral",
+    };
 
-  return { label: "Activo", labelKey: "adminOfficeUsers.statuses.active", tone: "ok" };
+  return {
+    label: "Activo",
+    labelKey: "adminOfficeUsers.statuses.active",
+    tone: "ok",
+  };
 }
 
 export default function AdminUserCardsGrid({
@@ -143,7 +159,10 @@ export default function AdminUserCardsGrid({
   if (!users.length) {
     return (
       <EmptyState
-        description={t("ui.AdminUserCardsGrid.daDeAltaAlPrimerUsuario", "Da de alta al primer usuario de oficina con «Nuevo usuario».")}
+        description={t(
+          "ui.AdminUserCardsGrid.daDeAltaAlPrimerUsuario",
+          "Da de alta al primer usuario de oficina con «Nuevo usuario».",
+        )}
         icon={<UserCog />}
         title={t("billing.noUsers", "Sin usuarios")}
       />
@@ -180,7 +199,10 @@ export default function AdminUserCardsGrid({
             <div className="flex items-start gap-3">
               <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
                 <Checkbox
-                  aria-label={t("ui.AdminUserCardsGrid.seleccionarNombre", { defaultValue: "Seleccionar {{name}}", name })}
+                  aria-label={t("ui.AdminUserCardsGrid.seleccionarNombre", {
+                    defaultValue: "Seleccionar {{name}}",
+                    name,
+                  })}
                   checked={selectedIds.includes(id)}
                   disabled={!canSelect(u)}
                   onCheckedChange={(v) => onSelect(id, Boolean(v))}
@@ -207,7 +229,9 @@ export default function AdminUserCardsGrid({
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold leading-tight">{name}</p>
                 <div className="mt-1">
-                  <StatusBadge tone={st.tone}>{t(st.labelKey, st.label)}</StatusBadge>
+                  <StatusBadge tone={st.tone}>
+                    {t(st.labelKey, st.label)}
+                  </StatusBadge>
                 </div>
               </div>
               {acts.length > 0 && (

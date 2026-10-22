@@ -18,6 +18,8 @@ import {
 
 import PartnerBillingView from "./PartnerBillingView";
 
+import AvisoSoloPrincipal from "@/components/sucursales/AvisoSoloPrincipal";
+import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import PartnerSeatLimit from "@/components/PartnerSeatLimit";
@@ -31,7 +33,6 @@ import {
   Section,
   StatCard,
   StatsStrip,
-  Stagger,
   StatusBadge,
   EmptyState,
   SkeletonCards,
@@ -109,7 +110,14 @@ function Aviso({
   );
 }
 
+/** Un gerente de sucursal no paga: lo hace la principal (el servidor también lo cierra). */
 export default function BillingPage() {
+  const gerente = useEsGerenteDeSucursal();
+
+  return gerente ? <AvisoSoloPrincipal /> : <BillingPageDeLaPrincipal />;
+}
+
+function BillingPageDeLaPrincipal() {
   const { t } = useTranslation();
   const [data, setData] = useState<BillingSummary | null>(null);
   const [users, setUsers] = useState<BillableUser[]>([]);
@@ -128,7 +136,8 @@ export default function BillingPage() {
 
   const fmtDate = (iso: string | null) =>
     iso
-      ? new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+      ? new Date(iso).toLocaleDateString(localeActual(), {
+          timeZone: zonaDeLaEmpresa(),
           day: "2-digit",
           month: "long",
           year: "numeric",
@@ -326,8 +335,7 @@ export default function BillingPage() {
         // Se manda ANTES de salir de la página: después ya no hay página.
         medir(EVENTOS.inicioDePago);
         window.location.href = res.url;
-      }
-      else
+      } else
         toast.error(
           t("billing.checkoutError", {
             defaultValue: "No se pudo iniciar el pago",

@@ -99,11 +99,20 @@ export default function UserPermissionOverrides({
     });
 
     if (denySet.has(p))
-      return { label: t("ui.UserPermissionOverrides.denegado", "Denegado"), style: tint("bad") };
+      return {
+        label: t("ui.UserPermissionOverrides.denegado", "Denegado"),
+        style: tint("bad"),
+      };
     if (grantSet.has(p))
-      return { label: t("ui.UserPermissionOverrides.concedido", "Concedido"), style: tint("ok") };
+      return {
+        label: t("ui.UserPermissionOverrides.concedido", "Concedido"),
+        style: tint("ok"),
+      };
     if (isFloor(p))
-      return { label: t("ui.UserPermissionOverrides.obligatorio", "Obligatorio"), style: tint("warn") };
+      return {
+        label: t("ui.UserPermissionOverrides.obligatorio", "Obligatorio"),
+        style: tint("warn"),
+      };
 
     return inherited.has(p)
       ? {

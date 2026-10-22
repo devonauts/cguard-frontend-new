@@ -32,6 +32,15 @@ export interface Sucursal {
   managerId: string | null;
   sortOrder: number;
   archivedAt: string | null;
+  /** La sucursal principal (la matriz). Hay una y no se archiva. */
+  isHeadquarters?: boolean;
+  /** Identidad propia (opcional; vacía = la de la empresa). */
+  legalName?: string | null;
+  taxId?: string | null;
+  country?: string | null;
+  address?: string | null;
+  establishmentCode?: string | null;
+  email?: string | null;
   sedes: SedeDeSucursal[];
   personas: number;
 }
@@ -78,21 +87,28 @@ export interface Propuesta {
 
 export const sucursalesService = {
   listar: (): Promise<ListaDeSucursales> => ApiService.get(base()),
-  resumen: (): Promise<ResumenDeSucursales> => ApiService.get(`${base()}/summary`),
+  resumen: (): Promise<ResumenDeSucursales> =>
+    ApiService.get(`${base()}/summary`),
   propuesta: (): Promise<Propuesta> => ApiService.get(`${base()}/proposal`),
   aplicarDivision: (
     grupos: Array<{ nombre: string; ciudades: string[]; siteIds: string[] }>,
   ): Promise<{ sucursales: number; sedes: number; personas: number }> =>
     ApiService.post(`${base()}/apply-division`, { grupos }),
-  crear: (d: Partial<Sucursal>): Promise<Sucursal> => ApiService.post(base(), d),
+  crear: (d: Partial<Sucursal>): Promise<Sucursal> =>
+    ApiService.post(base(), d),
   actualizar: (id: string, d: Partial<Sucursal>): Promise<Sucursal> =>
     ApiService.put(`${base()}/${id}`, d),
   archivar: (id: string): Promise<{ archivada: boolean }> =>
     ApiService.post(`${base()}/${id}/archive`, {}),
-  asignarSedes: (siteIds: string[], branchId: string | null): Promise<{ movidas: number }> =>
+  asignarSedes: (
+    siteIds: string[],
+    branchId: string | null,
+  ): Promise<{ movidas: number }> =>
     ApiService.post(`${base()}/assign-sites`, { siteIds, branchId }),
   /** Crea o sincroniza el canal de radio de la sucursal (sus puestos y su gente). */
-  canalDeRadio: (id: string): Promise<{ channelId: string; estaciones: number; personas: number }> =>
+  canalDeRadio: (
+    id: string,
+  ): Promise<{ channelId: string; estaciones: number; personas: number }> =>
     ApiService.post(`${base()}/${id}/radio`, {}),
 };
 
@@ -128,7 +144,10 @@ export function normalizarCiudad(c: unknown): string {
 }
 
 /** La sucursal que le toca a una sede suelta por su ciudad, si alguna la tiene. */
-export function sucursalSugerida(ciudad: string | null, sucursales: Sucursal[]): string | null {
+export function sucursalSugerida(
+  ciudad: string | null,
+  sucursales: Sucursal[],
+): string | null {
   const c = normalizarCiudad(ciudad);
 
   if (!c) return null;
@@ -144,7 +163,9 @@ export function coberturaDe(c: CifrasDeSucursal | undefined): number | null {
   if (!c) return null;
   const tocan = c.covered + c.at_risk + c.uncovered;
 
-  return tocan > 0 ? Math.min(100, Math.round((c.covered / tocan) * 100)) : null;
+  return tocan > 0
+    ? Math.min(100, Math.round((c.covered / tocan) * 100))
+    : null;
 }
 
 export function distanciaKm(
@@ -167,7 +188,15 @@ export function distanciaKm(
 export interface MisSucursales {
   /** true = la persona puede ver todas. */
   todas: boolean;
-  sucursales: Array<{ id: string; name: string; code: string | null; color: string | null }>;
+  sucursales: Array<{
+    id: string;
+    name: string;
+    code: string | null;
+    color: string | null;
+    isHeadquarters?: boolean;
+  }>;
+  /** El espacio guardado en la cuenta: 'global', el id de una sucursal, o null. */
+  espacio?: string | null;
 }
 
 export interface AccesoDePersona {
@@ -176,13 +205,27 @@ export interface AccesoDePersona {
   email: string | null;
   roles: string[];
   esAdmin: boolean;
+  /** Gerente de sucursal: tiene que tener sucursales (sin ellas no ve nada). */
+  esGerente?: boolean;
   /** null = todas. */
   acceso: string[] | null;
 }
 
 export const accesoService = {
   mias: (): Promise<MisSucursales> => ApiService.get(`${base()}/mine`),
-  listar: (): Promise<{ rows: AccesoDePersona[] }> => ApiService.get(`${base()}/access`),
-  fijar: (userId: string, branchIds: string[] | null): Promise<{ acceso: string[] | null }> =>
+  listar: (): Promise<{ rows: AccesoDePersona[] }> =>
+    ApiService.get(`${base()}/access`),
+  fijar: (
+    userId: string,
+    branchIds: string[] | null,
+  ): Promise<{ acceso: string[] | null }> =>
     ApiService.put(`${base()}/access/${userId}`, { branchIds }),
+};
+
+/** El espacio de trabajo guardado en la cuenta (Sucursales 2.0). */
+export const espacioService = {
+  leer: (): Promise<{ espacio: string | null }> =>
+    ApiService.get(`${base()}/workspace`),
+  fijar: (espacio: string | null): Promise<{ espacio: string | null }> =>
+    ApiService.put(`${base()}/workspace`, { espacio }),
 };

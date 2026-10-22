@@ -3,7 +3,14 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Puzzle, CheckCircle2, ExternalLink, Building2, ScanFace, FileSpreadsheet } from "lucide-react";
+import {
+  Puzzle,
+  CheckCircle2,
+  ExternalLink,
+  Building2,
+  ScanFace,
+  FileSpreadsheet,
+} from "lucide-react";
 
 /** El icono de cada módulo en la tienda; uno nuevo sin entrada sale con la pieza de puzle. */
 const ICONO_DEL_MODULO: Record<string, React.ReactNode> = {
@@ -30,6 +37,7 @@ import {
 } from "@/components/kit";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
+import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
 import {
   modulosAdicionalesService,
   type ModuloEnTienda,
@@ -124,7 +132,9 @@ export default function ModulosAdicionalesPage() {
     }
   };
 
-  const esDeSocio = data?.reason === "la_factura_el_socio";
+  const gerente = useEsGerenteDeSucursal();
+  // Un gerente de sucursal ve la tienda pero no contrata: eso es de la principal.
+  const esDeSocio = data?.reason === "la_factura_el_socio" || gerente;
   /* Los mensuales primero; luego los de pago único. */
   const modulos = data
     ? [...data.modules].sort(
@@ -155,9 +165,19 @@ export default function ModulosAdicionalesPage() {
           <div className="space-y-4">
             {esDeSocio && (
               <FadeIn>
-                <Section title={t("modulosAdicionales.socio.titulo")}>
+                <Section
+                  title={t(
+                    gerente
+                      ? "sucursales.gerente.soloPrincipalTitulo"
+                      : "modulosAdicionales.socio.titulo",
+                  )}
+                >
                   <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                    {t("modulosAdicionales.socio.desc")}
+                    {t(
+                      gerente
+                        ? "sucursales.gerente.soloPrincipalDesc"
+                        : "modulosAdicionales.socio.desc",
+                    )}
                   </p>
                 </Section>
               </FadeIn>

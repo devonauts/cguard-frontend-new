@@ -11,6 +11,16 @@ type Localized = { es: string; en: string; pt: string } & Partial<
 >;
 
 const ROLE_NAMES: Record<string, Localized> = {
+  branchmanager: {
+    es: "Gerente de sucursal",
+    en: "Branch Manager",
+    pt: "Gerente de filial",
+    de: "Niederlassungsleitung",
+    fr: "Responsable d’agence",
+    it: "Responsabile di filiale",
+    pl: "Kierownik oddziału",
+    nl: "Vestigingsmanager",
+  },
   admin: {
     es: "Administrador",
     en: "Administrator",
@@ -147,6 +157,16 @@ const ROLE_NAMES: Record<string, Localized> = {
 };
 
 const ROLE_DESCRIPTIONS: Record<string, Localized> = {
+  branchmanager: {
+    es: "Administra sus sucursales con poderes de administrador. No paga, no contrata módulos ni cierra la cuenta, y todo lo que hace queda en la bitácora.",
+    en: "Runs their branches with administrator powers. Can’t pay, buy modules or close the account, and everything they do is logged.",
+    pt: "Administra suas filiais com poderes de administrador. Não paga, não contrata módulos nem encerra a conta, e tudo o que faz fica registrado.",
+    de: "Leitet die eigenen Niederlassungen mit Administratorrechten. Kann nicht bezahlen, keine Module kaufen und das Konto nicht schließen; alles wird protokolliert.",
+    fr: "Gère ses agences avec des droits d’administrateur. Ne peut ni payer, ni acheter de modules, ni fermer le compte, et tout est journalisé.",
+    it: "Gestisce le sue filiali con poteri di amministratore. Non paga, non acquista moduli e non chiude l’account; tutto viene registrato.",
+    pl: "Zarządza swoimi oddziałami z uprawnieniami administratora. Nie płaci, nie kupuje modułów ani nie zamyka konta, a wszystko jest rejestrowane.",
+    nl: "Beheert de eigen vestigingen met beheerdersrechten. Kan niet betalen, geen modules kopen en het account niet sluiten; alles wordt gelogd.",
+  },
   admin: {
     es: "Administrador del sistema — acceso completo",
     en: "System administrator — full access",
