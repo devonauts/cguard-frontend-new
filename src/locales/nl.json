@@ -20030,6 +20030,18 @@
       "campo": "Vestiging van de klant",
       "todaLaEmpresa": "Hele bedrijf (gedeeld)",
       "ayuda": "Een klant van het hele bedrijf is in elke vestiging zichtbaar; een van een vestiging alleen daar."
+    },
+    "espacio": {
+      "titulo": "Waar werk je nu?",
+      "subtitulo": "Kies de ruimte: alles wat je ziet, inclusief rapporten en exports, komt dan daarvandaan.",
+      "global": "Totaaloverzicht",
+      "globalCorto": "Totaal",
+      "globalDesc": "Alle vestigingen samen, met de cijfers van het bedrijf.",
+      "principalDesc": "Het hoofdkantoor: de operatie, het team en de klanten.",
+      "sucursalDesc": "Alleen deze vestiging.",
+      "ahora": "Je bent hier nu",
+      "ultimaVez": "Vorige keer",
+      "cambiaCuandoQuieras": "Je kunt altijd wisselen via de bovenste balk. Het scherm waarop je zit blijft staan."
     }
   },
   "soporte": {

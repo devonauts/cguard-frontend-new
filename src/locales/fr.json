@@ -20030,6 +20030,18 @@
       "campo": "Agence du client",
       "todaLaEmpresa": "Toute l’entreprise (partagé)",
       "ayuda": "Un client de toute l’entreprise est visible dans toutes les agences ; celui d’une agence, seulement dans celle-ci."
+    },
+    "espacio": {
+      "titulo": "Où travaillez-vous maintenant ?",
+      "subtitulo": "Choisissez l’espace : tout ce que vous verrez, rapports et exports compris, en viendra.",
+      "global": "Vue globale",
+      "globalCorto": "Global",
+      "globalDesc": "Toutes les agences ensemble, avec les chiffres de l’entreprise.",
+      "principalDesc": "Le siège : son activité, son équipe et ses clients.",
+      "sucursalDesc": "Uniquement cette agence.",
+      "ahora": "Vous êtes ici",
+      "ultimaVez": "La dernière fois",
+      "cambiaCuandoQuieras": "Vous pouvez changer à tout moment depuis la barre supérieure. L’écran actuel est conservé."
     }
   },
   "soporte": {

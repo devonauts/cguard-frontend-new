@@ -1,4 +1,3 @@
-import i18n from "@/i18n";
 import {
   createContext,
   useContext,
@@ -16,6 +15,8 @@ import {
 } from "../services/auth/authService";
 import { ApiError } from "../services/api/apiService";
 
+import { marcarQueHayQuePreguntarElEspacio } from "@/lib/sucursalElegida";
+import i18n from "@/i18n";
 import { olvidarApariencia } from "@/lib/appearanceSync";
 import { leerPerfil, olvidarPerfil } from "@/lib/perfilDeLaCuenta";
 import { olvidarSiembraDeAvisos } from "@/hooks/useNotificationStream";
@@ -640,6 +641,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (response?.token) {
         localStorage.setItem("authToken", response.token);
+        // Sucursales: la primera pantalla del CRM pregunta dónde trabajar.
+        marcarQueHayQuePreguntarElEspacio();
         try {
           setAuthToken(response.token);
         } catch {}
@@ -958,6 +961,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithToken = async (token: string, userData?: any) => {
     try {
       localStorage.setItem("authToken", token);
+      marcarQueHayQuePreguntarElEspacio();
       try {
         setAuthToken(token);
       } catch {}

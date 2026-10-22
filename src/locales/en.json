@@ -20030,6 +20030,18 @@
       "campo": "Client’s branch",
       "todaLaEmpresa": "Whole company (shared)",
       "ayuda": "A whole-company client is visible in every branch; a branch client only in that branch."
+    },
+    "espacio": {
+      "titulo": "Where are you working now?",
+      "subtitulo": "Pick a workspace: everything you see, reports and exports included, will be from there.",
+      "global": "Global view",
+      "globalCorto": "Global",
+      "globalDesc": "All branches together, with the company’s figures.",
+      "principalDesc": "Headquarters: its operation, people and clients.",
+      "sucursalDesc": "Only this branch.",
+      "ahora": "You’re here now",
+      "ultimaVez": "Last time",
+      "cambiaCuandoQuieras": "You can switch anytime from the top bar. The screen you’re on stays put."
     }
   },
   "soporte": {

@@ -20314,6 +20314,18 @@
       "campo": "Oddział klienta",
       "todaLaEmpresa": "Cała firma (wspólny)",
       "ayuda": "Klient całej firmy jest widoczny we wszystkich oddziałach; klient oddziału tylko w nim."
+    },
+    "espacio": {
+      "titulo": "Gdzie teraz pracujesz?",
+      "subtitulo": "Wybierz przestrzeń: wszystko, co zobaczysz, łącznie z raportami i eksportami, będzie stamtąd.",
+      "global": "Widok globalny",
+      "globalCorto": "Globalny",
+      "globalDesc": "Wszystkie oddziały razem, z liczbami firmy.",
+      "principalDesc": "Centrala: jej działalność, ludzie i klienci.",
+      "sucursalDesc": "Tylko ten oddział.",
+      "ahora": "Jesteś tutaj",
+      "ultimaVez": "Ostatnio",
+      "cambiaCuandoQuieras": "Możesz zmienić w każdej chwili na górnym pasku. Bieżący ekran zostaje."
     }
   },
   "soporte": {

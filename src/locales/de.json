@@ -20030,6 +20030,18 @@
       "campo": "Niederlassung des Kunden",
       "todaLaEmpresa": "Ganzes Unternehmen (gemeinsam)",
       "ayuda": "Ein Kunde des ganzen Unternehmens ist in allen Niederlassungen sichtbar, einer einer Niederlassung nur dort."
+    },
+    "espacio": {
+      "titulo": "Wo arbeiten Sie gerade?",
+      "subtitulo": "Wählen Sie den Bereich: Alles, was Sie sehen, auch Berichte und Exporte, stammt dann von dort.",
+      "global": "Gesamtansicht",
+      "globalCorto": "Gesamt",
+      "globalDesc": "Alle Niederlassungen zusammen, mit den Zahlen des Unternehmens.",
+      "principalDesc": "Der Hauptsitz: sein Betrieb, sein Team und seine Kunden.",
+      "sucursalDesc": "Nur diese Niederlassung.",
+      "ahora": "Sie sind gerade hier",
+      "ultimaVez": "Letztes Mal",
+      "cambiaCuandoQuieras": "Sie können jederzeit in der oberen Leiste wechseln. Die aktuelle Ansicht bleibt erhalten."
     }
   },
   "soporte": {

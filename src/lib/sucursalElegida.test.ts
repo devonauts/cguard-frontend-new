@@ -39,3 +39,28 @@ describe("sucursal elegida en la barra", () => {
     expect(sucursalElegida()).toBeNull();
   });
 });
+
+describe("el espacio de trabajo (Sucursales 2.0, fase 2)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    localStorage.setItem("tenantId", "t1");
+  });
+
+  it("sin sucursal elegida, el espacio es la vista global", async () => {
+    const { espacioActual } = await import("./sucursalElegida");
+
+    expect(espacioActual()).toBe("global");
+    elegirSucursal("b-gye");
+    expect(espacioActual()).toBe("b-gye");
+  });
+
+  it("el inicio de sesión marca que hay que preguntar, y preguntar lo desmarca", async () => {
+    const m = await import("./sucursalElegida");
+
+    expect(m.hayQuePreguntarElEspacio()).toBe(false);
+    m.marcarQueHayQuePreguntarElEspacio();
+    expect(m.hayQuePreguntarElEspacio()).toBe(true);
+    m.yaSePreguntoElEspacio();
+    expect(m.hayQuePreguntarElEspacio()).toBe(false);
+  });
+});

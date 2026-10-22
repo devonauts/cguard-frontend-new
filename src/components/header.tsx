@@ -38,10 +38,9 @@ import {
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
-
-import i18n from "@/i18n";
 import { toast } from "sonner";
 
+import i18n from "@/i18n";
 import {
   subscribeRadio,
   getRadioSnapshot,
@@ -80,7 +79,6 @@ import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
 import { hasFeature } from "@/lib/entitlements";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
-import NAVS from "@/data/settings-nav.json";
 import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
 import TenantSwitcher from "@/components/TenantSwitcher";
 import SelectorDeSucursal from "@/components/SelectorDeSucursal";
@@ -249,7 +247,7 @@ export default function Header({
 
   const showTenant = Boolean(
     (user && user.tenant) ||
-      (user && Array.isArray(user.tenants) && user.tenants.length > 0),
+    (user && Array.isArray(user.tenants) && user.tenants.length > 0),
   );
 
   // Derive tenantId for SSE notification stream
@@ -338,21 +336,27 @@ export default function Header({
     };
   }, [tenantId]);
 
-  const { notifications, unreadCount, connected, markRead, markAllRead, dismiss } =
-    useNotificationStream(
-      tenantId,
-      (n) => {
-        if (n.eventType === "panic.alert") {
-          setPanicAlerts((prev) =>
-            prev.some((a) => a.id === n.id) ? prev : [n, ...prev],
-          );
-        } else {
-          showNotificationToast(n, navigate);
-        }
-      },
-      // Varios a la vez: un solo resumen que abre la bandeja.
-      (ns) => showBurstToast(ns),
-    );
+  const {
+    notifications,
+    unreadCount,
+    connected,
+    markRead,
+    markAllRead,
+    dismiss,
+  } = useNotificationStream(
+    tenantId,
+    (n) => {
+      if (n.eventType === "panic.alert") {
+        setPanicAlerts((prev) =>
+          prev.some((a) => a.id === n.id) ? prev : [n, ...prev],
+        );
+      } else {
+        showNotificationToast(n, navigate);
+      }
+    },
+    // Varios a la vez: un solo resumen que abre la bandeja.
+    (ns) => showBurstToast(ns),
+  );
 
   const [openUser, setOpenUser] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -909,6 +913,10 @@ export default function Header({
           <div className="mr-1 hidden sm:block">
             <SelectorDeSucursal />
           </div>
+          {/* En el teléfono: una pastilla con el código que abre el selector grande. */}
+          <div className="mr-0.5 sm:hidden">
+            <SelectorDeSucursal compacto />
+          </div>
 
           <div className="mr-1 hidden sm:block">
             <TrialDaysBadge />
@@ -1268,10 +1276,7 @@ export default function Header({
                   >
                     {t("header.support.myTickets", "Mis tickets")}
                   </Button>
-                  <Button
-                    className="flex-1"
-                    onClick={() => cerrarAyuda(false)}
-                  >
+                  <Button className="flex-1" onClick={() => cerrarAyuda(false)}>
                     {t("actions.close", "Cerrar")}
                   </Button>
                 </div>

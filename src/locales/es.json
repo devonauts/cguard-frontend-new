@@ -20030,6 +20030,18 @@
       "campo": "Sucursal del cliente",
       "todaLaEmpresa": "Toda la empresa (compartido)",
       "ayuda": "Un cliente de toda la empresa se ve en todas las sucursales; uno de una sucursal, sólo en ella."
+    },
+    "espacio": {
+      "titulo": "¿Dónde trabajas ahora?",
+      "subtitulo": "Elige el espacio: todo lo que veas, informes y exportaciones incluidos, será de ahí.",
+      "global": "Vista global",
+      "globalCorto": "Global",
+      "globalDesc": "Todas las sucursales juntas, con las cifras de la empresa.",
+      "principalDesc": "La matriz: su operación, su gente y sus clientes.",
+      "sucursalDesc": "Sólo lo de esta sucursal.",
+      "ahora": "Ahora estás aquí",
+      "ultimaVez": "La última vez",
+      "cambiaCuandoQuieras": "Puedes cambiar cuando quieras desde la barra superior. La pantalla en la que estés se mantiene."
     }
   },
   "soporte": {

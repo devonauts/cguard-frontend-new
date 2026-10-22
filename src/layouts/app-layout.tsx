@@ -9,6 +9,8 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import ElegirEspacio from "@/components/sucursales/ElegirEspacio";
+import { LineaDeEspacio } from "@/components/SelectorDeSucursal";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import BarraInferiorMovil from "@/components/BarraInferiorMovil";
@@ -185,9 +187,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       typeof window !== "undefined" ? localStorage.getItem("tenantId") : null;
     const hasTenant = Boolean(
       tenantId ||
-        (user &&
-          (user.tenant ||
-            (Array.isArray(user.tenants) && user.tenants.length > 0))),
+      (user &&
+        (user.tenant ||
+          (Array.isArray(user.tenants) && user.tenants.length > 0))),
     );
 
     if (!hasTenant && location.pathname !== "/dashboard") {
@@ -417,6 +419,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       >
         {/* No pinta nada: avisa al panel del dueño de que esta sesión está viva. */}
         <VisitBeacon />
+        {/* Sucursales: «¿dónde trabajas ahora?» una vez por inicio de sesión. */}
+        <ElegirEspacio />
         {/* El velo de los menús flotantes vive AQUÍ DENTRO, no en el <body>.
           `.app-shell` lleva `isolation: isolate`, así que crea su propio contexto
           de apilamiento: un velo hermano suyo pintaba por encima del armazón
@@ -436,6 +440,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           ].join(" ")}
         >
           <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+          {/* Sucursales: el color del espacio en el que se trabaja, al pie de la barra. */}
+          <LineaDeEspacio />
         </div>
 
         {/* 17rem es el menú SOLO: la barra ya no lleva un riel de secciones de
