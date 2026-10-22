@@ -18630,6 +18630,16 @@
         "claveSecreta": "Klucz tajny (sk_…)",
         "claveSecretaHint": "Przechowywany w postaci zaszyfrowanej i nigdy ponownie nie wyświetlany.",
         "clavePublicableInput": "Klucz publiczny (pk_…)"
+      },
+      "detalleDiscrepancia": {
+        "programadas": "Zaplanowane {{h}}",
+        "trabajadas": "Przepracowane {{h}}",
+        "facturables": "Do zafakturowania {{h}}",
+        "deMas": "{{h}} za dużo",
+        "deMenos": "{{h}} za mało",
+        "conRecargo": "{{h}} z dodatkiem",
+        "tarifa": "po {{p}} za godzinę",
+        "comoNormal": "Święto bez reguły: rozliczane jak zwykła godzina"
       }
     },
     "ClientInvoices": {

@@ -18350,6 +18350,16 @@
         "claveSecreta": "Geheime sleutel (sk_…)",
         "claveSecretaHint": "Versleuteld opgeslagen en nooit meer getoond.",
         "clavePublicableInput": "Publiceerbare sleutel (pk_…)"
+      },
+      "detalleDiscrepancia": {
+        "programadas": "Gepland {{h}}",
+        "trabajadas": "Gewerkt {{h}}",
+        "facturables": "Factureerbaar {{h}}",
+        "deMas": "{{h}} te veel",
+        "deMenos": "{{h}} te weinig",
+        "conRecargo": "{{h}} met toeslag",
+        "tarifa": "tegen {{p}} per uur",
+        "comoNormal": "Feestdag zonder regel: als normaal uur gefactureerd"
       }
     },
     "ClientInvoices": {

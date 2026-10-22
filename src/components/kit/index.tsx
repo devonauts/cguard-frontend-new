@@ -288,7 +288,7 @@ export function PageHeader({
           medía 290 px: un tercio de la pantalla gastado en decir dónde estás
           antes de enseñar nada. Al lado ocupa la altura que ya ocupaba el
           título. En `sm` hacia arriba la composición es la de siempre. */}
-      <div className="relative flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-6">
+      <div className="relative flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:p-6">
         <div className="flex min-w-0 flex-1 items-start gap-3 sm:contents">
           {/* El icono se alinea con la PRIMERA LÍNEA del título, no con el
               centro del bloque: centrado, un encabezado con subtítulo largo lo
@@ -304,7 +304,10 @@ export function PageHeader({
               {icon}
             </IconTile>
           )}
-          <div className="min-w-0 flex-1">
+          {/* The title keeps a readable width: with many actions it used to be
+              squeezed to nothing and printed one letter per line. Now the
+              actions wrap to their own row instead. */}
+          <div className="min-w-0 flex-1 sm:min-w-[16rem]">
             <h1 className="font-display truncate text-2xl font-bold tracking-tight">
               {title}
             </h1>
@@ -324,7 +327,7 @@ export function PageHeader({
           </div>
         </div>
         {actions && (
-          <div className="cg-acciones flex flex-wrap items-center gap-2 sm:w-auto sm:shrink-0">
+          <div className="cg-acciones flex max-w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0">
             {actions}
           </div>
         )}

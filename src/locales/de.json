@@ -18350,6 +18350,16 @@
         "claveSecreta": "Geheimer Schlüssel (sk_…)",
         "claveSecretaHint": "Verschlüsselt gespeichert und nie wieder angezeigt.",
         "clavePublicableInput": "Veröffentlichbarer Schlüssel (pk_…)"
+      },
+      "detalleDiscrepancia": {
+        "programadas": "Geplant {{h}}",
+        "trabajadas": "Gearbeitet {{h}}",
+        "facturables": "Abrechenbar {{h}}",
+        "deMas": "{{h}} zu viel",
+        "deMenos": "{{h}} zu wenig",
+        "conRecargo": "{{h}} mit Zuschlag",
+        "tarifa": "zu {{p}} pro Stunde",
+        "comoNormal": "Feiertag ohne Regel: als normale Stunde abgerechnet"
       }
     },
     "ClientInvoices": {
