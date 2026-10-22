@@ -17585,7 +17585,7 @@
         "activa": "Ativa",
         "sinTasas": "Sem taxas. Sem tabela, as faturas saem sem impostos.",
         "instruccionesDePago": "Instruções de pagamento",
-        "instruccionesDePagoHint": "Conta bancária, a quem vai o cheque, link de pagamento… Sai em cada fatura.",
+        "instruccionesDePagoHint": "Texto livre de reserva: só aparece se a fatura não oferecer nenhuma forma de pagamento (aba «Formas de pagamento»).",
         "pieDeFactura": "Rodapé da fatura",
         "adjuntarDetalle": "Anexar o detalhe de turnos ao PDF",
         "adjuntarDetalleHint": "Data, local, vigilante e horas de cada turno faturado, como anexo.",
@@ -17760,11 +17760,13 @@
         "info": "Informação"
       },
       "metodoPago": {
-        "ach": "Transferência ACH",
-        "card": "Cartão",
+        "transfer": "Transferência bancária",
+        "directDeposit": "Depósito direto (ACH)",
+        "wire": "Transferência eletrônica (wire)",
         "check": "Cheque",
-        "wire": "Transferência bancária",
+        "card": "Cartão de crédito",
         "cash": "Dinheiro",
+        "ach": "ACH",
         "other": "Outro"
       },
       "jurisdiccion": {
@@ -17785,7 +17787,8 @@
         "disputeResolved": "Disputa resolvida",
         "overdue": "Vencida",
         "lateFee": "Multa por atraso",
-        "reminderSent": "Lembrete enviado"
+        "reminderSent": "Lembrete enviado",
+        "paymentMethods": "Formas de pagamento alteradas"
       },
       "nuevaCorrida": {
         "creada": "Ciclo {{p}} criado",
@@ -17854,6 +17857,36 @@
         "desc": "Com o «Faturamento de clientes», o que seus vigilantes já trabalham vira cotações, contratos e faturas para seus clientes. Ative-o em Módulos adicionais.",
         "enlace": "Ativar em Módulos adicionais",
         "nombre": "Faturamento de clientes"
+      },
+      "metodos": {
+        "titulo": "Formas de pagamento",
+        "ayuda": "As formas ativas aparecem em cada fatura: na página pública, no PDF e no e-mail. A descrição é o que o cliente vê (banco, titular, conta, endereço para cheques…); a nota é uma dica adicional, como «escreva o número da fatura na referência». Cada fatura pode limitá-las.",
+        "propios": "Formas próprias",
+        "propiosHint": "Zelle, Venmo, um banco local… Até {{n}}.",
+        "anadir": "Adicionar forma de pagamento",
+        "sinPropios": "Você ainda não criou formas próprias.",
+        "nombre": "Nome",
+        "nombrePlaceholder": "Ex.: Zelle",
+        "descripcion": "Descrição",
+        "descripcionPlaceholder": "Banco, titular, número da conta, routing…",
+        "nota": "Nota",
+        "notaPlaceholder": "Ex.: escreva o número da fatura na referência.",
+        "activo": "Ativa",
+        "eliminar": "Excluir forma",
+        "nombreObligatorio": "Dê um nome a cada forma própria.",
+        "tarjetaEnLinea": "Com o Stripe conectado (aba Cobranças), o cliente paga com cartão on-line pela fatura.",
+        "deLaEmpresa": "As da empresa",
+        "elegir": "Escolher para esta fatura",
+        "desactivado": "desativada nas configurações",
+        "eligeUno": "Escolha pelo menos uma forma.",
+        "ninguno": "Nenhuma forma de pagamento ativa.",
+        "cambiar": "Alterar",
+        "guardados": "Formas de pagamento atualizadas",
+        "soloEstaFactura": "Escolhidas para esta fatura.",
+        "usaLosDeLaEmpresa": "Usa as formas ativas da empresa.",
+        "modalTitulo": "Formas de pagamento desta fatura",
+        "modalDesc": "Aparecem na página pública, no PDF e no e-mail. Por exemplo, «só transferência».",
+        "enEnvio": "Formas de pagamento que vão aparecer"
       }
     },
     "ClientInvoices": {

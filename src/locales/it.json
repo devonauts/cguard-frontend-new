@@ -18120,7 +18120,7 @@
         "activa": "Attiva",
         "sinTasas": "Nessuna aliquota. Senza tabella, le fatture escono senza imposte.",
         "instruccionesDePago": "Istruzioni di pagamento",
-        "instruccionesDePagoHint": "Conto bancario, intestatario dell’assegno, link di pagamento… Compare su ogni fattura.",
+        "instruccionesDePagoHint": "Testo libero di riserva: compare solo se la fattura non offre alcun metodo di pagamento (scheda «Metodi di pagamento»).",
         "pieDeFactura": "Piè di pagina della fattura",
         "adjuntarDetalle": "Allega il dettaglio dei turni al PDF",
         "adjuntarDetalleHint": "Data, sede, vigilante e ore di ogni turno fatturato, in allegato.",
@@ -18295,11 +18295,13 @@
         "info": "Informazione"
       },
       "metodoPago": {
-        "ach": "Bonifico ACH",
-        "card": "Carta",
+        "transfer": "Bonifico bancario",
+        "directDeposit": "Deposito diretto (ACH)",
+        "wire": "Bonifico telegrafico (wire)",
         "check": "Assegno",
-        "wire": "Bonifico bancario",
+        "card": "Carta di credito",
         "cash": "Contanti",
+        "ach": "ACH",
         "other": "Altro"
       },
       "jurisdiccion": {
@@ -18320,7 +18322,8 @@
         "disputeResolved": "Contestazione risolta",
         "overdue": "Scaduta",
         "lateFee": "Penale di mora",
-        "reminderSent": "Promemoria inviato"
+        "reminderSent": "Promemoria inviato",
+        "paymentMethods": "Metodi di pagamento modificati"
       },
       "nuevaCorrida": {
         "creada": "Ciclo {{p}} creato",
@@ -18389,6 +18392,36 @@
         "desc": "Con «Fatturazione clienti», il lavoro che le tue guardie già svolgono diventa preventivi, contratti e fatture per i tuoi clienti. Attivalo in Moduli aggiuntivi.",
         "enlace": "Attiva in Moduli aggiuntivi",
         "nombre": "Fatturazione clienti"
+      },
+      "metodos": {
+        "titulo": "Metodi di pagamento",
+        "ayuda": "I metodi attivi compaiono in ogni fattura: nella pagina pubblica, nel PDF e nell'e-mail. La descrizione è ciò che vede il cliente (banca, intestatario, conto, indirizzo per gli assegni…); la nota è un consiglio aggiuntivo, come «indica il numero di fattura nella causale». Ogni fattura può limitarli.",
+        "propios": "Metodi propri",
+        "propiosHint": "Zelle, Venmo, una banca locale… Fino a {{n}}.",
+        "anadir": "Aggiungi metodo di pagamento",
+        "sinPropios": "Non hai ancora creato metodi propri.",
+        "nombre": "Nome",
+        "nombrePlaceholder": "Es.: Zelle",
+        "descripcion": "Descrizione",
+        "descripcionPlaceholder": "Banca, intestatario, numero di conto, routing…",
+        "nota": "Nota",
+        "notaPlaceholder": "Es.: indica il numero di fattura nella causale.",
+        "activo": "Attivo",
+        "eliminar": "Elimina metodo",
+        "nombreObligatorio": "Dai un nome a ogni metodo proprio.",
+        "tarjetaEnLinea": "Con Stripe collegato (scheda Incassi), il cliente paga con carta online dalla fattura.",
+        "deLaEmpresa": "Quelli dell'azienda",
+        "elegir": "Scegli per questa fattura",
+        "desactivado": "disattivato nelle impostazioni",
+        "eligeUno": "Scegli almeno un metodo.",
+        "ninguno": "Nessun metodo di pagamento attivo.",
+        "cambiar": "Cambia",
+        "guardados": "Metodi di pagamento aggiornati",
+        "soloEstaFactura": "Scelti per questa fattura.",
+        "usaLosDeLaEmpresa": "Usa i metodi attivi dell'azienda.",
+        "modalTitulo": "Metodi di pagamento di questa fattura",
+        "modalDesc": "Compaiono nella pagina pubblica, nel PDF e nell'e-mail. Per esempio, «solo bonifico».",
+        "enEnvio": "Metodi di pagamento che compariranno"
       }
     },
     "ClientInvoices": {

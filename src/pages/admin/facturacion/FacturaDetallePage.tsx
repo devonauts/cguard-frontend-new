@@ -1,7 +1,8 @@
 /**
  * INVOICE DETAIL — the document, its money, what happened to it and every
  * action its status allows: edit (draft), issue, send, PDF, record a
- * payment, credit, void, dispute, public link, delete draft.
+ * payment, credit, void, dispute, public link, delete draft, and which
+ * payment methods it offers.
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,8 +19,9 @@ import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shar
 import { usePermissions } from "@/hooks/usePermissions";
 import { fechaYHora, soloFecha, soloFechaCivil, hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
-import clientBillingService, { balanceCents, PAYMENT_METHODS, type Invoice, type InvoiceLine, type PaymentMethod } from "@/lib/api/clientBillingService";
+import clientBillingService, { balanceCents, BUILTIN_PAYMENT_METHODS, type Invoice, type InvoiceLine, type PaymentMethod } from "@/lib/api/clientBillingService";
 import { QK, dinero, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
+import { MetodosDeLaFactura, SelectorDeMetodos, mismosMetodos, useMetodosDeLaEmpresa, useNombreDeMetodo } from "./MetodosDePago";
 
 type Modal_ = null | "enviar" | "pago" | "credito" | "anular" | "disputa";
 
@@ -30,6 +32,8 @@ function FacturaDetallePage() {
   const qc = useQueryClient();
   const { hasPermission } = usePermissions();
   const etiquetas = useEtiquetasDeFacturacion();
+  const { metodos } = useMetodosDeLaEmpresa();
+  const nombreDeMetodo = useNombreDeMetodo(metodos);
   const [modal, setModal] = useState<Modal_>(null);
   const [editando, setEditando] = useState(false);
   const [trabajando, setTrabajando] = useState(false);
@@ -255,12 +259,14 @@ function FacturaDetallePage() {
           </Section>
         )}
 
+        <MetodosDeLaFactura canEdit={canEdit} inv={inv} onSaved={refrescar} />
+
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Section title={t("ui.Facturacion.detalle.pagos", "Pagos")}>
             {(inv.payments ?? []).length ? (
               <div className="space-y-2">
                 {(inv.payments ?? []).map((p) => (
-                  <ListRow key={p.id} title={dinero(p.amountCents, p.currency || inv.currency)} subtitle={[etiquetas.paymentMethod[p.method] || p.method, p.reference, p.note].filter(Boolean).join(" · ")} meta={soloFecha(p.receivedAt || p.createdAt)} />
+                  <ListRow key={p.id} title={dinero(p.amountCents, p.currency || inv.currency)} subtitle={[nombreDeMetodo(p.method), p.reference, p.note].filter(Boolean).join(" · ")} meta={soloFecha(p.receivedAt || p.createdAt)} />
                 ))}
               </div>
             ) : (
@@ -286,7 +292,7 @@ function FacturaDetallePage() {
               <li key={ev.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
                 <span className="tabular-nums" style={{ color: "var(--ink-faint)" }}>{fechaYHora(ev.createdAt)}</span>
                 <span className="font-medium">{etiquetas.event[ev.type as keyof typeof etiquetas.event] || ev.type}</span>
-                <span style={{ color: "var(--ink-soft)" }}>{detalleDeEvento(ev.detail, inv.currency)}</span>
+                <span style={{ color: "var(--ink-soft)" }}>{detalleDeEvento(ev.detail, inv.currency, nombreDeMetodo)}</span>
                 {ev.actorType === "client" && <StatusBadge tone="info">{t("ui.Facturacion.detalle.cliente", "Cliente")}</StatusBadge>}
                 {ev.actorType === "system" && <StatusBadge tone="neutral">{t("ui.Facturacion.detalle.automatico", "Automático")}</StatusBadge>}
               </li>
@@ -295,8 +301,10 @@ function FacturaDetallePage() {
           </ol>
         </Section>
 
-        {modal === "enviar" && <EnviarModal inv={inv} trabajando={trabajando} onClose={() => setModal(null)} onSend={(to, message) => correr(async () => {
-          const r = await clientBillingService.sendInvoice(inv.id, { to, message, lang: localeActual().slice(0, 2) });
+        {modal === "enviar" && <EnviarModal inv={inv} trabajando={trabajando} onClose={() => setModal(null)} onSend={(to, message, paymentMethods) => correr(async () => {
+          // The methods travel only when changed: each change is an event on the invoice.
+          const cambio = mismosMetodos(paymentMethods, inv.paymentMethods) ? {} : { paymentMethods };
+          const r = await clientBillingService.sendInvoice(inv.id, { to, message, lang: localeActual().slice(0, 2), ...cambio });
 
           if (!r.sent) throw new Error(r.reason || t("ui.Facturacion.detalle.noSeEnvio", "No se pudo enviar el correo. Revisa los destinatarios."));
         }, t("ui.Facturacion.detalle.enviadaOk", "Factura enviada"))} />}
@@ -318,13 +326,14 @@ function Fila({ label, value, fuerte, suave }: { label: string; value: string; f
   );
 }
 
-function detalleDeEvento(detail: Record<string, unknown> | null, currency: string): string {
+function detalleDeEvento(detail: Record<string, unknown> | null, currency: string, nombreDeMetodo: (k: string) => string): string {
   if (!detail) return "";
   const partes: string[] = [];
 
   if (typeof detail.number === "string") partes.push(detail.number);
   if (typeof detail.amountCents === "number") partes.push(dinero(detail.amountCents, currency));
-  if (typeof detail.method === "string") partes.push(detail.method);
+  if (typeof detail.method === "string") partes.push(nombreDeMetodo(detail.method));
+  if (Array.isArray(detail.methods)) partes.push((detail.methods as string[]).map(nombreDeMetodo).join(", "));
   if (Array.isArray(detail.to)) partes.push((detail.to as string[]).join(", "));
   if (typeof detail.reason === "string" && detail.reason) partes.push(detail.reason);
   if (typeof detail.note === "string" && detail.note) partes.push(detail.note);
@@ -411,15 +420,18 @@ function EditorDeBorrador({ inv, onClose, onSaved }: { inv: Invoice; onClose: ()
 }
 
 /* ── Modals ───────────────────────────────────────────────────────────────── */
-function EnviarModal({ inv, trabajando, onClose, onSend }: { inv: Invoice; trabajando: boolean; onClose: () => void; onSend: (to: string[], message: string) => void }) {
+function EnviarModal({ inv, trabajando, onClose, onSend }: { inv: Invoice; trabajando: boolean; onClose: () => void; onSend: (to: string[], message: string, paymentMethods: string[] | null) => void }) {
   const { t } = useTranslation();
+  const { metodos } = useMetodosDeLaEmpresa();
   const [to, setTo] = useState(inv.billTo?.email || "");
   const [message, setMessage] = useState("");
+  const [paymentMethods, setPaymentMethods] = useState<string[] | null>(inv.paymentMethods && inv.paymentMethods.length ? inv.paymentMethods : null);
   const destinatarios = to.split(/[,;\s]+/).map((s) => s.trim()).filter(Boolean);
+  const sinMetodos = paymentMethods !== null && !paymentMethods.length;
 
   return (
     <Modal open size="md" title={t("ui.Facturacion.detalle.enviar", "Enviar")} description={inv.status === "draft" ? t("ui.Facturacion.detalle.enviarBorradorDesc", "El borrador se emite primero (se le asigna número) y luego se envía por correo con el PDF y el enlace público.") : t("ui.Facturacion.detalle.enviarDesc", "Se envía por correo el PDF y el enlace público de la factura.")} onOpenChange={(o) => { if (!o) onClose(); }}
-      footer={<div className="cg-acciones justify-end"><Button variant="outline" onClick={onClose}>{t("ui.Facturacion.cancelar", "Cancelar")}</Button><Button disabled={trabajando || !destinatarios.length} variant="brand" onClick={() => onSend(destinatarios, message)}><Send size={14} /> {t("ui.Facturacion.detalle.enviar", "Enviar")}</Button></div>}
+      footer={<div className="cg-acciones justify-end"><Button variant="outline" onClick={onClose}>{t("ui.Facturacion.cancelar", "Cancelar")}</Button><Button disabled={trabajando || !destinatarios.length || sinMetodos} variant="brand" onClick={() => onSend(destinatarios, message, paymentMethods)}><Send size={14} /> {t("ui.Facturacion.detalle.enviar", "Enviar")}</Button></div>}
     >
       <div className="space-y-3">
         <FormField label={t("ui.Facturacion.detalle.destinatarios", "Destinatarios")} hint={t("ui.Facturacion.detalle.destinatariosHint", "Separa varios correos con comas.")} required>
@@ -427,6 +439,9 @@ function EnviarModal({ inv, trabajando, onClose, onSend }: { inv: Invoice; traba
         </FormField>
         <FormField label={t("ui.Facturacion.detalle.mensaje", "Mensaje")}>
           <textarea className={`${FIELD_CLS} h-24`} value={message} onChange={(e) => setMessage(e.target.value)} />
+        </FormField>
+        <FormField label={t("ui.Facturacion.metodos.enEnvio", "Métodos de pago que aparecerán")}>
+          <SelectorDeMetodos metodos={metodos} value={paymentMethods} onChange={setPaymentMethods} />
         </FormField>
       </div>
     </Modal>
@@ -436,8 +451,10 @@ function EnviarModal({ inv, trabajando, onClose, onSend }: { inv: Invoice; traba
 function PagoModal({ inv, saldo, trabajando, onClose, onSave }: { inv: Invoice; saldo: number; trabajando: boolean; onClose: () => void; onSave: (body: { amountCents: number; method: PaymentMethod; receivedAt?: string; reference?: string; note?: string }) => void }) {
   const { t } = useTranslation();
   const etiquetas = useEtiquetasDeFacturacion();
+  const { metodos } = useMetodosDeLaEmpresa();
+  const propios = metodos.filter((m) => !m.builtin);
   const [amount, setAmount] = useState((saldo / 100).toFixed(2));
-  const [method, setMethod] = useState<PaymentMethod>("ach");
+  const [method, setMethod] = useState<PaymentMethod>("transfer");
   const [receivedAt, setReceivedAt] = useState(hoyEnLaEmpresa());
   const [reference, setReference] = useState("");
   const [note, setNote] = useState("");
@@ -452,8 +469,10 @@ function PagoModal({ inv, saldo, trabajando, onClose, onSave }: { inv: Invoice; 
           <input className={FIELD_CLS} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </FormField>
         <FormField label={t("ui.Facturacion.detalle.metodo", "Método")} required>
-          <select className={FIELD_CLS} value={method} onChange={(e) => setMethod(e.target.value as PaymentMethod)}>
-            {PAYMENT_METHODS.map((m) => <option key={m} value={m}>{etiquetas.paymentMethod[m]}</option>)}
+          <select className={FIELD_CLS} value={method} onChange={(e) => setMethod(e.target.value)}>
+            {BUILTIN_PAYMENT_METHODS.map((m) => <option key={m} value={m}>{etiquetas.paymentMethod[m]}</option>)}
+            {propios.map((m) => <option key={m.method} value={m.method}>{m.label || m.method}</option>)}
+            <option value="other">{etiquetas.paymentMethod.other}</option>
           </select>
         </FormField>
         <FormField label={t("ui.Facturacion.detalle.fechaDeRecepcion", "Recibido el")}>

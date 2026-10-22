@@ -22,6 +22,7 @@ import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, {
   type BillingCycle,
   type BillingRun,
+  type BuiltinPaymentMethod,
   type ClientAccountRef,
   type Contract,
   type ContractStatus,
@@ -29,7 +30,6 @@ import clientBillingService, {
   type DiscrepancySeverity,
   type InvoiceEventType,
   type InvoiceStatus,
-  type PaymentMethod,
   type PremiumKind,
   type QuoteEventType,
   type QuoteLineKind,
@@ -276,12 +276,15 @@ export function useEtiquetasDeFacturacion() {
       info: t("ui.Facturacion.severidad.info", "Información"),
     };
     const severityTone: Record<DiscrepancySeverity, string> = { block: "bad", warn: "warn", info: "info" };
-    const paymentMethod: Record<PaymentMethod, string> = {
-      ach: t("ui.Facturacion.metodoPago.ach", "Transferencia ACH"),
-      card: t("ui.Facturacion.metodoPago.card", "Tarjeta"),
+    // `ach` and `other` only label payments: `ach` is what older payments carry.
+    const paymentMethod: Record<BuiltinPaymentMethod | "ach" | "other", string> = {
+      transfer: t("ui.Facturacion.metodoPago.transfer", "Transferencia bancaria"),
+      directDeposit: t("ui.Facturacion.metodoPago.directDeposit", "Depósito directo (ACH)"),
+      wire: t("ui.Facturacion.metodoPago.wire", "Transferencia electrónica (wire)"),
       check: t("ui.Facturacion.metodoPago.check", "Cheque"),
-      wire: t("ui.Facturacion.metodoPago.wire", "Transferencia bancaria"),
+      card: t("ui.Facturacion.metodoPago.card", "Tarjeta de crédito"),
       cash: t("ui.Facturacion.metodoPago.cash", "Efectivo"),
+      ach: t("ui.Facturacion.metodoPago.ach", "ACH"),
       other: t("ui.Facturacion.metodoPago.other", "Otro"),
     };
     const jurisdiction: Record<TaxJurisdiction, string> = {
@@ -303,6 +306,7 @@ export function useEtiquetasDeFacturacion() {
       overdue: t("ui.Facturacion.evento.overdue", "Vencida"),
       lateFee: t("ui.Facturacion.evento.lateFee", "Recargo por mora"),
       reminderSent: t("ui.Facturacion.evento.reminderSent", "Recordatorio enviado"),
+      paymentMethods: t("ui.Facturacion.evento.paymentMethods", "Métodos de pago cambiados"),
     };
 
     const quoteStatus: Record<QuoteStatus, string> = {

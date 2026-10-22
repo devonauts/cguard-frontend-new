@@ -18120,7 +18120,7 @@
         "activa": "Actief",
         "sinTasas": "Geen tarieven. Zonder tabel gaan facturen zonder belasting uit.",
         "instruccionesDePago": "Betaalinstructies",
-        "instruccionesDePagoHint": "Bankrekening, aan wie de cheque is gericht, betaallink… Staat op elke factuur.",
+        "instruccionesDePagoHint": "Vrije tekst als terugval: verschijnt alleen als de factuur geen betaalmethode aanbiedt (tabblad „Betaalmethoden”).",
         "pieDeFactura": "Factuurvoettekst",
         "adjuntarDetalle": "Dienstdetails aan de pdf toevoegen",
         "adjuntarDetalleHint": "Datum, locatie, beveiliger en uren van elke gefactureerde dienst, als bijlage.",
@@ -18295,12 +18295,14 @@
         "info": "Informatie"
       },
       "metodoPago": {
-        "ach": "ACH-overschrijving",
-        "card": "Kaart",
+        "transfer": "Bankoverschrijving",
+        "directDeposit": "Directe storting (ACH)",
+        "wire": "Telegrafische overboeking (wire)",
         "check": "Cheque",
-        "wire": "Bankoverschrijving",
+        "card": "Creditcard",
         "cash": "Contant",
-        "other": "Anders"
+        "ach": "ACH",
+        "other": "Overig"
       },
       "jurisdiccion": {
         "state": "Staat",
@@ -18320,7 +18322,8 @@
         "disputeResolved": "Geschil opgelost",
         "overdue": "Achterstallig",
         "lateFee": "Boete voor te late betaling",
-        "reminderSent": "Herinnering verzonden"
+        "reminderSent": "Herinnering verzonden",
+        "paymentMethods": "Betaalmethoden gewijzigd"
       },
       "nuevaCorrida": {
         "creada": "Ronde {{p}} aangemaakt",
@@ -18389,6 +18392,36 @@
         "desc": "Met „Klantfacturatie” wordt het werk dat je beveiligers al doen omgezet in offertes, contracten en facturen voor je klanten. Activeer het bij Extra modules.",
         "enlace": "Activeren bij Extra modules",
         "nombre": "Klantfacturatie"
+      },
+      "metodos": {
+        "titulo": "Betaalmethoden",
+        "ayuda": "Actieve methoden staan op elke factuur: op de openbare pagina, in de pdf en in de e-mail. De beschrijving ziet de klant (bank, rekeninghouder, rekeningnummer, adres voor cheques…); de notitie is een extra tip, zoals „vermeld het factuurnummer in de omschrijving”. Elke factuur kan ze beperken.",
+        "propios": "Eigen methoden",
+        "propiosHint": "Zelle, Venmo, een lokale bank… Maximaal {{n}}.",
+        "anadir": "Betaalmethode toevoegen",
+        "sinPropios": "Je hebt nog geen eigen methoden aangemaakt.",
+        "nombre": "Naam",
+        "nombrePlaceholder": "Bijv. Zelle",
+        "descripcion": "Beschrijving",
+        "descripcionPlaceholder": "Bank, rekeninghouder, rekeningnummer, routing…",
+        "nota": "Notitie",
+        "notaPlaceholder": "Bijv. vermeld het factuurnummer in de omschrijving.",
+        "activo": "Actief",
+        "eliminar": "Methode verwijderen",
+        "nombreObligatorio": "Geef elke eigen methode een naam.",
+        "tarjetaEnLinea": "Met Stripe gekoppeld (tabblad Betalingen) betaalt de klant online per kaart vanaf de factuur.",
+        "deLaEmpresa": "Die van het bedrijf",
+        "elegir": "Kiezen voor deze factuur",
+        "desactivado": "uitgeschakeld in instellingen",
+        "eligeUno": "Kies minstens één methode.",
+        "ninguno": "Geen betaalmethode actief.",
+        "cambiar": "Wijzigen",
+        "guardados": "Betaalmethoden bijgewerkt",
+        "soloEstaFactura": "Gekozen voor deze factuur.",
+        "usaLosDeLaEmpresa": "Gebruikt de actieve methoden van het bedrijf.",
+        "modalTitulo": "Betaalmethoden van deze factuur",
+        "modalDesc": "Ze verschijnen op de openbare pagina, in de pdf en in de e-mail. Bijvoorbeeld „alleen overschrijving”.",
+        "enEnvio": "Betaalmethoden die worden getoond"
       }
     },
     "ClientInvoices": {

@@ -17585,7 +17585,7 @@
         "activa": "Activa",
         "sinTasas": "Sin tasas. Sin tabla, las facturas salen sin impuestos.",
         "instruccionesDePago": "Instrucciones de pago",
-        "instruccionesDePagoHint": "Cuenta bancaria, a nombre de quién va el cheque, enlace de pago… Sale en cada factura.",
+        "instruccionesDePagoHint": "Texto libre de respaldo: solo sale si la factura no ofrece ningún método de pago (pestaña «Métodos de pago»).",
         "pieDeFactura": "Pie de la factura",
         "adjuntarDetalle": "Adjuntar el detalle de turnos al PDF",
         "adjuntarDetalleHint": "Fecha, sede, vigilante y horas de cada turno facturado, como anexo.",
@@ -17760,11 +17760,13 @@
         "info": "Información"
       },
       "metodoPago": {
-        "ach": "Transferencia ACH",
-        "card": "Tarjeta",
+        "transfer": "Transferencia bancaria",
+        "directDeposit": "Depósito directo (ACH)",
+        "wire": "Transferencia electrónica (wire)",
         "check": "Cheque",
-        "wire": "Transferencia bancaria",
+        "card": "Tarjeta de crédito",
         "cash": "Efectivo",
+        "ach": "ACH",
         "other": "Otro"
       },
       "jurisdiccion": {
@@ -17785,7 +17787,8 @@
         "disputeResolved": "Disputa resuelta",
         "overdue": "Vencida",
         "lateFee": "Recargo por mora",
-        "reminderSent": "Recordatorio enviado"
+        "reminderSent": "Recordatorio enviado",
+        "paymentMethods": "Métodos de pago cambiados"
       },
       "nuevaCorrida": {
         "creada": "Corrida {{p}} creada",
@@ -17854,6 +17857,36 @@
         "desc": "Con «Facturación a clientes», lo que tus vigilantes ya trabajan se convierte en cotizaciones, contratos y facturas para tus clientes. Actívalo en Módulos adicionales.",
         "enlace": "Activar en Módulos adicionales",
         "nombre": "Facturación a clientes"
+      },
+      "metodos": {
+        "titulo": "Métodos de pago",
+        "ayuda": "Los métodos activos salen en cada factura: en la página pública, el PDF y el correo. La descripción es lo que ve el cliente (banco, titular, cuenta, dirección para cheques…); la nota es un consejo adicional, como «escribe el número de factura en la referencia». Cada factura puede limitarlos.",
+        "propios": "Métodos propios",
+        "propiosHint": "Zelle, Venmo, un banco local… Hasta {{n}}.",
+        "anadir": "Añadir método de pago",
+        "sinPropios": "Todavía no has creado métodos propios.",
+        "nombre": "Nombre",
+        "nombrePlaceholder": "Ej.: Zelle",
+        "descripcion": "Descripción",
+        "descripcionPlaceholder": "Banco, titular, número de cuenta, routing…",
+        "nota": "Nota",
+        "notaPlaceholder": "Ej.: escribe el número de factura en la referencia.",
+        "activo": "Activo",
+        "eliminar": "Eliminar método",
+        "nombreObligatorio": "Ponle un nombre a cada método propio.",
+        "tarjetaEnLinea": "Con Stripe conectado (pestaña Cobros), el cliente paga la tarjeta en línea desde la factura.",
+        "deLaEmpresa": "Los de la empresa",
+        "elegir": "Elegir para esta factura",
+        "desactivado": "desactivado en ajustes",
+        "eligeUno": "Elige al menos un método.",
+        "ninguno": "Ningún método de pago activo.",
+        "cambiar": "Cambiar",
+        "guardados": "Métodos de pago actualizados",
+        "soloEstaFactura": "Elegidos para esta factura.",
+        "usaLosDeLaEmpresa": "Usa los métodos activos de la empresa.",
+        "modalTitulo": "Métodos de pago de esta factura",
+        "modalDesc": "Aparecen en la página pública, el PDF y el correo. Por ejemplo, «solo transferencia».",
+        "enEnvio": "Métodos de pago que aparecerán"
       }
     },
     "ClientInvoices": {

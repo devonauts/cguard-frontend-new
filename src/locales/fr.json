@@ -18120,7 +18120,7 @@
         "activa": "Active",
         "sinTasas": "Aucun taux. Sans table, les factures sortent sans taxes.",
         "instruccionesDePago": "Instructions de paiement",
-        "instruccionesDePagoHint": "Compte bancaire, ordre du chèque, lien de paiement… Figure sur chaque facture.",
+        "instruccionesDePagoHint": "Texte libre de secours : n'apparaît que si la facture ne propose aucun moyen de paiement (onglet « Moyens de paiement »).",
         "pieDeFactura": "Pied de facture",
         "adjuntarDetalle": "Joindre le détail des vacations au PDF",
         "adjuntarDetalleHint": "Date, site, agent et heures de chaque vacation facturée, en annexe.",
@@ -18295,11 +18295,13 @@
         "info": "Information"
       },
       "metodoPago": {
-        "ach": "Virement ACH",
-        "card": "Carte",
+        "transfer": "Virement bancaire",
+        "directDeposit": "Dépôt direct (ACH)",
+        "wire": "Virement télégraphique (wire)",
         "check": "Chèque",
-        "wire": "Virement bancaire",
+        "card": "Carte de crédit",
         "cash": "Espèces",
+        "ach": "ACH",
         "other": "Autre"
       },
       "jurisdiccion": {
@@ -18320,7 +18322,8 @@
         "disputeResolved": "Litige résolu",
         "overdue": "En retard",
         "lateFee": "Pénalité de retard",
-        "reminderSent": "Rappel envoyé"
+        "reminderSent": "Rappel envoyé",
+        "paymentMethods": "Moyens de paiement modifiés"
       },
       "nuevaCorrida": {
         "creada": "Cycle {{p}} créé",
@@ -18389,6 +18392,36 @@
         "desc": "Avec « Facturation clients », le travail déjà effectué par vos agents devient des devis, des contrats et des factures pour vos clients. Activez-le dans Modules complémentaires.",
         "enlace": "Activer dans Modules complémentaires",
         "nombre": "Facturation clients"
+      },
+      "metodos": {
+        "titulo": "Moyens de paiement",
+        "ayuda": "Les moyens actifs figurent sur chaque facture : la page publique, le PDF et l'e-mail. La description est ce que voit le client (banque, titulaire, compte, adresse pour les chèques…) ; la note est un conseil supplémentaire, comme « indiquez le numéro de facture en référence ». Chaque facture peut les restreindre.",
+        "propios": "Vos propres moyens",
+        "propiosHint": "Zelle, Venmo, une banque locale… Jusqu'à {{n}}.",
+        "anadir": "Ajouter un moyen de paiement",
+        "sinPropios": "Vous n'avez encore créé aucun moyen propre.",
+        "nombre": "Nom",
+        "nombrePlaceholder": "Ex. : Zelle",
+        "descripcion": "Description",
+        "descripcionPlaceholder": "Banque, titulaire, numéro de compte, routing…",
+        "nota": "Note",
+        "notaPlaceholder": "Ex. : indiquez le numéro de facture en référence.",
+        "activo": "Actif",
+        "eliminar": "Supprimer le moyen",
+        "nombreObligatorio": "Donnez un nom à chacun de vos moyens.",
+        "tarjetaEnLinea": "Avec Stripe connecté (onglet Encaissements), le client paie par carte en ligne depuis la facture.",
+        "deLaEmpresa": "Ceux de l'entreprise",
+        "elegir": "Choisir pour cette facture",
+        "desactivado": "désactivé dans les réglages",
+        "eligeUno": "Choisissez au moins un moyen.",
+        "ninguno": "Aucun moyen de paiement actif.",
+        "cambiar": "Modifier",
+        "guardados": "Moyens de paiement mis à jour",
+        "soloEstaFactura": "Choisis pour cette facture.",
+        "usaLosDeLaEmpresa": "Utilise les moyens actifs de l'entreprise.",
+        "modalTitulo": "Moyens de paiement de cette facture",
+        "modalDesc": "Ils apparaissent sur la page publique, le PDF et l'e-mail. Par exemple, « virement uniquement ».",
+        "enEnvio": "Moyens de paiement affichés"
       }
     },
     "ClientInvoices": {

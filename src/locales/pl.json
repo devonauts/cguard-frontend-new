@@ -18400,7 +18400,7 @@
         "activa": "Aktywna",
         "sinTasas": "Brak stawek. Bez tabeli faktury wychodzą bez podatków.",
         "instruccionesDePago": "Instrukcje płatności",
-        "instruccionesDePagoHint": "Konto bankowe, odbiorca czeku, link do płatności… Na każdej fakturze.",
+        "instruccionesDePagoHint": "Dowolny tekst awaryjny: pojawia się tylko wtedy, gdy faktura nie oferuje żadnej metody płatności (karta „Metody płatności”).",
         "pieDeFactura": "Stopka faktury",
         "adjuntarDetalle": "Dołącz szczegóły zmian do PDF",
         "adjuntarDetalleHint": "Data, obiekt, ochroniarz i godziny każdej zafakturowanej zmiany, jako załącznik.",
@@ -18575,12 +18575,14 @@
         "info": "Informacja"
       },
       "metodoPago": {
-        "ach": "Przelew ACH",
-        "card": "Karta",
+        "transfer": "Przelew bankowy",
+        "directDeposit": "Wpłata bezpośrednia (ACH)",
+        "wire": "Przelew ekspresowy (wire)",
         "check": "Czek",
-        "wire": "Przelew bankowy",
+        "card": "Karta kredytowa",
         "cash": "Gotówka",
-        "other": "Inne"
+        "ach": "ACH",
+        "other": "Inna"
       },
       "jurisdiccion": {
         "state": "Stan",
@@ -18600,7 +18602,8 @@
         "disputeResolved": "Spór rozwiązany",
         "overdue": "Przeterminowana",
         "lateFee": "Opłata za zwłokę",
-        "reminderSent": "Przypomnienie wysłane"
+        "reminderSent": "Przypomnienie wysłane",
+        "paymentMethods": "Zmieniono metody płatności"
       },
       "nuevaCorrida": {
         "creada": "Cykl {{p}} utworzony",
@@ -18669,6 +18672,36 @@
         "desc": "Dzięki „Fakturowaniu klientów” praca, którą już wykonują Twoi pracownicy ochrony, zamienia się w oferty, umowy i faktury dla klientów. Włącz go w Modułach dodatkowych.",
         "enlace": "Włącz w Modułach dodatkowych",
         "nombre": "Fakturowanie klientów"
+      },
+      "metodos": {
+        "titulo": "Metody płatności",
+        "ayuda": "Aktywne metody pojawiają się na każdej fakturze: na stronie publicznej, w PDF i w e-mailu. Opis widzi klient (bank, właściciel rachunku, numer konta, adres dla czeków…); notatka to dodatkowa wskazówka, np. „wpisz numer faktury w tytule przelewu”. Każda faktura może je ograniczyć.",
+        "propios": "Własne metody",
+        "propiosHint": "Zelle, Venmo, lokalny bank… Maksymalnie {{n}}.",
+        "anadir": "Dodaj metodę płatności",
+        "sinPropios": "Nie utworzono jeszcze własnych metod.",
+        "nombre": "Nazwa",
+        "nombrePlaceholder": "Np. Zelle",
+        "descripcion": "Opis",
+        "descripcionPlaceholder": "Bank, właściciel rachunku, numer konta, routing…",
+        "nota": "Notatka",
+        "notaPlaceholder": "Np. wpisz numer faktury w tytule przelewu.",
+        "activo": "Aktywna",
+        "eliminar": "Usuń metodę",
+        "nombreObligatorio": "Nadaj nazwę każdej własnej metodzie.",
+        "tarjetaEnLinea": "Po podłączeniu Stripe (karta Płatności) klient płaci kartą online z poziomu faktury.",
+        "deLaEmpresa": "Metody firmy",
+        "elegir": "Wybierz dla tej faktury",
+        "desactivado": "wyłączona w ustawieniach",
+        "eligeUno": "Wybierz co najmniej jedną metodę.",
+        "ninguno": "Brak aktywnych metod płatności.",
+        "cambiar": "Zmień",
+        "guardados": "Zaktualizowano metody płatności",
+        "soloEstaFactura": "Wybrane dla tej faktury.",
+        "usaLosDeLaEmpresa": "Używa aktywnych metod firmy.",
+        "modalTitulo": "Metody płatności tej faktury",
+        "modalDesc": "Pojawiają się na stronie publicznej, w PDF i w e-mailu. Na przykład „tylko przelew”.",
+        "enEnvio": "Metody płatności, które się pojawią"
       }
     },
     "ClientInvoices": {

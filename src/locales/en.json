@@ -17585,7 +17585,7 @@
         "activa": "Active",
         "sinTasas": "No rates. Without a table, invoices go out without taxes.",
         "instruccionesDePago": "Payment instructions",
-        "instruccionesDePagoHint": "Bank account, who the check is made out to, payment link… Printed on every invoice.",
+        "instruccionesDePagoHint": "Free-text fallback: shown only when the invoice offers no payment method (\"Payment methods\" tab).",
         "pieDeFactura": "Invoice footer",
         "adjuntarDetalle": "Attach the shift detail to the PDF",
         "adjuntarDetalleHint": "Date, site, guard and hours of every billed shift, as an annex.",
@@ -17760,11 +17760,13 @@
         "info": "Information"
       },
       "metodoPago": {
-        "ach": "ACH transfer",
-        "card": "Card",
-        "check": "Check",
+        "transfer": "Bank transfer",
+        "directDeposit": "Direct deposit (ACH)",
         "wire": "Wire transfer",
+        "check": "Check",
+        "card": "Credit card",
         "cash": "Cash",
+        "ach": "ACH",
         "other": "Other"
       },
       "jurisdiccion": {
@@ -17785,7 +17787,8 @@
         "disputeResolved": "Dispute resolved",
         "overdue": "Overdue",
         "lateFee": "Late fee",
-        "reminderSent": "Reminder sent"
+        "reminderSent": "Reminder sent",
+        "paymentMethods": "Payment methods changed"
       },
       "nuevaCorrida": {
         "creada": "Run {{p}} created",
@@ -17854,6 +17857,36 @@
         "desc": "With “Client billing”, the work your officers already do becomes quotes, contracts and invoices for your clients. Turn it on in Add-on modules.",
         "enlace": "Turn on in Add-on modules",
         "nombre": "Client billing"
+      },
+      "metodos": {
+        "titulo": "Payment methods",
+        "ayuda": "Enabled methods appear on every invoice: the public page, the PDF and the e-mail. The description is what the client sees (bank, account holder, account number, mailing address for checks…); the note is extra advice, such as \"write the invoice number in the memo\". Each invoice can narrow them down.",
+        "propios": "Your own methods",
+        "propiosHint": "Zelle, Venmo, a local bank… Up to {{n}}.",
+        "anadir": "Add payment method",
+        "sinPropios": "You have not created any methods of your own yet.",
+        "nombre": "Name",
+        "nombrePlaceholder": "E.g. Zelle",
+        "descripcion": "Description",
+        "descripcionPlaceholder": "Bank, account holder, account number, routing…",
+        "nota": "Note",
+        "notaPlaceholder": "E.g. write the invoice number in the memo.",
+        "activo": "Enabled",
+        "eliminar": "Delete method",
+        "nombreObligatorio": "Give each of your own methods a name.",
+        "tarjetaEnLinea": "With Stripe connected (Collections tab), the client pays by card online from the invoice.",
+        "deLaEmpresa": "The company's",
+        "elegir": "Choose for this invoice",
+        "desactivado": "disabled in settings",
+        "eligeUno": "Choose at least one method.",
+        "ninguno": "No payment method enabled.",
+        "cambiar": "Change",
+        "guardados": "Payment methods updated",
+        "soloEstaFactura": "Chosen for this invoice.",
+        "usaLosDeLaEmpresa": "Uses the company's enabled methods.",
+        "modalTitulo": "Payment methods of this invoice",
+        "modalDesc": "They appear on the public page, the PDF and the e-mail. For example, \"bank transfer only\".",
+        "enEnvio": "Payment methods to show"
       }
     },
     "ClientInvoices": {

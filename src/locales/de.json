@@ -18120,7 +18120,7 @@
         "activa": "Aktiv",
         "sinTasas": "Keine Sätze. Ohne Tabelle gehen Rechnungen ohne Steuern raus.",
         "instruccionesDePago": "Zahlungshinweise",
-        "instruccionesDePagoHint": "Bankkonto, Scheckempfänger, Zahlungslink… Steht auf jeder Rechnung.",
+        "instruccionesDePagoHint": "Freitext als Rückfall: erscheint nur, wenn die Rechnung keine Zahlungsart anbietet (Reiter „Zahlungsarten“).",
         "pieDeFactura": "Rechnungsfußzeile",
         "adjuntarDetalle": "Schichtdetails an das PDF anhängen",
         "adjuntarDetalleHint": "Datum, Objekt, Wachmann und Stunden jeder abgerechneten Schicht, als Anhang.",
@@ -18295,12 +18295,14 @@
         "info": "Information"
       },
       "metodoPago": {
-        "ach": "ACH-Überweisung",
-        "card": "Karte",
+        "transfer": "Banküberweisung",
+        "directDeposit": "Direkteinzahlung (ACH)",
+        "wire": "Telegrafische Überweisung (Wire)",
         "check": "Scheck",
-        "wire": "Banküberweisung",
-        "cash": "Bar",
-        "other": "Sonstiges"
+        "card": "Kreditkarte",
+        "cash": "Bargeld",
+        "ach": "ACH",
+        "other": "Sonstige"
       },
       "jurisdiccion": {
         "state": "Bundesstaat",
@@ -18320,7 +18322,8 @@
         "disputeResolved": "Streit beigelegt",
         "overdue": "Überfällig",
         "lateFee": "Säumnisgebühr",
-        "reminderSent": "Erinnerung gesendet"
+        "reminderSent": "Erinnerung gesendet",
+        "paymentMethods": "Zahlungsarten geändert"
       },
       "nuevaCorrida": {
         "creada": "Lauf {{p}} erstellt",
@@ -18389,6 +18392,36 @@
         "desc": "Mit „Kundenabrechnung“ wird die Arbeit Ihrer Sicherheitskräfte zu Angeboten, Verträgen und Rechnungen für Ihre Kunden. Aktivieren Sie es unter Zusatzmodule.",
         "enlace": "In Zusatzmodulen aktivieren",
         "nombre": "Kundenabrechnung"
+      },
+      "metodos": {
+        "titulo": "Zahlungsarten",
+        "ayuda": "Aktive Zahlungsarten erscheinen auf jeder Rechnung: auf der öffentlichen Seite, im PDF und in der E-Mail. Die Beschreibung sieht der Kunde (Bank, Kontoinhaber, Kontonummer, Adresse für Schecks…); die Notiz ist ein zusätzlicher Hinweis, etwa „Rechnungsnummer im Verwendungszweck angeben“. Jede Rechnung kann sie einschränken.",
+        "propios": "Eigene Zahlungsarten",
+        "propiosHint": "Zelle, Venmo, eine lokale Bank… Bis zu {{n}}.",
+        "anadir": "Zahlungsart hinzufügen",
+        "sinPropios": "Sie haben noch keine eigenen Zahlungsarten angelegt.",
+        "nombre": "Name",
+        "nombrePlaceholder": "Z. B. Zelle",
+        "descripcion": "Beschreibung",
+        "descripcionPlaceholder": "Bank, Kontoinhaber, Kontonummer, Routing…",
+        "nota": "Notiz",
+        "notaPlaceholder": "Z. B. Rechnungsnummer im Verwendungszweck angeben.",
+        "activo": "Aktiv",
+        "eliminar": "Zahlungsart löschen",
+        "nombreObligatorio": "Geben Sie jeder eigenen Zahlungsart einen Namen.",
+        "tarjetaEnLinea": "Mit verbundenem Stripe (Reiter Zahlungen) zahlt der Kunde per Karte online über die Rechnung.",
+        "deLaEmpresa": "Die des Unternehmens",
+        "elegir": "Für diese Rechnung wählen",
+        "desactivado": "in den Einstellungen deaktiviert",
+        "eligeUno": "Wählen Sie mindestens eine Zahlungsart.",
+        "ninguno": "Keine Zahlungsart aktiv.",
+        "cambiar": "Ändern",
+        "guardados": "Zahlungsarten aktualisiert",
+        "soloEstaFactura": "Für diese Rechnung gewählt.",
+        "usaLosDeLaEmpresa": "Verwendet die aktiven Zahlungsarten des Unternehmens.",
+        "modalTitulo": "Zahlungsarten dieser Rechnung",
+        "modalDesc": "Sie erscheinen auf der öffentlichen Seite, im PDF und in der E-Mail. Zum Beispiel „nur Überweisung“.",
+        "enEnvio": "Angezeigte Zahlungsarten"
       }
     },
     "ClientInvoices": {

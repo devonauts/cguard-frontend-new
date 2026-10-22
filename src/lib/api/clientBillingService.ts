@@ -61,22 +61,71 @@ export type InvoiceStatus =
   | "draft" | "issued" | "sent" | "viewed" | "partiallyPaid" | "paid" | "overdue" | "void" | "disputed";
 /** `open` is a server-side alias: issued · sent · viewed · partiallyPaid · overdue. */
 export type InvoiceFilterStatus = InvoiceStatus | "open";
-export type PaymentMethod = "ach" | "card" | "check" | "wire" | "cash" | "other";
+/** The six ways to pay every company has; it may add its own (`c_xxxxxxxx`). */
+export type BuiltinPaymentMethod = "transfer" | "directDeposit" | "wire" | "check" | "card" | "cash";
+/**
+ * The method a payment is recorded with: a built-in, a company method key,
+ * `other`, or the legacy `ach` older payments still carry.
+ */
+export type PaymentMethod = BuiltinPaymentMethod | "ach" | "other" | (string & {});
 export type InvoiceEventType =
   | "created" | "edited" | "issued" | "sent" | "viewed" | "paymentRecorded" | "creditNote"
-  | "voided" | "disputed" | "disputeResolved" | "overdue" | "lateFee" | "reminderSent";
+  | "voided" | "disputed" | "disputeResolved" | "overdue" | "lateFee" | "reminderSent" | "paymentMethods";
 
 export const BILLING_CYCLES: BillingCycle[] = ["weekly", "biweekly", "semimonthly", "monthly"];
 export const RATE_KINDS: RateKind[] = ["hourly", "fixed", "recurring", "patrol", "dispatch"];
 export const SHIFT_TYPES: ShiftType[] = ["any", "day", "night", "weekend"];
 export const RATE_UNITS: RateUnit[] = ["hour", "month", "week", "visit", "each"];
-export const PAYMENT_METHODS: PaymentMethod[] = ["ach", "card", "check", "wire", "cash", "other"];
+/** Canonical order, same as the server. */
+export const BUILTIN_PAYMENT_METHODS: BuiltinPaymentMethod[] = ["transfer", "directDeposit", "wire", "check", "card", "cash"];
+/** At most this many methods of the company's own. */
+export const MAX_CUSTOM_PAYMENT_METHODS = 20;
 export const INVOICE_STATUSES: InvoiceStatus[] = ["draft", "issued", "sent", "viewed", "partiallyPaid", "paid", "overdue", "void", "disputed"];
 
 /** A premium rule. `multiplier` is in hundredths (150 = 1.5×); `amount` is
  *  cents per hour added to the base rate. `priority` (holiday) wins over
  *  overtime. `null` on a contract = the company default from settings. */
 export interface PremiumRule { mode: RuleMode; value: number; priority?: boolean }
+
+/**
+ * One way the company accepts payment. `description` is what the client reads
+ * (bank details, payee, address); `note` is extra advice («write the invoice
+ * number in the memo»). `label` names the company's own methods only.
+ */
+export interface PaymentMethodConfig {
+  method: string;
+  builtin: boolean;
+  label: string | null;
+  enabled: boolean;
+  description: string | null;
+  note: string | null;
+}
+
+/** A method one invoice offers, as the server resolves it. */
+export interface OfferedPaymentMethod {
+  method: string;
+  label: string | null;
+  description: string | null;
+  note: string | null;
+  online: boolean;
+}
+
+export const isBuiltinPaymentMethod = (m: string): m is BuiltinPaymentMethod => (BUILTIN_PAYMENT_METHODS as string[]).includes(m);
+
+/** What the server assumes for a company that never configured its methods. */
+export const defaultPaymentMethods = (): PaymentMethodConfig[] =>
+  BUILTIN_PAYMENT_METHODS.map((method) => ({ method, builtin: true, label: null, enabled: method !== "cash", description: null, note: null }));
+
+/**
+ * What an invoice offers: its own list when it has one (a method the company
+ * deleted is skipped), else the company's enabled methods. Same rule as the
+ * server's `offeredMethods`.
+ */
+export function offeredPaymentMethodKeys(company: PaymentMethodConfig[], invoice: string[] | null | undefined): string[] {
+  if (invoice && invoice.length) return invoice.filter((k) => company.some((c) => c.method === k));
+
+  return company.filter((c) => c.enabled).map((c) => c.method);
+}
 
 export interface ClientAccountRef {
   id: string;
@@ -120,6 +169,8 @@ export interface BillingSettings {
   quoteValidityDays?: number | null;
   /** Default terms text of new quotes. */
   quoteTerms?: string | null;
+  /** The six built-ins in canonical order, then the company's own. */
+  paymentMethods?: PaymentMethodConfig[];
 }
 
 export interface TaxRate {
@@ -368,6 +419,8 @@ export interface Invoice {
   billTo: BillTo | null;
   notes: string | null;
   publicToken: string | null;
+  /** The methods this invoice offers; null = whatever the company has enabled. */
+  paymentMethods?: string[] | null;
   remindersSent: number[] | null;
   lines?: InvoiceLine[];
   payments?: Payment[];
@@ -771,7 +824,7 @@ const clientBillingService = {
   },
 
   /** Issues a draft first; e-mails the PDF and the public link. */
-  async sendInvoice(id: string, body: { to?: string[]; message?: string; lang?: string } = {}): Promise<{ invoice: Invoice; sent: boolean; to: string[]; reason?: string | null }> {
+  async sendInvoice(id: string, body: { to?: string[]; message?: string; lang?: string; paymentMethods?: string[] | null } = {}): Promise<{ invoice: Invoice; sent: boolean; to: string[]; reason?: string | null }> {
     return unwrap(await api.post(`${base()}/invoices/${enc(id)}/send`, { data: body }));
   },
 
@@ -780,6 +833,11 @@ const clientBillingService = {
       format: "pdf",
       nombreBase: inv.number || "borrador",
     });
+  },
+
+  /** Which methods this invoice offers (null = the company's). Any status but void. */
+  async setInvoicePaymentMethods(id: string, paymentMethods: string[] | null): Promise<{ invoice: Invoice; paymentOptions: OfferedPaymentMethod[] }> {
+    return unwrap(await api.put(`${base()}/invoices/${enc(id)}/payment-methods`, { data: { paymentMethods } }));
   },
 
   async recordPayment(id: string, body: PaymentInput): Promise<{ invoice: Invoice }> {

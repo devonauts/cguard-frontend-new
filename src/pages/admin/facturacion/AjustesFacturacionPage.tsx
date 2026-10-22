@@ -1,13 +1,13 @@
 /**
  * BILLING SETTINGS — the company's header on the invoice, numbering and
  * terms, premium and late-fee rules, the sales-tax table the company keeps
- * by hand, and the document footer.
+ * by hand, the payment methods it accepts, and the document footer.
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Building2, CreditCard, FileText, Hash, Percent, Plus, Scale, Settings2, Trash2, Pencil } from "lucide-react";
+import { Building2, CreditCard, FileText, Hash, Percent, Plus, Scale, Settings2, Trash2, Pencil, Wallet } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,9 @@ import clientBillingService, { BILLING_CYCLES, type BillingSettings, type TaxJur
 import { QK, porcentaje, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
 import { ReglaDeRecargo } from "./ReglaDeRecargo";
 import { CobrosGateway } from "./CobrosGateway";
+import { MetodosDePagoAjustes, metodoSinNombre } from "./MetodosDePago";
 
-type Pestana = "empresa" | "numeracion" | "reglas" | "impuestos" | "cobros" | "documento";
+type Pestana = "empresa" | "numeracion" | "reglas" | "impuestos" | "metodos" | "cobros" | "documento";
 
 function AjustesFacturacionPage() {
   const { t } = useTranslation();
@@ -50,6 +51,12 @@ function AjustesFacturacionPage() {
 
   const guardar = async () => {
     if (!form) return;
+    if (metodoSinNombre(form.paymentMethods)) {
+      setTab("metodos");
+      toast.error(t("ui.Facturacion.metodos.nombreObligatorio", "Ponle un nombre a cada método propio."));
+
+      return;
+    }
     setSaving(true);
     try {
       const { settings } = await clientBillingService.saveSettings(form);
@@ -80,6 +87,7 @@ function AjustesFacturacionPage() {
     { value: "numeracion" as Pestana, label: t("ui.Facturacion.ajustes.numeracion", "Numeración y términos"), icon: <Hash /> },
     { value: "reglas" as Pestana, label: t("ui.Facturacion.ajustes.reglas", "Reglas"), icon: <Scale /> },
     { value: "impuestos" as Pestana, label: t("ui.Facturacion.ajustes.impuestos", "Impuestos"), icon: <Percent />, badge: vista.data?.taxRates.length || null },
+    { value: "metodos" as Pestana, label: t("ui.Facturacion.metodos.titulo", "Métodos de pago"), icon: <Wallet /> },
     { value: "cobros" as Pestana, label: t("ui.Facturacion.ajustes.cobros", "Cobros"), icon: <CreditCard /> },
     { value: "documento" as Pestana, label: t("ui.Facturacion.ajustes.documento", "Documento"), icon: <FileText /> },
   ];
@@ -237,6 +245,8 @@ function AjustesFacturacionPage() {
               </tbody>
             </TabTable>
           </Section>
+        ) : tab === "metodos" ? (
+          <MetodosDePagoAjustes canEdit={canEdit} value={form.paymentMethods} onChange={(v) => set("paymentMethods", v)} />
         ) : tab === "cobros" ? (
           <CobrosGateway canEdit={canEdit} />
         ) : (
