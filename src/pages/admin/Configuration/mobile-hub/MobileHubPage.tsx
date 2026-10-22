@@ -205,6 +205,8 @@ export default function MobileHubPage() {
   const canEdit = hasPermission("settingsEdit");
   // «Roles de pago» en la app sólo se puede encender con el módulo activo.
   const tieneRolesDePago = useEntitlement("payroll_slips");
+  // Sin el módulo, la fila de «Roles de pago» ni aparece ni cuenta en el total.
+  const modulosVisibles = MODULE_META.filter((m) => m.key !== "payslips" || tieneRolesDePago);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -278,8 +280,8 @@ export default function MobileHubPage() {
   };
 
   const modulosActivos = useMemo(
-    () => MODULE_META.filter((m) => cfg.modules[m.key]).length,
-    [cfg.modules],
+    () => modulosVisibles.filter((m) => cfg.modules[m.key]).length,
+    [cfg.modules, tieneRolesDePago],
   );
 
   const preview = useMemo(
@@ -356,13 +358,13 @@ export default function MobileHubPage() {
               !loading ? (
                 <StatusBadge
                   tone={
-                    modulosActivos === MODULE_META.length ? "ok" : "neutral"
+                    modulosActivos === modulosVisibles.length ? "ok" : "neutral"
                   }
                 >
                   {t("settings.mobileHub.modulesVisibleBadge", {
                     defaultValue: "{{active}} de {{total}} módulos visibles",
                     active: modulosActivos,
-                    total: MODULE_META.length,
+                    total: modulosVisibles.length,
                   })}
                 </StatusBadge>
               ) : undefined
@@ -621,10 +623,7 @@ export default function MobileHubPage() {
                   })}
                 >
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {MODULE_META.filter(
-                      // Sin el módulo, la fila de «Roles de pago» ni aparece.
-                      (m) => m.key !== "payslips" || tieneRolesDePago,
-                    ).map((m) => (
+                    {modulosVisibles.map((m) => (
                       <div
                         key={m.key}
                         className="glass-flat flex items-center justify-between gap-3 p-3.5"

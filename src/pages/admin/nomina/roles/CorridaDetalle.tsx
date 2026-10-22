@@ -131,7 +131,7 @@ export default function CorridaDetalle() {
                         <th className="px-2 py-1.5 text-right">{t("ui.RolesDePago.corridas.extra", "Extra")}</th>
                         <th className="px-2 py-1.5 text-right" title={t("ui.RolesDePago.corridas.dobladasHint", "Turnos extra por dobladas: una tripleta cuenta dos")}>{t("ui.RolesDePago.corridas.dobladas", "Dobladas")}</th>
                         {porConcepto && conceptos.map((c) => (
-                          <th key={c.code} className="whitespace-nowrap px-2 py-1.5 text-right" title={c.code}>
+                          <th key={c.code} className="min-w-[6rem] max-w-[9rem] px-2 py-1.5 text-right leading-tight" title={c.code}>
                             <span className="mr-1 inline-block size-1.5 rounded-full align-middle" style={{ background: TONO[c.kind] }} />{c.name}
                           </th>
                         ))}
