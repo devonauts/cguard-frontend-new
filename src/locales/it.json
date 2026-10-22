@@ -19957,6 +19957,127 @@
           "planilla": "Il foglio paga del mese in pochi minuti, senza fogli sparsi",
           "rol": "Ognuno con la sua busta paga, in PDF e nell’app"
         }
+      },
+      "facturacion": {
+        "escenas": {
+          "cotizacion": "Preventivo",
+          "corrida": "Fatturazione",
+          "cobro": "Incasso"
+        },
+        "empresa": "Cedar Bluff Security",
+        "cliente": "Lone Oak Logistics",
+        "firmante": "Dana Whitfield · Direttrice operativa",
+        "propuesta": "Preventivo P-0318",
+        "servicios": "Servizi proposti",
+        "corrida": "Ore di ottobre",
+        "factura": "Fattura INV-1027",
+        "estimado": "Stima",
+        "estimadoMensual": "Stima mensile",
+        "cols": {
+          "servicio": "Servizio",
+          "cant": "Quantità",
+          "tarifa": "Tariffa",
+          "importe": "Importo",
+          "corto": {
+            "cant": "Q.tà",
+            "tarifa": "Tariffa",
+            "importe": "Importo"
+          }
+        },
+        "lineas": {
+          "p247": "Postazione 24/7 · Cancello 1",
+          "finde": "Postazione del weekend",
+          "extra": "Straordinari · Cancello 1",
+          "ronda": "Ronda notturna",
+          "supervision": "Supervisione"
+        },
+        "unidades": {
+          "h": "h",
+          "visitas": "ronde",
+          "mes": "mese"
+        },
+        "ot": "1,5×",
+        "subtotal": "Subtotale",
+        "impuesto": "Imposta del Texas 6,25 %",
+        "totalMensual": "Totale mensile",
+        "totalFactura": "Totale da pagare",
+        "vence": "Scade il {{fecha}}",
+        "estados": {
+          "borrador": "Bozza",
+          "enviada": "Inviato",
+          "firmada": "Firmato",
+          "emitida": "Emessa",
+          "calculando": "Lettura turni",
+          "revisar": "1 da verificare",
+          "aprobadas": "Approvate",
+          "porPagar": "Da pagare",
+          "pagada": "Pagata"
+        },
+        "firma": {
+          "titulo": "Firma qui per accettare"
+        },
+        "convertir": "Converti in cliente e contratto",
+        "convertido": "Cliente e contratto creati",
+        "correo": {
+          "asunto": "Fattura INV-1027 · ottobre · PDF allegato"
+        },
+        "archivos": {
+          "pdf": "INV-1027.pdf"
+        },
+        "cobro": {
+          "comoPagar": "Come pagare",
+          "transferencia": "Bonifico bancario",
+          "banco": "First Prairie Bank · c/c ••4821",
+          "referencia": "Causale: INV-1027",
+          "cheque": "Assegno",
+          "chequeA": "Intestato a Cedar Bluff Security",
+          "tarjeta": "Paga con carta",
+          "aviso": {
+            "elige": "Scegli come pagare",
+            "procesando": "Pagamento in corso…",
+            "pagada": "Pagata. Grazie!"
+          }
+        },
+        "antiguedad": {
+          "titulo": "Scadenzario crediti",
+          "porCobrar": "Da incassare",
+          "aldia": "In regola",
+          "d30": "1–30 giorni",
+          "d60": "31–60 giorni",
+          "d90": "Oltre 60"
+        },
+        "pagos": {
+          "titulo": "Pagamenti ricevuti",
+          "fila": "Lone Oak Logistics · INV-1027"
+        },
+        "pasos": {
+          "arma": "Prepari il preventivo per Lone Oak Logistics",
+          "lineas": "Postazioni, ronda e supervisione con la stima mensile",
+          "impuesto": "Si aggiunge l’imposta del Texas del 6,25 %",
+          "envia": "Lo invii con il tuo logo e le tue condizioni",
+          "firma": "Il cliente lo firma dal telefono",
+          "firmada": "Preventivo firmato",
+          "convierte": "Un clic: cliente e contratto creati",
+          "corre": "Avvii la fatturazione di ottobre",
+          "horas": "Le ore approvate arrivano dai turni del mese",
+          "discrepancia": "Discrepanza: 12 h di sabato 17 senza uscita timbrata",
+          "resuelta": "Il supervisore conferma l’uscita: 216 h",
+          "extra": "Gli straordinari sono segnalati e fatturati a 1,5×",
+          "importes": "Ore × tariffa, riga per riga",
+          "emite": "Fattura INV-1027 emessa, numerata e con il totale",
+          "correo": "Parte via e-mail a nome di Cedar Bluff Security",
+          "pdf": "Con il PDF allegato",
+          "abre": "Lone Oak apre il link della fattura",
+          "comoPagar": "Vede come pagarti: bonifico, assegno o carta",
+          "tarjeta": "Paga con carta, direttamente sul tuo conto",
+          "pagada": "Pagamento ricevuto: la fattura risulta Pagata",
+          "antiguedad": "Lo scadenzario si riduce da solo"
+        },
+        "resultado": {
+          "cotizacion": "Dal preventivo al contratto firmato, senza carta",
+          "corrida": "Il lavoro svolto, fatturato e inviato a tuo nome",
+          "cobro": "Il cliente paga dal link e i tuoi crediti si aggiornano"
+        }
       }
     }
   },

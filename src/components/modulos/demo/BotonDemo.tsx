@@ -25,6 +25,7 @@ const DEMOS: Record<string, LazyExoticComponent<ComponentType>> = {
   sucursales: lazy(() => import("./DemoSucursales")),
   reconocimiento_facial: lazy(() => import("./DemoReconocimientoFacial")),
   payroll_slips: lazy(() => import("./DemoRolesDePago")),
+  client_billing: lazy(() => import("./DemoFacturacion")),
 };
 
 export function tieneDemo(clave: string): boolean {

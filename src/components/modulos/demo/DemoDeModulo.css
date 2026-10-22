@@ -1,7 +1,7 @@
 /*
  * LAS DEMOSTRACIONES DE LA TIENDA — motor común (Sucursales, Reconocimiento
- * facial, Roles de pago). Todo sale de los tokens del CRM; lo único fijo es el
- * marco del teléfono, que es negro en los dos temas.
+ * facial, Roles de pago, Facturación a clientes). Todo sale de los tokens del
+ * CRM; lo único fijo es el marco del teléfono, que es negro en los dos temas.
  *
  * ALTO FIJO: el escenario mide 380 px en el escritorio y 600 en el teléfono
  * (ahí se apila). Cada escena reserva el sitio de todo lo que puede aparecer,
@@ -237,6 +237,56 @@
 .dm-notif b { display: block; font-size: 12px; }
 .dm-notif .ic { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; flex: none; background: var(--brand); color: var(--brand-ink); font-weight: 800; font-size: 11px; }
 
+/* ── FACTURACIÓN A CLIENTES ──────────────────────────────────────────── */
+.dm-tabla[data-c3] .dm-fila { grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr)); }
+.dm-fact .dm-fila > * { transition: opacity 0.35s; }
+.dm-fact .dm-fila[data-oculta] > * { opacity: 0; }
+.dm-fila .dm-sello { padding: 1px 5px; font-size: 9.5px; vertical-align: 1px; }
+.dm-num[data-alerta] { color: var(--warn); font-weight: 700; }
+.dm-firma {
+  padding: 8px 12px 6px; border-radius: 16px; background: var(--dm-frame); color: #f3f4f6; box-shadow: var(--dm-shadow);
+  opacity: 0; transform: translateY(10px); transition: opacity 0.45s, transform 0.45s var(--dm-ease);
+}
+.dm-firma[data-ve] { opacity: 1; transform: none; }
+.dm-firma-cab { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; opacity: 0.85; }
+.dm-firma-svg { display: block; width: 100%; height: 40px; }
+.dm-trazo { stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1.3s var(--dm-ease); }
+.dm-trazo[data-ve] { stroke-dashoffset: 0; }
+.dm-firma-pie { font-size: 10.5px; opacity: 0.6; }
+.dm-boton {
+  display: flex; align-items: center; justify-content: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 12px;
+  background: var(--brand); color: var(--brand-ink); font-size: 12px; font-weight: 600; white-space: nowrap;
+  opacity: 0; transform: translateY(6px); transition: opacity 0.4s, transform 0.4s, background 0.4s, color 0.4s;
+}
+.dm-boton[data-ve] { opacity: 1; transform: none; }
+.dm-boton[data-hecho] { background: var(--ok); color: oklch(0.99 0 0); animation: dm-pulsa 0.35s; }
+@keyframes dm-pulsa { 40% { transform: scale(0.96); } }
+/* The client's phone keeps a fixed width: its text must not stretch it past the stage. */
+.dm-cobro { grid-template-rows: minmax(0, 1fr); }
+.dm-cobro .dm-tel { aspect-ratio: auto; width: 220px; min-width: 0; }
+.dm-pago { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 5px; padding: 0 10px; font-size: 10px; }
+.dm-pago-total { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.dm-pago-total b { font-size: 18px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.dm-pago-vence { margin-top: -4px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dm-pago-t { margin-top: 3px; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.6; }
+.dm-opcion {
+  display: flex; align-items: flex-start; gap: 7px; padding: 6px 8px; border-radius: 10px; line-height: 1.3;
+  background: rgb(255 255 255 / 0.08); border: 1px solid transparent;
+  opacity: 0; transform: translateY(6px); transition: opacity 0.35s, transform 0.35s, background 0.3s, border-color 0.3s;
+}
+.dm-opcion[data-ve] { opacity: 1; transform: none; }
+.dm-opcion[data-sel] { border-color: var(--brand); background: color-mix(in oklab, var(--brand) 24%, transparent); }
+.dm-opcion > svg { margin-top: 1px; }
+.dm-opcion span span { opacity: 0.65; }
+.dm-cobro-total { display: inline-flex; align-items: baseline; gap: 6px; flex: none; font-size: 11px; font-weight: 500; color: var(--ink-faint); white-space: nowrap; }
+.dm-cobro-total b { font-size: 16px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dm-cubeta { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr) 68px; gap: 10px; align-items: center; height: 24px; font-size: 12px; }
+.dm-barra { height: 8px; border-radius: 999px; background: var(--dm-block); overflow: hidden; }
+.dm-barra > span { display: block; height: 100%; border-radius: inherit; background: var(--ok); transition: width 0.9s var(--dm-ease); }
+.dm-cubeta[data-i="1"] .dm-barra > span { background: var(--info); }
+.dm-cubeta[data-i="2"] .dm-barra > span { background: var(--warn); }
+.dm-cubeta[data-i="3"] .dm-barra > span { background: var(--bad); }
+
 /* ── Teléfono: todo apilado ──────────────────────────────────────────── */
 @media (max-width: 760px) {
   .dm-suc { grid-template-columns: minmax(0, 1fr); grid-template-rows: 250px minmax(0, 1fr); }
@@ -256,6 +306,13 @@
   .dm-linea[data-neto] { height: 26px; }
   .dm-archivo { margin-top: 8px; }
   .dm-chip { padding: 4px 8px; font-size: 11px; }
+  /* Facturación: el teléfono del cliente algo más alto y el panel más apretado. */
+  .dm-cobro { grid-template-rows: 318px minmax(0, 1fr); }
+  .dm-cobro .dm-tel { width: 230px; }
+  .dm-cobro .dm-panel { gap: 8px; }
+  .dm-cubeta { height: 20px; font-size: 11.5px; }
+  .dm-pago-vence { display: none; }
+  .dm-boton { height: 32px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -19957,6 +19957,127 @@
           "planilla": "The month’s payroll in minutes, no loose spreadsheets",
           "rol": "Everyone gets their payslip, as a PDF and in the app"
         }
+      },
+      "facturacion": {
+        "escenas": {
+          "cotizacion": "Proposal",
+          "corrida": "Billing run",
+          "cobro": "Payment"
+        },
+        "empresa": "Cedar Bluff Security",
+        "cliente": "Lone Oak Logistics",
+        "firmante": "Dana Whitfield · Director of Operations",
+        "propuesta": "Proposal P-0318",
+        "servicios": "Proposed services",
+        "corrida": "October hours",
+        "factura": "Invoice INV-1027",
+        "estimado": "Estimate",
+        "estimadoMensual": "Monthly estimate",
+        "cols": {
+          "servicio": "Service",
+          "cant": "Quantity",
+          "tarifa": "Rate",
+          "importe": "Amount",
+          "corto": {
+            "cant": "Qty",
+            "tarifa": "Rate",
+            "importe": "Amount"
+          }
+        },
+        "lineas": {
+          "p247": "24/7 post · Gate 1",
+          "finde": "Weekend post",
+          "extra": "Overtime · Gate 1",
+          "ronda": "Night patrol",
+          "supervision": "Supervision"
+        },
+        "unidades": {
+          "h": "h",
+          "visitas": "visits",
+          "mes": "mo"
+        },
+        "ot": "1.5×",
+        "subtotal": "Subtotal",
+        "impuesto": "Texas sales tax 6.25%",
+        "totalMensual": "Monthly total",
+        "totalFactura": "Amount due",
+        "vence": "Due {{fecha}}",
+        "estados": {
+          "borrador": "Draft",
+          "enviada": "Sent",
+          "firmada": "Signed",
+          "emitida": "Issued",
+          "calculando": "Reading shifts",
+          "revisar": "1 to review",
+          "aprobadas": "Approved",
+          "porPagar": "Unpaid",
+          "pagada": "Paid"
+        },
+        "firma": {
+          "titulo": "Sign here to accept"
+        },
+        "convertir": "Convert to client and contract",
+        "convertido": "Client and contract created",
+        "correo": {
+          "asunto": "Invoice INV-1027 · October · PDF attached"
+        },
+        "archivos": {
+          "pdf": "INV-1027.pdf"
+        },
+        "cobro": {
+          "comoPagar": "How to pay",
+          "transferencia": "Bank transfer",
+          "banco": "First Prairie Bank · acct. ••4821",
+          "referencia": "Reference: INV-1027",
+          "cheque": "Check",
+          "chequeA": "Payable to Cedar Bluff Security",
+          "tarjeta": "Pay by card",
+          "aviso": {
+            "elige": "Choose how to pay",
+            "procesando": "Processing payment…",
+            "pagada": "Paid. Thank you!"
+          }
+        },
+        "antiguedad": {
+          "titulo": "Accounts receivable aging",
+          "porCobrar": "Outstanding",
+          "aldia": "Current",
+          "d30": "1–30 days",
+          "d60": "31–60 days",
+          "d90": "Over 60"
+        },
+        "pagos": {
+          "titulo": "Payments received",
+          "fila": "Lone Oak Logistics · INV-1027"
+        },
+        "pasos": {
+          "arma": "You build the proposal for Lone Oak Logistics",
+          "lineas": "Posts, patrol and supervision with a monthly estimate",
+          "impuesto": "Texas sales tax of 6.25% is added",
+          "envia": "You send it with your logo and your terms",
+          "firma": "The client signs it from their phone",
+          "firmada": "Proposal signed",
+          "convierte": "One click: client and contract created",
+          "corre": "You run October’s billing",
+          "horas": "Approved hours come straight from the month’s shifts",
+          "discrepancia": "Discrepancy: 12 h on Saturday the 17th with no clock-out",
+          "resuelta": "The supervisor confirms the clock-out: 216 h",
+          "extra": "Overtime is flagged and billed at 1.5×",
+          "importes": "Hours × rate, line by line",
+          "emite": "Invoice INV-1027 issued, numbered and totaled",
+          "correo": "It goes out by e-mail in Cedar Bluff Security’s name",
+          "pdf": "With its PDF attached",
+          "abre": "Lone Oak opens the invoice link",
+          "comoPagar": "They see how to pay you: transfer, check or card",
+          "tarjeta": "They pay by card, straight to your account",
+          "pagada": "Payment received: the invoice is marked Paid",
+          "antiguedad": "Your aging report shrinks on its own"
+        },
+        "resultado": {
+          "cotizacion": "From proposal to signed contract, no paperwork",
+          "corrida": "Hours worked, invoiced and sent in your name",
+          "cobro": "Your client pays from the link and your receivables catch up"
+        }
       }
     }
   },
