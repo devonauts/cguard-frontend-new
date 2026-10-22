@@ -17210,7 +17210,12 @@
         "bases": "Base de seguridad social {{ss}} · base de renta {{tax}}",
         "verificacion": "Verificación",
         "lineaGuardada": "Línea ajustada; el rol se recalculó",
-        "lineaDesc": "El importe que pongas sustituye al calculado solo en este rol."
+        "lineaDesc": "El importe que pongas sustituye al calculado solo en este rol.",
+        "ingresos": "Ingresos",
+        "deducciones": "Deducciones",
+        "aportes": "Aportes del empleador",
+        "informativos": "Informativos",
+        "borrador": "Borrador"
       },
       "novedades": {
         "importe": "Importe",

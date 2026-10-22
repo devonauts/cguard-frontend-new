@@ -17745,7 +17745,12 @@
         "bases": "Imponibile previdenziale {{ss}} · imponibile fiscale {{tax}}",
         "verificacion": "Verifica",
         "lineaGuardada": "Riga modificata; la busta paga è stata ricalcolata",
-        "lineaDesc": "L'importo che inserisci sostituisce quello calcolato solo in questa busta paga."
+        "lineaDesc": "L'importo che inserisci sostituisce quello calcolato solo in questa busta paga.",
+        "ingresos": "Competenze",
+        "deducciones": "Trattenute",
+        "aportes": "Contributi del datore",
+        "informativos": "Informativi",
+        "borrador": "Bozza"
       },
       "novedades": {
         "importe": "Importo",

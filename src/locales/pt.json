@@ -17210,7 +17210,12 @@
         "bases": "Base da previdência {{ss}} · base do imposto de renda {{tax}}",
         "verificacion": "Verificação",
         "lineaGuardada": "Linha ajustada; o holerite foi recalculado",
-        "lineaDesc": "O valor que você informar substitui o calculado somente neste holerite."
+        "lineaDesc": "O valor que você informar substitui o calculado somente neste holerite.",
+        "ingresos": "Proventos",
+        "deducciones": "Descontos",
+        "aportes": "Encargos do empregador",
+        "informativos": "Informativos",
+        "borrador": "Rascunho"
       },
       "novedades": {
         "importe": "Valor",

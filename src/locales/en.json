@@ -17210,7 +17210,12 @@
         "bases": "Social security base {{ss}} · tax base {{tax}}",
         "verificacion": "Verification",
         "lineaGuardada": "Line adjusted; the payslip was recalculated",
-        "lineaDesc": "The amount you enter replaces the calculated one on this payslip only."
+        "lineaDesc": "The amount you enter replaces the calculated one on this payslip only.",
+        "ingresos": "Earnings",
+        "deducciones": "Deductions",
+        "aportes": "Employer contributions",
+        "informativos": "Informational",
+        "borrador": "Draft"
       },
       "novedades": {
         "importe": "Amount",

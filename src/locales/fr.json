@@ -17745,7 +17745,12 @@
         "bases": "Base de sécurité sociale {{ss}} · base d'impôt {{tax}}",
         "verificacion": "Vérification",
         "lineaGuardada": "Ligne ajustée ; le bulletin a été recalculé",
-        "lineaDesc": "Le montant que vous saisissez remplace le montant calculé sur ce bulletin uniquement."
+        "lineaDesc": "Le montant que vous saisissez remplace le montant calculé sur ce bulletin uniquement.",
+        "ingresos": "Gains",
+        "deducciones": "Retenues",
+        "aportes": "Cotisations patronales",
+        "informativos": "Informatif",
+        "borrador": "Brouillon"
       },
       "novedades": {
         "importe": "Montant",

@@ -17745,7 +17745,12 @@
         "bases": "Grondslag sociale zekerheid {{ss}} · grondslag belasting {{tax}}",
         "verificacion": "Controle",
         "lineaGuardada": "Regel aangepast; de loonstrook is herberekend",
-        "lineaDesc": "Het bedrag dat je invult vervangt het berekende bedrag alleen op deze loonstrook."
+        "lineaDesc": "Het bedrag dat je invult vervangt het berekende bedrag alleen op deze loonstrook.",
+        "ingresos": "Loon",
+        "deducciones": "Inhoudingen",
+        "aportes": "Werkgeverslasten",
+        "informativos": "Ter informatie",
+        "borrador": "Concept"
       },
       "novedades": {
         "importe": "Bedrag",

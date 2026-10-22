@@ -106,7 +106,7 @@ export default function CorridaDetalle() {
             {run.status === "review" && (run.totals?.withoutTimecard || 0) > 0 && <InfoNote tone="warn">{t("ui.RolesDePago.corridas.sinTarjeta", "{{n}} persona(s) sin tarjeta de horas en el periodo: su rol solo lleva el sueldo y las novedades.", { n: run.totals?.withoutTimecard })}</InfoNote>}
             {run.status === "review" && enNegativo > 0 && <InfoNote tone="bad">{t("ui.RolesDePago.corridas.netoNegativo", "{{n}} rol(es) con neto negativo: las deducciones superan los ingresos. Baja la multa, la cuota o el anticipo y recalcula; mientras tanto no se puede publicar.", { n: enNegativo })}</InfoNote>}
             {slips.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard label={t("ui.RolesDePago.portada.personas", "Personas")} value={String(slips.length)} />
                 <StatCard label={t("ui.RolesDePago.corridas.bruto", "Total ingresos")} value={dinero(run.totals?.gross || 0, cur, decimals)} />
                 <StatCard label={t("ui.RolesDePago.corridas.deducciones", "Total deducciones")} value={dinero(run.totals?.deductions || 0, cur, decimals)} />

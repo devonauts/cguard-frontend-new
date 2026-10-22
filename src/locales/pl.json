@@ -18025,7 +18025,12 @@
         "bases": "Podstawa ubezpieczeń społecznych {{ss}} · podstawa podatku {{tax}}",
         "verificacion": "Weryfikacja",
         "lineaGuardada": "Pozycja skorygowana; pasek wypłaty został przeliczony",
-        "lineaDesc": "Wpisana kwota zastępuje kwotę wyliczoną tylko na tym pasku wypłaty."
+        "lineaDesc": "Wpisana kwota zastępuje kwotę wyliczoną tylko na tym pasku wypłaty.",
+        "ingresos": "Przychody",
+        "deducciones": "Potrącenia",
+        "aportes": "Składki pracodawcy",
+        "informativos": "Informacyjne",
+        "borrador": "Szkic"
       },
       "novedades": {
         "importe": "Kwota",

@@ -17745,7 +17745,12 @@
         "bases": "Sozialversicherungsbasis {{ss}} · Steuerbasis {{tax}}",
         "verificacion": "Prüfung",
         "lineaGuardada": "Zeile angepasst; die Lohnabrechnung wurde neu berechnet",
-        "lineaDesc": "Der eingegebene Betrag ersetzt den berechneten nur in dieser Lohnabrechnung."
+        "lineaDesc": "Der eingegebene Betrag ersetzt den berechneten nur in dieser Lohnabrechnung.",
+        "ingresos": "Bezüge",
+        "deducciones": "Abzüge",
+        "aportes": "Arbeitgeberbeiträge",
+        "informativos": "Informativ",
+        "borrador": "Entwurf"
       },
       "novedades": {
         "importe": "Betrag",

@@ -15,13 +15,12 @@ import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, InfoNote, Modal, FormField, FIELD_CLS, Field } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type SlipLine, type ConceptKind } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, dinero, useEtiquetas, MoneyInput } from "./comun";
+import { PresentacionDelModulo, useModuloRoles, dinero, MoneyInput } from "./comun";
 
 export default function RolIndividual() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
   const qc = useQueryClient();
-  const etiquetas = useEtiquetas();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("payrollSlipEdit");
   const [editando, setEditando] = useState<Partial<SlipLine> | null>(null);
@@ -94,9 +93,9 @@ export default function RolIndividual() {
       <PageContainer>
         <PageHeader
           icon={<FileText />}
-          title={slip ? `${slip.number || t("ui.RolesDePago.corridas.borrador", "borrador")} · ${slip.profileSnapshot?.name || ""}` : t("ui.RolesDePago.rol.titulo", "Rol de pago")}
+          title={slip ? `${slip.number || t("ui.RolesDePago.rol.borrador", "Borrador")} · ${slip.profileSnapshot?.name || ""}` : t("ui.RolesDePago.rol.titulo", "Rol de pago")}
           subtitle={run ? <span>{t("ui.RolesDePago.corridas.planilla", "Planilla")} <Link className="underline" to={`/nomina/roles/planillas/${run.id}`}>{run.number}</Link> · {run.periodFrom} → {run.periodTo}</span> : undefined}
-          badges={slip ? <StatusBadge tone={slip.status === "published" ? "ok" : slip.status === "voided" ? "neutral" : "warn"}>{slip.status === "published" ? t("ui.RolesDePago.corridas.estado.published", "Publicada") : slip.status === "voided" ? t("ui.RolesDePago.corridas.estado.voided", "Anulada") : t("ui.RolesDePago.corridas.borrador", "borrador")}</StatusBadge> : undefined}
+          badges={slip ? <StatusBadge tone={slip.status === "published" ? "ok" : slip.status === "voided" ? "neutral" : "warn"}>{slip.status === "published" ? t("ui.RolesDePago.corridas.estado.published", "Publicada") : slip.status === "voided" ? t("ui.RolesDePago.corridas.estado.voided", "Anulada") : t("ui.RolesDePago.rol.borrador", "Borrador")}</StatusBadge> : undefined}
           actions={slip && !sinModulo ? (
             <div className="cg-acciones">
               {enRevision && canEdit && <Button variant="outline" onClick={() => setEditando({})}><Plus size={14} /> {t("ui.RolesDePago.rol.anadirLinea", "Añadir línea")}</Button>}
@@ -125,8 +124,8 @@ export default function RolIndividual() {
                 <Field numeric label={t("ui.RolesDePago.horas.night", "Horas nocturnas")} value={Number(h.night || 0).toFixed(2)} />
               </div>
             </Section>
-            <Tabla titulo={t("ui.RolesDePago.tipo.earning", "Ingreso")} filas={bloque("earning")} total={slip.grossCents} />
-            <Tabla titulo={t("ui.RolesDePago.tipo.deduction", "Deducción")} filas={bloque("deduction")} total={slip.deductionsCents} />
+            <Tabla titulo={t("ui.RolesDePago.rol.ingresos", "Ingresos")} filas={bloque("earning")} total={slip.grossCents} />
+            <Tabla titulo={t("ui.RolesDePago.rol.deducciones", "Deducciones")} filas={bloque("deduction")} total={slip.deductionsCents} />
             <Section>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-lg font-semibold">{t("ui.RolesDePago.corridas.neto", "Neto a pagar")}</div>
@@ -137,8 +136,8 @@ export default function RolIndividual() {
                 {slip.hash ? ` · ${t("ui.RolesDePago.rol.verificacion", "Verificación")} ${slip.hash.slice(0, 16)}` : ""}
               </p>
             </Section>
-            {bloque("employer").length > 0 && <Tabla titulo={etiquetas.kind.employer} filas={bloque("employer")} total={slip.employerCostCents} />}
-            {bloque("info").length > 0 && <Tabla titulo={etiquetas.kind.info} filas={bloque("info")} total={bloque("info").reduce((s, l) => s + Number(l.amountCents), 0)} />}
+            {bloque("employer").length > 0 && <Tabla titulo={t("ui.RolesDePago.rol.aportes", "Aportes del empleador")} filas={bloque("employer")} total={slip.employerCostCents} />}
+            {bloque("info").length > 0 && <Tabla titulo={t("ui.RolesDePago.rol.informativos", "Informativos")} filas={bloque("info")} total={bloque("info").reduce((s, l) => s + Number(l.amountCents), 0)} />}
           </div>
         )}
         {editando && slip && (
