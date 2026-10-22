@@ -8,6 +8,7 @@ import { Puzzle, CheckCircle2, ExternalLink } from "lucide-react";
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";
 import TarjetaModuloMensual from "./TarjetaModuloMensual";
 
+import BotonDemo from "@/components/modulos/demo/BotonDemo";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -42,7 +43,8 @@ import {
  * suscripción, con su confirmación cuando hay dinero) y apagar es dejar de
  * renovar. Un pago único no se apaga —es suyo para siempre— y su interruptor
  * queda encendido y bloqueado. Las tarjetas entran escalonadas y se elevan al
- * pasar el ratón.
+ * pasar el ratón. Cada módulo que aún no tiene lleva su píldora «Demo» con su
+ * demostración animada (`components/modulos/demo`).
  *
  * Nombre y descripción llegan ya traducidos del servidor; todo lo demás sale
  * de `modulosAdicionales.*` en los 8 idiomas del CRM.
@@ -198,6 +200,11 @@ export default function ModulosAdicionalesPage() {
                 return (
                   <TarjetaModulo
                     key={m.key}
+                    accion={
+                      tiene ? undefined : (
+                        <BotonDemo clave={m.key} nombre={m.name} />
+                      )
+                    }
                     delay={i * 0.08}
                     description={m.description}
                     icon={<Puzzle />}

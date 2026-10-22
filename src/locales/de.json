@@ -19433,7 +19433,187 @@
       "demo": "Demo"
     },
     "interruptor": "{{nombre}} ein- oder ausschalten",
-    "paraSiempre": "Einmalzahlung · gehört Ihnen für immer"
+    "paraSiempre": "Einmalzahlung · gehört Ihnen für immer",
+    "demo": {
+      "titulo": "So funktioniert {{nombre}}",
+      "hora": "Uhrzeit",
+      "fecha": "Datum",
+      "enTuCrm": "Was in Ihrem Dashboard bleibt",
+      "ficticio": "Fiktives Beispiel: Namen, Orte und Zahlen sind erfunden."
+    },
+    "demos": {
+      "sucursales": {
+        "escenas": {
+          "dividir": "Betrieb aufteilen",
+          "equipos": "Jedes Team für sich"
+        },
+        "panel": "Niederlassungen",
+        "supervisor": "Andrés · Nord",
+        "chips": {
+          "todas": "Alle",
+          "norte": "Nord",
+          "centro": "Mitte",
+          "sur": "Süd"
+        },
+        "kpi": {
+          "puestos": "Posten",
+          "vigilantes": "Im Dienst",
+          "cobertura": "Abdeckung"
+        },
+        "equipo": {
+          "titulo": "Team",
+          "supervisa": "Leitung",
+          "jefe": {
+            "norte": "Andrés Pólit · Nord",
+            "centro": "Ricardo Beltrán · Mitte",
+            "sur": "Paola Vera · Süd"
+          },
+          "norte1": "Andrés Pólit",
+          "norte2": "Luis Andrade",
+          "norte3": "Carla Ruiz",
+          "centro1": "Ricardo Beltrán",
+          "centro2": "Ana Torres",
+          "centro3": "Jorge Mena",
+          "sur1": "Paola Vera",
+          "sur2": "Pedro Gómez",
+          "sur3": "María León"
+        },
+        "alerta": "Rundgang verspätet · Posten Nord 3",
+        "alertaResuelta": "Rundgang erledigt · Posten Nord 3",
+        "informe": "Oktoberbericht · Nord",
+        "pasos": {
+          "todo": "Ihr Betrieb: 24 Posten auf einer Karte",
+          "norte": "Sie legen die Niederlassung Nord an",
+          "centro": "Dann Mitte",
+          "sur": "Und Süd: jeder Posten in seiner",
+          "filtra": "Sie wählen Nord: Karte und Zahlen nur von dort",
+          "filtraSur": "Mit einem Tipp wechseln Sie zu Süd",
+          "todas": "Und sehen wieder das ganze Unternehmen",
+          "entra": "Andrés, Leiter Nord, meldet sich im CRM an",
+          "soloSuya": "Er sieht nur seine Niederlassung: Posten, Leute, Alarme",
+          "alerta": "Ein verspäteter Rundgang in Nord: die Meldung geht an ihn",
+          "resuelta": "Er löst es, ohne die anderen zu stören",
+          "informe": "Monatsbericht pro Niederlassung"
+        },
+        "resultado": {
+          "dividir": "Ein Unternehmen, mehrere Niederlassungen, jede mit eigenen Zahlen",
+          "equipos": "Jede Leitung sieht und verantwortet ihren Bereich"
+        }
+      },
+      "facial": {
+        "escenas": {
+          "fichaje": "Geprüfte Anmeldung",
+          "suplantacion": "Niemand stempelt für andere",
+          "registro": "Registrierung und Freigabe"
+        },
+        "tel": {
+          "inicio": "Schicht beginnen",
+          "registro": "Gesicht registrieren",
+          "puesto": "Nordplatz · 07:00",
+          "buscando": "Schauen Sie in die Kamera",
+          "ok": "Sie sind es: Schicht begonnen",
+          "falla": "Keine Übereinstimmung: abgelehnt",
+          "listo": "Registrierung gesendet"
+        },
+        "gestos": {
+          "izquierda": "Kopf nach links drehen",
+          "parpadea": "Zweimal blinzeln",
+          "angulos": "Langsam zu jeder Seite drehen"
+        },
+        "panel": "Anmeldungen heute",
+        "sello": {
+          "protegido": "Geschützt",
+          "alerta": "Alarm"
+        },
+        "filas": {
+          "previa": "Carla Ruiz · Gesicht geprüft",
+          "ok": "Luis Andrade · Gesicht geprüft",
+          "rechazo": "Nordplatz · Versuch mit Foto",
+          "aviso": "Leitung mit Aufnahme benachrichtigt"
+        },
+        "aprobar": "Gesichter freigeben",
+        "aprobacion": {
+          "ana": "Ana Torres",
+          "pendiente": "Ausstehend",
+          "aprobado": "Freigegeben"
+        },
+        "pasos": {
+          "abre": "Luis öffnet die App zum Schichtbeginn",
+          "gesto": "Die App verlangt eine zufällige Geste",
+          "ok": "Er ist es: Anmeldung geprüft",
+          "foto": "Jemand versucht, mit einem Foto für Luis zu stempeln",
+          "noParpadea": "Das Foto blinzelt nicht: abgelehnt",
+          "aviso": "Die Leitung erhält die Meldung mit Aufnahme",
+          "registra": "Ana registriert ihr Gesicht ein einziges Mal",
+          "pendiente": "Es wartet auf Freigabe",
+          "aprobada": "Die Leitung gibt es im CRM frei"
+        },
+        "resultado": {
+          "fichaje": "Jede Anmeldung mit dem Gesicht der Person",
+          "suplantacion": "Keine Fotos, keine Videos: niemand stempelt für andere",
+          "registro": "Sie entscheiden, welche Gesichter gelten"
+        }
+      },
+      "roles": {
+        "escenas": {
+          "planilla": "Die Lohnliste des Monats",
+          "rol": "Die Abrechnung jeder Person"
+        },
+        "planilla": "Lohnliste Oktober",
+        "calculando": "Wird berechnet",
+        "cuadrada": "Stimmt",
+        "cols": {
+          "persona": "Person",
+          "sueldo": "Gehalt",
+          "extras": "Zulagen",
+          "descuentos": "Abzüge",
+          "neto": "Auszahlung"
+        },
+        "personas": {
+          "luis": "Luis Andrade",
+          "ana": "Ana Torres",
+          "pedro": "Pedro Gómez",
+          "maria": "María León"
+        },
+        "total": "Summe",
+        "rol": "Lohnabrechnung · Oktober",
+        "num": "Nr. 0042",
+        "borrador": "Entwurf",
+        "publicado": "Veröffentlicht",
+        "lineas": {
+          "sueldo": "Gehalt",
+          "extras": "Überstunden (8 Std.)",
+          "nocturno": "Nachtzuschlag",
+          "social": "Sozialversicherung",
+          "anticipo": "Vorschuss",
+          "neto": "Netto"
+        },
+        "app": {
+          "titulo": "Ihre Oktober-Abrechnung",
+          "texto": "Jetzt ansehen und herunterladen"
+        },
+        "archivos": {
+          "excel": "lohnliste-oktober.xlsx",
+          "pdf": "abrechnung-luis-oktober.pdf"
+        },
+        "pasos": {
+          "cierra": "Sie schließen den Oktober mit Stunden und Änderungen ab",
+          "sueldos": "Das Gehalt jeder Person",
+          "extras": "Überstunden und Zuschläge kommen aus den Stempelzeiten",
+          "descuentos": "Beiträge, Darlehen und Vorschüsse werden automatisch abgezogen",
+          "cuadra": "Die Lohnliste stimmt",
+          "excel": "Sie laden sie als Excel herunter",
+          "rol": "Die Einzelabrechnung von Luis",
+          "publica": "Sie veröffentlichen sie: nummeriert und unveränderlich",
+          "app": "Luis sieht sie in seiner App",
+          "pdf": "Und als PDF, bereit zur Unterschrift"
+        },
+        "resultado": {
+          "planilla": "Die Lohnliste in Minuten, ohne lose Tabellen",
+          "rol": "Jede Person mit ihrer Abrechnung, als PDF und in der App"
+        }
+      }
+    }
   },
   "sucursales": {
     "titulo": "Niederlassungen",

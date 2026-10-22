@@ -3,16 +3,15 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Sparkles, CheckCircle2, Play } from "lucide-react";
+import { Sparkles, CheckCircle2 } from "lucide-react";
 
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";
 
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
-import { Modal, StatusBadge } from "@/components/kit";
-import ComoFuncionaVigiaPro from "@/components/vigia/ComoFuncionaVigiaPro";
+import { StatusBadge } from "@/components/kit";
+import BotonDemo from "@/components/modulos/demo/BotonDemo";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAgente } from "@/lib/agenteDeMarca";
 import { soloFecha } from "@/lib/horaDeLaEmpresa";
 import {
   modulosAdicionalesService,
@@ -95,12 +94,10 @@ export default function TarjetaModuloMensual({
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const { refreshProfile } = useAuth();
-  const agente = useAgente().nombre;
   const [intervalo, setIntervalo] = useState<"month" | "year">(
     m.interval === "year" ? "year" : "month",
   );
   const [ocupado, setOcupado] = useState(false);
-  const [verDemo, setVerDemo] = useState(false);
   const L = i18n.language;
   const precioElegido = intervalo === "year" ? m.yearlyCents : m.monthlyCents;
   const porPeriodo =
@@ -413,31 +410,8 @@ export default function TarjetaModuloMensual({
                     reason
                   ? motivo(reason)
                   : null;
-  /* La demostración se abre desde una píldora «Demo» junto al interruptor: la
-     cabecera es la única fila con sitio, y así la línea de situación queda
-     entera y las tarjetas no cambian de forma entre sí. */
-  const enlaceDemo = m.key === "vigia_pro" && !activo && (
-    <button
-      aria-label={t(
-        "modulosAdicionales.mensual.verComoFunciona",
-        "Ver cómo funciona",
-      )}
-      className="cg-focus inline-flex h-7 items-center gap-1 rounded-full border px-2.5 text-xs font-medium transition-colors duration-200 hover:bg-[var(--brand-wash)]"
-      style={{
-        borderColor: "var(--hairline)",
-        color: "var(--brand-text, var(--brand))",
-      }}
-      title={t(
-        "modulosAdicionales.mensual.verComoFunciona",
-        "Ver cómo funciona",
-      )}
-      type="button"
-      onClick={() => setVerDemo(true)}
-    >
-      <Play className="h-3 w-3" />
-      {t("modulosAdicionales.mensual.demo", "Demo")}
-    </button>
-  );
+  /* La demostración: la misma píldora «Demo» que en todos los módulos (`BotonDemo`). */
+  const enlaceDemo = !activo && <BotonDemo clave={m.key} nombre={m.name} />;
   const situacion = (
     <span className="flex min-w-0 items-center gap-1.5">
       {contratado && (
@@ -549,17 +523,6 @@ export default function TarjetaModuloMensual({
         precio={precio}
         situacion={situacion}
       />
-      {m.key === "vigia_pro" && (
-        <Modal
-          icon={<Sparkles />}
-          open={verDemo}
-          size="xl"
-          title={t("vigiaPro.demo.titulo", { agente })}
-          onOpenChange={setVerDemo}
-        >
-          {verDemo && <ComoFuncionaVigiaPro />}
-        </Modal>
-      )}
     </>
   );
 }

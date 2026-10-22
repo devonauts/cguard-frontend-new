@@ -19433,7 +19433,187 @@
       "demo": "Demo"
     },
     "interruptor": "Attiva o disattiva {{nombre}}",
-    "paraSiempre": "Pagamento unico · è tuo per sempre"
+    "paraSiempre": "Pagamento unico · è tuo per sempre",
+    "demo": {
+      "titulo": "Come funziona {{nombre}}",
+      "hora": "Ora",
+      "fecha": "Data",
+      "enTuCrm": "Ciò che resta nel tuo pannello",
+      "ficticio": "Esempio fittizio: nomi, luoghi e cifre sono inventati."
+    },
+    "demos": {
+      "sucursales": {
+        "escenas": {
+          "dividir": "Dividi la tua operatività",
+          "equipos": "Ogni squadra per conto suo"
+        },
+        "panel": "Filiali",
+        "supervisor": "Andrés · Nord",
+        "chips": {
+          "todas": "Tutte",
+          "norte": "Nord",
+          "centro": "Centro",
+          "sur": "Sud"
+        },
+        "kpi": {
+          "puestos": "Postazioni",
+          "vigilantes": "In servizio",
+          "cobertura": "Copertura"
+        },
+        "equipo": {
+          "titulo": "Squadra",
+          "supervisa": "Supervisore",
+          "jefe": {
+            "norte": "Andrés Pólit · Nord",
+            "centro": "Ricardo Beltrán · Centro",
+            "sur": "Paola Vera · Sud"
+          },
+          "norte1": "Andrés Pólit",
+          "norte2": "Luis Andrade",
+          "norte3": "Carla Ruiz",
+          "centro1": "Ricardo Beltrán",
+          "centro2": "Ana Torres",
+          "centro3": "Jorge Mena",
+          "sur1": "Paola Vera",
+          "sur2": "Pedro Gómez",
+          "sur3": "María León"
+        },
+        "alerta": "Ronda in ritardo · Postazione Nord 3",
+        "alertaResuelta": "Ronda completata · Postazione Nord 3",
+        "informe": "Report di ottobre · Nord",
+        "pasos": {
+          "todo": "La tua operatività: 24 postazioni su una sola mappa",
+          "norte": "Crei la filiale Nord",
+          "centro": "Poi Centro",
+          "sur": "E Sud: ogni postazione nella sua",
+          "filtra": "Scegli Nord: mappa e cifre solo di lì",
+          "filtraSur": "Passi a Sud con un tocco",
+          "todas": "E torni a vedere tutta l’azienda",
+          "entra": "Andrés, supervisore del Nord, entra nel CRM",
+          "soloSuya": "Vede solo la sua filiale: postazioni, persone e allarmi",
+          "alerta": "Una ronda in ritardo al Nord: l’avviso arriva a lui",
+          "resuelta": "La risolve senza disturbare le altre filiali",
+          "informe": "Report mensile per filiale"
+        },
+        "resultado": {
+          "dividir": "Un’azienda, più filiali, ognuna con le sue cifre",
+          "equipos": "Ogni supervisore vede e risponde per la sua parte"
+        }
+      },
+      "facial": {
+        "escenas": {
+          "fichaje": "Timbratura verificata",
+          "suplantacion": "Nessuno timbra per un altro",
+          "registro": "Registrazione e approvazione"
+        },
+        "tel": {
+          "inicio": "Inizia turno",
+          "registro": "Registra il mio volto",
+          "puesto": "Piazza Nord · 07:00",
+          "buscando": "Guarda la fotocamera",
+          "ok": "Sei tu: turno iniziato",
+          "falla": "Non corrisponde: timbratura rifiutata",
+          "listo": "Registrazione inviata"
+        },
+        "gestos": {
+          "izquierda": "Gira la testa a sinistra",
+          "parpadea": "Sbatti le palpebre due volte",
+          "angulos": "Gira piano da ogni lato"
+        },
+        "panel": "Timbrature di oggi",
+        "sello": {
+          "protegido": "Protetto",
+          "alerta": "Allarme"
+        },
+        "filas": {
+          "previa": "Carla Ruiz · volto verificato",
+          "ok": "Luis Andrade · volto verificato",
+          "rechazo": "Piazza Nord · tentativo con una foto",
+          "aviso": "Supervisore avvisato con la cattura"
+        },
+        "aprobar": "Volti da approvare",
+        "aprobacion": {
+          "ana": "Ana Torres",
+          "pendiente": "In attesa",
+          "aprobado": "Approvato"
+        },
+        "pasos": {
+          "abre": "Luis apre l’app per iniziare il turno",
+          "gesto": "L’app chiede un gesto a caso",
+          "ok": "È lui: timbratura verificata",
+          "foto": "Qualcuno prova a timbrare per Luis con una foto",
+          "noParpadea": "La foto non sbatte le palpebre: rifiutata",
+          "aviso": "Il supervisore riceve l’avviso con la cattura",
+          "registra": "Ana registra il suo volto una sola volta",
+          "pendiente": "Resta in attesa di approvazione",
+          "aprobada": "Il supervisore lo approva dal CRM"
+        },
+        "resultado": {
+          "fichaje": "Ogni timbratura con il volto di chi timbra",
+          "suplantacion": "Né foto né video: nessuno timbra per un altro",
+          "registro": "Decidi tu quali volti valgono"
+        }
+      },
+      "roles": {
+        "escenas": {
+          "planilla": "Il foglio paga del mese",
+          "rol": "La busta paga di ognuno"
+        },
+        "planilla": "Foglio paga di ottobre",
+        "calculando": "In calcolo",
+        "cuadrada": "Quadra",
+        "cols": {
+          "persona": "Persona",
+          "sueldo": "Stipendio",
+          "extras": "Extra",
+          "descuentos": "Trattenute",
+          "neto": "Da pagare"
+        },
+        "personas": {
+          "luis": "Luis Andrade",
+          "ana": "Ana Torres",
+          "pedro": "Pedro Gómez",
+          "maria": "María León"
+        },
+        "total": "Totale",
+        "rol": "Busta paga · Ottobre",
+        "num": "N. 0042",
+        "borrador": "Bozza",
+        "publicado": "Pubblicata",
+        "lineas": {
+          "sueldo": "Stipendio",
+          "extras": "Straordinari (8 h)",
+          "nocturno": "Maggiorazione notturna",
+          "social": "Previdenza sociale",
+          "anticipo": "Anticipo",
+          "neto": "Netto da ricevere"
+        },
+        "app": {
+          "titulo": "La tua busta paga di ottobre",
+          "texto": "Puoi già vederla e scaricarla"
+        },
+        "archivos": {
+          "excel": "foglio-paga-ottobre.xlsx",
+          "pdf": "busta-paga-luis-ottobre.pdf"
+        },
+        "pasos": {
+          "cierra": "Chiudi ottobre con ore e variazioni",
+          "sueldos": "Lo stipendio di ognuno",
+          "extras": "Straordinari e maggiorazioni dalle timbrature",
+          "descuentos": "Contributi, prestiti e anticipi trattenuti da soli",
+          "cuadra": "Il foglio paga quadra",
+          "excel": "Lo scarichi in Excel",
+          "rol": "La busta paga di Luis",
+          "publica": "La pubblichi: numerata e bloccata",
+          "app": "Luis la vede nella sua app",
+          "pdf": "E in PDF, pronta da firmare"
+        },
+        "resultado": {
+          "planilla": "Il foglio paga del mese in pochi minuti, senza fogli sparsi",
+          "rol": "Ognuno con la sua busta paga, in PDF e nell’app"
+        }
+      }
+    }
   },
   "sucursales": {
     "titulo": "Filiali",

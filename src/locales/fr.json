@@ -19433,7 +19433,187 @@
       "demo": "Demo"
     },
     "interruptor": "Activer ou désactiver {{nombre}}",
-    "paraSiempre": "Paiement unique · à vous pour toujours"
+    "paraSiempre": "Paiement unique · à vous pour toujours",
+    "demo": {
+      "titulo": "Comment fonctionne {{nombre}}",
+      "hora": "Heure",
+      "fecha": "Date",
+      "enTuCrm": "Ce qui reste dans votre tableau de bord",
+      "ficticio": "Exemple fictif : noms, lieux et chiffres sont inventés."
+    },
+    "demos": {
+      "sucursales": {
+        "escenas": {
+          "dividir": "Divisez votre activité",
+          "equipos": "Chaque équipe chez soi"
+        },
+        "panel": "Agences",
+        "supervisor": "Andrés · Nord",
+        "chips": {
+          "todas": "Toutes",
+          "norte": "Nord",
+          "centro": "Centre",
+          "sur": "Sud"
+        },
+        "kpi": {
+          "puestos": "Postes",
+          "vigilantes": "En service",
+          "cobertura": "Couverture"
+        },
+        "equipo": {
+          "titulo": "Équipe",
+          "supervisa": "Superviseur",
+          "jefe": {
+            "norte": "Andrés Pólit · Nord",
+            "centro": "Ricardo Beltrán · Centre",
+            "sur": "Paola Vera · Sud"
+          },
+          "norte1": "Andrés Pólit",
+          "norte2": "Luis Andrade",
+          "norte3": "Carla Ruiz",
+          "centro1": "Ricardo Beltrán",
+          "centro2": "Ana Torres",
+          "centro3": "Jorge Mena",
+          "sur1": "Paola Vera",
+          "sur2": "Pedro Gómez",
+          "sur3": "María León"
+        },
+        "alerta": "Ronde en retard · Poste Nord 3",
+        "alertaResuelta": "Ronde terminée · Poste Nord 3",
+        "informe": "Rapport d’octobre · Nord",
+        "pasos": {
+          "todo": "Votre activité : 24 postes sur une seule carte",
+          "norte": "Vous créez l’agence Nord",
+          "centro": "Puis Centre",
+          "sur": "Et Sud : chaque poste dans la sienne",
+          "filtra": "Vous choisissez Nord : carte et chiffres de là seulement",
+          "filtraSur": "Vous passez à Sud d’un geste",
+          "todas": "Et revenez à toute l’entreprise",
+          "entra": "Andrés, superviseur du Nord, se connecte au CRM",
+          "soloSuya": "Il ne voit que son agence : postes, équipe et alertes",
+          "alerta": "Une ronde en retard au Nord : l’alerte lui arrive",
+          "resuelta": "Il la règle sans déranger les autres agences",
+          "informe": "Rapport mensuel par agence"
+        },
+        "resultado": {
+          "dividir": "Une entreprise, plusieurs agences, chacune avec ses chiffres",
+          "equipos": "Chaque superviseur voit et répond de son périmètre"
+        }
+      },
+      "facial": {
+        "escenas": {
+          "fichaje": "Pointage vérifié",
+          "suplantacion": "Personne ne pointe pour un autre",
+          "registro": "Enregistrement et validation"
+        },
+        "tel": {
+          "inicio": "Commencer le service",
+          "registro": "Enregistrer mon visage",
+          "puesto": "Place Nord · 07:00",
+          "buscando": "Regardez la caméra",
+          "ok": "C’est vous : service commencé",
+          "falla": "Pas de correspondance : pointage refusé",
+          "listo": "Enregistrement envoyé"
+        },
+        "gestos": {
+          "izquierda": "Tournez la tête à gauche",
+          "parpadea": "Clignez deux fois des yeux",
+          "angulos": "Tournez lentement de chaque côté"
+        },
+        "panel": "Pointages du jour",
+        "sello": {
+          "protegido": "Protégé",
+          "alerta": "Alerte"
+        },
+        "filas": {
+          "previa": "Carla Ruiz · visage vérifié",
+          "ok": "Luis Andrade · visage vérifié",
+          "rechazo": "Place Nord · tentative avec une photo",
+          "aviso": "Superviseur alerté avec la capture"
+        },
+        "aprobar": "Visages à valider",
+        "aprobacion": {
+          "ana": "Ana Torres",
+          "pendiente": "En attente",
+          "aprobado": "Validé"
+        },
+        "pasos": {
+          "abre": "Luis ouvre l’app pour commencer son service",
+          "gesto": "L’app demande un geste au hasard",
+          "ok": "C’est bien lui : pointage vérifié",
+          "foto": "Quelqu’un essaie de pointer pour Luis avec une photo",
+          "noParpadea": "La photo ne cligne pas : pointage refusé",
+          "aviso": "Le superviseur reçoit l’alerte avec la capture",
+          "registra": "Ana enregistre son visage une seule fois",
+          "pendiente": "Il attend la validation",
+          "aprobada": "Le superviseur le valide depuis le CRM"
+        },
+        "resultado": {
+          "fichaje": "Chaque pointage avec le visage de celui qui pointe",
+          "suplantacion": "Ni photos ni vidéos : personne ne pointe pour un autre",
+          "registro": "Vous décidez quels visages comptent"
+        }
+      },
+      "roles": {
+        "escenas": {
+          "planilla": "La paie du mois",
+          "rol": "Le bulletin de chacun"
+        },
+        "planilla": "Paie d’octobre",
+        "calculando": "Calcul en cours",
+        "cuadrada": "Équilibrée",
+        "cols": {
+          "persona": "Personne",
+          "sueldo": "Salaire",
+          "extras": "Extras",
+          "descuentos": "Retenues",
+          "neto": "À payer"
+        },
+        "personas": {
+          "luis": "Luis Andrade",
+          "ana": "Ana Torres",
+          "pedro": "Pedro Gómez",
+          "maria": "María León"
+        },
+        "total": "Total",
+        "rol": "Bulletin de paie · Octobre",
+        "num": "N° 0042",
+        "borrador": "Brouillon",
+        "publicado": "Publié",
+        "lineas": {
+          "sueldo": "Salaire",
+          "extras": "Heures supp. (8 h)",
+          "nocturno": "Majoration de nuit",
+          "social": "Sécurité sociale",
+          "anticipo": "Avance",
+          "neto": "Net à payer"
+        },
+        "app": {
+          "titulo": "Votre bulletin d’octobre",
+          "texto": "Vous pouvez le consulter et le télécharger"
+        },
+        "archivos": {
+          "excel": "paie-octobre.xlsx",
+          "pdf": "bulletin-luis-octobre.pdf"
+        },
+        "pasos": {
+          "cierra": "Vous clôturez octobre avec ses heures et événements",
+          "sueldos": "Le salaire de chacun",
+          "extras": "Heures supp. et majorations viennent des pointages",
+          "descuentos": "Cotisations, prêts et avances déduits automatiquement",
+          "cuadra": "La paie est équilibrée",
+          "excel": "Vous la téléchargez en Excel",
+          "rol": "Le bulletin individuel de Luis",
+          "publica": "Vous le publiez : numéroté et figé",
+          "app": "Luis le voit dans son app",
+          "pdf": "Et en PDF, prêt à signer"
+        },
+        "resultado": {
+          "planilla": "La paie du mois en quelques minutes, sans tableurs épars",
+          "rol": "Chacun reçoit son bulletin, en PDF et dans l’app"
+        }
+      }
+    }
   },
   "sucursales": {
     "titulo": "Agences",

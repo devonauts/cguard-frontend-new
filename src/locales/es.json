@@ -19433,7 +19433,187 @@
       "demo": "Demo"
     },
     "interruptor": "Activar o desactivar {{nombre}}",
-    "paraSiempre": "Pago único · es tuyo para siempre"
+    "paraSiempre": "Pago único · es tuyo para siempre",
+    "demo": {
+      "titulo": "Así funciona {{nombre}}",
+      "hora": "Hora",
+      "fecha": "Fecha",
+      "enTuCrm": "Lo que queda en tu panel",
+      "ficticio": "Ejemplo ficticio: nombres, lugares y cifras son inventados."
+    },
+    "demos": {
+      "sucursales": {
+        "escenas": {
+          "dividir": "Divide tu operación",
+          "equipos": "Cada equipo en lo suyo"
+        },
+        "panel": "Sucursales",
+        "supervisor": "Andrés · Norte",
+        "chips": {
+          "todas": "Todas",
+          "norte": "Norte",
+          "centro": "Centro",
+          "sur": "Sur"
+        },
+        "kpi": {
+          "puestos": "Puestos",
+          "vigilantes": "En turno",
+          "cobertura": "Cobertura"
+        },
+        "equipo": {
+          "titulo": "Equipo",
+          "supervisa": "Supervisor",
+          "jefe": {
+            "norte": "Andrés Pólit · Norte",
+            "centro": "Ricardo Beltrán · Centro",
+            "sur": "Paola Vera · Sur"
+          },
+          "norte1": "Andrés Pólit",
+          "norte2": "Luis Andrade",
+          "norte3": "Carla Ruiz",
+          "centro1": "Ricardo Beltrán",
+          "centro2": "Ana Torres",
+          "centro3": "Jorge Mena",
+          "sur1": "Paola Vera",
+          "sur2": "Pedro Gómez",
+          "sur3": "María León"
+        },
+        "alerta": "Ronda tarde · Puesto Norte 3",
+        "alertaResuelta": "Ronda completada · Puesto Norte 3",
+        "informe": "Informe de octubre · Norte",
+        "pasos": {
+          "todo": "Tu operación: 24 puestos en un solo mapa",
+          "norte": "Creas la sucursal Norte",
+          "centro": "Luego Centro",
+          "sur": "Y Sur: cada puesto en la suya",
+          "filtra": "Eliges Norte: mapa y cifras sólo de ahí",
+          "filtraSur": "Cambias a Sur con un toque",
+          "todas": "Y vuelves a ver toda la empresa",
+          "entra": "Andrés, supervisor de Norte, entra al CRM",
+          "soloSuya": "Sólo ve su sucursal: puestos, gente y alertas",
+          "alerta": "Una ronda tarde en Norte: el aviso le llega a él",
+          "resuelta": "La resuelve sin molestar a las demás sucursales",
+          "informe": "Informe del mes por sucursal"
+        },
+        "resultado": {
+          "dividir": "Una empresa, varias sucursales, cada una con sus cifras",
+          "equipos": "Cada supervisor ve y responde por lo suyo"
+        }
+      },
+      "facial": {
+        "escenas": {
+          "fichaje": "Fichaje verificado",
+          "suplantacion": "Nadie ficha por otro",
+          "registro": "Registro y aprobación"
+        },
+        "tel": {
+          "inicio": "Iniciar turno",
+          "registro": "Registrar mi cara",
+          "puesto": "Plaza Norte · 07:00",
+          "buscando": "Mira a la cámara",
+          "ok": "Eres tú: turno iniciado",
+          "falla": "No coincide: fichaje rechazado",
+          "listo": "Registro enviado"
+        },
+        "gestos": {
+          "izquierda": "Gira la cabeza a la izquierda",
+          "parpadea": "Parpadea dos veces",
+          "angulos": "Gira despacio a cada lado"
+        },
+        "panel": "Fichajes de hoy",
+        "sello": {
+          "protegido": "Protegido",
+          "alerta": "Alerta"
+        },
+        "filas": {
+          "previa": "Carla Ruiz · rostro verificado",
+          "ok": "Luis Andrade · rostro verificado",
+          "rechazo": "Plaza Norte · intento con una foto",
+          "aviso": "Aviso al supervisor con la captura"
+        },
+        "aprobar": "Rostros por aprobar",
+        "aprobacion": {
+          "ana": "Ana Torres",
+          "pendiente": "Pendiente",
+          "aprobado": "Aprobado"
+        },
+        "pasos": {
+          "abre": "Luis abre la app para iniciar su turno",
+          "gesto": "La app pide un gesto al azar",
+          "ok": "Es él: fichaje verificado",
+          "foto": "Alguien intenta fichar por Luis con una foto",
+          "noParpadea": "La foto no parpadea: fichaje rechazado",
+          "aviso": "El supervisor recibe el aviso con la captura",
+          "registra": "Ana registra su cara una sola vez",
+          "pendiente": "Queda pendiente de aprobación",
+          "aprobada": "El supervisor la aprueba desde el CRM"
+        },
+        "resultado": {
+          "fichaje": "Cada fichaje, con la cara de quien ficha",
+          "suplantacion": "Ni fotos ni vídeos: nadie ficha por otro",
+          "registro": "Tú decides qué rostros valen"
+        }
+      },
+      "roles": {
+        "escenas": {
+          "planilla": "La planilla del mes",
+          "rol": "El rol de cada persona"
+        },
+        "planilla": "Planilla de octubre",
+        "calculando": "Calculando",
+        "cuadrada": "Cuadrada",
+        "cols": {
+          "persona": "Persona",
+          "sueldo": "Sueldo",
+          "extras": "Extras",
+          "descuentos": "Descuentos",
+          "neto": "A pagar"
+        },
+        "personas": {
+          "luis": "Luis Andrade",
+          "ana": "Ana Torres",
+          "pedro": "Pedro Gómez",
+          "maria": "María León"
+        },
+        "total": "Total",
+        "rol": "Rol de pago · Octubre",
+        "num": "N.º 0042",
+        "borrador": "Borrador",
+        "publicado": "Publicado",
+        "lineas": {
+          "sueldo": "Sueldo",
+          "extras": "Horas extra (8 h)",
+          "nocturno": "Recargo nocturno",
+          "social": "Seguridad social",
+          "anticipo": "Anticipo",
+          "neto": "Neto a recibir"
+        },
+        "app": {
+          "titulo": "Tu rol de octubre",
+          "texto": "Ya puedes verlo y descargarlo"
+        },
+        "archivos": {
+          "excel": "planilla-octubre.xlsx",
+          "pdf": "rol-luis-octubre.pdf"
+        },
+        "pasos": {
+          "cierra": "Cierras octubre con sus horas y novedades",
+          "sueldos": "El sueldo de cada persona",
+          "extras": "Extras y recargos salen de los fichajes",
+          "descuentos": "Aportes, préstamos y anticipos se descuentan solos",
+          "cuadra": "La planilla cuadra",
+          "excel": "La descargas en Excel",
+          "rol": "El rol individual de Luis",
+          "publica": "Lo publicas: numerado y sin cambios",
+          "app": "Luis lo ve en su app",
+          "pdf": "Y en PDF, listo para firmar"
+        },
+        "resultado": {
+          "planilla": "La planilla del mes en minutos, sin hojas sueltas",
+          "rol": "Cada persona con su rol, en PDF y en su app"
+        }
+      }
+    }
   },
   "sucursales": {
     "titulo": "Sucursales",

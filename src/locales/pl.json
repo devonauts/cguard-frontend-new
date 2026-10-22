@@ -19717,7 +19717,187 @@
       "demo": "Demo"
     },
     "interruptor": "Włącz lub wyłącz {{nombre}}",
-    "paraSiempre": "Płatność jednorazowa · na zawsze Twoje"
+    "paraSiempre": "Płatność jednorazowa · na zawsze Twoje",
+    "demo": {
+      "titulo": "Jak działa {{nombre}}",
+      "hora": "Godzina",
+      "fecha": "Data",
+      "enTuCrm": "Co zostaje w Twoim panelu",
+      "ficticio": "Fikcyjny przykład: imiona, miejsca i kwoty są zmyślone."
+    },
+    "demos": {
+      "sucursales": {
+        "escenas": {
+          "dividir": "Podziel działalność",
+          "equipos": "Każdy zespół u siebie"
+        },
+        "panel": "Oddziały",
+        "supervisor": "Andrés · Północ",
+        "chips": {
+          "todas": "Wszystkie",
+          "norte": "Północ",
+          "centro": "Centrum",
+          "sur": "Południe"
+        },
+        "kpi": {
+          "puestos": "Posterunki",
+          "vigilantes": "Na zmianie",
+          "cobertura": "Obsada"
+        },
+        "equipo": {
+          "titulo": "Zespół",
+          "supervisa": "Kierownik",
+          "jefe": {
+            "norte": "Andrés Pólit · Północ",
+            "centro": "Ricardo Beltrán · Centrum",
+            "sur": "Paola Vera · Południe"
+          },
+          "norte1": "Andrés Pólit",
+          "norte2": "Luis Andrade",
+          "norte3": "Carla Ruiz",
+          "centro1": "Ricardo Beltrán",
+          "centro2": "Ana Torres",
+          "centro3": "Jorge Mena",
+          "sur1": "Paola Vera",
+          "sur2": "Pedro Gómez",
+          "sur3": "María León"
+        },
+        "alerta": "Spóźniony obchód · Posterunek Północ 3",
+        "alertaResuelta": "Obchód zakończony · Posterunek Północ 3",
+        "informe": "Raport za październik · Północ",
+        "pasos": {
+          "todo": "Twoja działalność: 24 posterunki na jednej mapie",
+          "norte": "Tworzysz oddział Północ",
+          "centro": "Potem Centrum",
+          "sur": "I Południe: każdy posterunek w swoim",
+          "filtra": "Wybierasz Północ: mapa i liczby tylko stamtąd",
+          "filtraSur": "Jednym dotknięciem przechodzisz na Południe",
+          "todas": "I wracasz do całej firmy",
+          "entra": "Andrés, kierownik Północy, loguje się do CRM",
+          "soloSuya": "Widzi tylko swój oddział: posterunki, ludzi i alerty",
+          "alerta": "Spóźniony obchód na Północy: alert trafia do niego",
+          "resuelta": "Rozwiązuje go bez angażowania innych oddziałów",
+          "informe": "Miesięczny raport dla oddziału"
+        },
+        "resultado": {
+          "dividir": "Jedna firma, kilka oddziałów, każdy ze swoimi liczbami",
+          "equipos": "Każdy kierownik widzi i odpowiada za swoje"
+        }
+      },
+      "facial": {
+        "escenas": {
+          "fichaje": "Zweryfikowane wejście",
+          "suplantacion": "Nikt nie odbija się za innych",
+          "registro": "Rejestracja i zatwierdzenie"
+        },
+        "tel": {
+          "inicio": "Rozpocznij zmianę",
+          "registro": "Zarejestruj twarz",
+          "puesto": "Plac Północny · 07:00",
+          "buscando": "Spójrz w kamerę",
+          "ok": "To Ty: zmiana rozpoczęta",
+          "falla": "Brak zgodności: odrzucono",
+          "listo": "Rejestracja wysłana"
+        },
+        "gestos": {
+          "izquierda": "Obróć głowę w lewo",
+          "parpadea": "Mrugnij dwa razy",
+          "angulos": "Obracaj się powoli w obie strony"
+        },
+        "panel": "Dzisiejsze wejścia",
+        "sello": {
+          "protegido": "Chronione",
+          "alerta": "Alert"
+        },
+        "filas": {
+          "previa": "Carla Ruiz · twarz zweryfikowana",
+          "ok": "Luis Andrade · twarz zweryfikowana",
+          "rechazo": "Plac Północny · próba ze zdjęciem",
+          "aviso": "Kierownik powiadomiony ze zdjęciem"
+        },
+        "aprobar": "Twarze do zatwierdzenia",
+        "aprobacion": {
+          "ana": "Ana Torres",
+          "pendiente": "Oczekuje",
+          "aprobado": "Zatwierdzona"
+        },
+        "pasos": {
+          "abre": "Luis otwiera aplikację, by zacząć zmianę",
+          "gesto": "Aplikacja prosi o losowy gest",
+          "ok": "To on: wejście zweryfikowane",
+          "foto": "Ktoś próbuje odbić się za Luisa zdjęciem",
+          "noParpadea": "Zdjęcie nie mruga: odrzucono",
+          "aviso": "Kierownik dostaje alert ze zdjęciem",
+          "registra": "Ana rejestruje twarz tylko raz",
+          "pendiente": "Czeka na zatwierdzenie",
+          "aprobada": "Kierownik zatwierdza ją w CRM"
+        },
+        "resultado": {
+          "fichaje": "Każde wejście z twarzą osoby, która się odbija",
+          "suplantacion": "Ani zdjęcia, ani wideo: nikt nie odbija się za innych",
+          "registro": "Ty decydujesz, które twarze się liczą"
+        }
+      },
+      "roles": {
+        "escenas": {
+          "planilla": "Lista płac za miesiąc",
+          "rol": "Pasek każdej osoby"
+        },
+        "planilla": "Lista płac za październik",
+        "calculando": "Obliczanie",
+        "cuadrada": "Zgodna",
+        "cols": {
+          "persona": "Osoba",
+          "sueldo": "Pensja",
+          "extras": "Dodatki",
+          "descuentos": "Potrącenia",
+          "neto": "Do wypłaty"
+        },
+        "personas": {
+          "luis": "Luis Andrade",
+          "ana": "Ana Torres",
+          "pedro": "Pedro Gómez",
+          "maria": "María León"
+        },
+        "total": "Razem",
+        "rol": "Pasek wypłaty · Październik",
+        "num": "Nr 0042",
+        "borrador": "Szkic",
+        "publicado": "Opublikowany",
+        "lineas": {
+          "sueldo": "Pensja",
+          "extras": "Nadgodziny (8 h)",
+          "nocturno": "Dodatek nocny",
+          "social": "Ubezpieczenie społeczne",
+          "anticipo": "Zaliczka",
+          "neto": "Do wypłaty netto"
+        },
+        "app": {
+          "titulo": "Twój pasek za październik",
+          "texto": "Możesz go już zobaczyć i pobrać"
+        },
+        "archivos": {
+          "excel": "lista-plac-pazdziernik.xlsx",
+          "pdf": "pasek-luis-pazdziernik.pdf"
+        },
+        "pasos": {
+          "cierra": "Zamykasz październik z godzinami i zmianami",
+          "sueldos": "Pensja każdej osoby",
+          "extras": "Nadgodziny i dodatki z rejestracji wejść",
+          "descuentos": "Składki, pożyczki i zaliczki potrącane same",
+          "cuadra": "Lista płac się zgadza",
+          "excel": "Pobierasz ją w Excelu",
+          "rol": "Indywidualny pasek Luisa",
+          "publica": "Publikujesz go: numerowany i niezmienny",
+          "app": "Luis widzi go w aplikacji",
+          "pdf": "I w PDF, gotowy do podpisu"
+        },
+        "resultado": {
+          "planilla": "Lista płac w kilka minut, bez luźnych arkuszy",
+          "rol": "Każdy ma swój pasek, w PDF i w aplikacji"
+        }
+      }
+    }
   },
   "sucursales": {
     "titulo": "Oddziały",
