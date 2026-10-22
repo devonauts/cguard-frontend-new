@@ -3,19 +3,9 @@
 import type { MapCenter } from "./defaultCenter";
 
 export type EntityKind =
-  | "tenant"
-  | "station"
-  | "supervisor"
-  | "guard"
-  | "incident"
-  | "client";
+  "tenant" | "station" | "supervisor" | "guard" | "incident" | "client";
 export type LiveStatus =
-  | "online"
-  | "offline"
-  | "patrol"
-  | "incident"
-  | "delayed"
-  | "emergency";
+  "online" | "offline" | "patrol" | "incident" | "delayed" | "emergency";
 
 /**
  * Lo que el mapa de operaciones necesita saber de una entidad MÁS ALLÁ de su

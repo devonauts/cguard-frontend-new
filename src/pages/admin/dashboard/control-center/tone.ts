@@ -76,6 +76,7 @@ export function toneGlow(t: Tone, pct = 26): string {
 // Built lazily and per locale: a formatter created at import time kept the
 // language the app booted with, even after the user switched it.
 const NUM_CACHE = new Map<string, Intl.NumberFormat>();
+
 function NUM(): Intl.NumberFormat {
   const loc = localeActual();
   let f = NUM_CACHE.get(loc);
@@ -134,7 +135,8 @@ export function clockOf(iso: string): string {
 
   if (Number.isNaN(d.getTime())) return "";
 
-  return d.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+  return d.toLocaleTimeString(localeActual(), {
+    timeZone: zonaDeLaEmpresa(),
     hour: "2-digit",
     minute: "2-digit",
   });

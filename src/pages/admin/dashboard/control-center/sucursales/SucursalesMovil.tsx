@@ -8,17 +8,17 @@
  * en la que más arde, igual que el carrusel de escritorio.
  */
 import type { MapEntity } from "../types";
+import type {
+  ListaDeSucursales,
+  ResumenDeSucursales,
+} from "@/lib/api/sucursalesService";
 
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { repartir, SIN_SUCURSAL } from "./repartir";
+import { useParadas } from "./paradas";
 
-import {
-  coberturaDe,
-  type ListaDeSucursales,
-  type ResumenDeSucursales,
-} from "@/lib/api/sucursalesService";
+import { sucursalElegida } from "@/lib/sucursalElegida";
 
 export interface SucursalesParaMovil {
   lista: ListaDeSucursales;
@@ -34,72 +34,41 @@ interface Pastilla {
   peso: number;
   entidades: MapEntity[];
   centro?: { lat: number; lng: number; zoom?: number };
+  /** Lo que encuadra la cámara al elegir esta pastilla. */
+  puntos?: Array<{ lat: number; lng: number }>;
 }
 
 export function useFocoDeSucursal(
   s: SucursalesParaMovil | undefined,
   entities: MapEntity[],
   sinSucursalNombre: string,
+  globalNombre = "",
 ) {
+  // Sucursales 2.0 (fase 3): las mismas paradas que el mapa de escritorio —
+  // la vista global primero y luego cada ciudad, en orden fijo— y un solo mapa
+  // que viaja entre ellas (`puntos` → `encuadre`).
+  void sinSucursalNombre;
   const [elegida, setElegida] = useState<string | null>(null);
-  const pastillas: Pastilla[] = useMemo(() => {
-    if (!s) return [];
-    const por = repartir(entities, s.lista);
-    const cifras = new Map(
-      (s.resumen?.porSucursal || []).map((c) => [
-        c.branchId ?? SIN_SUCURSAL,
-        c,
-      ]),
-    );
-    const armar = (
-      clave: string,
-      nombre: string,
-      color: string,
-      sedes: Array<{ lat: number | null; lng: number | null }>,
-    ): Pastilla => {
-      const ents = por.get(clave) || [];
-      const c = cifras.get(clave);
-      const emergencias = ents.filter(
-        (e) => e.kind === "incident" && e.status === "emergency",
-      ).length;
-      const con = sedes.filter((x) => x.lat != null && x.lng != null);
-
-      return {
-        clave,
-        nombre,
-        color,
-        cobertura: coberturaDe(c),
-        emergencias,
-        peso:
-          emergencias * 1000 +
-          (c?.uncovered || 0) * 100 +
-          (c?.at_risk || 0) * 10,
-        entidades: ents,
-        centro: con.length
-          ? {
-              lat: con.reduce((a, x) => a + (x.lat as number), 0) / con.length,
-              lng: con.reduce((a, x) => a + (x.lng as number), 0) / con.length,
-              zoom: 11,
-            }
-          : undefined,
-      };
-    };
-    const reales = s.lista.sucursales
-      .map((b) => armar(b.id, b.name, b.color || "var(--brand)", b.sedes))
-      .sort((a, b) => b.peso - a.peso);
-    const sueltas = s.lista.sinSucursal.length
-      ? [
-          armar(
-            SIN_SUCURSAL,
-            sinSucursalNombre,
-            "var(--ink-faint)",
-            s.lista.sinSucursal,
-          ),
-        ]
-      : [];
-
-    return [...reales, ...sueltas];
-  }, [s, entities, sinSucursalNombre]);
+  const todas = useParadas(s?.lista, s?.resumen, entities);
+  const enSucursal = sucursalElegida();
+  const paradas =
+    enSucursal && todas.some((p) => p.clave === enSucursal)
+      ? todas.filter((p) => p.clave === enSucursal)
+      : todas;
+  const pastillas: Pastilla[] = useMemo(
+    () =>
+      paradas.map((p) => ({
+        clave: p.clave,
+        nombre: p.global ? globalNombre : p.nombre,
+        color: p.color,
+        cobertura: p.cobertura,
+        emergencias: p.emergencias,
+        peso: 0,
+        entidades: p.entidades,
+        puntos: p.puntos,
+      })),
+    [paradas, globalNombre],
+  );
 
   const actual =
     pastillas.find((p) => p.clave === elegida) || pastillas[0] || null;

@@ -20115,6 +20115,19 @@
       "ahora": "Ora sei qui",
       "ultimaVez": "L’ultima volta",
       "cambiaCuandoQuieras": "Puoi cambiare quando vuoi dalla barra superiore. La schermata attuale resta."
+    },
+    "mapa": {
+      "titulo": "Mappa dell’operatività",
+      "entrar": "Entra"
+    },
+    "comparativa": {
+      "titulo": "Confronto tra filiali",
+      "subtitulo": "In questo momento, una riga per filiale. Toccane una per vederla sulla mappa.",
+      "sucursal": "Filiale",
+      "sinCubrir": "Scoperti",
+      "enRiesgo": "A rischio",
+      "incidentes": "Incidenti",
+      "total": "Tutta l’azienda"
     }
   },
   "soporte": {

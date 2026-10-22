@@ -20115,6 +20115,19 @@
       "ahora": "Você está aqui agora",
       "ultimaVez": "Da última vez",
       "cambiaCuandoQuieras": "Você pode trocar quando quiser na barra superior. A tela em que você está se mantém."
+    },
+    "mapa": {
+      "titulo": "Mapa da operação",
+      "entrar": "Entrar"
+    },
+    "comparativa": {
+      "titulo": "Comparativo de filiais",
+      "subtitulo": "Agora mesmo, uma linha por filial. Toque em uma para vê-la no mapa.",
+      "sucursal": "Filial",
+      "sinCubrir": "Sem cobertura",
+      "enRiesgo": "Em risco",
+      "incidentes": "Incidentes",
+      "total": "Empresa toda"
     }
   },
   "soporte": {

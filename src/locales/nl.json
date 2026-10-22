@@ -20115,6 +20115,19 @@
       "ahora": "Je bent hier nu",
       "ultimaVez": "Vorige keer",
       "cambiaCuandoQuieras": "Je kunt altijd wisselen via de bovenste balk. Het scherm waarop je zit blijft staan."
+    },
+    "mapa": {
+      "titulo": "Operationele kaart",
+      "entrar": "Openen"
+    },
+    "comparativa": {
+      "titulo": "Vestigingen vergeleken",
+      "subtitulo": "Op dit moment, één rij per vestiging. Tik er een aan om hem op de kaart te zien.",
+      "sucursal": "Vestiging",
+      "sinCubrir": "Onbezet",
+      "enRiesgo": "Risico",
+      "incidentes": "Incidenten",
+      "total": "Hele bedrijf"
     }
   },
   "soporte": {

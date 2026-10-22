@@ -20115,6 +20115,19 @@
       "ahora": "You’re here now",
       "ultimaVez": "Last time",
       "cambiaCuandoQuieras": "You can switch anytime from the top bar. The screen you’re on stays put."
+    },
+    "mapa": {
+      "titulo": "Operations map",
+      "entrar": "Enter"
+    },
+    "comparativa": {
+      "titulo": "Branch comparison",
+      "subtitulo": "Right now, one row per branch. Tap one to see it on the map.",
+      "sucursal": "Branch",
+      "sinCubrir": "Uncovered",
+      "enRiesgo": "At risk",
+      "incidentes": "Incidents",
+      "total": "Whole company"
     }
   },
   "soporte": {

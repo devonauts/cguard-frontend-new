@@ -80,14 +80,17 @@ import { CustomizePanel } from "./components/CustomizePanel";
 import { DashboardErrorBoundary } from "./components/ErrorBoundary";
 import { MobileCommandCenter } from "./components/MobileCommandCenter";
 import { useEsMovil } from "./useMovil";
-
-import i18n from "@/i18n";
-import { useAuth } from "@/contexts/AuthContext";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import AppLayout from "@/layouts/app-layout";
-import { useSucursales } from "@/hooks/useSucursales";
-import { CarruselDeSucursales } from "./sucursales/CarruselDeSucursales";
+import { MapaDeSucursales } from "./sucursales/MapaDeSucursales";
+import { ComparativaDeSucursales } from "./sucursales/ComparativaDeSucursales";
+import { GLOBAL } from "./sucursales/paradas";
 import { InvitacionADividir } from "./sucursales/InvitacionADividir";
+
+import { sucursalElegida } from "@/lib/sucursalElegida";
+import { useSucursales } from "@/hooks/useSucursales";
+import AppLayout from "@/layouts/app-layout";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { useAuth } from "@/contexts/AuthContext";
+import i18n from "@/i18n";
 
 const KPI_ICON: Record<string, LucideIcon> = {
   onDuty: User,
@@ -156,10 +159,16 @@ export default function ControlCenter() {
   // Módulo SUCURSALES: con la operación dividida, el mapa general deja paso al
   // carrusel de sucursales. Sin el módulo no se pide nada y todo sigue igual.
   const suc = useSucursales();
-  const divididas = suc.activo ? suc.lista.data?.sucursales.length ?? 0 : 0;
+  const divididas = suc.activo ? (suc.lista.data?.sucursales.length ?? 0) : 0;
+  // Sucursales 2.0 (fase 3): la parada del mapa la comparten el mapa y la comparativa.
+  const [parada, setParada] = useState<string>(GLOBAL);
+  const enVistaGlobal = !sucursalElegida();
   // Sólo a quien puede aplicarlo (el servidor pide `settingsEdit`).
   const invitarADividir =
-    suc.activo && suc.lista.isSuccess && divididas === 0 && hasPermission("settingsEdit");
+    suc.activo &&
+    suc.lista.isSuccess &&
+    divididas === 0 &&
+    hasPermission("settingsEdit");
 
   const openFullMap = () =>
     window.open(
@@ -285,14 +294,16 @@ export default function ControlCenter() {
               {/* ── 2. MAPA (o SUCURSALES) + DIAL + RIEL ───────────────────── */}
               <div className="grid gap-5 xl:grid-cols-12">
                 {divididas > 0 && suc.lista.data ? (
-                  <CarruselDeSucursales
+                  <MapaDeSucursales
                     className="xl:col-span-8"
                     defaultCenter={data.defaultCenter}
                     entities={data.entities}
                     lista={suc.lista.data}
                     live={data.health.sseConnected}
+                    parada={parada}
                     prefs={prefs}
                     resumen={suc.resumen.data}
+                    onParada={setParada}
                   />
                 ) : (
                   <MapPanel
@@ -339,6 +350,22 @@ export default function ControlCenter() {
                   />
                 </div>
               </div>
+
+              {/* ── 2b. COMPARATIVA DE SUCURSALES (sólo en la vista global) ── */}
+              {divididas > 1 && enVistaGlobal && suc.lista.data && (
+                <ComparativaDeSucursales
+                  activa={parada}
+                  entities={data.entities}
+                  lista={suc.lista.data}
+                  resumen={suc.resumen.data}
+                  onVer={(clave) => {
+                    setParada(clave);
+                    document
+                      .querySelector(".cc-root")
+                      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                />
+              )}
 
               {/* ── 3. TENDENCIA + NOVEDADES ──────────────────────────────── */}
               <div className="grid gap-5 xl:grid-cols-12">

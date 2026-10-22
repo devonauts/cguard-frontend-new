@@ -271,7 +271,8 @@ function senalViva(e: MapEntity, umbralMin: number): boolean {
 /** El usuario de la app de una entidad del mapa (vigilante o supervisor). */
 function usuarioDeEntidad(e: MapEntity): string | null {
   if (e.kind === "guard") return e.meta?.userId ? String(e.meta.userId) : null;
-  if (e.kind === "supervisor") return e.id.startsWith("sup-") ? e.id.slice(4) : null;
+  if (e.kind === "supervisor")
+    return e.id.startsWith("sup-") ? e.id.slice(4) : null;
 
   return null;
 }
@@ -285,6 +286,7 @@ export function OperationsMap({
   hud = true,
   area = "control-center",
   vista,
+  encuadre,
 }: {
   entities: MapEntity[];
   prefs: DashboardPrefs;
@@ -297,6 +299,15 @@ export function OperationsMap({
   area?: string;
   /** Clave de la caché de vista; por defecto, `area`. */
   vista?: string;
+  /**
+   * La cámara la lleva quien usa el mapa (Sucursales 2.0, fase 3: el mapa que
+   * viaja de la vista global a cada ciudad). Cada vez que cambia `clave`, la
+   * cámara vuela a encuadrar `puntos`, y el encuadre automático ya no la pisa.
+   */
+  encuadre?: {
+    clave: string;
+    puntos: Array<{ lat: number; lng: number }>;
+  } | null;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
@@ -404,7 +415,10 @@ export function OperationsMap({
           const u = usuarioDeEntidad(e);
           const c = u ? conexion.get(u) : undefined;
 
-          return c && c.perdioConexion && e.status !== "emergency" && e.status !== "incident"
+          return c &&
+            c.perdioConexion &&
+            e.status !== "emergency" &&
+            e.status !== "incident"
             ? { ...e, status: "offline" as const }
             : e;
         }),
@@ -532,16 +546,18 @@ export function OperationsMap({
 
             return;
           }
-          rastroLineaRef.current = trackear(new g.maps.Polyline({
-            map: mapRef.current,
-            path: puntos,
-            // El rastro es una RUTA, no un estado: va en el acento, que es el color
-            // con el que el CRM dibuja recorridos, y por debajo de las chinchetas.
-            strokeColor: pal.brand,
-            strokeOpacity: 0.9,
-            strokeWeight: 3,
-            zIndex: 50,
-          }));
+          rastroLineaRef.current = trackear(
+            new g.maps.Polyline({
+              map: mapRef.current,
+              path: puntos,
+              // El rastro es una RUTA, no un estado: va en el acento, que es el color
+              // con el que el CRM dibuja recorridos, y por debajo de las chinchetas.
+              strokeColor: pal.brand,
+              strokeOpacity: 0.9,
+              strokeWeight: 3,
+              zIndex: 50,
+            }),
+          );
           setRastroDe(e.id);
           motorRef.current?.camara.encuadrar(puntos, {
             padding: 72,
@@ -562,7 +578,10 @@ export function OperationsMap({
   const abrirGlobo = useCallback(
     (e: MapEntity, marcador: any, cob?: PuestoEstado) => {
       const u = usuarioDeEntidad(e);
-      const base = conConexion(globoDe(e, cob, mando), u ? conexionRef.current.get(u) : undefined);
+      const base = conConexion(
+        globoDe(e, cob, mando),
+        u ? conexionRef.current.get(u) : undefined,
+      );
       // El detalle de un vigilante (batería, velocidad, precisión reales) se pide
       // AL PULSAR, nunca en el sondeo: es una consulta por clic, no por segundo.
       // Nada de esto se le pide al servidor en modo demostración: sus
@@ -644,7 +663,10 @@ export function OperationsMap({
       .catch((e) =>
         setErr(
           e?.message ||
-            i18n.t("ui.OperationsMap.noSePudoCargarElMapa", "No se pudo cargar el mapa"),
+            i18n.t(
+              "ui.OperationsMap.noSePudoCargarElMapa",
+              "No se pudo cargar el mapa",
+            ),
         ),
       );
 
@@ -654,7 +676,6 @@ export function OperationsMap({
       prestadoRef.current = null;
       mapRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cerca]);
 
   // Al desmontar: el motor baja sus animaciones y sus capas con él.
@@ -695,6 +716,34 @@ export function OperationsMap({
     });
     if (defaultCenter.zoom) mapRef.current.setZoom(defaultCenter.zoom);
   }, [defaultCenter, ready]);
+
+  // La cámara mandada desde fuera (ver la prop `encuadre`).
+  const claveDeEncuadre =
+    encuadre && encuadre.puntos.length
+      ? `${encuadre.clave}:${encuadre.puntos.length}`
+      : null;
+
+  useEffect(() => {
+    if (!ready || !mapRef.current || !encuadre || !claveDeEncuadre) return;
+    encuadradoRef.current = true;
+    const puntos = encuadre.puntos;
+    const motor = motorRef.current;
+
+    if (motor) {
+      // Margen amplio: la tira de paradas tapa la franja de abajo del mapa.
+      motor.camara.encuadrar(puntos, { padding: 150, zoomMax: 13 });
+    } else if (puntos.length === 1) {
+      mapRef.current.setCenter(puntos[0]);
+      mapRef.current.setZoom(13);
+    } else {
+      const g = (window as any).google;
+      const b = new g.maps.LatLngBounds();
+
+      puntos.forEach((p) => b.extend(p));
+      mapRef.current.fitBounds(b, 150);
+    }
+    // Sólo cuando cambia la parada, no en cada repintado de la lista de puntos.
+  }, [ready, claveDeEncuadre]);
 
   /* ── Sincronización de marcadores ──────────────────────────────────────── */
 
@@ -889,16 +938,18 @@ export function OperationsMap({
       let m = markersRef.current[r.id];
 
       if (!m) {
-        m = trackear(new g.maps.Marker({
-          map: mapRef.current,
-          position: { lat: r.lat, lng: r.lng },
-          icon: iconoDe(g, asset),
-          title: i18n.t("controlCenter.map.sedes", {
-            count: r.miembros.length,
-            defaultValue: "{{count}} sedes",
+        m = trackear(
+          new g.maps.Marker({
+            map: mapRef.current,
+            position: { lat: r.lat, lng: r.lng },
+            icon: iconoDe(g, asset),
+            title: i18n.t("controlCenter.map.sedes", {
+              count: r.miembros.length,
+              defaultValue: "{{count}} sedes",
+            }),
+            zIndex: 180,
           }),
-          zIndex: 180,
-        }));
+        );
         markersRef.current[r.id] = m;
       } else {
         m.setPosition({ lat: r.lat, lng: r.lng });
@@ -938,18 +989,20 @@ export function OperationsMap({
           };
 
           if (!c) {
-            c = trackear(poly
-              ? new g.maps.Polygon({
-                  ...opciones,
-                  map: mapRef.current,
-                  paths: poly,
-                })
-              : new g.maps.Circle({
-                  ...opciones,
-                  map: mapRef.current,
-                  center: { lat: e.lat, lng: e.lng },
-                  radius: radioDe(e),
-                }));
+            c = trackear(
+              poly
+                ? new g.maps.Polygon({
+                    ...opciones,
+                    map: mapRef.current,
+                    paths: poly,
+                  })
+                : new g.maps.Circle({
+                    ...opciones,
+                    map: mapRef.current,
+                    center: { lat: e.lat, lng: e.lng },
+                    radius: radioDe(e),
+                  }),
+            );
             cercasRef.current[clave] = c;
           } else {
             c.setOptions(opciones);
@@ -1115,9 +1168,11 @@ export function OperationsMap({
             />
 
             <button
-              aria-label={geocercas
+              aria-label={
+                geocercas
                   ? t("ui.OperationsMap.ocultarGeocercas", "Ocultar geocercas")
-                  : t("ui.OperationsMap.mostrarGeocercas", "Mostrar geocercas")}
+                  : t("ui.OperationsMap.mostrarGeocercas", "Mostrar geocercas")
+              }
               aria-pressed={geocercas}
               className="cg-focus grid size-9 place-items-center transition"
               style={{
@@ -1125,9 +1180,11 @@ export function OperationsMap({
                 color: geocercas ? "var(--brand-text)" : "var(--ink-faint)",
                 background: geocercas ? "var(--brand-wash)" : "transparent",
               }}
-              title={geocercas
+              title={
+                geocercas
                   ? t("ui.OperationsMap.ocultarGeocercas", "Ocultar geocercas")
-                  : t("ui.OperationsMap.mostrarGeocercas", "Mostrar geocercas")}
+                  : t("ui.OperationsMap.mostrarGeocercas", "Mostrar geocercas")
+              }
               type="button"
               onClick={() => setGeocercas((v) => !v)}
             >
@@ -1142,7 +1199,10 @@ export function OperationsMap({
                         nombre: seguidoNombre,
                         defaultValue: "Dejar de seguir a {{nombre}}",
                       })
-                    : t("ui.OperationsMap.quitarElRecorrido", "Quitar el recorrido")
+                    : t(
+                        "ui.OperationsMap.quitarElRecorrido",
+                        "Quitar el recorrido",
+                      )
                 }
                 className="cg-focus grid size-9 place-items-center transition"
                 style={{
@@ -1157,7 +1217,10 @@ export function OperationsMap({
                         nombre: seguidoNombre,
                         defaultValue: "Dejar de seguir a {{nombre}}",
                       })
-                    : t("ui.OperationsMap.quitarElRecorrido", "Quitar el recorrido")
+                    : t(
+                        "ui.OperationsMap.quitarElRecorrido",
+                        "Quitar el recorrido",
+                      )
                 }
                 type="button"
                 onClick={() => {
