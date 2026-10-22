@@ -19433,7 +19433,193 @@
       "demo": "Demo"
     },
     "interruptor": "Ativar ou desativar {{nombre}}",
-    "paraSiempre": "Pagamento único · é seu para sempre"
+    "paraSiempre": "Pagamento único · é seu para sempre",
+    "demo": {
+      "titulo": "Como funciona {{nombre}}",
+      "hora": "Hora",
+      "fecha": "Data",
+      "enTuCrm": "O que fica no seu painel",
+      "ficticio": "Exemplo fictício: nomes, lugares e valores são inventados."
+    },
+    "demos": {
+      "sucursales": {
+        "escenas": {
+          "dividir": "Divida sua operação",
+          "equipos": "Cada equipe no que é seu"
+        },
+        "panel": "Filiais",
+        "supervisor": "Andrés · Norte",
+        "chips": {
+          "todas": "Todas",
+          "norte": "Norte",
+          "centro": "Centro",
+          "sur": "Sul"
+        },
+        "kpi": {
+          "puestos": "Postos",
+          "vigilantes": "Em turno",
+          "cobertura": "Cobertura"
+        },
+        "equipo": {
+          "titulo": "Equipe",
+          "supervisa": "Supervisor",
+          "jefe": {
+            "norte": "Andrés Pólit · Norte",
+            "centro": "Ricardo Beltrán · Centro",
+            "sur": "Paola Vera · Sul"
+          },
+          "norte1": "Andrés Pólit",
+          "norte2": "Luis Andrade",
+          "norte3": "Carla Ruiz",
+          "centro1": "Ricardo Beltrán",
+          "centro2": "Ana Torres",
+          "centro3": "Jorge Mena",
+          "sur1": "Paola Vera",
+          "sur2": "Pedro Gómez",
+          "sur3": "María León"
+        },
+        "alerta": "Ronda atrasada · Posto Norte 3",
+        "alertaResuelta": "Ronda concluída · Posto Norte 3",
+        "informe": "Relatório de outubro · Norte",
+        "pasos": {
+          "todo": "Sua operação: 24 postos em um só mapa",
+          "norte": "Você cria a filial Norte",
+          "centro": "Depois Centro",
+          "sur": "E Sul: cada posto na sua",
+          "filtra": "Você escolhe Norte: mapa e números só de lá",
+          "filtraSur": "Muda para Sul com um toque",
+          "todas": "E volta a ver a empresa toda",
+          "entra": "Andrés, supervisor do Norte, entra no CRM",
+          "soloSuya": "Ele só vê a filial dele: postos, pessoas e alertas",
+          "alerta": "Uma ronda atrasada no Norte: o aviso vai para ele",
+          "resuelta": "Ele resolve sem incomodar as outras filiais",
+          "informe": "Relatório do mês por filial"
+        },
+        "resultado": {
+          "dividir": "Uma empresa, várias filiais, cada uma com seus números",
+          "equipos": "Cada supervisor vê e responde pelo que é seu"
+        }
+      },
+      "facial": {
+        "escenas": {
+          "fichaje": "Ponto verificado",
+          "suplantacion": "Ninguém bate ponto por outro",
+          "registro": "Cadastro e aprovação"
+        },
+        "tel": {
+          "inicio": "Iniciar turno",
+          "registro": "Cadastrar meu rosto",
+          "puesto": "Praça Norte · 07:00",
+          "buscando": "Olhe para a câmera",
+          "ok": "É você: turno iniciado",
+          "falla": "Não confere: ponto recusado",
+          "listo": "Cadastro enviado"
+        },
+        "gestos": {
+          "izquierda": "Vire a cabeça para a esquerda",
+          "parpadea": "Pisque duas vezes",
+          "angulos": "Vire devagar para cada lado"
+        },
+        "panel": "Pontos de hoje",
+        "sello": {
+          "protegido": "Protegido",
+          "alerta": "Alerta"
+        },
+        "filas": {
+          "previa": "Carla Ruiz · rosto verificado",
+          "ok": "Luis Andrade · rosto verificado",
+          "rechazo": "Praça Norte · tentativa com foto",
+          "aviso": "Aviso ao supervisor com a captura"
+        },
+        "aprobar": "Rostos para aprovar",
+        "aprobacion": {
+          "ana": "Ana Torres",
+          "pendiente": "Pendente",
+          "aprobado": "Aprovado"
+        },
+        "pasos": {
+          "abre": "Luis abre o app para iniciar o turno",
+          "gesto": "O app pede um gesto aleatório",
+          "ok": "É ele: ponto verificado",
+          "foto": "Alguém tenta bater o ponto do Luis com uma foto",
+          "noParpadea": "A foto não pisca: ponto recusado",
+          "aviso": "O supervisor recebe o aviso com a captura",
+          "registra": "Ana cadastra o rosto uma única vez",
+          "pendiente": "Fica pendente de aprovação",
+          "aprobada": "O supervisor aprova pelo CRM"
+        },
+        "resultado": {
+          "fichaje": "Cada ponto com o rosto de quem bate",
+          "suplantacion": "Nem fotos nem vídeos: ninguém bate ponto por outro",
+          "registro": "Você decide quais rostos valem"
+        }
+      },
+      "roles": {
+        "escenas": {
+          "planilla": "A folha do mês",
+          "rol": "O holerite de cada pessoa"
+        },
+        "planilla": "Folha de outubro",
+        "calculando": "Calculando",
+        "cuadrada": "Conferida",
+        "cols": {
+          "persona": "Pessoa",
+          "sueldo": "Salário",
+          "extras": "Extras",
+          "descuentos": "Descontos",
+          "neto": "A pagar",
+          "corto": {
+            "sueldo": "Salário",
+            "extras": "Extras",
+            "descuentos": "Desc.",
+            "neto": "Líquido"
+          }
+        },
+        "personas": {
+          "luis": "Luis Andrade",
+          "ana": "Ana Torres",
+          "pedro": "Pedro Gómez",
+          "maria": "María León"
+        },
+        "total": "Total",
+        "rol": "Holerite · Outubro",
+        "num": "Nº 0042",
+        "borrador": "Rascunho",
+        "publicado": "Publicado",
+        "lineas": {
+          "sueldo": "Salário",
+          "extras": "Horas extras (8 h)",
+          "nocturno": "Adicional noturno",
+          "social": "Previdência social",
+          "anticipo": "Adiantamento",
+          "neto": "Líquido a receber"
+        },
+        "app": {
+          "titulo": "Seu holerite de outubro",
+          "texto": "Você já pode ver e baixar"
+        },
+        "archivos": {
+          "excel": "folha-outubro.xlsx",
+          "pdf": "holerite-luis-outubro.pdf"
+        },
+        "pasos": {
+          "cierra": "Você fecha outubro com as horas e ocorrências",
+          "sueldos": "O salário de cada pessoa",
+          "extras": "Extras e adicionais saem dos pontos",
+          "descuentos": "Contribuições, empréstimos e adiantamentos descontados sozinhos",
+          "cuadra": "A folha confere",
+          "excel": "Você baixa em Excel",
+          "rol": "O holerite individual do Luis",
+          "publica": "Você publica: numerado e sem alterações",
+          "app": "Luis vê no app dele",
+          "pdf": "E em PDF, pronto para assinar"
+        },
+        "resultado": {
+          "planilla": "A folha do mês em minutos, sem planilhas soltas",
+          "rol": "Cada pessoa com seu holerite, em PDF e no app"
+        }
+      }
+    }
   },
   "sucursales": {
     "titulo": "Filiais",

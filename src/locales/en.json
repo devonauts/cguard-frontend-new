@@ -19433,7 +19433,193 @@
       "demo": "Demo"
     },
     "interruptor": "Turn {{nombre}} on or off",
-    "paraSiempre": "One-time payment · yours forever"
+    "paraSiempre": "One-time payment · yours forever",
+    "demo": {
+      "titulo": "How {{nombre}} works",
+      "hora": "Time",
+      "fecha": "Date",
+      "enTuCrm": "What stays in your dashboard",
+      "ficticio": "Fictional example: names, places and figures are made up."
+    },
+    "demos": {
+      "sucursales": {
+        "escenas": {
+          "dividir": "Split your operation",
+          "equipos": "Each team on its own"
+        },
+        "panel": "Branches",
+        "supervisor": "Andrés · North",
+        "chips": {
+          "todas": "All",
+          "norte": "North",
+          "centro": "Central",
+          "sur": "South"
+        },
+        "kpi": {
+          "puestos": "Posts",
+          "vigilantes": "On duty",
+          "cobertura": "Coverage"
+        },
+        "equipo": {
+          "titulo": "Team",
+          "supervisa": "Supervisor",
+          "jefe": {
+            "norte": "Andrés Pólit · North",
+            "centro": "Ricardo Beltrán · Central",
+            "sur": "Paola Vera · South"
+          },
+          "norte1": "Andrés Pólit",
+          "norte2": "Luis Andrade",
+          "norte3": "Carla Ruiz",
+          "centro1": "Ricardo Beltrán",
+          "centro2": "Ana Torres",
+          "centro3": "Jorge Mena",
+          "sur1": "Paola Vera",
+          "sur2": "Pedro Gómez",
+          "sur3": "María León"
+        },
+        "alerta": "Late patrol · North post 3",
+        "alertaResuelta": "Patrol completed · North post 3",
+        "informe": "October report · North",
+        "pasos": {
+          "todo": "Your operation: 24 posts on one map",
+          "norte": "You create the North branch",
+          "centro": "Then Central",
+          "sur": "And South: every post in its branch",
+          "filtra": "You pick North: map and figures from there only",
+          "filtraSur": "You switch to South in one tap",
+          "todas": "And go back to the whole company",
+          "entra": "Andrés, North supervisor, signs in to the CRM",
+          "soloSuya": "He only sees his branch: posts, people and alerts",
+          "alerta": "A late patrol in North: the alert goes to him",
+          "resuelta": "He solves it without bothering the other branches",
+          "informe": "Monthly report per branch"
+        },
+        "resultado": {
+          "dividir": "One company, several branches, each with its own figures",
+          "equipos": "Each supervisor sees and answers for their own"
+        }
+      },
+      "facial": {
+        "escenas": {
+          "fichaje": "Verified clock-in",
+          "suplantacion": "No one clocks in for others",
+          "registro": "Enrollment and approval"
+        },
+        "tel": {
+          "inicio": "Start shift",
+          "registro": "Register my face",
+          "puesto": "North Plaza · 07:00",
+          "buscando": "Look at the camera",
+          "ok": "It’s you: shift started",
+          "falla": "No match: clock-in rejected",
+          "listo": "Enrollment sent"
+        },
+        "gestos": {
+          "izquierda": "Turn your head to the left",
+          "parpadea": "Blink twice",
+          "angulos": "Turn slowly to each side"
+        },
+        "panel": "Today’s clock-ins",
+        "sello": {
+          "protegido": "Protected",
+          "alerta": "Alert"
+        },
+        "filas": {
+          "previa": "Carla Ruiz · face verified",
+          "ok": "Luis Andrade · face verified",
+          "rechazo": "North Plaza · attempt with a photo",
+          "aviso": "Supervisor alerted with the capture"
+        },
+        "aprobar": "Faces to approve",
+        "aprobacion": {
+          "ana": "Ana Torres",
+          "pendiente": "Pending",
+          "aprobado": "Approved"
+        },
+        "pasos": {
+          "abre": "Luis opens the app to start his shift",
+          "gesto": "The app asks for a random gesture",
+          "ok": "It’s him: clock-in verified",
+          "foto": "Someone tries to clock in for Luis with a photo",
+          "noParpadea": "The photo can’t blink: clock-in rejected",
+          "aviso": "The supervisor gets the alert with the capture",
+          "registra": "Ana registers her face just once",
+          "pendiente": "It waits for approval",
+          "aprobada": "The supervisor approves it from the CRM"
+        },
+        "resultado": {
+          "fichaje": "Every clock-in, with the face of whoever clocks in",
+          "suplantacion": "No photos, no videos: no one clocks in for others",
+          "registro": "You decide which faces count"
+        }
+      },
+      "roles": {
+        "escenas": {
+          "planilla": "The month’s payroll",
+          "rol": "Each person’s payslip"
+        },
+        "planilla": "October payroll",
+        "calculando": "Calculating",
+        "cuadrada": "Balanced",
+        "cols": {
+          "persona": "Person",
+          "sueldo": "Salary",
+          "extras": "Extras",
+          "descuentos": "Deductions",
+          "neto": "To pay",
+          "corto": {
+            "sueldo": "Salary",
+            "extras": "Extras",
+            "descuentos": "Deduct.",
+            "neto": "Net"
+          }
+        },
+        "personas": {
+          "luis": "Luis Andrade",
+          "ana": "Ana Torres",
+          "pedro": "Pedro Gómez",
+          "maria": "María León"
+        },
+        "total": "Total",
+        "rol": "Payslip · October",
+        "num": "No. 0042",
+        "borrador": "Draft",
+        "publicado": "Published",
+        "lineas": {
+          "sueldo": "Salary",
+          "extras": "Overtime (8 h)",
+          "nocturno": "Night premium",
+          "social": "Social security",
+          "anticipo": "Advance",
+          "neto": "Net pay"
+        },
+        "app": {
+          "titulo": "Your October payslip",
+          "texto": "You can now view and download it"
+        },
+        "archivos": {
+          "excel": "payroll-october.xlsx",
+          "pdf": "payslip-luis-october.pdf"
+        },
+        "pasos": {
+          "cierra": "You close October with its hours and changes",
+          "sueldos": "Each person’s salary",
+          "extras": "Overtime and premiums come from the clock-ins",
+          "descuentos": "Contributions, loans and advances are deducted automatically",
+          "cuadra": "The payroll balances",
+          "excel": "You download it in Excel",
+          "rol": "Luis’s individual payslip",
+          "publica": "You publish it: numbered and locked",
+          "app": "Luis sees it in his app",
+          "pdf": "And as a PDF, ready to sign"
+        },
+        "resultado": {
+          "planilla": "The month’s payroll in minutes, no loose spreadsheets",
+          "rol": "Everyone gets their payslip, as a PDF and in the app"
+        }
+      }
+    }
   },
   "sucursales": {
     "titulo": "Branches",
