@@ -202,6 +202,7 @@
 .dm-fila[data-total] { font-weight: 700; background: var(--dm-block); }
 .dm-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .dm-num[data-vacio] { color: var(--ink-faint); }
+.dm-corto { display: none; }
 .dm-num[data-neg] { color: var(--bad); }
 .dm-num[data-nuevo] { animation: dm-destello 1s both; border-radius: 6px; }
 @keyframes dm-destello {
@@ -244,6 +245,16 @@
   .dm-fac-panel { width: 100%; }
   .dm-rol { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); padding: 12px; gap: 12px; }
   .dm-fila { font-size: 11px; padding: 0 8px; gap: 4px; }
+  /* En el teléfono la planilla y el rol van uno encima del otro: filas algo más
+     bajas para que el aviso de la app y el PDF quepan en los 600 px. */
+  .dm-fila { height: 28px; }
+  .dm-fila[data-cab] { height: 24px; letter-spacing: 0; }
+  .dm-largo { display: none; }
+  .dm-corto { display: inline; }
+  .dm-tabla-t { height: 34px; }
+  .dm-linea { height: 20px; }
+  .dm-linea[data-neto] { height: 26px; }
+  .dm-archivo { margin-top: 8px; }
   .dm-chip { padding: 4px 8px; font-size: 11px; }
 }
 

@@ -19567,7 +19567,13 @@
           "sueldo": "Stipendio",
           "extras": "Extra",
           "descuentos": "Trattenute",
-          "neto": "Da pagare"
+          "neto": "Da pagare",
+          "corto": {
+            "sueldo": "Stip.",
+            "extras": "Extra",
+            "descuentos": "Tratt.",
+            "neto": "Netto"
+          }
         },
         "personas": {
           "luis": "Luis Andrade",

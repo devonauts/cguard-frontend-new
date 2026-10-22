@@ -19851,7 +19851,13 @@
           "sueldo": "Pensja",
           "extras": "Dodatki",
           "descuentos": "Potrącenia",
-          "neto": "Do wypłaty"
+          "neto": "Do wypłaty",
+          "corto": {
+            "sueldo": "Pensja",
+            "extras": "Dod.",
+            "descuentos": "Potr.",
+            "neto": "Netto"
+          }
         },
         "personas": {
           "luis": "Luis Andrade",

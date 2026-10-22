@@ -14,7 +14,8 @@ import DemoDeModulo, {
  * Izquierda, la planilla del mes: las columnas se llenan una a una (sueldo,
  * extras de los fichajes, descuentos, a pagar) y la fila del total cuadra.
  * Derecha, el rol de una persona: sus líneas, el neto, publicado y numerado,
- * el aviso en su app y la descarga en PDF. Cifras inventadas que SÍ cuadran.
+ * el aviso en su app y la descarga en PDF. Cifras inventadas, enteras, que SÍ
+ * cuadran (fila a fila y en el total). En el teléfono las cabeceras se acortan.
  */
 type Escena = "planilla" | "rol";
 
@@ -30,10 +31,10 @@ interface Estado extends EstadoBase {
 }
 
 const PERSONAS = [
-  { k: "personas.luis", sueldo: 520, extras: 86.4, desc: 87.3 },
-  { k: "personas.ana", sueldo: 520, extras: 42.5, desc: 53.16 },
-  { k: "personas.pedro", sueldo: 560, extras: 0, desc: 52.92 },
-  { k: "personas.maria", sueldo: 520, extras: 129.6, desc: 101.39 },
+  { k: "personas.luis", sueldo: 520, extras: 86, desc: 87 },
+  { k: "personas.ana", sueldo: 520, extras: 42, desc: 53 },
+  { k: "personas.pedro", sueldo: 560, extras: 0, desc: 53 },
+  { k: "personas.maria", sueldo: 520, extras: 130, desc: 101 },
 ];
 const TOTAL = PERSONAS.reduce(
   (a, p) => ({
@@ -47,8 +48,8 @@ const TOTAL = PERSONAS.reduce(
 const ROL: Array<{ k: string; v: number }> = [
   { k: "lineas.sueldo", v: 520 },
   { k: "lineas.extras", v: 65 },
-  { k: "lineas.nocturno", v: 21.4 },
-  { k: "lineas.social", v: -57.3 },
+  { k: "lineas.nocturno", v: 21 },
+  { k: "lineas.social", v: -57 },
   { k: "lineas.anticipo", v: -30 },
 ];
 const NETO_LUIS = ROL.reduce((a, l) => a + l.v, 0);
@@ -201,9 +202,11 @@ function Escenario({ s, T, escena }: PropsDeEscenario<Estado, Escena>) {
       return new Intl.NumberFormat(i18n.language, {
         style: "currency",
         currency: "USD",
+        currencyDisplay: "narrowSymbol",
+        maximumFractionDigits: 0,
       }).format(n);
     } catch {
-      return `$${n.toFixed(2)}`;
+      return `$${Math.round(n)}`;
     }
   };
   /* Una cifra de la planilla: «—» hasta que su columna se llena; destella al llenarse
@@ -235,10 +238,22 @@ function Escenario({ s, T, escena }: PropsDeEscenario<Estado, Escena>) {
           </div>
           <div className="dm-fila" data-cab="">
             <span>{T("cols.persona")}</span>
-            <span className="dm-num">{T("cols.sueldo")}</span>
-            <span className="dm-num">{T("cols.extras")}</span>
-            <span className="dm-num">{T("cols.descuentos")}</span>
-            <span className="dm-num">{T("cols.neto")}</span>
+            <span className="dm-num">
+              <span className="dm-largo">{T("cols.sueldo")}</span>
+              <span className="dm-corto">{T("cols.corto.sueldo")}</span>
+            </span>
+            <span className="dm-num">
+              <span className="dm-largo">{T("cols.extras")}</span>
+              <span className="dm-corto">{T("cols.corto.extras")}</span>
+            </span>
+            <span className="dm-num">
+              <span className="dm-largo">{T("cols.descuentos")}</span>
+              <span className="dm-corto">{T("cols.corto.descuentos")}</span>
+            </span>
+            <span className="dm-num">
+              <span className="dm-largo">{T("cols.neto")}</span>
+              <span className="dm-corto">{T("cols.corto.neto")}</span>
+            </span>
           </div>
           {PERSONAS.map((p) => (
             <div key={p.k} className="dm-fila">

@@ -38,7 +38,7 @@ import {
  *
  * ── FORMA DE LA PÁGINA (2026-10-21) ─────────────────────────────────────
  * Todos los módulos van en la MISMA tarjeta (`TarjetaModulo`), del mismo
- * tamaño, en una rejilla de hasta tres columnas (una en el teléfono). Cada
+ * tamaño, en una rejilla de dos columnas con filas iguales (una en el teléfono). Cada
  * tarjeta lleva un INTERRUPTOR: encender es contratar (prueba, compra o
  * suscripción, con su confirmación cuando hay dinero) y apagar es dejar de
  * renovar. Un pago único no se apaga —es suyo para siempre— y su interruptor
@@ -171,7 +171,7 @@ export default function ModulosAdicionalesPage() {
                 </FadeIn>
               )}
 
-            <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid auto-rows-fr grid-cols-1 items-stretch gap-4 md:grid-cols-2">
               {modulos.map((m, i) => {
                 if (m.billingType === "monthly_tiers") {
                   return (

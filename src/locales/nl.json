@@ -19567,7 +19567,13 @@
           "sueldo": "Salaris",
           "extras": "Toeslagen",
           "descuentos": "Inhoudingen",
-          "neto": "Uit te betalen"
+          "neto": "Uit te betalen",
+          "corto": {
+            "sueldo": "Salaris",
+            "extras": "Toesl.",
+            "descuentos": "Inh.",
+            "neto": "Netto"
+          }
         },
         "personas": {
           "luis": "Luis Andrade",

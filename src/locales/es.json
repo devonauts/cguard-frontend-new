@@ -19567,7 +19567,13 @@
           "sueldo": "Sueldo",
           "extras": "Extras",
           "descuentos": "Descuentos",
-          "neto": "A pagar"
+          "neto": "A pagar",
+          "corto": {
+            "sueldo": "Sueldo",
+            "extras": "Extras",
+            "descuentos": "Desc.",
+            "neto": "Neto"
+          }
         },
         "personas": {
           "luis": "Luis Andrade",
