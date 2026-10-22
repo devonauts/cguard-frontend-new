@@ -18350,6 +18350,16 @@
         "claveSecreta": "Chiave segreta (sk_…)",
         "claveSecretaHint": "Salvata cifrata e mai più mostrata.",
         "clavePublicableInput": "Chiave pubblicabile (pk_…)"
+      },
+      "detalleDiscrepancia": {
+        "programadas": "Programmate {{h}}",
+        "trabajadas": "Lavorate {{h}}",
+        "facturables": "Fatturabili {{h}}",
+        "deMas": "{{h}} in più",
+        "deMenos": "{{h}} in meno",
+        "conRecargo": "{{h}} con maggiorazione",
+        "tarifa": "a {{p}} l'ora",
+        "comoNormal": "Festivo senza regola: fatturato come ora normale"
       }
     },
     "ClientInvoices": {

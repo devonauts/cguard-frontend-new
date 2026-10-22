@@ -17815,6 +17815,16 @@
         "claveSecreta": "Secret key (sk_…)",
         "claveSecretaHint": "Stored encrypted and never shown again.",
         "clavePublicableInput": "Publishable key (pk_…)"
+      },
+      "detalleDiscrepancia": {
+        "programadas": "Scheduled {{h}}",
+        "trabajadas": "Worked {{h}}",
+        "facturables": "Billable {{h}}",
+        "deMas": "{{h}} over",
+        "deMenos": "{{h}} under",
+        "conRecargo": "{{h}} at a premium",
+        "tarifa": "at {{p}} per hour",
+        "comoNormal": "Holiday without a rule: billed as a regular hour"
       }
     },
     "ClientInvoices": {

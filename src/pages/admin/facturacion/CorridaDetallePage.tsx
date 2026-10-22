@@ -20,6 +20,24 @@ import { soloFechaCivil, fechaYHora } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { type BillingRun, type Discrepancy, type DiscrepancySeverity, type RunItem } from "@/lib/api/clientBillingService";
 import { QK, dinero, horas, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError } from "./comun";
 
+/** What the engine wrote about a discrepancy, as a sentence (it comes as an object). */
+function detalleLegible(t: (k: string, d: string, o?: Record<string, unknown>) => string, detail: Discrepancy["detail"], moneda?: string): string | null {
+  if (!detail) return null;
+  if (typeof detail === "string") return detail;
+  const d = detail as Record<string, unknown>;
+  const partes: string[] = [];
+  if (d.scheduledMinutes != null) partes.push(t("ui.Facturacion.detalleDiscrepancia.programadas", "Programadas {{h}}", { h: horas(Number(d.scheduledMinutes)) }));
+  if (d.workedMinutes != null) partes.push(t("ui.Facturacion.detalleDiscrepancia.trabajadas", "Trabajadas {{h}}", { h: horas(Number(d.workedMinutes)) }));
+  if (d.billableMinutes != null) partes.push(t("ui.Facturacion.detalleDiscrepancia.facturables", "Facturables {{h}}", { h: horas(Number(d.billableMinutes)) }));
+  if (d.overMinutes != null) partes.push(t("ui.Facturacion.detalleDiscrepancia.deMas", "{{h}} de más", { h: horas(Number(d.overMinutes)) }));
+  if (d.underMinutes != null) partes.push(t("ui.Facturacion.detalleDiscrepancia.deMenos", "{{h}} de menos", { h: horas(Number(d.underMinutes)) }));
+  if (d.minutes != null) partes.push(t("ui.Facturacion.detalleDiscrepancia.conRecargo", "{{h}} con recargo", { h: horas(Number(d.minutes)) }));
+  if (d.unitCents != null) partes.push(t("ui.Facturacion.detalleDiscrepancia.tarifa", "a {{p}} la hora", { p: dinero(Number(d.unitCents), moneda || "USD") }));
+  if (d.billedAsRegular) partes.push(t("ui.Facturacion.detalleDiscrepancia.comoNormal", "Feriado sin regla: se factura como hora normal"));
+  if (typeof d.note === "string" && d.note) partes.push(d.note);
+  return partes.join(" · ") || null;
+}
+
 export default function CorridaDetallePage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
@@ -206,7 +224,7 @@ export default function CorridaDetallePage() {
                         <div key={d.id} className="glass-flat flex flex-wrap items-center gap-3 px-3 py-2 text-sm">
                           <div className="min-w-0 flex-1">
                             <div className="font-medium">{etiquetas.discrepancy[d.kind] || d.kind}{item ? <span className="font-normal" style={{ color: "var(--ink-soft)" }}> · {soloFechaCivil(item.date)} · {item.guardName || "—"} · {item.siteName || "—"}</span> : null}</div>
-                            {d.detail && <div style={{ color: "var(--ink-soft)" }}>{d.detail}</div>}
+                            {detalleLegible(t, d.detail, moneda) && <div style={{ color: "var(--ink-soft)" }}>{detalleLegible(t, d.detail, moneda)}</div>}
                             {d.note && <div className="text-xs" style={{ color: "var(--ink-faint)" }}>{d.note}</div>}
                           </div>
                           {d.resolution === "pending" ? (
@@ -300,7 +318,7 @@ function ResolverModal({ discrepancia, item, trabajando, onClose, onSave }: { di
   const listo = resolution !== "corrected" || (Number.isFinite(n) && n >= 0);
 
   return (
-    <Modal open size="md" title={etiquetas.discrepancy[discrepancia.kind] || discrepancia.kind} description={discrepancia.detail || undefined} onOpenChange={(o) => { if (!o) onClose(); }}
+    <Modal open size="md" title={etiquetas.discrepancy[discrepancia.kind] || discrepancia.kind} description={detalleLegible(t, discrepancia.detail) || undefined} onOpenChange={(o) => { if (!o) onClose(); }}
       footer={<div className="cg-acciones justify-end"><Button variant="outline" onClick={onClose}>{t("ui.Facturacion.cancelar", "Cancelar")}</Button><Button disabled={trabajando || !listo} variant="brand" onClick={() => onSave({ resolution, note: note || undefined, ...(resolution === "corrected" ? { billableMinutes: Math.round(n) } : {}) })}>{t("ui.Facturacion.guardar", "Guardar")}</Button></div>}
     >
       <div className="space-y-3">

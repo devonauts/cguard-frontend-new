@@ -238,7 +238,7 @@ export interface Discrepancy {
   itemId: string | null;
   kind: DiscrepancyKind;
   severity: DiscrepancySeverity;
-  detail: string | null;
+  detail: Record<string, unknown> | string | null;
   resolution: DiscrepancyResolution;
   resolvedById: string | null;
   resolvedAt: string | null;
