@@ -17037,7 +17037,7 @@
         "paisCambiado": "Modelo de {{pais}} aplicado; {{n}} rubricas adicionadas",
         "titulo": "Holerites",
         "paisTitulo": "País e moeda",
-        "paisHint": "Mudar de país propõe a jornada, os adicionais e as rubricas desse país; o que você já ajustou não é sobrescrito.",
+        "paisHint": "Mudar de país propõe a jornada, os adicionais e os conceitos desse país. Os conceitos do país anterior são substituídos; os que você criou ficam.",
         "monedaIso": "Moeda (código ISO)",
         "decimales": "Casas decimais",
         "sueldoTitulo": "Salário base e mínimo",

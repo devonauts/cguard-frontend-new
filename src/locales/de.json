@@ -17572,7 +17572,7 @@
         "paisCambiado": "Vorlage für {{pais}} angewendet; {{n}} Lohnarten hinzugefügt",
         "titulo": "Lohnabrechnungen",
         "paisTitulo": "Land und Währung",
-        "paisHint": "Ein Länderwechsel schlägt Arbeitszeit, Zuschläge und Lohnarten dieses Landes vor; was Sie bereits angepasst haben, wird nicht überschrieben.",
+        "paisHint": "Ein Länderwechsel übernimmt Arbeitszeit, Zuschläge und Lohnarten dieses Landes. Die Lohnarten des bisherigen Landes werden ersetzt; deine eigenen bleiben.",
         "monedaIso": "Währung (ISO-Code)",
         "decimales": "Dezimalstellen",
         "sueldoTitulo": "Grundgehalt und Mindestlohn",

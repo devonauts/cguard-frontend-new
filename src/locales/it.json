@@ -17572,7 +17572,7 @@
         "paisCambiado": "Modello di {{pais}} applicato; aggiunte {{n}} voci",
         "titulo": "Buste paga",
         "paisTitulo": "Paese e valuta",
-        "paisHint": "Cambiare paese propone l'orario, le maggiorazioni e le voci di quel paese; ciò che hai già modificato non viene sovrascritto.",
+        "paisHint": "Cambiare paese propone orario, maggiorazioni e voci di quel paese. Le voci del paese precedente vengono sostituite; quelle che hai creato restano.",
         "monedaIso": "Valuta (codice ISO)",
         "decimales": "Decimali",
         "sueldoTitulo": "Stipendio base e minimo",

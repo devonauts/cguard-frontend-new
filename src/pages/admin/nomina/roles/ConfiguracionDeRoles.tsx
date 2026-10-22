@@ -80,7 +80,7 @@ export default function ConfiguracionDeRoles() {
           <FadeIn className="space-y-4 pb-28">
             <Section icon={<Globe2 />} title={t("ui.RolesDePago.config.paisTitulo", "País y moneda")}>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <FormField label={t("ui.RolesDePago.asistente.pais", "País")} hint={t("ui.RolesDePago.config.paisHint", "Cambiar de país propone la jornada, los recargos y los conceptos de ese país; lo que ya ajustaste no se pisa.")}>
+                <FormField label={t("ui.RolesDePago.asistente.pais", "País")} hint={t("ui.RolesDePago.config.paisHint", "Cambiar de país propone la jornada, los recargos y los conceptos de ese país. Los conceptos del país anterior se reemplazan; los que creaste tú se quedan.")}>
                   <select className={FIELD_CLS} disabled={!canEdit || saving} value={s.countryCode} onChange={(e) => cambiarPais(e.target.value)}>
                     <option value="">{t("ui.RolesDePago.asistente.elige", "Elige…")}</option>
                     {paises.map((p) => <option key={p.code} value={p.code}>{p.nombre}</option>)}

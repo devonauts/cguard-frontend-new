@@ -17037,7 +17037,7 @@
         "paisCambiado": "Plantilla de {{pais}} aplicada; se añadieron {{n}} conceptos",
         "titulo": "Roles de pago",
         "paisTitulo": "País y moneda",
-        "paisHint": "Cambiar de país propone la jornada, los recargos y los conceptos de ese país; lo que ya ajustaste no se pisa.",
+        "paisHint": "Cambiar de país propone la jornada, los recargos y los conceptos de ese país. Los conceptos del país anterior se reemplazan; los que creaste tú se quedan.",
         "monedaIso": "Moneda (código ISO)",
         "decimales": "Decimales",
         "sueldoTitulo": "Sueldo base y mínimo",

@@ -17037,7 +17037,7 @@
         "paisCambiado": "{{pais}} template applied; {{n}} pay items added",
         "titulo": "Payslips",
         "paisTitulo": "Country and currency",
-        "paisHint": "Changing the country suggests that country's working hours, premiums and pay items; what you already adjusted is not overwritten.",
+        "paisHint": "Changing country proposes that country’s hours, premiums and concepts. The previous country’s concepts are replaced; the ones you created stay.",
         "monedaIso": "Currency (ISO code)",
         "decimales": "Decimals",
         "sueldoTitulo": "Base salary and minimum",

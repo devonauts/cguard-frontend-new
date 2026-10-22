@@ -17852,7 +17852,7 @@
         "paisCambiado": "Zastosowano szablon: {{pais}}; dodano składniki: {{n}}",
         "titulo": "Paski wypłaty",
         "paisTitulo": "Kraj i waluta",
-        "paisHint": "Zmiana kraju proponuje czas pracy, dodatki i składniki tego kraju; to, co już dostosowano, nie jest nadpisywane.",
+        "paisHint": "Zmiana kraju proponuje czas pracy, dodatki i składniki tego kraju. Składniki poprzedniego kraju są zastępowane; te, które utworzyłeś, zostają.",
         "monedaIso": "Waluta (kod ISO)",
         "decimales": "Miejsca dziesiętne",
         "sueldoTitulo": "Wynagrodzenie bazowe i minimalne",

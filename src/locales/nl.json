@@ -17572,7 +17572,7 @@
         "paisCambiado": "Sjabloon van {{pais}} toegepast; {{n}} looncomponenten toegevoegd",
         "titulo": "Loonstroken",
         "paisTitulo": "Land en valuta",
-        "paisHint": "Van land wisselen stelt de arbeidstijd, toeslagen en looncomponenten van dat land voor; wat je al hebt aangepast wordt niet overschreven.",
+        "paisHint": "Een ander land kiezen stelt de werktijd, toeslagen en looncomponenten van dat land voor. Die van het vorige land worden vervangen; die je zelf maakte blijven.",
         "monedaIso": "Valuta (ISO-code)",
         "decimales": "Decimalen",
         "sueldoTitulo": "Basissalaris en minimum",

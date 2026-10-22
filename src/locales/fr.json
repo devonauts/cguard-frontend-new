@@ -17572,7 +17572,7 @@
         "paisCambiado": "Modèle {{pais}} appliqué ; {{n}} rubriques ajoutées",
         "titulo": "Bulletins de paie",
         "paisTitulo": "Pays et devise",
-        "paisHint": "Changer de pays propose la durée du travail, les majorations et les rubriques de ce pays ; ce que vous avez déjà ajusté n'est pas écrasé.",
+        "paisHint": "Changer de pays propose la durée du travail, les majorations et les éléments de paie de ce pays. Ceux du pays précédent sont remplacés ; ceux que vous avez créés restent.",
         "monedaIso": "Devise (code ISO)",
         "decimales": "Décimales",
         "sueldoTitulo": "Salaire de base et minimum",
