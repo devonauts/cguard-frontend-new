@@ -216,6 +216,17 @@ export default defineConfig({
           // Las insignias de las tiendas, en ocho idiomas: 16 imágenes que el
           // arranque no pinta. Se piden cuando una pantalla las muestra.
           "assets/badges/**",
+          // ── OUR BRAND ART IS NOT PRECACHED ─────────────────────────────────
+          // One build serves every host, and the precache list is the same on
+          // all of them: a partner's host was downloading our shield, lockup
+          // and e-mail mark in the background (visible in its Network tab)
+          // although no screen there paints them. They load from the network
+          // where they ARE painted — our own login, the lockup, our favicon
+          // fallback — like any other image (offline, from the browser's
+          // HTTP cache once seen). The partner's art comes from the API.
+          "assets/logo/**",
+          "email/**",
+          "icons/**",
         ],
         // ── SÓLO EL ARRANQUE SE DESCARGA POR ADELANTADO ─────────────────────
         // Aun con las exclusiones de arriba quedaban ~440 ficheros que el SW se

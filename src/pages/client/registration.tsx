@@ -21,6 +21,7 @@ const MISEGURIDAD_IOS_URL =
   "https://apps.apple.com/us/app/mi-seguridad-by-c-guard-pro/id6778661633";
 import { toast } from "sonner";
 import { FadeIn, IconTile, InfoNote } from "@/components/kit";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import AuthShell, {
   AvisoError,
   BOTON_PRINCIPAL,
@@ -34,6 +35,15 @@ export default function ClientRegistration() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const marca = useWhiteLabel();
+  /* The customer app as shown on the confirmation: ours on our hosts; the
+     partner's logo and name on theirs (each may be missing — then nothing). */
+  const appLogo = marca.puedeUsarArteDePlataforma
+    ? "/assets/logo/miseguridad.png"
+    : marca.logo;
+  const appNombre = marca.puedeUsarArteDePlataforma
+    ? "Mi Seguridad"
+    : marca.platformName || "";
   const rawInviteToken =
     searchParams.get("token") ||
     searchParams.get("invitationToken") ||
@@ -401,10 +411,22 @@ export default function ClientRegistration() {
             className="text-sm leading-relaxed"
             style={{ color: "var(--ink-soft)" }}
           >
+            {/* Our app's name and logo only on our hosts. On a partner's host
+                the store links stay ours (owner's decision, until the partner
+                publishes its own apps), but what is SHOWN around them is the
+                partner's: its logo and name, or nothing. */}
             <Trans
               components={{ b: <strong style={{ color: "var(--ink)" }} /> }}
-              defaults="Tu cuenta con <b>{{empresa}}</b> está lista. Descarga <b>Mi Seguridad</b> para monitorear y gestionar tu servicio de seguridad desde tu teléfono."
-              i18nKey="ui.registration.tuCuentaConEstaListaDescarga"
+              defaults={
+                marca.puedeUsarArteDePlataforma
+                  ? "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga <b>Mi Seguridad</b> para monitorear y gestionar tu servicio de seguridad desde tu teléfono."
+                  : "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la app para monitorear y gestionar tu servicio de seguridad desde tu teléfono."
+              }
+              i18nKey={
+                marca.puedeUsarArteDePlataforma
+                  ? "ui.registration.tuCuentaConEstaListaDescarga"
+                  : "ui.registration.cuentaListaDescargaLaApp"
+              }
               values={{
                 empresa:
                   empresa ||
@@ -417,13 +439,15 @@ export default function ClientRegistration() {
           </p>
 
           <div className="glass-sunken mt-6 flex items-center gap-3 p-4 text-left">
-            <img
-              src="/assets/logo/miseguridad.png"
-              alt="Mi Seguridad"
-              className="h-12 w-12 shrink-0 rounded-xl object-contain"
-            />
+            {appLogo ? (
+              <img
+                src={appLogo}
+                alt={appNombre}
+                className="h-12 w-12 shrink-0 rounded-xl object-contain"
+              />
+            ) : null}
             <div className="min-w-0">
-              <p className="text-sm font-bold">Mi Seguridad</p>
+              {appNombre ? <p className="text-sm font-bold">{appNombre}</p> : null}
               <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                 {t(
                   "ui.registration.vigilantesYPuestosEnTiempoReal",

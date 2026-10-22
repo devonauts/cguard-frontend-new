@@ -22,6 +22,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import type { MapEntity } from "../types";
+import type { EstadoDeConexion } from "@/lib/api/conexionAppService";
 
 import { Crosshair, Users } from "lucide-react";
 
@@ -47,8 +48,10 @@ import {
 // Precedente: src/components/AppErrorBoundary.tsx
 import i18n from "@/i18n";
 import securityGuardService from "@/lib/api/securityGuardService";
-import type { EstadoDeConexion } from "@/lib/api/conexionAppService";
-import { textoDeEpisodio, textoDePendientes } from "@/components/conexion/EstadoDeConexionApp";
+import {
+  textoDeEpisodio,
+  textoDePendientes,
+} from "@/components/conexion/EstadoDeConexionApp";
 import { soloHora } from "@/lib/horaDeLaEmpresa";
 
 /* ── Lo que el mapa deja hacer desde un globo ─────────────────────────────── */
@@ -203,7 +206,10 @@ export function globoDe(
         campos,
         i18n.t("ui.OperationsMapPopup.geocerca", "Geocerca"),
         m.geofencePolygon?.length
-          ? i18n.t("ui.OperationsMapPopup.perimetroTrazado", "Perímetro trazado")
+          ? i18n.t(
+              "ui.OperationsMapPopup.perimetroTrazado",
+              "Perímetro trazado",
+            )
           : `${cob?.radio ?? 150} m`,
         { mono: true },
       );
@@ -230,7 +236,10 @@ export function globoDe(
         title: e.label,
         subtitle:
           [m.clientName, m.postSiteName].filter(Boolean).join(" · ") ||
-          i18n.t("ui.OperationsMapPopup.puestoDeServicio", "Puesto de servicio"),
+          i18n.t(
+            "ui.OperationsMapPopup.puestoDeServicio",
+            "Puesto de servicio",
+          ),
         status: {
           label: i18n.t(
             COBERTURA_LABEL[estado].labelKey,
@@ -337,7 +346,10 @@ export function globoDe(
           rutaSede && rutaCliente
             ? {
                 id: "client",
-                label: i18n.t("ui.OperationsMapPopup.verCliente", "Ver cliente"),
+                label: i18n.t(
+                  "ui.OperationsMapPopup.verCliente",
+                  "Ver cliente",
+                ),
                 icon: <Users />,
                 onClick: () => mando.irA(rutaCliente),
               }
@@ -353,7 +365,11 @@ export function globoDe(
     case "guard": {
       const senal = m.lastSeenAt || m.punchInTime;
 
-      fila(campos, i18n.t("maps.kind.station", "Puesto"), m.stationName || e.sub);
+      fila(
+        campos,
+        i18n.t("maps.kind.station", "Puesto"),
+        m.stationName || e.sub,
+      );
       if (m.punchInTime)
         fila(
           campos,
@@ -426,7 +442,11 @@ export function globoDe(
       const senal = m.lastSeenAt;
 
       fila(campos, i18n.t("maps.kind.zone", "Zona"), m.zone);
-      fila(campos, i18n.t("ui.OperationsMapPopup.vehiculo", "Vehículo"), m.vehicle);
+      fila(
+        campos,
+        i18n.t("ui.OperationsMapPopup.vehiculo", "Vehículo"),
+        m.vehicle,
+      );
       if (m.onDutySince)
         fila(
           campos,
@@ -488,9 +508,14 @@ export function globoDe(
 
     /* ── INCIDENTE ─────────────────────────────────────────────────────── */
     case "incident": {
-      fila(campos, i18n.t("ui.OperationsMapPopup.ubicacion", "Ubicación"), e.sub, {
-        wide: true,
-      });
+      fila(
+        campos,
+        i18n.t("ui.OperationsMapPopup.ubicacion", "Ubicación"),
+        e.sub,
+        {
+          wide: true,
+        },
+      );
       if (m.lastSeenAt)
         fila(
           campos,
@@ -523,9 +548,14 @@ export function globoDe(
 
     /* ── SEDE DEL NEGOCIO ──────────────────────────────────────────────── */
     default: {
-      fila(campos, i18n.t("clients.form.address", "Dirección"), m.address || e.sub, {
-        wide: true,
-      });
+      fila(
+        campos,
+        i18n.t("clients.form.address", "Dirección"),
+        m.address || e.sub,
+        {
+          wide: true,
+        },
+      );
 
       return {
         id: e.id,
@@ -552,18 +582,27 @@ export function globoDe(
  * acaba de volver, cuánto estuvo sin ella y si mandó lo que hizo sin señal.
  * Ver hooks/useConexionApp.
  */
-export function conConexion(data: MapPopupData, estado?: EstadoDeConexion): MapPopupData {
+export function conConexion(
+  data: MapPopupData,
+  estado?: EstadoDeConexion,
+): MapPopupData {
   if (!estado) return data;
   const t = (k: string, d: string, o?: any) => String(i18n.t(k, d, o));
   const reciente =
-    estado.ultimoEpisodio && Date.now() - new Date(estado.ultimoEpisodio.hasta).getTime() < 2 * 3600 * 1000
+    estado.ultimoEpisodio &&
+    Date.now() - new Date(estado.ultimoEpisodio.hasta).getTime() <
+      2 * 3600 * 1000
       ? estado.ultimoEpisodio
       : null;
   const valor = !estado.conectado
-    ? t("conexionApp.sinConexionDesde", "Sin conexión desde {{hora}}", { hora: soloHora(estado.desde) })
+    ? t("conexionApp.sinConexionDesde", "Sin conexión desde {{hora}}", {
+        hora: soloHora(estado.desde),
+      })
     : reciente
       ? textoDeEpisodio(t, reciente)
-      : t("conexionApp.conectadoDesde", "Con conexión desde {{hora}}", { hora: soloHora(estado.desde) });
+      : t("conexionApp.conectadoDesde", "Con conexión desde {{hora}}", {
+          hora: soloHora(estado.desde),
+        });
   // Lo hecho y aún no enviado: la central tiene que saber que HAY algo en camino.
   const pendientes = textoDePendientes(t, estado.pendientes);
   const campo: MapPopupField = {
@@ -593,7 +632,10 @@ export function globoDeRacimo(r: Racimo, mando: MandoGlobo): MapPopupData {
       count: r.miembros.length,
       defaultValue: "{{count}} sedes",
     }),
-    subtitle: i18n.t("ui.OperationsMapPopup.agrupadasPorCercania", "Agrupadas por cercanía"),
+    subtitle: i18n.t(
+      "ui.OperationsMapPopup.agrupadasPorCercania",
+      "Agrupadas por cercanía",
+    ),
     tone: "neutral",
     fields: [
       {
@@ -612,7 +654,10 @@ export function globoDeRacimo(r: Racimo, mando: MandoGlobo): MapPopupData {
     actions: [
       {
         id: "expand",
-        label: i18n.t("ui.OperationsMapPopup.verPorSeparado", "Ver por separado"),
+        label: i18n.t(
+          "ui.OperationsMapPopup.verPorSeparado",
+          "Ver por separado",
+        ),
         icon: <Crosshair />,
         variant: "primary",
         onClick: () => mando.abrirRacimo(r),

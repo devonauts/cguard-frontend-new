@@ -5789,7 +5789,8 @@
     "cvSent": "Curriculum: {{n}}",
     "cvTitle": "Curriculum letto",
     "downloadExcel": "Scarica Excel",
-    "downloadPdf": "Scarica PDF"
+    "downloadPdf": "Scarica PDF",
+    "nombreNeutro": "Assistente"
   },
   "actions": {
     "action": "Azione",
@@ -6224,7 +6225,8 @@
       "label": "Utenti: {{usados}} di {{maximo}}",
       "body": "{{proveedor}} stabilisce quanti utenti può avere la tua azienda. Se te ne servono altri, chiedili a loro.",
       "bodyUnnamed": "Il tuo fornitore stabilisce quanti utenti può avere la tua azienda. Se te ne servono altri, chiedili a lui.",
-      "full": "Hai raggiunto il tuo massimo. Per aggiungere altri utenti, chiedi a {{proveedor}}."
+      "full": "Hai raggiunto il tuo massimo. Per aggiungere altri utenti, chiedi a {{proveedor}}.",
+      "fullUnnamed": "Hai raggiunto il tuo massimo. Per aggiungere altri utenti, chiedi al tuo fornitore."
     }
   },
   "brand": {
@@ -9569,7 +9571,8 @@
       "usuarioSinCorreoAyuda": "Con questo nome utente e la password che crei qui entrerai nell'app. Se hai un'e-mail, puoi aggiungerla sotto (facoltativo).",
       "yaPuedesEntrar": "Puoi già accedere",
       "tuEmpresaTeAsignaraAUnPuesto": "La tua azienda ti assegnerà a una postazione.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password.",
+      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono."
     },
     "AddressAutocomplete": {
       "miUbicacion": "La mia posizione",
@@ -18427,6 +18430,76 @@
         "modalTitulo": "Metodi di pagamento di questa fattura",
         "modalDesc": "Compaiono nella pagina pubblica, nel PDF e nell'e-mail. Per esempio, «solo bonifico».",
         "enEnvio": "Metodi di pagamento che compariranno"
+      },
+      "diseno": {
+        "colorInvalido": "Usa il formato #RRGGBB.",
+        "clasico": "Classico",
+        "clasicoHint": "Nome a sinistra, titolo colorato a destra.",
+        "banda": "Fascia colorata",
+        "bandaHint": "Una fascia in alto nel tuo colore, con nome e logo in bianco.",
+        "minimalista": "Minimalista",
+        "minimalistaHint": "Sobrio: una linea sottile colorata sotto l’intestazione.",
+        "fuenteHelvetica": "Helvetica (moderno)",
+        "fuenteTimes": "Times (classico)",
+        "fuenteCourier": "Courier (macchina da scrivere)",
+        "mostrarIdFiscal": "Identificativo fiscale dell’azienda",
+        "mostrarIdFiscalHint": "Nel piè di pagina di ogni pagina.",
+        "mostrarOrdenDeCompra": "Ordine d’acquisto",
+        "mostrarOrdenDeCompraHint": "Quando il contratto o la fattura ne hanno uno.",
+        "mostrarPeriodo": "Periodo di servizio",
+        "mostrarPeriodoHint": "Le date coperte dalla fattura.",
+        "mostrarMetodos": "Come pagare",
+        "mostrarMetodosHint": "I metodi di pagamento con i loro dati. Disattivato, viene stampato il testo delle istruzioni di pagamento.",
+        "mostrarFirmas": "Righe per la firma",
+        "mostrarFirmasHint": "Per firmare la copia stampata. Nel preventivo solo se non è stato accettato online.",
+        "mostrarPaginas": "Numero di pagina",
+        "mostrarPaginasHint": "«Pagina 1», «Pagina 2»… nel piè di pagina.",
+        "colores": "Colori",
+        "colorAcento": "Colore principale",
+        "colorTexto": "Colore del testo",
+        "coloresHint": "Il colore principale si usa per il titolo, la fascia e le intestazioni, e anche nelle e-mail di fatture e preventivi.",
+        "encabezado": "Intestazione",
+        "letraYLogo": "Carattere e logo",
+        "fuente": "Carattere",
+        "logo": "Logo",
+        "logoDeLaEmpresa": "Il logo della tua azienda.",
+        "sinLogo": "La tua azienda non ha ancora un logo.",
+        "cambiarLogo": "Cambialo nel profilo aziendale",
+        "mostrarLogo": "Mostra il logo",
+        "logoIzquierda": "A sinistra",
+        "logoDerecha": "A destra",
+        "queSeMuestra": "Cosa viene mostrato",
+        "titulos": "Titoli",
+        "tituloHint": "Vuoto = quello di sempre, nella lingua del documento.",
+        "tituloFactura": "Titolo della fattura",
+        "tituloFacturaDefecto": "INVOICE",
+        "tituloCotizacion": "Titolo del preventivo",
+        "tituloCotizacionDefecto": "PROPOSAL",
+        "textosFactura": "Fatture",
+        "notasPorDefectoHint": "Copiate in ogni nuova fattura senza note (anche quelle dei cicli di fatturazione). Modificabili in ciascuna.",
+        "notasPorDefecto": "Note predefinite",
+        "terminosFacturaHint": "Stampati su tutte le fatture sotto «Termini e condizioni»: scadenze, penali, clausole.",
+        "terminosFactura": "Termini e condizioni",
+        "instruccionesHint": "Stampate solo quando la fattura non mostra metodi di pagamento (o li hai nascosti in Design).",
+        "pieFacturaHint": "L’ultima riga del documento: un ringraziamento, la licenza, un indirizzo postale…",
+        "textosCotizacion": "Preventivi",
+        "introPorDefectoHint": "Il saluto con cui inizia ogni nuovo preventivo. Modificabile in ciascuno.",
+        "introPorDefecto": "Introduzione predefinita",
+        "cierreHint": "Stampato dopo i totali: «Restiamo a disposizione…».",
+        "cierre": "Testo di chiusura",
+        "pieCotizacionHint": "L’ultima riga del preventivo: licenze, certificazioni, contatti…",
+        "pieCotizacion": "Piè di pagina del preventivo",
+        "errorVistaPrevia": "Impossibile disegnare l’anteprima.",
+        "abrir": "Apri",
+        "vistaPrevia": "Anteprima",
+        "factura": "Fattura",
+        "cotizacion": "Preventivo",
+        "actualizando": "Aggiornamento…",
+        "dibujando": "Disegno del documento…",
+        "vistaPreviaHint": "Dati di esempio con la tua intestazione reale e le modifiche non salvate. Nulla viene salvato finché non premi Salva.",
+        "pestanaDiseno": "Design dei documenti",
+        "pestanaTextos": "Testi",
+        "validezYTerminosMovidos": "Validità, introduzione e termini dei preventivi ora sono in Testi."
       }
     },
     "ClientInvoices": {
@@ -20047,6 +20120,19 @@
       "ahora": "Ora sei qui",
       "ultimaVez": "L’ultima volta",
       "cambiaCuandoQuieras": "Puoi cambiare quando vuoi dalla barra superiore. La schermata attuale resta."
+    },
+    "mapa": {
+      "titulo": "Mappa dell’operatività",
+      "entrar": "Entra"
+    },
+    "comparativa": {
+      "titulo": "Confronto tra filiali",
+      "subtitulo": "In questo momento, una riga per filiale. Toccane una per vederla sulla mappa.",
+      "sucursal": "Filiale",
+      "sinCubrir": "Scoperti",
+      "enRiesgo": "A rischio",
+      "incidentes": "Incidenti",
+      "total": "Tutta l’azienda"
     }
   },
   "soporte": {

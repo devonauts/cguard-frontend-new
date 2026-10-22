@@ -1,13 +1,14 @@
 /**
  * BILLING SETTINGS — the company's header on the invoice, numbering and
  * terms, premium and late-fee rules, the sales-tax table the company keeps
- * by hand, the payment methods it accepts, and the document footer.
+ * by hand, the payment methods it accepts, and how its invoices and
+ * proposals look and read (design + texts, with a live preview).
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Building2, CreditCard, FileText, Hash, Percent, Plus, Scale, Settings2, Trash2, Pencil, Wallet } from "lucide-react";
+import { Building2, CreditCard, FileText, Hash, Palette, Percent, Plus, Scale, Settings2, Trash2, Pencil, Wallet } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -16,13 +17,14 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import { PageContainer, PageHeader, Section, SkeletonCards, Modal, FormField, FIELD_CLS, StatusBadge, TabNav, InfoNote } from "@/components/kit";
 import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { usePermissions } from "@/hooks/usePermissions";
-import clientBillingService, { BILLING_CYCLES, type BillingSettings, type TaxJurisdiction, type TaxRate, type UsState } from "@/lib/api/clientBillingService";
+import clientBillingService, { BILLING_CYCLES, isHexColor, type BillingSettings, type DocumentStyle, type TaxJurisdiction, type TaxRate, type UsState } from "@/lib/api/clientBillingService";
 import { QK, porcentaje, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
 import { ReglaDeRecargo } from "./ReglaDeRecargo";
 import { CobrosGateway } from "./CobrosGateway";
 import { MetodosDePagoAjustes, metodoSinNombre } from "./MetodosDePago";
+import { DisenoAjustes, TextosAjustes, VistaPrevia, estiloDe, type DocKind } from "./DisenoDeDocumentos";
 
-type Pestana = "empresa" | "numeracion" | "reglas" | "impuestos" | "metodos" | "cobros" | "documento";
+type Pestana = "empresa" | "numeracion" | "reglas" | "impuestos" | "metodos" | "cobros" | "documento" | "textos";
 
 function AjustesFacturacionPage() {
   const { t } = useTranslation();
@@ -38,6 +40,8 @@ function AjustesFacturacionPage() {
   const [tasa, setTasa] = useState<Partial<TaxRate> | null>(null);
   // Typed as text so «-3, » survives while the person is still typing.
   const [reminderText, setReminderText] = useState("");
+  // The preview of the design and texts tabs: which document it draws.
+  const [docKind, setDocKind] = useState<DocKind>("invoice");
 
   useEffect(() => {
     if (vista.data) {
@@ -47,6 +51,7 @@ function AjustesFacturacionPage() {
   }, [vista.data]);
 
   const set = <K extends keyof BillingSettings>(k: K, v: BillingSettings[K]) => setForm((f) => (f ? { ...f, [k]: v } : f));
+  const setEstilo = (patch: Partial<DocumentStyle>) => setForm((f) => (f ? { ...f, documentStyle: { ...estiloDe(f), ...patch } } : f));
   const num = (s: string) => { const n = Number(s); return Number.isFinite(n) ? n : 0; };
 
   const guardar = async () => {
@@ -54,6 +59,14 @@ function AjustesFacturacionPage() {
     if (metodoSinNombre(form.paymentMethods)) {
       setTab("metodos");
       toast.error(t("ui.Facturacion.metodos.nombreObligatorio", "Ponle un nombre a cada método propio."));
+
+      return;
+    }
+    const estilo = estiloDe(form);
+
+    if (!isHexColor(estilo.accentColor) || !isHexColor(estilo.textColor)) {
+      setTab("documento");
+      toast.error(t("ui.Facturacion.diseno.colorInvalido", "Usa el formato #RRGGBB."));
 
       return;
     }
@@ -89,7 +102,8 @@ function AjustesFacturacionPage() {
     { value: "impuestos" as Pestana, label: t("ui.Facturacion.ajustes.impuestos", "Impuestos"), icon: <Percent />, badge: vista.data?.taxRates.length || null },
     { value: "metodos" as Pestana, label: t("ui.Facturacion.metodos.titulo", "Métodos de pago"), icon: <Wallet /> },
     { value: "cobros" as Pestana, label: t("ui.Facturacion.ajustes.cobros", "Cobros"), icon: <CreditCard /> },
-    { value: "documento" as Pestana, label: t("ui.Facturacion.ajustes.documento", "Documento"), icon: <FileText /> },
+    { value: "documento" as Pestana, label: t("ui.Facturacion.diseno.pestanaDiseno", "Diseño de documentos"), icon: <Palette /> },
+    { value: "textos" as Pestana, label: t("ui.Facturacion.diseno.pestanaTextos", "Textos"), icon: <FileText /> },
   ];
 
   const botonGuardar = canEdit && tab !== "impuestos" && tab !== "cobros" ? <Button disabled={saving || !form} variant="brand" onClick={guardar}>{saving ? t("ui.Facturacion.guardando", "Guardando…") : t("ui.Facturacion.guardar", "Guardar")}</Button> : undefined;
@@ -179,12 +193,11 @@ function AjustesFacturacionPage() {
               <FormField label={t("ui.Facturacion.ajustes.prefijoCotizacion", "Prefijo de cotización")} hint={t("ui.Facturacion.ajustes.prefijoCotizacionHint", "Ej.: QUO-2026-00001")}>
                 <input className={FIELD_CLS} disabled={!canEdit} value={form.quotePrefix ?? ""} onChange={(e) => set("quotePrefix", e.target.value)} />
               </FormField>
-              <FormField label={t("ui.Facturacion.ajustes.validezCotizacion", "Validez de la cotización (días)")} hint={t("ui.Facturacion.ajustes.validezCotizacionHint", "Pasado ese plazo sin firma, la cotización vence sola.")}>
-                <input className={FIELD_CLS} disabled={!canEdit} max={365} min={1} type="number" value={form.quoteValidityDays ?? 30} onChange={(e) => set("quoteValidityDays", num(e.target.value))} />
-              </FormField>
-              <FormField className="sm:col-span-3" label={t("ui.Facturacion.ajustes.terminosCotizacion", "Términos por defecto de las cotizaciones")} hint={t("ui.Facturacion.ajustes.terminosCotizacionHint", "Se copian en cada cotización nueva; puedes cambiarlos en cada una.")}>
-                <textarea className={`${FIELD_CLS} h-32`} disabled={!canEdit} value={form.quoteTerms ?? ""} onChange={(e) => set("quoteTerms", e.target.value)} />
-              </FormField>
+              <div className="flex items-end text-xs sm:col-span-2" style={{ color: "var(--ink-soft)" }}>
+                <button className="cg-focus text-left underline-offset-2 hover:underline" style={{ color: "var(--brand-text)" }} type="button" onClick={() => { setDocKind("quote"); setTab("textos"); }}>
+                  {t("ui.Facturacion.diseno.validezYTerminosMovidos", "La validez, la introducción y los términos de las cotizaciones están en Textos.")}
+                </button>
+              </div>
             </div>
           </Section>
         ) : tab === "reglas" ? (
@@ -250,23 +263,17 @@ function AjustesFacturacionPage() {
         ) : tab === "cobros" ? (
           <CobrosGateway canEdit={canEdit} />
         ) : (
-          <Section title={t("ui.Facturacion.ajustes.documento", "Documento")} icon={<FileText />}>
-            <div className="space-y-3">
-              <FormField label={t("ui.Facturacion.ajustes.instruccionesDePago", "Instrucciones de pago")} hint={t("ui.Facturacion.ajustes.instruccionesDePagoHint", "Cuenta bancaria, a nombre de quién va el cheque, enlace de pago… Sale en cada factura.")}>
-                <textarea className={`${FIELD_CLS} h-24`} disabled={!canEdit} value={form.paymentInstructions || ""} onChange={(e) => set("paymentInstructions", e.target.value)} />
-              </FormField>
-              <FormField label={t("ui.Facturacion.ajustes.pieDeFactura", "Pie de la factura")}>
-                <textarea className={`${FIELD_CLS} h-20`} disabled={!canEdit} value={form.invoiceFooter || ""} onChange={(e) => set("invoiceFooter", e.target.value)} />
-              </FormField>
-              <label className="flex items-center justify-between gap-3 text-sm">
-                <span>
-                  <span className="block font-medium">{t("ui.Facturacion.ajustes.adjuntarDetalle", "Adjuntar el detalle de turnos al PDF")}</span>
-                  <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Facturacion.ajustes.adjuntarDetalleHint", "Fecha, sede, vigilante y horas de cada turno facturado, como anexo.")}</span>
-                </span>
-                <Switch checked={form.attachShiftDetail} disabled={!canEdit} onCheckedChange={(v) => set("attachShiftDetail", v)} />
-              </label>
+          // Design and texts: the form on the left, the live preview on the right (below it on narrow screens).
+          <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            {tab === "documento" ? (
+              <DisenoAjustes canEdit={canEdit} logoUrl={vista.data?.logoUrl ?? null} value={estiloDe(form)} onChange={setEstilo} />
+            ) : (
+              <TextosAjustes canEdit={canEdit} form={form} set={set} setEstilo={setEstilo} onKind={setDocKind} />
+            )}
+            <div className="xl:sticky xl:top-4">
+              <VistaPrevia form={form} kind={docKind} onKind={setDocKind} />
             </div>
-          </Section>
+          </div>
         )}
 
         {tasa && (

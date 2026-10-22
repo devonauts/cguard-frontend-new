@@ -19,6 +19,8 @@
  * Si no existe, estamos en web y cada función degrada con elegancia.
  */
 
+import { iconoDeAvisos } from "@/lib/iconoDeAvisos";
+
 interface CguardDesktopBridge {
   setBadge: (count: number, overlayDataUrl?: string) => void;
   /** Des-esconde y enfoca la ventana (bandeja/minimizada). */
@@ -85,7 +87,8 @@ export function notifyNative(
       // pánicos distintos con el mismo título son DOS avisos, no uno (la
       // auditoría encontró que el tag por título tragaba el segundo pánico).
       tag: eventId ? `cguard-${eventId}` : undefined,
-      icon: "/assets/logo/c-guard-app-logo.png",
+      // The host's icon (see `lib/iconoDeAvisos`): never ours on a partner's host.
+      icon: iconoDeAvisos(),
     });
 
     n.onclick = () => {

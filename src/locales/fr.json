@@ -5789,7 +5789,8 @@
     "cvSent": "CV : {{n}}",
     "cvTitle": "CV analysé",
     "downloadExcel": "Télécharger Excel",
-    "downloadPdf": "Télécharger PDF"
+    "downloadPdf": "Télécharger PDF",
+    "nombreNeutro": "Assistant"
   },
   "actions": {
     "action": "Action",
@@ -6224,7 +6225,8 @@
       "label": "Utilisateurs : {{usados}} sur {{maximo}}",
       "body": "{{proveedor}} fixe le nombre d'utilisateurs de votre entreprise. S'il vous en faut plus, demandez-le-lui.",
       "bodyUnnamed": "Votre fournisseur fixe le nombre d'utilisateurs de votre entreprise. S'il vous en faut plus, demandez-le-lui.",
-      "full": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à {{proveedor}}."
+      "full": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à {{proveedor}}.",
+      "fullUnnamed": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à votre fournisseur."
     }
   },
   "brand": {
@@ -9569,7 +9571,8 @@
       "usuarioSinCorreoAyuda": "Vous vous connecterez à l'app avec cet identifiant et le mot de passe créé ici. Si vous avez un e-mail, ajoutez-le ci-dessous (facultatif).",
       "yaPuedesEntrar": "Vous pouvez déjà vous connecter",
       "tuEmpresaTeAsignaraAUnPuesto": "Votre entreprise vous affectera à un poste.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Connectez-vous avec votre identifiant et votre mot de passe."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Connectez-vous avec votre identifiant et votre mot de passe.",
+      "cuentaListaDescargaLaApp": "Votre compte avec <b>{{empresa}}</b> est prêt. Téléchargez l'application pour suivre et gérer votre service de sécurité depuis votre téléphone."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Ma position",
@@ -18427,6 +18430,76 @@
         "modalTitulo": "Moyens de paiement de cette facture",
         "modalDesc": "Ils apparaissent sur la page publique, le PDF et l'e-mail. Par exemple, « virement uniquement ».",
         "enEnvio": "Moyens de paiement affichés"
+      },
+      "diseno": {
+        "colorInvalido": "Utilisez le format #RRGGBB.",
+        "clasico": "Classique",
+        "clasicoHint": "Nom à gauche, titre en couleur à droite.",
+        "banda": "Bandeau de couleur",
+        "bandaHint": "Un bandeau supérieur à votre couleur, nom et logo en blanc.",
+        "minimalista": "Minimaliste",
+        "minimalistaHint": "Sobre : un filet de couleur sous l’en-tête.",
+        "fuenteHelvetica": "Helvetica (moderne)",
+        "fuenteTimes": "Times (classique)",
+        "fuenteCourier": "Courier (machine à écrire)",
+        "mostrarIdFiscal": "Identifiant fiscal de l’entreprise",
+        "mostrarIdFiscalHint": "En pied de chaque page.",
+        "mostrarOrdenDeCompra": "Bon de commande",
+        "mostrarOrdenDeCompraHint": "Quand le contrat ou la facture en a un.",
+        "mostrarPeriodo": "Période de service",
+        "mostrarPeriodoHint": "Les dates couvertes par la facture.",
+        "mostrarMetodos": "Comment payer",
+        "mostrarMetodosHint": "Les moyens de paiement avec leurs coordonnées. Désactivé, le texte des instructions de paiement est imprimé.",
+        "mostrarFirmas": "Lignes de signature",
+        "mostrarFirmasHint": "Pour signer la copie imprimée. Sur un devis, seulement s’il n’a pas été accepté en ligne.",
+        "mostrarPaginas": "Numéro de page",
+        "mostrarPaginasHint": "« Page 1 », « Page 2 »… en pied de page.",
+        "colores": "Couleurs",
+        "colorAcento": "Couleur principale",
+        "colorTexto": "Couleur du texte",
+        "coloresHint": "La couleur principale sert au titre, au bandeau et aux intitulés, ainsi qu’aux e-mails de factures et de devis.",
+        "encabezado": "En-tête",
+        "letraYLogo": "Police et logo",
+        "fuente": "Police",
+        "logo": "Logo",
+        "logoDeLaEmpresa": "Le logo de votre entreprise.",
+        "sinLogo": "Votre entreprise n’a pas encore de logo.",
+        "cambiarLogo": "Le modifier dans le profil de l’entreprise",
+        "mostrarLogo": "Afficher le logo",
+        "logoIzquierda": "À gauche",
+        "logoDerecha": "À droite",
+        "queSeMuestra": "Ce qui s’affiche",
+        "titulos": "Titres",
+        "tituloHint": "Vide = le titre habituel, dans la langue du document.",
+        "tituloFactura": "Titre de la facture",
+        "tituloFacturaDefecto": "INVOICE",
+        "tituloCotizacion": "Titre du devis",
+        "tituloCotizacionDefecto": "PROPOSAL",
+        "textosFactura": "Factures",
+        "notasPorDefectoHint": "Copiées dans chaque nouvelle facture sans notes (y compris celles des cycles de facturation). Modifiables sur chacune.",
+        "notasPorDefecto": "Notes par défaut",
+        "terminosFacturaHint": "Imprimées sur toutes les factures sous « Conditions générales » : délais, pénalités, clauses.",
+        "terminosFactura": "Conditions générales",
+        "instruccionesHint": "Imprimées seulement quand la facture n’affiche aucun moyen de paiement (ou si vous les avez masqués dans Conception).",
+        "pieFacturaHint": "La dernière ligne du document : un remerciement, la licence, une adresse postale…",
+        "textosCotizacion": "Devis",
+        "introPorDefectoHint": "La formule d’accueil de chaque nouveau devis. Modifiable sur chacun.",
+        "introPorDefecto": "Introduction par défaut",
+        "cierreHint": "Imprimé après les totaux : « Nous restons à votre disposition… ».",
+        "cierre": "Texte de conclusion",
+        "pieCotizacionHint": "La dernière ligne du devis : licences, certifications, coordonnées…",
+        "pieCotizacion": "Pied du devis",
+        "errorVistaPrevia": "Impossible de dessiner l’aperçu.",
+        "abrir": "Ouvrir",
+        "vistaPrevia": "Aperçu",
+        "factura": "Facture",
+        "cotizacion": "Devis",
+        "actualizando": "Mise à jour…",
+        "dibujando": "Dessin du document…",
+        "vistaPreviaHint": "Données d’exemple avec votre en-tête réel et vos modifications non enregistrées. Rien n’est enregistré avant de cliquer sur Enregistrer.",
+        "pestanaDiseno": "Conception des documents",
+        "pestanaTextos": "Textes",
+        "validezYTerminosMovidos": "La validité, l’introduction et les conditions des devis sont désormais dans Textes."
       }
     },
     "ClientInvoices": {
@@ -20047,6 +20120,19 @@
       "ahora": "Vous êtes ici",
       "ultimaVez": "La dernière fois",
       "cambiaCuandoQuieras": "Vous pouvez changer à tout moment depuis la barre supérieure. L’écran actuel est conservé."
+    },
+    "mapa": {
+      "titulo": "Carte de l’activité",
+      "entrar": "Entrer"
+    },
+    "comparativa": {
+      "titulo": "Comparatif des agences",
+      "subtitulo": "En ce moment, une ligne par agence. Touchez-en une pour la voir sur la carte.",
+      "sucursal": "Agence",
+      "sinCubrir": "Non couverts",
+      "enRiesgo": "À risque",
+      "incidentes": "Incidents",
+      "total": "Toute l’entreprise"
     }
   },
   "soporte": {

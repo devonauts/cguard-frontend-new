@@ -135,6 +135,65 @@ export interface ClientAccountRef {
   email?: string | null;
 }
 
+// ── How the documents look (invoice and proposal PDFs) ──────────────────────
+export const HEADER_STYLES = ["classic", "band", "minimal"] as const;
+export type HeaderStyle = (typeof HEADER_STYLES)[number];
+export const DOC_FONTS = ["helvetica", "times", "courier"] as const;
+export type DocFont = (typeof DOC_FONTS)[number];
+
+/** Mirrors `services/clientBilling/documentStyle.ts` on the server. */
+export interface DocumentStyle {
+  accentColor: string;
+  textColor: string;
+  headerStyle: HeaderStyle;
+  font: DocFont;
+  showLogo: boolean;
+  logoPosition: "left" | "right";
+  showTaxId: boolean;
+  showPoNumber: boolean;
+  showServicePeriod: boolean;
+  showPaymentMethods: boolean;
+  showSignatureLines: boolean;
+  showPageNumbers: boolean;
+  /** Empty = the translated default («FACTURA» / «INVOICE»). */
+  invoiceTitle: string;
+  quoteTitle: string;
+  /** Pre-fills the notes of a new invoice that brings none. */
+  invoiceDefaultNotes: string;
+  invoiceTerms: string;
+  /** Pre-fills the intro of a new proposal that brings none. */
+  quoteDefaultIntro: string;
+  quoteClosing: string;
+  quoteFooter: string;
+}
+
+export const DEFAULT_DOCUMENT_STYLE: DocumentStyle = {
+  accentColor: "#0d5c63",
+  textColor: "#0f172a",
+  headerStyle: "classic",
+  font: "helvetica",
+  showLogo: true,
+  logoPosition: "left",
+  showTaxId: true,
+  showPoNumber: true,
+  showServicePeriod: true,
+  showPaymentMethods: true,
+  showSignatureLines: false,
+  showPageNumbers: true,
+  invoiceTitle: "",
+  quoteTitle: "",
+  invoiceDefaultNotes: "",
+  invoiceTerms: "",
+  quoteDefaultIntro: "",
+  quoteClosing: "",
+  quoteFooter: "",
+};
+
+/** Maximum length of each text, as the server cuts it. */
+export const DOCUMENT_TEXT_LIMITS = { title: 40, text: 4000 } as const;
+
+export const isHexColor = (v: unknown): v is string => typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v.trim());
+
 // ── Settings and the tax table ──────────────────────────────────────────────
 export interface BillingSettings {
   id?: string;
@@ -171,6 +230,8 @@ export interface BillingSettings {
   quoteTerms?: string | null;
   /** The six built-ins in canonical order, then the company's own. */
   paymentMethods?: PaymentMethodConfig[];
+  /** How the invoice and proposal PDFs look, and the company's own texts. */
+  documentStyle?: DocumentStyle;
 }
 
 export interface TaxRate {
@@ -186,7 +247,13 @@ export interface TaxRate {
 
 export interface UsState { code: string; name: string }
 
-export interface SettingsView { settings: BillingSettings; taxRates: TaxRate[]; usStates: UsState[] }
+export interface SettingsView {
+  settings: BillingSettings;
+  taxRates: TaxRate[];
+  usStates: UsState[];
+  /** The company logo from its general settings (changed there, not in billing). */
+  logoUrl?: string | null;
+}
 
 // ── Contracts and rates ─────────────────────────────────────────────────────
 export interface ContractRate {
@@ -703,6 +770,17 @@ const clientBillingService = {
 
   async saveSettings(patch: Partial<BillingSettings>): Promise<{ settings: BillingSettings }> {
     return unwrap(await api.put(`${base()}/settings`, { data: patch }));
+  },
+
+  /**
+   * A sample invoice or proposal (fictitious client) drawn with the company's
+   * real header and the settings still being edited. Nothing is saved.
+   */
+  async previewDocument(kind: "invoice" | "quote", unsaved: Partial<BillingSettings>, lang: "es" | "en", signal?: AbortSignal): Promise<Blob> {
+    const resp = await api.post(`${base()}/settings/preview/${kind}?lang=${lang}`, { data: unsaved }, { responseType: "blob", signal, toast: { silentError: true } } as never);
+    const data = (resp as { data?: Blob })?.data ?? (resp as unknown as Blob);
+
+    return data instanceof Blob ? new Blob([data], { type: "application/pdf" }) : new Blob([data as BlobPart], { type: "application/pdf" });
   },
 
   async createTaxRate(r: Partial<TaxRate>): Promise<{ taxRate: TaxRate }> {

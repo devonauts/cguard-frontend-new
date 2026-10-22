@@ -8,6 +8,7 @@ import { cargarAnaliticaDeMarca } from "@/lib/analiticaDeMarca";
 import { TIPO_DE_MENSAJE, tokenDeVistaPrevia } from "@/lib/vistaPrevia";
 import { aplicarFuenteDeMarca, esFuenteDeMarca } from "@/lib/fuentesDeMarca";
 import { resolveApiBase } from "@/lib/apiBase";
+import { fijarIconoDeAvisos } from "@/lib/iconoDeAvisos";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -94,6 +95,10 @@ export const MARCA_DE_PLATAFORMA: ContextoDeMarca = {
 /** Los recursos de plataforma, para cuando un socio no tiene los suyos. */
 const LOGO_DE_PLATAFORMA = "/assets/logo/c-guard-logo.png";
 const FAVICON_DE_PLATAFORMA = "/favicon-escudo.ico?v=2";
+/** Our app icon, for system notifications on our own hosts. */
+const ICONO_DE_AVISOS_DE_PLATAFORMA = "/assets/logo/c-guard-app-logo.png";
+/** A partner's icon, rendered square per host by the server (no extension on purpose). */
+const ICONO_DE_AVISOS_DEL_SOCIO = "/api/platform/icon/192";
 /** A transparent 1×1 icon: what a partner's tab shows when they have no art. */
 const ICONO_VACIO = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
@@ -345,6 +350,15 @@ export function aplicarMarca(ctx: ContextoDeMarca): void {
   /* The home-screen icon of a partner with art: rendered square by the server
      (`/api/platform/icon/180`), so iOS does not fill a transparent logo
      with black. */
+  /* The icon of system notifications follows the same rule: ours only where
+     our art may show, the partner's when it has art, otherwise none. */
+  fijarIconoDeAvisos(
+    puedeUsarArteDePlataforma(ctx)
+      ? ICONO_DE_AVISOS_DE_PLATAFORMA
+      : esMarcaDeSocio(ctx) && (ctx.faviconUrl || ctx.logoUrl)
+        ? ICONO_DE_AVISOS_DEL_SOCIO
+        : null,
+  );
   if (esMarcaDeSocio(ctx) && (ctx.faviconUrl || ctx.logoUrl)) {
     try {
       document.querySelectorAll<HTMLLinkElement>('link[rel="apple-touch-icon"]').forEach((l) => {

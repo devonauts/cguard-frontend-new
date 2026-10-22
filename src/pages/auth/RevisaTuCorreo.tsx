@@ -12,6 +12,11 @@ import { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight } from "lucide-react";
 
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+
+/** Our shield: only where the platform's art may show. */
+const ESCUDO_DE_PLATAFORMA = "/assets/logo/escudo.png";
+
 export default function RevisaTuCorreo({
   titulo,
   texto,
@@ -30,6 +35,11 @@ export default function RevisaTuCorreo({
   extra?: ReactNode;
 }) {
   const { t } = useTranslation();
+  /* The letter carries the HOST's mark: our shield on our hosts, the partner's
+     logo on theirs (the letter is white, so the light-background logo), and
+     no image at all when the partner has none — never our shield as a filler. */
+  const marca = useWhiteLabel();
+  const sello = marca.puedeUsarArteDePlataforma ? ESCUDO_DE_PLATAFORMA : marca.logo;
   const [quedan, setQuedan] = useState(autoSegundos ?? 0);
 
   useEffect(() => {
@@ -54,7 +64,13 @@ export default function RevisaTuCorreo({
       <div aria-hidden className="cg-correo-escena">
         <span className="cg-correo-sobre">
           <span className="cg-correo-carta">
-            <img alt="" src="/assets/logo/escudo.png" />
+            {sello ? (
+              <img
+                alt=""
+                className={marca.puedeUsarArteDePlataforma ? undefined : "cg-correo-socio"}
+                src={sello}
+              />
+            ) : null}
             <i />
             <i />
           </span>
@@ -137,6 +153,7 @@ const ESTILOS = `
   background: #fff; box-shadow: 0 6px 16px -8px rgba(0,0,0,.5); display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 7px;
   animation: cgCorreoCarta .55s cubic-bezier(.6,0,.3,1) .45s both; }
 .cg-correo-carta img { width: 18px; }
+.cg-correo-carta img.cg-correo-socio { width: auto; max-width: 70%; height: 18px; object-fit: contain; }
 .cg-correo-carta i { display: block; width: 60%; height: 3px; border-radius: 3px; background: #dfe3ea; }
 .cg-correo-carta i + i { width: 42%; }
 .cg-correo-frente { position: absolute; inset: 0; border-radius: 10px; overflow: hidden;

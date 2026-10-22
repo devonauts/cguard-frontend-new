@@ -18,3 +18,35 @@ export function enlaceLegal(doc: DocumentoLegal, idioma?: string): string {
 
   return `${WEB}/${CON_PAGINA.includes(base) ? base : "en"}/${doc}/`;
 }
+
+/**
+ * Where the privacy/terms links point on THIS host.
+ *
+ * Our hosts: our site, as above. A partner's host: never our site — its
+ * companies must not land on cguardpro.com from the sign-up form. The partner's
+ * published support URL serves both links when there is one; otherwise `null`,
+ * and the form renders the acceptance text without links (the checkbox stays).
+ */
+export function enlaceLegalDelAnfitrion(
+  doc: DocumentoLegal,
+  idioma: string | undefined,
+  anfitrion: { deSocio: boolean; urlDeSoporte: string | null | undefined },
+): string | null {
+  if (!anfitrion.deSocio) return enlaceLegal(doc, idioma);
+
+  return urlSegura(anfitrion.urlDeSoporte);
+}
+
+/** An http(s) URL ready for an `href`, or null. A bare domain gets `https://`. */
+function urlSegura(valor: string | null | undefined): string | null {
+  const v = (valor || "").trim();
+
+  if (!v) return null;
+  try {
+    const u = new URL(/^[a-z][a-z0-9+.-]*:/i.test(v) ? v : `https://${v}`);
+
+    return u.protocol === "https:" || u.protocol === "http:" ? u.href : null;
+  } catch {
+    return null;
+  }
+}

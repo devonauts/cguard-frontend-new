@@ -5791,7 +5791,8 @@
     "cvSent": "CV: {{n}}",
     "cvTitle": "CV odczytane",
     "downloadExcel": "Pobierz Excel",
-    "downloadPdf": "Pobierz PDF"
+    "downloadPdf": "Pobierz PDF",
+    "nombreNeutro": "Asystent"
   },
   "actions": {
     "action": "Akcja",
@@ -6226,7 +6227,8 @@
       "label": "Użytkownicy: {{usados}} z {{maximo}}",
       "body": "{{proveedor}} ustala, ilu użytkowników może mieć Twoja firma. Jeśli potrzebujesz więcej, poproś ich o to.",
       "bodyUnnamed": "Twój dostawca ustala, ilu użytkowników może mieć Twoja firma. Jeśli potrzebujesz więcej, poproś go o to.",
-      "full": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś {{proveedor}}."
+      "full": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś {{proveedor}}.",
+      "fullUnnamed": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś swojego dostawcę."
     }
   },
   "brand": {
@@ -9591,7 +9593,8 @@
       "usuarioSinCorreoAyuda": "Tą nazwą użytkownika i utworzonym tu hasłem zalogujesz się do aplikacji. Jeśli masz e-mail, możesz go dodać poniżej (opcjonalnie).",
       "yaPuedesEntrar": "Możesz już się zalogować",
       "tuEmpresaTeAsignaraAUnPuesto": "Twoja firma przydzieli cię do stanowiska.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Zaloguj się swoją nazwą użytkownika i hasłem."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Zaloguj się swoją nazwą użytkownika i hasłem.",
+      "cuentaListaDescargaLaApp": "Twoje konto w <b>{{empresa}}</b> jest gotowe. Pobierz aplikację, aby monitorować usługę ochrony i zarządzać nią z telefonu."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Moja lokalizacja",
@@ -18707,6 +18710,76 @@
         "modalTitulo": "Metody płatności tej faktury",
         "modalDesc": "Pojawiają się na stronie publicznej, w PDF i w e-mailu. Na przykład „tylko przelew”.",
         "enEnvio": "Metody płatności, które się pojawią"
+      },
+      "diseno": {
+        "colorInvalido": "Użyj formatu #RRGGBB.",
+        "clasico": "Klasyczny",
+        "clasicoHint": "Nazwa po lewej, kolorowy tytuł po prawej.",
+        "banda": "Pasek koloru",
+        "bandaHint": "Górny pasek w Twoim kolorze, nazwa i logo na biało.",
+        "minimalista": "Minimalistyczny",
+        "minimalistaHint": "Skromnie: cienka kolorowa linia pod nagłówkiem.",
+        "fuenteHelvetica": "Helvetica (nowoczesna)",
+        "fuenteTimes": "Times (klasyczna)",
+        "fuenteCourier": "Courier (maszyna do pisania)",
+        "mostrarIdFiscal": "Numer podatkowy firmy",
+        "mostrarIdFiscalHint": "W stopce każdej strony.",
+        "mostrarOrdenDeCompra": "Numer zamówienia",
+        "mostrarOrdenDeCompraHint": "Gdy umowa lub faktura go ma.",
+        "mostrarPeriodo": "Okres usługi",
+        "mostrarPeriodoHint": "Daty, które obejmuje faktura.",
+        "mostrarMetodos": "Jak zapłacić",
+        "mostrarMetodosHint": "Metody płatności z ich danymi. Po wyłączeniu drukowany jest tekst instrukcji płatności.",
+        "mostrarFirmas": "Linie podpisu",
+        "mostrarFirmasHint": "Do podpisania wydruku. W ofercie tylko, jeśli nie została przyjęta online.",
+        "mostrarPaginas": "Numer strony",
+        "mostrarPaginasHint": "„Strona 1”, „Strona 2”… w stopce.",
+        "colores": "Kolory",
+        "colorAcento": "Kolor główny",
+        "colorTexto": "Kolor tekstu",
+        "coloresHint": "Kolor główny jest używany w tytule, pasku i nagłówkach, a także w e-mailach z fakturami i ofertami.",
+        "encabezado": "Nagłówek",
+        "letraYLogo": "Czcionka i logo",
+        "fuente": "Krój pisma",
+        "logo": "Logo",
+        "logoDeLaEmpresa": "Logo Twojej firmy.",
+        "sinLogo": "Twoja firma nie ma jeszcze logo.",
+        "cambiarLogo": "Zmień je w profilu firmy",
+        "mostrarLogo": "Pokaż logo",
+        "logoIzquierda": "Po lewej",
+        "logoDerecha": "Po prawej",
+        "queSeMuestra": "Co jest widoczne",
+        "titulos": "Tytuły",
+        "tituloHint": "Puste = zwykły, w języku dokumentu.",
+        "tituloFactura": "Tytuł faktury",
+        "tituloFacturaDefecto": "INVOICE",
+        "tituloCotizacion": "Tytuł oferty",
+        "tituloCotizacionDefecto": "PROPOSAL",
+        "textosFactura": "Faktury",
+        "notasPorDefectoHint": "Kopiowane do każdej nowej faktury bez uwag (także z cykli rozliczeniowych). Można je zmienić w każdej.",
+        "notasPorDefecto": "Domyślne uwagi",
+        "terminosFacturaHint": "Drukowane na każdej fakturze w sekcji „Warunki”: terminy, kary, klauzule.",
+        "terminosFactura": "Warunki",
+        "instruccionesHint": "Drukowane tylko, gdy faktura nie pokazuje metod płatności (lub ukryto je w Wyglądzie).",
+        "pieFacturaHint": "Ostatni wiersz dokumentu: podziękowanie, licencja, adres pocztowy…",
+        "textosCotizacion": "Oferty",
+        "introPorDefectoHint": "Powitanie, od którego zaczyna się każda nowa oferta. Można je zmienić w każdej.",
+        "introPorDefecto": "Domyślne wprowadzenie",
+        "cierreHint": "Drukowany po sumach: „Czekamy na Państwa odpowiedź…”.",
+        "cierre": "Tekst zamykający",
+        "pieCotizacionHint": "Ostatni wiersz oferty: licencje, certyfikaty, dane kontaktowe…",
+        "pieCotizacion": "Stopka oferty",
+        "errorVistaPrevia": "Nie udało się narysować podglądu.",
+        "abrir": "Otwórz",
+        "vistaPrevia": "Podgląd",
+        "factura": "Faktura",
+        "cotizacion": "Oferta",
+        "actualizando": "Aktualizowanie…",
+        "dibujando": "Rysowanie dokumentu…",
+        "vistaPreviaHint": "Przykładowe dane z Twoim prawdziwym nagłówkiem i niezapisanymi zmianami. Nic nie jest zapisywane, dopóki nie klikniesz Zapisz.",
+        "pestanaDiseno": "Wygląd dokumentów",
+        "pestanaTextos": "Teksty",
+        "validezYTerminosMovidos": "Ważność, wprowadzenie i warunki ofert są teraz w Tekstach."
       }
     },
     "ClientInvoices": {
@@ -20331,6 +20404,19 @@
       "ahora": "Jesteś tutaj",
       "ultimaVez": "Ostatnio",
       "cambiaCuandoQuieras": "Możesz zmienić w każdej chwili na górnym pasku. Bieżący ekran zostaje."
+    },
+    "mapa": {
+      "titulo": "Mapa działalności",
+      "entrar": "Wejdź"
+    },
+    "comparativa": {
+      "titulo": "Porównanie oddziałów",
+      "subtitulo": "W tej chwili, jeden wiersz na oddział. Dotknij, aby zobaczyć go na mapie.",
+      "sucursal": "Oddział",
+      "sinCubrir": "Nieobsadzone",
+      "enRiesgo": "Zagrożone",
+      "incidentes": "Incydenty",
+      "total": "Cała firma"
     }
   },
   "soporte": {
