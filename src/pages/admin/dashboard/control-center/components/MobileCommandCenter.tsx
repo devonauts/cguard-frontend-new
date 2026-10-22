@@ -51,6 +51,11 @@ import {
 
 import { KPI_ROUTES } from "../navigation";
 import { clockOf } from "../tone";
+import {
+  PastillasDeSucursal,
+  useFocoDeSucursal,
+  type SucursalesParaMovil,
+} from "../sucursales/SucursalesMovil";
 
 import { OperationsMap } from "./OperationsMap";
 import { Panel, PanelLink, TonePill } from "./Panel";
@@ -61,11 +66,6 @@ import { TrendPanel } from "./TrendPanel";
 import { SystemStatus } from "./SystemStatus";
 import { StatCarousel } from "./StatCarousel";
 import { BottomSheet } from "./BottomSheet";
-import {
-  PastillasDeSucursal,
-  useFocoDeSucursal,
-  type SucursalesParaMovil,
-} from "../sucursales/SucursalesMovil";
 
 import {
   AlCambiar,
@@ -114,7 +114,12 @@ export function MobileCommandCenter({
   sucursales?: SucursalesParaMovil;
 }) {
   const { t } = useTranslation();
-  const foco = useFocoDeSucursal(sucursales, data.entities, t("sucursales.sinSucursal"));
+  const foco = useFocoDeSucursal(
+    sucursales,
+    data.entities,
+    t("sucursales.sinSucursal"),
+    t("sucursales.espacio.global"),
+  );
   const enFoco = foco.actual;
   const contRef = useRef<HTMLDivElement | null>(null);
   const carruselRef = useRef<HTMLDivElement | null>(null);
@@ -186,11 +191,11 @@ export function MobileCommandCenter({
   }, []);
 
   const enlace = data.health.sseConnected
-      ? { tone: "ok" as const, label: t("dashboard.live", "En vivo") }
-      : {
-          tone: "warn" as const,
-          label: t("ui.MobileCommandCenter.sondeo", "Sondeo"),
-        };
+    ? { tone: "ok" as const, label: t("dashboard.live", "En vivo") }
+    : {
+        tone: "warn" as const,
+        label: t("ui.MobileCommandCenter.sondeo", "Sondeo"),
+      };
 
   if (data.error === "no-tenant") {
     return (
@@ -217,10 +222,15 @@ export function MobileCommandCenter({
           390 px el resumen flotante del mapa chocaría con el carrusel y con la
           hoja, y esas mismas cifras ya están en las tarjetas. */}
       <div className="cc-movil-mapa">
+        {/* UN mapa que viaja: todo pintado, y la cámara va a la parada elegida. */}
         <OperationsMap
-          key={enFoco?.clave || "todo"}
-          defaultCenter={enFoco?.centro || data.defaultCenter}
-          entities={enFoco ? enFoco.entidades : data.entities}
+          defaultCenter={data.defaultCenter}
+          encuadre={
+            enFoco?.puntos?.length
+              ? { clave: enFoco.clave, puntos: enFoco.puntos }
+              : null
+          }
+          entities={data.entities}
           height={alto || 520}
           hud={false}
           prefs={prefs}
@@ -325,7 +335,6 @@ export function MobileCommandCenter({
                 <Maximize2 className="size-3.5" />
                 {t("dashboard.fullMap", "Mapa completo")}
               </button>
-
             </div>
 
             <Panel
@@ -349,7 +358,10 @@ export function MobileCommandCenter({
             <StatRail
               icon={<Boxes />}
               items={railItems}
-              subtitle={t("dashboard.resources.sub", "Puestos, mando y cartera")}
+              subtitle={t(
+                "dashboard.resources.sub",
+                "Puestos, mando y cartera",
+              )}
               title={t(
                 "ui.MobileCommandCenter.recursosDeLaOperacion",
                 "Recursos de la operación",

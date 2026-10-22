@@ -142,7 +142,13 @@ export function CarruselDeSucursales({
   defaultCenter,
   live,
   className,
+  organizarAlAbrir = false,
+  onSalir,
 }: {
+  /** Abrirse ya en «Organizar» (desde el mapa de sucursales). */
+  organizarAlAbrir?: boolean;
+  /** Al pulsar «Listo»: volver a quien lo abrió. */
+  onSalir?: () => void;
   lista: ListaDeSucursales;
   resumen?: ResumenDeSucursales;
   entities: MapEntity[];
@@ -159,7 +165,7 @@ export function CarruselDeSucursales({
   // tiene, el botón sólo le daría errores.
   const { hasPermission } = usePermissions();
   const puedeOrganizar = hasPermission("settingsEdit");
-  const [organizando, setOrganizando] = useState(false);
+  const [organizando, setOrganizando] = useState(organizarAlAbrir);
   const [editor, setEditor] = useState<{
     abierto: boolean;
     sucursal: Sucursal | null;
@@ -247,7 +253,9 @@ export function CarruselDeSucursales({
               size="sm"
               type="button"
               variant={organizando ? "brand" : "outline"}
-              onClick={() => setOrganizando((v) => !v)}
+              onClick={() =>
+                organizando && onSalir ? onSalir() : setOrganizando((v) => !v)
+              }
             >
               <Settings2 className="mr-1.5 size-3.5" />
               {organizando

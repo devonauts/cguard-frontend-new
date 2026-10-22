@@ -20042,6 +20042,19 @@
       "ahora": "Sie sind gerade hier",
       "ultimaVez": "Letztes Mal",
       "cambiaCuandoQuieras": "Sie können jederzeit in der oberen Leiste wechseln. Die aktuelle Ansicht bleibt erhalten."
+    },
+    "mapa": {
+      "titulo": "Einsatzkarte",
+      "entrar": "Öffnen"
+    },
+    "comparativa": {
+      "titulo": "Niederlassungen im Vergleich",
+      "subtitulo": "Gerade jetzt, eine Zeile pro Niederlassung. Tippen Sie eine an, um sie auf der Karte zu sehen.",
+      "sucursal": "Niederlassung",
+      "sinCubrir": "Unbesetzt",
+      "enRiesgo": "Gefährdet",
+      "incidentes": "Vorfälle",
+      "total": "Ganzes Unternehmen"
     }
   },
   "soporte": {

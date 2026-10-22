@@ -34,6 +34,9 @@ export interface Sucursal {
   archivedAt: string | null;
   /** La sucursal principal (la matriz). Hay una y no se archiva. */
   isHeadquarters?: boolean;
+  /** Centro guardado de su zona (cuando sus sedes no tienen coordenadas). */
+  centerLat?: number | string | null;
+  centerLng?: number | string | null;
   /** Identidad propia (opcional; vacía = la de la empresa). */
   legalName?: string | null;
   taxId?: string | null;

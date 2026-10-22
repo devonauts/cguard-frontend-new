@@ -20042,6 +20042,19 @@
       "ahora": "Ahora estás aquí",
       "ultimaVez": "La última vez",
       "cambiaCuandoQuieras": "Puedes cambiar cuando quieras desde la barra superior. La pantalla en la que estés se mantiene."
+    },
+    "mapa": {
+      "titulo": "Mapa de la operación",
+      "entrar": "Entrar"
+    },
+    "comparativa": {
+      "titulo": "Comparativa de sucursales",
+      "subtitulo": "Ahora mismo, una fila por sucursal. Toca una para verla en el mapa.",
+      "sucursal": "Sucursal",
+      "sinCubrir": "Sin cubrir",
+      "enRiesgo": "En riesgo",
+      "incidentes": "Incidentes",
+      "total": "Toda la empresa"
     }
   },
   "soporte": {

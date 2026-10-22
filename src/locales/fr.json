@@ -20042,6 +20042,19 @@
       "ahora": "Vous êtes ici",
       "ultimaVez": "La dernière fois",
       "cambiaCuandoQuieras": "Vous pouvez changer à tout moment depuis la barre supérieure. L’écran actuel est conservé."
+    },
+    "mapa": {
+      "titulo": "Carte de l’activité",
+      "entrar": "Entrer"
+    },
+    "comparativa": {
+      "titulo": "Comparatif des agences",
+      "subtitulo": "En ce moment, une ligne par agence. Touchez-en une pour la voir sur la carte.",
+      "sucursal": "Agence",
+      "sinCubrir": "Non couverts",
+      "enRiesgo": "À risque",
+      "incidentes": "Incidents",
+      "total": "Toute l’entreprise"
     }
   },
   "soporte": {

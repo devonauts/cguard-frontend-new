@@ -3,10 +3,7 @@
  * del puesto — quién está al mando, si el enlace en tiempo real está vivo y
  * cuándo fue la última sincronización — con las acciones a mano derecha.
  */
-import {
-  SlidersHorizontal,
-  Radar,
-} from "lucide-react";
+import { SlidersHorizontal, Radar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { clockOf } from "../tone";
@@ -124,7 +121,6 @@ export function CommandBar({
             className="mx-1 hidden h-6 w-px sm:block"
             style={{ background: "var(--hairline)" }}
           />
-
 
           <button
             className="cg-btn-brand cg-focus inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold"

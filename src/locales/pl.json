@@ -20326,6 +20326,19 @@
       "ahora": "Jesteś tutaj",
       "ultimaVez": "Ostatnio",
       "cambiaCuandoQuieras": "Możesz zmienić w każdej chwili na górnym pasku. Bieżący ekran zostaje."
+    },
+    "mapa": {
+      "titulo": "Mapa działalności",
+      "entrar": "Wejdź"
+    },
+    "comparativa": {
+      "titulo": "Porównanie oddziałów",
+      "subtitulo": "W tej chwili, jeden wiersz na oddział. Dotknij, aby zobaczyć go na mapie.",
+      "sucursal": "Oddział",
+      "sinCubrir": "Nieobsadzone",
+      "enRiesgo": "Zagrożone",
+      "incidentes": "Incydenty",
+      "total": "Cała firma"
     }
   },
   "soporte": {

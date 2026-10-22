@@ -82,7 +82,8 @@ export default function OperationsMapFull() {
           <span className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
             {t("ui.OperationsMapFull.elementosFiltrosYLeyenda", {
               count: data.entities.length,
-              defaultValue: "{{count}} elementos · filtros y leyenda sobre el mapa",
+              defaultValue:
+                "{{count}} elementos · filtros y leyenda sobre el mapa",
             })}
           </span>
           {/* ── SIN LEYENDA AQUÍ ───────────────────────────────────────────────
@@ -95,9 +96,15 @@ export default function OperationsMapFull() {
         </div>
         <div className="pointer-events-auto flex items-center gap-2">
           <button
-            aria-label={t("ui.OperationsMapFull.pantallaCompleta", "Pantalla completa")}
+            aria-label={t(
+              "ui.OperationsMapFull.pantallaCompleta",
+              "Pantalla completa",
+            )}
             className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full transition active:scale-95"
-            title={t("ui.OperationsMapFull.pantallaCompleta", "Pantalla completa")}
+            title={t(
+              "ui.OperationsMapFull.pantallaCompleta",
+              "Pantalla completa",
+            )}
             onClick={goFullscreen}
           >
             <Maximize className="size-4" />
