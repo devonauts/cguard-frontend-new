@@ -11,8 +11,12 @@ const lista: any = {
   ],
   sinSucursal: [{ id: "s3", lat: null, lng: null }],
 };
-const e = (id: string, kind: any, p: { lat: number; lng: number }, meta: any = {}) =>
-  ({ id, kind, status: "online", label: id, ...p, meta }) as any;
+const e = (
+  id: string,
+  kind: any,
+  p: { lat: number; lng: number },
+  meta: any = {},
+) => ({ id, kind, status: "online", label: id, ...p, meta }) as any;
 
 describe("sucursales · a qué sucursal va cada punto del mapa", () => {
   it("estaciones y sedes por su sede; el resto por la sede más cercana", () => {

@@ -1,14 +1,30 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { FIELD_CLS_LG } from "./components/_shared/tab-kit";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { crearEsquemaCliente, type ClientInput } from "@/lib/validators/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  User,
+  Building2,
+  Upload,
+  X,
+  Image,
+  Loader2,
+  UserPlus,
+  Trash2,
+  MapPin,
+  UserRound,
+} from "lucide-react";
+
+import { FIELD_CLS_LG } from "./components/_shared/tab-kit";
+
+import { crearEsquemaCliente, type ClientInput } from "@/lib/validators/client";
 import { clientService } from "@/lib/api/clientService";
 import { categoryService } from "@/lib/api/categoryService";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTranslation } from "react-i18next";
+import { useSucursales } from "@/hooks/useSucursales";
+import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
 import {
   taxIdLabelFor,
   taxIdHintFor,
@@ -23,14 +39,7 @@ import AddressAutocomplete, {
 import { toastOnce } from "@/lib/toastOnce";
 import { getTenantCountry } from "@/utils/tenantLocation";
 import { COUNTRIES } from "@/lib/data/countries";
-
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import {
   Form,
   FormControl,
@@ -46,37 +55,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import { Input } from "@/components/ui/input";
-import {
-  CategorySelect,
-  CategoryOption,
-} from "@/components/categories/CategorySelect";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Info,
-  User,
-  Mail,
-  Phone,
-  Tag,
-  Globe,
-  Building2,
-  Upload,
-  X,
-  Image,
-  Loader2,
-  UserPlus,
-  Trash2,
-  MapPin,
-  UserRound,
-} from "lucide-react";
-import { Link } from "react-router-dom";
+import { CategoryOption } from "@/components/categories/CategorySelect";
 import { Section, Stagger } from "@/components/kit";
 
 export type Category = { id: string; name: string };
@@ -111,8 +92,10 @@ export default function ClientForm({
   // Determine the tenant's phone dial-code prefix from cached country
   const defaultPhonePrefix = useMemo(() => {
     const countryCode = getTenantCountry();
+
     if (!countryCode) return "";
     const found = COUNTRIES.find((c) => c.code === countryCode.toUpperCase());
+
     return found ? `+${found.dialCode}` : "";
   }, []);
   // Deduplicate toasts in case of multiple mounts (React StrictMode)
@@ -124,6 +107,17 @@ export default function ClientForm({
     console.warn(message);
   };
   const [redirecting, setRedirecting] = useState(false);
+  // Módulo «Sucursales»: el cliente es de una sucursal o de toda la empresa ("").
+  const suc = useSucursales();
+  const gerente = useEsGerenteDeSucursal();
+  const sucursalesDelCliente = suc.lista.data?.sucursales ?? [];
+  const [sucursalCliente, setSucursalCliente] = useState<string>("");
+
+  useEffect(() => {
+    // Un gerente no crea clientes «de toda la empresa»: nace en su sucursal.
+    if (gerente && !sucursalCliente && sucursalesDelCliente.length)
+      setSucursalCliente(sucursalesDelCliente[0].id);
+  }, [gerente, sucursalCliente, sucursalesDelCliente]);
   const [categories, setCategories] = useState<Category[]>(
     initialCategories || [],
   );
@@ -214,7 +208,6 @@ export default function ClientForm({
       form.setValue("email", w.legalRepEmail);
     if (w.legalRepPhone && w.phoneNumber !== w.legalRepPhone)
       form.setValue("phoneNumber", w.legalRepPhone);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
   // ── El país con el que se mide la identificación ─────────────────────────
@@ -246,13 +239,16 @@ export default function ClientForm({
   /** Comprueba el documento con la regla del país, al salir del campo. */
   const revisarDocumento = (valor: unknown) => {
     const v = (valor ?? "").toString().trim();
+
     if (!v) return;
     const valido =
       personType === "PJ"
         ? validateTaxNumberForCountry(v, paisDelCliente)
         : validatePersonIdForCountry(v, paisDelCliente);
+
     if (valido) {
       form.clearErrors("documentNumber");
+
       return;
     }
     form.setError("documentNumber", {
@@ -317,6 +313,7 @@ export default function ClientForm({
 
       // Extraer el array de Sectores de la respuesta
       const categoryList = response?.rows || [];
+
       setCategories(categoryList);
     } catch (e) {
       console.error("Error loading categories:", e);
@@ -337,10 +334,15 @@ export default function ClientForm({
   useEffect(() => {
     if (mode === "edit" && id) {
       let mounted = true;
+
       (async () => {
         try {
           const data = await clientService.getClient(id);
+
           if (!mounted) return;
+          setSucursalCliente(
+            (data as any)?.branchId ? String((data as any).branchId) : "",
+          );
           const initial: FormValues = {
             name: data.name ?? "",
             lastName:
@@ -388,14 +390,18 @@ export default function ClientForm({
 
           // Load existing file objects for logo and place picture
           const logoArr = (data as any).logoUrl;
+
           if (Array.isArray(logoArr) && logoArr.length > 0) {
             const f = logoArr[0];
+
             setLogoExisting(f);
             setLogoPreview(f.downloadUrl || f.publicUrl || null);
           }
           const picArr = (data as any).placePictureUrl;
+
           if (Array.isArray(picArr) && picArr.length > 0) {
             const f = picArr[0];
+
             setPlacePicExisting(f);
             setPlacePicPreview(f.downloadUrl || f.publicUrl || null);
           }
@@ -420,11 +426,11 @@ export default function ClientForm({
           }
         }
       })();
+
       return () => {
         mounted = false;
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, id]);
 
   // Keep a ref with the initial data loaded in edit mode to compute diffs
@@ -434,6 +440,7 @@ export default function ClientForm({
   // Track latest preview values via refs so the unmount cleanup sees current ones.
   const logoPreviewRef = useRef<string | null>(null);
   const placePicPreviewRef = useRef<string | null>(null);
+
   logoPreviewRef.current = logoPreview;
   placePicPreviewRef.current = placePicPreview;
   useEffect(() => {
@@ -507,6 +514,8 @@ export default function ClientForm({
       basePayload.postalCode = values.postalCode;
     if (values.city !== undefined) basePayload.city = values.city;
     if (values.country !== undefined) basePayload.country = values.country;
+    if (suc.activo && sucursalesDelCliente.length)
+      basePayload.branchId = sucursalCliente || null;
     // A landline left with just the country prefix is "no landline", not
     // «+593» (QA-140) — same rule as the main phone.
     if (values.faxNumber !== undefined)
@@ -515,6 +524,7 @@ export default function ClientForm({
       basePayload.website = values.website;
     if (values.latitude !== undefined) {
       const rawLat = values.latitude;
+
       basePayload.latitude =
         rawLat === "" || rawLat === null
           ? null
@@ -522,6 +532,7 @@ export default function ClientForm({
     }
     if (values.longitude !== undefined) {
       const rawLng = values.longitude;
+
       basePayload.longitude =
         rawLng === "" || rawLng === null
           ? null
@@ -537,6 +548,7 @@ export default function ClientForm({
           logoFile,
           "clientAccountLogoUrl",
         );
+
         basePayload.logoUrl = [fileObj];
       } else if (logoExisting) {
         basePayload.logoUrl = [logoExisting];
@@ -550,6 +562,7 @@ export default function ClientForm({
           placePicFile,
           "clientAccountPlacePictureUrl",
         );
+
         basePayload.placePictureUrl = [fileObj];
       } else if (placePicExisting) {
         basePayload.placePictureUrl = [placePicExisting];
@@ -565,6 +578,7 @@ export default function ClientForm({
             t("adminOfficeUsers.newUser.errors.unknown", "Error desconocido"),
         }),
       );
+
       return;
     }
 
@@ -581,11 +595,13 @@ export default function ClientForm({
             phone: a.phone.trim() || null,
             relationship: a.relationship.trim() || null,
           }));
+
         if (additionalContacts.length)
           (basePayload as any).additionalContacts = additionalContacts;
         const data = await clientService.createClient(
           basePayload as ClientInput,
         );
+
         // El alta crea TAMBIÉN la primera sede del cliente, con estos
         // mismos datos. Lo que no crea es su operación —qué servicio se
         // presta, con qué equipamiento y capacitación— porque aquí no se
@@ -626,9 +642,11 @@ export default function ClientForm({
         const initial = initialDataRef.current ?? ({} as ClientInput);
         const changed: any = {};
         const keys = Object.keys(basePayload) as Array<keyof ClientInput>;
+
         for (const k of keys) {
           const cur = (basePayload as any)[k];
           const init = (initial as any)[k];
+
           // Always include file fields (they use array comparison)
           if (
             (k as string) === "logoUrl" ||
@@ -648,6 +666,7 @@ export default function ClientForm({
             : init === undefined
               ? null
               : String(init);
+
           if (curVal !== initVal) {
             changed[k as string] = Array.isArray((basePayload as any)[k])
               ? (basePayload as any)[k]
@@ -657,6 +676,7 @@ export default function ClientForm({
 
         if (Object.keys(changed).length === 0) {
           toast.success(t("clients.noChanges", "No hubo cambios para guardar"));
+
           return;
         }
 
@@ -664,6 +684,7 @@ export default function ClientForm({
           id,
           changed as ClientInput,
         );
+
         toast.success(
           t("clients.clientUpdated") || "Cliente actualizado exitosamente",
         );
@@ -690,6 +711,7 @@ export default function ClientForm({
         null;
 
       const duplicateFields = [] as string[];
+
       try {
         if (
           respData?.errors?.email ||
@@ -710,6 +732,7 @@ export default function ClientForm({
         const fieldLabels = duplicateFields
           .map((f) => t(`clients.form.${f}`, f))
           .join(", ");
+
         toast.error(
           `${message} — ${t("clients.duplicateFound", { fields: fieldLabels })}`,
         );
@@ -730,6 +753,7 @@ export default function ClientForm({
 
   const cats: CategoryOption[] = useMemo(() => {
     if (!categories || !Array.isArray(categories)) return [];
+
     return categories.map((c) => ({ id: c.id, name: c.name }));
   }, [categories]);
 
@@ -741,13 +765,13 @@ export default function ClientForm({
   return (
     <div className="space-y-5">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
           <Stagger className="space-y-5">
             {/* ── Section 1: Tipo de cliente + Representante legal ──── */}
             <Section
+              contentClassName="space-y-4"
               icon={<User />}
               title={t("clients.form.legalRep", "Representante legal")}
-              contentClassName="space-y-4"
             >
               {/* Tipo de cliente arriba */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -820,13 +844,7 @@ export default function ClientForm({
                           value={
                             typeof field.value === "string" ? field.value : ""
                           }
-                          placeholder={ejemploDelDocumento || undefined}
-                          /* Media docena de países llevan LETRAS en el identificador
-                                                       —RFC mexicano, CIF español, codice fiscale, IVA europeo con
-                                                       prefijo— y aquí se borraban según se tecleaban: el campo
-                                                       hacía `replace(/\D/g,'')`. Ahora sólo se limpia lo que
-                                                       nadie quiere (símbolos raros) y se respeta el resto. */
-                          maxLength={30}
+                          onBlur={() => revisarDocumento(field.value)}
                           onChange={(e) =>
                             field.onChange(
                               (e.target.value || "")
@@ -834,7 +852,13 @@ export default function ClientForm({
                                 .toUpperCase(),
                             )
                           }
-                          onBlur={() => revisarDocumento(field.value)}
+                          placeholder={ejemploDelDocumento || undefined}
+                          /* Media docena de países llevan LETRAS en el identificador
+                                                       —RFC mexicano, CIF español, codice fiscale, IVA europeo con
+                                                       prefijo— y aquí se borraban según se tecleaban: el campo
+                                                       hacía `replace(/\D/g,'')`. Ahora sólo se limpia lo que
+                                                       nadie quiere (símbolos raros) y se respeta el resto. */
+                          maxLength={30}
                         />
                       </FormControl>
                       <FormMessage />
@@ -878,6 +902,7 @@ export default function ClientForm({
                                   word.slice(1).toLowerCase(),
                               )
                               .join(" ");
+
                             field.onChange(capitalized);
                           }}
                         />
@@ -917,6 +942,7 @@ export default function ClientForm({
                                   word.slice(1).toLowerCase(),
                               )
                               .join(" ");
+
                             field.onChange(capitalized);
                           }}
                         />
@@ -943,8 +969,8 @@ export default function ClientForm({
                       </FormLabel>
                       <FormControl>
                         <input
-                          type="tel"
                           className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm"
+                          type="tel"
                           {...field}
                           value={
                             typeof field.value === "string" ? field.value : ""
@@ -975,8 +1001,8 @@ export default function ClientForm({
                       </FormLabel>
                       <FormControl>
                         <input
-                          type="email"
                           className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm"
+                          type="email"
                           {...field}
                           value={
                             typeof field.value === "string" ? field.value : ""
@@ -1014,8 +1040,8 @@ export default function ClientForm({
                                           siquiera dejaba escribirlas. */}
                         <FormControl>
                           <input
-                            maxLength={30}
                             className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm"
+                            maxLength={30}
                             {...field}
                             value={
                               typeof field.value === "string" ? field.value : ""
@@ -1039,10 +1065,43 @@ export default function ClientForm({
 
             {/* ── Section 2: Business Info ──────────────────────────── */}
             <Section
+              contentClassName="space-y-4"
               icon={<Building2 />}
               title={t("clients.form.businessInfo", "Información de empresa")}
-              contentClassName="space-y-4"
             >
+              {suc.activo && sucursalesDelCliente.length > 0 && (
+                <div className="space-y-1.5">
+                  <label
+                    className="text-xs font-medium text-foreground/70 uppercase tracking-wide"
+                    htmlFor="cliente-sucursal"
+                  >
+                    {t("sucursales.cliente.campo")}
+                  </label>
+                  <select
+                    className="cg-input cg-focus flex h-10 w-full px-3 text-sm"
+                    id="cliente-sucursal"
+                    value={sucursalCliente}
+                    onChange={(e) => setSucursalCliente(e.target.value)}
+                  >
+                    {!gerente && (
+                      <option value="">
+                        {t("sucursales.cliente.todaLaEmpresa")}
+                      </option>
+                    )}
+                    {sucursalesDelCliente.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                        {b.isHeadquarters
+                          ? ` · ${t("sucursales.principal")}`
+                          : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-muted-foreground">
+                    {t("sucursales.cliente.ayuda")}
+                  </p>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField<ClientInput>
                   control={form.control}
@@ -1063,10 +1122,10 @@ export default function ClientForm({
                             "Ej. Empresa Segura S.A.",
                           )}
                           {...field}
+                          maxLength={200}
                           value={
                             typeof field.value === "string" ? field.value : ""
                           }
-                          maxLength={200}
                         />
                       </FormControl>
                       <p className="text-[10px] text-muted-foreground mt-1">
@@ -1092,8 +1151,8 @@ export default function ClientForm({
                       </FormLabel>
                       <FormControl>
                         <input
-                          type="date"
                           className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
+                          type="date"
                           {...field}
                           value={
                             typeof field.value === "string" ? field.value : ""
@@ -1117,8 +1176,8 @@ export default function ClientForm({
                       </FormLabel>
                       <FormControl>
                         <input
-                          type="date"
                           className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm"
+                          type="date"
                           {...field}
                           value={
                             typeof field.value === "string" ? field.value : ""
@@ -1142,9 +1201,9 @@ export default function ClientForm({
                       </FormLabel>
                       <FormControl>
                         <input
-                          type="text"
-                          placeholder="CLI-0001"
                           className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm"
+                          placeholder="CLI-0001"
+                          type="text"
                           {...field}
                           value={
                             typeof field.value === "string" ? field.value : ""
@@ -1206,21 +1265,23 @@ export default function ClientForm({
                       </FormLabel>
                       <FormControl>
                         <PhoneInput
+                          maxLocalDigits={10}
                           value={
                             typeof field.value === "string" ? field.value : ""
                           }
                           onChange={(val) => {
                             const digitsOnly = val.replace(/[^\d+]/g, "");
                             const match = digitsOnly.match(/^(\+\d+)(\d*)$/);
+
                             if (match) {
                               const prefix = match[1];
                               const local = match[2].slice(0, 10);
+
                               field.onChange(prefix + local);
                             } else {
                               field.onChange(val.slice(0, 1 + 3 + 10));
                             }
                           }}
-                          maxLocalDigits={10}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1266,17 +1327,19 @@ export default function ClientForm({
                     }
                   >
                     <input
-                      id="logo-upload-input"
-                      type="file"
                       accept="image/*"
                       className="hidden"
+                      id="logo-upload-input"
+                      type="file"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
+
                         if (!file) return;
                         setLogoFile(file);
                         setLogoPreview((prev) => {
                           if (prev && prev.startsWith("blob:"))
                             URL.revokeObjectURL(prev);
+
                           return URL.createObjectURL(file);
                         });
                         setLogoExisting(null);
@@ -1285,24 +1348,25 @@ export default function ClientForm({
                     {logoPreview ? (
                       <>
                         <img
-                          src={logoPreview}
                           alt={t("ui.ClientForm.logo", "Logo")}
                           className="max-h-24 max-w-full object-contain rounded"
+                          src={logoPreview}
                         />
                         <button
-                          type="button"
                           className="cg-focus absolute right-2 top-2 rounded-full border p-0.5 shadow-sm transition-opacity hover:opacity-70"
                           style={{
                             background: "var(--glass-raised)",
                             borderColor: "var(--hairline)",
                             color: "var(--bad-text)",
                           }}
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setLogoFile(null);
                             setLogoPreview((prev) => {
                               if (prev && prev.startsWith("blob:"))
                                 URL.revokeObjectURL(prev);
+
                               return null;
                             });
                             setLogoExisting(null);
@@ -1343,17 +1407,19 @@ export default function ClientForm({
                     }
                   >
                     <input
-                      id="place-upload-input"
-                      type="file"
                       accept="image/*"
                       className="hidden"
+                      id="place-upload-input"
+                      type="file"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
+
                         if (!file) return;
                         setPlacePicFile(file);
                         setPlacePicPreview((prev) => {
                           if (prev && prev.startsWith("blob:"))
                             URL.revokeObjectURL(prev);
+
                           return URL.createObjectURL(file);
                         });
                         setPlacePicExisting(null);
@@ -1362,27 +1428,28 @@ export default function ClientForm({
                     {placePicPreview ? (
                       <>
                         <img
-                          src={placePicPreview}
                           alt={t(
                             "ui.ClientForm.fotoDelLugar",
                             "Foto del lugar",
                           )}
                           className="max-h-24 max-w-full object-contain rounded"
+                          src={placePicPreview}
                         />
                         <button
-                          type="button"
                           className="cg-focus absolute right-2 top-2 rounded-full border p-0.5 shadow-sm transition-opacity hover:opacity-70"
                           style={{
                             background: "var(--glass-raised)",
                             borderColor: "var(--hairline)",
                             color: "var(--bad-text)",
                           }}
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setPlacePicFile(null);
                             setPlacePicPreview((prev) => {
                               if (prev && prev.startsWith("blob:"))
                                 URL.revokeObjectURL(prev);
+
                               return null;
                             });
                             setPlacePicExisting(null);
@@ -1416,27 +1483,27 @@ export default function ClientForm({
             {/* ── Personas con acceso adicionales (optional) ──────────── */}
             {mode === "create" && (
               <Section
-                icon={<UserPlus />}
-                title={t(
-                  "clients.form.extraAccess",
-                  "Personas con acceso adicionales",
-                )}
                 action={
                   <button
-                    type="button"
-                    onClick={addAccessPerson}
                     className="cg-focus inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors"
                     style={{
                       borderColor: "var(--brand-line)",
                       color: "var(--brand-text)",
                       background: "var(--brand-wash)",
                     }}
+                    type="button"
+                    onClick={addAccessPerson}
                   >
                     <UserPlus size={13} />{" "}
                     {t("clients.form.addPerson", "Agregar persona")}
                   </button>
                 }
                 contentClassName="space-y-3"
+                icon={<UserPlus />}
+                title={t(
+                  "clients.form.extraAccess",
+                  "Personas con acceso adicionales",
+                )}
               >
                 <p className="text-xs text-muted-foreground -mt-1">
                   {personType === "PJ"
@@ -1463,27 +1530,24 @@ export default function ClientForm({
                     className="glass-sunken grid grid-cols-1 gap-2 p-3 sm:grid-cols-12"
                   >
                     <input
+                      className={`${FIELD_CLS_LG} sm:col-span-4`}
+                      placeholder={t("ui.ClientForm.nombreCompleto")}
                       value={p.name}
                       onChange={(e) =>
                         updateAccessPerson(i, { name: e.target.value })
                       }
-                      placeholder={t("ui.ClientForm.nombreCompleto")}
-                      className={`${FIELD_CLS_LG} sm:col-span-4`}
                     />
                     <input
+                      className={`${FIELD_CLS_LG} sm:col-span-4`}
+                      placeholder={t("comun.correoReq")}
+                      type="email"
                       value={p.email}
                       onChange={(e) =>
                         updateAccessPerson(i, { email: e.target.value })
                       }
-                      type="email"
-                      placeholder={t("comun.correoReq")}
-                      className={`${FIELD_CLS_LG} sm:col-span-4`}
                     />
                     <input
-                      value={p.relationship}
-                      onChange={(e) =>
-                        updateAccessPerson(i, { relationship: e.target.value })
-                      }
+                      className={`${FIELD_CLS_LG} sm:col-span-3`}
                       placeholder={
                         personType === "PJ"
                           ? t(
@@ -1495,14 +1559,17 @@ export default function ClientForm({
                               "Relación (ej: hijo)",
                             )
                       }
-                      className={`${FIELD_CLS_LG} sm:col-span-3`}
+                      value={p.relationship}
+                      onChange={(e) =>
+                        updateAccessPerson(i, { relationship: e.target.value })
+                      }
                     />
                     <button
-                      type="button"
-                      onClick={() => removeAccessPerson(i)}
+                      aria-label={t("clients.form.extraAccessRemove", "Quitar")}
                       className="cg-focus grid place-items-center rounded-lg transition-opacity hover:opacity-70 sm:col-span-1"
                       style={{ color: "var(--bad-text)" }}
-                      aria-label={t("clients.form.extraAccessRemove", "Quitar")}
+                      type="button"
+                      onClick={() => removeAccessPerson(i)}
                     >
                       <Trash2 size={15} />
                     </button>
@@ -1519,32 +1586,49 @@ export default function ClientForm({
 
             {/* ── Section 4: Address ────────────────────────────────── */}
             <Section
-              icon={<MapPin />}
-              title={t("clients.form.addressSearch", "Dirección")}
               action={
                 /* Mode toggle pills */
                 <div className="glass-sunken flex items-center gap-0.5 p-0.5">
                   <button
+                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showAddressAutocomplete ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                     type="button"
                     onClick={() => setShowAddressAutocomplete(true)}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showAddressAutocomplete ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                   >
                     {t("clients.form.switchToAutocomplete", "Búsqueda")}
                   </button>
                   <button
+                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showAddressAutocomplete ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                     type="button"
                     onClick={() => setShowAddressAutocomplete(false)}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showAddressAutocomplete ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                   >
                     {t("clients.form.switchToManual", "Manual")}
                   </button>
                 </div>
               }
               contentClassName="space-y-4"
+              icon={<MapPin />}
+              title={t("clients.form.addressSearch", "Dirección")}
             >
               {showAddressAutocomplete ? (
                 <AddressAutocomplete
                   key={addressMapKey}
+                  defaultValue={form.getValues("address") || ""}
+                  initialLat={
+                    watchedLat
+                      ? Number.parseFloat(String(watchedLat))
+                      : undefined
+                  }
+                  initialLng={
+                    watchedLng
+                      ? Number.parseFloat(String(watchedLng))
+                      : undefined
+                  }
+                  mapHeight="320px"
+                  placeholder={t(
+                    "clients.form.searchAddress",
+                    "Buscar dirección...",
+                  )}
+                  showMap={true}
                   onAddressSelect={(addressData: AddressComponents) => {
                     const anyAddr = addressData as any;
                     const addrObj =
@@ -1595,6 +1679,7 @@ export default function ClientForm({
                       shouldTouch: true,
                       shouldValidate: false,
                     } as const;
+
                     form.setValue("address", addressStr, setOpts);
                     form.setValue("city", cityStr, setOpts);
                     form.setValue("postalCode", postal, setOpts);
@@ -1619,23 +1704,6 @@ export default function ClientForm({
                       ),
                     );
                   }}
-                  defaultValue={form.getValues("address") || ""}
-                  placeholder={t(
-                    "clients.form.searchAddress",
-                    "Buscar dirección...",
-                  )}
-                  showMap={true}
-                  mapHeight="320px"
-                  initialLat={
-                    watchedLat
-                      ? Number.parseFloat(String(watchedLat))
-                      : undefined
-                  }
-                  initialLng={
-                    watchedLng
-                      ? Number.parseFloat(String(watchedLng))
-                      : undefined
-                  }
                 />
               ) : null}
 
@@ -1657,10 +1725,10 @@ export default function ClientForm({
                         <input
                           className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                           {...field}
+                          maxLength={100}
                           value={
                             typeof field.value === "string" ? field.value : ""
                           }
-                          maxLength={100}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1688,10 +1756,10 @@ export default function ClientForm({
                             "Piso, oficina, departamento…",
                           )}
                           {...field}
+                          maxLength={100}
                           value={
                             typeof field.value === "string" ? field.value : ""
                           }
-                          maxLength={100}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1714,11 +1782,11 @@ export default function ClientForm({
                         </FormLabel>
                         <FormControl>
                           <input
-                            type="text"
                             className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
+                            type="text"
                             {...field}
-                            value={String(field.value || "")}
                             maxLength={20}
+                            value={String(field.value || "")}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1740,10 +1808,10 @@ export default function ClientForm({
                           <input
                             className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                             {...field}
+                            maxLength={100}
                             value={
                               typeof field.value === "string" ? field.value : ""
                             }
-                            maxLength={100}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1765,10 +1833,10 @@ export default function ClientForm({
                           <input
                             className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
                             {...field}
+                            maxLength={100}
                             value={
                               typeof field.value === "string" ? field.value : ""
                             }
-                            maxLength={100}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1783,14 +1851,14 @@ export default function ClientForm({
                     <svg
                       className="h-3.5 w-3.5 transition-transform group-open:rotate-90"
                       fill="none"
-                      viewBox="0 0 24 24"
                       stroke="currentColor"
                       strokeWidth={2}
+                      viewBox="0 0 24 24"
                     >
                       <path
+                        d="M9 5l7 7-7 7"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M9 5l7 7-7 7"
                       />
                     </svg>
                     {t("clients.form.coordinates", "Coordenadas GPS")}
@@ -1806,15 +1874,15 @@ export default function ClientForm({
                           </FormLabel>
                           <FormControl>
                             <input
-                              type="text"
                               className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
                               placeholder={t(
                                 "ui.ClientForm.rangoLatitud",
                                 "-90 a 90",
                               )}
+                              type="text"
                               {...field}
-                              value={String(field.value ?? "")}
                               maxLength={20}
+                              value={String(field.value ?? "")}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1831,15 +1899,15 @@ export default function ClientForm({
                           </FormLabel>
                           <FormControl>
                             <input
-                              type="text"
                               className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
                               placeholder={t(
                                 "ui.ClientForm.rangoLongitud",
                                 "-180 a 180",
                               )}
+                              type="text"
                               {...field}
-                              value={String(field.value ?? "")}
                               maxLength={20}
+                              value={String(field.value ?? "")}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1855,18 +1923,18 @@ export default function ClientForm({
             {/* ── Actions ──────────────────────────────────────────── */}
             <div className="flex justify-end gap-3 pt-1">
               <Button
-                type="button"
-                disabled={form.formState.isSubmitting}
-                onClick={() => (onCancel ? onCancel() : navigate("/clients"))}
                 className="cg-btn-glass min-w-28 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={form.formState.isSubmitting}
+                type="button"
+                onClick={() => (onCancel ? onCancel() : navigate("/clients"))}
               >
                 {t("profile.cancel", "Cancelar")}
               </Button>
               <Button
+                className="min-w-28 disabled:opacity-70 disabled:cursor-not-allowed"
+                disabled={form.formState.isSubmitting}
                 type="submit"
                 variant="brand"
-                disabled={form.formState.isSubmitting}
-                className="min-w-28 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {form.formState.isSubmitting ? (
                   <span className="flex items-center gap-2">

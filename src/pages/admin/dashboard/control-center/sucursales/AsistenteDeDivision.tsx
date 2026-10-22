@@ -81,7 +81,9 @@ export function AsistenteDeDivision({
   );
 
   const cambiar = (clave: string, patch: Partial<Grupo>) =>
-    setGrupos((gs) => gs.map((g) => (g.clave === clave ? { ...g, ...patch } : g)));
+    setGrupos((gs) =>
+      gs.map((g) => (g.clave === clave ? { ...g, ...patch } : g)),
+    );
 
   const marcar = (clave: string, v: boolean) =>
     setMarcados((m) => {
@@ -123,7 +125,8 @@ export function AsistenteDeDivision({
   };
 
   const incluidos = grupos.filter((g) => g.incluido);
-  const fuera = grupos.filter((g) => !g.incluido).reduce((a, g) => a + g.sedes, 0) +
+  const fuera =
+    grupos.filter((g) => !g.incluido).reduce((a, g) => a + g.sedes, 0) +
     (propuesta?.sinUbicar.length || 0);
 
   const aplicar = async () => {
@@ -136,10 +139,19 @@ export function AsistenteDeDivision({
     setAplicando(true);
     try {
       const r = await sucursalesService.aplicarDivision(
-        incluidos.map((g) => ({ nombre: g.nombre.trim(), ciudades: g.ciudades, siteIds: g.siteIds })),
+        incluidos.map((g) => ({
+          nombre: g.nombre.trim(),
+          ciudades: g.ciudades,
+          siteIds: g.siteIds,
+        })),
       );
 
-      toast.success(t("sucursales.asistente.hecho", { count: r.sucursales, sedes: r.sedes }));
+      toast.success(
+        t("sucursales.asistente.hecho", {
+          count: r.sucursales,
+          sedes: r.sedes,
+        }),
+      );
       onAplicado();
       onCerrar();
     } catch {
@@ -154,7 +166,9 @@ export function AsistenteDeDivision({
       <DialogContent className="max-h-[88vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("sucursales.asistente.titulo")}</DialogTitle>
-          <DialogDescription>{t("sucursales.asistente.intro")}</DialogDescription>
+          <DialogDescription>
+            {t("sucursales.asistente.intro")}
+          </DialogDescription>
         </DialogHeader>
 
         {cargando ? (
@@ -169,9 +183,17 @@ export function AsistenteDeDivision({
           <div className="space-y-3">
             {marcados.size >= 2 && (
               <div className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm">
-                <span>{t("sucursales.asistente.marcadas", { count: marcados.size })}</span>
-                <Button size="sm" type="button" variant="outline" onClick={() => juntar([...marcados])}>
-                  <Merge className="mr-1.5 size-4" /> {t("sucursales.asistente.juntar")}
+                <span>
+                  {t("sucursales.asistente.marcadas", { count: marcados.size })}
+                </span>
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  onClick={() => juntar([...marcados])}
+                >
+                  <Merge className="mr-1.5 size-4" />{" "}
+                  {t("sucursales.asistente.juntar")}
                 </Button>
               </div>
             )}
@@ -194,7 +216,9 @@ export function AsistenteDeDivision({
                     disabled={!g.incluido}
                     maxLength={120}
                     value={g.nombre}
-                    onChange={(e) => cambiar(g.clave, { nombre: e.target.value })}
+                    onChange={(e) =>
+                      cambiar(g.clave, { nombre: e.target.value })
+                    }
                   />
                   <Button
                     size="sm"
@@ -202,31 +226,50 @@ export function AsistenteDeDivision({
                     variant="ghost"
                     onClick={() => cambiar(g.clave, { incluido: !g.incluido })}
                   >
-                    {g.incluido ? t("sucursales.asistente.dejarFuera") : t("sucursales.asistente.incluir")}
+                    {g.incluido
+                      ? t("sucursales.asistente.dejarFuera")
+                      : t("sucursales.asistente.incluir")}
                   </Button>
                 </div>
-                <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 pl-7 text-xs" style={{ color: "var(--ink-soft)" }}>
+                <p
+                  className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 pl-7 text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
                   <span className="inline-flex items-center gap-1">
                     <MapPin className="size-3.5" /> {g.ciudades.join(" · ")}
                   </span>
-                  <span>{t("sucursales.cifras.sedes", { count: g.sedes })}</span>
-                  <span>{t("sucursales.cifras.estaciones", { count: g.estaciones })}</span>
-                  <span>{t("sucursales.cifras.vigilantes", { count: g.vigilantes })}</span>
+                  <span>
+                    {t("sucursales.cifras.sedes", { count: g.sedes })}
+                  </span>
+                  <span>
+                    {t("sucursales.cifras.estaciones", { count: g.estaciones })}
+                  </span>
+                  <span>
+                    {t("sucursales.cifras.vigilantes", { count: g.vigilantes })}
+                  </span>
                 </p>
-                {g.incluido && g.cercaDe.filter((c) => nombreDe.has(c)).length > 0 && (
-                  <p className="mt-1.5 pl-7 text-xs">
-                    {t("sucursales.asistente.cerca", {
-                      ciudades: g.cercaDe.map((c) => nombreDe.get(c)).join(", "),
-                    })}{" "}
-                    <button
-                      className="underline"
-                      type="button"
-                      onClick={() => juntar([g.clave, ...g.cercaDe.filter((c) => nombreDe.has(c))])}
-                    >
-                      {t("sucursales.asistente.juntarEnRegion")}
-                    </button>
-                  </p>
-                )}
+                {g.incluido &&
+                  g.cercaDe.filter((c) => nombreDe.has(c)).length > 0 && (
+                    <p className="mt-1.5 pl-7 text-xs">
+                      {t("sucursales.asistente.cerca", {
+                        ciudades: g.cercaDe
+                          .map((c) => nombreDe.get(c))
+                          .join(", "),
+                      })}{" "}
+                      <button
+                        className="underline"
+                        type="button"
+                        onClick={() =>
+                          juntar([
+                            g.clave,
+                            ...g.cercaDe.filter((c) => nombreDe.has(c)),
+                          ])
+                        }
+                      >
+                        {t("sucursales.asistente.juntarEnRegion")}
+                      </button>
+                    </p>
+                  )}
               </div>
             ))}
 

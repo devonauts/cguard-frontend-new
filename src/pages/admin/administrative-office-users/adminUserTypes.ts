@@ -10,8 +10,7 @@ export type { TenantUser };
 
 /** A role reference, which the API may return as a bare slug or an object. */
 export type RoleRef =
-  | string
-  | { id?: string; name?: string; slug?: string; role?: string };
+  string | { id?: string; name?: string; slug?: string; role?: string };
 
 /** Per-user permission overrides layered on top of the base role. */
 export interface PermissionOverrides {

@@ -19953,7 +19953,8 @@
       "cargando": "Loading staff…",
       "vacio": "There are no office staff to limit.",
       "admin": "Administrator: always sees every branch.",
-      "todas": "All"
+      "todas": "All",
+      "gerenteSinSucursal": "Branch manager without a branch: sees nothing until you assign one."
     },
     "sede": {
       "campo": "Branch",
@@ -19965,6 +19966,29 @@
       "boton": "Radio channel",
       "hecho": "Radio channel ready: {{estaciones}} posts and {{personas}} people.",
       "error": "The radio channel couldn't be set up."
+    },
+    "principal": "Headquarters",
+    "identidad": {
+      "titulo": "Own identity (optional)",
+      "ayuda": "Leave it empty if the branch uses the company’s legal name and tax ID.",
+      "razonSocial": "Legal name",
+      "pais": "Country",
+      "paisDeLaEmpresa": "The company’s",
+      "identificador": "Tax ID",
+      "identificadorMalo": "This {{documento}} is not valid for the chosen country.",
+      "establecimiento": "Establishment code",
+      "correo": "Branch email",
+      "direccion": "Registered address",
+      "revisa": "Check the branch tax ID."
+    },
+    "gerente": {
+      "soloPrincipalTitulo": "Headquarters handles this",
+      "soloPrincipalDesc": "As a branch manager you run your branch, but payments, modules and the account are managed by a headquarters administrator."
+    },
+    "cliente": {
+      "campo": "Client’s branch",
+      "todaLaEmpresa": "Whole company (shared)",
+      "ayuda": "A whole-company client is visible in every branch; a branch client only in that branch."
     }
   },
   "soporte": {
