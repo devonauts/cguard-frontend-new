@@ -20030,6 +20030,18 @@
       "campo": "Filiale del cliente",
       "todaLaEmpresa": "Tutta l’azienda (condiviso)",
       "ayuda": "Un cliente di tutta l’azienda è visibile in tutte le filiali; uno di una filiale, solo lì."
+    },
+    "espacio": {
+      "titulo": "Dove stai lavorando ora?",
+      "subtitulo": "Scegli lo spazio: tutto ciò che vedrai, report ed esportazioni inclusi, sarà di lì.",
+      "global": "Vista globale",
+      "globalCorto": "Globale",
+      "globalDesc": "Tutte le filiali insieme, con i numeri dell’azienda.",
+      "principalDesc": "La sede principale: la sua operatività, il suo team e i suoi clienti.",
+      "sucursalDesc": "Solo questa filiale.",
+      "ahora": "Ora sei qui",
+      "ultimaVez": "L’ultima volta",
+      "cambiaCuandoQuieras": "Puoi cambiare quando vuoi dalla barra superiore. La schermata attuale resta."
     }
   },
   "soporte": {
