@@ -17096,7 +17096,9 @@
         "tramos": "Tramos (hasta · % · cuota fija acumulada)",
         "tramoHasta": "Hasta",
         "tramoFijo": "Cuota fija",
-        "anadirTramo": "Añadir tramo"
+        "anadirTramo": "Añadir tramo",
+        "dobladaSiempreAparte": "Con esta forma de pago la doblada siempre sale en su propia línea del rol («Premio por doblada»).",
+        "dobladaComoSeCuenta": "Hay doblada cuando alguien trabaja en un día 1,5 veces o más su turno habitual (el que le marca el horario). 24 h sobre turnos de 12 es una doblada; 36 h es una tripleta y cuenta como dos turnos extra. Un turno de 24 h programado no es doblada."
       },
       "atras": "Atrás",
       "continuar": "Continuar",
@@ -17285,7 +17287,13 @@
         "desde": "El periodo empieza el",
         "hasta": "y termina el",
         "hastaHint": "Vacío = según la frecuencia",
-        "poblaciones": "A quién incluir"
+        "poblaciones": "A quién incluir",
+        "netoNegativo": "{{n}} rol(es) con neto negativo: las deducciones superan los ingresos. Baja la multa, la cuota o el anticipo y recalcula; mientras tanto no se puede publicar.",
+        "porConcepto": "Ver por concepto",
+        "verResumen": "Ver totales",
+        "dobladas": "Dobladas",
+        "dobladasHint": "Turnos extra por dobladas: una tripleta cuenta dos",
+        "dobladasDetalle": "{{d}} día(s) con doblada · {{h}} h · turno de {{j}} h"
       },
       "prestamos": {
         "estado": {

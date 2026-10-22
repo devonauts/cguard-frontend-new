@@ -17631,7 +17631,9 @@
         "tramos": "Stufen (bis · % · kumulierter Festbetrag)",
         "tramoHasta": "Bis",
         "tramoFijo": "Festbetrag",
-        "anadirTramo": "Stufe hinzufügen"
+        "anadirTramo": "Stufe hinzufügen",
+        "dobladaSiempreAparte": "Bei dieser Vergütungsart steht die Doppelschicht immer in einer eigenen Zeile der Abrechnung („Doppelschicht-Prämie“).",
+        "dobladaComoSeCuenta": "Eine Doppelschicht liegt vor, wenn jemand an einem Tag das 1,5-Fache oder mehr seiner üblichen Schicht (laut Dienstplan) arbeitet. 24 Std. bei 12-Std.-Schichten sind eine Doppelschicht; 36 Std. sind eine Dreifachschicht und zählen als zwei zusätzliche Schichten. Eine geplante 24-Std.-Schicht ist keine Doppelschicht."
       },
       "atras": "Zurück",
       "continuar": "Weiter",
@@ -17820,7 +17822,13 @@
         "desde": "Der Zeitraum beginnt am",
         "hasta": "und endet am",
         "hastaHint": "Leer = laut Rhythmus",
-        "poblaciones": "Wer einbezogen wird"
+        "poblaciones": "Wer einbezogen wird",
+        "netoNegativo": "{{n}} Abrechnung(en) mit negativem Netto: Die Abzüge übersteigen die Bezüge. Senke Strafe, Rate oder Vorschuss und berechne neu; bis dahin kann nicht veröffentlicht werden.",
+        "porConcepto": "Nach Lohnart anzeigen",
+        "verResumen": "Summen anzeigen",
+        "dobladas": "Doppelschichten",
+        "dobladasHint": "Zusätzliche Schichten durch Doppelschichten: eine Dreifachschicht zählt doppelt",
+        "dobladasDetalle": "{{d}} Tag(e) mit Doppelschicht · {{h}} Std. · {{j}}-Std.-Schicht"
       },
       "prestamos": {
         "estado": {

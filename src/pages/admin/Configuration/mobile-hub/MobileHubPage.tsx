@@ -161,7 +161,7 @@ const MODULE_META: {
   {
     key: "payslips",
     label: "Roles de pago",
-    desc: "El trabajador ve y descarga sus roles de pago publicados. Apagado de fábrica; necesita el módulo «Roles de pago».",
+    desc: "El trabajador ve y descarga sus roles de pago publicados. Apagado de fábrica.",
     icon: <FileSpreadsheet size={16} />,
   },
 ];
@@ -621,7 +621,10 @@ export default function MobileHubPage() {
                   })}
                 >
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {MODULE_META.map((m) => (
+                    {MODULE_META.filter(
+                      // Sin el módulo, la fila de «Roles de pago» ni aparece.
+                      (m) => m.key !== "payslips" || tieneRolesDePago,
+                    ).map((m) => (
                       <div
                         key={m.key}
                         className="glass-flat flex items-center justify-between gap-3 p-3.5"

@@ -39,6 +39,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import api from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
+import { hasFeature } from "@/lib/entitlements";
 
 type Via = "dashboard" | "email" | "sms";
 type Prefs = Record<string, Partial<Record<Via, boolean>>>;
@@ -53,6 +55,8 @@ const FILAS: {
   bloqueada?: boolean;
   hintKey?: string;
   hint?: string;
+  /** Módulo de pago del que depende: sin él, la fila no se enseña. */
+  modulo?: string;
 }[] = [
   {
     id: "panic-button",
@@ -114,6 +118,7 @@ const FILAS: {
     id: "payslip-published",
     labelKey: "misAvisos.fila.payslipPublished",
     label: "Rol de pago publicado",
+    modulo: "payroll_slips",
   },
   {
     id: "license-expiry",
@@ -157,6 +162,8 @@ const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function MisAvisosPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const filas = FILAS.filter((f) => !f.modulo || hasFeature(user, f.modulo));
   const [prefs, setPrefs] = useState<Prefs>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -263,7 +270,7 @@ export default function MisAvisosPage() {
                       className="divide-y"
                       style={{ borderColor: "var(--hairline)" }}
                     >
-                      {FILAS.map((f) => (
+                      {filas.map((f) => (
                         <div
                           key={f.id}
                           className="grid grid-cols-[1fr_repeat(3,120px)] items-center gap-2 px-4 py-3"

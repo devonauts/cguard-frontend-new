@@ -17631,7 +17631,9 @@
         "tramos": "Scaglioni (fino a · % · quota fissa cumulata)",
         "tramoHasta": "Fino a",
         "tramoFijo": "Quota fissa",
-        "anadirTramo": "Aggiungi scaglione"
+        "anadirTramo": "Aggiungi scaglione",
+        "dobladaSiempreAparte": "Con questa modalità di pagamento il doppio turno compare sempre su una riga propria della busta paga («Premio doppio turno»).",
+        "dobladaComoSeCuenta": "C’è doppio turno quando qualcuno lavora in un giorno 1,5 volte o più il suo turno abituale (quello del calendario). 24 h su turni di 12 è un doppio; 36 h è un triplo e conta come due turni extra. Un turno di 24 h programmato non è un doppio."
       },
       "atras": "Indietro",
       "continuar": "Continua",
@@ -17820,7 +17822,13 @@
         "desde": "Il periodo inizia il",
         "hasta": "e termina il",
         "hastaHint": "Vuoto = in base alla periodicità",
-        "poblaciones": "Chi includere"
+        "poblaciones": "Chi includere",
+        "netoNegativo": "{{n}} busta/e paga con netto negativo: le trattenute superano le competenze. Riduci la multa, la rata o l’anticipo e ricalcola; nel frattempo non si può pubblicare.",
+        "porConcepto": "Vedi per voce",
+        "verResumen": "Vedi totali",
+        "dobladas": "Doppi turni",
+        "dobladasHint": "Turni extra da doppi turni: un triplo conta due",
+        "dobladasDetalle": "{{d}} giorno/i con doppio turno · {{h}} h · turno di {{j}} h"
       },
       "prestamos": {
         "estado": {

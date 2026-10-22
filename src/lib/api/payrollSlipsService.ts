@@ -245,11 +245,16 @@ export interface PayrollSlipRow {
   employmentType: "employee" | "contractor";
   profileSnapshot: { name: string; population: Population; jobTitle: string | null; employeeNumber: string | null; payBasis: string; baseSalaryCents: number } & Record<string, unknown>;
   lines?: SlipLine[];
+  /** En la planilla: el importe de cada concepto del rol (sin las líneas enteras). */
+  byConcept?: Array<{ code: string; name: string; kind: ConceptKind; amountCents: number }>;
   grossCents: number | string;
   deductionsCents: number | string;
   netCents: number | string;
   employerCostCents: number | string;
-  bases: { hourlyRateCents: number; baseSalaryCents: number; ssBaseCents: number; taxBaseCents: number; paidDays: number; hours: Record<HoursOf, number>; manualLines?: Array<{ code: string; amountCents: number; name?: string; kind?: ConceptKind; note?: string | null }> } | null;
+  bases: { hourlyRateCents: number; baseSalaryCents: number; ssBaseCents: number; taxBaseCents: number; paidDays: number; hours: Record<HoursOf, number>;
+    /** Dobladas del periodo: días, tripletas, turnos extra que suman y la jornada contra la que se midieron. */
+    doubleShifts?: { days: number; tripleDays: number; extraShifts: number; hours: number; shiftHours: number };
+    manualLines?: Array<{ code: string; amountCents: number; name?: string; kind?: ConceptKind; note?: string | null }> } | null;
   alerts: SlipAlert[] | null;
   status: SlipStatus;
   hash: string | null;

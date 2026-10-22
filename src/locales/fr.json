@@ -17631,7 +17631,9 @@
         "tramos": "Tranches (jusqu'à · % · part fixe cumulée)",
         "tramoHasta": "Jusqu'à",
         "tramoFijo": "Part fixe",
-        "anadirTramo": "Ajouter une tranche"
+        "anadirTramo": "Ajouter une tranche",
+        "dobladaSiempreAparte": "Avec ce mode de paiement, le double poste figure toujours sur sa propre ligne du bulletin (« Prime de double poste »).",
+        "dobladaComoSeCuenta": "Il y a double poste quand quelqu’un travaille dans la journée 1,5 fois ou plus son poste habituel (celui de son planning). 24 h sur des postes de 12 h font un double ; 36 h font un triple, qui compte pour deux postes supplémentaires. Un poste de 24 h planifié n’est pas un double."
       },
       "atras": "Retour",
       "continuar": "Continuer",
@@ -17820,7 +17822,13 @@
         "desde": "La période commence le",
         "hasta": "et se termine le",
         "hastaHint": "Vide = selon la fréquence",
-        "poblaciones": "Qui inclure"
+        "poblaciones": "Qui inclure",
+        "netoNegativo": "{{n}} bulletin(s) au net négatif : les retenues dépassent les gains. Réduisez l’amende, l’échéance ou l’avance et recalculez ; d’ici là, impossible de publier.",
+        "porConcepto": "Voir par rubrique",
+        "verResumen": "Voir les totaux",
+        "dobladas": "Doubles postes",
+        "dobladasHint": "Postes supplémentaires dus aux doubles postes : un triple compte pour deux",
+        "dobladasDetalle": "{{d}} jour(s) avec double poste · {{h}} h · poste de {{j}} h"
       },
       "prestamos": {
         "estado": {

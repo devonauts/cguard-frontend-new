@@ -17096,7 +17096,9 @@
         "tramos": "Faixas (até · % · parcela fixa acumulada)",
         "tramoHasta": "Até",
         "tramoFijo": "Parcela fixa",
-        "anadirTramo": "Adicionar faixa"
+        "anadirTramo": "Adicionar faixa",
+        "dobladaSiempreAparte": "Com esta forma de pagamento a dobra sempre sai em sua própria linha do holerite («Prêmio por dobra»).",
+        "dobladaComoSeCuenta": "Há dobra quando alguém trabalha num dia 1,5 vez ou mais o seu turno habitual (o que a escala define). 24 h sobre turnos de 12 é uma dobra; 36 h é uma tripla e conta como dois turnos extras. Um turno de 24 h programado não é dobra."
       },
       "atras": "Voltar",
       "continuar": "Continuar",
@@ -17285,7 +17287,13 @@
         "desde": "O período começa em",
         "hasta": "e termina em",
         "hastaHint": "Vazio = conforme a frequência",
-        "poblaciones": "Quem incluir"
+        "poblaciones": "Quem incluir",
+        "netoNegativo": "{{n}} holerite(s) com líquido negativo: os descontos superam os proventos. Reduza a multa, a parcela ou o adiantamento e recalcule; até lá não é possível publicar.",
+        "porConcepto": "Ver por verba",
+        "verResumen": "Ver totais",
+        "dobladas": "Dobras",
+        "dobladasHint": "Turnos extras por dobras: uma tripla conta como duas",
+        "dobladasDetalle": "{{d}} dia(s) com dobra · {{h}} h · turno de {{j}} h"
       },
       "prestamos": {
         "estado": {

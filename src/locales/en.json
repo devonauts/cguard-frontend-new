@@ -17096,7 +17096,9 @@
         "tramos": "Brackets (up to · % · cumulative fixed amount)",
         "tramoHasta": "Up to",
         "tramoFijo": "Fixed amount",
-        "anadirTramo": "Add bracket"
+        "anadirTramo": "Add bracket",
+        "dobladaSiempreAparte": "With this pay method the double shift always goes on its own payslip line («Double-shift bonus»).",
+        "dobladaComoSeCuenta": "A double shift is a day when someone works 1.5 times or more their usual shift (the one their schedule sets). 24 h on 12-hour shifts is a double; 36 h is a triple and counts as two extra shifts. A scheduled 24-hour shift is not a double."
       },
       "atras": "Back",
       "continuar": "Continue",
@@ -17285,7 +17287,13 @@
         "desde": "The period starts on",
         "hasta": "and ends on",
         "hastaHint": "Empty = by frequency",
-        "poblaciones": "Who to include"
+        "poblaciones": "Who to include",
+        "netoNegativo": "{{n}} payslip(s) with negative net pay: deductions exceed earnings. Lower the fine, installment or advance and recalculate; until then it cannot be published.",
+        "porConcepto": "View by concept",
+        "verResumen": "View totals",
+        "dobladas": "Double shifts",
+        "dobladasHint": "Extra shifts from double shifts: a triple counts as two",
+        "dobladasDetalle": "{{d}} day(s) with a double shift · {{h}} h · {{j}} h shift"
       },
       "prestamos": {
         "estado": {

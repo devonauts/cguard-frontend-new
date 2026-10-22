@@ -173,11 +173,16 @@ export default function ConfiguracionDeRoles() {
                     </FormField>
                   </>
                 )}
-                <label className="glass-flat flex cursor-pointer items-center gap-2.5 px-3 py-2.5 sm:col-span-2">
-                  <input checked={s.doubleShift.listSeparately} className="cg-focus size-4" disabled={!canEdit} style={{ accentColor: "var(--brand)" }} type="checkbox" onChange={(e) => set("doubleShift", { ...s.doubleShift, listSeparately: e.target.checked })} />
-                  <span className="text-sm">{t("ui.RolesDePago.config.dobladaAparte", "Listar las dobladas en el rol como concepto aparte del horario normal")}</span>
-                </label>
+                {s.doubleShift.mode === "overtime" ? (
+                  <label className="glass-flat flex cursor-pointer items-center gap-2.5 px-3 py-2.5 sm:col-span-2">
+                    <input checked={s.doubleShift.listSeparately} className="cg-focus size-4" disabled={!canEdit} style={{ accentColor: "var(--brand)" }} type="checkbox" onChange={(e) => set("doubleShift", { ...s.doubleShift, listSeparately: e.target.checked })} />
+                    <span className="text-sm">{t("ui.RolesDePago.config.dobladaAparte", "Listar las dobladas en el rol como concepto aparte del horario normal")}</span>
+                  </label>
+                ) : (
+                  <p className="text-sm sm:col-span-2" style={{ color: "var(--ink-soft)" }}>{t("ui.RolesDePago.config.dobladaSiempreAparte", "Con esta forma de pago la doblada siempre sale en su propia línea del rol («Premio por doblada»).")}</p>
+                )}
               </div>
+              <p className="mt-3 text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.RolesDePago.config.dobladaComoSeCuenta", "Hay doblada cuando alguien trabaja en un día 1,5 veces o más su turno habitual (el que le marca el horario). 24 h sobre turnos de 12 es una doblada; 36 h es una tripleta y cuenta como dos turnos extra. Un turno de 24 h programado no es doblada.")}</p>
             </Section>
 
             <Section icon={<Percent />} title={t("ui.RolesDePago.config.rentaTitulo", "Impuesto a la renta")}>

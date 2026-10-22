@@ -17631,7 +17631,9 @@
         "tramos": "Schijven (tot · % · cumulatief vast bedrag)",
         "tramoHasta": "Tot",
         "tramoFijo": "Vast bedrag",
-        "anadirTramo": "Schijf toevoegen"
+        "anadirTramo": "Schijf toevoegen",
+        "dobladaSiempreAparte": "Bij deze betaalwijze staat de dubbele dienst altijd op een eigen regel van de loonstrook („Premie dubbele dienst”).",
+        "dobladaComoSeCuenta": "Er is een dubbele dienst als iemand op een dag 1,5 keer of meer zijn gewone dienst (volgens het rooster) werkt. 24 u bij diensten van 12 is een dubbele; 36 u is een driedubbele en telt als twee extra diensten. Een ingeroosterde dienst van 24 u is geen dubbele."
       },
       "atras": "Terug",
       "continuar": "Doorgaan",
@@ -17820,7 +17822,13 @@
         "desde": "De periode begint op",
         "hasta": "en eindigt op",
         "hastaHint": "Leeg = volgens de frequentie",
-        "poblaciones": "Wie opnemen"
+        "poblaciones": "Wie opnemen",
+        "netoNegativo": "{{n}} loonstrook/loonstroken met negatief netto: de inhoudingen zijn hoger dan het loon. Verlaag de boete, termijn of het voorschot en herbereken; tot die tijd kan er niet gepubliceerd worden.",
+        "porConcepto": "Per looncomponent",
+        "verResumen": "Totalen",
+        "dobladas": "Dubbele diensten",
+        "dobladasHint": "Extra diensten door dubbele diensten: een driedubbele telt als twee",
+        "dobladasDetalle": "{{d}} dag(en) met dubbele dienst · {{h}} u · dienst van {{j}} u"
       },
       "prestamos": {
         "estado": {

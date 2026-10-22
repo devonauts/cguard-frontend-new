@@ -81,6 +81,7 @@ import MENU from "@/data/sidebar-menu.json";
 import { hasFeature } from "@/lib/entitlements";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import NAVS from "@/data/settings-nav.json";
+import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
 import TenantSwitcher from "@/components/TenantSwitcher";
 import SelectorDeSucursal from "@/components/SelectorDeSucursal";
 import { useAgente } from "@/lib/agenteDeMarca";
@@ -468,9 +469,8 @@ export default function Header({
         });
       }
     }
-    const config = (NAVS as any)?.configuracion;
-
-    for (const sec of (config?.sections ?? []) as any[]) {
+    // Configuración sin las entradas de módulos que la empresa no tiene.
+    for (const sec of seccionesDeConfiguracion(user) as any[]) {
       for (const it of (sec.items ?? []) as any[]) {
         out.push({
           id: `cfg.${it.id}`,

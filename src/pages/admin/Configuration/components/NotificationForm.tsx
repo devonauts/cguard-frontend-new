@@ -27,6 +27,8 @@ import { communicationService } from "@/lib/api/communicationService";
 import { Section, SkeletonCards } from "@/components/kit";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { useAgente } from "@/lib/agenteDeMarca";
+import { useAuth } from "@/contexts/AuthContext";
+import { hasFeature } from "@/lib/entitlements";
 
 /**
  * Los cuatro destinos de un aviso. `push` es el TELÉFONO —las apps del vigilante
@@ -44,6 +46,8 @@ type NotificationItem = {
   label: string;
   hint?: string;
   default?: Partial<Record<ChannelKey, boolean>>;
+  /** Módulo de pago del que depende: sin él, la fila no se enseña. */
+  modulo?: string;
 };
 
 type MatrixState = Record<
@@ -257,6 +261,7 @@ export default function NotificationMatrix() {
           defaultValue: "Rol de pago publicado",
         }),
         default: { dashboard: true, push: true },
+        modulo: "payroll_slips",
       },
       {
         id: "license-expiry",
@@ -278,6 +283,13 @@ export default function NotificationMatrix() {
       },
     ],
     [t],
+  );
+  // Las filas de un módulo que la empresa no tiene no se enseñan ni se tocan
+  // con «toda la columna»; al guardar se reenvían tal como estaban.
+  const { user } = useAuth();
+  const VISIBLES = React.useMemo(
+    () => NOTIFICATIONS.filter((n) => !n.modulo || hasFeature(user, n.modulo)),
+    [NOTIFICATIONS, user],
   );
 
   const columns: { key: ChannelKey; label: string; icon: React.ReactNode }[] =
@@ -396,10 +408,10 @@ export default function NotificationMatrix() {
   }, []);
 
   const allCheckedByColumn = (col: ChannelKey) =>
-    NOTIFICATIONS.every((n) => state[n.id]?.[col]);
+    VISIBLES.every((n) => state[n.id]?.[col]);
 
   const someCheckedByColumn = (col: ChannelKey) =>
-    NOTIFICATIONS.some((n) => state[n.id]?.[col]);
+    VISIBLES.some((n) => state[n.id]?.[col]);
 
   const toggleColumn = async (col: ChannelKey, value: boolean) => {
     // Encender la columna de SMS de un clic arma un canal DE PAGO en todos los
@@ -411,7 +423,7 @@ export default function NotificationMatrix() {
         t("settings.notificationForm.smsConfirm", {
           defaultValue:
             "Vas a activar el envío por SMS en los {{n}} avisos.\n\nEl SMS se cobra por mensaje y por destinatario, y se descuenta de tu saldo. Un aviso frecuente —como las entradas y salidas de turno— puede consumirlo rápido.\n\n¿Continuar?",
-          n: NOTIFICATIONS.length,
+          n: VISIBLES.length,
         }),
       );
 
@@ -420,7 +432,7 @@ export default function NotificationMatrix() {
     setState((prev) => {
       const copy: MatrixState = { ...prev };
 
-      NOTIFICATIONS.forEach((n) => {
+      VISIBLES.forEach((n) => {
         copy[n.id] = { ...copy[n.id], [col]: value };
       });
 
@@ -657,7 +669,7 @@ export default function NotificationMatrix() {
                 className="divide-y border-x border-b"
                 style={{ borderRadius: "0 0 var(--r-md) var(--r-md)" }}
               >
-                {NOTIFICATIONS.map((n) => {
+                {VISIBLES.map((n) => {
                   const row = state[n.id];
                   const allRow = row.dashboard && row.email && row.sms;
                   const someRow =

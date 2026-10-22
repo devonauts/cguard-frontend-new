@@ -5,6 +5,8 @@ import { Search, ChevronRight, Settings2 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import NAVS from "@/data/settings-nav.json";
+import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
+import { useAuth } from "@/contexts/AuthContext";
 import { settingsIcon } from "@/config/settingsIcons";
 import { useAgente } from "@/lib/agenteDeMarca";
 import {
@@ -39,8 +41,12 @@ export default function SettingsHome() {
   // Cómo se llama el asistente aquí: en el CRM de un socio, el suyo.
   const agente = useAgente();
   const [query, setQuery] = useState("");
-  const nav = (NAVS as Record<string, { title?: string; sections: Section[] }>)
-    .configuracion;
+  const { user } = useAuth();
+  const nav = {
+    ...(NAVS as Record<string, { title?: string; sections: Section[] }>).configuracion,
+    // Sin las entradas de módulos que la empresa no tiene (p. ej. Roles de pago).
+    sections: seccionesDeConfiguracion(user) as Section[],
+  };
 
   const sections = useMemo(() => {
     const q = query.trim().toLowerCase();

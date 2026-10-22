@@ -2,7 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import NAVS from "@/data/settings-nav.json";
+import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
+import { useAuth } from "@/contexts/AuthContext";
 import { settingsIcon } from "@/config/settingsIcons";
 import { useAgente } from "@/lib/agenteDeMarca";
 
@@ -43,8 +44,9 @@ export default function SettingsLayout({
   const { pathname } = useLocation();
   // Some labels carry the assistant's name, which a partner can rename.
   const agente = useAgente();
-  const secciones = (NAVS as Record<string, { sections: Section[] }>)
-    .configuracion.sections;
+  // Sin las entradas de módulos que la empresa no tiene (p. ej. Roles de pago).
+  const { user } = useAuth();
+  const secciones = seccionesDeConfiguracion(user) as Section[];
 
   return (
     /* ── POR QUÉ AQUÍ YA NO SE MIDE LA VENTANA ────────────────────────────

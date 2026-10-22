@@ -17911,7 +17911,9 @@
         "tramos": "Progi (do · % · skumulowana kwota stała)",
         "tramoHasta": "Do",
         "tramoFijo": "Kwota stała",
-        "anadirTramo": "Dodaj próg"
+        "anadirTramo": "Dodaj próg",
+        "dobladaSiempreAparte": "Przy tym sposobie płatności podwójna zmiana zawsze ma własną pozycję na pasku („Premia za podwójną zmianę”).",
+        "dobladaComoSeCuenta": "Podwójna zmiana to dzień, w którym ktoś pracuje co najmniej 1,5 raza dłużej niż jego zwykła zmiana (z grafiku). 24 h przy zmianach 12-godzinnych to podwójna; 36 h to potrójna i liczy się jako dwie dodatkowe zmiany. Zaplanowana zmiana 24-godzinna nie jest podwójną."
       },
       "atras": "Wstecz",
       "continuar": "Dalej",
@@ -18100,7 +18102,13 @@
         "desde": "Okres zaczyna się",
         "hasta": "i kończy się",
         "hastaHint": "Puste = według częstotliwości",
-        "poblaciones": "Kogo uwzględnić"
+        "poblaciones": "Kogo uwzględnić",
+        "netoNegativo": "{{n}} pasek/pasków z ujemną kwotą netto: potrącenia przekraczają przychody. Zmniejsz karę, ratę lub zaliczkę i przelicz; do tego czasu nie można opublikować.",
+        "porConcepto": "Według składników",
+        "verResumen": "Sumy",
+        "dobladas": "Podwójne zmiany",
+        "dobladasHint": "Dodatkowe zmiany z podwójnych: potrójna liczy się jako dwie",
+        "dobladasDetalle": "{{d}} dzień/dni z podwójną zmianą · {{h}} h · zmiana {{j}} h"
       },
       "prestamos": {
         "estado": {
