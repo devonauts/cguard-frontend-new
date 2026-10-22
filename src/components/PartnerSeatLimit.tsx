@@ -39,12 +39,19 @@ export default function PartnerSeatLimit({
             })}
           </p>
           <p>
+            {/* Without the partner's name, the unnamed wording — never our
+                name: this company is a partner's, not ours. */}
             {full
-              ? t("billing.partnerSeats.full", {
-                  defaultValue:
-                    "Llegaste a tu máximo. Para agregar más usuarios, pídeselo a {{proveedor}}.",
-                  proveedor: proveedor || "CGuard Pro",
-                })
+              ? proveedor
+                ? t("billing.partnerSeats.full", {
+                    defaultValue:
+                      "Llegaste a tu máximo. Para agregar más usuarios, pídeselo a {{proveedor}}.",
+                    proveedor,
+                  })
+                : t("billing.partnerSeats.fullUnnamed", {
+                    defaultValue:
+                      "Llegaste a tu máximo. Para agregar más usuarios, pídeselo a tu proveedor.",
+                  })
               : proveedor
                 ? t("billing.partnerSeats.body", {
                     defaultValue:

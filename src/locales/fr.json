@@ -5789,7 +5789,8 @@
     "cvSent": "CV : {{n}}",
     "cvTitle": "CV analysé",
     "downloadExcel": "Télécharger Excel",
-    "downloadPdf": "Télécharger PDF"
+    "downloadPdf": "Télécharger PDF",
+    "nombreNeutro": "Assistant"
   },
   "actions": {
     "action": "Action",
@@ -6224,7 +6225,8 @@
       "label": "Utilisateurs : {{usados}} sur {{maximo}}",
       "body": "{{proveedor}} fixe le nombre d'utilisateurs de votre entreprise. S'il vous en faut plus, demandez-le-lui.",
       "bodyUnnamed": "Votre fournisseur fixe le nombre d'utilisateurs de votre entreprise. S'il vous en faut plus, demandez-le-lui.",
-      "full": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à {{proveedor}}."
+      "full": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à {{proveedor}}.",
+      "fullUnnamed": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à votre fournisseur."
     }
   },
   "brand": {
@@ -9569,7 +9571,8 @@
       "usuarioSinCorreoAyuda": "Vous vous connecterez à l'app avec cet identifiant et le mot de passe créé ici. Si vous avez un e-mail, ajoutez-le ci-dessous (facultatif).",
       "yaPuedesEntrar": "Vous pouvez déjà vous connecter",
       "tuEmpresaTeAsignaraAUnPuesto": "Votre entreprise vous affectera à un poste.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Connectez-vous avec votre identifiant et votre mot de passe."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Connectez-vous avec votre identifiant et votre mot de passe.",
+      "cuentaListaDescargaLaApp": "Votre compte avec <b>{{empresa}}</b> est prêt. Téléchargez l'application pour suivre et gérer votre service de sécurité depuis votre téléphone."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Ma position",

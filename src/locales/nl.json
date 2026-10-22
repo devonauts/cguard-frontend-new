@@ -5789,7 +5789,8 @@
     "cvSent": "Cv: {{n}}",
     "cvTitle": "Cv gelezen",
     "downloadExcel": "Excel downloaden",
-    "downloadPdf": "PDF downloaden"
+    "downloadPdf": "PDF downloaden",
+    "nombreNeutro": "Assistent"
   },
   "actions": {
     "action": "Actie",
@@ -6224,7 +6225,8 @@
       "label": "Gebruikers: {{usados}} van {{maximo}}",
       "body": "{{proveedor}} bepaalt hoeveel gebruikers je bedrijf kan hebben. Heb je er meer nodig, vraag het hen.",
       "bodyUnnamed": "Je leverancier bepaalt hoeveel gebruikers je bedrijf kan hebben. Heb je er meer nodig, vraag het hen.",
-      "full": "Je hebt je maximum bereikt. Vraag {{proveedor}} om meer gebruikers toe te voegen."
+      "full": "Je hebt je maximum bereikt. Vraag {{proveedor}} om meer gebruikers toe te voegen.",
+      "fullUnnamed": "Je hebt je maximum bereikt. Vraag je leverancier om meer gebruikers toe te voegen."
     }
   },
   "brand": {
@@ -9569,7 +9571,8 @@
       "usuarioSinCorreoAyuda": "Met deze gebruikersnaam en het wachtwoord dat je hier maakt, log je in op de app. Heb je een e-mail, dan kun je die hieronder toevoegen (optioneel).",
       "yaPuedesEntrar": "Je kunt nu inloggen",
       "tuEmpresaTeAsignaraAUnPuesto": "Je bedrijf wijst je een post toe.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Log in met je gebruikersnaam en wachtwoord."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Log in met je gebruikersnaam en wachtwoord.",
+      "cuentaListaDescargaLaApp": "Je account bij <b>{{empresa}}</b> is klaar. Download de app om je beveiligingsdienst vanaf je telefoon te volgen en te beheren."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mijn positie",

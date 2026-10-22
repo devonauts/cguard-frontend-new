@@ -5791,7 +5791,8 @@
     "cvSent": "CV: {{n}}",
     "cvTitle": "CV odczytane",
     "downloadExcel": "Pobierz Excel",
-    "downloadPdf": "Pobierz PDF"
+    "downloadPdf": "Pobierz PDF",
+    "nombreNeutro": "Asystent"
   },
   "actions": {
     "action": "Akcja",
@@ -6226,7 +6227,8 @@
       "label": "Użytkownicy: {{usados}} z {{maximo}}",
       "body": "{{proveedor}} ustala, ilu użytkowników może mieć Twoja firma. Jeśli potrzebujesz więcej, poproś ich o to.",
       "bodyUnnamed": "Twój dostawca ustala, ilu użytkowników może mieć Twoja firma. Jeśli potrzebujesz więcej, poproś go o to.",
-      "full": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś {{proveedor}}."
+      "full": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś {{proveedor}}.",
+      "fullUnnamed": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś swojego dostawcę."
     }
   },
   "brand": {
@@ -9591,7 +9593,8 @@
       "usuarioSinCorreoAyuda": "Tą nazwą użytkownika i utworzonym tu hasłem zalogujesz się do aplikacji. Jeśli masz e-mail, możesz go dodać poniżej (opcjonalnie).",
       "yaPuedesEntrar": "Możesz już się zalogować",
       "tuEmpresaTeAsignaraAUnPuesto": "Twoja firma przydzieli cię do stanowiska.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Zaloguj się swoją nazwą użytkownika i hasłem."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Zaloguj się swoją nazwą użytkownika i hasłem.",
+      "cuentaListaDescargaLaApp": "Twoje konto w <b>{{empresa}}</b> jest gotowe. Pobierz aplikację, aby monitorować usługę ochrony i zarządzać nią z telefonu."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Moja lokalizacja",

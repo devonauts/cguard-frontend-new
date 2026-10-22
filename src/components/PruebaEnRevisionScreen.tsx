@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Hourglass, ShieldX, RefreshCw } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { esMarcaDeSocio, useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { currentTenantEntry, getBillingState } from "@/lib/entitlements";
 
 /**
@@ -43,6 +44,12 @@ export default function PruebaEnRevisionScreen({
   const montado = useRef(true);
 
   const rechazada = variant === "rejected";
+  /* Defense in depth: should a partner's company ever land here, it writes to
+     its partner's support, never to ours (same rule as `AccesoBloqueado`).
+     Without a partner mailbox there is no contact button at all. */
+  const marca = useWhiteLabel();
+  const correoDeSoporte: string | null =
+    marca?.support?.email || (marca && esMarcaDeSocio(marca) ? null : CORREO_DE_SOPORTE);
   const entrada = currentTenantEntry(user);
   const motivo: string | null = entrada?.trialReviewNote
     ? String(entrada.trialReviewNote)
@@ -163,14 +170,16 @@ export default function PruebaEnRevisionScreen({
 
       <div className="flex flex-wrap justify-center gap-3">
         {rechazada ? (
-          <a
-            className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-[filter] hover:brightness-105"
-            href={`mailto:${CORREO_DE_SOPORTE}`}
-          >
-            {t("billing.pruebaEnRevision.contact", {
-              defaultValue: "Escribir a soporte",
-            })}
-          </a>
+          correoDeSoporte ? (
+            <a
+              className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-[filter] hover:brightness-105"
+              href={`mailto:${correoDeSoporte}`}
+            >
+              {t("billing.pruebaEnRevision.contact", {
+                defaultValue: "Escribir a soporte",
+              })}
+            </a>
+          ) : null
         ) : (
           <button
             className="cg-btn-brand cg-focus inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-[filter] hover:brightness-105 disabled:opacity-60"

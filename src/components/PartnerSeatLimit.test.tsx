@@ -48,3 +48,16 @@ describe("PartnerSeatLimit", () => {
     expect(page).toContain("{!loading && esDeProveedor && data?.seatCap != null && (");
   });
 });
+
+describe("PartnerSeatLimit · never our name", () => {
+  it("at the maximum without the partner's name: the unnamed wording", () => {
+    const html = paint({ seats: 10, seatCap: 10, partnerName: null });
+    expect(html).toContain("pídeselo a tu proveedor");
+    expect(html).not.toMatch(/CGuard/i);
+  });
+
+  it("the source no longer falls back to our name", () => {
+    const src = readFileSync(resolve(__dirname, "PartnerSeatLimit.tsx"), "utf8");
+    expect(src).not.toContain('"CGuard Pro"');
+  });
+});

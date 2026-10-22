@@ -655,7 +655,8 @@
       "label": "Users: {{usados}} of {{maximo}}",
       "body": "{{proveedor}} sets how many users your company can have. If you need more, ask them.",
       "bodyUnnamed": "Your provider sets how many users your company can have. If you need more, ask them.",
-      "full": "You've reached your maximum. To add more users, ask {{proveedor}}."
+      "full": "You've reached your maximum. To add more users, ask {{proveedor}}.",
+      "fullUnnamed": "You've reached your maximum. To add more users, ask your provider."
     }
   },
   "categories": {
@@ -8099,7 +8100,8 @@
     "cvSent": "CV: {{n}}",
     "cvTitle": "CV read",
     "downloadExcel": "Download Excel",
-    "downloadPdf": "Download PDF"
+    "downloadPdf": "Download PDF",
+    "nombreNeutro": "Assistant"
   },
   "kit": {
     "pagination": {
@@ -9034,7 +9036,8 @@
       "usuarioSinCorreoAyuda": "You'll sign in to the app with this username and the password you create here. If you have an email, you can add it below (optional).",
       "yaPuedesEntrar": "You can sign in now",
       "tuEmpresaTeAsignaraAUnPuesto": "Your company will assign you to a post.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Sign in with your username and password."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Sign in with your username and password.",
+      "cuentaListaDescargaLaApp": "Your account with <b>{{empresa}}</b> is ready. Download the app to monitor and manage your security service from your phone."
     },
     "AddressAutocomplete": {
       "miUbicacion": "My location",

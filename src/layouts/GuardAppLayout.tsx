@@ -3,8 +3,13 @@ import { Outlet, NavLink } from "react-router-dom";
 import { Shield, Calendar, CalendarOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+
 export default function GuardAppLayout() {
   const { t } = useTranslation();
+  /* The host's brand name, never ours hardcoded: on a partner's host the guard
+     must see the partner. An unnamed partner shows no name at all. */
+  const { platformName } = useWhiteLabel();
   const navItems = [
     { to: "/guard", icon: Shield, label: t("guard.nav.home") },
     { to: "/guard/schedule", icon: Calendar, label: t("guard.nav.schedule") },
@@ -17,7 +22,9 @@ export default function GuardAppLayout() {
       <header className="bg-card border-b px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-2">
           <Shield className="text-primary" size={20} />
-          <span className="font-bold text-foreground text-sm">CGuard Pro</span>
+          {platformName ? (
+            <span className="font-bold text-foreground text-sm">{platformName}</span>
+          ) : null}
         </div>
         <span className="text-xs text-muted-foreground">
           {t("guard.roleLabel")}

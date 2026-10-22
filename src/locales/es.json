@@ -655,7 +655,8 @@
       "label": "Usuarios: {{usados}} de {{maximo}}",
       "body": "{{proveedor}} fija cuántos usuarios puede tener tu empresa. Si necesitas más, pídeselo a ellos.",
       "bodyUnnamed": "Tu proveedor fija cuántos usuarios puede tener tu empresa. Si necesitas más, pídeselo a ellos.",
-      "full": "Llegaste a tu máximo. Para agregar más usuarios, pídeselo a {{proveedor}}."
+      "full": "Llegaste a tu máximo. Para agregar más usuarios, pídeselo a {{proveedor}}.",
+      "fullUnnamed": "Llegaste a tu máximo. Para agregar más usuarios, pídeselo a tu proveedor."
     }
   },
   "categories": {
@@ -8099,7 +8100,8 @@
     "cvSent": "Hoja de vida: {{n}}",
     "cvTitle": "Hoja de vida leída",
     "downloadExcel": "Descargar Excel",
-    "downloadPdf": "Descargar PDF"
+    "downloadPdf": "Descargar PDF",
+    "nombreNeutro": "Asistente"
   },
   "kit": {
     "pagination": {
@@ -9034,7 +9036,8 @@
       "usuarioSinCorreoAyuda": "Con este usuario y la contraseña que crees aquí entrarás a la app. Si tienes un correo, puedes añadirlo abajo (es opcional).",
       "yaPuedesEntrar": "Ya puedes entrar",
       "tuEmpresaTeAsignaraAUnPuesto": "Tu empresa te asignará a un puesto.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Inicia sesión con tu usuario y contraseña."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Inicia sesión con tu usuario y contraseña.",
+      "cuentaListaDescargaLaApp": "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la app para monitorear y gestionar tu servicio de seguridad desde tu teléfono."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mi ubicación",

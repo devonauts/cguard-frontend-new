@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import i18n from "@/i18n";
 import api from "@/lib/api";
 import { esAnfitrionDePlataforma } from "@/lib/apiBase";
 
@@ -40,19 +41,22 @@ export interface AgenteDeMarca {
   icono: string | null;
 }
 
-/* Before the answer arrives: the shield only on our own planes. On a partner's
-   host the first paint is already the neutral orb, never our shield. */
-function formaInicial(): string {
+/** Is this one of OUR hosts? Unknown (no `window`) counts as not ours. */
+function anfitrionPropio(): boolean {
   try {
     return esAnfitrionDePlataforma(
       window.location.hostname,
       import.meta.env.VITE_API_URL as string | undefined,
-    )
-      ? "escudo"
-      : "orbe";
+    );
   } catch {
-    return "orbe";
+    return false;
   }
+}
+
+/* Before the answer arrives: the shield only on our own planes. On a partner's
+   host the first paint is already the neutral orb, never our shield. */
+function formaInicial(): string {
+  return anfitrionPropio() ? "escudo" : "orbe";
 }
 
 /**
@@ -64,7 +68,18 @@ function formaInicial(): string {
 export const NOMBRE_HISPANO = "VigIA";
 export const NOMBRE_GLOBAL = "Vigia AI";
 
+/** The neutral word a partner's host shows until its assistant's name arrives. */
+const CLAVE_NOMBRE_NEUTRO = "vigia.nombreNeutro";
+
 function nombreInicial(): string {
+  /* On a partner's host our assistant's name must not flash before
+     `/assistant/identity` answers: a neutral, localized «Assistant». */
+  if (!anfitrionPropio()) {
+    const neutro = i18n.t(CLAVE_NOMBRE_NEUTRO, { defaultValue: "Asistente" });
+    return typeof neutro === "string" && neutro && neutro !== CLAVE_NOMBRE_NEUTRO
+      ? neutro
+      : "Asistente";
+  }
   try {
     return /^es\b/i.test(navigator.language || "") ? NOMBRE_HISPANO : NOMBRE_GLOBAL;
   } catch {
@@ -74,7 +89,12 @@ function nombreInicial(): string {
 
 /** Lo nuestro, y lo que se pinta mientras llega la respuesta. */
 export const AGENTE_POR_DEFECTO: AgenteDeMarca = {
-  nombre: nombreInicial(),
+  /* A getter, read at paint time: this module loads before the language
+     catalog does, so a value fixed at import would be the untranslated
+     fallback on a partner's host. */
+  get nombre() {
+    return nombreInicial();
+  },
   saludo: null,
   avatarUrl: null,
   forma: formaInicial(),

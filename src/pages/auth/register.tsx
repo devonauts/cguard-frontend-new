@@ -21,7 +21,7 @@ import Boveda, {
 } from "./Boveda";
 import RevisaTuCorreo from "./RevisaTuCorreo";
 
-import { enlaceLegal } from "@/lib/enlacesLegales";
+import { enlaceLegalDelAnfitrion } from "@/lib/enlacesLegales";
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,7 +39,7 @@ import { Combobox } from "@/components/app/combobox";
 import { listaDePaises } from "@/lib/paisDeLaEmpresa";
 import { paisConocido } from "@/lib/paisDelVisitante";
 import { isStrongPassword } from "@/lib/passwordPolicy";
-import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { esMarcaDeSocio, useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 /* ── EL REGISTRO «BÓVEDA» (2026-10-03) ─────────────────────────────────────
@@ -111,6 +111,14 @@ export default function Register() {
     if (paso === 2) campoEmpresa.current?.focus();
   }, [paso]);
   const marca = useWhiteLabel();
+  /* Privacy/terms: ours on our hosts; on a partner's host its support URL, or
+     no link at all — never our site (see `enlaceLegalDelAnfitrion`). */
+  const anfitrionLegal = {
+    deSocio: esMarcaDeSocio(marca),
+    urlDeSoporte: marca.support?.url,
+  };
+  const enlacePrivacidad = enlaceLegalDelAnfitrion("privacy", language, anfitrionLegal);
+  const enlaceTerminos = enlaceLegalDelAnfitrion("terms", language, anfitrionLegal);
   const dePlataforma = !!marca.puedeUsarArteDePlataforma;
   /* Las tres frases de abajo (los días gratis, sin tarjeta, la cifra) son promesas de
      la plataforma: en el anfitrión de un socio no se dicen. */
@@ -696,27 +704,39 @@ export default function Register() {
               />
               <span>
                 {t("auth.accept_prefix", { defaultValue: "Acepto la" })}{" "}
-                <a
-                  className="cg-reg-enlace"
-                  href={enlaceLegal("privacy", language)}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {t("auth.privacy_policy", {
+                {enlacePrivacidad ? (
+                  <a
+                    className="cg-reg-enlace"
+                    href={enlacePrivacidad}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {t("auth.privacy_policy", {
+                      defaultValue: "Política de privacidad",
+                    })}
+                  </a>
+                ) : (
+                  t("auth.privacy_policy", {
                     defaultValue: "Política de privacidad",
-                  })}
-                </a>{" "}
+                  })
+                )}{" "}
                 {t("auth.accept_and", { defaultValue: "y los" })}{" "}
-                <a
-                  className="cg-reg-enlace"
-                  href={enlaceLegal("terms", language)}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  {t("auth.terms_conditions", {
+                {enlaceTerminos ? (
+                  <a
+                    className="cg-reg-enlace"
+                    href={enlaceTerminos}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {t("auth.terms_conditions", {
+                      defaultValue: "Términos y condiciones",
+                    })}
+                  </a>
+                ) : (
+                  t("auth.terms_conditions", {
                     defaultValue: "Términos y condiciones",
-                  })}
-                </a>
+                  })
+                )}
                 .
               </span>
             </label>

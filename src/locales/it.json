@@ -5789,7 +5789,8 @@
     "cvSent": "Curriculum: {{n}}",
     "cvTitle": "Curriculum letto",
     "downloadExcel": "Scarica Excel",
-    "downloadPdf": "Scarica PDF"
+    "downloadPdf": "Scarica PDF",
+    "nombreNeutro": "Assistente"
   },
   "actions": {
     "action": "Azione",
@@ -6224,7 +6225,8 @@
       "label": "Utenti: {{usados}} di {{maximo}}",
       "body": "{{proveedor}} stabilisce quanti utenti può avere la tua azienda. Se te ne servono altri, chiedili a loro.",
       "bodyUnnamed": "Il tuo fornitore stabilisce quanti utenti può avere la tua azienda. Se te ne servono altri, chiedili a lui.",
-      "full": "Hai raggiunto il tuo massimo. Per aggiungere altri utenti, chiedi a {{proveedor}}."
+      "full": "Hai raggiunto il tuo massimo. Per aggiungere altri utenti, chiedi a {{proveedor}}.",
+      "fullUnnamed": "Hai raggiunto il tuo massimo. Per aggiungere altri utenti, chiedi al tuo fornitore."
     }
   },
   "brand": {
@@ -9569,7 +9571,8 @@
       "usuarioSinCorreoAyuda": "Con questo nome utente e la password che crei qui entrerai nell'app. Se hai un'e-mail, puoi aggiungerla sotto (facoltativo).",
       "yaPuedesEntrar": "Puoi già accedere",
       "tuEmpresaTeAsignaraAUnPuesto": "La tua azienda ti assegnerà a una postazione.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password.",
+      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono."
     },
     "AddressAutocomplete": {
       "miUbicacion": "La mia posizione",

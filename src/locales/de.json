@@ -5789,7 +5789,8 @@
     "cvSent": "Lebenslauf: {{n}}",
     "cvTitle": "Lebenslauf ausgelesen",
     "downloadExcel": "Excel herunterladen",
-    "downloadPdf": "PDF herunterladen"
+    "downloadPdf": "PDF herunterladen",
+    "nombreNeutro": "Assistent"
   },
   "actions": {
     "action": "Aktion",
@@ -6224,7 +6225,8 @@
       "label": "Benutzer: {{usados}} von {{maximo}}",
       "body": "{{proveedor}} legt fest, wie viele Benutzer Ihr Unternehmen haben kann. Wenn Sie mehr brauchen, wenden Sie sich an sie.",
       "bodyUnnamed": "Ihr Anbieter legt fest, wie viele Benutzer Ihr Unternehmen haben kann. Wenn Sie mehr brauchen, wenden Sie sich an ihn.",
-      "full": "Sie haben Ihr Maximum erreicht. Um weitere Benutzer hinzuzufügen, wenden Sie sich an {{proveedor}}."
+      "full": "Sie haben Ihr Maximum erreicht. Um weitere Benutzer hinzuzufügen, wenden Sie sich an {{proveedor}}.",
+      "fullUnnamed": "Sie haben Ihr Maximum erreicht. Um weitere Benutzer hinzuzufügen, wenden Sie sich an Ihren Anbieter."
     }
   },
   "brand": {
@@ -9569,7 +9571,8 @@
       "usuarioSinCorreoAyuda": "Mit diesem Benutzernamen und dem hier erstellten Passwort melden Sie sich in der App an. Haben Sie eine E-Mail, können Sie sie unten angeben (optional).",
       "yaPuedesEntrar": "Sie können sich jetzt anmelden",
       "tuEmpresaTeAsignaraAUnPuesto": "Ihr Unternehmen weist Sie einem Posten zu.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Melden Sie sich mit Ihrem Benutzernamen und Passwort an."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Melden Sie sich mit Ihrem Benutzernamen und Passwort an.",
+      "cuentaListaDescargaLaApp": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die App herunter, um Ihren Sicherheitsdienst vom Telefon aus zu überwachen und zu verwalten."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mein Standort",

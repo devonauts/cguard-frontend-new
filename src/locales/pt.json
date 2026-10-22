@@ -6776,7 +6776,8 @@
     "cvSent": "Currículo: {{n}}",
     "cvTitle": "Currículo lido",
     "downloadExcel": "Baixar Excel",
-    "downloadPdf": "Baixar PDF"
+    "downloadPdf": "Baixar PDF",
+    "nombreNeutro": "Assistente"
   },
   "auth": {
     "account_created_verify_email": "Conta criada. Verifique seu e-mail para entrar.",
@@ -7151,7 +7152,8 @@
       "label": "Usuários: {{usados}} de {{maximo}}",
       "body": "{{proveedor}} define quantos usuários sua empresa pode ter. Se precisar de mais, peça a eles.",
       "bodyUnnamed": "Seu provedor define quantos usuários sua empresa pode ter. Se precisar de mais, peça a eles.",
-      "full": "Você atingiu o seu máximo. Para adicionar mais usuários, peça a {{proveedor}}."
+      "full": "Você atingiu o seu máximo. Para adicionar mais usuários, peça a {{proveedor}}.",
+      "fullUnnamed": "Você atingiu o seu máximo. Para adicionar mais usuários, peça ao seu provedor."
     }
   },
   "suscripcion": {
@@ -9034,7 +9036,8 @@
       "usuarioSinCorreoAyuda": "Com este usuário e a senha que criar aqui você entrará no app. Se tiver um e-mail, pode adicioná-lo abaixo (opcional).",
       "yaPuedesEntrar": "Você já pode entrar",
       "tuEmpresaTeAsignaraAUnPuesto": "Sua empresa vai atribuir você a um posto.",
-      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Entre com seu usuário e senha."
+      "googlePlayAppStoreIniciaYa": "Google Play · App Store. Entre com seu usuário e senha.",
+      "cuentaListaDescargaLaApp": "Sua conta com <b>{{empresa}}</b> está pronta. Baixe o app para monitorar e gerenciar seu serviço de segurança pelo celular."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Minha localização",
