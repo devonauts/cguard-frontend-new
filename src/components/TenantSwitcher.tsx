@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Building2, Check, ChevronDown } from "lucide-react";
 
+import { marcarQueHayQuePreguntarElEspacio } from "@/lib/sucursalElegida";
 import { SmartImage } from "@/components/kit/SmartImage";
 import {
   getActiveTenant,
@@ -62,6 +63,8 @@ export default function TenantSwitcher() {
     setAbierto(false);
     if (tid === activa?.tenantId) return;
     setActiveTenantId(tid);
+    // Sucursales: la empresa nueva puede tener sucursales: se pregunta dónde trabajar.
+    marcarQueHayQuePreguntarElEspacio();
     window.location.reload();
   };
 

@@ -224,7 +224,8 @@ export interface PayrollRun {
   periodFrom: string;
   periodTo: string;
   frequency: PayFrequency;
-  population: { roles: Population[]; userIds: string[] | null } | null;
+  /** branchIds: planilla de esas sucursales (null = de toda la empresa). */
+  population: { roles: Population[]; userIds: string[] | null; branchIds?: string[] | null } | null;
   currency: string;
   status: RunStatus;
   countryCode: string | null;
@@ -410,7 +411,7 @@ const payrollSlipsService = {
     return unwrap(await api.get(`${base()}/runs`));
   },
 
-  async createRun(body: { from: string; to?: string; populations?: Population[]; userIds?: string[] }): Promise<PayrollRun> {
+  async createRun(body: { from: string; to?: string; populations?: Population[]; userIds?: string[]; branchIds?: string[] }): Promise<PayrollRun> {
     return unwrap(await api.post(`${base()}/runs`, { data: body }));
   },
 

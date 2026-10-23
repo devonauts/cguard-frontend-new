@@ -18116,7 +18116,11 @@
         "verResumen": "Sumy",
         "dobladas": "Podwójne zmiany",
         "dobladasHint": "Dodatkowe zmiany z podwójnych: potrójna liczy się jako dwie",
-        "dobladasDetalle": "{{d}} dzień/dni z podwójną zmianą · {{h}} h · zmiana {{j}} h"
+        "dobladasDetalle": "{{d}} dzień/dni z podwójną zmianą · {{h}} h · zmiana {{j}} h",
+        "sucursal": "Oddział",
+        "todaLaEmpresa": "Cała firma",
+        "sucursalAyuda": "Lista płac oddziału rozlicza tylko jego stały personel; osoby pracujące w kilku oddziałach trafiają do listy całej firmy.",
+        "deEstaSucursal": "Lista płac oddziału {{nombre}}: pracujesz w tym oddziale."
       },
       "prestamos": {
         "estado": {

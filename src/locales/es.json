@@ -17301,7 +17301,11 @@
         "verResumen": "Ver totales",
         "dobladas": "Dobladas",
         "dobladasHint": "Turnos extra por dobladas: una tripleta cuenta dos",
-        "dobladasDetalle": "{{d}} día(s) con doblada · {{h}} h · turno de {{j}} h"
+        "dobladasDetalle": "{{d}} día(s) con doblada · {{h}} h · turno de {{j}} h",
+        "sucursal": "Sucursal",
+        "todaLaEmpresa": "Toda la empresa",
+        "sucursalAyuda": "La planilla de una sucursal liquida sólo a su gente de casa; quien cubre en varias va en la de toda la empresa.",
+        "deEstaSucursal": "Planilla de {{nombre}}: estás trabajando en esa sucursal."
       },
       "prestamos": {
         "estado": {

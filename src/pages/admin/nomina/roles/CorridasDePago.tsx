@@ -9,23 +9,57 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { FileSpreadsheet, Plus } from "lucide-react";
 
+import {
+  PresentacionDelModulo,
+  useModuloRoles,
+  dinero,
+  useEtiquetas,
+} from "./comun";
+
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import { useSucursales } from "@/hooks/useSucursales";
+import { useEspacio } from "@/hooks/useEspacio";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
-import { PageContainer, PageHeader, Section, SkeletonCards, EmptyState, Modal, FormField, FIELD_CLS, StatusBadge, ListRow } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  Section,
+  SkeletonCards,
+  EmptyState,
+  Modal,
+  FormField,
+  FIELD_CLS,
+  StatusBadge,
+  ListRow,
+} from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
-import payrollSlipsService, { type PayrollRun, type Population, type RunStatus } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, dinero, useEtiquetas } from "./comun";
+import payrollSlipsService, {
+  type PayrollRun,
+  type Population,
+  type RunStatus,
+} from "@/lib/api/payrollSlipsService";
 
 export function useEstadoDeCorrida() {
   const { t } = useTranslation();
   const label: Record<RunStatus, string> = {
-    generating: t("ui.RolesDePago.corridas.estado.generating", "Calculando horas…"),
+    generating: t(
+      "ui.RolesDePago.corridas.estado.generating",
+      "Calculando horas…",
+    ),
     review: t("ui.RolesDePago.corridas.estado.review", "En revisión"),
     published: t("ui.RolesDePago.corridas.estado.published", "Publicada"),
     voided: t("ui.RolesDePago.corridas.estado.voided", "Anulada"),
     error: t("ui.RolesDePago.corridas.estado.error", "Error"),
   };
-  const tone: Record<RunStatus, string> = { generating: "info", review: "warn", published: "ok", voided: "neutral", error: "bad" };
+  const tone: Record<RunStatus, string> = {
+    generating: "info",
+    review: "warn",
+    published: "ok",
+    voided: "neutral",
+    error: "bad",
+  };
 
   return { label, tone };
 }
@@ -36,8 +70,22 @@ export default function CorridasDePago() {
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("payrollSlipEdit");
   const [nueva, setNueva] = useState(false);
-  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false });
-  const corridas = useQuery({ queryKey: ["payroll-slips", "runs"], queryFn: () => payrollSlipsService.runs(), retry: false, refetchInterval: (q) => ((q.state.data?.rows ?? []).some((r) => r.status === "generating") ? 4000 : false) });
+  // Sucursales (vista global): de quién es cada planilla.
+  const etiquetasSuc = useEtiquetasDeSucursal();
+  const vista = useQuery({
+    queryKey: ["payroll-slips", "settings"],
+    queryFn: () => payrollSlipsService.settings(),
+    retry: false,
+  });
+  const corridas = useQuery({
+    queryKey: ["payroll-slips", "runs"],
+    queryFn: () => payrollSlipsService.runs(),
+    retry: false,
+    refetchInterval: (q) =>
+      (q.state.data?.rows ?? []).some((r) => r.status === "generating")
+        ? 4000
+        : false,
+  });
   const { sinModulo } = useModuloRoles(vista.error);
   const estado = useEstadoDeCorrida();
   const decimals = vista.data?.settings.decimals ?? 2;
@@ -46,27 +94,93 @@ export default function CorridasDePago() {
     <AppLayout>
       <PageContainer>
         <PageHeader
+          actions={
+            !sinModulo && canEdit ? (
+              <Button variant="brand" onClick={() => setNueva(true)}>
+                <Plus size={14} />{" "}
+                {t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}
+              </Button>
+            ) : undefined
+          }
           icon={<FileSpreadsheet />}
+          subtitle={t(
+            "ui.RolesDePago.corridas.subtitulo",
+            "Una planilla por periodo: se calculan las horas, revisas cada rol, publicas y descargas los documentos.",
+          )}
           title={t("ui.RolesDePago.corridas.titulo", "Planillas de pago")}
-          subtitle={t("ui.RolesDePago.corridas.subtitulo", "Una planilla por periodo: se calculan las horas, revisas cada rol, publicas y descargas los documentos.")}
-          actions={!sinModulo && canEdit ? <Button variant="brand" onClick={() => setNueva(true)}><Plus size={14} /> {t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}</Button> : undefined}
         />
         {sinModulo ? (
           <PresentacionDelModulo />
         ) : corridas.isLoading ? (
           <SkeletonCards count={3} />
         ) : !(corridas.data?.rows ?? []).length ? (
-          <EmptyState icon={<FileSpreadsheet />} title={t("ui.RolesDePago.corridas.vacio", "Todavía no hay planillas")} description={t("ui.RolesDePago.corridas.vacioDesc", "Crea la primera eligiendo el día en que empieza el periodo.")} action={canEdit ? <Button variant="brand" onClick={() => setNueva(true)}>{t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}</Button> : undefined} />
+          <EmptyState
+            action={
+              canEdit ? (
+                <Button variant="brand" onClick={() => setNueva(true)}>
+                  {t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}
+                </Button>
+              ) : undefined
+            }
+            description={t(
+              "ui.RolesDePago.corridas.vacioDesc",
+              "Crea la primera eligiendo el día en que empieza el periodo.",
+            )}
+            icon={<FileSpreadsheet />}
+            title={t(
+              "ui.RolesDePago.corridas.vacio",
+              "Todavía no hay planillas",
+            )}
+          />
         ) : (
           <Section>
             <div className="space-y-2">
               {(corridas.data?.rows ?? []).map((r) => (
                 <ListRow
                   key={r.id}
+                  badges={
+                    <span className="inline-flex flex-wrap items-center gap-1.5">
+                      {/* Sucursales: de quién es la planilla (sólo en la vista global). */}
+                      {etiquetasSuc.activo &&
+                        ((r.population?.branchIds ?? []).length ? (
+                          (r.population?.branchIds ?? []).map((b) => (
+                            <EtiquetaDeSucursal
+                              key={b}
+                              sucursal={etiquetasSuc.sucursal(b)}
+                            />
+                          ))
+                        ) : (
+                          <EtiquetaDeSucursal empresa sucursal={null} />
+                        ))}
+                      <StatusBadge tone={estado.tone[r.status]}>
+                        {estado.label[r.status]}
+                      </StatusBadge>
+                    </span>
+                  }
+                  meta={
+                    r.totals?.alerts
+                      ? t("ui.RolesDePago.corridas.alertas", "{{n}} alertas", {
+                          n: r.totals.alerts,
+                        })
+                      : undefined
+                  }
+                  subtitle={
+                    r.totals?.people
+                      ? t(
+                          "ui.RolesDePago.corridas.resumen",
+                          "{{n}} personas · neto {{neto}}",
+                          {
+                            n: r.totals.people,
+                            neto: dinero(
+                              r.totals.net || 0,
+                              r.currency,
+                              decimals,
+                            ),
+                          },
+                        )
+                      : undefined
+                  }
                   title={`${r.number} · ${r.periodFrom} → ${r.periodTo}`}
-                  subtitle={r.totals?.people ? t("ui.RolesDePago.corridas.resumen", "{{n}} personas · neto {{neto}}", { n: r.totals.people, neto: dinero(r.totals.net || 0, r.currency, decimals) }) : undefined}
-                  badges={<StatusBadge tone={estado.tone[r.status]}>{estado.label[r.status]}</StatusBadge>}
-                  meta={r.totals?.alerts ? t("ui.RolesDePago.corridas.alertas", "{{n}} alertas", { n: r.totals.alerts }) : undefined}
                   onClick={() => navigate(`/nomina/roles/planillas/${r.id}`)}
                 />
               ))}
@@ -74,60 +188,198 @@ export default function CorridasDePago() {
           </Section>
         )}
         {nueva && vista.data && (
-          <NuevaCorrida frequency={vista.data.settings.frequency} onClose={() => setNueva(false)} onCreated={(r) => { setNueva(false); navigate(`/nomina/roles/planillas/${r.id}`); }} />
+          <NuevaCorrida
+            frequency={vista.data.settings.frequency}
+            onClose={() => setNueva(false)}
+            onCreated={(r) => {
+              setNueva(false);
+              navigate(`/nomina/roles/planillas/${r.id}`);
+            }}
+          />
         )}
       </PageContainer>
     </AppLayout>
   );
 }
 
-export function NuevaCorrida({ frequency, onClose, onCreated }: { frequency: string; onClose: () => void; onCreated: (r: PayrollRun) => void }) {
+export function NuevaCorrida({
+  frequency,
+  onClose,
+  onCreated,
+}: {
+  frequency: string;
+  onClose: () => void;
+  onCreated: (r: PayrollRun) => void;
+}) {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const etiquetas = useEtiquetas();
   const hoy = new Date();
-  const [from, setFrom] = useState(`${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-01`);
+  const [from, setFrom] = useState(
+    `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-01`,
+  );
   const [to, setTo] = useState("");
-  const [poblaciones, setPoblaciones] = useState<Population[]>(["vigilante", "supervisor", "oficina"]);
+  const [poblaciones, setPoblaciones] = useState<Population[]>([
+    "vigilante",
+    "supervisor",
+    "oficina",
+  ]);
   const [saving, setSaving] = useState(false);
+  // Sucursales: en la vista global se elige; dentro de una sucursal, es ella (lo fija el servidor).
+  const suc = useSucursales();
+  const etiquetasSuc = useEtiquetasDeSucursal();
+  const espacio = useEspacio();
+  const [sucursal, setSucursal] = useState("");
 
   const crear = async () => {
     setSaving(true);
     try {
-      const r = await payrollSlipsService.createRun({ from, to: to || undefined, populations: poblaciones });
+      const r = await payrollSlipsService.createRun({
+        from,
+        to: to || undefined,
+        populations: poblaciones,
+        branchIds: etiquetasSuc.activo && sucursal ? [sucursal] : undefined,
+      });
 
-      toast.success(t("ui.RolesDePago.corridas.creada", "Planilla {{n}} creada: calculando las horas del periodo", { n: r.number }));
+      toast.success(
+        t(
+          "ui.RolesDePago.corridas.creada",
+          "Planilla {{n}} creada: calculando las horas del periodo",
+          { n: r.number },
+        ),
+      );
       await qc.invalidateQueries({ queryKey: ["payroll-slips"] });
       onCreated(r);
     } catch (e) {
-      toast.error((e as { message?: string })?.message || t("ui.RolesDePago.errorAlGuardar", "No se pudo guardar"));
+      toast.error(
+        (e as { message?: string })?.message ||
+          t("ui.RolesDePago.errorAlGuardar", "No se pudo guardar"),
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  const alternar = (p: Population) => setPoblaciones((x) => (x.includes(p) ? x.filter((y) => y !== p) : [...x, p]));
+  const alternar = (p: Population) =>
+    setPoblaciones((x) =>
+      x.includes(p) ? x.filter((y) => y !== p) : [...x, p],
+    );
 
   return (
-    <Modal open size="md" title={t("ui.RolesDePago.corridas.nueva", "Nueva planilla")} description={t("ui.RolesDePago.corridas.nuevaDesc", "Frecuencia de la empresa: {{f}}. Si no pones fin, se calcula con la frecuencia.", { f: etiquetas.frequency[frequency as keyof typeof etiquetas.frequency] || frequency })} onOpenChange={(o) => { if (!o) onClose(); }}
-      footer={<div className="cg-acciones justify-end"><Button variant="outline" onClick={onClose}>{t("ui.RolesDePago.cancelar", "Cancelar")}</Button><Button disabled={saving || !from || !poblaciones.length} variant="brand" onClick={crear}>{saving ? t("ui.RolesDePago.guardando", "Guardando…") : t("ui.RolesDePago.corridas.crear", "Crear y calcular")}</Button></div>}
+    <Modal
+      open
+      description={t(
+        "ui.RolesDePago.corridas.nuevaDesc",
+        "Frecuencia de la empresa: {{f}}. Si no pones fin, se calcula con la frecuencia.",
+        {
+          f:
+            etiquetas.frequency[
+              frequency as keyof typeof etiquetas.frequency
+            ] || frequency,
+        },
+      )}
+      footer={
+        <div className="cg-acciones justify-end">
+          <Button variant="outline" onClick={onClose}>
+            {t("ui.RolesDePago.cancelar", "Cancelar")}
+          </Button>
+          <Button
+            disabled={saving || !from || !poblaciones.length}
+            variant="brand"
+            onClick={crear}
+          >
+            {saving
+              ? t("ui.RolesDePago.guardando", "Guardando…")
+              : t("ui.RolesDePago.corridas.crear", "Crear y calcular")}
+          </Button>
+        </div>
+      }
+      size="md"
+      title={t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
     >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <FormField label={t("ui.RolesDePago.corridas.desde", "El periodo empieza el")} required>
-          <input className={FIELD_CLS} type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+        <FormField
+          required
+          label={t("ui.RolesDePago.corridas.desde", "El periodo empieza el")}
+        >
+          <input
+            className={FIELD_CLS}
+            type="date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+          />
         </FormField>
-        <FormField label={t("ui.RolesDePago.corridas.hasta", "y termina el")} hint={t("ui.RolesDePago.corridas.hastaHint", "Vacío = según la frecuencia")}>
-          <input className={FIELD_CLS} type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+        <FormField
+          hint={t(
+            "ui.RolesDePago.corridas.hastaHint",
+            "Vacío = según la frecuencia",
+          )}
+          label={t("ui.RolesDePago.corridas.hasta", "y termina el")}
+        >
+          <input
+            className={FIELD_CLS}
+            type="date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+          />
         </FormField>
+        {etiquetasSuc.activo ? (
+          <div className="sm:col-span-2">
+            <FormField
+              hint={t("ui.RolesDePago.corridas.sucursalAyuda")}
+              label={t("ui.RolesDePago.corridas.sucursal")}
+            >
+              <select
+                className={FIELD_CLS}
+                value={sucursal}
+                onChange={(e) => setSucursal(e.target.value)}
+              >
+                <option value="">
+                  {t("ui.RolesDePago.corridas.todaLaEmpresa")}
+                </option>
+                {(suc.lista.data?.sucursales ?? []).map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+        ) : espacio.activo && espacio.actual && !espacio.actual.global ? (
+          <p
+            className="text-sm sm:col-span-2"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            {t("ui.RolesDePago.corridas.deEstaSucursal", {
+              nombre: espacio.actual.nombre,
+            })}
+          </p>
+        ) : null}
         <div className="sm:col-span-2">
-          <div className="cg-eyebrow mb-1">{t("ui.RolesDePago.corridas.poblaciones", "A quién incluir")}</div>
+          <div className="cg-eyebrow mb-1">
+            {t("ui.RolesDePago.corridas.poblaciones", "A quién incluir")}
+          </div>
           <div className="flex flex-wrap gap-2">
-            {(["vigilante", "supervisor", "oficina"] as Population[]).map((p) => (
-              <label key={p} className="glass-flat flex cursor-pointer items-center gap-2 px-3 py-2 text-sm">
-                <input checked={poblaciones.includes(p)} className="cg-focus size-4" style={{ accentColor: "var(--brand)" }} type="checkbox" onChange={() => alternar(p)} />
-                {etiquetas.population[p]}
-              </label>
-            ))}
+            {(["vigilante", "supervisor", "oficina"] as Population[]).map(
+              (p) => (
+                <label
+                  key={p}
+                  className="glass-flat flex cursor-pointer items-center gap-2 px-3 py-2 text-sm"
+                >
+                  <input
+                    checked={poblaciones.includes(p)}
+                    className="cg-focus size-4"
+                    style={{ accentColor: "var(--brand)" }}
+                    type="checkbox"
+                    onChange={() => alternar(p)}
+                  />
+                  {etiquetas.population[p]}
+                </label>
+              ),
+            )}
           </div>
         </div>
       </div>

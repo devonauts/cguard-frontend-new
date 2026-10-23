@@ -17301,7 +17301,11 @@
         "verResumen": "Ver totais",
         "dobladas": "Dobras",
         "dobladasHint": "Turnos extras por dobras: uma tripla conta como duas",
-        "dobladasDetalle": "{{d}} dia(s) com dobra · {{h}} h · turno de {{j}} h"
+        "dobladasDetalle": "{{d}} dia(s) com dobra · {{h}} h · turno de {{j}} h",
+        "sucursal": "Filial",
+        "todaLaEmpresa": "Empresa toda",
+        "sucursalAyuda": "A folha de uma filial paga só a equipe da casa; quem cobre em várias vai na da empresa toda.",
+        "deEstaSucursal": "Folha de {{nombre}}: você está trabalhando nessa filial."
       },
       "prestamos": {
         "estado": {
