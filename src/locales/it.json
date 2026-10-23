@@ -17836,7 +17836,11 @@
         "verResumen": "Vedi totali",
         "dobladas": "Doppi turni",
         "dobladasHint": "Turni extra da doppi turni: un triplo conta due",
-        "dobladasDetalle": "{{d}} giorno/i con doppio turno · {{h}} h · turno di {{j}} h"
+        "dobladasDetalle": "{{d}} giorno/i con doppio turno · {{h}} h · turno di {{j}} h",
+        "sucursal": "Filiale",
+        "todaLaEmpresa": "Tutta l’azienda",
+        "sucursalAyuda": "Il foglio paga di una filiale liquida solo il suo personale; chi copre più filiali va in quello di tutta l’azienda.",
+        "deEstaSucursal": "Foglio paga di {{nombre}}: stai lavorando in quella filiale."
       },
       "prestamos": {
         "estado": {

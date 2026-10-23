@@ -17836,7 +17836,11 @@
         "verResumen": "Voir les totaux",
         "dobladas": "Doubles postes",
         "dobladasHint": "Postes supplémentaires dus aux doubles postes : un triple compte pour deux",
-        "dobladasDetalle": "{{d}} jour(s) avec double poste · {{h}} h · poste de {{j}} h"
+        "dobladasDetalle": "{{d}} jour(s) avec double poste · {{h}} h · poste de {{j}} h",
+        "sucursal": "Agence",
+        "todaLaEmpresa": "Toute l’entreprise",
+        "sucursalAyuda": "La paie d’une agence ne règle que son personnel rattaché ; ceux qui couvrent plusieurs agences vont dans celle de toute l’entreprise.",
+        "deEstaSucursal": "Paie de {{nombre}} : vous travaillez dans cette agence."
       },
       "prestamos": {
         "estado": {

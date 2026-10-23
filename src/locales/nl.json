@@ -17836,7 +17836,11 @@
         "verResumen": "Totalen",
         "dobladas": "Dubbele diensten",
         "dobladasHint": "Extra diensten door dubbele diensten: een driedubbele telt als twee",
-        "dobladasDetalle": "{{d}} dag(en) met dubbele dienst · {{h}} u · dienst van {{j}} u"
+        "dobladasDetalle": "{{d}} dag(en) met dubbele dienst · {{h}} u · dienst van {{j}} u",
+        "sucursal": "Vestiging",
+        "todaLaEmpresa": "Hele bedrijf",
+        "sucursalAyuda": "De loonlijst van een vestiging betaalt alleen het eigen personeel; wie in meerdere invalt, gaat in die van het hele bedrijf.",
+        "deEstaSucursal": "Loonlijst van {{nombre}}: je werkt in die vestiging."
       },
       "prestamos": {
         "estado": {

@@ -17836,7 +17836,11 @@
         "verResumen": "Summen anzeigen",
         "dobladas": "Doppelschichten",
         "dobladasHint": "Zusätzliche Schichten durch Doppelschichten: eine Dreifachschicht zählt doppelt",
-        "dobladasDetalle": "{{d}} Tag(e) mit Doppelschicht · {{h}} Std. · {{j}}-Std.-Schicht"
+        "dobladasDetalle": "{{d}} Tag(e) mit Doppelschicht · {{h}} Std. · {{j}}-Std.-Schicht",
+        "sucursal": "Niederlassung",
+        "todaLaEmpresa": "Ganzes Unternehmen",
+        "sucursalAyuda": "Die Lohnliste einer Niederlassung rechnet nur ihr Stammpersonal ab; wer in mehreren einspringt, kommt in die des ganzen Unternehmens.",
+        "deEstaSucursal": "Lohnliste von {{nombre}}: Sie arbeiten in dieser Niederlassung."
       },
       "prestamos": {
         "estado": {

@@ -17301,7 +17301,11 @@
         "verResumen": "View totals",
         "dobladas": "Double shifts",
         "dobladasHint": "Extra shifts from double shifts: a triple counts as two",
-        "dobladasDetalle": "{{d}} day(s) with a double shift · {{h}} h · {{j}} h shift"
+        "dobladasDetalle": "{{d}} day(s) with a double shift · {{h}} h · {{j}} h shift",
+        "sucursal": "Branch",
+        "todaLaEmpresa": "Whole company",
+        "sucursalAyuda": "A branch payroll only pays its home-branch staff; people who cover several branches go in the whole-company payroll.",
+        "deEstaSucursal": "Payroll for {{nombre}}: you are working in that branch."
       },
       "prestamos": {
         "estado": {
