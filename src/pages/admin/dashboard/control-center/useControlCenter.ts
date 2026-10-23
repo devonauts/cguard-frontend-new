@@ -940,6 +940,9 @@ export function useControlCenter(
             e.sourceEntityType === "incident" && e.sourceEntityId
               ? `/reports/incident/${e.sourceEntityId}`
               : undefined,
+          branchId: ((e as any).branchId as string | null) ?? null,
+          postSiteId:
+            ((p.postSiteId || p.siteId) as string | undefined) ?? null,
         } as ActivityItem;
       });
       const incidentActivity: ActivityItem[] = incidentRows
@@ -956,6 +959,7 @@ export function useControlCenter(
               ? "incident"
               : "online",
           to: i.id ? `/reports/incident/${i.id}` : undefined,
+          postSiteId: ((i as any).postSiteId as string | undefined) ?? null,
         }));
       const activity: ActivityItem[] = (
         eventActivity.length ? eventActivity : incidentActivity

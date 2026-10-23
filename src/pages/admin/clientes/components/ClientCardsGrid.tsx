@@ -18,6 +18,8 @@ import {
   EllipsisVertical,
 } from "lucide-react";
 
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -94,6 +96,8 @@ export default function ClientCardsGrid({
   onOpen: (c: Client) => void;
   rowActions: (c: Client) => CardRowAction[];
 }) {
+  // Módulo Sucursales (vista global): la etiqueta de sucursal de cada fila.
+  const etiquetas = useEtiquetasDeSucursal();
   const { t } = useTranslation();
   const cards = useMemo(() => clients, [clients]);
 
@@ -167,6 +171,12 @@ export default function ClientCardsGrid({
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold leading-tight">{name}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  {etiquetas.activo && (
+                    <EtiquetaDeSucursal
+                      empresa={!c.branchId}
+                      sucursal={etiquetas.sucursal(c.branchId)}
+                    />
+                  )}
                   <StatusBadge tone={isActive ? "ok" : "bad"}>
                     {isActive
                       ? t("common.active", "Activo")

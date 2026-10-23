@@ -21,6 +21,8 @@ import {
 
 import { FIELD_CLS, TabTable, THead, Th, Tr } from "../_shared/tab-kit";
 
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
@@ -132,6 +134,7 @@ const markerRole = (s: Sede) =>
         : "crit";
 
 export default function ClientPostSites({ client }: { client: Client }) {
+  const etiquetas = useEtiquetasDeSucursal();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [sedes, setSedes] = useState<Sede[]>([]);
@@ -257,7 +260,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
       title: t("ui.ClientPostSites.eliminarSede", "Eliminar sede"),
       message: t("ui.ClientPostSites.eliminarSedeConfirm", {
         defaultValue:
-          "¿Eliminar la sede \"{{name}}\"? Sus estaciones, horarios y asignaciones dejarán de estar disponibles.",
+          '¿Eliminar la sede "{{name}}"? Sus estaciones, horarios y asignaciones dejarán de estar disponibles.',
         name: s.name,
       }),
       confirmText: t("actions.delete", "Eliminar"),
@@ -315,9 +318,9 @@ export default function ClientPostSites({ client }: { client: Client }) {
             <SearchInput
               className="min-w-[200px] flex-1"
               placeholder={t(
-                  "ui.ClientPostSites.buscarSedePorNombreO",
-                  "Buscar sede por nombre o dirección",
-                )}
+                "ui.ClientPostSites.buscarSedePorNombreO",
+                "Buscar sede por nombre o dirección",
+              )}
               value={query}
               onChange={(v) => setQuery(v)}
             />
@@ -423,8 +426,11 @@ export default function ClientPostSites({ client }: { client: Client }) {
                           style={{ borderColor: "var(--hairline)" }}
                         />
                         <div className="min-w-0">
-                          <p className="truncate font-medium text-foreground">
-                            {s.name}
+                          <p className="flex min-w-0 items-center gap-1.5 font-medium text-foreground">
+                            <span className="truncate">{s.name}</span>
+                            <EtiquetaDeSucursal
+                              sucursal={etiquetas.deSede(s.id)}
+                            />
                           </p>
                           {s.setupPending ? (
                             <OperationSetupBadge
@@ -548,13 +554,15 @@ export default function ClientPostSites({ client }: { client: Client }) {
                           <DropdownMenuItem
                             onClick={() => navigate(`/post-sites/${s.id}/edit`)}
                           >
-                            <Pencil className="mr-2 h-3.5 w-3.5" /> {t("actions.edit", "Editar")}
+                            <Pencil className="mr-2 h-3.5 w-3.5" />{" "}
+                            {t("actions.edit", "Editar")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             style={{ color: "var(--bad-text)" }}
                             onClick={() => void deleteSede(s)}
                           >
-                            <Trash2 className="mr-2 h-3.5 w-3.5" /> {t("actions.delete", "Eliminar")}
+                            <Trash2 className="mr-2 h-3.5 w-3.5" />{" "}
+                            {t("actions.delete", "Eliminar")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -711,7 +719,10 @@ export default function ClientPostSites({ client }: { client: Client }) {
                 />
                 <Stat
                   icon={<Users className="h-4 w-4" />}
-                  label={t("ui.ClientCoverage.vigilantesAsignados", "Vigilantes asignados")}
+                  label={t(
+                    "ui.ClientCoverage.vigilantesAsignados",
+                    "Vigilantes asignados",
+                  )}
                   value={`${selected.guards} / ${selected.required}`}
                 />
                 <Stat

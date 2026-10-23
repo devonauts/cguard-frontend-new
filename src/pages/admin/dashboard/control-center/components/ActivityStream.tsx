@@ -26,6 +26,8 @@ import { clockOf, timeAgo, toneFill, toneOf } from "../tone";
 
 import { Panel, PanelLink, TonePill } from "./Panel";
 
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { EmptyState, IconTile } from "@/components/kit";
 
 const ICON = {
@@ -56,6 +58,8 @@ function ActivityStreamBase({
   live?: boolean;
   className?: string;
 }) {
+  // Módulo Sucursales (vista global): la sucursal de cada aviso.
+  const etiquetas = useEtiquetasDeSucursal();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -124,7 +128,15 @@ function ActivityStreamBase({
                 </IconTile>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{it.title}</p>
+                  <p className="flex min-w-0 items-center gap-1.5 text-sm font-medium">
+                    <span className="truncate">{it.title}</span>
+                    <EtiquetaDeSucursal
+                      sucursal={
+                        etiquetas.sucursal(it.branchId) ??
+                        etiquetas.deSede(it.postSiteId)
+                      }
+                    />
+                  </p>
                   {it.sub && (
                     <p
                       className="truncate text-xs"

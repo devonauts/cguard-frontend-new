@@ -4,11 +4,6 @@ import type { ReactNode } from "react";
 
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-
-import {
-  AvisoDePuesta,
-  type PasoDePuesta,
-} from "@/components/onboarding/PuestaEnMarcha";
 import { Link, useNavigate } from "react-router-dom";
 import {
   MapPin,
@@ -34,6 +29,10 @@ import {
 
 import { TabTable, THead, Th, Tr } from "../_shared/tab-kit";
 
+import {
+  AvisoDePuesta,
+  type PasoDePuesta,
+} from "@/components/onboarding/PuestaEnMarcha";
 import { clientDisplayName } from "@/lib/clientName";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import SitesMap from "@/components/maps/SitesMap";
@@ -304,8 +303,7 @@ export default function ClientOverview({
    */
   const sedesReales = sites.filter((s) => s.id !== "__loose__");
   const primera = sedesReales[0] as
-    | (Site & { setup?: { pending?: boolean } })
-    | undefined;
+    (Site & { setup?: { pending?: boolean } }) | undefined;
   const sedeLista =
     sedesReales.length > 0 &&
     !sedesReales.some((s) => (s as any).setup?.pending);

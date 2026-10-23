@@ -1,10 +1,37 @@
+import type { Client } from "@/types/client";
+
 import { useState, useEffect, useMemo, useRef } from "react";
-import { clientDisplayName } from "@/lib/clientName";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
+import {
+  EllipsisVertical,
+  Filter,
+  FileDown,
+  FileSpreadsheet,
+  ArrowDownUp,
+  Search,
+  Eye,
+  Tag,
+  Archive,
+  Trash,
+  RotateCcw,
+  Smartphone,
+  Download,
+  Users,
+  Plus,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { LayoutGrid, List as ListIcon } from "lucide-react";
+
+import ClientCardsGrid, {
+  type ClientCardMeta,
+} from "./components/ClientCardsGrid";
+
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import { clientDisplayName } from "@/lib/clientName";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,24 +55,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-import {
-  EllipsisVertical,
-  Filter,
-  FileDown,
-  FileSpreadsheet,
-  ArrowDownUp,
-  Search,
-  Eye,
-  Tag,
-  Archive,
-  Trash,
-  RotateCcw,
-  Smartphone,
-  Download,
-  Users,
-  Plus,
-} from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -53,19 +62,10 @@ import {
   Toolbar,
   Segmented,
   EmptyState,
-  GlassPanel,
   IconTile,
 } from "@/components/kit";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-
 import { clientService } from "@/lib/api/clientService";
 import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
-import ClientCardsGrid, {
-  type ClientCardMeta,
-} from "./components/ClientCardsGrid";
-import { LayoutGrid, List as ListIcon } from "lucide-react";
-import type { Client } from "@/types/client";
 
 type ClientFilters = {
   active?: boolean;
@@ -88,7 +88,9 @@ import {
   type BulkAction,
 } from "@/components/table/BulkActionsSelect";
 import { DataTable, type Column } from "@/components/table/DataTable";
+
 import type { RowAction } from "@/components/table/RowActionsMenu";
+
 import { RowActionsMenu } from "@/components/table/RowActionsMenu";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import {
@@ -134,6 +136,7 @@ const getServerErrorMessage = (error: any, defaultMessage = "Error") => {
 
 export default function ClientesPage() {
   const { t } = useTranslation();
+
   usePageTitle(t("clients.nav.title", "Clientes"));
   const { hasPermission } = usePermissions();
   const navigate = useNavigate();
@@ -168,12 +171,12 @@ export default function ClientesPage() {
   useEffect(() => {
     if (viewMode !== "cards" || !clients.length) return;
     const missing = clients.map((c) => c.id).filter((id) => !(id in cardMeta));
+
     if (!missing.length) return;
     clientService
       .getCardMeta(missing)
       .then((m) => setCardMeta((prev) => ({ ...prev, ...m })))
       .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewMode, clients]);
   // Sorting state
   const [sortKey, setSortKey] = useState<string | null>(null);
@@ -196,8 +199,11 @@ export default function ClientesPage() {
      sus puestos y anula sus turnos: quien lo pulsa tiene que verlo ANTES, no
      enterarse después. Para un solo cliente se pide al abrir el diálogo. */
   const [alcanceArchivado, setAlcanceArchivado] = useState<{
-    sedes: number; estaciones: number; vigilantes: number;
-    nombresDeSedes: string[]; nombresDeVigilantes: string[];
+    sedes: number;
+    estaciones: number;
+    vigilantes: number;
+    nombresDeSedes: string[];
+    nombresDeVigilantes: string[];
   } | null>(null);
   const [openArchiveSingleDialog, setOpenArchiveSingleDialog] = useState(false);
   const [archiveSingleClient, setArchiveSingleClient] = useState<Client | null>(
@@ -232,9 +238,11 @@ export default function ClientesPage() {
     // setPage(1) effect + the load effect both react to filters); only the
     // latest response may apply, else a slow earlier one clobbers newer rows.
     const mine = ++loadClientsSeqRef.current;
+
     setLoading(true);
     try {
       const tenantId = localStorage.getItem("tenantId");
+
       if (!tenantId) {
         if (!tenantMissingNotifiedRef.current) {
           toast.error(t("ui.ClientsPage.elUsuarioDebeEstarVinculado"));
@@ -244,12 +252,14 @@ export default function ClientesPage() {
           setClients([]);
           setTotalCount(0);
         }
+
         return;
       }
       const pagination: { limit: number; offset: number; orderBy?: string } = {
         limit,
         offset: (page - 1) * limit,
       };
+
       if (sortKey && sortDir) pagination.orderBy = `${sortKey}:${sortDir}`;
 
       const data = await clientService.getClients(
@@ -260,6 +270,7 @@ export default function ClientesPage() {
         },
         pagination,
       );
+
       if (mine !== loadClientsSeqRef.current) return; // superseded by a newer load
       setClients(data.rows);
       setTotalCount(data.count);
@@ -308,8 +319,10 @@ export default function ClientesPage() {
       try {
         // AppLayout renders the scrollable area inside a <main> element
         const main = document.querySelector("main");
+
         if (main && typeof (main as HTMLElement).scrollTo === "function") {
           (main as HTMLElement).scrollTo({ top: 0, behavior: "smooth" });
+
           return;
         }
       } catch (e) {
@@ -323,8 +336,10 @@ export default function ClientesPage() {
     };
 
     const onChange = () => scrollTopMain();
+
     if (mq.addEventListener) mq.addEventListener("change", onChange);
     else mq.addListener(onChange);
+
     return () => {
       if (mq.removeEventListener)
         mq.removeEventListener("change", onChange as any);
@@ -365,6 +380,7 @@ export default function ClientesPage() {
     setOpenCategorizeDialog(true);
     try {
       const data = await clientService.getClient(client.id);
+
       setCategorizeCategories((data as any).categoryIds ?? []);
     } catch (error: any) {
       // error handled by backend
@@ -381,12 +397,15 @@ export default function ClientesPage() {
         if (prev) {
           // toggle para forzar re-render del diálogo
           setTimeout(() => setOpenCategoryManager(true), 0);
+
           return false;
         }
+
         return true;
       });
       // Resetear el selector para poder re-seleccionar la misma opción
       setBulkKey((k) => k + 1);
+
       return;
     }
 
@@ -394,30 +413,36 @@ export default function ClientesPage() {
       if (selectedIds.length === 0) {
         toast.error(t("clients.selectAtLeastOne"));
         setBulkKey((k) => k + 1);
+
         return;
       }
       setMoveCategories([]);
       setOpenMoveDialog(true);
       setBulkKey((k) => k + 1);
+
       return;
     }
 
     if (selectedIds.length === 0) {
       toast.error(t("clients.selectAtLeastOne"));
       setBulkKey((k) => k + 1);
+
       return;
     }
 
     if (action === "archivar") {
       const invalid = selectedIds.filter((id) => {
         const c = clients.find((x) => x.id === id);
+
         return !c || c.active === false;
       });
+
       if (invalid.length > 0) {
         // Say why nothing happened instead of silently clearing the selection.
         toast.error(t("clients.selectOnlyActiveToArchive"));
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
+
         return;
       }
       setAlcanceArchivado(null);
@@ -429,40 +454,49 @@ export default function ClientesPage() {
       }
       setOpenArchiveBulkDialog(true);
       setBulkKey((k) => k + 1);
+
       return;
     }
 
     if (action === "restaurar") {
       const invalid = selectedIds.filter((id) => {
         const c = clients.find((x) => x.id === id);
+
         return !c || c.active === true;
       });
+
       if (invalid.length > 0) {
         // Say why nothing happened instead of silently clearing the selection.
         toast.error(t("clients.selectOnlyArchivedToRestore"));
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
+
         return;
       }
       setOpenRestoreBulkDialog(true);
       setBulkKey((k) => k + 1);
+
       return;
     }
 
     if (action === "eliminar") {
       const invalid = selectedIds.filter((id) => {
         const c = clients.find((x) => x.id === id);
+
         return !c || c.active === true;
       });
+
       if (invalid.length > 0) {
         // Say why nothing happened instead of silently clearing the selection.
         toast.error(t("clients.selectOnlyArchivedToDelete"));
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
+
         return;
       }
       setOpenDeleteBulkDialog(true);
       setBulkKey((k) => k + 1);
+
       return;
     }
 
@@ -481,6 +515,7 @@ export default function ClientesPage() {
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
+
       a.href = url;
       a.download = `clientes-${hoyEnLaEmpresa()}.pdf`;
       a.click();
@@ -503,6 +538,7 @@ export default function ClientesPage() {
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
+
       a.href = url;
       a.download = `clientes-${hoyEnLaEmpresa()}.xlsx`;
       a.click();
@@ -536,6 +572,7 @@ export default function ClientesPage() {
   const handleMoveSubmit = async () => {
     if (moveCategories.length === 0) {
       toast.warning(t("clients.selectAtLeastOneCategory"));
+
       return;
     }
     setMoveLoading(true);
@@ -551,6 +588,7 @@ export default function ClientesPage() {
       );
       const failed = results.filter((r) => r.status === "rejected").length;
       const succeeded = results.length - failed;
+
       if (failed === 0) {
         toast.success(t("clients.categoriesUpdated"));
       } else if (succeeded === 0) {
@@ -578,6 +616,7 @@ export default function ClientesPage() {
 
   const bulkActions: BulkAction[] = useMemo(() => {
     const actions: BulkAction[] = [];
+
     // mover (cambiar categoría) requires edit
     if (hasPermission("clientAccountEdit"))
       actions.push({ value: "mover", label: t("actions.move") });
@@ -608,10 +647,13 @@ export default function ClientesPage() {
         value: "gestionar-Sectores",
         label: t("actions.manageCategories"),
       });
+
     return actions;
     /* `archived` también: de «Todos» a «Archivados» `active` no cambia (sigue
        sin poner) y sin esto no aparecía «Restaurar». */
   }, [filters.active, filters.archived, hasPermission, t]);
+
+  const etiquetas = useEtiquetasDeSucursal();
 
   const columns: Column<Client>[] = useMemo(
     () => [
@@ -620,9 +662,22 @@ export default function ClientesPage() {
         header: t("clients.columns.name"),
         className: "font-medium",
         render: (value, row) => {
-          if (row.commercialName) return row.commercialName;
           const lastName = cleanLastName(row.lastName);
-          return lastName ? `${row.name} ${lastName}` : row.name;
+          const nombre =
+            row.commercialName ||
+            (lastName ? `${row.name} ${lastName}` : row.name);
+
+          if (!etiquetas.activo) return nombre;
+
+          return (
+            <span className="inline-flex min-w-0 items-center gap-1.5">
+              <span className="truncate">{nombre}</span>
+              <EtiquetaDeSucursal
+                empresa={!row.branchId}
+                sucursal={etiquetas.sucursal(row.branchId)}
+              />
+            </span>
+          );
         },
       },
       // Hide less-important columns on smaller breakpoints to favor compact layouts
@@ -650,9 +705,9 @@ export default function ClientesPage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
                   aria-label={t("clients.columns.more", "Más")}
+                  size="icon"
+                  variant="ghost"
                 >
                   <EllipsisVertical className="h-4 w-4" />
                 </Button>
@@ -679,9 +734,9 @@ export default function ClientesPage() {
                   </div>
                   <div className="mt-2">
                     <Link
-                      to={`/clients/${row.id}/overview`}
                       className="text-sm font-semibold"
                       style={{ color: "var(--brand-text)" }}
+                      to={`/clients/${row.id}/overview`}
                     >
                       {t("actions.viewDetails", "Ver")}
                     </Link>
@@ -698,6 +753,7 @@ export default function ClientesPage() {
         render: (_value: unknown, row: Client) => {
           // El backend puede enviar booleano o entero (0/1)
           const isActive = row.active === true;
+
           return (
             <StatusBadge tone={isActive ? "ok" : "bad"}>
               {isActive
@@ -734,15 +790,16 @@ export default function ClientesPage() {
             },
           };
           const badge = map[status] || map.not_invited;
+
           return (
-            <StatusBadge tone={badge.tone} className="whitespace-nowrap">
+            <StatusBadge className="whitespace-nowrap" tone={badge.tone}>
               {badge.label}
             </StatusBadge>
           );
         },
       },
     ],
-    [t],
+    [t, etiquetas],
   );
 
   const rowActions = (client: Client): RowAction[] => {
@@ -869,8 +926,10 @@ export default function ClientesPage() {
         setIsSmallScreen(false);
       }
     };
+
     onResize();
     window.addEventListener("resize", onResize);
+
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
@@ -884,15 +943,9 @@ export default function ClientesPage() {
       <section>
         <PageContainer width="wide">
           <PageHeader
-            icon={<Users />}
-            title={t("clients.breadcrumb.clients")}
-            subtitle={t(
-              "clients.header.subtitle",
-              "Gestiona tus clientes, su acceso a la app y su categorización.",
-            )}
             actions={
               hasPermission("clientAccountCreate") ? (
-                <Button variant="brand" asChild>
+                <Button asChild variant="brand">
                   <Link to="/clients/add-new">
                     <Plus className="h-4 w-4" />
                     {t("clients.newClient")}
@@ -900,6 +953,12 @@ export default function ClientesPage() {
                 </Button>
               ) : undefined
             }
+            icon={<Users />}
+            subtitle={t(
+              "clients.header.subtitle",
+              "Gestiona tus clientes, su acceso a la app y su categorización.",
+            )}
+            title={t("clients.breadcrumb.clients")}
           />
           <Toolbar className="grid grid-cols-1 items-center gap-3 p-3 md:grid-cols-[auto_1fr_auto]">
             <div className="flex items-center gap-2">
@@ -912,6 +971,16 @@ export default function ClientesPage() {
                   del panel de Filtros y nadie la encontraba: un cliente que
                   suspendió el servicio no tenía por dónde volver. */}
               <Segmented
+                options={[
+                  {
+                    value: "active",
+                    label: t("clients.sections.active", "Activos"),
+                  },
+                  {
+                    value: "archived",
+                    label: t("clients.sections.archived", "Archivados"),
+                  },
+                ]}
                 value={
                   filters.archived
                     ? "archived"
@@ -927,10 +996,6 @@ export default function ClientesPage() {
                       : { ...filters, active: true, archived: undefined },
                   );
                 }}
-                options={[
-                  { value: "active", label: t("clients.sections.active", "Activos") },
-                  { value: "archived", label: t("clients.sections.archived", "Archivados") },
-                ]}
               />
             </div>
 
@@ -941,8 +1006,8 @@ export default function ClientesPage() {
                   style={{ color: "var(--ink-faint)" }}
                 />
                 <Input
-                  placeholder={t("clients.searchPlaceholder")}
                   className="h-9 w-full border-0 bg-transparent px-0 shadow-none"
+                  placeholder={t("clients.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -954,18 +1019,18 @@ export default function ClientesPage() {
                 <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                   <SheetTrigger asChild>
                     <Button
-                      variant="outline"
                       className="flex-1 justify-center md:flex-none"
                       style={{
                         borderColor: "var(--brand-line)",
                         color: "var(--brand-text)",
                       }}
+                      variant="outline"
                     >
                       <Filter className="mr-2 h-4 w-4" />
                       {t("clients.filters.title")}
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side={sheetSide} className={sheetClass}>
+                  <SheetContent className={sheetClass} side={sheetSide}>
                     <SheetHeader>
                       <SheetTitle>{t("clients.filters.title")}</SheetTitle>
                     </SheetHeader>
@@ -988,7 +1053,9 @@ export default function ClientesPage() {
                       <div className="space-y-2">
                         <Label>{t("clients.filters.phone")}</Label>
                         <Input
-                          placeholder={t("clients.placeholders.phoneExample", { ejemplo: ejemploDeTelefono() })}
+                          placeholder={t("clients.placeholders.phoneExample", {
+                            ejemplo: ejemploDeTelefono(),
+                          })}
                           value={filters.phoneNumber || ""}
                           onChange={(e) =>
                             setFilters({
@@ -1079,10 +1146,23 @@ export default function ClientesPage() {
                                salir — si no, se pedirían las dos cosas a la
                                vez y no saldría nada. */
                             if (v === "all")
-                              setFilters({ ...filters, active: undefined, archived: undefined });
+                              setFilters({
+                                ...filters,
+                                active: undefined,
+                                archived: undefined,
+                              });
                             else if (v === "active")
-                              setFilters({ ...filters, active: true, archived: undefined });
-                            else setFilters({ ...filters, active: undefined, archived: true });
+                              setFilters({
+                                ...filters,
+                                active: true,
+                                archived: undefined,
+                              });
+                            else
+                              setFilters({
+                                ...filters,
+                                active: undefined,
+                                archived: true,
+                              });
                           }}
                         >
                           <SelectTrigger>
@@ -1105,15 +1185,15 @@ export default function ClientesPage() {
                       </div>
 
                       <Button
-                        variant="brand"
                         className="w-full"
+                        variant="brand"
                         onClick={() => setOpenFilter(false)}
                       >
                         {t("clients.applyFilters")}
                       </Button>
                       <Button
-                        variant="outline"
                         className="w-full"
+                        variant="outline"
                         onClick={() => {
                           setFilters({ active: true });
                           setOpenFilter(false);
@@ -1128,15 +1208,13 @@ export default function ClientesPage() {
                 {/* Vista de tarjetas ⇄ lista */}
                 <Segmented
                   className="hidden md:inline-flex"
-                  value={viewMode}
-                  onChange={setViewMode}
                   options={[
                     {
                       value: "cards",
                       label: (
                         <span className="flex items-center gap-1.5">
                           <LayoutGrid className="h-3.5 w-3.5" />{" "}
-                            {t("ui.AdminOfficeUsersPage.tarjetas", "Tarjetas")}
+                          {t("ui.AdminOfficeUsersPage.tarjetas", "Tarjetas")}
                         </span>
                       ),
                     },
@@ -1150,13 +1228,15 @@ export default function ClientesPage() {
                       ),
                     },
                   ]}
+                  value={viewMode}
+                  onChange={setViewMode}
                 />
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      variant="outline"
                       className="flex w-12 items-center justify-center md:w-auto"
+                      variant="outline"
                     >
                       <EllipsisVertical className="h-4 w-4" />
                     </Button>
@@ -1184,36 +1264,36 @@ export default function ClientesPage() {
             {viewMode === "cards" ? (
               <ClientCardsGrid
                 clients={clients}
-                meta={cardMeta}
                 loading={loading}
-                onOpen={(c) => navigate(`/clients/${c.id}/overview`)}
+                meta={cardMeta}
                 rowActions={rowActions}
+                onOpen={(c) => navigate(`/clients/${c.id}/overview`)}
               />
             ) : (
               <DataTable<Client>
                 columns={columns}
                 data={clients}
+                emptyState={
+                  <EmptyState
+                    className="border-0"
+                    description={t("clients.empty.description")}
+                    icon={<Users />}
+                    title={t("clients.empty.title")}
+                  />
+                }
                 loading={loading}
+                rowActions={rowActions}
                 selectedIds={selectedIds}
+                sortDir={sortDir ?? undefined}
+                sortKey={sortKey ?? undefined}
+                onRowClick={(r) => navigate(`/clients/${r.id}/overview`)}
                 onSelectAll={handleSelectAll}
                 onSelectOne={handleSelectOne}
-                rowActions={rowActions}
-                onRowClick={(r) => navigate(`/clients/${r.id}/overview`)}
-                sortKey={sortKey ?? undefined}
-                sortDir={sortDir ?? undefined}
                 onSortChange={(key, dir) => {
                   setSortKey(dir ? key : null);
                   setSortDir(dir);
                   setPage(1);
                 }}
-                emptyState={
-                  <EmptyState
-                    icon={<Users />}
-                    title={t("clients.empty.title")}
-                    description={t("clients.empty.description")}
-                    className="border-0"
-                  />
-                }
               />
             )}
 
@@ -1251,17 +1331,17 @@ export default function ClientesPage() {
 
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
-                  size="sm"
                   disabled={page === 1 || loading}
+                  size="sm"
+                  variant="outline"
                   onClick={() => setPage((p) => p - 1)}
                 >
                   {t("clients.pagination.prev")}
                 </Button>
                 <Button
-                  variant="outline"
-                  size="sm"
                   disabled={page * limit >= totalCount || loading}
+                  size="sm"
+                  variant="outline"
                   onClick={() => setPage((p) => p + 1)}
                 >
                   {t("clients.pagination.next")}
@@ -1273,86 +1353,95 @@ export default function ClientesPage() {
           {/* Mobile cards */}
           <div className="mt-4 md:hidden">
             <MobileCardList
+              emptyMessage={t("clients.empty.title") as string}
               items={clients}
               loading={loading}
-              emptyMessage={t("clients.empty.title") as string}
               renderCard={(client: Client) => (
                 <>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    {/* Mobile cards must match the desktop table, which already
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      {/* Mobile cards must match the desktop table, which already
                       shows commercialName. */}
-                    <div className="truncate text-sm font-semibold">
-                      {clientDisplayName(client, client.name)}
+                      <div className="flex min-w-0 items-center gap-1.5 text-sm font-semibold">
+                        <span className="truncate">
+                          {clientDisplayName(client, client.name)}
+                        </span>
+                        {etiquetas.activo && (
+                          <EtiquetaDeSucursal
+                            empresa={!client.branchId}
+                            sucursal={etiquetas.sucursal(client.branchId)}
+                          />
+                        )}
+                      </div>
+                      <div
+                        className="truncate text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {client.email || "-"}
+                      </div>
                     </div>
-                    <div
-                      className="truncate text-xs"
-                      style={{ color: "var(--ink-soft)" }}
-                    >
-                      {client.email || "-"}
-                    </div>
-                  </div>
 
-                  {/* El menú va ARRIBA, pegado a la esquina; las etiquetas
+                    {/* El menú va ARRIBA, pegado a la esquina; las etiquetas
                       bajan a su propia fila. Apilados los tres en una columna
                       a la derecha —dos etiquetas y un menú de 44 px— esa
                       columna medía 112 px contra los 36 del nombre, y el
                       hueco que quedaba debajo del correo era medio tarjeta
                       de vacío con el menú flotando en mitad de la nada. */}
-                  <div className="-mr-1 -mt-1 shrink-0">
-                    <RowActionsMenu actions={rowActions(client)} />
+                    <div className="-mr-1 -mt-1 shrink-0">
+                      <RowActionsMenu actions={rowActions(client)} />
+                    </div>
                   </div>
-                </div>
 
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <StatusBadge tone={client.active ? "ok" : "bad"}>
-                    {client.active
-                      ? t("clients.status.active")
-                      : t("clients.status.archived")}
-                  </StatusBadge>
-                  {(() => {
-                    const s = client.onboardingStatus || "not_invited";
-                    const mobileMap: Record<
-                      string,
-                      {
-                        label: string;
-                        tone: "neutral" | "warn" | "ok" | "bad";
-                      }
-                    > = {
-                      not_invited: {
-                        label: t(
-                          "clients.onboarding.not_invited",
-                          "Sin acceso",
-                        ),
-                        tone: "neutral",
-                      },
-                      invited: {
-                        label: t("clients.onboarding.invited", "Invitado"),
-                        tone: "warn",
-                      },
-                      active: {
-                        label: t("clients.onboarding.active", "En app"),
-                        tone: "ok",
-                      },
-                      suspended: {
-                        label: t(
-                          "clients.onboarding.suspended",
-                          "Suspendido",
-                        ),
-                        tone: "bad",
-                      },
-                    };
-                    const b = mobileMap[s] || mobileMap.not_invited;
-                    return <StatusBadge tone={b.tone}>{b.label}</StatusBadge>;
-                  })()}
-                </div>
-                <div
-                  className="mt-3 space-y-1 text-xs"
-                  style={{ color: "var(--ink-soft)" }}
-                >
-                  <div className="truncate">{client.phoneNumber || "-"}</div>
-                  <div className="truncate">{client.address || "-"}</div>
-                </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <StatusBadge tone={client.active ? "ok" : "bad"}>
+                      {client.active
+                        ? t("clients.status.active")
+                        : t("clients.status.archived")}
+                    </StatusBadge>
+                    {(() => {
+                      const s = client.onboardingStatus || "not_invited";
+                      const mobileMap: Record<
+                        string,
+                        {
+                          label: string;
+                          tone: "neutral" | "warn" | "ok" | "bad";
+                        }
+                      > = {
+                        not_invited: {
+                          label: t(
+                            "clients.onboarding.not_invited",
+                            "Sin acceso",
+                          ),
+                          tone: "neutral",
+                        },
+                        invited: {
+                          label: t("clients.onboarding.invited", "Invitado"),
+                          tone: "warn",
+                        },
+                        active: {
+                          label: t("clients.onboarding.active", "En app"),
+                          tone: "ok",
+                        },
+                        suspended: {
+                          label: t(
+                            "clients.onboarding.suspended",
+                            "Suspendido",
+                          ),
+                          tone: "bad",
+                        },
+                      };
+                      const b = mobileMap[s] || mobileMap.not_invited;
+
+                      return <StatusBadge tone={b.tone}>{b.label}</StatusBadge>;
+                    })()}
+                  </div>
+                  <div
+                    className="mt-3 space-y-1 text-xs"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    <div className="truncate">{client.phoneNumber || "-"}</div>
+                    <div className="truncate">{client.address || "-"}</div>
+                  </div>
                 </>
               )}
             />
@@ -1381,31 +1470,31 @@ export default function ClientesPage() {
           <div className="space-y-2">
             <Label>{t("clients.dialogs.changeCategories.newCategories")}</Label>
             <CategorySelect
-              module="clientAccount"
               multiple
-              value={moveCategories}
-              onChange={(val) =>
-                setMoveCategories(Array.isArray(val) ? val : [])
-              }
+              module="clientAccount"
+              options={categories.map((c) => ({ id: c.id, name: c.name }))}
               placeholder={
                 categories.length === 0
                   ? t("categories.loading")
                   : t("clients.selectCategories")
               }
-              options={categories.map((c) => ({ id: c.id, name: c.name }))}
+              value={moveCategories}
               onCategoryCreated={loadCategories}
+              onChange={(val) =>
+                setMoveCategories(Array.isArray(val) ? val : [])
+              }
             />
           </div>
 
           <DialogFooter>
             <Button
+              disabled={moveLoading}
               variant="outline"
               onClick={() => setOpenMoveDialog(false)}
-              disabled={moveLoading}
             >
               {t("clients.cancel")}
             </Button>
-            <Button onClick={handleMoveSubmit} disabled={moveLoading}>
+            <Button disabled={moveLoading} onClick={handleMoveSubmit}>
               {moveLoading ? t("clients.saving") : t("clients.save")}
             </Button>
           </DialogFooter>
@@ -1426,34 +1515,34 @@ export default function ClientesPage() {
           <div className="space-y-2">
             <Label>{t("clients.filters.categories")}</Label>
             <CategorySelect
-              module="clientAccount"
               multiple
-              value={categorizeCategories}
-              onChange={(val) =>
-                setCategorizeCategories(Array.isArray(val) ? val : [])
-              }
+              module="clientAccount"
+              options={categories.map((c) => ({ id: c.id, name: c.name }))}
               placeholder={
                 categorizeLoading || categories.length === 0
                   ? t("clients.loading")
                   : t("clients.selectCategories")
               }
-              options={categories.map((c) => ({ id: c.id, name: c.name }))}
+              value={categorizeCategories}
               onCategoryCreated={loadCategories}
+              onChange={(val) =>
+                setCategorizeCategories(Array.isArray(val) ? val : [])
+              }
             />
           </div>
 
           <DialogFooter>
             <Button
+              disabled={categorizeSaving}
               variant="outline"
               onClick={() => setOpenCategorizeDialog(false)}
-              disabled={categorizeSaving}
             >
               {t("clients.cancel")}
             </Button>
             <Button
+              disabled={categorizeSaving || categorizeLoading}
               variant="brand"
               onClick={handleCategorizeSubmit}
-              disabled={categorizeSaving || categorizeLoading}
             >
               {categorizeSaving ? t("clients.saving") : t("clients.save")}
             </Button>
@@ -1461,10 +1550,10 @@ export default function ClientesPage() {
         </DialogContent>
       </Dialog>
       <CategoryManagerDialog
-        open={openCategoryManager}
-        onOpenChange={setOpenCategoryManager}
         module="clientAccount"
+        open={openCategoryManager}
         onChanged={loadCategories}
+        onOpenChange={setOpenCategoryManager}
       />
       {/* ClientDetailsDialog removed: navigation uses ClientsDetails page instead of modal */}
 
@@ -1492,7 +1581,8 @@ export default function ClientesPage() {
                 </div>
                 <div>
                   {t("clients.alerts.archiveClients.impactSites", {
-                    defaultValue: "{{sedes}} sede(s) y {{estaciones}} puesto(s)",
+                    defaultValue:
+                      "{{sedes}} sede(s) y {{estaciones}} puesto(s)",
                     sedes: alcanceArchivado.sedes,
                     estaciones: alcanceArchivado.estaciones,
                   })}
@@ -1528,6 +1618,7 @@ export default function ClientesPage() {
                     (r) => r.status === "rejected",
                   ).length;
                   const succeeded = results.length - failed;
+
                   if (failed === 0) {
                     toast.success(t("clients.clientsArchived"));
                   } else if (succeeded === 0) {
@@ -1587,6 +1678,7 @@ export default function ClientesPage() {
                     (r) => r.status === "rejected",
                   ).length;
                   const succeeded = results.length - failed;
+
                   if (failed === 0) {
                     toast.success(t("clients.clientsRestored"));
                   } else if (succeeded === 0) {

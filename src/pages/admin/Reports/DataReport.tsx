@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
 import type { ReportTone } from "./reportIcons";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -43,6 +44,12 @@ export interface ReportColumn<T> {
 }
 
 interface DataReportProps<T> {
+  /**
+   * Módulo Sucursales (fase 4): la SEDE de cada fila. Con ella, en la vista
+   * global, el informe gana la columna «Sucursal» —en pantalla y en las
+   * exportaciones, que salen de las mismas columnas—. Sin ella, nada cambia.
+   */
+  sedeDe?: (row: T) => string | null | undefined;
   title: string;
   description?: string;
   icon?: LucideIcon;
@@ -137,6 +144,7 @@ const PRESETS = [7, 30, 90] as const;
  * columna del vigilante.
  */
 export default function DataReport<T>({
+  sedeDe,
   title,
   description,
   icon,
@@ -178,12 +186,28 @@ export default function DataReport<T>({
       }
     })();
   }, []);
-  const columns = useMemo(
+  const columnasBase = useMemo(
     () =>
       ocultarVigilante
         ? columnsProp.filter((c) => c.privacy !== "guardName")
         : columnsProp,
     [columnsProp, ocultarVigilante],
+  );
+  const etiquetas = useEtiquetasDeSucursal();
+  const columns = useMemo(
+    () =>
+      sedeDe && etiquetas.activo
+        ? [
+            ...columnasBase,
+            {
+              key: "__sucursal",
+              label: "Sucursal",
+              labelKey: "sucursales.etiqueta.columna",
+              value: (row: T) => etiquetas.texto(etiquetas.deSede(sedeDe(row))) || "—",
+            } as ReportColumn<T>,
+          ]
+        : columnasBase,
+    [columnasBase, sedeDe, etiquetas],
   );
   const today = useMemo(() => new Date(), []);
   const [from, setFrom] = useState(() => daysAgo(defaultDays));

@@ -286,7 +286,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
       title: t("ui.ClientCoverage.eliminarEstacion", "Eliminar estación"),
       message: t("ui.ClientCoverage.eliminarEstacionConfirm", {
         defaultValue:
-          "¿Eliminar la estación \"{{name}}\"? Sus horarios, asignaciones y rondas (QR) quedan huérfanos — si la vuelves a crear, las rondas NO se reconectan solas. Considera editarla en su lugar.",
+          '¿Eliminar la estación "{{name}}"? Sus horarios, asignaciones y rondas (QR) quedan huérfanos — si la vuelves a crear, las rondas NO se reconectan solas. Considera editarla en su lugar.',
         name: p.name,
       }),
       confirmText: t("actions.delete", "Eliminar"),
@@ -375,7 +375,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
       await clientService.setStationLocation(selected.id, { lat, lng });
       toast.success(
         t("ui.ClientCoverage.ubicacionFijada", {
-          defaultValue: "Ubicación de \"{{name}}\" fijada",
+          defaultValue: 'Ubicación de "{{name}}" fijada',
           name: selected.name,
         }),
       );
@@ -398,7 +398,8 @@ export default function ClientCoverage({ client }: { client: Client }) {
           : null;
 
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
@@ -458,9 +459,9 @@ export default function ClientCoverage({ client }: { client: Client }) {
               <SearchInput
                 className="min-w-[180px] flex-1"
                 placeholder={t(
-                    "ui.ClientCoverage.buscarEstacionPorNombre",
-                    "Buscar estación por nombre",
-                  )}
+                  "ui.ClientCoverage.buscarEstacionPorNombre",
+                  "Buscar estación por nombre",
+                )}
                 value={q}
                 onChange={(v) => {
                   setQ(v);
@@ -653,10 +654,14 @@ export default function ClientCoverage({ client }: { client: Client }) {
                             ) : p.assigned?.length ? (
                               <span
                                 style={{ color: "var(--warn-text)" }}
-                                title={t("ui.ClientCoverage.asignadosSinMarcarEntrada", {
-                                  defaultValue: "Asignados (aún sin marcar entrada): {{names}}",
-                                  names: p.assigned.join(", "),
-                                })}
+                                title={t(
+                                  "ui.ClientCoverage.asignadosSinMarcarEntrada",
+                                  {
+                                    defaultValue:
+                                      "Asignados (aún sin marcar entrada): {{names}}",
+                                    names: p.assigned.join(", "),
+                                  },
+                                )}
                               >
                                 {p.assigned.join(", ")}
                               </span>
@@ -707,7 +712,10 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 className="text-xs"
                                 style={{ color: "var(--ink-faint)" }}
                               >
-                                {t("ui.ClientCoverage.entradaMarcada", "Entrada marcada")}
+                                {t(
+                                  "ui.ClientCoverage.entradaMarcada",
+                                  "Entrada marcada",
+                                )}
                               </div>
                             </div>
                           ) : (
@@ -756,13 +764,19 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 }
                               >
                                 <Users className="mr-2 h-3.5 w-3.5" />{" "}
-                                {t("ui.ClientCoverage.vigilantesAsignados", "Vigilantes asignados")}
+                                {t(
+                                  "ui.ClientCoverage.vigilantesAsignados",
+                                  "Vigilantes asignados",
+                                )}
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => navigate("/schedule")}
                               >
                                 <CalendarDays className="mr-2 h-3.5 w-3.5" />{" "}
-                                {t("ui.ClientCoverage.horarioEnProgramador", "Horario en Programador")}
+                                {t(
+                                  "ui.ClientCoverage.horarioEnProgramador",
+                                  "Horario en Programador",
+                                )}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => selectPuesto(p)}>
@@ -833,7 +847,8 @@ export default function ClientCoverage({ client }: { client: Client }) {
                       value: "roadmap",
                       label: (
                         <span className="flex items-center gap-1">
-                          <MapIcon className="h-3.5 w-3.5" /> {t("ui.ClientCoverage.mapa", "Mapa")}
+                          <MapIcon className="h-3.5 w-3.5" />{" "}
+                          {t("ui.ClientCoverage.mapa", "Mapa")}
                         </span>
                       ),
                     },
@@ -977,7 +992,10 @@ export default function ClientCoverage({ client }: { client: Client }) {
                     <Crosshair className="mr-1.5 h-4 w-4" />{" "}
                     {placing
                       ? t("ui.ClientCoverage.fijando", "Fijando…")
-                      : t("ui.ClientCoverage.fijarUbicacionExacta", "Fijar ubicación exacta")}
+                      : t(
+                          "ui.ClientCoverage.fijarUbicacionExacta",
+                          "Fijar ubicación exacta",
+                        )}
                   </Button>
                   <Button
                     size="sm"

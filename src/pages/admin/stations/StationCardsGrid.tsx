@@ -5,6 +5,8 @@
  * al detalle de la estación. Los datos llegan en lote desde /station/cards.
  */
 import type { JSX } from "react";
+import type { StationCard } from "@/lib/api/stationService";
+
 import { useTranslation } from "react-i18next";
 import {
   RadioTower,
@@ -19,6 +21,9 @@ import {
   Route,
   QrCode,
 } from "lucide-react";
+
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
 import {
   StatusBadge,
   SkeletonCards,
@@ -26,9 +31,7 @@ import {
   GlassPanel,
   SmartImage,
 } from "@/components/kit";
-import type { StationCard } from "@/lib/api/stationService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
-
 import { localeActual } from "@/lib/localeActual";
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -58,6 +61,7 @@ function horaCorta(iso?: string | null): string | null {
   if (!iso) return null;
   try {
     const tz = getTenantTimezone();
+
     return new Date(iso).toLocaleTimeString(localeActual(), {
       hour: "2-digit",
       minute: "2-digit",
@@ -91,9 +95,12 @@ function nombreEnPuesto(s: StationCard): string | null {
   const nombres = Array.isArray(s.onDutyNames)
     ? s.onDutyNames.filter(Boolean)
     : [];
+
   if (!nombres.length) return null;
   const corto = nombres[0].trim().split(/\s+/).slice(0, 2).join(" ");
+
   if (!corto) return null;
+
   return nombres.length > 1 ? `${corto} +${nombres.length - 1}` : corto;
 }
 
@@ -202,9 +209,11 @@ function insigniaDeTurno(
   t: (k: string, o?: any) => string,
 ): Insignia | null {
   const sh = s.shift;
+
   if (!sh) return null;
   const letra = t(`stations.shift.${sh.code}`, { defaultValue: sh.code });
   let hint: string | null = null;
+
   if (sh.vacant)
     hint = t("stations.shift.vacant", { defaultValue: "sin vigilante" });
   else if (sh.overdue)
@@ -229,6 +238,7 @@ function insigniaDeTurno(
       : sh.endsSoon
         ? "warn"
         : "ok";
+
   return {
     tone,
     icon: <Clock className="h-3 w-3" />,
@@ -252,23 +262,26 @@ export default function StationCardsGrid({
   /** Abrir la estación DIRECTAMENTE en una pestaña (rondas, códigos QR…). */
   onOpenTab?: (s: StationCard, tab: string) => void;
 }) {
+  // Módulo Sucursales (vista global): la etiqueta de sucursal de cada fila.
+  const suc = useEtiquetasDeSucursal();
   const { t } = useTranslation();
 
   if (loading)
     return (
       <SkeletonCards
-        count={8}
         className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        count={8}
       />
     );
   if (!stations.length) {
     return (
       <EmptyState
+        description={t("stations.empty.description", {
+          defaultValue:
+            "Pulsa «Agregar estación» y elige el cliente y la sede; también se crean desde la sede.",
+        })}
         icon={<RadioTower />}
         title={t("stations.empty.title", { defaultValue: "Sin estaciones" })}
-        description={t("stations.empty.description", {
-          defaultValue: "Pulsa «Agregar estación» y elige el cliente y la sede; también se crean desde la sede.",
-        })}
       />
     );
   }
@@ -280,34 +293,28 @@ export default function StationCardsGrid({
         const title = s.nickname || s.stationName || "?";
         const subtitle = s.nickname ? s.stationName : null;
         const initial = (s.clientName || title || "?").charAt(0).toUpperCase();
+
         return (
           <GlassPanel
             key={s.id}
             flat
             hover
+            className="cg-focus group flex cursor-pointer flex-col p-4 animate-in fade-in slide-in-from-bottom-2"
             role="button"
+            style={{
+              animationDelay: `${Math.min(i, 12) * 30}ms`,
+              animationFillMode: "backwards",
+            }}
             tabIndex={0}
             onClick={() => onOpen(s)}
             onKeyDown={(e) => {
               if (e.key === "Enter") onOpen(s);
             }}
-            className="cg-focus group flex cursor-pointer flex-col p-4 animate-in fade-in slide-in-from-bottom-2"
-            style={{
-              animationDelay: `${Math.min(i, 12) * 30}ms`,
-              animationFillMode: "backwards",
-            }}
           >
             <div className="flex items-start gap-3">
               <SmartImage
-                src={s.clientLogoUrl}
                 alt=""
-                rounded="rounded-xl"
-                fit="contain"
                 className="h-12 w-12 shrink-0 border"
-                style={{
-                  background: "oklch(1 0 0)",
-                  borderColor: "var(--hairline)",
-                }}
                 fallback={
                   <span
                     className="grid h-full w-full place-items-center text-lg font-bold"
@@ -319,13 +326,21 @@ export default function StationCardsGrid({
                     {initial}
                   </span>
                 }
+                fit="contain"
+                rounded="rounded-xl"
+                src={s.clientLogoUrl}
+                style={{
+                  background: "oklch(1 0 0)",
+                  borderColor: "var(--hairline)",
+                }}
               />
               <div className="min-w-0 flex-1">
                 <p
-                  className="truncate font-semibold leading-tight"
+                  className="flex min-w-0 items-center gap-1.5 font-semibold leading-tight"
                   title={title}
                 >
-                  {title}
+                  <span className="truncate">{title}</span>
+                  <EtiquetaDeSucursal sucursal={suc.deSede(s.postSiteId)} />
                 </p>
                 {subtitle && (
                   <p
@@ -339,10 +354,12 @@ export default function StationCardsGrid({
                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                   {(() => {
                     const ins = insigniaDeCobertura(s, t);
+
                     if (!ins) return null;
+
                     return (
                       <>
-                        <StatusBadge tone={ins.tone} dot={false}>
+                        <StatusBadge dot={false} tone={ins.tone}>
                           {ins.icon} {ins.label}
                         </StatusBadge>
                         {ins.hint && (
@@ -358,10 +375,12 @@ export default function StationCardsGrid({
                   })()}
                   {(() => {
                     const turno = insigniaDeTurno(s, t);
+
                     if (!turno) return null;
+
                     return (
                       <>
-                        <StatusBadge tone={turno.tone} dot={false}>
+                        <StatusBadge dot={false} tone={turno.tone}>
                           {turno.icon} <strong>{turno.label}</strong>
                         </StatusBadge>
                         {turno.hint && (
@@ -378,7 +397,7 @@ export default function StationCardsGrid({
                   {/* Un puesto sin NADIE asignado en el contrato es un problema
                       distinto —y previo— al de la cobertura de esta noche. */}
                   {s.guardCount === 0 && (
-                    <StatusBadge tone="warn" dot={false}>
+                    <StatusBadge dot={false} tone="warn">
                       {t("stations.noGuardsAssigned", {
                         defaultValue: "Sin vigilantes asignados",
                       })}
@@ -435,42 +454,42 @@ export default function StationCardsGrid({
               {onOpenTab && (
                 <span className="ml-auto flex items-center gap-1">
                   <button
+                    aria-label={
+                      t("stations.openRondas", {
+                        defaultValue: "Rondas del puesto",
+                      }) as string
+                    }
+                    className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md sm:h-7 sm:w-7"
+                    title={
+                      t("stations.openRondas", {
+                        defaultValue: "Rondas del puesto",
+                      }) as string
+                    }
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       onOpenTab(s, "site-tours");
                     }}
-                    title={
-                      t("stations.openRondas", {
-                        defaultValue: "Rondas del puesto",
-                      }) as string
-                    }
-                    aria-label={
-                      t("stations.openRondas", {
-                        defaultValue: "Rondas del puesto",
-                      }) as string
-                    }
-                    className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md sm:h-7 sm:w-7"
                   >
                     <Route className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                   </button>
                   <button
+                    aria-label={
+                      t("stations.openQr", {
+                        defaultValue: "Códigos QR",
+                      }) as string
+                    }
+                    className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md sm:h-7 sm:w-7"
+                    title={
+                      t("stations.openQr", {
+                        defaultValue: "Códigos QR",
+                      }) as string
+                    }
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       onOpenTab(s, "etiquetas");
                     }}
-                    title={
-                      t("stations.openQr", {
-                        defaultValue: "Códigos QR",
-                      }) as string
-                    }
-                    aria-label={
-                      t("stations.openQr", {
-                        defaultValue: "Códigos QR",
-                      }) as string
-                    }
-                    className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md sm:h-7 sm:w-7"
                   >
                     <QrCode className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                   </button>

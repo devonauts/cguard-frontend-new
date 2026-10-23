@@ -20254,6 +20254,10 @@
       "enRiesgo": "À risque",
       "incidentes": "Incidents",
       "total": "Toute l’entreprise"
+    },
+    "etiqueta": {
+      "empresa": "Entreprise",
+      "columna": "Agence"
     }
   },
   "soporte": {

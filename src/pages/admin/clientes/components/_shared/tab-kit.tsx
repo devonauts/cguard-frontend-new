@@ -409,7 +409,8 @@ export function TabFooter({
             type="button"
             onClick={onRefresh}
           >
-            <RefreshCw className="h-3.5 w-3.5" /> {t("ui.tabkit.actualizar", "Actualizar")}
+            <RefreshCw className="h-3.5 w-3.5" />{" "}
+            {t("ui.tabkit.actualizar", "Actualizar")}
           </button>
         )}
       </span>

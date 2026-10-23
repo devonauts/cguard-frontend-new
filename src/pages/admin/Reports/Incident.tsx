@@ -1,4 +1,5 @@
 import { AlertTriangle } from "lucide-react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import {
   warnIfCapped,
 } from "./reportFormat";
 
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
 import { ApiService } from "@/services/api/apiService";
 
 interface Incident {
@@ -22,6 +24,9 @@ interface Incident {
   priority?: string | null;
   location?: string | null;
   postSite?: { name?: string } | null;
+  /** Lo que de verdad manda el servidor: la sede como `site`. */
+  site?: { id?: string; companyName?: string } | null;
+  postSiteId?: string | null;
   station?: { stationName?: string } | null;
   /** El caso del Centro de Emergencias que atiende este incidente, si lo hay
    *  (un pánico crea los dos). Lo adjunta el listado del servidor. */
@@ -64,7 +69,10 @@ const columns: ReportColumn<Incident>[] = [
     key: "site",
     label: "Puesto/Estación",
     labelKey: "reports.col.incident.site",
-    value: (r) => r.postSite?.name || r.station?.stationName || "—",
+    // El servidor manda la sede como `site.companyName`; `postSite.name` no
+    // llegaba nunca y la celda caía siempre al nombre del puesto.
+    value: (r) =>
+      r.site?.companyName || r.postSite?.name || r.station?.stationName || "—",
   },
   {
     key: "location",
@@ -83,6 +91,25 @@ const columns: ReportColumn<Incident>[] = [
 export default function Incident() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // Módulo Sucursales (vista global): la sucursal de cada incidente, detrás del
+  // puesto; también sale en la exportación (CSV/Excel/PDF), que usa las mismas columnas.
+  const etiquetas = useEtiquetasDeSucursal();
+  const columnas = useMemo<ReportColumn<Incident>[]>(() => {
+    if (!etiquetas.activo) return columns;
+    const i = columns.findIndex((c) => c.key === "site") + 1;
+
+    return [
+      ...columns.slice(0, i),
+      {
+        key: "branch",
+        label: "Sucursal",
+        labelKey: "sucursales.etiqueta.columna",
+        value: (r) =>
+          etiquetas.texto(etiquetas.deSede(r.postSiteId || r.site?.id)) || "—",
+      },
+      ...columns.slice(i),
+    ];
+  }, [etiquetas]);
 
   return (
     <DataReport<Incident>
@@ -111,9 +138,10 @@ export default function Incident() {
         if (/critical|crítica|critica|alta|high|urgent/.test(p)) return abierto ? "bad" : "warn";
         return undefined;
       }}
-      columns={columns}
-      // Incidentes reportados sin señal desde la app.
-      idSinSenal={(r) => r.id}
+      onRowClick={(r) => {
+        if (r.alarmCaseId) { navigate(`/alarm/case/${r.alarmCaseId}`); return; }
+        toast.info(t("ui.Incident.sinCaso", "Este incidente no tiene un caso de emergencia asociado."));
+      }}
       /* ── LA FILA TIENE QUE LLEVAR A ALGUNA PARTE ────────────────────────────
          Un pánico aparece aquí y la fila no se podía ni tocar: sin acción, sin
          ficha y —hasta el arreglo del espejo en el servidor— mostrando
@@ -123,10 +151,9 @@ export default function Incident() {
          que no nacieron de un pánico no tienen caso: se dice, en vez de dejar
          una fila que a veces responde y a veces no — que es peor que una que
          nunca responde. */
-      onRowClick={(r) => {
-        if (r.alarmCaseId) { navigate(`/alarm/case/${r.alarmCaseId}`); return; }
-        toast.info(t("ui.Incident.sinCaso", "Este incidente no tiene un caso de emergencia asociado."));
-      }}
+      columns={columnas}
+      // Incidentes reportados sin señal desde la app.
+      idSinSenal={(r) => r.id}
       title={t("ui.Incident.informeDeIncidente", "Informe de Incidente")}
       // Un incidente de prioridad alta/crítica todavía abierto se señala en rojo.
       tone="bad"

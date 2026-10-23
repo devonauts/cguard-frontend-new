@@ -150,7 +150,11 @@ const EVENTO: Record<string, string> = {
   rejected: "ui.DocumentPackets.eventRejected",
 };
 
-const VIA: Record<string, string> = { crm: "CRM", app: "App", link: "ui.DocumentPackets.viaLink" };
+const VIA: Record<string, string> = {
+  crm: "CRM",
+  app: "App",
+  link: "ui.DocumentPackets.viaLink",
+};
 
 const fmtDT = (iso?: string | null) => {
   if (!iso) return "—";
@@ -647,7 +651,9 @@ export default function DocumentPackets({
                                         onClick={() =>
                                           copiar(
                                             l.url,
-                                            t("ui.DocumentPackets.copyLabelLink"),
+                                            t(
+                                              "ui.DocumentPackets.copyLabelLink",
+                                            ),
                                             t,
                                           )
                                         }
@@ -662,7 +668,9 @@ export default function DocumentPackets({
                                           onClick={() =>
                                             copiar(
                                               l.accessCode!,
-                                              t("ui.DocumentPackets.copyLabelCode"),
+                                              t(
+                                                "ui.DocumentPackets.copyLabelCode",
+                                              ),
                                               t,
                                             )
                                           }
@@ -756,11 +764,7 @@ export default function DocumentPackets({
                   size="sm"
                   variant="outline"
                   onClick={() =>
-                    copiar(
-                      recien.url,
-                      t("ui.DocumentPackets.copyLabelLink"),
-                      t,
-                    )
+                    copiar(recien.url, t("ui.DocumentPackets.copyLabelLink"), t)
                   }
                 >
                   <Copy className="h-3.5 w-3.5" />
@@ -899,15 +903,9 @@ export default function DocumentPackets({
                 value={horas}
                 onChange={(e) => setHoras(Number(e.target.value))}
               >
-                <option value={24}>
-                  {t("ui.DocumentPackets.expiry24h")}
-                </option>
-                <option value={72}>
-                  {t("ui.DocumentPackets.expiry72h")}
-                </option>
-                <option value={168}>
-                  {t("ui.DocumentPackets.expiry7d")}
-                </option>
+                <option value={24}>{t("ui.DocumentPackets.expiry24h")}</option>
+                <option value={72}>{t("ui.DocumentPackets.expiry72h")}</option>
+                <option value={168}>{t("ui.DocumentPackets.expiry7d")}</option>
               </select>
             </LabeledField>
           </div>

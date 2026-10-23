@@ -20,6 +20,8 @@ import { useTranslation } from "react-i18next";
 
 import GuardRatingLevel from "./GuardRatingLevel";
 
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -122,6 +124,8 @@ export default function GuardCardsGrid({
   onOpen: (guard: GuardRow) => void;
   actions: (guard: GuardRow) => GuardCardAction[];
 }) {
+  // Módulo Sucursales (vista global): la de casa o, si no tiene, la de su puesto.
+  const etiquetas = useEtiquetasDeSucursal({ personas: true });
   const { t } = useTranslation();
 
   if (loading)
@@ -178,7 +182,10 @@ export default function GuardCardsGrid({
             <div className="flex items-start gap-3">
               <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
                 <Checkbox
-                  aria-label={t("guards.list.selectAria", { defaultValue: "Seleccionar {{name}}", name })}
+                  aria-label={t("guards.list.selectAria", {
+                    defaultValue: "Seleccionar {{name}}",
+                    name,
+                  })}
                   checked={selectedIds.includes(g.id)}
                   onCheckedChange={(v) => onSelect(g.id, Boolean(v))}
                 />
@@ -202,10 +209,16 @@ export default function GuardCardsGrid({
                 style={{ borderColor: "var(--hairline)" }}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold leading-tight transition-colors group-hover:[color:var(--brand-text)]">
-                  {name}
+                <p className="flex min-w-0 items-center gap-1.5 font-semibold leading-tight transition-colors group-hover:[color:var(--brand-text)]">
+                  <span className="truncate">{name}</span>
                 </p>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  <EtiquetaDeSucursal
+                    sucursal={
+                      etiquetas.dePersona(userId) ??
+                      etiquetas.deSede(asignacion?.postSiteId)
+                    }
+                  />
                   <StatusBadge tone={tone}>
                     {g.status === "Activo"
                       ? t("common.active", "Activo")
@@ -215,18 +228,17 @@ export default function GuardCardsGrid({
                           ? t("comun.pendiente", "Pendiente")
                           : g.status}
                   </StatusBadge>
-                  {g.status === "Archivado" &&
-                    g.raw?.archivadoTrasEvento && (
-                      <span
-                        className="text-xs"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        {t("guards.list.archivadoTras", {
-                          defaultValue: "Archivado tras {{evento}}",
-                          evento: g.raw.archivadoTrasEvento.nombre,
-                        })}
-                      </span>
-                    )}
+                  {g.status === "Archivado" && g.raw?.archivadoTrasEvento && (
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {t("guards.list.archivadoTras", {
+                        defaultValue: "Archivado tras {{evento}}",
+                        evento: g.raw.archivadoTrasEvento.nombre,
+                      })}
+                    </span>
+                  )}
                   {rating && (
                     <GuardRatingLevel
                       average={rating.average}
