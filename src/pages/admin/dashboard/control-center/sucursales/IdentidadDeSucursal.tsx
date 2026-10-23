@@ -136,6 +136,9 @@ export function IdentidadDeSucursal({
             value={valor.establishmentCode}
             onChange={poner("establishmentCode")}
           />
+          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+            {t("sucursales.identidad.establecimientoAyuda")}
+          </p>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="suc-correo">{t("sucursales.identidad.correo")}</Label>

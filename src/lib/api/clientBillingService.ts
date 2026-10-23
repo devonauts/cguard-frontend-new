@@ -461,6 +461,8 @@ export interface InvoiceEvent {
 export interface Invoice {
   id: string;
   clientAccountId: string;
+  /** Branch that issues it (null = the company). */
+  branchId?: string | null;
   contractId: string | null;
   billingRunId: string | null;
   number: string | null;
@@ -633,6 +635,8 @@ export interface QuoteEvent {
 
 export interface Quote {
   id: string;
+  /** Branch it belongs to (null = the company). */
+  branchId?: string | null;
   number: string;
   revision: number;
   title: string;

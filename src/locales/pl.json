@@ -20499,7 +20499,8 @@
       "establecimiento": "Kod placówki",
       "correo": "E-mail oddziału",
       "direccion": "Adres podatkowy",
-      "revisa": "Sprawdź identyfikator podatkowy oddziału."
+      "revisa": "Sprawdź identyfikator podatkowy oddziału.",
+      "establecimientoAyuda": "Z kodem jej faktury mają własną numerację: INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "Tym zajmuje się centrala",
