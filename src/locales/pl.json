@@ -20067,60 +20067,52 @@
     "demos": {
       "sucursales": {
         "escenas": {
-          "dividir": "Podziel działalność",
-          "equipos": "Każdy zespół u siebie"
+          "espacio": "Wybierz, gdzie pracujesz",
+          "mapa": "Mapa, która podróżuje",
+          "gerente": "Kierownik oddziału"
         },
-        "panel": "Oddziały",
-        "supervisor": "Andrés · Północ",
-        "chips": {
-          "todas": "Wszystkie",
-          "norte": "Północ",
-          "centro": "Centrum",
-          "sur": "Południe"
+        "espacios": {
+          "global": "Widok globalny",
+          "uio": "Quito",
+          "gye": "Guayaquil"
         },
+        "principal": "Centrala",
+        "gerente": "Kierownik",
         "kpi": {
-          "puestos": "Posterunki",
-          "vigilantes": "Na zmianie",
-          "cobertura": "Obsada"
+          "cobertura": "Obsada",
+          "enTurno": "Na zmianie",
+          "puestos": "Posterunki"
         },
-        "equipo": {
-          "titulo": "Zespół",
-          "supervisa": "Kierownik",
-          "jefe": {
-            "norte": "Andrés Pólit · Północ",
-            "centro": "Ricardo Beltrán · Centrum",
-            "sur": "Paola Vera · Południe"
-          },
-          "norte1": "Andrés Pólit",
-          "norte2": "Luis Andrade",
-          "norte3": "Carla Ruiz",
-          "centro1": "Ricardo Beltrán",
-          "centro2": "Ana Torres",
-          "centro3": "Jorge Mena",
-          "sur1": "Paola Vera",
-          "sur2": "Pedro Gómez",
-          "sur3": "María León"
-        },
-        "alerta": "Spóźniony obchód · Posterunek Północ 3",
-        "alertaResuelta": "Obchód zakończony · Posterunek Północ 3",
-        "informe": "Raport za październik · Północ",
+        "comparativa": "Porównanie",
+        "total": "Cała firma",
+        "hoy": "Dziś",
+        "alerta": "Spóźniony obchód · Posterunek GYE 2",
+        "alertaResuelta": "Obchód zakończony · Posterunek GYE 2",
+        "pagoIntento": "Opłać subskrypcję…",
+        "pagoBloqueado": "Tym zajmuje się centrala",
+        "enBitacora": "Andrés próbował zapłacić · w dzienniku",
+        "soloGlobal": "Wszystkie oddziały razem",
+        "soloSuya": "Tylko Guayaquil",
+        "selector": "Gdzie teraz pracujesz?",
         "pasos": {
-          "todo": "Twoja działalność: 24 posterunki na jednej mapie",
-          "norte": "Tworzysz oddział Północ",
-          "centro": "Potem Centrum",
-          "sur": "I Południe: każdy posterunek w swoim",
-          "filtra": "Wybierasz Północ: mapa i liczby tylko stamtąd",
-          "filtraSur": "Jednym dotknięciem przechodzisz na Południe",
-          "todas": "I wracasz do całej firmy",
-          "entra": "Andrés, kierownik Północy, loguje się do CRM",
-          "soloSuya": "Widzi tylko swój oddział: posterunki, ludzi i alerty",
-          "alerta": "Spóźniony obchód na Północy: alert trafia do niego",
-          "resuelta": "Rozwiązuje go bez angażowania innych oddziałów",
-          "informe": "Miesięczny raport dla oddziału"
+          "entra": "Logujesz się i wybierasz, gdzie pracujesz",
+          "elige": "Wchodzisz do Guayaquil",
+          "color": "Pasek przybiera kolor Guayaquil",
+          "acotado": "Listy, mapa i raporty: tylko Guayaquil",
+          "global": "Zaczynasz w widoku globalnym",
+          "quito": "Przesuń: mapa leci do Quito",
+          "guayaquil": "Jeszcze raz: Guayaquil",
+          "compara": "I porównujesz oddziały na pierwszy rzut oka",
+          "gerente": "Andrés, kierownik Guayaquil, loguje się",
+          "aviso": "Spóźniony obchód w Guayaquil: alert trafia do niego",
+          "resuelve": "Rozwiązuje to w swoim oddziale",
+          "noPaga": "Próbuje zapłacić: to sprawa centrali",
+          "bitacora": "Wszystko, co robi, trafia do dziennika"
         },
         "resultado": {
-          "dividir": "Jedna firma, kilka oddziałów, każdy ze swoimi liczbami",
-          "equipos": "Każdy kierownik widzi i odpowiada za swoje"
+          "espacio": "Każdy wchodzi tam, gdzie pracuje",
+          "mapa": "Cała firma na jednej mapie, miasto po mieście",
+          "gerente": "Admin dla każdego oddziału, z dala od kasy"
         }
       },
       "facial": {

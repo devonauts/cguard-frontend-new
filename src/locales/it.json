@@ -19783,60 +19783,52 @@
     "demos": {
       "sucursales": {
         "escenas": {
-          "dividir": "Dividi la tua operatività",
-          "equipos": "Ogni squadra per conto suo"
+          "espacio": "Scegli dove lavorare",
+          "mapa": "La mappa che viaggia",
+          "gerente": "Il responsabile di filiale"
         },
-        "panel": "Filiali",
-        "supervisor": "Andrés · Nord",
-        "chips": {
-          "todas": "Tutte",
-          "norte": "Nord",
-          "centro": "Centro",
-          "sur": "Sud"
+        "espacios": {
+          "global": "Vista globale",
+          "uio": "Quito",
+          "gye": "Guayaquil"
         },
+        "principal": "Sede principale",
+        "gerente": "Responsabile",
         "kpi": {
-          "puestos": "Postazioni",
-          "vigilantes": "In servizio",
-          "cobertura": "Copertura"
+          "cobertura": "Copertura",
+          "enTurno": "In servizio",
+          "puestos": "Postazioni"
         },
-        "equipo": {
-          "titulo": "Squadra",
-          "supervisa": "Supervisore",
-          "jefe": {
-            "norte": "Andrés Pólit · Nord",
-            "centro": "Ricardo Beltrán · Centro",
-            "sur": "Paola Vera · Sud"
-          },
-          "norte1": "Andrés Pólit",
-          "norte2": "Luis Andrade",
-          "norte3": "Carla Ruiz",
-          "centro1": "Ricardo Beltrán",
-          "centro2": "Ana Torres",
-          "centro3": "Jorge Mena",
-          "sur1": "Paola Vera",
-          "sur2": "Pedro Gómez",
-          "sur3": "María León"
-        },
-        "alerta": "Ronda in ritardo · Postazione Nord 3",
-        "alertaResuelta": "Ronda completata · Postazione Nord 3",
-        "informe": "Report di ottobre · Nord",
+        "comparativa": "Confronto",
+        "total": "Tutta l’azienda",
+        "hoy": "Oggi",
+        "alerta": "Ronda in ritardo · Postazione GYE 2",
+        "alertaResuelta": "Ronda completata · Postazione GYE 2",
+        "pagoIntento": "Paga l’abbonamento…",
+        "pagoBloqueado": "Se ne occupa la sede principale",
+        "enBitacora": "Andrés ha provato a pagare · nel registro",
+        "soloGlobal": "Tutte le filiali insieme",
+        "soloSuya": "Solo Guayaquil",
+        "selector": "Dove stai lavorando ora?",
         "pasos": {
-          "todo": "La tua operatività: 24 postazioni su una sola mappa",
-          "norte": "Crei la filiale Nord",
-          "centro": "Poi Centro",
-          "sur": "E Sud: ogni postazione nella sua",
-          "filtra": "Scegli Nord: mappa e cifre solo di lì",
-          "filtraSur": "Passi a Sud con un tocco",
-          "todas": "E torni a vedere tutta l’azienda",
-          "entra": "Andrés, supervisore del Nord, entra nel CRM",
-          "soloSuya": "Vede solo la sua filiale: postazioni, persone e allarmi",
-          "alerta": "Una ronda in ritardo al Nord: l’avviso arriva a lui",
-          "resuelta": "La risolve senza disturbare le altre filiali",
-          "informe": "Report mensile per filiale"
+          "entra": "Accedi e scegli dove lavorare",
+          "elige": "Entri a Guayaquil",
+          "color": "La barra prende il colore di Guayaquil",
+          "acotado": "Elenchi, mappa e report: solo Guayaquil",
+          "global": "Parti dalla vista globale",
+          "quito": "Scorri: la mappa vola a Quito",
+          "guayaquil": "Scorri ancora: Guayaquil",
+          "compara": "E confronti le filiali a colpo d’occhio",
+          "gerente": "Andrés, responsabile di Guayaquil, accede",
+          "aviso": "Una ronda in ritardo a Guayaquil: l’avviso arriva a lui",
+          "resuelve": "La risolve nella sua filiale",
+          "noPaga": "Prova a pagare: è compito della sede principale",
+          "bitacora": "Tutto ciò che fa resta nel registro"
         },
         "resultado": {
-          "dividir": "Un’azienda, più filiali, ognuna con le sue cifre",
-          "equipos": "Ogni supervisore vede e risponde per la sua parte"
+          "espacio": "Ognuno entra dove lavora",
+          "mapa": "Tutta l’azienda su una mappa, città per città",
+          "gerente": "Un admin per filiale, lontano dalla cassa"
         }
       },
       "facial": {

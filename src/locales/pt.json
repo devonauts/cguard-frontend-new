@@ -19783,60 +19783,52 @@
     "demos": {
       "sucursales": {
         "escenas": {
-          "dividir": "Divida sua operação",
-          "equipos": "Cada equipe no que é seu"
+          "espacio": "Escolha onde trabalhar",
+          "mapa": "O mapa que viaja",
+          "gerente": "O gerente de filial"
         },
-        "panel": "Filiais",
-        "supervisor": "Andrés · Norte",
-        "chips": {
-          "todas": "Todas",
-          "norte": "Norte",
-          "centro": "Centro",
-          "sur": "Sul"
+        "espacios": {
+          "global": "Visão global",
+          "uio": "Quito",
+          "gye": "Guayaquil"
         },
+        "principal": "Matriz",
+        "gerente": "Gerente",
         "kpi": {
-          "puestos": "Postos",
-          "vigilantes": "Em turno",
-          "cobertura": "Cobertura"
+          "cobertura": "Cobertura",
+          "enTurno": "Em turno",
+          "puestos": "Postos"
         },
-        "equipo": {
-          "titulo": "Equipe",
-          "supervisa": "Supervisor",
-          "jefe": {
-            "norte": "Andrés Pólit · Norte",
-            "centro": "Ricardo Beltrán · Centro",
-            "sur": "Paola Vera · Sul"
-          },
-          "norte1": "Andrés Pólit",
-          "norte2": "Luis Andrade",
-          "norte3": "Carla Ruiz",
-          "centro1": "Ricardo Beltrán",
-          "centro2": "Ana Torres",
-          "centro3": "Jorge Mena",
-          "sur1": "Paola Vera",
-          "sur2": "Pedro Gómez",
-          "sur3": "María León"
-        },
-        "alerta": "Ronda atrasada · Posto Norte 3",
-        "alertaResuelta": "Ronda concluída · Posto Norte 3",
-        "informe": "Relatório de outubro · Norte",
+        "comparativa": "Comparativo",
+        "total": "Empresa toda",
+        "hoy": "Hoje",
+        "alerta": "Ronda atrasada · Posto GYE 2",
+        "alertaResuelta": "Ronda concluída · Posto GYE 2",
+        "pagoIntento": "Pagar a assinatura…",
+        "pagoBloqueado": "Isso é com a matriz",
+        "enBitacora": "Andrés tentou pagar · no registro",
+        "soloGlobal": "Todas as filiais juntas",
+        "soloSuya": "Só Guayaquil",
+        "selector": "Onde você está trabalhando agora?",
         "pasos": {
-          "todo": "Sua operação: 24 postos em um só mapa",
-          "norte": "Você cria a filial Norte",
-          "centro": "Depois Centro",
-          "sur": "E Sul: cada posto na sua",
-          "filtra": "Você escolhe Norte: mapa e números só de lá",
-          "filtraSur": "Muda para Sul com um toque",
-          "todas": "E volta a ver a empresa toda",
-          "entra": "Andrés, supervisor do Norte, entra no CRM",
-          "soloSuya": "Ele só vê a filial dele: postos, pessoas e alertas",
-          "alerta": "Uma ronda atrasada no Norte: o aviso vai para ele",
-          "resuelta": "Ele resolve sem incomodar as outras filiais",
-          "informe": "Relatório do mês por filial"
+          "entra": "Você entra e escolhe onde trabalhar",
+          "elige": "Você entra em Guayaquil",
+          "color": "A barra fica com a cor de Guayaquil",
+          "acotado": "Listas, mapa e relatórios: só de Guayaquil",
+          "global": "Você começa na visão global",
+          "quito": "Desliza: o mapa voa até Quito",
+          "guayaquil": "Desliza de novo: Guayaquil",
+          "compara": "E compara as filiais num relance",
+          "gerente": "Andrés, gerente de Guayaquil, entra",
+          "aviso": "Uma ronda atrasada em Guayaquil: o aviso vai para ele",
+          "resuelve": "Ele resolve na filial dele",
+          "noPaga": "Tenta pagar: isso é da matriz",
+          "bitacora": "Tudo o que faz fica no registro"
         },
         "resultado": {
-          "dividir": "Uma empresa, várias filiais, cada uma com seus números",
-          "equipos": "Cada supervisor vê e responde pelo que é seu"
+          "espacio": "Cada um entra onde trabalha",
+          "mapa": "A empresa toda num mapa, cidade por cidade",
+          "gerente": "Um admin para cada filial, longe do caixa"
         }
       },
       "facial": {
