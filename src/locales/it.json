@@ -20215,7 +20215,8 @@
       "establecimiento": "Codice di stabilimento",
       "correo": "E-mail della filiale",
       "direccion": "Indirizzo fiscale",
-      "revisa": "Controlla l’identificativo fiscale della filiale."
+      "revisa": "Controlla l’identificativo fiscale della filiale.",
+      "establecimientoAyuda": "Con un codice, le sue fatture hanno numerazione propria: INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "Se ne occupa la sede principale",

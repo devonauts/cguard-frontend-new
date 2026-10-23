@@ -20215,7 +20215,8 @@
       "establecimiento": "Establishment code",
       "correo": "Branch email",
       "direccion": "Registered address",
-      "revisa": "Check the branch tax ID."
+      "revisa": "Check the branch tax ID.",
+      "establecimientoAyuda": "With a code, its invoices number separately: INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "Headquarters handles this",

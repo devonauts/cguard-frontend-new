@@ -20215,7 +20215,8 @@
       "establecimiento": "Cód. de estabelecimento",
       "correo": "E-mail da filial",
       "direccion": "Endereço fiscal",
-      "revisa": "Revise a identificação fiscal da filial."
+      "revisa": "Revise a identificação fiscal da filial.",
+      "establecimientoAyuda": "Com código, as faturas dela têm numeração própria: INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "Isso é com a matriz",

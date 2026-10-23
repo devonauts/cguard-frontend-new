@@ -20215,7 +20215,8 @@
       "establecimiento": "Code d’établissement",
       "correo": "E-mail de l’agence",
       "direccion": "Adresse fiscale",
-      "revisa": "Vérifiez l’identifiant fiscal de l’agence."
+      "revisa": "Vérifiez l’identifiant fiscal de l’agence.",
+      "establecimientoAyuda": "Avec un code, ses factures ont leur propre numérotation : INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "C’est le siège qui s’en charge",

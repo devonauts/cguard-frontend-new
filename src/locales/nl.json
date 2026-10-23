@@ -20215,7 +20215,8 @@
       "establecimiento": "Vestigingscode",
       "correo": "E-mail van de vestiging",
       "direccion": "Fiscaal adres",
-      "revisa": "Controleer het fiscale nummer van de vestiging."
+      "revisa": "Controleer het fiscale nummer van de vestiging.",
+      "establecimientoAyuda": "Met een code krijgen haar facturen een eigen nummering: INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "Dit regelt het hoofdkantoor",

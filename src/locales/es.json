@@ -20215,7 +20215,8 @@
       "establecimiento": "Cód. de establecimiento",
       "correo": "Correo de la sucursal",
       "direccion": "Dirección fiscal",
-      "revisa": "Revisa la identificación fiscal de la sucursal."
+      "revisa": "Revisa la identificación fiscal de la sucursal.",
+      "establecimientoAyuda": "Con código, sus facturas numeran aparte: INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "Esto lo hace la principal",

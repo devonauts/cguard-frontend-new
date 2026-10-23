@@ -20215,7 +20215,8 @@
       "establecimiento": "Betriebsstättencode",
       "correo": "E-Mail der Niederlassung",
       "direccion": "Steueradresse",
-      "revisa": "Prüfen Sie die Steuernummer der Niederlassung."
+      "revisa": "Prüfen Sie die Steuernummer der Niederlassung.",
+      "establecimientoAyuda": "Mit Code bekommen ihre Rechnungen eigene Nummern: INV-002-2026-00001."
     },
     "gerente": {
       "soloPrincipalTitulo": "Das macht der Hauptsitz",
