@@ -19783,60 +19783,52 @@
     "demos": {
       "sucursales": {
         "escenas": {
-          "dividir": "Betrieb aufteilen",
-          "equipos": "Jedes Team für sich"
+          "espacio": "Arbeitsbereich wählen",
+          "mapa": "Die reisende Karte",
+          "gerente": "Die Niederlassungsleitung"
         },
-        "panel": "Niederlassungen",
-        "supervisor": "Andrés · Nord",
-        "chips": {
-          "todas": "Alle",
-          "norte": "Nord",
-          "centro": "Mitte",
-          "sur": "Süd"
+        "espacios": {
+          "global": "Gesamtansicht",
+          "uio": "Quito",
+          "gye": "Guayaquil"
         },
+        "principal": "Hauptsitz",
+        "gerente": "Leitung",
         "kpi": {
-          "puestos": "Posten",
-          "vigilantes": "Im Dienst",
-          "cobertura": "Abdeckung"
+          "cobertura": "Abdeckung",
+          "enTurno": "Im Dienst",
+          "puestos": "Posten"
         },
-        "equipo": {
-          "titulo": "Team",
-          "supervisa": "Leitung",
-          "jefe": {
-            "norte": "Andrés Pólit · Nord",
-            "centro": "Ricardo Beltrán · Mitte",
-            "sur": "Paola Vera · Süd"
-          },
-          "norte1": "Andrés Pólit",
-          "norte2": "Luis Andrade",
-          "norte3": "Carla Ruiz",
-          "centro1": "Ricardo Beltrán",
-          "centro2": "Ana Torres",
-          "centro3": "Jorge Mena",
-          "sur1": "Paola Vera",
-          "sur2": "Pedro Gómez",
-          "sur3": "María León"
-        },
-        "alerta": "Rundgang verspätet · Posten Nord 3",
-        "alertaResuelta": "Rundgang erledigt · Posten Nord 3",
-        "informe": "Oktoberbericht · Nord",
+        "comparativa": "Vergleich",
+        "total": "Ganzes Unternehmen",
+        "hoy": "Heute",
+        "alerta": "Rundgang verspätet · Posten GYE 2",
+        "alertaResuelta": "Rundgang erledigt · Posten GYE 2",
+        "pagoIntento": "Abo bezahlen…",
+        "pagoBloqueado": "Das macht der Hauptsitz",
+        "enBitacora": "Andrés wollte zahlen · im Protokoll",
+        "soloGlobal": "Alle Niederlassungen zusammen",
+        "soloSuya": "Nur Guayaquil",
+        "selector": "Wo arbeiten Sie gerade?",
         "pasos": {
-          "todo": "Ihr Betrieb: 24 Posten auf einer Karte",
-          "norte": "Sie legen die Niederlassung Nord an",
-          "centro": "Dann Mitte",
-          "sur": "Und Süd: jeder Posten in seiner",
-          "filtra": "Sie wählen Nord: Karte und Zahlen nur von dort",
-          "filtraSur": "Mit einem Tipp wechseln Sie zu Süd",
-          "todas": "Und sehen wieder das ganze Unternehmen",
-          "entra": "Andrés, Leiter Nord, meldet sich im CRM an",
-          "soloSuya": "Er sieht nur seine Niederlassung: Posten, Leute, Alarme",
-          "alerta": "Ein verspäteter Rundgang in Nord: die Meldung geht an ihn",
-          "resuelta": "Er löst es, ohne die anderen zu stören",
-          "informe": "Monatsbericht pro Niederlassung"
+          "entra": "Sie melden sich an und wählen den Bereich",
+          "elige": "Sie gehen in Guayaquil",
+          "color": "Die Leiste nimmt Guayaquils Farbe an",
+          "acotado": "Listen, Karte und Berichte: nur Guayaquil",
+          "global": "Sie starten in der Gesamtansicht",
+          "quito": "Wischen: die Karte fliegt nach Quito",
+          "guayaquil": "Noch einmal: Guayaquil",
+          "compara": "Und vergleichen die Niederlassungen auf einen Blick",
+          "gerente": "Andrés, Leiter Guayaquil, meldet sich an",
+          "aviso": "Verspäteter Rundgang in Guayaquil: die Meldung geht an ihn",
+          "resuelve": "Er löst es in seiner Niederlassung",
+          "noPaga": "Er will zahlen: das macht der Hauptsitz",
+          "bitacora": "Alles, was er tut, steht im Protokoll"
         },
         "resultado": {
-          "dividir": "Ein Unternehmen, mehrere Niederlassungen, jede mit eigenen Zahlen",
-          "equipos": "Jede Leitung sieht und verantwortet ihren Bereich"
+          "espacio": "Jeder arbeitet dort, wo er hingehört",
+          "mapa": "Das ganze Unternehmen auf einer Karte, Stadt für Stadt",
+          "gerente": "Ein Admin je Niederlassung, ohne Zugriff aufs Geld"
         }
       },
       "facial": {

@@ -19783,60 +19783,52 @@
     "demos": {
       "sucursales": {
         "escenas": {
-          "dividir": "Divide tu operación",
-          "equipos": "Cada equipo en lo suyo"
+          "espacio": "Elige dónde trabajar",
+          "mapa": "El mapa que viaja",
+          "gerente": "El gerente de sucursal"
         },
-        "panel": "Sucursales",
-        "supervisor": "Andrés · Norte",
-        "chips": {
-          "todas": "Todas",
-          "norte": "Norte",
-          "centro": "Centro",
-          "sur": "Sur"
+        "espacios": {
+          "global": "Vista global",
+          "uio": "Quito",
+          "gye": "Guayaquil"
         },
+        "principal": "Principal",
+        "gerente": "Gerente",
         "kpi": {
-          "puestos": "Puestos",
-          "vigilantes": "En turno",
-          "cobertura": "Cobertura"
+          "cobertura": "Cobertura",
+          "enTurno": "En turno",
+          "puestos": "Puestos"
         },
-        "equipo": {
-          "titulo": "Equipo",
-          "supervisa": "Supervisor",
-          "jefe": {
-            "norte": "Andrés Pólit · Norte",
-            "centro": "Ricardo Beltrán · Centro",
-            "sur": "Paola Vera · Sur"
-          },
-          "norte1": "Andrés Pólit",
-          "norte2": "Luis Andrade",
-          "norte3": "Carla Ruiz",
-          "centro1": "Ricardo Beltrán",
-          "centro2": "Ana Torres",
-          "centro3": "Jorge Mena",
-          "sur1": "Paola Vera",
-          "sur2": "Pedro Gómez",
-          "sur3": "María León"
-        },
-        "alerta": "Ronda tarde · Puesto Norte 3",
-        "alertaResuelta": "Ronda completada · Puesto Norte 3",
-        "informe": "Informe de octubre · Norte",
+        "comparativa": "Comparativa",
+        "total": "Toda la empresa",
+        "hoy": "Hoy",
+        "alerta": "Ronda tarde · Puesto GYE 2",
+        "alertaResuelta": "Ronda completada · Puesto GYE 2",
+        "pagoIntento": "Pagar la suscripción…",
+        "pagoBloqueado": "Esto lo hace la principal",
+        "enBitacora": "Andrés intentó pagar · en la bitácora",
+        "soloGlobal": "Todas las sucursales juntas",
+        "soloSuya": "Sólo lo de Guayaquil",
+        "selector": "¿Dónde trabajas ahora?",
         "pasos": {
-          "todo": "Tu operación: 24 puestos en un solo mapa",
-          "norte": "Creas la sucursal Norte",
-          "centro": "Luego Centro",
-          "sur": "Y Sur: cada puesto en la suya",
-          "filtra": "Eliges Norte: mapa y cifras sólo de ahí",
-          "filtraSur": "Cambias a Sur con un toque",
-          "todas": "Y vuelves a ver toda la empresa",
-          "entra": "Andrés, supervisor de Norte, entra al CRM",
-          "soloSuya": "Sólo ve su sucursal: puestos, gente y alertas",
-          "alerta": "Una ronda tarde en Norte: el aviso le llega a él",
-          "resuelta": "La resuelve sin molestar a las demás sucursales",
-          "informe": "Informe del mes por sucursal"
+          "entra": "Inicias sesión: eliges dónde trabajar",
+          "elige": "Entras en Guayaquil",
+          "color": "La barra se pinta del color de Guayaquil",
+          "acotado": "Listados, mapa e informes: sólo de Guayaquil",
+          "global": "Arrancas en la vista global",
+          "quito": "Deslizas: el mapa vuela a Quito",
+          "guayaquil": "Deslizas otra vez: Guayaquil",
+          "compara": "Y comparas las sucursales de un vistazo",
+          "gerente": "Andrés, gerente de Guayaquil, entra",
+          "aviso": "Una ronda tarde en Guayaquil: el aviso le llega a él",
+          "resuelve": "La resuelve en su sucursal",
+          "noPaga": "Intenta pagar: eso es de la principal",
+          "bitacora": "Todo lo que hace queda en la bitácora"
         },
         "resultado": {
-          "dividir": "Una empresa, varias sucursales, cada una con sus cifras",
-          "equipos": "Cada supervisor ve y responde por lo suyo"
+          "espacio": "Cada uno entra donde trabaja",
+          "mapa": "Toda la empresa en un mapa, ciudad por ciudad",
+          "gerente": "Un admin para cada sucursal, sin tocar la caja"
         }
       },
       "facial": {

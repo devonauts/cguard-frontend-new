@@ -1,4 +1,4 @@
-import { Lock } from "lucide-react";
+import { Building2, Globe2, Lock, ScrollText } from "lucide-react";
 
 import DemoDeModulo, {
   Cambia,
@@ -10,168 +10,207 @@ import DemoDeModulo, {
 } from "./DemoDeModulo";
 
 /**
- * CÓMO FUNCIONA «SUCURSALES» — una empresa, varias sucursales.
+ * CÓMO FUNCIONA «SUCURSALES» — el modelo 2.0 (2026-10-23).
  *
- * Izquierda, el mapa de la operación: los puestos se agrupan por zona y, al
- * elegir una sucursal, el mapa se acerca a ella. Derecha, el panel: selector
- * de sucursal y cifras que cambian con ella; en la segunda escena el
- * supervisor de una sucursal sólo ve (y atiende) la suya.
+ * Tres escenas, las tres cosas que cambiaron:
+ *   · «Elige dónde trabajar»: al entrar, la vista global, la principal o una
+ *     sucursal; la barra se pinta de su color y todo queda acotado a ella.
+ *   · «El mapa que viaja»: un solo mapa que va de la vista global a cada
+ *     ciudad, y la comparativa de sucursales al lado.
+ *   · «El gerente de sucursal»: ve y atiende lo suyo, no paga ni cancela la
+ *     cuenta, y todo lo que hace queda en la bitácora.
  */
-type Zona = "norte" | "centro" | "sur";
-type Vista = "todas" | Zona;
-type Escena = "dividir" | "equipos";
+type Espacio = "global" | "uio" | "gye";
+type Escena = "espacio" | "mapa" | "gerente";
 
 interface Estado extends EstadoBase {
-  agrupado: boolean;
-  zonas: number;
-  activa: Vista;
-  supervisor: boolean;
+  selector: boolean;
+  resaltada: Espacio | null;
+  espacio: Espacio;
+  camara: Espacio;
+  comparativa: boolean;
+  gerente: boolean;
   alerta: "no" | "abierta" | "resuelta";
-  informe: boolean;
+  pago: "no" | "intento" | "bloqueado";
+  bitacora2: boolean;
 }
 
-const ORDEN_ZONAS: Zona[] = ["norte", "centro", "sur"];
-/* En % del mapa. */
-const ZONAS: Record<Zona, { x: number; y: number; w: number; h: number }> = {
-  norte: { x: 6, y: 6, w: 40, h: 38 },
-  centro: { x: 40, y: 34, w: 30, h: 32 },
-  sur: { x: 60, y: 58, w: 34, h: 36 },
-};
-const PUESTOS: Array<{ x: number; y: number; z: Zona }> = [
-  { x: 16, y: 22, z: "norte" },
-  { x: 30, y: 16, z: "norte" },
-  { x: 24, y: 34, z: "norte" },
-  { x: 38, y: 26, z: "norte" },
-  { x: 48, y: 46, z: "centro" },
-  { x: 60, y: 42, z: "centro" },
-  { x: 54, y: 58, z: "centro" },
-  { x: 70, y: 70, z: "sur" },
-  { x: 84, y: 66, z: "sur" },
-  { x: 78, y: 84, z: "sur" },
-  { x: 66, y: 86, z: "sur" },
-];
-/* El puesto que se queda sin ronda en la escena de los equipos. */
-const PUESTO_ALERTA = 2;
-const CIFRAS: Record<
-  Vista,
-  { puestos: number; vigilantes: number; cobertura: number }
+/* El mapa, en % — Quito arriba, tierra adentro; Guayaquil abajo, en la costa. */
+const ZONAS: Record<
+  Exclude<Espacio, "global">,
+  { x: number; y: number; w: number; h: number }
 > = {
-  todas: { puestos: 24, vigilantes: 58, cobertura: 96 },
-  norte: { puestos: 9, vigilantes: 21, cobertura: 100 },
-  centro: { puestos: 8, vigilantes: 20, cobertura: 94 },
-  sur: { puestos: 7, vigilantes: 17, cobertura: 92 },
+  uio: { x: 50, y: 8, w: 34, h: 34 },
+  gye: { x: 10, y: 54, w: 36, h: 36 },
+};
+const PUESTOS: Array<{ x: number; y: number; z: "uio" | "gye" }> = [
+  { x: 60, y: 18, z: "uio" },
+  { x: 72, y: 24, z: "uio" },
+  { x: 64, y: 32, z: "uio" },
+  { x: 76, y: 14, z: "uio" },
+  { x: 20, y: 64, z: "gye" },
+  { x: 32, y: 70, z: "gye" },
+  { x: 26, y: 80, z: "gye" },
+];
+const PUESTO_ALERTA = 5;
+const COLOR: Record<Espacio, string> = {
+  global: "var(--brand)",
+  uio: "var(--info)",
+  gye: "var(--ok)",
+};
+const CIFRAS: Record<
+  Espacio,
+  { puestos: number; enTurno: number; cobertura: number }
+> = {
+  global: { puestos: 31, enTurno: 74, cobertura: 95 },
+  uio: { puestos: 19, enTurno: 46, cobertura: 97 },
+  gye: { puestos: 12, enTurno: 28, cobertura: 92 },
 };
 
 const base = (): Estado => ({
-  hora: "08:00",
+  hora: "07:58",
   bitacora: [],
   resultado: null,
-  agrupado: false,
-  zonas: 0,
-  activa: "todas",
-  supervisor: false,
+  selector: false,
+  resaltada: null,
+  espacio: "global",
+  camara: "global",
+  comparativa: false,
+  gerente: false,
   alerta: "no",
-  informe: false,
+  pago: "no",
+  bitacora2: false,
 });
 
 const GUIONES: Record<Escena, Guion<Estado>> = {
-  dividir: {
-    dur: 13000,
-    inicio: base,
+  espacio: {
+    dur: 11500,
+    inicio: () => ({ ...base(), selector: true }),
     pasos: [
-      [500, (s) => nota(s, "08:00", "pasos.todo")],
+      [500, (s) => nota(s, "07:58", "pasos.entra")],
       [
-        1700,
+        1400,
         (s) => {
-          s.agrupado = true;
-          s.zonas = 1;
-          nota(s, "08:01", "pasos.norte", "brand");
+          s.resaltada = "global";
         },
       ],
       [
-        2600,
+        2300,
         (s) => {
-          s.zonas = 2;
-          nota(s, "08:01", "pasos.centro", "brand");
+          s.resaltada = "uio";
         },
       ],
       [
-        3500,
+        3200,
         (s) => {
-          s.zonas = 3;
-          nota(s, "08:02", "pasos.sur", "brand");
+          s.resaltada = "gye";
         },
       ],
       [
-        5000,
+        4200,
         (s) => {
-          s.hora = "08:05";
-          s.activa = "norte";
-          nota(s, "08:05", "pasos.filtra");
+          s.selector = false;
+          s.espacio = "gye";
+          s.camara = "gye";
+          s.hora = "07:59";
+          nota(s, "07:59", "pasos.elige", "brand");
         },
       ],
+      [5800, (s) => nota(s, "07:59", "pasos.color", "ok")],
+      [7200, (s) => nota(s, "08:00", "pasos.acotado")],
       [
-        7200,
+        8400,
         (s) => {
-          s.activa = "sur";
-          nota(s, "08:05", "pasos.filtraSur");
-        },
-      ],
-      [
-        9200,
-        (s) => {
-          s.activa = "todas";
-          nota(s, "08:06", "pasos.todas", "ok");
-        },
-      ],
-      [
-        10000,
-        (s) => {
-          s.resultado = "resultado.dividir";
+          s.resultado = "resultado.espacio";
         },
       ],
     ],
   },
-  equipos: {
-    dur: 12500,
-    inicio: () => ({ ...base(), agrupado: true, zonas: 3, hora: "22:30" }),
+  mapa: {
+    dur: 13000,
+    inicio: () => ({ ...base(), comparativa: true, hora: "10:15" }),
     pasos: [
+      [600, (s) => nota(s, "10:15", "pasos.global")],
       [
-        600,
+        2000,
         (s) => {
-          s.supervisor = true;
-          s.activa = "norte";
-          nota(s, "22:30", "pasos.entra");
+          s.camara = "uio";
+          nota(s, "10:15", "pasos.quito", "brand");
         },
       ],
-      [2000, (s) => nota(s, "22:30", "pasos.soloSuya", "brand")],
       [
-        3600,
+        4200,
+        (s) => {
+          s.camara = "gye";
+          nota(s, "10:16", "pasos.guayaquil", "brand");
+        },
+      ],
+      [
+        6400,
+        (s) => {
+          s.camara = "global";
+          nota(s, "10:16", "pasos.compara", "ok");
+        },
+      ],
+      [
+        8600,
+        (s) => {
+          s.resultado = "resultado.mapa";
+        },
+      ],
+    ],
+  },
+  gerente: {
+    dur: 13000,
+    inicio: () => ({
+      ...base(),
+      espacio: "gye",
+      camara: "gye",
+      gerente: true,
+      hora: "22:30",
+    }),
+    pasos: [
+      [600, (s) => nota(s, "22:30", "pasos.gerente")],
+      [
+        2000,
         (s) => {
           s.hora = "22:41";
           s.alerta = "abierta";
-          nota(s, "22:41", "pasos.alerta", "warn");
+          nota(s, "22:41", "pasos.aviso", "warn");
         },
       ],
       [
-        6000,
+        4000,
         (s) => {
-          s.hora = "22:48";
+          s.hora = "22:47";
           s.alerta = "resuelta";
-          nota(s, "22:48", "pasos.resuelta", "ok");
+          nota(s, "22:47", "pasos.resuelve", "ok");
         },
       ],
       [
-        7600,
+        5600,
         (s) => {
-          s.informe = true;
-          nota(s, "22:50", "pasos.informe");
+          s.pago = "intento";
         },
       ],
       [
-        9000,
+        6400,
         (s) => {
-          s.resultado = "resultado.equipos";
+          s.pago = "bloqueado";
+          nota(s, "22:50", "pasos.noPaga", "bad");
+        },
+      ],
+      [
+        8000,
+        (s) => {
+          s.bitacora2 = true;
+          nota(s, "22:50", "pasos.bitacora", "brand");
+        },
+      ],
+      [
+        9400,
+        (s) => {
+          s.resultado = "resultado.gerente";
         },
       ],
     ],
@@ -179,31 +218,28 @@ const GUIONES: Record<Escena, Guion<Estado>> = {
 };
 
 function Escenario({ s, T }: PropsDeEscenario<Estado, Escena>) {
-  const zona = s.activa === "todas" ? null : ZONAS[s.activa];
-  /* Acercar el mapa a la sucursal: llevar su centro al centro y ampliar. */
+  const zona = s.camara === "global" ? null : ZONAS[s.camara];
   const zoom = zona
-    ? `scale(1.45) translate(${50 - (zona.x + zona.w / 2)}%, ${50 - (zona.y + zona.h / 2)}%)`
+    ? `scale(1.5) translate(${50 - (zona.x + zona.w / 2)}%, ${50 - (zona.y + zona.h / 2)}%)`
     : "none";
-  const cifras = CIFRAS[s.activa];
-  const equipo =
-    s.activa === "todas"
-      ? ["norte", "centro", "sur"].map((z) => `equipo.jefe.${z}`)
-      : [1, 2, 3].map((n) => `equipo.${s.activa}${n}`);
+  const cifras = CIFRAS[s.espacio === "global" ? s.camara : s.espacio];
+  const nombre = (e: Espacio) => T(`espacios.${e}`);
 
   return (
     <div className="dm-suc">
+      {/* El mapa: uno solo, la cámara viaja */}
       <div className="dm-suc-mapa">
         <div className="dm-zoom" style={{ transform: zoom }}>
           <Plano />
-          {ORDEN_ZONAS.map((z, i) => (
+          {(["uio", "gye"] as const).map((z) => (
             <div
               key={z}
               className="dm-zona"
               data-apagada={
-                s.activa !== "todas" && s.activa !== z ? "" : undefined
+                s.espacio !== "global" && s.espacio !== z ? "" : undefined
               }
-              data-ve={s.zonas > i ? "" : undefined}
-              data-z={z}
+              data-ve=""
+              data-z={z === "uio" ? "norte" : "sur"}
               style={{
                 left: `${ZONAS[z].x}%`,
                 top: `${ZONAS[z].y}%`,
@@ -211,7 +247,7 @@ function Escenario({ s, T }: PropsDeEscenario<Estado, Escena>) {
                 height: `${ZONAS[z].h}%`,
               }}
             >
-              <span className="dm-zona-nombre">{T(`chips.${z}`)}</span>
+              <span className="dm-zona-nombre">{nombre(z)}</span>
             </div>
           ))}
           {PUESTOS.map((p, i) => (
@@ -222,102 +258,191 @@ function Escenario({ s, T }: PropsDeEscenario<Estado, Escena>) {
                 s.alerta === "abierta" && i === PUESTO_ALERTA ? "" : undefined
               }
               data-apagado={
-                s.activa !== "todas" && s.activa !== p.z ? "" : undefined
+                s.espacio !== "global" && s.espacio !== p.z ? "" : undefined
               }
-              data-color={
-                s.agrupado && s.zonas > ORDEN_ZONAS.indexOf(p.z)
-                  ? ""
-                  : undefined
-              }
-              data-z={p.z}
+              data-color=""
+              data-z={p.z === "uio" ? "norte" : "sur"}
               style={{ left: `${p.x}%`, top: `${p.y}%` }}
+            />
+          ))}
+        </div>
+        {/* Los puntos de las paradas, como en el panel de verdad */}
+        <div className="dm-paradas">
+          {(["global", "uio", "gye"] as const).map((e) => (
+            <span
+              key={e}
+              data-on={s.camara === e ? "" : undefined}
+              style={{ background: s.camara === e ? COLOR[e] : undefined }}
             />
           ))}
         </div>
       </div>
 
+      {/* El panel del CRM */}
       <div className="dm-panel dm-suc-panel">
-        <div className="dm-panel-cab">
-          <span>{T("panel")}</span>
-          {s.supervisor && (
-            <span className="dm-sello">
-              <Lock className="h-3 w-3" /> {T("supervisor")}
+        {/* La barra: el espacio y su color */}
+        <div className="dm-espacio-barra" style={{ borderColor: COLOR[s.espacio] }}>
+          {s.espacio === "global" ? (
+            <Globe2 className="h-3.5 w-3.5" />
+          ) : (
+            <span
+              className="dm-punto"
+              style={{ background: COLOR[s.espacio] }}
+            />
+          )}
+          <Cambia k={s.espacio}>{nombre(s.espacio)}</Cambia>
+          {s.espacio === "uio" && (
+            <span className="dm-sello">{T("principal")}</span>
+          )}
+          {s.gerente && (
+            <span className="dm-sello" data-tono="ok">
+              {T("gerente")}
             </span>
           )}
         </div>
-        <div className="dm-chips">
-          {(["todas", ...ORDEN_ZONAS] as Vista[]).map((v, i) => (
-            <span
-              key={v}
-              className="dm-chip"
-              data-off={
-                (s.supervisor && v !== "norte") ||
-                (v !== "todas" && s.zonas < i)
-                  ? ""
-                  : undefined
-              }
-              data-on={s.activa === v ? "" : undefined}
-            >
-              {T(`chips.${v}`)}
-            </span>
-          ))}
-        </div>
+
         <div className="dm-kpis">
-          <div className="dm-kpi">
-            <div className="l">{T("kpi.puestos")}</div>
-            <div className="v">
-              <Cambia k={`p-${s.activa}`}>{cifras.puestos}</Cambia>
-            </div>
-          </div>
-          <div className="dm-kpi">
-            <div className="l">{T("kpi.vigilantes")}</div>
-            <div className="v">
-              <Cambia k={`v-${s.activa}`}>{cifras.vigilantes}</Cambia>
-            </div>
-          </div>
           <div className="dm-kpi">
             <div className="l">{T("kpi.cobertura")}</div>
             <div className="v">
-              <Cambia k={`c-${s.activa}`}>{cifras.cobertura}%</Cambia>
+              <Cambia k={`c-${s.espacio}-${s.camara}`}>
+                {cifras.cobertura}%
+              </Cambia>
+            </div>
+          </div>
+          <div className="dm-kpi">
+            <div className="l">{T("kpi.enTurno")}</div>
+            <div className="v">
+              <Cambia k={`t-${s.espacio}-${s.camara}`}>{cifras.enTurno}</Cambia>
+            </div>
+          </div>
+          <div className="dm-kpi">
+            <div className="l">{T("kpi.puestos")}</div>
+            <div className="v">
+              <Cambia k={`p-${s.espacio}-${s.camara}`}>{cifras.puestos}</Cambia>
             </div>
           </div>
         </div>
-        <div className="dm-titulito">{T("equipo.titulo")}</div>
-        {equipo.map((k, i) => (
-          <div key={`${s.activa}-${k}`} className="dm-item" data-nuevo="">
-            <span className="dm-av">{T(k).slice(0, 1)}</span>
-            <span className="txt">{T(k)}</span>
-            {i === 0 && s.activa !== "todas" && (
-              <span className="der">{T("equipo.supervisa")}</span>
+
+        {s.comparativa ? (
+          <>
+            <div className="dm-titulito">{T("comparativa")}</div>
+            {(["uio", "gye", "global"] as const).map((e) => (
+              <div
+                key={e}
+                className="dm-item"
+                style={{
+                  fontWeight: e === "global" ? 700 : undefined,
+                  boxShadow:
+                    s.camara === e && e !== "global"
+                      ? `inset 3px 0 0 ${COLOR[e]}`
+                      : undefined,
+                }}
+              >
+                {e === "global" ? (
+                  <Globe2 className="h-3.5 w-3.5" />
+                ) : (
+                  <span className="dm-punto" style={{ background: COLOR[e] }} />
+                )}
+                <span className="txt">
+                  {e === "global" ? T("total") : nombre(e)}
+                </span>
+                <span className="der">
+                  {CIFRAS[e].cobertura}% · {CIFRAS[e].puestos}
+                </span>
+              </div>
+            ))}
+          </>
+        ) : s.gerente ? (
+          <>
+            <div className="dm-titulito">{T("hoy")}</div>
+            {s.alerta === "no" ? (
+              <div className="dm-hueco" />
+            ) : (
+              <div key={s.alerta} className="dm-item" data-nuevo="">
+                <span
+                  className="dm-punto"
+                  data-tono={s.alerta === "abierta" ? "warn" : "ok"}
+                />
+                <span className="txt">
+                  {T(s.alerta === "abierta" ? "alerta" : "alertaResuelta")}
+                </span>
+              </div>
             )}
-          </div>
-        ))}
-        {/* Una fila reservada para la alerta o el informe: siempre ocupa su sitio. */}
-        {s.informe ? (
-          <div className="dm-item" data-nuevo="">
-            <span className="dm-punto" data-tono="brand" />
-            <span className="txt">{T("informe")}</span>
-            <span className="der">PDF</span>
-          </div>
-        ) : s.alerta !== "no" ? (
-          <div key={s.alerta} className="dm-item" data-nuevo="">
-            <span
-              className="dm-punto"
-              data-tono={s.alerta === "abierta" ? "warn" : "ok"}
-            />
-            <span className="txt">
-              {T(s.alerta === "abierta" ? "alerta" : "alertaResuelta")}
-            </span>
-          </div>
+            {s.pago === "no" ? (
+              <div className="dm-hueco" />
+            ) : (
+              <div
+                className="dm-item"
+                data-nuevo=""
+                style={{
+                  color: s.pago === "bloqueado" ? "var(--bad)" : undefined,
+                }}
+              >
+                <Lock className="h-3.5 w-3.5" />
+                <span className="txt">
+                  {T(s.pago === "bloqueado" ? "pagoBloqueado" : "pagoIntento")}
+                </span>
+              </div>
+            )}
+            {s.bitacora2 ? (
+              <div className="dm-item" data-nuevo="">
+                <ScrollText className="h-3.5 w-3.5" />
+                <span className="txt">{T("enBitacora")}</span>
+                <span className="der">22:50</span>
+              </div>
+            ) : (
+              <div className="dm-hueco" />
+            )}
+          </>
         ) : (
-          <div className="dm-hueco" />
+          <>
+            <div className="dm-titulito">{T("hoy")}</div>
+            <div className="dm-item">
+              <Building2 className="h-3.5 w-3.5" />
+              <span className="txt">
+                {T(s.espacio === "global" ? "soloGlobal" : "soloSuya")}
+              </span>
+            </div>
+            <div className="dm-hueco" />
+            <div className="dm-hueco" />
+          </>
         )}
+      </div>
+
+      {/* «¿Dónde trabajas ahora?» al entrar */}
+      <div className="dm-selector" data-ve={s.selector ? "" : undefined}>
+        <div className="dm-selector-caja">
+          <div className="dm-selector-t">{T("selector")}</div>
+          {(["global", "uio", "gye"] as const).map((e) => (
+            <div
+              key={e}
+              className="dm-selector-op"
+              data-on={s.resaltada === e ? "" : undefined}
+              style={{
+                borderLeftColor: COLOR[e],
+                boxShadow:
+                  s.resaltada === e ? `inset 0 0 0 2px ${COLOR[e]}` : undefined,
+              }}
+            >
+              {e === "global" ? (
+                <Globe2 className="h-4 w-4" />
+              ) : (
+                <Building2 className="h-4 w-4" style={{ color: COLOR[e] }} />
+              )}
+              <span className="txt">{nombre(e)}</span>
+              {e === "uio" && (
+                <span className="dm-sello">{T("principal")}</span>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-const ORDEN: Escena[] = ["dividir", "equipos"];
+const ORDEN: Escena[] = ["espacio", "mapa", "gerente"];
 
 export default function DemoSucursales() {
   return (

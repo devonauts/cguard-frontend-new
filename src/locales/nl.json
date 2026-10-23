@@ -19783,60 +19783,52 @@
     "demos": {
       "sucursales": {
         "escenas": {
-          "dividir": "Verdeel je operatie",
-          "equipos": "Elk team het zijne"
+          "espacio": "Kies waar je werkt",
+          "mapa": "De reizende kaart",
+          "gerente": "De vestigingsmanager"
         },
-        "panel": "Vestigingen",
-        "supervisor": "Andrés · Noord",
-        "chips": {
-          "todas": "Alle",
-          "norte": "Noord",
-          "centro": "Centrum",
-          "sur": "Zuid"
+        "espacios": {
+          "global": "Totaaloverzicht",
+          "uio": "Quito",
+          "gye": "Guayaquil"
         },
+        "principal": "Hoofdkantoor",
+        "gerente": "Manager",
         "kpi": {
-          "puestos": "Posten",
-          "vigilantes": "In dienst",
-          "cobertura": "Dekking"
+          "cobertura": "Dekking",
+          "enTurno": "In dienst",
+          "puestos": "Posten"
         },
-        "equipo": {
-          "titulo": "Team",
-          "supervisa": "Leidinggevende",
-          "jefe": {
-            "norte": "Andrés Pólit · Noord",
-            "centro": "Ricardo Beltrán · Centrum",
-            "sur": "Paola Vera · Zuid"
-          },
-          "norte1": "Andrés Pólit",
-          "norte2": "Luis Andrade",
-          "norte3": "Carla Ruiz",
-          "centro1": "Ricardo Beltrán",
-          "centro2": "Ana Torres",
-          "centro3": "Jorge Mena",
-          "sur1": "Paola Vera",
-          "sur2": "Pedro Gómez",
-          "sur3": "María León"
-        },
-        "alerta": "Ronde te laat · Post Noord 3",
-        "alertaResuelta": "Ronde voltooid · Post Noord 3",
-        "informe": "Rapport oktober · Noord",
+        "comparativa": "Vergelijking",
+        "total": "Hele bedrijf",
+        "hoy": "Vandaag",
+        "alerta": "Ronde te laat · Post GYE 2",
+        "alertaResuelta": "Ronde voltooid · Post GYE 2",
+        "pagoIntento": "Abonnement betalen…",
+        "pagoBloqueado": "Dit regelt het hoofdkantoor",
+        "enBitacora": "Andrés probeerde te betalen · in het logboek",
+        "soloGlobal": "Alle vestigingen samen",
+        "soloSuya": "Alleen Guayaquil",
+        "selector": "Waar werk je nu?",
         "pasos": {
-          "todo": "Je operatie: 24 posten op één kaart",
-          "norte": "Je maakt de vestiging Noord",
-          "centro": "Dan Centrum",
-          "sur": "En Zuid: elke post in de zijne",
-          "filtra": "Je kiest Noord: kaart en cijfers alleen van daar",
-          "filtraSur": "Met één tik naar Zuid",
-          "todas": "En weer het hele bedrijf in beeld",
-          "entra": "Andrés, leidinggevende Noord, logt in op het CRM",
-          "soloSuya": "Hij ziet alleen zijn vestiging: posten, mensen en meldingen",
-          "alerta": "Een ronde te laat in Noord: de melding gaat naar hem",
-          "resuelta": "Hij lost het op zonder de rest te storen",
-          "informe": "Maandrapport per vestiging"
+          "entra": "Je logt in en kiest waar je werkt",
+          "elige": "Je gaat Guayaquil in",
+          "color": "De balk krijgt de kleur van Guayaquil",
+          "acotado": "Lijsten, kaart en rapporten: alleen Guayaquil",
+          "global": "Je begint in het totaaloverzicht",
+          "quito": "Veeg: de kaart vliegt naar Quito",
+          "guayaquil": "Nog eens vegen: Guayaquil",
+          "compara": "En vergelijk de vestigingen in één oogopslag",
+          "gerente": "Andrés, manager Guayaquil, logt in",
+          "aviso": "Een te late ronde in Guayaquil: de melding gaat naar hem",
+          "resuelve": "Hij lost het op in zijn vestiging",
+          "noPaga": "Hij wil betalen: dat doet het hoofdkantoor",
+          "bitacora": "Alles wat hij doet staat in het logboek"
         },
         "resultado": {
-          "dividir": "Eén bedrijf, meerdere vestigingen, elk met eigen cijfers",
-          "equipos": "Elke leidinggevende ziet en beheert het zijne"
+          "espacio": "Iedereen werkt waar hij hoort",
+          "mapa": "Het hele bedrijf op één kaart, stad voor stad",
+          "gerente": "Een beheerder per vestiging, zonder aan de kas te komen"
         }
       },
       "facial": {

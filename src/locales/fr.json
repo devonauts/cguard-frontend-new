@@ -19783,60 +19783,52 @@
     "demos": {
       "sucursales": {
         "escenas": {
-          "dividir": "Divisez votre activité",
-          "equipos": "Chaque équipe chez soi"
+          "espacio": "Choisir où travailler",
+          "mapa": "La carte qui voyage",
+          "gerente": "Le responsable d’agence"
         },
-        "panel": "Agences",
-        "supervisor": "Andrés · Nord",
-        "chips": {
-          "todas": "Toutes",
-          "norte": "Nord",
-          "centro": "Centre",
-          "sur": "Sud"
+        "espacios": {
+          "global": "Vue globale",
+          "uio": "Quito",
+          "gye": "Guayaquil"
         },
+        "principal": "Siège",
+        "gerente": "Responsable",
         "kpi": {
-          "puestos": "Postes",
-          "vigilantes": "En service",
-          "cobertura": "Couverture"
+          "cobertura": "Couverture",
+          "enTurno": "En service",
+          "puestos": "Postes"
         },
-        "equipo": {
-          "titulo": "Équipe",
-          "supervisa": "Superviseur",
-          "jefe": {
-            "norte": "Andrés Pólit · Nord",
-            "centro": "Ricardo Beltrán · Centre",
-            "sur": "Paola Vera · Sud"
-          },
-          "norte1": "Andrés Pólit",
-          "norte2": "Luis Andrade",
-          "norte3": "Carla Ruiz",
-          "centro1": "Ricardo Beltrán",
-          "centro2": "Ana Torres",
-          "centro3": "Jorge Mena",
-          "sur1": "Paola Vera",
-          "sur2": "Pedro Gómez",
-          "sur3": "María León"
-        },
-        "alerta": "Ronde en retard · Poste Nord 3",
-        "alertaResuelta": "Ronde terminée · Poste Nord 3",
-        "informe": "Rapport d’octobre · Nord",
+        "comparativa": "Comparatif",
+        "total": "Toute l’entreprise",
+        "hoy": "Aujourd’hui",
+        "alerta": "Ronde en retard · Poste GYE 2",
+        "alertaResuelta": "Ronde terminée · Poste GYE 2",
+        "pagoIntento": "Payer l’abonnement…",
+        "pagoBloqueado": "C’est le siège qui s’en charge",
+        "enBitacora": "Andrés a tenté de payer · au journal",
+        "soloGlobal": "Toutes les agences ensemble",
+        "soloSuya": "Guayaquil seulement",
+        "selector": "Où travaillez-vous maintenant ?",
         "pasos": {
-          "todo": "Votre activité : 24 postes sur une seule carte",
-          "norte": "Vous créez l’agence Nord",
-          "centro": "Puis Centre",
-          "sur": "Et Sud : chaque poste dans la sienne",
-          "filtra": "Vous choisissez Nord : carte et chiffres de là seulement",
-          "filtraSur": "Vous passez à Sud d’un geste",
-          "todas": "Et revenez à toute l’entreprise",
-          "entra": "Andrés, superviseur du Nord, se connecte au CRM",
-          "soloSuya": "Il ne voit que son agence : postes, équipe et alertes",
-          "alerta": "Une ronde en retard au Nord : l’alerte lui arrive",
-          "resuelta": "Il la règle sans déranger les autres agences",
-          "informe": "Rapport mensuel par agence"
+          "entra": "Vous vous connectez et choisissez où travailler",
+          "elige": "Vous entrez dans Guayaquil",
+          "color": "La barre prend la couleur de Guayaquil",
+          "acotado": "Listes, carte et rapports : Guayaquil seulement",
+          "global": "Vous démarrez en vue globale",
+          "quito": "Glissez : la carte vole vers Quito",
+          "guayaquil": "Glissez encore : Guayaquil",
+          "compara": "Et comparez les agences d’un coup d’œil",
+          "gerente": "Andrés, responsable de Guayaquil, se connecte",
+          "aviso": "Une ronde en retard à Guayaquil : l’alerte lui arrive",
+          "resuelve": "Il la règle dans son agence",
+          "noPaga": "Il essaie de payer : c’est le siège",
+          "bitacora": "Tout ce qu’il fait est au journal"
         },
         "resultado": {
-          "dividir": "Une entreprise, plusieurs agences, chacune avec ses chiffres",
-          "equipos": "Chaque superviseur voit et répond de son périmètre"
+          "espacio": "Chacun travaille là où il est",
+          "mapa": "Toute l’entreprise sur une carte, ville par ville",
+          "gerente": "Un admin par agence, sans toucher à la caisse"
         }
       },
       "facial": {

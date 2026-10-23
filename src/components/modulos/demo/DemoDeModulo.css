@@ -318,3 +318,29 @@
 @media (prefers-reduced-motion: reduce) {
   .dm *, .dm *::before, .dm *::after { animation: none !important; transition: none !important; }
 }
+
+/* ── SUCURSALES 2.0 (la demo nueva, 2026-10-23) ─────────────────────── */
+.dm-suc { position: relative; }
+.dm-espacio-barra {
+  display: flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px;
+  border: 1px solid var(--hairline); border-bottom-width: 3px; border-radius: 10px;
+  background: var(--float); font-size: 12px; font-weight: 600; transition: border-color 0.5s;
+}
+.dm-paradas { position: absolute; left: 50%; bottom: 10px; z-index: 6; display: flex; gap: 5px; transform: translateX(-50%); }
+.dm-paradas span { width: 6px; height: 6px; border-radius: 999px; background: color-mix(in oklab, var(--ink) 30%, transparent); transition: width 0.4s, background 0.4s; }
+.dm-paradas span[data-on] { width: 18px; }
+.dm-selector {
+  position: absolute; inset: 0; z-index: 15; display: grid; place-items: center; padding: 16px;
+  background: color-mix(in oklab, var(--canvas) 72%, transparent); backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none; transition: opacity 0.5s;
+}
+.dm-selector[data-ve] { opacity: 1; }
+.dm-selector-caja { width: min(320px, 100%); display: grid; gap: 8px; padding: 14px; border: 1px solid var(--hairline); border-radius: 16px; background: var(--float); box-shadow: var(--dm-shadow); }
+.dm-selector-t { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.dm-selector-op {
+  display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px;
+  border: 1px solid var(--hairline); border-left-width: 4px; border-radius: 12px;
+  font-size: 13px; font-weight: 600; transition: box-shadow 0.3s, transform 0.3s;
+}
+.dm-selector-op[data-on] { transform: translateX(3px); }
+.dm-selector-op .txt { flex: 1; }
