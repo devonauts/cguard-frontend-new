@@ -20254,6 +20254,10 @@
       "enRiesgo": "At risk",
       "incidentes": "Incidents",
       "total": "Whole company"
+    },
+    "etiqueta": {
+      "empresa": "Company",
+      "columna": "Branch"
     }
   },
   "soporte": {

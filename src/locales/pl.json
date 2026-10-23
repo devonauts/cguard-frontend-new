@@ -20538,6 +20538,10 @@
       "enRiesgo": "Zagrożone",
       "incidentes": "Incydenty",
       "total": "Cała firma"
+    },
+    "etiqueta": {
+      "empresa": "Firma",
+      "columna": "Oddział"
     }
   },
   "soporte": {

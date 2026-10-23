@@ -180,7 +180,8 @@ const fmtD = (iso: string) => {
 
   return Number.isNaN(d.getTime())
     ? ""
-    : d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    : d.toLocaleDateString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -207,7 +208,8 @@ function ActividadChart({
       />
     );
   const dia = (iso: string) =>
-    new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    new Date(iso).toLocaleDateString(localeActual(), {
+      timeZone: zonaDeLaEmpresa(),
       day: "2-digit",
       month: "short",
     });
@@ -360,7 +362,8 @@ export default function ClientReports({
   const reportsTotal = data?.reportsTotal ?? 0;
   const pageCount = Math.max(1, Math.ceil(reportsTotal / perPage));
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    ? new Date(data.updatedAt).toLocaleString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         hour: "2-digit",
@@ -425,7 +428,7 @@ export default function ClientReports({
     if (
       !(await confirmDialog({
         message: t("ui.ClientDocuments.eliminarConfirm", {
-          defaultValue: "¿Eliminar \"{{name}}\"?",
+          defaultValue: '¿Eliminar "{{name}}"?',
           name: s.name,
         }),
         tone: "danger",
@@ -683,7 +686,10 @@ export default function ClientReports({
               <StatusBadge dot={false} tone="neutral">
                 {t("ui.ClientReports.clienteNombre", {
                   defaultValue: "Cliente: {{name}}",
-                  name: clientDisplayName(client, t("comun.cliente", "Cliente")),
+                  name: clientDisplayName(
+                    client,
+                    t("comun.cliente", "Cliente"),
+                  ),
                 })}
               </StatusBadge>
             </div>
@@ -737,11 +743,15 @@ export default function ClientReports({
                 style={{ color: "var(--brand-text)" }}
                 onClick={() => setSchedOpen(true)}
               >
-                <Plus className="h-3.5 w-3.5" /> {t("ui.ClientReports.programar", "Programar")}
+                <Plus className="h-3.5 w-3.5" />{" "}
+                {t("ui.ClientReports.programar", "Programar")}
               </button>
             }
             icon={<CalendarClock className="h-4 w-4" />}
-            title={t("ui.ClientReports.reportesProgramados", "Reportes programados")}
+            title={t(
+              "ui.ClientReports.reportesProgramados",
+              "Reportes programados",
+            )}
           >
             {programados.length === 0 ? (
               <EmptyState

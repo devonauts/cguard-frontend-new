@@ -59,7 +59,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa, soloFechaCivil} from "@/lib/horaDeLaEmpresa";
+import { zonaDeLaEmpresa, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 // ── Shape of GET /client-account/:id/contract (clientAccountContract.ts) ──
 interface ContractTerms {
   id: string;
@@ -355,7 +355,9 @@ export default function ClientContract({ client }: { client: Client }) {
     setSaving(true);
     try {
       await clientService.updateClientContract(client.id, form);
-      toast.success(t("ui.ClientContract.contratoActualizado", "Contrato actualizado"));
+      toast.success(
+        t("ui.ClientContract.contratoActualizado", "Contrato actualizado"),
+      );
       setEditOpen(false);
       await load();
     } catch {
@@ -415,7 +417,7 @@ export default function ClientContract({ client }: { client: Client }) {
     if (
       !(await confirmDialog({
         message: t("ui.ClientContract.eliminarElServicioConfirm", {
-          defaultValue: "¿Eliminar el servicio \"{{name}}\"?",
+          defaultValue: '¿Eliminar el servicio "{{name}}"?',
           name: s.name,
         }),
         tone: "danger",
@@ -681,12 +683,17 @@ export default function ClientContract({ client }: { client: Client }) {
                   <span className="flex min-w-0 items-center gap-2 text-sm text-foreground">
                     <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
                     <span className="truncate">
-                      {d.name || d.filename || t("ui.ClientContract.documento", "Documento")}
+                      {d.name ||
+                        d.filename ||
+                        t("ui.ClientContract.documento", "Documento")}
                     </span>
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
                     {d.createdAt
-                      ? new Date(d.createdAt).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+                      ? new Date(d.createdAt).toLocaleDateString(
+                          localeActual(),
+                          { timeZone: zonaDeLaEmpresa() },
+                        )
                       : ""}
                   </span>
                 </a>
@@ -705,7 +712,10 @@ export default function ClientContract({ client }: { client: Client }) {
           </Button>
         }
         icon={<ClipboardCheck className="h-4 w-4" />}
-        title={t("ui.ClientContract.serviciosContratados", "Servicios contratados")}
+        title={t(
+          "ui.ClientContract.serviciosContratados",
+          "Servicios contratados",
+        )}
       >
         {services.length === 0 ? (
           <EmptyState
@@ -728,7 +738,9 @@ export default function ClientContract({ client }: { client: Client }) {
               <Th>{t("ui.ClientContract.servicio", "Servicio")}</Th>
               <Th>{t("ui.ClientContract.descripcion", "Descripción")}</Th>
               <Th>{t("ui.ClientContract.unidadCol", "Unidad")}</Th>
-              <Th align="right">{t("ui.ClientContract.contratado", "Contratado")}</Th>
+              <Th align="right">
+                {t("ui.ClientContract.contratado", "Contratado")}
+              </Th>
               <Th align="right">
                 {t("ui.ClientContract.utilizadoMes", "Utilizado (mes)")}
               </Th>
@@ -842,7 +854,10 @@ export default function ClientContract({ client }: { client: Client }) {
         <StatCard
           hint={t("ui.ClientContract.segunElContrato", "Según el contrato")}
           icon={<Clock className="h-4 w-4" />}
-          label={t("ui.ClientContract.horasContratadasMes", "Horas contratadas / mes")}
+          label={t(
+            "ui.ClientContract.horasContratadasMes",
+            "Horas contratadas / mes",
+          )}
           value={
             derived.hoursContracted != null
               ? `${derived.hoursContracted.toLocaleString(localeActual())} h`
@@ -852,17 +867,29 @@ export default function ClientContract({ client }: { client: Client }) {
         <StatCard
           hint={t("ui.ClientContract.deTurnosReales", "De turnos reales")}
           icon={<Timer className="h-4 w-4" />}
-          label={t("ui.ClientContract.horasUtilizadasMes", "Horas utilizadas (mes)")}
+          label={t(
+            "ui.ClientContract.horasUtilizadasMes",
+            "Horas utilizadas (mes)",
+          )}
           value={`${(derived.hoursUsed || 0).toLocaleString(localeActual())} h`}
         />
         <StatCard
           accent={diff != null && diff < 0 ? "red" : "green"}
           hint={
             diff == null
-              ? t("ui.ClientContract.defineHorasContratadas", "Define horas contratadas")
+              ? t(
+                  "ui.ClientContract.defineHorasContratadas",
+                  "Define horas contratadas",
+                )
               : diff < 0
-                ? t("ui.ClientContract.porDebajoDeLoContratado", "Por debajo de lo contratado")
-                : t("ui.ClientContract.dentroSobreLoContratado", "Dentro / sobre lo contratado")
+                ? t(
+                    "ui.ClientContract.porDebajoDeLoContratado",
+                    "Por debajo de lo contratado",
+                  )
+                : t(
+                    "ui.ClientContract.dentroSobreLoContratado",
+                    "Dentro / sobre lo contratado",
+                  )
           }
           icon={<Gauge className="h-4 w-4" />}
           label={t("ui.ClientContract.diferencia", "Diferencia")}
@@ -924,7 +951,10 @@ export default function ClientContract({ client }: { client: Client }) {
             />
             <SlaCell
               icon={<FileText className="h-4 w-4" />}
-              label={t("ui.ClientContract.reportesEntregados", "Reportes entregados")}
+              label={t(
+                "ui.ClientContract.reportesEntregados",
+                "Reportes entregados",
+              )}
               suffix="%"
               value={c.slaReportsTarget}
             />
@@ -1073,7 +1103,10 @@ export default function ClientContract({ client }: { client: Client }) {
           <LabeledField label={t("ui.ClientContract.tipoDeContrato")}>
             <input
               className={FIELD_CLS}
-              placeholder={t("ui.ClientContract.phServicioIntegral", "Servicio integral")}
+              placeholder={t(
+                "ui.ClientContract.phServicioIntegral",
+                "Servicio integral",
+              )}
               value={form.contractType}
               onChange={(e) =>
                 setForm({ ...form, contractType: e.target.value })
@@ -1163,7 +1196,10 @@ export default function ClientContract({ client }: { client: Client }) {
             />
           </LabeledField>
           <LabeledField
-            label={t("ui.ClientContract.horasContratadasMes", "Horas contratadas / mes")}
+            label={t(
+              "ui.ClientContract.horasContratadasMes",
+              "Horas contratadas / mes",
+            )}
           >
             <input
               className={FIELD_CLS}
@@ -1225,7 +1261,9 @@ export default function ClientContract({ client }: { client: Client }) {
             />
           </LabeledField>
           <div className="sm:col-span-2 mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <LabeledField label={t("ui.ClientContract.slaUptimePct", "SLA uptime (%)")}>
+            <LabeledField
+              label={t("ui.ClientContract.slaUptimePct", "SLA uptime (%)")}
+            >
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1235,7 +1273,9 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label={t("ui.ClientContract.respuestaMin", "Respuesta (min)")}>
+            <LabeledField
+              label={t("ui.ClientContract.respuestaMin", "Respuesta (min)")}
+            >
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1245,7 +1285,9 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label={t("ui.ClientContract.rondasPct", "Rondas (%)")}>
+            <LabeledField
+              label={t("ui.ClientContract.rondasPct", "Rondas (%)")}
+            >
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1255,7 +1297,9 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label={t("ui.ClientContract.reportesPct", "Reportes (%)")}>
+            <LabeledField
+              label={t("ui.ClientContract.reportesPct", "Reportes (%)")}
+            >
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1368,7 +1412,10 @@ export default function ClientContract({ client }: { client: Client }) {
               />
             </LabeledField>
             <LabeledField
-              label={t("ui.ClientContract.cantidadContratada", "Cantidad contratada")}
+              label={t(
+                "ui.ClientContract.cantidadContratada",
+                "Cantidad contratada",
+              )}
             >
               <input
                 className={FIELD_CLS}
@@ -1383,7 +1430,9 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label={t("ui.ClientContract.objetivoSlaPct", "Objetivo SLA (%)")}>
+            <LabeledField
+              label={t("ui.ClientContract.objetivoSlaPct", "Objetivo SLA (%)")}
+            >
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1422,7 +1471,10 @@ export default function ClientContract({ client }: { client: Client }) {
       >
         {renForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <LabeledField full label={t("ui.ClientContract.periodo", "Periodo")}>
+            <LabeledField
+              full
+              label={t("ui.ClientContract.periodo", "Periodo")}
+            >
               <input
                 className={FIELD_CLS}
                 placeholder={t("ui.ClientContract.actualAnterior")}
@@ -1511,7 +1563,10 @@ function SlaCell({
       </div>
       {actual != null && (
         <div className="text-xs" style={{ color: "var(--ink-faint)" }}>
-          {t("ui.ClientContract.realPct", { defaultValue: "Real: {{pct}}%", pct: actual })}
+          {t("ui.ClientContract.realPct", {
+            defaultValue: "Real: {{pct}}%",
+            pct: actual,
+          })}
         </div>
       )}
     </div>

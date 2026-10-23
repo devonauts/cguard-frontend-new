@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
 import type { Client } from "@/types/client";
-import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
-import { clientService } from "@/lib/api/clientService";
+
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -13,6 +12,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+
+import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
+import { clientService } from "@/lib/api/clientService";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { EmptyState, Modal } from "@/components/kit";
@@ -56,9 +58,11 @@ export default function ClientContacts({
 
   useEffect(() => {
     let mounted = true;
+
     async function loadContacts() {
       if (!client || !client.id) {
         setContacts(initial);
+
         return;
       }
 
@@ -67,8 +71,10 @@ export default function ClientContacts({
           limit: 9999,
           offset: 0,
         });
+
         if (!mounted) return;
         const rows = Array.isArray(resp?.rows) ? resp.rows : [];
+
         setContacts(rows);
         console.debug("[ClientContacts] loaded contacts", client.id, {
           count: rows.length,
@@ -84,6 +90,7 @@ export default function ClientContacts({
     }
 
     loadContacts();
+
     return () => {
       mounted = false;
     };
@@ -115,6 +122,7 @@ export default function ClientContacts({
 
   useEffect(() => {
     let mounted = true;
+
     async function loadPostSites() {
       if (!client || !client.id) {
         setPostSites(
@@ -131,6 +139,7 @@ export default function ClientContacts({
             }),
           ),
         );
+
         return;
       }
 
@@ -139,6 +148,7 @@ export default function ClientContacts({
           limit: 9999,
           offset: 0,
         });
+
         if (!mounted) return;
         const rows: PostSiteRaw[] = Array.isArray(resp?.rows) ? resp.rows : [];
         const normalized = rows.map((r: PostSiteRaw) => ({
@@ -152,6 +162,7 @@ export default function ClientContacts({
             String(r.id),
           raw: r,
         }));
+
         setPostSites(normalized);
         console.debug("[ClientContacts] loaded postSites", client.id, {
           count: normalized.length,
@@ -181,6 +192,7 @@ export default function ClientContacts({
     }
 
     loadPostSites();
+
     return () => {
       mounted = false;
     };
@@ -195,6 +207,7 @@ export default function ClientContacts({
 
   const isValidEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     return re.test(email);
   };
 
@@ -207,12 +220,15 @@ export default function ClientContacts({
             defaultCountry: defaultCountry as any,
           })
         : parsePhoneNumberFromString(String(phone));
+
       if (p && p.isValid()) return true;
       // fallback: try without defaultCountry
       if (defaultCountry) {
         const p2 = parsePhoneNumberFromString(String(phone));
+
         return p2 ? p2.isValid() : false;
       }
+
       return false;
     } catch (e) {
       return false;
@@ -228,7 +244,9 @@ export default function ClientContacts({
 
   const filtered = useMemo(() => {
     const q = (query || "").toLowerCase().trim();
+
     if (!q) return contacts;
+
     return contacts.filter(
       (c) =>
         (c.name || "").toLowerCase().includes(q) ||
@@ -242,6 +260,7 @@ export default function ClientContacts({
 
   // compact mode for narrow viewports (<= 768px) to avoid horizontal scroll
   const [isCompact, setIsCompact] = useState<boolean>(false);
+
   useEffect(() => {
     function updateCompact() {
       try {
@@ -253,6 +272,7 @@ export default function ClientContacts({
     }
     updateCompact();
     window.addEventListener("resize", updateCompact);
+
     return () => window.removeEventListener("resize", updateCompact);
   }, []);
 
@@ -271,6 +291,7 @@ export default function ClientContacts({
 
     if (field === "email") {
       const v = String(value || "");
+
       setErrors((prev) => ({
         ...prev,
         email:
@@ -282,6 +303,7 @@ export default function ClientContacts({
 
     if (field === "mobile") {
       const v = String(value || "");
+
       setErrors((prev) => ({
         ...prev,
         mobile:
@@ -293,6 +315,7 @@ export default function ClientContacts({
 
     if (field === "name") {
       const v = String(value || "");
+
       setErrors((prev) => ({
         ...prev,
         name: v
@@ -309,6 +332,7 @@ export default function ClientContacts({
     let mobileVal = String(form.mobile || "").trim();
 
     const nextErrors: any = {};
+
     if (!nameVal)
       nextErrors.name = t(
         "clients.contacts.errors.requiredName",
@@ -325,6 +349,7 @@ export default function ClientContacts({
         const parsed = parsePhoneNumberFromString(mobileVal, {
           defaultCountry: (phoneCountry || undefined) as any,
         });
+
         if (parsed && parsed.isValid()) {
           mobileVal = parsed.format("E.164");
         }
@@ -340,6 +365,7 @@ export default function ClientContacts({
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors((prev) => ({ ...prev, ...nextErrors }));
+
       return;
     }
 
@@ -369,6 +395,7 @@ export default function ClientContacts({
             payload,
           );
           const updated = resp && resp.data ? resp.data : resp;
+
           setContacts((prev) =>
             prev.map((c) => (c.id === updated.id ? updated : c)),
           );
@@ -378,6 +405,7 @@ export default function ClientContacts({
               : resp && resp.message
                 ? resp.message
                 : t("clients.contacts.contactUpdated");
+
           toast.success(msg);
         } else {
           // local fallback
@@ -394,9 +422,11 @@ export default function ClientContacts({
           id: String(Date.now()),
           ...payload,
         };
+
         if (client && client.id) {
           const resp = await clientService.createClientContact(client.id, temp);
           const created = resp && resp.data ? resp.data : resp;
+
           setContacts((prev) => [created, ...prev]);
           const msg =
             resp && resp.messageCode
@@ -404,6 +434,7 @@ export default function ClientContacts({
               : resp && resp.message
                 ? resp.message
                 : t("clients.contacts.contactCreated");
+
           toast.success(msg);
         } else {
           setContacts((prev) => [temp, ...prev]);
@@ -468,6 +499,7 @@ export default function ClientContacts({
 
     // direct object
     const ps = contact.postSite;
+
     if (ps && typeof ps === "object") {
       return (
         ps.name ||
@@ -486,11 +518,14 @@ export default function ClientContacts({
       const matchById = (postSites || []).find(
         (p) => String(p.id) === String(ps),
       );
+
       if (matchById) return matchById.label;
       const matchByLabel = (postSites || []).find(
         (p) => String(p.label) === String(ps),
       );
+
       if (matchByLabel) return matchByLabel.label;
+
       // fallback to the raw string (might already be a readable name)
       return ps;
     }
@@ -501,7 +536,9 @@ export default function ClientContacts({
       const match = (postSites || []).find(
         (p) => String(p.id) === String(contact.postSiteId),
       );
+
       if (match) return match.label;
+
       return contact.postSiteId;
     }
     if (
@@ -513,6 +550,7 @@ export default function ClientContacts({
       const matches = (postSites || []).filter((p) =>
         ids.includes(String(p.id)),
       );
+
       if (matches.length) return matches.map((m) => m.label).join(", ");
     }
 
@@ -523,6 +561,7 @@ export default function ClientContacts({
     try {
       if (client && client.id) {
         const resp = await clientService.destroyClientContact(client.id, id);
+
         setContacts((prev) => prev.filter((c) => c.id !== id));
         setSelectedIds((prev) => prev.filter((x) => x !== id));
         setOpenMenuId(null);
@@ -532,6 +571,7 @@ export default function ClientContacts({
             : resp && resp.message
               ? resp.message
               : t("clients.contacts.contactDeleted");
+
         toast.success(msg);
       } else {
         setContacts((prev) => prev.filter((c) => c.id !== id));
@@ -556,12 +596,14 @@ export default function ClientContacts({
 
   async function deleteSelected(ids?: string[]) {
     const toDelete = Array.isArray(ids) && ids.length > 0 ? ids : selectedIds;
+
     if (!toDelete || toDelete.length === 0) return;
 
     try {
       if (client && client.id) {
         // delete sequentially to keep it simple
         let lastResp: any = null;
+
         for (const id of toDelete) {
           lastResp = await clientService.destroyClientContact(client.id, id);
         }
@@ -571,6 +613,7 @@ export default function ClientContacts({
             : lastResp && lastResp.message
               ? lastResp.message
               : t("clients.contacts.contactDeleted");
+
         toast.success(msg);
       }
     } catch (err) {
@@ -592,6 +635,7 @@ export default function ClientContacts({
 
   const confirmNames = (confirmDeleteIds || []).map((id) => {
     const found = (contacts || []).find((c) => c.id === id);
+
     return found ? found.name || String(found.id) : String(id);
   });
 
@@ -604,33 +648,33 @@ export default function ClientContacts({
           <div className="flex-shrink-0">
             <div className="relative">
               <button
-                onClick={() => setHeaderMenuOpen((v) => !v)}
                 className="px-3 py-2 border rounded-md inline-flex items-center gap-2 bg-card justify-center"
+                onClick={() => setHeaderMenuOpen((v) => !v)}
               >
                 <span className="text-center">{t("actions.action")}</span>
                 <svg
-                  width="12"
+                  aria-hidden
+                  fill="none"
                   height="12"
                   viewBox="0 0 24 24"
-                  fill="none"
+                  width="12"
                   xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden
                 >
                   <path
                     d="M6 9l6 6 6-6"
                     stroke="currentColor"
-                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    strokeWidth="2"
                   />
                 </svg>
               </button>
               {headerMenuOpen && (
                 <div className="absolute left-0 mt-2 bg-card shadow-lg rounded-md z-20 sm:w-56">
                   <button
-                    onClick={() => setConfirmDeleteIds(selectedIds)}
-                    disabled={selectedIds.length === 0}
                     className={`block w-full px-4 py-2 text-sm text-left hover:bg-muted/30 ${selectedIds.length === 0 ? "text-muted-foreground cursor-not-allowed" : ""}`}
+                    disabled={selectedIds.length === 0}
+                    onClick={() => setConfirmDeleteIds(selectedIds)}
                   >
                     {t("actions.delete")}
                   </button>
@@ -643,49 +687,49 @@ export default function ClientContacts({
             <div className="relative">
               <span className="absolute left-3 top-2 text-muted-foreground pointer-events-none">
                 <svg
-                  width="16"
+                  aria-hidden
+                  fill="none"
                   height="16"
                   viewBox="0 0 24 24"
-                  fill="none"
+                  width="16"
                   xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden
                 >
                   <path
                     d="M21 21l-4.35-4.35"
                     stroke="currentColor"
-                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    strokeWidth="2"
                   />
                   <circle
                     cx="11"
                     cy="11"
                     r="6"
                     stroke="currentColor"
-                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    strokeWidth="2"
                   />
                 </svg>
               </span>
               <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={
-                  t("clients.contacts.searchcontact") || "Buscar contactos..."
-                }
                 aria-label={
                   t("clients.contacts.searchcontact") || "Buscar contactos"
                 }
                 className="w-full min-w-0 h-10 rounded-md border pl-9 pr-3 text-sm"
+                placeholder={
+                  t("clients.contacts.searchcontact") || "Buscar contactos..."
+                }
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
             </div>
           </div>
 
           <div className="flex-shrink-0">
             <button
-              onClick={handleOpenAdd}
               className={`cg-btn-brand cg-focus w-full md:w-auto ${isCompact ? "px-3 py-1" : "px-6 py-2"} flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all`}
+              onClick={handleOpenAdd}
             >
               <Plus size={isCompact ? 14 : 18} />
               <span>
@@ -700,16 +744,17 @@ export default function ClientContacts({
               <tr className="border-b bg-muted/30">
                 <th className="cg-eyebrow px-2 py-2">
                   <input
-                    type="checkbox"
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      if (checked) setSelectedIds(contacts.map((c) => c.id));
-                      else setSelectedIds([]);
-                    }}
                     checked={
                       selectedIds.length === contacts.length &&
                       contacts.length > 0
                     }
+                    type="checkbox"
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+
+                      if (checked) setSelectedIds(contacts.map((c) => c.id));
+                      else setSelectedIds([]);
+                    }}
                   />
                 </th>
                 <th className="cg-eyebrow px-2 py-2">
@@ -724,20 +769,20 @@ export default function ClientContacts({
                 <th className="cg-eyebrow px-2 py-2">
                   {t("clients.contacts.contactPostSites") || "Post Site"}
                 </th>
-                <th className="cg-eyebrow px-2 py-2"></th>
+                <th className="cg-eyebrow px-2 py-2" />
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12">
+                  <td className="px-4 py-12" colSpan={6}>
                     <EmptyState
-                      icon={<Users />}
-                      title={t("clients.empty.title") || "No results found"}
                       description={
                         t("clients.empty.description") ||
                         "We couldn't find any items matching your search."
                       }
+                      icon={<Users />}
+                      title={t("clients.empty.title") || "No results found"}
                     />
                   </td>
                 </tr>
@@ -746,8 +791,8 @@ export default function ClientContacts({
                   <tr key={c.id} className="border-b hover:bg-muted/40">
                     <td className="px-2 py-2.5 text-sm text-foreground">
                       <input
-                        type="checkbox"
                         checked={selectedIds.includes(c.id)}
+                        type="checkbox"
                         onChange={() => toggleSelect(c.id)}
                       />
                     </td>
@@ -766,33 +811,33 @@ export default function ClientContacts({
                     <td key={`actions-${c.id}`} className="text-right pr-4">
                       <div className="relative inline-block">
                         <button
+                          aria-controls={`actions-${c.id}-menu`}
+                          aria-expanded={openMenuId === c.id}
+                          className={`${isCompact ? "p-1" : "p-2"} rounded-full hover:bg-muted focus:outline-none`}
+                          title={t("actions.more", "Acciones")}
                           onClick={() =>
                             setOpenMenuId((prev) =>
                               prev === c.id ? null : c.id,
                             )
                           }
-                          aria-expanded={openMenuId === c.id}
-                          aria-controls={`actions-${c.id}-menu`}
-                          className={`${isCompact ? "p-1" : "p-2"} rounded-full hover:bg-muted focus:outline-none`}
-                          title={t("actions.more", "Acciones")}
                         >
                           <EllipsisVertical size={isCompact ? 14 : 18} />
                         </button>
 
                         {openMenuId === c.id && (
                           <div
-                            id={`actions-${c.id}-menu`}
                             className="absolute right-0 mt-2 w-36 bg-card border rounded-md shadow-lg z-50"
+                            id={`actions-${c.id}-menu`}
                           >
                             <button
+                              aria-label={t("actions.edit")}
+                              className={`w-full flex items-center justify-start gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none`}
+                              title={t("actions.edit")}
                               onClick={() => {
                                 setForm(c);
                                 setShowAdd(true);
                                 setOpenMenuId(null);
                               }}
-                              className={`w-full flex items-center justify-start gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none`}
-                              aria-label={t("actions.edit")}
-                              title={t("actions.edit")}
                             >
                               <Pencil size={isCompact ? 14 : 16} />
                               <span className="text-sm">
@@ -800,14 +845,14 @@ export default function ClientContacts({
                               </span>
                             </button>
                             <button
+                              aria-label={t("actions.delete")}
+                              className="flex w-full items-center justify-start gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
+                              style={{ color: "var(--bad-text)" }}
+                              title={t("actions.delete")}
                               onClick={() => {
                                 setConfirmDeleteIds([c.id]);
                                 setOpenMenuId(null);
                               }}
-                              className="flex w-full items-center justify-start gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
-                              style={{ color: "var(--bad-text)" }}
-                              aria-label={t("actions.delete")}
-                              title={t("actions.delete")}
                             >
                               <Trash size={isCompact ? 14 : 16} />
                               <span className="text-sm">
@@ -828,9 +873,9 @@ export default function ClientContacts({
         {/* Mobile cards */}
         <div className="mt-6 md:hidden">
           <MobileCardList
+            emptyMessage={t("clients.empty.title") as string}
             items={filtered}
             loading={false}
-            emptyMessage={t("clients.empty.title") as string}
             renderCard={(c: Contact) => (
               <div>
                 <div className="flex items-start justify-between gap-2">
@@ -846,11 +891,11 @@ export default function ClientContacts({
                   <div className="shrink-0 text-right">
                     <div className="mt-2">
                       <button
+                        className="px-2 py-1 text-sm"
                         onClick={() => {
                           setForm(c);
                           setShowAdd(true);
                         }}
-                        className="px-2 py-1 text-sm"
                       >
                         {t("actions.edit")}
                       </button>
@@ -864,10 +909,15 @@ export default function ClientContacts({
       </div>
 
       <Modal
+        footer={
+          <Button disabled={!canSubmit} onClick={handleAdd}>
+            {form && form.id
+              ? t("actions.save", "Guardar")
+              : t("clients.contacts.form.Addcontact", "Agregar contacto")}
+          </Button>
+        }
+        icon={<Users className="h-5 w-5" />}
         open={showAdd}
-        onOpenChange={(o) => {
-          if (!o) handleCloseAdd();
-        }}
         title={
           form && form.id
             ? t("clients.contacts.editcontact", "Editar contacto")
@@ -876,14 +926,9 @@ export default function ClientContacts({
                 "Agregar contacto del cliente",
               )
         }
-        icon={<Users className="h-5 w-5" />}
-        footer={
-          <Button onClick={handleAdd} disabled={!canSubmit}>
-            {form && form.id
-              ? t("actions.save", "Guardar")
-              : t("clients.contacts.form.Addcontact", "Agregar contacto")}
-          </Button>
-        }
+        onOpenChange={(o) => {
+          if (!o) handleCloseAdd();
+        }}
       >
         <div className="space-y-4">
           <div>
@@ -929,6 +974,7 @@ export default function ClientContacts({
                   value: form.mobile || "",
                   onChange: (v: any, data?: any) => {
                     const val = String(v || "");
+
                     handleChange("mobile", val);
                     if (data && data.countryCode)
                       setPhoneCountry(String(data.countryCode).toLowerCase());
@@ -949,13 +995,13 @@ export default function ClientContacts({
             </label>
             <textarea
               className="w-full border rounded-md px-3 py-2 min-h-[90px]"
-              value={form.description || ""}
-              onChange={(e) => handleChange("description", e.target.value)}
               placeholder={t(
                 "clients.contacts.form.descriptioninput",
                 "Escribe una descripción",
               )}
               rows={6}
+              value={form.description || ""}
+              onChange={(e) => handleChange("description", e.target.value)}
             />
           </div>
           <div>
@@ -983,13 +1029,13 @@ export default function ClientContacts({
           </div>
           <div className="flex items-center gap-2">
             <input
+              checked={!!form.allowGuard}
+              className="h-4 w-4"
               id="allowGuard"
               type="checkbox"
-              className="h-4 w-4"
-              checked={!!form.allowGuard}
               onChange={(e) => handleChange("allowGuard", e.target.checked)}
             />
-            <label htmlFor="allowGuard" className="text-sm text-foreground">
+            <label className="text-sm text-foreground" htmlFor="allowGuard">
               {t("clients.contacts.form.checkbox")}
             </label>
           </div>
@@ -997,16 +1043,6 @@ export default function ClientContacts({
       </Modal>
 
       <Modal
-        open={confirmDeleteIds.length > 0}
-        onOpenChange={(o) => {
-          if (!o) setConfirmDeleteIds([]);
-        }}
-        title={t(
-          "clients.contacts.confirmDeleteTitle",
-          "¿Eliminar contacto(s)?",
-        )}
-        icon={<AlertTriangle className="h-5 w-5" />}
-        size="sm"
         footer={
           <>
             <Button variant="outline" onClick={() => setConfirmDeleteIds([])}>
@@ -1026,6 +1062,16 @@ export default function ClientContacts({
             </Button>
           </>
         }
+        icon={<AlertTriangle className="h-5 w-5" />}
+        open={confirmDeleteIds.length > 0}
+        size="sm"
+        title={t(
+          "clients.contacts.confirmDeleteTitle",
+          "¿Eliminar contacto(s)?",
+        )}
+        onOpenChange={(o) => {
+          if (!o) setConfirmDeleteIds([]);
+        }}
       >
         <p className="text-sm font-medium text-foreground mb-2">
           {confirmNames.join(", ")}

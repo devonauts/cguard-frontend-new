@@ -114,7 +114,9 @@ export interface ActivityItem {
   status?: LiveStatus;
   /** Explicit destination (e.g. a specific incident); falls back to the
    *  kind's default list route when absent (see ./navigation). */
-  to?: string;
+  to?: string; /** Módulo Sucursales: de qué sucursal es (la del aviso, o la de su sede). */
+  branchId?: string | null;
+  postSiteId?: string | null;
 }
 
 /** Raw shape of GET /tenant/:id/dashboard/stats */

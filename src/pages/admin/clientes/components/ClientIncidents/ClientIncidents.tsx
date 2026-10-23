@@ -1,5 +1,4 @@
 import type { Client } from "@/types/client";
-import ResumenParaCliente from "@/components/vigia/partes/ResumenParaCliente";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,6 +31,7 @@ import {
   KpiTile,
 } from "../_shared/tab-kit";
 
+import ResumenParaCliente from "@/components/vigia/partes/ResumenParaCliente";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { clientService } from "@/lib/api/clientService";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
@@ -124,7 +124,10 @@ interface IncidentBoardData {
   updatedAt: string;
 }
 
-const PRIO: Record<string, { label: string; labelKey: string; tone: BadgeTone }> = {
+const PRIO: Record<
+  string,
+  { label: string; labelKey: string; tone: BadgeTone }
+> = {
   alta: { label: "Alta", labelKey: "comun.alta", tone: "bad" },
   media: { label: "Media", labelKey: "comun.media", tone: "warn" },
   baja: { label: "Baja", labelKey: "comun.baja", tone: "info" },
@@ -137,7 +140,12 @@ const ESTADO: Record<
   string,
   { label: string; labelKey?: string; tone: BadgeTone; dot: string }
 > = {
-  abierto: { label: "Abierto", labelKey: "comun.abierto", tone: "bad", dot: "var(--bad)" },
+  abierto: {
+    label: "Abierto",
+    labelKey: "comun.abierto",
+    tone: "bad",
+    dot: "var(--bad)",
+  },
   investigacion: {
     label: "En investigación",
     labelKey: "ui.ClientIncidents.enInvestigacion",
@@ -179,7 +187,8 @@ const fmtDate = (iso: string) => {
 
   return Number.isNaN(d.getTime())
     ? ""
-    : d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    : d.toLocaleDateString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -190,7 +199,8 @@ const fmtTime = (iso: string) => {
 
   return Number.isNaN(d.getTime())
     ? ""
-    : d.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    : d.toLocaleTimeString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -263,7 +273,6 @@ export default function ClientIncidents({ client }: { client: Client }) {
     }
   };
 
-
   /* Incidentes en vivo: el backend avisa con `incident:changed` (ids y hora,
      nunca la fila), así que se vuelve a leer. `quiet` para que no parpadee. */
   useEventoEnVivo(["incident:changed"], () => load(true));
@@ -282,7 +291,8 @@ export default function ClientIncidents({ client }: { client: Client }) {
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const selected = incidents.find((i) => i.id === selectedId) || null;
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    ? new Date(data.updatedAt).toLocaleString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         hour: "2-digit",
@@ -373,7 +383,10 @@ export default function ClientIncidents({ client }: { client: Client }) {
         <KpiTile
           accent={(kpis.abiertos ?? 0) > 0 ? "red" : "slate"}
           icon={<ShieldAlert />}
-          label={t("ui.ClientIncidents.incidentesAbiertos", "Incidentes abiertos")}
+          label={t(
+            "ui.ClientIncidents.incidentesAbiertos",
+            "Incidentes abiertos",
+          )}
           sub={
             <StatusBadge
               dot={false}
@@ -481,9 +494,9 @@ export default function ClientIncidents({ client }: { client: Client }) {
             <SearchInput
               className="col-span-2 md:col-span-3 xl:col-span-1"
               placeholder={t(
-                  "ui.ClientIncidents.buscarPorIdTituloO",
-                  "Buscar por ID, título o ubicación",
-                )}
+                "ui.ClientIncidents.buscarPorIdTituloO",
+                "Buscar por ID, título o ubicación",
+              )}
               value={q}
               onChange={(v) => resetPage(setQ)(v)}
             />
@@ -798,7 +811,8 @@ export default function ClientIncidents({ client }: { client: Client }) {
                     {t("ui.ClientIncidents.asignadoA", "Asignado a")}
                   </div>
                   <div className="font-medium">
-                    {selected.assignedName || t("comun.sinAsignar", "Sin asignar")}
+                    {selected.assignedName ||
+                      t("comun.sinAsignar", "Sin asignar")}
                   </div>
                 </div>
               </div>
@@ -869,7 +883,10 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   {selected.causaProbable && (
                     <div>
                       <div className="cg-eyebrow mb-1">
-                        {t("ui.ClientIncidents.causaProbable", "Causa probable")}
+                        {t(
+                          "ui.ClientIncidents.causaProbable",
+                          "Causa probable",
+                        )}
                       </div>
                       <p
                         className="text-sm"
@@ -882,7 +899,10 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   {selected.actionsTaken?.length > 0 && (
                     <div>
                       <div className="cg-eyebrow mb-1">
-                        {t("ui.ClientIncidents.accionesTomadas", "Acciones tomadas")}
+                        {t(
+                          "ui.ClientIncidents.accionesTomadas",
+                          "Acciones tomadas",
+                        )}
                       </div>
                       <ul
                         className="list-disc space-y-0.5 pl-5 text-sm"
@@ -922,7 +942,8 @@ export default function ClientIncidents({ client }: { client: Client }) {
                       >
                         <span className="inline-flex items-center gap-1">
                           <MapPin className="h-3.5 w-3.5" />{" "}
-                          {selected.location || t("ui.SiteTour.ubicacion", "Ubicación")}
+                          {selected.location ||
+                            t("ui.SiteTour.ubicacion", "Ubicación")}
                         </span>
                         <span className="tabular-nums">
                           {selected.lat!.toFixed(4)}, {selected.lng!.toFixed(4)}

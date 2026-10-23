@@ -255,7 +255,9 @@ export default function ScheduleCard({
         );
       } else if (editRow.assignmentId) {
         await clientService.removeGuardAssignment(editRow.assignmentId);
-        toast.success(t("ui.ScheduleCard.asignacionRemovida", "Asignación removida"));
+        toast.success(
+          t("ui.ScheduleCard.asignacionRemovida", "Asignación removida"),
+        );
       }
       setEditRow(null);
     } catch (e: any) {
@@ -280,7 +282,9 @@ export default function ScheduleCard({
     setSaving(true);
     try {
       await clientService.removeGuardAssignment(editRow.assignmentId);
-      toast.success(t("ui.ScheduleCard.asignacionRemovida", "Asignación removida"));
+      toast.success(
+        t("ui.ScheduleCard.asignacionRemovida", "Asignación removida"),
+      );
       setEditRow(null);
       await load(true);
     } catch {
@@ -375,7 +379,10 @@ export default function ScheduleCard({
                       background: "var(--glass-solid)",
                     }}
                   >
-                    {t("ui.ScheduleCard.puestoPosicionVigilante", "Puesto · Posición · Vigilante")}
+                    {t(
+                      "ui.ScheduleCard.puestoPosicionVigilante",
+                      "Puesto · Posición · Vigilante",
+                    )}
                   </th>
                   {days.map((d) => (
                     <th
@@ -435,7 +442,10 @@ export default function ScheduleCard({
                             {canEdit ? (
                               <button
                                 className="cg-focus block truncate rounded-md text-left text-sm font-medium hover:underline"
-                                title={t("ui.ScheduleCard.cambiarVigilante", "Cambiar vigilante")}
+                                title={t(
+                                  "ui.ScheduleCard.cambiarVigilante",
+                                  "Cambiar vigilante",
+                                )}
                                 onClick={() => openEdit(r)}
                               >
                                 {r.guardName || (
@@ -458,7 +468,10 @@ export default function ScheduleCard({
                             <button
                               className="cg-focus shrink-0 rounded-md p-1 transition-opacity hover:opacity-70"
                               style={{ color: "var(--ink-faint)" }}
-                              title={t("ui.ScheduleCard.cambiarVigilante", "Cambiar vigilante")}
+                              title={t(
+                                "ui.ScheduleCard.cambiarVigilante",
+                                "Cambiar vigilante",
+                              )}
                               onClick={() => openEdit(r)}
                             >
                               <UserPlus className="h-3.5 w-3.5" />
@@ -614,7 +627,9 @@ export default function ScheduleCard({
                 value={pickGuard}
                 onChange={(e) => setPickGuard(e.target.value)}
               >
-                <option value="">— {t("comun.sinAsignar", "Sin asignar")} —</option>
+                <option value="">
+                  — {t("comun.sinAsignar", "Sin asignar")} —
+                </option>
                 {guardOptions.map((g) => (
                   <option key={g.id} value={g.id}>
                     {g.label}

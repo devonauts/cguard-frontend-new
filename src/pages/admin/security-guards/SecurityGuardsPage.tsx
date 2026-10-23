@@ -1,19 +1,54 @@
-import { loadXlsx } from "../../../lib/lazyXlsx";
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { clientDisplayName } from "@/lib/clientName";
-import { invalidateEntity, cachedFetch } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
+import {
+  EllipsisVertical,
+  Filter,
+  FileDown,
+  FileSpreadsheet,
+  ArrowDownUp,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Copy,
+  Send,
+  KeyRound,
+  Archive,
+  RotateCw,
+  Trash,
+  UserPlus,
+  ShieldCheck,
+  Clock,
+  Users,
+  LayoutGrid,
+  List as ListIcon,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+
+import { loadXlsx } from "../../../lib/lazyXlsx";
+
 import GuardCardsGrid, {
   type GuardCardAction,
   type AsignacionVigilante,
 } from "./GuardCardsGrid";
 import GuardRatingLevel from "./GuardRatingLevel";
+import {
+  eliminarVigilantes,
+  type FalloAlEliminar,
+  type ResultadoEliminar,
+  type VigilanteAEliminar,
+} from "./eliminarVigilantes";
+
+import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
+import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import { clientDisplayName } from "@/lib/clientName";
+import { invalidateEntity, cachedFetch } from "@/lib/queryClient";
 import guardRatingService from "@/lib/api/guardRatingService";
 import {
   PageHeader,
   StatCard,
   StatsStrip,
-  Stagger,
   Modal,
   StatusBadge,
   Toolbar,
@@ -27,7 +62,6 @@ import {
 } from "@/components/kit";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,34 +95,8 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-
-import {
-  EllipsisVertical,
-  Filter,
-  FileDown,
-  FileSpreadsheet,
-  ArrowDownUp,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Copy,
-  Send,
-  KeyRound,
-  Archive,
-  RotateCw,
-  Trash,
-  UserPlus,
-  ShieldCheck,
-  Clock,
-  Users,
-  LayoutGrid,
-  List as ListIcon,
-} from "lucide-react";
-import { Link } from "react-router-dom";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useDebouncedValue } from "@/hooks/useDebounce";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
@@ -96,19 +104,14 @@ import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { correoVisible } from "@/lib/correoVisible";
 import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
-import {
-  eliminarVigilantes,
-  type FalloAlEliminar,
-  type ResultadoEliminar,
-  type VigilanteAEliminar,
-} from "./eliminarVigilantes";
+
 // Fallback local Breadcrumb component (avoid missing module error)
 interface BreadcrumbItem {
   label: string;
   path?: string;
 }
 const Breadcrumb: React.FC<{ items: BreadcrumbItem[] }> = ({ items }) => (
-  <nav className="py-2" aria-label="breadcrumb">
+  <nav aria-label="breadcrumb" className="py-2">
     <ol
       className="flex flex-wrap gap-2 text-sm"
       style={{ color: "var(--ink-soft)" }}
@@ -116,7 +119,7 @@ const Breadcrumb: React.FC<{ items: BreadcrumbItem[] }> = ({ items }) => (
       {items.map((it, idx) => (
         <li key={idx} className="flex items-center">
           {it.path ? (
-            <a href={it.path} className="brand-text hover:underline">
+            <a className="brand-text hover:underline" href={it.path}>
               {it.label}
             </a>
           ) : (
@@ -128,6 +131,7 @@ const Breadcrumb: React.FC<{ items: BreadcrumbItem[] }> = ({ items }) => (
     </ol>
   </nav>
 );
+
 // Tipos para los security-guards
 type GuardStatus = "Activo" | "Pendiente" | "Archivado" | "Invitado";
 
@@ -173,12 +177,14 @@ function normalizeGuard(item: any): SecurityGuard {
     "";
   const status: GuardStatus = ((): GuardStatus => {
     const s = (guardObj.status ?? item.status ?? "").toString().toLowerCase();
+
     if (s === "archived" || s === "archivado") return "Archivado";
     if (s === "active" || s === "activo") return "Activo";
     if (s === "invited" || s === "invitado") return "Pendiente";
     if (s === "pending" || s === "pendiente") return "Pendiente";
     if (typeof item.isOnDuty === "boolean")
       return item.isOnDuty ? "Activo" : "Pendiente";
+
     return "Activo";
   })();
 
@@ -195,6 +201,10 @@ function normalizeGuard(item: any): SecurityGuard {
 
 export default function SecurityGuardsPage() {
   const { t } = useTranslation();
+  // Módulo Sucursales (vista global): la sucursal de casa de cada persona; si no
+  // tiene, la de la sede donde está asignada.
+  const etiquetas = useEtiquetasDeSucursal({ personas: true });
+
   usePageTitle(t("guards.list.headerTitle", "Vigilantes de Seguridad"));
   const { hasPermission } = usePermissions();
   const [openFilter, setOpenFilter] = useState(false);
@@ -234,16 +244,20 @@ export default function SecurityGuardsPage() {
   const [ratings, setRatings] = useState<
     Record<string, { average: number; count: number }>
   >({});
+
   useEffect(() => {
     const ids = guards.map((g: any) => g.raw?.id || g.id).filter(Boolean);
+
     if (!ids.length) return;
     let alive = true;
+
     guardRatingService
       .summary(ids)
       .then((m) => {
         if (alive) setRatings(m);
       })
       .catch(() => {});
+
     return () => {
       alive = false;
     };
@@ -257,9 +271,7 @@ export default function SecurityGuardsPage() {
   const [archiveLoading, setArchiveLoading] = useState(false);
   // La baja se REGISTRA, no solo se aplica: fecha, motivo y equipo por devolver
   // alimentan el expediente laboral (guardTermination) del servidor.
-  const [bajaFecha, setBajaFecha] = useState<string>(
-    hoyEnLaEmpresa(),
-  );
+  const [bajaFecha, setBajaFecha] = useState<string>(hoyEnLaEmpresa());
   const [bajaMotivo, setBajaMotivo] = useState<string>("resignation");
   const [bajaNota, setBajaNota] = useState<string>("");
   const [bajaRecontratable, setBajaRecontratable] = useState<boolean>(true);
@@ -280,16 +292,43 @@ export default function SecurityGuardsPage() {
     Uniforme: t("ui.SecurityGuardsPage.equipo.uniforme", "Uniforme"),
     Credencial: t("ui.SecurityGuardsPage.equipo.credencial", "Credencial"),
     Radio: t("ui.SecurityGuardsPage.equipo.radio", "Radio"),
-    "Chaleco antibalas": t("ui.SecurityGuardsPage.equipo.chaleco", "Chaleco antibalas"),
-    "Arma y municiones": t("ui.SecurityGuardsPage.equipo.arma", "Arma y municiones"),
-    "Llaves y accesos": t("ui.SecurityGuardsPage.equipo.llaves", "Llaves y accesos"),
+    "Chaleco antibalas": t(
+      "ui.SecurityGuardsPage.equipo.chaleco",
+      "Chaleco antibalas",
+    ),
+    "Arma y municiones": t(
+      "ui.SecurityGuardsPage.equipo.arma",
+      "Arma y municiones",
+    ),
+    "Llaves y accesos": t(
+      "ui.SecurityGuardsPage.equipo.llaves",
+      "Llaves y accesos",
+    ),
   };
   const MOTIVOS_BAJA: Array<[string, string]> = [
-    ["resignation", t("ui.SecurityGuardsPage.motivo.resignation", "Renuncia voluntaria")],
-    ["dismissal_with_cause", t("ui.SecurityGuardsPage.motivo.dismissalWithCause", "Despido con causa")],
-    ["dismissal_without_cause", t("ui.SecurityGuardsPage.motivo.dismissalWithoutCause", "Despido sin causa")],
-    ["end_of_contract", t("ui.SecurityGuardsPage.motivo.endOfContract", "Fin de contrato")],
-    ["abandonment", t("ui.SecurityGuardsPage.motivo.abandonment", "Abandono del puesto")],
+    [
+      "resignation",
+      t("ui.SecurityGuardsPage.motivo.resignation", "Renuncia voluntaria"),
+    ],
+    [
+      "dismissal_with_cause",
+      t("ui.SecurityGuardsPage.motivo.dismissalWithCause", "Despido con causa"),
+    ],
+    [
+      "dismissal_without_cause",
+      t(
+        "ui.SecurityGuardsPage.motivo.dismissalWithoutCause",
+        "Despido sin causa",
+      ),
+    ],
+    [
+      "end_of_contract",
+      t("ui.SecurityGuardsPage.motivo.endOfContract", "Fin de contrato"),
+    ],
+    [
+      "abandonment",
+      t("ui.SecurityGuardsPage.motivo.abandonment", "Abandono del puesto"),
+    ],
     ["retirement", t("ui.SecurityGuardsPage.motivo.retirement", "Jubilación")],
     ["death", t("ui.SecurityGuardsPage.motivo.death", "Fallecimiento")],
     ["other", t("ui.SecurityGuardsPage.motivo.other", "Otro")],
@@ -314,6 +353,7 @@ export default function SecurityGuardsPage() {
     message: string;
     porAgenda: boolean;
   } | null>(null);
+
   useEffect(() => {
     if (deleteDialogOpen) setDeleteBlocked(null);
   }, [deleteDialogOpen, guardToDelete]);
@@ -327,6 +367,7 @@ export default function SecurityGuardsPage() {
   const quitarEliminados = (r: ResultadoEliminar) => {
     if (!r.removed.length) return;
     const fuera = new Set(r.removed);
+
     setGuards((prev) => prev.filter((g) => !fuera.has(g.id)));
     setSelectedGuards((prev) => prev.filter((id) => !fuera.has(id)));
     toast.success(
@@ -351,6 +392,7 @@ export default function SecurityGuardsPage() {
   const aEliminar = (rowIds: string[]): VigilanteAEliminar[] =>
     rowIds.map((rowId) => {
       const g = guards.find((x) => x.id === rowId);
+
       return {
         id: rowId,
         realId: g?.raw?.id || rowId,
@@ -365,6 +407,7 @@ export default function SecurityGuardsPage() {
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
   const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
+
   useEffect(() => {
     if (bulkActionDialogOpen) setBulkDeleteBlocked(null);
   }, [bulkActionDialogOpen]);
@@ -420,6 +463,7 @@ export default function SecurityGuardsPage() {
     const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+
     a.href = url;
     a.download = `vigilantes_${hoyEnLaEmpresa()}.csv`;
     document.body.appendChild(a);
@@ -431,9 +475,11 @@ export default function SecurityGuardsPage() {
   function escapeCsv(v: any) {
     if (v == null) return "";
     const s = String(v);
+
     if (s.includes(",") || s.includes('"') || s.includes("\n")) {
       return `"${s.replace(/"/g, '""')}"`;
     }
+
     return s;
   }
 
@@ -446,6 +492,7 @@ export default function SecurityGuardsPage() {
       .join("\n");
     const html = `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(t("guards.list.title", "Vigilantes"))}</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>${escapeHtml(t("guards.list.title", "Vigilantes"))}</h2><table><thead><tr><th>${escapeHtml(t("comun.nombre", "Nombre"))}</th><th>${escapeHtml(t("comun.correo", "Correo"))}</th><th>${escapeHtml(t("ui.SecurityGuardsPage.telefono", "Teléfono"))}</th><th>${escapeHtml(t("comun.estado", "Estado"))}</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
     const w = window.open("", "_blank");
+
     if (!w) {
       toast.error(
         t(
@@ -453,6 +500,7 @@ export default function SecurityGuardsPage() {
           "No se pudo abrir la ventana de impresión",
         ),
       );
+
       return;
     }
     w.document.open();
@@ -476,18 +524,21 @@ export default function SecurityGuardsPage() {
       const filename = `vigilantes_${hoyEnLaEmpresa()}.${ext}`;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
+
       a.href = url;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+
       return true;
     } catch (err) {
       console.warn(
         "Backend export failed, falling back to client export:",
         err,
       );
+
       return false;
     }
   }
@@ -502,6 +553,7 @@ export default function SecurityGuardsPage() {
 
   function escapeHtml(s: any) {
     if (s == null) return "";
+
     return String(s)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -525,6 +577,7 @@ export default function SecurityGuardsPage() {
         .get(`/tenant/${tenantId}/stations?limit=200&offset=0`)
         .then((resp: any) => {
           const rows: any[] = resp?.data?.rows ?? resp?.rows ?? [];
+
           setAssignStations(
             rows.map((s: any) => ({
               id: s.id,
@@ -541,7 +594,6 @@ export default function SecurityGuardsPage() {
     /* `assignStations.length` NO va en las dependencias a propósito: lo lee la
        guarda de arriba para no repetir la petición, y ponerlo aquí volvería a
        disparar el efecto justo al llegar la respuesta. */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assignDialogOpen]);
 
   const handleAssignStation = async () => {
@@ -557,6 +609,7 @@ export default function SecurityGuardsPage() {
         assignGuard.id;
       const securityGuardId = assignGuard.raw?.id || assignGuard.id;
       const { default: api } = await import("@/lib/api");
+
       // Goes through the assignment service, which binds an OPEN puesto at the
       // station → the guard shows up in the Horario scheduler (vs the old raw
       // /shift call that created an orphaned shift with no assignment).
@@ -607,6 +660,7 @@ export default function SecurityGuardsPage() {
    */
   useEffect(() => {
     const tenantId = localStorage.getItem("tenantId") || "";
+
     if (!tenantId) return;
     import("@/lib/api").then(({ default: api }) => {
       /* Bajo la clave ["stations", …]: el mapa ES el reparto vigilante↔puesto,
@@ -635,6 +689,7 @@ export default function SecurityGuardsPage() {
   // Ejemplo de dónde cargar datos reales: carga lista desde backend cuando cambian filtros relevantes
   useEffect(() => {
     let mounted = true;
+
     setLoading(true);
     setError(null);
     // Always load all guards — status tabs filter client-side for instant switching
@@ -659,6 +714,7 @@ export default function SecurityGuardsPage() {
         if (!mounted) return;
         // Algunos endpoints devuelven { rows, count } u otras formas
         let normalizedList: SecurityGuard[] = [];
+
         if (Array.isArray(data)) normalizedList = data.map(normalizeGuard);
         else if (data && Array.isArray((data as any).rows))
           normalizedList = (data as any).rows.map(normalizeGuard);
@@ -729,6 +785,7 @@ export default function SecurityGuardsPage() {
           ? [a.nickname, a.stationName].filter(Boolean).join(" · ") +
             (a.esCobertura ? ` · ${t("comun.cobertura", "cobertura")}` : "")
           : "";
+
         return station ? { ...g, station } : g;
       }),
     [guards, stationByUserId],
@@ -744,12 +801,14 @@ export default function SecurityGuardsPage() {
         if (filterStatus === "activos") return g.status === "Activo";
         if (filterStatus === "pendientes") return g.status === "Pendiente";
         if (filterStatus === "archivados") return g.status === "Archivado";
+
         return true;
       });
     }
 
     if (!searchQuery) return list;
     const lowerQuery = searchQuery.toLowerCase();
+
     return list.filter(
       (g) =>
         g.name.toLowerCase().includes(lowerQuery) ||
@@ -767,6 +826,7 @@ export default function SecurityGuardsPage() {
   // Paginado
   const paginatedGuards = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
+
     return filteredGuards.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredGuards, currentPage, itemsPerPage]);
 
@@ -786,8 +846,10 @@ export default function SecurityGuardsPage() {
     (checked: boolean) => {
       setSelectedGuards((prev) => {
         const idsOnPage = paginatedGuards.map((g) => g.id);
+
         if (checked) {
           const merged = new Set([...prev, ...idsOnPage]);
+
           return Array.from(merged);
         } else {
           return prev.filter((id) => !idsOnPage.includes(id));
@@ -845,9 +907,12 @@ export default function SecurityGuardsPage() {
    */
   const necesitaInvitacion = useCallback((guard: any): boolean => {
     const g = guard?.raw?.guard || guard?.raw || {};
+
     if (g.hasPassword === true) return false;
     const estado = String(g.status || guard?.raw?.status || "").toLowerCase();
+
     if (estado === "archived" || guard?.status === "Archivado") return false;
+
     return true;
   }, []);
 
@@ -856,8 +921,10 @@ export default function SecurityGuardsPage() {
     const exp =
       guard?.raw?.guard?.invitationTokenExpiresAt ||
       guard?.raw?.invitationTokenExpiresAt;
+
     if (!exp) return false;
     const t = new Date(exp).getTime();
+
     return Number.isFinite(t) && t < Date.now();
   }, []);
 
@@ -867,17 +934,20 @@ export default function SecurityGuardsPage() {
       try {
         // El servidor acepta el id del usuario, o el correo si aún no hay usuario.
         const payload: any = {};
+
         if (guard.raw?.guard?.id) payload.guard = guard.raw.guard.id;
         else if (guard.email) payload.contact = guard.email;
         else if (guard.raw?.contact) payload.contact = guard.raw.contact;
         if (guard.id) payload.securityGuardId = guard.raw?.id || guard.id;
         const nombre = guard.raw?.guard?.firstName || guard.raw?.firstName;
         const apellido = guard.raw?.guard?.lastName || guard.raw?.lastName;
+
         if (nombre) payload.firstName = nombre;
         if (apellido) payload.lastName = apellido;
         // Sin correo de verdad no hay a dónde mandarla: `compartir` pide al
         // servidor el enlace para dárselo en mano (copiar / WhatsApp).
         const sinBuzon = !correoVisible(guard.email);
+
         if (sinBuzon) payload.compartir = true;
 
         if (!payload.guard && !payload.contact) {
@@ -887,11 +957,13 @@ export default function SecurityGuardsPage() {
               "Este vigilante no tiene correo: añádele uno para poder invitarlo.",
             ),
           );
+
           return;
         }
 
         const r: any = await securityGuardService.resendInvite(payload);
         const enlace = r?.invitationLink || r?.link || null;
+
         if (sinBuzon && enlace) {
           compartir.abrir(
             [
@@ -912,6 +984,7 @@ export default function SecurityGuardsPage() {
         // que la ficha no siga diciendo «caducada» con el enlace ya renovado.
         try {
           const refreshed: any = await securityGuardService.list();
+
           if (Array.isArray(refreshed))
             setGuards(refreshed.map(normalizeGuard));
           else if (refreshed && Array.isArray(refreshed.rows))
@@ -942,6 +1015,7 @@ export default function SecurityGuardsPage() {
       try {
         const realId = guard.raw?.id || guard.id;
         const r: any = await securityGuardService.sendPasswordReset(realId);
+
         if (r?.link) {
           compartir.abrir(
             [
@@ -960,6 +1034,7 @@ export default function SecurityGuardsPage() {
                 via: "push",
               }),
             );
+
           return;
         }
         const via = [
@@ -968,11 +1043,11 @@ export default function SecurityGuardsPage() {
         ]
           .filter(Boolean)
           .join(" + ");
+
         toast.success(
           via
             ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
-                defaultValue:
-                  "Enlace de restablecimiento enviado por {{via}}",
+                defaultValue: "Enlace de restablecimiento enviado por {{via}}",
                 via,
               })
             : t(
@@ -998,6 +1073,7 @@ export default function SecurityGuardsPage() {
     (guard: any): GuardCardAction[] => {
       const realId = guard.raw?.id || guard.id;
       const acts: GuardCardAction[] = [];
+
       if (hasPermission("securityGuardRead")) {
         acts.push({
           label: t("guards.list.actions.viewDetails", "Ver Detalles"),
@@ -1031,7 +1107,10 @@ export default function SecurityGuardsPage() {
           });
         }
         acts.push({
-          label: t("guards.list.actions.resetPassword", "Restablecer contraseña"),
+          label: t(
+            "guards.list.actions.resetPassword",
+            "Restablecer contraseña",
+          ),
           icon: <KeyRound className="h-4 w-4" />,
           onClick: () => restablecerContrasena(guard),
         });
@@ -1052,7 +1131,7 @@ export default function SecurityGuardsPage() {
             icon: <Archive className="h-4 w-4" />,
             onClick: () => {
               setGuardToArchive(guard);
-              abrirDialogoDeBaja(), setArchiveDialogOpen(true);
+              (abrirDialogoDeBaja(), setArchiveDialogOpen(true));
             },
           });
         }
@@ -1068,6 +1147,7 @@ export default function SecurityGuardsPage() {
           },
         });
       }
+
       return acts;
     },
     [hasPermission, navigate, t, restablecerContrasena],
@@ -1078,16 +1158,9 @@ export default function SecurityGuardsPage() {
       {/* Page Header */}
       <div className="px-4 pt-5 sm:px-6">
         <PageHeader
-          className="mt-2"
-          icon={<ShieldCheck />}
-          title={t("guards.list.headerTitle", "Vigilantes de Seguridad")}
-          subtitle={t(
-            "guards.list.subtitle",
-            "Gestiona el personal de seguridad de tu organización",
-          )}
           actions={
             hasPermission("securityGuardCreate") ? (
-              <Button variant="brand" asChild>
+              <Button asChild variant="brand">
                 <Link to="/security-guards/new">
                   <UserPlus className="mr-2 h-4 w-4" />
                   {t("guards.list.newGuard", "Nuevo Vigilante")}
@@ -1095,6 +1168,13 @@ export default function SecurityGuardsPage() {
               </Button>
             ) : undefined
           }
+          className="mt-2"
+          icon={<ShieldCheck />}
+          subtitle={t(
+            "guards.list.subtitle",
+            "Gestiona el personal de seguridad de tu organización",
+          )}
+          title={t("guards.list.headerTitle", "Vigilantes de Seguridad")}
         />
       </div>
 
@@ -1119,26 +1199,26 @@ export default function SecurityGuardsPage() {
       <div className="px-4 pb-2 pt-5 sm:px-6">
         <StatsStrip className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <StatCard
-            icon={<Users />}
             accent="info"
+            icon={<Users />}
             label={t("comun.total")}
             value={guards.length}
           />
           <StatCard
-            icon={<ShieldCheck />}
             accent="ok"
+            icon={<ShieldCheck />}
             label={t("guards.list.filter.statusActive", "Activos")}
             value={activeCount}
           />
           <StatCard
-            icon={<Clock />}
             accent="warn"
+            icon={<Clock />}
             label={t("guards.list.filter.statusPending", "Pendientes")}
             value={pendingCount}
           />
           <StatCard
-            icon={<Archive />}
             accent="neutral"
+            icon={<Archive />}
             label={t("guards.list.filter.statusArchived", "Archivados")}
             value={archivedCount}
           />
@@ -1150,15 +1230,22 @@ export default function SecurityGuardsPage() {
           {/* Pestañas de estado */}
           <div className="mb-4">
             <Segmented
-              value={filterStatus}
-              onChange={(v) => {
-                setFilterStatus(v);
-                setCurrentPage(1);
-              }}
               options={[
-                { key: "todos", label: t("guards.list.filter.clientAll", "Todos"), count: guards.length },
-                { key: "activos", label: t("guards.list.filter.statusActive", "Activos"), count: activeCount },
-                { key: "pendientes", label: t("guards.list.filter.statusPending", "Pendientes"), count: pendingCount },
+                {
+                  key: "todos",
+                  label: t("guards.list.filter.clientAll", "Todos"),
+                  count: guards.length,
+                },
+                {
+                  key: "activos",
+                  label: t("guards.list.filter.statusActive", "Activos"),
+                  count: activeCount,
+                },
+                {
+                  key: "pendientes",
+                  label: t("guards.list.filter.statusPending", "Pendientes"),
+                  count: pendingCount,
+                },
                 {
                   key: "archivados",
                   label: t("guards.list.filter.statusArchived", "Archivados"),
@@ -1183,6 +1270,11 @@ export default function SecurityGuardsPage() {
                   </span>
                 ),
               }))}
+              value={filterStatus}
+              onChange={(v) => {
+                setFilterStatus(v);
+                setCurrentPage(1);
+              }}
             />
           </div>
 
@@ -1190,6 +1282,7 @@ export default function SecurityGuardsPage() {
           <Toolbar className="mt-2 justify-between gap-3">
             <div className="order-2 flex w-full items-center gap-2 md:order-1 md:w-auto">
               <Select
+                disabled={bulkActionLoading}
                 value={bulkActionValue}
                 onValueChange={(v) => {
                   // set and immediately clear to avoid leaving the option selected
@@ -1202,6 +1295,7 @@ export default function SecurityGuardsPage() {
                       ),
                     );
                     setBulkActionValue("");
+
                     return;
                   }
 
@@ -1217,6 +1311,7 @@ export default function SecurityGuardsPage() {
                       ),
                     );
                     setBulkActionValue("");
+
                     return;
                   }
                   if (
@@ -1230,11 +1325,13 @@ export default function SecurityGuardsPage() {
                       ),
                     );
                     setBulkActionValue("");
+
                     return;
                   }
 
                   const ids = selectedGuards.map((sid) => {
                     const g = guards.find((x) => x.id === sid);
+
                     return g?.raw?.id || sid;
                   });
 
@@ -1244,7 +1341,6 @@ export default function SecurityGuardsPage() {
                   // clear selection so UI shows placeholder
                   setBulkActionValue("");
                 }}
-                disabled={bulkActionLoading}
               >
                 <SelectTrigger
                   className="w-full md:w-40"
@@ -1284,9 +1380,9 @@ export default function SecurityGuardsPage() {
               <SearchInput
                 className="w-full md:w-auto"
                 placeholder={t(
-                    "guards.list.searchPlaceholder",
-                    "Buscar vigilante",
-                  )}
+                  "guards.list.searchPlaceholder",
+                  "Buscar vigilante",
+                )}
                 value={searchQuery}
                 onChange={(v) => setSearchQuery(v)}
               />
@@ -1295,8 +1391,8 @@ export default function SecurityGuardsPage() {
               <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                 <SheetTrigger asChild>
                   <Button
-                    variant="outline"
                     className="flex-1 justify-center md:flex-none"
+                    variant="outline"
                   >
                     <Filter className="mr-2 h-4 w-4" />
                     {t("guards.list.filters", "Filtros")}
@@ -1304,7 +1400,7 @@ export default function SecurityGuardsPage() {
                 </SheetTrigger>
                 {/* Ancho fijo de 400px en una pantalla de 375: la hoja se salía.
                     `w-full` en móvil, medida fija a partir de sm. */}
-                <SheetContent side="right" className="w-full sm:w-[460px]">
+                <SheetContent className="w-full sm:w-[460px]" side="right">
                   <SheetHeader>
                     <SheetTitle>
                       {t("guards.list.filters", "Filtros")}
@@ -1368,8 +1464,8 @@ export default function SecurityGuardsPage() {
                     </div>
 
                     <Button
-                      variant="brand"
                       className="w-full"
+                      variant="brand"
                       onClick={() => {
                         // Aplica tus filtros reales aquí
                         setOpenFilter(false);
@@ -1378,8 +1474,8 @@ export default function SecurityGuardsPage() {
                       {t("guards.list.applyFilters", "Filtro")}
                     </Button>
                     <Button
-                      variant="outline"
                       className="w-full"
+                      variant="outline"
                       onClick={() => {
                         // Limpiar filtros: resetear filtros controlados y mantener la hoja abierta
                         setFilterClient("todos");
@@ -1396,8 +1492,6 @@ export default function SecurityGuardsPage() {
               {/* Conmutador Tarjetas ⇄ Lista (escritorio) */}
               <Segmented
                 className="hidden md:inline-flex"
-                value={viewMode}
-                onChange={(v) => setViewMode(v)}
                 options={[
                   {
                     value: "cards" as const,
@@ -1417,12 +1511,14 @@ export default function SecurityGuardsPage() {
                     ),
                   },
                 ]}
+                value={viewMode}
+                onChange={(v) => setViewMode(v)}
               />
 
               {/* Menú superior (exportar/importar) */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button size="icon" variant="ghost">
                     <EllipsisVertical className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -1481,20 +1577,21 @@ export default function SecurityGuardsPage() {
                     className={viewMode === "cards" ? undefined : "md:hidden"}
                   >
                     <GuardCardsGrid
+                      actions={guardCardActions}
                       guards={paginatedGuards}
-                      stationByUserId={stationByUserId}
+                      loading={false}
                       ratings={ratings}
+                      selectedIds={selectedGuards}
+                      stationByUserId={stationByUserId}
+                      onOpen={(g) => {
+                        const realId = g.raw?.id || g.id;
+
+                        navigate(`/guards/${realId}/resumen`);
+                      }}
                       onOpenReviews={(realId) =>
                         navigate(`/guards/${realId}/reviews`)
                       }
-                      loading={false}
-                      selectedIds={selectedGuards}
                       onSelect={handleSelectGuard}
-                      onOpen={(g) => {
-                        const realId = g.raw?.id || g.id;
-                        navigate(`/guards/${realId}/resumen`);
-                      }}
-                      actions={guardCardActions}
                     />
                   </div>
                   {viewMode !== "cards" && (
@@ -1504,14 +1601,14 @@ export default function SecurityGuardsPage() {
                           <tr className="border-b">
                             <th className="px-4 py-3">
                               <Checkbox
-                                checked={allOnPageSelected}
-                                onCheckedChange={(v) =>
-                                  handleSelectAllGuards(Boolean(v))
-                                }
                                 aria-label={t(
                                   "guards.list.selectAllAria",
                                   "Seleccionar todos los vigilantes de esta página",
                                 )}
+                                checked={allOnPageSelected}
+                                onCheckedChange={(v) =>
+                                  handleSelectAllGuards(Boolean(v))
+                                }
                               />
                             </th>
                             <th className="px-4 py-3 font-semibold">
@@ -1545,15 +1642,15 @@ export default function SecurityGuardsPage() {
                               >
                                 <td className="px-4 py-3">
                                   <Checkbox
-                                    checked={selectedGuards.includes(guard.id)}
-                                    onCheckedChange={(v) =>
-                                      handleSelectGuard(guard.id, Boolean(v))
-                                    }
                                     aria-label={t(
                                       "guards.list.selectAria",
                                       "Seleccionar {{name}}",
                                       { name: guard.name },
                                     )}
+                                    checked={selectedGuards.includes(guard.id)}
+                                    onCheckedChange={(v) =>
+                                      handleSelectGuard(guard.id, Boolean(v))
+                                    }
                                   />
                                 </td>
                                 <td className="px-4 py-3 flex items-center gap-3">
@@ -1570,11 +1667,17 @@ export default function SecurityGuardsPage() {
                                     ).toUpperCase()}
                                   </div>
                                   <div
+                                    aria-label={t(
+                                      "guards.list.openOverviewAria",
+                                      "Abrir resumen de {{name}}",
+                                      { name: guard.name },
+                                    )}
+                                    className="brand-text flex-1 cursor-pointer select-none font-medium hover:underline"
                                     role="link"
                                     tabIndex={0}
-                                    className="brand-text flex-1 cursor-pointer select-none font-medium hover:underline"
                                     onClick={() => {
                                       const realId = guard.raw?.id || guard.id;
+
                                       navigate(`/guards/${realId}/resumen`);
                                     }}
                                     onKeyDown={(e) => {
@@ -1582,20 +1685,38 @@ export default function SecurityGuardsPage() {
                                         e.preventDefault();
                                         const realId =
                                           guard.raw?.id || guard.id;
+
                                         navigate(`/guards/${realId}/resumen`);
                                       }
                                     }}
-                                    aria-label={t(
-                                      "guards.list.openOverviewAria",
-                                      "Abrir resumen de {{name}}",
-                                      { name: guard.name },
-                                    )}
                                   >
                                     {guard.name}
                                   </div>
+                                  {etiquetas.activo &&
+                                    (() => {
+                                      const uid =
+                                        guard.raw?.guard?.id ??
+                                        guard.raw?.guardId ??
+                                        null;
+
+                                      return (
+                                        <EtiquetaDeSucursal
+                                          sucursal={
+                                            etiquetas.dePersona(uid) ??
+                                            etiquetas.deSede(
+                                              uid
+                                                ? stationByUserId[uid]
+                                                    ?.postSiteId
+                                                : null,
+                                            )
+                                          }
+                                        />
+                                      );
+                                    })()}
                                   {(() => {
                                     const realId = guard.raw?.id || guard.id;
                                     const r = ratings[realId];
+
                                     return r ? (
                                       <GuardRatingLevel
                                         average={r.average}
@@ -1610,14 +1731,20 @@ export default function SecurityGuardsPage() {
                                 <td className="px-4 py-3">
                                   {guard.email || (
                                     <span style={{ color: "var(--ink-faint)" }}>
-                                      {t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")}
+                                      {t(
+                                        "usuarioDeAcceso.sinCorreoCorto",
+                                        "Sin correo",
+                                      )}
                                     </span>
                                   )}
                                   {guard.username && (
                                     <div
                                       className="font-mono text-xs"
                                       style={{ color: "var(--ink-soft)" }}
-                                      title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                                      title={t(
+                                        "usuarioDeAcceso.etiqueta",
+                                        "Usuario para entrar",
+                                      )}
                                     >
                                       {guard.username}
                                     </div>
@@ -1627,7 +1754,10 @@ export default function SecurityGuardsPage() {
                                 <td className="px-4 py-3 text-sm">
                                   {guard.station || (
                                     <span style={{ color: "var(--ink-faint)" }}>
-                                      {t("ui.SecurityGuardsPage.ninguna", "Ninguna")}
+                                      {t(
+                                        "ui.SecurityGuardsPage.ninguna",
+                                        "Ninguna",
+                                      )}
                                     </span>
                                   )}
                                 </td>
@@ -1642,9 +1772,11 @@ export default function SecurityGuardsPage() {
                                         style={{ color: "var(--ink-soft)" }}
                                       >
                                         {t("guards.list.archivadoTras", {
-                                          defaultValue: "Archivado tras {{evento}}",
+                                          defaultValue:
+                                            "Archivado tras {{evento}}",
                                           evento:
-                                            guard.raw.archivadoTrasEvento.nombre,
+                                            guard.raw.archivadoTrasEvento
+                                              .nombre,
                                         })}
                                       </div>
                                     )}
@@ -1652,7 +1784,7 @@ export default function SecurityGuardsPage() {
                                 <td className="px-4 py-3 text-right">
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon">
+                                      <Button size="icon" variant="ghost">
                                         <EllipsisVertical className="h-5 w-5" />
                                       </Button>
                                     </DropdownMenuTrigger>
@@ -1680,7 +1812,9 @@ export default function SecurityGuardsPage() {
                                           </DropdownMenuItem>
 
                                           <DropdownMenuItem
-                                            onClick={() => restablecerContrasena(guard)}
+                                            onClick={() =>
+                                              restablecerContrasena(guard)
+                                            }
                                           >
                                             <KeyRound className="mr-2 h-4 w-4" />{" "}
                                             {t(
@@ -1703,12 +1837,14 @@ export default function SecurityGuardsPage() {
                                                   (inviteCode
                                                     ? `${window.location.origin}/guard/registration?code=${encodeURIComponent(inviteCode)}`
                                                     : null);
+
                                                 if (!link) {
                                                   toast.error(
                                                     t(
                                                       "ui.SecurityGuardsPage.noHayEnlaceDeRegistro",
                                                     ),
                                                   );
+
                                                   return;
                                                 }
                                                 await navigator.clipboard.writeText(
@@ -1762,6 +1898,7 @@ export default function SecurityGuardsPage() {
                                               onClick={() => {
                                                 const realId =
                                                   guard.raw?.id || guard.id;
+
                                                 navigate(
                                                   `/guards/${realId}/resumen`,
                                                 );
@@ -1795,7 +1932,9 @@ export default function SecurityGuardsPage() {
                                             "securityGuardEdit",
                                           ) && (
                                             <DropdownMenuItem
-                                              onClick={() => restablecerContrasena(guard)}
+                                              onClick={() =>
+                                                restablecerContrasena(guard)
+                                              }
                                             >
                                               <KeyRound className="mr-2 h-4 w-4" />{" "}
                                               {t(
@@ -1868,10 +2007,10 @@ export default function SecurityGuardsPage() {
                                                 <DropdownMenuItem
                                                   onClick={() => {
                                                     setGuardToArchive(guard);
-                                                    abrirDialogoDeBaja(),
+                                                    (abrirDialogoDeBaja(),
                                                       setArchiveDialogOpen(
                                                         true,
-                                                      );
+                                                      ));
                                                   }}
                                                 >
                                                   <Archive className="mr-2 h-4 w-4" />{" "}
@@ -1908,8 +2047,39 @@ export default function SecurityGuardsPage() {
                             ))
                           ) : (
                             <tr>
-                              <td colSpan={7} className="p-6">
+                              <td className="p-6" colSpan={7}>
                                 <EmptyState
+                                  action={
+                                    hasPermission("securityGuardCreate") &&
+                                    filterStatus === "todos" &&
+                                    !searchQuery ? (
+                                      <Button asChild variant="brand">
+                                        <Link to="/security-guards/new">
+                                          <UserPlus className="mr-2 h-4 w-4" />
+                                          {t(
+                                            "guards.list.newGuard",
+                                            "Nuevo Vigilante",
+                                          )}
+                                        </Link>
+                                      </Button>
+                                    ) : undefined
+                                  }
+                                  description={
+                                    filterStatus !== "todos"
+                                      ? t(
+                                          "ui.SecurityGuardsPage.pruebaConOtroFiltro",
+                                          "Prueba con otro filtro de estado.",
+                                        )
+                                      : searchQuery
+                                        ? t(
+                                            "ui.SecurityGuardsPage.ningunVigilanteCoincide",
+                                            "Ningún vigilante coincide con tu búsqueda.",
+                                          )
+                                        : t(
+                                            "ui.SecurityGuardsPage.agregaTuPrimerVigilante",
+                                            "Agrega tu primer vigilante para comenzar.",
+                                          )
+                                  }
                                   icon={<Users />}
                                   title={
                                     filterStatus !== "todos"
@@ -1921,25 +2091,6 @@ export default function SecurityGuardsPage() {
                                           "guards.list.empty.noneFoundTitle",
                                           "No se encontraron vigilantes",
                                         )
-                                  }
-                                  description={
-                                    filterStatus !== "todos"
-                                      ? t("ui.SecurityGuardsPage.pruebaConOtroFiltro", "Prueba con otro filtro de estado.")
-                                      : searchQuery
-                                        ? t("ui.SecurityGuardsPage.ningunVigilanteCoincide", "Ningún vigilante coincide con tu búsqueda.")
-                                        : t("ui.SecurityGuardsPage.agregaTuPrimerVigilante", "Agrega tu primer vigilante para comenzar.")
-                                  }
-                                  action={
-                                    hasPermission("securityGuardCreate") &&
-                                    filterStatus === "todos" &&
-                                    !searchQuery ? (
-                                      <Button variant="brand" asChild>
-                                        <Link to="/security-guards/new">
-                                          <UserPlus className="mr-2 h-4 w-4" />
-                                          {t("guards.list.newGuard", "Nuevo Vigilante")}
-                                        </Link>
-                                      </Button>
-                                    ) : undefined
                                   }
                                 />
                               </td>
@@ -2003,28 +2154,28 @@ export default function SecurityGuardsPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Button
-                    variant="outline"
-                    size="icon-sm"
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    disabled={currentPage === 1}
                     aria-label={t(
                       "ui.SecurityGuards.paginaAnterior",
                       "Página anterior",
                     )}
+                    disabled={currentPage === 1}
+                    size="icon-sm"
+                    variant="outline"
+                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="outline"
-                    size="icon-sm"
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(p + 1, totalPages))
-                    }
-                    disabled={currentPage >= totalPages}
                     aria-label={t(
                       "ui.SecurityGuards.paginaSiguiente",
                       "Página siguiente",
                     )}
+                    disabled={currentPage >= totalPages}
+                    size="icon-sm"
+                    variant="outline"
+                    onClick={() =>
+                      setCurrentPage((p) => Math.min(p + 1, totalPages))
+                    }
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -2090,12 +2241,12 @@ export default function SecurityGuardsPage() {
                 {t("guards.list.dialog.archive.note", "Nota (opcional)")}
               </Label>
               <Input
-                value={bajaNota}
-                onChange={(e) => setBajaNota(e.target.value)}
                 placeholder={t(
                   "guards.list.dialog.archive.notePh",
                   "Detalle del motivo",
                 )}
+                value={bajaNota}
+                onChange={(e) => setBajaNota(e.target.value)}
               />
             </div>
             <div>
@@ -2139,13 +2290,14 @@ export default function SecurityGuardsPage() {
           </div>
           <DialogFooter>
             <Button
+              disabled={archiveLoading}
               variant="outline"
               onClick={() => setArchiveDialogOpen(false)}
-              disabled={archiveLoading}
             >
               {t("actions.cancel", "Cancelar")}
             </Button>
             <Button
+              disabled={archiveLoading}
               variant="brand"
               onClick={async () => {
                 if (!guardToArchive) return;
@@ -2157,6 +2309,7 @@ export default function SecurityGuardsPage() {
                     guardToArchive.raw?.isOnDuty ??
                     guardToArchive.raw?.onDuty ??
                     false;
+
                   if (isOnDuty) {
                     toast.error(
                       t(
@@ -2165,6 +2318,7 @@ export default function SecurityGuardsPage() {
                       ),
                     );
                     setArchiveLoading(false);
+
                     return;
                   }
                   await securityGuardService.archive([realId], {
@@ -2203,7 +2357,6 @@ export default function SecurityGuardsPage() {
                   setArchiveLoading(false);
                 }
               }}
-              disabled={archiveLoading}
             >
               {archiveLoading
                 ? t("guards.list.buttons.archiving", "Archivando…")
@@ -2240,12 +2393,12 @@ export default function SecurityGuardsPage() {
           </div>
           {deleteBlocked && (
             <InfoNote
-              tone="warn"
               className="mt-4"
               title={t(
                 "guards.list.dialog.delete.blockedTitle",
                 "Todavía no se puede eliminar",
               )}
+              tone="warn"
             >
               <p>{deleteBlocked.message}</p>
               <p className="mt-2">
@@ -2263,16 +2416,16 @@ export default function SecurityGuardsPage() {
           )}
           <DialogFooter className="gap-2">
             <Button
+              disabled={deleteLoading}
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
-              disabled={deleteLoading}
             >
               {t("actions.cancel", "Cancelar")}
             </Button>
             {deleteBlocked && hasPermission("securityGuardEdit") && (
               <Button
-                variant="outline"
                 disabled={deleteLoading}
+                variant="outline"
                 onClick={() => {
                   if (!guardToDelete) return;
                   setDeleteDialogOpen(false);
@@ -2281,11 +2434,15 @@ export default function SecurityGuardsPage() {
                   setArchiveDialogOpen(true);
                 }}
               >
-                {t("guards.list.actions.archiveInstead", "Archivar en su lugar")}
+                {t(
+                  "guards.list.actions.archiveInstead",
+                  "Archivar en su lugar",
+                )}
               </Button>
             )}
             {(!deleteBlocked || deleteBlocked.porAgenda) && (
               <Button
+                disabled={deleteLoading}
                 variant="destructive"
                 onClick={async () => {
                   if (!guardToDelete) return;
@@ -2303,17 +2460,26 @@ export default function SecurityGuardsPage() {
                       securityGuardService.destroy,
                       { freeSchedule },
                     );
+
                     if (r.removed.length) {
                       quitarEliminados(r);
                       setDeleteDialogOpen(false);
+
                       return;
                     }
                     // Refused: the row STAYS, and the dialog says why and what to do.
                     const fallo = r.blockedBySchedule[0] || r.failed[0];
+
                     if (r.blockedBySchedule.length) {
-                      setDeleteBlocked({ message: fallo.message, porAgenda: true });
+                      setDeleteBlocked({
+                        message: fallo.message,
+                        porAgenda: true,
+                      });
                     } else if (fallo && fallo.openShift) {
-                      setDeleteBlocked({ message: fallo.message, porAgenda: false });
+                      setDeleteBlocked({
+                        message: fallo.message,
+                        porAgenda: false,
+                      });
                     } else {
                       toast.error(
                         t(
@@ -2327,7 +2493,6 @@ export default function SecurityGuardsPage() {
                     setDeleteLoading(false);
                   }
                 }}
-                disabled={deleteLoading}
               >
                 {deleteLoading
                   ? t("guards.list.buttons.deleting", "Eliminando…")
@@ -2367,19 +2532,21 @@ export default function SecurityGuardsPage() {
           </div>
           <DialogFooter>
             <Button
+              disabled={restoreLoading}
               variant="outline"
               onClick={() => setRestoreDialogOpen(false)}
-              disabled={restoreLoading}
             >
               {t("actions.cancel", "Cancelar")}
             </Button>
             <Button
+              disabled={restoreLoading}
               variant="brand"
               onClick={async () => {
                 if (!guardToRestore) return;
                 setRestoreLoading(true);
                 try {
                   const realId = guardToRestore.raw?.id || guardToRestore.id;
+
                   await securityGuardService.restore([realId]);
                   // mark as active in UI
                   setGuards((prev) =>
@@ -2413,7 +2580,6 @@ export default function SecurityGuardsPage() {
                   setRestoreLoading(false);
                 }
               }}
-              disabled={restoreLoading}
             >
               {restoreLoading
                 ? t("guards.list.buttons.restoring", "Restaurando…")
@@ -2494,12 +2660,12 @@ export default function SecurityGuardsPage() {
           </div>
           {bulkActionType === "eliminar" && bulkDeleteBlocked && (
             <InfoNote
-              tone="warn"
               className="mt-4"
               title={t(
                 "guards.list.dialog.bulk.blockedTitle",
                 "Estos vigilantes no se pudieron eliminar",
               )}
+              tone="warn"
             >
               <ul className="list-disc space-y-1 pl-4">
                 {[
@@ -2523,9 +2689,9 @@ export default function SecurityGuardsPage() {
           )}
           <DialogFooter>
             <Button
+              disabled={bulkActionLoading}
               variant="outline"
               onClick={() => setBulkActionDialogOpen(false)}
-              disabled={bulkActionLoading}
             >
               {bulkDeleteBlocked
                 ? t("actions.close", "Cerrar")
@@ -2536,123 +2702,124 @@ export default function SecurityGuardsPage() {
               bulkDeleteBlocked &&
               bulkDeleteBlocked.blockedBySchedule.length === 0
             ) && (
-            <Button
-              variant={bulkActionType === "eliminar" ? "destructive" : "brand"}
-              onClick={async () => {
-                setBulkActionLoading(true);
-                /* Some guards could not be deleted: keep the dialog (and its
-                   action) open so the list of who and why stays on screen. */
-                let mantenerAbierto = false;
-                try {
-                  const ids = bulkActionTargetIds;
-                  if (bulkActionType === "archivar") {
-                    await securityGuardService.archive(ids);
-                    setGuards((prev) =>
-                      prev.map((g) =>
-                        selectedGuards.includes(g.id)
-                          ? {
-                              ...g,
-                              status: "Archivado",
-                              raw: { ...g.raw, status: "archived" },
-                            }
-                          : g,
-                      ),
-                    );
-                    toast.success(
-                      t(
-                        "guards.list.toasts.bulkArchived",
-                        "Vigilantes archivados",
-                      ),
-                    );
-                  } else if (bulkActionType === "restaurar") {
-                    await securityGuardService.restore(ids);
-                    setGuards((prev) =>
-                      prev.map((g) =>
-                        selectedGuards.includes(g.id)
-                          ? {
-                              ...g,
-                              status: "Activo",
-                              raw: { ...g.raw, status: "active" },
-                            }
-                          : g,
-                      ),
-                    );
-                    toast.success(
-                      t(
-                        "guards.list.toasts.bulkRestored",
-                        "Vigilantes restaurados",
-                      ),
-                    );
-                  } else if (bulkActionType === "eliminar") {
-                    // Second pass = the person chose «cancel their shifts and
-                    // delete them» for the ones the agenda blocked.
-                    const reintento = !!bulkDeleteBlocked;
-                    const objetivo = reintento
-                      ? bulkDeleteBlocked!.blockedBySchedule.map((f) => f.guard)
-                      : aEliminar(selectedGuards);
-                    const r = await eliminarVigilantes(
-                      objetivo,
-                      securityGuardService.destroy,
-                      { freeSchedule: reintento },
-                    );
-                    quitarEliminados(r);
-                    if (r.blockedBySchedule.length || r.failed.length) {
-                      setBulkDeleteBlocked({
-                        blockedBySchedule: r.blockedBySchedule,
-                        failed: r.failed,
-                      });
-                      mantenerAbierto = true;
-                      return;
-                    }
-                  }
-                  setSelectedGuards([]);
-                  setBulkActionDialogOpen(false);
-                } catch (err: any) {
-                  console.error("Error ejecutando acción masiva:", err);
-                  // The request is `silentError`: if this does not say it,
-                  // nothing does (it used to fail without a word).
-                  toast.error(
-                    t(
-                      "guards.list.toasts.bulkActionError",
-                      "No se pudo completar la acción: {{msg}}",
-                      { msg: err?.message || String(err) },
-                    ),
-                  );
-                } finally {
-                  setBulkActionLoading(false);
-                  if (!mantenerAbierto) {
-                    setBulkActionType(null);
-                    setBulkActionTargetIds([]);
-                  }
-                  setBulkActionValue("");
+              <Button
+                disabled={bulkActionLoading}
+                variant={
+                  bulkActionType === "eliminar" ? "destructive" : "brand"
                 }
-              }}
-              disabled={bulkActionLoading}
-            >
-              {bulkActionLoading
-                ? t("guards.list.buttons.processing", "Procesando…")
-                : bulkActionType === "eliminar"
-                  ? bulkDeleteBlocked
-                    ? t(
-                        "guards.list.actions.freeScheduleAndDeleteMany",
-                        "Cancelar sus turnos y eliminarlos",
-                      )
-                    : t("actions.delete", "Eliminar")
-                  : t("actions.confirm", "Confirmar")}
-            </Button>
+                onClick={async () => {
+                  setBulkActionLoading(true);
+                  /* Some guards could not be deleted: keep the dialog (and its
+                   action) open so the list of who and why stays on screen. */
+                  let mantenerAbierto = false;
+
+                  try {
+                    const ids = bulkActionTargetIds;
+
+                    if (bulkActionType === "archivar") {
+                      await securityGuardService.archive(ids);
+                      setGuards((prev) =>
+                        prev.map((g) =>
+                          selectedGuards.includes(g.id)
+                            ? {
+                                ...g,
+                                status: "Archivado",
+                                raw: { ...g.raw, status: "archived" },
+                              }
+                            : g,
+                        ),
+                      );
+                      toast.success(
+                        t(
+                          "guards.list.toasts.bulkArchived",
+                          "Vigilantes archivados",
+                        ),
+                      );
+                    } else if (bulkActionType === "restaurar") {
+                      await securityGuardService.restore(ids);
+                      setGuards((prev) =>
+                        prev.map((g) =>
+                          selectedGuards.includes(g.id)
+                            ? {
+                                ...g,
+                                status: "Activo",
+                                raw: { ...g.raw, status: "active" },
+                              }
+                            : g,
+                        ),
+                      );
+                      toast.success(
+                        t(
+                          "guards.list.toasts.bulkRestored",
+                          "Vigilantes restaurados",
+                        ),
+                      );
+                    } else if (bulkActionType === "eliminar") {
+                      // Second pass = the person chose «cancel their shifts and
+                      // delete them» for the ones the agenda blocked.
+                      const reintento = !!bulkDeleteBlocked;
+                      const objetivo = reintento
+                        ? bulkDeleteBlocked!.blockedBySchedule.map(
+                            (f) => f.guard,
+                          )
+                        : aEliminar(selectedGuards);
+                      const r = await eliminarVigilantes(
+                        objetivo,
+                        securityGuardService.destroy,
+                        { freeSchedule: reintento },
+                      );
+
+                      quitarEliminados(r);
+                      if (r.blockedBySchedule.length || r.failed.length) {
+                        setBulkDeleteBlocked({
+                          blockedBySchedule: r.blockedBySchedule,
+                          failed: r.failed,
+                        });
+                        mantenerAbierto = true;
+
+                        return;
+                      }
+                    }
+                    setSelectedGuards([]);
+                    setBulkActionDialogOpen(false);
+                  } catch (err: any) {
+                    console.error("Error ejecutando acción masiva:", err);
+                    // The request is `silentError`: if this does not say it,
+                    // nothing does (it used to fail without a word).
+                    toast.error(
+                      t(
+                        "guards.list.toasts.bulkActionError",
+                        "No se pudo completar la acción: {{msg}}",
+                        { msg: err?.message || String(err) },
+                      ),
+                    );
+                  } finally {
+                    setBulkActionLoading(false);
+                    if (!mantenerAbierto) {
+                      setBulkActionType(null);
+                      setBulkActionTargetIds([]);
+                    }
+                    setBulkActionValue("");
+                  }
+                }}
+              >
+                {bulkActionLoading
+                  ? t("guards.list.buttons.processing", "Procesando…")
+                  : bulkActionType === "eliminar"
+                    ? bulkDeleteBlocked
+                      ? t(
+                          "guards.list.actions.freeScheduleAndDeleteMany",
+                          "Cancelar sus turnos y eliminarlos",
+                        )
+                      : t("actions.delete", "Eliminar")
+                    : t("actions.confirm", "Confirmar")}
+              </Button>
             )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
       {detailsGuard && (
         <Modal
-          open={detailsOpen}
-          onOpenChange={(o) => {
-            if (!o) setDetailsOpen(false);
-          }}
-          title={t("guards.list.details.title", "Detalles del Vigilante")}
-          icon={<Eye className="h-5 w-5" />}
-          size="lg"
           footer={
             <>
               <Button variant="outline" onClick={() => setDetailsOpen(false)}>
@@ -2663,6 +2830,7 @@ export default function SecurityGuardsPage() {
                   onClick={() => {
                     setDetailsOpen(false);
                     const realId = detailsGuard.raw?.id || detailsGuard.id;
+
                     navigate(`/security-guards/edit/${realId}`);
                   }}
                 >
@@ -2671,6 +2839,13 @@ export default function SecurityGuardsPage() {
               )}
             </>
           }
+          icon={<Eye className="h-5 w-5" />}
+          open={detailsOpen}
+          size="lg"
+          title={t("guards.list.details.title", "Detalles del Vigilante")}
+          onOpenChange={(o) => {
+            if (!o) setDetailsOpen(false);
+          }}
         >
           <div
             className="mb-4 text-xs sm:text-sm"
@@ -2693,8 +2868,9 @@ export default function SecurityGuardsPage() {
             <Field
               label={t("guards.list.details.fields.email", "Correo")}
               value={
-                correoVisible(detailsGuard.raw?.guard?.email ?? detailsGuard.email) ||
-                t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")
+                correoVisible(
+                  detailsGuard.raw?.guard?.email ?? detailsGuard.email,
+                ) || t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")
               }
             />
             <Field
@@ -2821,8 +2997,8 @@ export default function SecurityGuardsPage() {
                 </li>
               </ul>
               <Button
-                variant="link"
                 className="px-0"
+                variant="link"
                 onClick={() => {
                   const csvContent = `Nombre,Correo,Teléfono,Estado,Cédula,Fecha Contrato,Género,Tipo Sangre,Credenciales,Fecha Nac.,Lugar Nac.,Estado Civ.,Educación,Dirección\nFrank Mendoza,frankmendoza12@gmail.com,+593123456789,Activo,12345678888,30/11/2025,Femenino,AB-,7878787887878usahuia,10/6/2004,Pastocalle,Casado,Universidad,Calle principal`;
                   const blob = new Blob([csvContent], {
@@ -2830,6 +3006,7 @@ export default function SecurityGuardsPage() {
                   });
                   const url = window.URL.createObjectURL(blob);
                   const link = document.createElement("a");
+
                   link.href = url;
                   link.download = "plantilla-vigilantes.csv";
                   link.click();
@@ -2859,29 +3036,29 @@ export default function SecurityGuardsPage() {
               }}
             >
               <input
-                type="file"
                 accept=".xlsx,.xls,.csv"
-                onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
                 className="hidden"
                 id="guard-file-upload"
+                type="file"
+                onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
               />
               <label
-                htmlFor="guard-file-upload"
                 className="block cursor-pointer"
+                htmlFor="guard-file-upload"
               >
                 <svg
                   className="mx-auto mb-2 h-12 w-12"
-                  style={{ color: "var(--brand-text)" }}
-                  xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
                   stroke="currentColor"
+                  strokeWidth="1.5"
+                  style={{ color: "var(--brand-text)" }}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
+                    d="M12 16v-8m0 0l-3 3m3-3 3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M12 16v-8m0 0l-3 3m3-3 3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
                 <p className="text-sm font-medium">
@@ -2906,13 +3083,14 @@ export default function SecurityGuardsPage() {
 
             <div className="flex justify-end gap-2">
               <Button
+                disabled={importLoading}
                 variant="outline"
                 onClick={() => setImportDialogOpen(false)}
-                disabled={importLoading}
               >
                 {t("actions.cancel", "Cancelar")}
               </Button>
               <Button
+                disabled={!importFile || importLoading}
                 onClick={async () => {
                   if (!importFile) {
                     toast.error(
@@ -2921,6 +3099,7 @@ export default function SecurityGuardsPage() {
                         "Selecciona un archivo",
                       ),
                     );
+
                     return;
                   }
 
@@ -2931,6 +3110,7 @@ export default function SecurityGuardsPage() {
                         "El archivo está vacío",
                       ),
                     );
+
                     return;
                   }
 
@@ -2953,12 +3133,14 @@ export default function SecurityGuardsPage() {
                   ];
 
                   const lowerName = importFile.name.toLowerCase();
+
                   if (lowerName.endsWith(".csv")) {
                     try {
                       // Try decode as UTF-8 first, fallback to windows-1252 / latin1 if headers look mojibake
                       const arrayBuffer = await new Promise<ArrayBuffer>(
                         (resolve, reject) => {
                           const fr = new FileReader();
+
                           fr.onload = () => resolve(fr.result as ArrayBuffer);
                           fr.onerror = () => reject(fr.error);
                           fr.readAsArrayBuffer(importFile);
@@ -2971,6 +3153,7 @@ export default function SecurityGuardsPage() {
                       ) => {
                         try {
                           const dec = new TextDecoder(encoding as any);
+
                           return dec.decode(buf);
                         } catch (e) {
                           return null;
@@ -2996,6 +3179,7 @@ export default function SecurityGuardsPage() {
                         const alt =
                           tryDecode(arrayBuffer, "windows-1252") ??
                           tryDecode(arrayBuffer, "iso-8859-1");
+
                         if (alt) {
                           text = alt;
                         }
@@ -3004,6 +3188,7 @@ export default function SecurityGuardsPage() {
                       const lines = text
                         .split(/\r?\n/)
                         .filter((l) => l.trim() !== "");
+
                       if (lines.length <= 1) {
                         toast.error(
                           t(
@@ -3011,6 +3196,7 @@ export default function SecurityGuardsPage() {
                             "El CSV no contiene filas de datos",
                           ),
                         );
+
                         return;
                       }
                       const firstLine = (lines[0] || "").trim();
@@ -3023,6 +3209,7 @@ export default function SecurityGuardsPage() {
                             (hh) => hh.toLowerCase() === h.toLowerCase(),
                           ),
                       );
+
                       if (missing.length > 0) {
                         console.debug("CSV headers found:", headers);
                         toast.error(
@@ -3032,6 +3219,7 @@ export default function SecurityGuardsPage() {
                             { columns: missing.join(", ") },
                           ),
                         );
+
                         return;
                       }
                       console.debug("CSV preview lines:", lines.slice(0, 5));
@@ -3043,6 +3231,7 @@ export default function SecurityGuardsPage() {
                           "No se pudo validar el archivo CSV antes de subir. Asegúrate del formato.",
                         ),
                       );
+
                       return;
                     }
                   } else if (
@@ -3053,6 +3242,7 @@ export default function SecurityGuardsPage() {
                       const arrBuf = await new Promise<ArrayBuffer>(
                         (resolve, reject) => {
                           const fr = new FileReader();
+
                           fr.onload = () => resolve(fr.result as ArrayBuffer);
                           fr.onerror = () => reject(fr.error);
                           fr.readAsArrayBuffer(importFile);
@@ -3065,6 +3255,7 @@ export default function SecurityGuardsPage() {
                       const rows = XLSX.utils.sheet_to_json(sheet, {
                         header: 1,
                       }) as any[];
+
                       if (!rows || rows.length <= 1) {
                         toast.error(
                           t(
@@ -3072,6 +3263,7 @@ export default function SecurityGuardsPage() {
                             "El archivo Excel no contiene filas de datos válidas",
                           ),
                         );
+
                         return;
                       }
                       console.debug("Excel preview rows:", rows.slice(0, 5));
@@ -3086,6 +3278,7 @@ export default function SecurityGuardsPage() {
                           "No se pudo validar el archivo Excel antes de subir. Asegúrate del formato.",
                         ),
                       );
+
                       return;
                     }
                   } else {
@@ -3103,6 +3296,7 @@ export default function SecurityGuardsPage() {
                       "Procesando archivo...",
                     ),
                   );
+
                   try {
                     // Prepare file to upload: normalize headers (remove accents, trim, lowercase)
                     const normalizeHeader = (h: string) =>
@@ -3119,6 +3313,7 @@ export default function SecurityGuardsPage() {
                       const rawLines = text
                         .split(/\r?\n/)
                         .filter((l) => l !== undefined && l !== null);
+
                       if (rawLines.length === 0) return text;
 
                       const headerLine = (rawLines[0] || "").trim();
@@ -3127,8 +3322,10 @@ export default function SecurityGuardsPage() {
                       const delimiters = [",", ";", "\t", "|"];
                       let delim = ",";
                       let bestCount = -1;
+
                       for (const d of delimiters) {
                         const count = headerLine.split(d).length - 1;
+
                         if (count > bestCount) {
                           bestCount = count;
                           delim = d;
@@ -3139,6 +3336,7 @@ export default function SecurityGuardsPage() {
                         // Basic split on detected delimiter. This does not fully handle
                         // quoted delimiters but works for common exports from Excel/Sheets.
                         const parts = line.split(delim);
+
                         return parts.map((p) => p.replace(/^"|"$/g, "").trim());
                       };
 
@@ -3149,6 +3347,7 @@ export default function SecurityGuardsPage() {
                       const rest = rawLines.slice(1).map((line) => {
                         if (!line) return "";
                         const cols = parseLine(line);
+
                         // Re-join using comma for backend consistency
                         return cols.join(",");
                       });
@@ -3175,11 +3374,13 @@ export default function SecurityGuardsPage() {
                     let uploadFile: File | Blob = importFile;
 
                     const lowerName = importFile.name.toLowerCase();
+
                     if (lowerName.endsWith(".csv")) {
                       // read as text (we already validated earlier but re-read to create normalized blob)
                       const text = await new Promise<string>(
                         (resolve, reject) => {
                           const fr = new FileReader();
+
                           fr.onload = () => resolve(String(fr.result ?? ""));
                           fr.onerror = () => reject(fr.error);
                           fr.readAsText(importFile, "utf-8");
@@ -3188,6 +3389,7 @@ export default function SecurityGuardsPage() {
                         // fallback to latin1
                         return new Promise<string>((resolve, reject) => {
                           const fr = new FileReader();
+
                           fr.onload = () => resolve(String(fr.result ?? ""));
                           fr.onerror = () => reject(fr.error);
                           try {
@@ -3199,6 +3401,7 @@ export default function SecurityGuardsPage() {
                       });
 
                       const normalized = normalizeCsvContent(text);
+
                       // parse to objects for preview
                       try {
                         const XLSX = await loadXlsx();
@@ -3209,6 +3412,7 @@ export default function SecurityGuardsPage() {
                           wbPreview.Sheets[wbPreview.SheetNames[0]],
                           { defval: "" },
                         ) as any[];
+
                         console.debug(
                           "Parsed CSV rows (preview):",
                           objs.slice(0, 5),
@@ -3225,6 +3429,7 @@ export default function SecurityGuardsPage() {
                       const arrBuf = await new Promise<ArrayBuffer>(
                         (resolve, reject) => {
                           const fr = new FileReader();
+
                           fr.onload = () => resolve(fr.result as ArrayBuffer);
                           fr.onerror = () => reject(fr.error);
                           fr.readAsArrayBuffer(importFile);
@@ -3235,6 +3440,7 @@ export default function SecurityGuardsPage() {
                       const sheetName = wb.SheetNames[0];
                       const sheet = wb.Sheets[sheetName];
                       let csv = XLSX.utils.sheet_to_csv(sheet);
+
                       csv = normalizeCsvContent(csv);
                       try {
                         const wbPreview = XLSX.read(csv, { type: "string" });
@@ -3242,6 +3448,7 @@ export default function SecurityGuardsPage() {
                           wbPreview.Sheets[wbPreview.SheetNames[0]],
                           { defval: "" },
                         ) as any[];
+
                         console.debug(
                           "Parsed Excel->CSV rows (preview):",
                           objs.slice(0, 5),
@@ -3258,6 +3465,7 @@ export default function SecurityGuardsPage() {
                     // Log FormData preview (file size and type)
                     try {
                       const fd = new FormData();
+
                       fd.append("file", uploadFile as Blob, importFile.name);
                       console.debug("FormData preview:", {
                         fileName: importFile.name,
@@ -3272,6 +3480,7 @@ export default function SecurityGuardsPage() {
                     try {
                       const blob = uploadFile as Blob;
                       let sample = "<binary or non-text>";
+
                       if (
                         blob &&
                         blob.size &&
@@ -3309,6 +3518,7 @@ export default function SecurityGuardsPage() {
                       uploadFile as any,
                       importFile?.name,
                     );
+
                     toast.dismiss(toastId);
                     toast.success(
                       t(
@@ -3323,6 +3533,7 @@ export default function SecurityGuardsPage() {
                     setLoading(true);
                     try {
                       const data = await securityGuardService.list();
+
                       if (Array.isArray(data)) {
                         const normalize = (item: any): SecurityGuard => {
                           const guardObj = item.guard ?? {};
@@ -3348,6 +3559,7 @@ export default function SecurityGuardsPage() {
                             const s = (guardObj.status ?? item.status ?? "")
                               .toString()
                               .toLowerCase();
+
                             if (s === "active" || s === "activo")
                               return "Activo";
                             if (s === "invited" || s === "invitado")
@@ -3356,8 +3568,10 @@ export default function SecurityGuardsPage() {
                               return "Pendiente";
                             if (s === "archived" || s === "archivado")
                               return "Archivado";
+
                             return "Pendiente";
                           })();
+
                           return {
                             id,
                             name,
@@ -3368,6 +3582,7 @@ export default function SecurityGuardsPage() {
                             raw: item,
                           };
                         };
+
                         setGuards(data.map(normalize));
                       }
                     } catch (e) {
@@ -3382,13 +3597,16 @@ export default function SecurityGuardsPage() {
                       error?.details ||
                       error?.response?.data?.message ||
                       error?.message ||
-                      t("ui.SecurityGuardsPage.errorAlImportar", "Error al importar");
+                      t(
+                        "ui.SecurityGuardsPage.errorAlImportar",
+                        "Error al importar",
+                      );
+
                     toast.error(msg);
                   } finally {
                     setImportLoading(false);
                   }
                 }}
-                disabled={!importFile || importLoading}
               >
                 {importLoading
                   ? t("guards.list.importDialog.importing", "Importando...")
@@ -3448,9 +3666,9 @@ export default function SecurityGuardsPage() {
               <Button variant="outline">{t("actions.cancel")}</Button>
             </DialogClose>
             <Button
+              disabled={!assignStationId || assignLoading}
               variant="brand"
               onClick={handleAssignStation}
-              disabled={!assignStationId || assignLoading}
             >
               {assignLoading
                 ? t("ui.SecurityGuardsPage.asignando", "Asignando...")

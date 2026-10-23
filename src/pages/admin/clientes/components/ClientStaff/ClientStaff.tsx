@@ -34,7 +34,12 @@ import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { clientService } from "@/lib/api/clientService";
 import guardRatingService from "@/lib/api/guardRatingService";
 import GuardRatingLevel from "@/pages/admin/security-guards/GuardRatingLevel";
-import { Section, EmptyState, StatusBadge, SearchInput } from "@/components/kit";
+import {
+  Section,
+  EmptyState,
+  StatusBadge,
+  SearchInput,
+} from "@/components/kit";
 import { Donut, MeterBar } from "@/components/charts";
 import { seriesVar } from "@/lib/chartColors";
 import { ApiService } from "@/services/api/apiService";
@@ -291,7 +296,8 @@ export default function ClientStaff({ client }: { client: Client }) {
   const ausencias: Ausencia[] = data?.ausenciasHoy || [];
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
@@ -333,7 +339,7 @@ export default function ClientStaff({ client }: { client: Client }) {
       title: t("ui.ClientStaff.quitarDeLaEstacion", "Quitar de la estación"),
       message: t("ui.ClientStaff.quitarDeEstacionConfirm", {
         defaultValue:
-          "¿Quitar a {{name}} de \"{{station}}\"? Volverá al grupo de vigilantes sin asignación y se eliminarán sus turnos futuros generados.",
+          '¿Quitar a {{name}} de "{{station}}"? Volverá al grupo de vigilantes sin asignación y se eliminarán sus turnos futuros generados.',
         name: p.name,
         station: p.puesto || t("ui.ClientStaff.suEstacion", "su estación"),
       }),
@@ -383,9 +389,9 @@ export default function ClientStaff({ client }: { client: Client }) {
             <SearchInput
               className="col-span-2 md:col-span-3 xl:col-span-1"
               placeholder={t(
-                  "ui.ClientStaff.buscarPorNombreIdO",
-                  "Buscar por nombre, ID o estación",
-                )}
+                "ui.ClientStaff.buscarPorNombreIdO",
+                "Buscar por nombre, ID o estación",
+              )}
               value={q}
               onChange={(v) => resetPage(setQ)(v)}
             />
@@ -547,7 +553,10 @@ export default function ClientStaff({ client }: { client: Client }) {
                           >
                             <RouteIcon className="h-3.5 w-3.5" />{" "}
                             {p.ultimaActividad.label ||
-                              t("ui.ClientCoverage.rondaActiva", "Ronda activa")}
+                              t(
+                                "ui.ClientCoverage.rondaActiva",
+                                "Ronda activa",
+                              )}
                           </span>
                         ) : p.ultimaActividad?.label ? (
                           <div>

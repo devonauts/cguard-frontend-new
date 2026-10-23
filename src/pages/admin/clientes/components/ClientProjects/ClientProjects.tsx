@@ -83,7 +83,9 @@ export default function ClientProjects({ client }: Props) {
     if (!deleteTargetId) return;
     try {
       await projectService.delete([deleteTargetId]);
-      toast.success(t("ui.ClientProjects.proyectoEliminado", "Proyecto eliminado"));
+      toast.success(
+        t("ui.ClientProjects.proyectoEliminado", "Proyecto eliminado"),
+      );
       setDeleteTargetId(undefined);
       loadProjects();
     } catch {
@@ -95,11 +97,16 @@ export default function ClientProjects({ client }: Props) {
     try {
       await projectService.update(id, { status: "completed" });
       toast.success(
-        t("ui.ClientProjects.proyectoCompletado", "Proyecto marcado como completado"),
+        t(
+          "ui.ClientProjects.proyectoCompletado",
+          "Proyecto marcado como completado",
+        ),
       );
       loadProjects();
     } catch {
-      toast.error(t("ui.ClientProjects.errorAlActualizar", "Error al actualizar"));
+      toast.error(
+        t("ui.ClientProjects.errorAlActualizar", "Error al actualizar"),
+      );
     }
   };
 
@@ -206,7 +213,8 @@ export default function ClientProjects({ client }: Props) {
                               setOpenForm(true);
                             }}
                           >
-                            <Pencil className="mr-2 h-4 w-4" /> {t("actions.edit", "Editar")}
+                            <Pencil className="mr-2 h-4 w-4" />{" "}
+                            {t("actions.edit", "Editar")}
                           </DropdownMenuItem>
                           {p.status !== "completed" && (
                             <DropdownMenuItem
@@ -216,14 +224,18 @@ export default function ClientProjects({ client }: Props) {
                                 className="mr-2 h-4 w-4"
                                 style={{ color: "var(--ok-text)" }}
                               />{" "}
-                              {t("ui.ClientProjects.marcarCompletado", "Marcar completado")}
+                              {t(
+                                "ui.ClientProjects.marcarCompletado",
+                                "Marcar completado",
+                              )}
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
                             style={{ color: "var(--bad-text)" }}
                             onClick={() => setDeleteTargetId(p.id)}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> {t("actions.delete", "Eliminar")}
+                            <Trash2 className="mr-2 h-4 w-4" />{" "}
+                            {t("actions.delete", "Eliminar")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

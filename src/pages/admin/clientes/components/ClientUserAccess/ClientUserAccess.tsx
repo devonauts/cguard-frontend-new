@@ -1,9 +1,8 @@
+import type { Client } from "@/types/client";
+
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
-import { clientService } from "@/lib/api/clientService";
-import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
 import {
   UserPlus,
   Users,
@@ -12,7 +11,7 @@ import {
   Smartphone,
   Loader2,
 } from "lucide-react";
-import { Section, EmptyState, StatusBadge, Modal, SearchInput } from "@/components/kit";
+
 import {
   FIELD_CLS,
   LabeledField,
@@ -20,8 +19,18 @@ import {
   TabLoading,
   Avatar,
 } from "../_shared/tab-kit";
+
+import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
+import { clientService } from "@/lib/api/clientService";
+import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
+import {
+  Section,
+  EmptyState,
+  StatusBadge,
+  Modal,
+  SearchInput,
+} from "@/components/kit";
 import { Button } from "@/components/ui/button";
-import type { Client } from "@/types/client";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
 type Props = { client: Client };
@@ -40,6 +49,7 @@ interface AccessUser {
 export default function ClientUserAccess({ client }: Props) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
+
   useScrollToTopOnMount(containerRef);
 
   const [users, setUsers] = useState<AccessUser[]>([]);
@@ -55,6 +65,7 @@ export default function ClientUserAccess({ client }: Props) {
   // Con el correo de la app apagado sólo queda el portal, y el canal por
   // defecto tiene que dejar de ser uno que el servidor va a rechazar.
   const appInviteEnabled = useAppInviteEnabled();
+
   useEffect(() => {
     if (!appInviteEnabled)
       setForm((f) => (f.channel === "app" ? { ...f, channel: "portal" } : f));
@@ -63,6 +74,7 @@ export default function ClientUserAccess({ client }: Props) {
   const load = async () => {
     try {
       const u = await clientService.getClientAccessUsers(client.id);
+
       setUsers(Array.isArray(u) ? u : []);
     } catch {
       setUsers([]);
@@ -70,9 +82,10 @@ export default function ClientUserAccess({ client }: Props) {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     setLoading(true);
-    load(); /* eslint-disable-next-line */
+    load();
   }, [client.id]);
 
   const filtered = users.filter(
@@ -83,8 +96,10 @@ export default function ClientUserAccess({ client }: Props) {
 
   const invite = async () => {
     const email = form.email.trim();
+
     if (!email) {
       toast.error(t("ui.ClientUserAccess.ingresaUnCorreo"));
+
       return;
     }
     setSending(true);
@@ -104,7 +119,10 @@ export default function ClientUserAccess({ client }: Props) {
     } catch (e: any) {
       toast.error(
         e?.response?.data?.message ||
-          t("ui.ClientsPage.errorEnviarInvitacion", "No se pudo enviar la invitación"),
+          t(
+            "ui.ClientsPage.errorEnviarInvitacion",
+            "No se pudo enviar la invitación",
+          ),
       );
     } finally {
       setSending(false);
@@ -114,6 +132,7 @@ export default function ClientUserAccess({ client }: Props) {
   const revoke = async (u: AccessUser) => {
     if (u.isTitular || !u.pivotId) {
       toast.error(t("ui.ClientUserAccess.elAccesoDelTitularSe"));
+
       return;
     }
     if (
@@ -140,14 +159,14 @@ export default function ClientUserAccess({ client }: Props) {
   return (
     <div ref={containerRef} className="space-y-4">
       <Section
-        title={t("comun.usuariosConAcceso")}
-        icon={<Users className="h-4 w-4" />}
         action={
           <Button size="sm" variant="brand" onClick={() => setInviteOpen(true)}>
             <UserPlus className="mr-1.5 h-4 w-4" />{" "}
             {t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
           </Button>
         }
+        icon={<Users className="h-4 w-4" />}
+        title={t("comun.usuariosConAcceso")}
       >
         <SearchInput
           className="mb-3 max-w-sm"
@@ -158,15 +177,15 @@ export default function ClientUserAccess({ client }: Props) {
 
         {filtered.length === 0 ? (
           <EmptyState
-            icon={<Users className="h-5 w-5" />}
-            title={t("comun.sinUsuariosConAcceso")}
-            description={t("ui.ClientUserAccess.invitaAlTitularOAgrega")}
             action={
               <Button size="sm" onClick={() => setInviteOpen(true)}>
                 <UserPlus className="mr-1.5 h-4 w-4" />{" "}
-            {t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
+                {t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
               </Button>
             }
+            description={t("ui.ClientUserAccess.invitaAlTitularOAgrega")}
+            icon={<Users className="h-5 w-5" />}
+            title={t("comun.sinUsuariosConAcceso")}
           />
         ) : (
           <div className="divide-y">
@@ -187,14 +206,17 @@ export default function ClientUserAccess({ client }: Props) {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <StatusBadge
-                    tone={u.isTitular ? "green" : "blue"}
                     dot={false}
+                    tone={u.isTitular ? "green" : "blue"}
                   >
                     {u.role || t("ui.ClientPortal.acceso", "Acceso")}
                   </StatusBadge>
                   {!u.isTitular && u.pivotId && (
                     <RowAction
-                      title={t("ui.ClientUserAccess.revocarAcceso", "Revocar acceso")}
+                      title={t(
+                        "ui.ClientUserAccess.revocarAcceso",
+                        "Revocar acceso",
+                      )}
                       tone="bad"
                       onClick={() => revoke(u)}
                     >
@@ -215,25 +237,19 @@ export default function ClientUserAccess({ client }: Props) {
       </Section>
 
       <Modal
-        open={inviteOpen}
-        onOpenChange={(o) => {
-          if (!sending) setInviteOpen(o);
-        }}
-        title={t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
-        icon={<UserPlus className="h-5 w-5" />}
         footer={
           <>
             <Button
+              disabled={sending}
               variant="outline"
               onClick={() => setInviteOpen(false)}
-              disabled={sending}
             >
               {t("actions.cancel")}
             </Button>
             <Button
+              disabled={sending || !form.email.trim()}
               variant="brand"
               onClick={invite}
-              disabled={sending || !form.email.trim()}
             >
               {sending ? (
                 <>
@@ -246,13 +262,19 @@ export default function ClientUserAccess({ client }: Props) {
             </Button>
           </>
         }
+        icon={<UserPlus className="h-5 w-5" />}
+        open={inviteOpen}
+        title={t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
+        onOpenChange={(o) => {
+          if (!sending) setInviteOpen(o);
+        }}
       >
         <div className="space-y-3">
           <LabeledField label={t("ui.ClientUserAccess.correoDeLaPersona")}>
             <input
-              type="email"
               className={FIELD_CLS}
               placeholder={t("ui.ClientUserAccess.personaEmpresaCom")}
+              type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
@@ -263,17 +285,20 @@ export default function ClientUserAccess({ client }: Props) {
             >
               {(
                 [
-                  ["app", t("ui.ClientUserAccess.appMiSeguridad", "App Mi Seguridad")],
+                  [
+                    "app",
+                    t("ui.ClientUserAccess.appMiSeguridad", "App Mi Seguridad"),
+                  ],
                   ["portal", t("ui.ClientUserAccess.portalWeb", "Portal web")],
                 ] as const
               )
                 .filter(([canal]) => canal !== "app" || appInviteEnabled)
                 .map(([canal, etiqueta]) => {
                   const activo = form.channel === canal;
+
                   return (
                     <button
                       key={canal}
-                      onClick={() => setForm({ ...form, channel: canal })}
                       className="cg-focus flex items-center gap-2 rounded-lg border p-2.5 text-sm transition-all"
                       style={
                         activo
@@ -287,6 +312,7 @@ export default function ClientUserAccess({ client }: Props) {
                               color: "var(--ink-soft)",
                             }
                       }
+                      onClick={() => setForm({ ...form, channel: canal })}
                     >
                       {canal === "app" ? (
                         <Smartphone className="h-4 w-4" />

@@ -214,7 +214,8 @@ const fmtDT = (iso: string) => {
 const ago = (iso: string) => {
   const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
 
-  if (s < 60) return i18n.t("ui.ClientDocuments.haceInstantes", "hace instantes");
+  if (s < 60)
+    return i18n.t("ui.ClientDocuments.haceInstantes", "hace instantes");
   if (s < 3600)
     return i18n.t("ui.ClientDocuments.haceMin", {
       defaultValue: "hace {{n}} min",
@@ -308,7 +309,8 @@ export default function ClientDocuments({ client }: { client: Client }) {
   const total = data?.total ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    ? new Date(data.updatedAt).toLocaleString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         hour: "2-digit",
@@ -402,7 +404,8 @@ export default function ClientDocuments({ client }: { client: Client }) {
   /** Nombre por defecto: el mes en curso. Es lo que se teclea el 95 % de las veces. */
   const abrirAgrupar = () => {
     const ahora = new Date();
-    const mes = ahora.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    const mes = ahora.toLocaleDateString(localeActual(), {
+      timeZone: zonaDeLaEmpresa(),
       month: "long",
       year: "numeric",
     });
@@ -445,7 +448,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
       setPacketsKey((k) => k + 1);
     } catch {
       toast.error(
-        t("ui.ClientDocuments.noSePudoCrearLaCarpeta", "No se pudo crear la carpeta"),
+        t(
+          "ui.ClientDocuments.noSePudoCrearLaCarpeta",
+          "No se pudo crear la carpeta",
+        ),
       );
     } finally {
       setCreando(false);
@@ -456,7 +462,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
     if (
       !(await confirmDialog({
         message: t("ui.ClientDocuments.eliminarConfirm", {
-          defaultValue: "¿Eliminar \"{{name}}\"?",
+          defaultValue: '¿Eliminar "{{name}}"?',
           name: d.name,
         }),
         tone: "danger",
@@ -465,7 +471,9 @@ export default function ClientDocuments({ client }: { client: Client }) {
       return;
     try {
       await clientService.deleteClientDocument(d.id);
-      toast.success(t("ui.ClientDocuments.documentoEliminado", "Documento eliminado"));
+      toast.success(
+        t("ui.ClientDocuments.documentoEliminado", "Documento eliminado"),
+      );
       await load(true);
     } catch {
       toast.error(t("comun.noSePudoEliminar"));
@@ -607,7 +615,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
               action={
                 <Button size="sm" onClick={() => setUploadOpen(true)}>
                   <Upload className="mr-1.5 h-4 w-4" />{" "}
-            {t("ui.ClientDocuments.subirDocumento", "Subir documento")}
+                  {t("ui.ClientDocuments.subirDocumento", "Subir documento")}
                 </Button>
               }
               description={t("ui.ClientDocuments.subeElPrimerDocumentoDe")}
@@ -805,7 +813,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
                 <span>{kpis.usedPct ?? 0}%</span>
               </div>
               <MeterBar
-                ariaLabel={t("ui.ClientDocuments.almacenamientoUsado", "Almacenamiento usado")}
+                ariaLabel={t(
+                  "ui.ClientDocuments.almacenamientoUsado",
+                  "Almacenamiento usado",
+                )}
                 height={6}
                 minVisiblePct={1}
                 pct={kpis.usedPct ?? 0}
@@ -857,7 +868,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
 
           <Section
             icon={<Clock />}
-            title={t("ui.ClientDocuments.actividadReciente", "Actividad reciente")}
+            title={t(
+              "ui.ClientDocuments.actividadReciente",
+              "Actividad reciente",
+            )}
           >
             {activity.length === 0 ? (
               <p className="text-sm" style={{ color: "var(--ink-soft)" }}>

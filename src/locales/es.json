@@ -20254,6 +20254,10 @@
       "enRiesgo": "En riesgo",
       "incidentes": "Incidentes",
       "total": "Toda la empresa"
+    },
+    "etiqueta": {
+      "empresa": "Empresa",
+      "columna": "Sucursal"
     }
   },
   "soporte": {

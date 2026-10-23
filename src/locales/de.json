@@ -20254,6 +20254,10 @@
       "enRiesgo": "Gefährdet",
       "incidentes": "Vorfälle",
       "total": "Ganzes Unternehmen"
+    },
+    "etiqueta": {
+      "empresa": "Unternehmen",
+      "columna": "Niederlassung"
     }
   },
   "soporte": {
