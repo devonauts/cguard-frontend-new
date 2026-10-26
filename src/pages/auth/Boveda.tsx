@@ -183,7 +183,7 @@ export default function Boveda({
             {marca.logo ? (
               <img
                 alt={nombreDeMarca}
-                className="h-10 max-w-[200px] object-contain"
+                className="cg-reg-logo-socio h-[72px] w-auto max-w-[min(340px,85vw)] object-contain sm:h-[88px]"
                 src={(!claro && marca.logoDarkUrl) || marca.logo}
               />
             ) : nombreDeMarca ? (

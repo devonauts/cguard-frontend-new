@@ -102,7 +102,7 @@ function LoadingScreen() {
       {tenantLogo && (
         <img
           alt="Logo"
-          className="h-14 max-w-[200px] object-contain"
+          className="h-16 w-auto max-w-[min(320px,85vw)] object-contain sm:h-20"
           src={tenantLogo}
           onError={(e) => {
             e.currentTarget.style.display = "none";
