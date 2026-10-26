@@ -6114,7 +6114,8 @@
     "notBilled": {
       "archived": "Geen toegang · niet gefactureerd",
       "demo": "Voorbeeldgegevens · niet gefactureerd",
-      "duplicate": "Dubbel · wordt al één keer gefactureerd"
+      "duplicate": "Dubbel · wordt al één keer gefactureerd",
+      "pending": "Nog geen geregistreerd account · niet gefactureerd"
     },
     "partner": {
       "activeMsg": "Je abonnement is bijgewerkt. Het wordt elke maand automatisch afgeschreven.",

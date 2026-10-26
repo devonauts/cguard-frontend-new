@@ -629,10 +629,15 @@ function BillingPageDeLaPrincipal() {
                                         defaultValue:
                                           "Datos de ejemplo · no se cobra",
                                       })
-                                    : t("billing.notBilled.duplicate", {
-                                        defaultValue:
-                                          "Repetida · ya se cobra una vez",
-                                      })}
+                                    : u.excludedReason === "pending"
+                                      ? t("billing.notBilled.pending", {
+                                          defaultValue:
+                                            "Sin cuenta registrada aún · no se cobra",
+                                        })
+                                      : t("billing.notBilled.duplicate", {
+                                          defaultValue:
+                                            "Repetida · ya se cobra una vez",
+                                        })}
                               </div>
                             )}
                             {u.email && (

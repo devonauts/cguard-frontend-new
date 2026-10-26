@@ -6114,7 +6114,8 @@
     "notBilled": {
       "archived": "Kein Zugang · wird nicht berechnet",
       "demo": "Beispieldaten · wird nicht berechnet",
-      "duplicate": "Doppelt · wird bereits einmal berechnet"
+      "duplicate": "Doppelt · wird bereits einmal berechnet",
+      "pending": "Noch kein registriertes Konto · nicht berechnet"
     },
     "partner": {
       "activeMsg": "Ihr Abonnement ist auf dem neuesten Stand. Die Abbuchung erfolgt automatisch jeden Monat.",
