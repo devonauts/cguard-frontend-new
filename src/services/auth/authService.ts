@@ -7,6 +7,8 @@ export interface LoginCredentials {
   password: string;
   /** The account's realm, once the person chose it (email unique per realm). */
   realm?: string;
+  /** Cloudflare Turnstile token (action «login»), when the platform has the captcha on. */
+  captchaToken?: string;
 }
 
 export interface SignUpData {
