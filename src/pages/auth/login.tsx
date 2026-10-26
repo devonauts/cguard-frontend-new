@@ -25,6 +25,7 @@ import { consultaDeAtribucion } from "@/lib/atribucionWeb";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { ApiService } from "@/services/api/apiService";
+import Captcha from "@/components/auth/Captcha";
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -41,6 +42,39 @@ export default function Login() {
   /* Tras el visto verde: «Bienvenido, {nombre}» y luego el CRM entra por
      partes (opciones 13 + 14 de la galería de transiciones). */
   const [bienvenida, setBienvenida] = useState(false);
+
+  /* The captcha on sign-in (2026-10-26): the same Cloudflare Turnstile the
+     sign-up uses, when the server has it configured (/auth/sign-up/config).
+     A token is single-use: after a failed attempt the widget is remounted
+     (`captchaVuelta`) for a fresh one. The server keeps a solved captcha for
+     5 minutes, so choosing the company does not ask again. */
+  const [captcha, setCaptcha] = useState<{ siteKey: string; provider: "turnstile" | "recaptcha" } | null>(null);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaVuelta, setCaptchaVuelta] = useState(0);
+  const nuevoCaptcha = () => {
+    setCaptchaToken("");
+    setCaptchaVuelta((v) => v + 1);
+  };
+
+  useEffect(() => {
+    let vivo = true;
+
+    ApiService.get("/auth/sign-up/config")
+      .then((r: any) => {
+        if (!vivo) return;
+        const c = (r && (r.captcha || r.data?.captcha)) || null;
+
+        if (c && c.enabled && c.siteKey)
+          setCaptcha({ siteKey: c.siteKey, provider: c.provider === "recaptcha" ? "recaptcha" : "turnstile" });
+      })
+      .catch(() => {
+        /* without the config the form stays usable: the server decides */
+      });
+
+    return () => {
+      vivo = false;
+    };
+  }, []);
   /* Al acabar la bienvenida, la guarda (PublicOnlyRoute) redirige con su
      lógica de siempre: vigilante → /guard, el resto → panel. */
   const irAlCrm = useCallback(() => terminarEntradaAlCrm(), []);
@@ -139,7 +173,7 @@ export default function Login() {
     setCuentaElegida(realm);
     setIsLoading(true);
     empezarEntradaAlCrm();
-    const result = await signIn({ email: email.trim(), password, realm });
+    const result = await signIn({ email: email.trim(), password, realm, captchaToken: captchaToken || undefined });
 
     setIsLoading(false);
     if (result.success) {
@@ -150,6 +184,7 @@ export default function Login() {
       navigate(rutaDeAccesoBloqueado({ motivo: "bloqueo" }), { replace: true });
     } else {
       cancelarEntradaAlCrm();
+      nuevoCaptcha();
       toast.error(result.error || t("auth.login_failed"));
     }
   };
@@ -165,6 +200,11 @@ export default function Login() {
     // use validation helpers from the hook (they show localized toasts).
     // Correo O usuario: sin validar formato de correo (ver validateLoginId).
     if (!validateLoginId() || !validatePassword(6)) return;
+    if (captcha && !captchaToken) {
+      toast.error(t("auth.captcha_pending", { defaultValue: "Confirma que no eres un robot para continuar." }));
+
+      return;
+    }
     const ok = await accion.ejecutar(async () => {
       setIsLoading(true);
       // Antes de pedir la sesión: que la guarda no salte al panel todavía.
@@ -177,6 +217,7 @@ export default function Login() {
         email: email.trim(),
         password,
         realm: cuentaElegida || undefined,
+        captchaToken: captchaToken || undefined,
       });
 
       setIsLoading(false);
@@ -196,6 +237,7 @@ export default function Login() {
       }
       if (!result.success) {
         cancelarEntradaAlCrm();
+        nuevoCaptcha();
         toast.error(result.error || t("auth.login_failed"));
 
         return false;
@@ -345,6 +387,17 @@ export default function Login() {
               {t("auth.forgot_password")}
             </NavLink>
           </div>
+
+          {captcha ? (
+            <Captcha
+              key={captchaVuelta}
+              action="login"
+              className="flex justify-center"
+              provider={captcha.provider}
+              siteKey={captcha.siteKey}
+              onToken={setCaptchaToken}
+            />
+          ) : null}
 
           <BotonDeAccion estado={accion.estado} type="submit">
             {t("auth.login")} <ArrowRight className="h-4 w-4" />
