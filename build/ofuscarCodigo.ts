@@ -57,11 +57,26 @@ export const OPCIONES_DE_OFUSCACION = {
 };
 
 export function ofuscarCodigo(): Plugin {
+  let apiUrl = "";
   return {
     name: "cg-ofuscar-codigo",
     apply: "build",
     enforce: "post",
+    configResolved(config) {
+      apiUrl = String(config.env?.VITE_API_URL || process.env.VITE_API_URL || "");
+    },
     generateBundle(_salida, bundle) {
+      /* The minifier writes every string as a template literal (`…`) and the
+         obfuscator encodes those even when reservedStrings matches, so the API
+         URL can no longer be found by grepping the shipped code. Check it here,
+         in the PLAIN code, and leave the proof in cg-api.json for
+         scripts/verificar-build.mjs and the deploy script. */
+      if (apiUrl) {
+        let origen = "";
+        try { origen = new URL(apiUrl).origin; } catch { /* relative base: nothing to check */ }
+        const presente = !origen || Object.values(bundle).some((f) => f.type === "chunk" && f.code.includes(origen));
+        this.emitFile({ type: "asset", fileName: "cg-api.json", source: JSON.stringify({ api: apiUrl, enElCodigo: presente }) + "\n" });
+      }
       if (process.env.CG_SIN_OFUSCAR === "1") {
         this.warn("CG_SIN_OFUSCAR=1: build SIN ofuscar (sólo para depurar en local)");
         return;

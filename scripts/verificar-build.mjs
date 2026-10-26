@@ -155,6 +155,15 @@ let incrustada = false;
 for (const f of ficheros(DIST)) {
   if (fs.readFileSync(f, 'utf8').includes(origen)) { incrustada = true; break; }
 }
+// Obfuscated code encodes the URL: build/ofuscarCodigo checked it in the plain
+// code before encoding and left the proof here.
+const prueba = path.join(DIST, 'cg-api.json');
+if (!incrustada && fs.existsSync(prueba)) {
+  try {
+    const p = JSON.parse(fs.readFileSync(prueba, 'utf8'));
+    incrustada = p.api === url && p.enElCodigo === true;
+  } catch { /* unreadable proof: the check below fails */ }
+}
 
 if (!incrustada) {
   fallar(
