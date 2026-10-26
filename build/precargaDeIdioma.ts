@@ -19,9 +19,15 @@ import type { Plugin } from "vite";
 const IDIOMAS = ["es", "en", "pt", "fr", "de", "it", "nl", "pl"];
 
 export function precargaDeIdioma(): Plugin {
+  /* La base del build: `/` en el CRM, `/p/` en la mini-app pública. */
+  let base = "/";
+
   return {
     name: "precarga-de-idioma",
     apply: "build",
+    configResolved(c) {
+      base = c.base || "/";
+    },
     transformIndexHtml: {
       order: "post",
       handler(html, ctx) {
@@ -30,7 +36,7 @@ export function precargaDeIdioma(): Plugin {
         for (const archivo of Object.keys(ctx.bundle || {})) {
           const m = /^assets\/([a-z]{2})-[\w-]+\.js$/.exec(archivo);
 
-          if (m && IDIOMAS.includes(m[1])) mapa[m[1]] = "/" + archivo;
+          if (m && IDIOMAS.includes(m[1])) mapa[m[1]] = base + archivo;
         }
         if (Object.keys(mapa).length !== IDIOMAS.length) return html;
         const guion =
@@ -65,7 +71,7 @@ export function precargaDeIdioma(): Plugin {
         return {
           html,
           tags: [
-            { tag: "script", attrs: { src: "/" + fileName }, injectTo: "head" },
+            { tag: "script", attrs: { src: base + fileName }, injectTo: "head" },
           ],
         };
       },

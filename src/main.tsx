@@ -9,6 +9,7 @@ import { atenderVueltaDeGusto } from "./lib/vueltaDeGusto";
 import { instalarIdiomaEnFetch } from "./lib/idiomaElegido";
 import { instalarBlindajeDom } from "./lib/blindajeDom";
 import { guardarAtribucionWeb } from "./lib/atribucionWeb";
+import { mantenerSesionDeCodigo } from "./lib/sesionDeCodigo";
 
 // Antes de pintar nada: un traductor del navegador no debe poder tumbar la app.
 instalarBlindajeDom();
@@ -115,6 +116,9 @@ if (!(window as any).cguardDesktop) {
 
   registrarActualizador(actualizar);
 }
+/* El código del CRM sólo se sirve con la cookie de la sesión (ver
+   lib/sesionDeCodigo): se renueva ahora y cada 4 h mientras esté abierto. */
+mantenerSesionDeCodigo();
 startCachePersistence();
 /* La identidad sale YA, en paralelo con la marca del anfitrión, en vez de
    encolarse detrás de ella. El porqué medido está en `perfilDeLaCuenta.ts`. */

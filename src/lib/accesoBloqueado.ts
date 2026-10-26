@@ -16,6 +16,7 @@
  * lo que sea no está, se hace lo mínimo: quitar el token y navegar.
  * ════════════════════════════════════════════════════════════════════════════
  */
+import { cerrarSesionDeCodigo } from "@/lib/sesionDeCodigo";
 
 export const RUTA_ACCESO_BLOQUEADO = "/acceso-bloqueado";
 
@@ -101,6 +102,7 @@ export async function sacarDeLaSesion(
   } catch {
     /* sin almacenamiento */
   }
+  void cerrarSesionDeCodigo();
   try {
     window.location.replace(destino);
   } catch {

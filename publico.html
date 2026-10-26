@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="es" translate="no" class="notranslate">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- El CRM ya viene en 8 idiomas. Si Chrome/Safari/Edge lo traducen encima,
+         reescriben el texto del DOM por su cuenta y React se cae al reconciliar
+         («Failed to execute 'insertBefore' on 'Node'…»): le pasó a un prospecto
+         creando su cuenta (2026-10-08). Se pide a los navegadores que no lo traduzcan;
+         el idioma se elige en la propia app. -->
+    <meta name="google" content="notranslate" />
+    <!-- SIN `maximum-scale` NI `user-scalable=0`. Bloquear el pellizco es una
+         barrera de accesibilidad, y aquí pesa el doble: esto se usa en la calle,
+         con guantes, a contraluz y con gente que necesita agrandar una placa o
+         una coordenada para leerla. iOS además ignora el bloqueo desde hace
+         años, así que lo único que conseguía era romper el zoom en Android.
+         Ojo: al devolver el zoom, iOS vuelve a ampliar solo al enfocar un campo
+         de menos de 16 px — por eso glass.css fija 16 px en pantalla táctil.
+
+         `viewport-fit=cover` SÍ va, y ahora es seguro: las tres piezas que
+         tienen que sumar lo mismo ya usan la misma fórmula —la cabecera y
+         `<main>` en `app-layout.tsx`, y `.cg-route-progress` en glass.css—,
+         todas con `env(safe-area-inset-top)`. Sin `cover`, esa variable vale
+         `0px` y el resultado es idéntico al de antes; con `cover`, la cabecera
+         reserva la muesca en vez de meterse debajo. El cajón lateral y el rail
+         reservan además el inset izquierdo, que es el que muerde en apaisado. -->
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
+    />
+
+    <!-- ── Buscadores ──────────────────────────────────────────────────────
+         Este dominio es la APLICACIÓN, no la web que vende. Antes pedía ser
+         indexado con el título y la descripción del producto entero, así que
+         quien buscaba la marca podía aterrizar en un formulario de acceso en
+         lugar de en cguardpro.com — y encima compitiendo contra ella por las
+         mismas palabras, con una página que sin JavaScript no sirve ni una
+         palabra de contenido.
+
+         Ahora:
+         · `noindex, follow` — fuera del índice, pero los enlaces se siguen.
+         · `canonical` a cguardpro.com — la señal de marca se consolida allí.
+
+         Este archivo es el ÚNICO que se sirve para CUALQUIER ruta (nginx:
+         `try_files $uri $uri/ /index.html`; no hay render en servidor ni
+         prerenderizado). Por eso el noindex cubre todo el panel de una vez,
+         incluidas las rutas que se añadan mañana... y por eso NO se puede
+         dejar `/login` indexable desde aquí: la etiqueta es la misma para las
+         dos. Y no vale ponerla con JavaScript al revés (noindex en el HTML y
+         quitarlo en `/login`): cuando el noindex viene en el HTML de origen,
+         el rastreador descarta la página ANTES de ejecutar el JavaScript, así
+         que ese permiso nunca lo vería. Si algún día hay que posicionar
+         «cguardpro acceso», sale de la web comercial o de una cabecera
+         `X-Robots-Tag` por ruta en nginx, no de este archivo. -->
+    <!-- ── EL TÍTULO DEL PRIMER PINTADO ES NEUTRO (fase 11) ──────────────
+         Este archivo es EL MISMO para `app.cguardpro.com` y para el anfitrión
+         de cualquier socio: hay un solo artefacto de CRM y la marca es un dato
+         en tiempo de ejecución. Un título con la marca aquí aparecería en la
+         pestaña durante el arranque de TODOS los anfitriones, y el cliente de
+         un socio descubriría a su proveedor por el rabillo del ojo.
+
+         `WhiteLabelProvider` pone el título de verdad —el del socio, o el de
+         CGuardPro— en cuanto responde `/api/platform/context`. Lo que se ve
+         entretanto es esto: una palabra que no es de nadie. -->
+    <title>Acceso</title>
+    <!-- Shell version: changing it makes every installed service worker fetch index.html again. Bumped
+         2026-10-22: the copy precached between 06:44 and 17:39 UTC carried a CSP that blocked the API. -->
+    <meta name="cg-shell" content="2026-10-22b" />
+
+    <!-- Poppins is self-hosted (bundled via src/main.tsx) — no render-blocking
+         Google Fonts CDN request, and no dependency on a CDN that email/geo
+         filters sometimes block. (Removed the duplicate CDN <link>.) -->
+
+    <!-- Neutra por lo mismo que el título. La página lleva `noindex`, así que
+         esto no lo lee ningún buscador: lo leen las vistas previas de enlaces,
+         que es donde una marca ajena canta. -->
+    <meta
+      name="description"
+      content="Pantalla de acceso. Entra con tu cuenta de empresa."
+    />
+    <!-- Aquí vivía una lista de palabras clave declaradas a mano. Google la
+         ignora desde 2009 y hoy sólo delata SEO viejo: se retiró entera en
+         lugar de mantenerla. -->
+    <!-- Sin autor declarado: aquí diría la marca de la plataforma en el
+         anfitrión de un socio. -->
+    <meta name="robots" content="noindex, follow" />
+    <!-- El color de la barra del navegador, en el tono NEUTRO de la superficie
+         y no en un acento de marca: el acento lo pone `--brand-h` en tiempo de
+         ejecución y aquí clavarlo haría que la barra parpadeara del color de la
+         plataforma al del socio. -->
+    <meta name="theme-color" content="#0A0E16" />
+    <!-- ── EL CANÓNICO SE QUEDA, Y APUNTA A LA WEB COMERCIAL ─────────────
+         Decisión deliberada, no un descuido. La página lleva `noindex, follow`,
+         así que ningún buscador la va a indexar bajo ninguna URL — el canónico
+         aquí sólo consolida la señal de marca de la PLATAFORMA en su propia web,
+         que es lo que ya hacía y sigue siendo correcto.
+
+         Lo que NO se hace es inventar un canónico por anfitrión: eso sería
+         arquitectura SEO por socio (sitemaps, indexación, señales de marca
+         separadas) y no es de esta fase. Y dejarlo apuntando a
+         `app.cguardpro.com` sí habría sido un error: haría que el anfitrión de
+         un socio reclamara la identidad canónica de la plataforma. -->
+    <link rel="canonical" href="https://cguardpro.com/" />
+
+    <!-- ── OPENGRAPH Y TWITTER, RETIRADOS (fase 11) ──────────────────────
+         Declaraban `og:site_name`, `og:title`, `og:image` y `twitter:*` con la
+         marca y el logotipo de CGuardPro, en un archivo que ahora sirve también
+         a los anfitriones de los socios. Pegar el enlace de acceso de un socio
+         en un chat mostraba la tarjeta de CGuardPro — que es precisamente el
+         trato que la marca blanca vende.
+
+         No se sustituyen por etiquetas dinámicas: eso es arquitectura de vista
+         previa por anfitrión, necesita render en servidor (los rastreadores de
+         tarjetas no ejecutan JavaScript) y es trabajo de otra fase. Retirarlas
+         deja una vista previa sosa; dejarlas delataba al proveedor. Sosa gana.
+
+         `og:url` tampoco puede quedarse: era `https://app.cguardpro.com/`, que
+         en el anfitrión de un socio apunta a otro sitio. -->
+
+    <!-- ── ICONS: NEUTRAL IN THE HTML ───────────────────────────────────────
+         This file is served on every host, partners included. The browser
+         fetched our shield here BEFORE any of our code ran, so a partner's
+         tab showed the CGuard icon for a second or two on every load (seen on
+         portal.entecdigital.mx, 2026-10-22). Now the HTML carries an empty
+         icon and the inline script below decides: our icons on our own
+         hosts, the partner's last-known icon on theirs. The empty `data:`
+         icon also keeps the browser from asking for /favicon.ico, which
+         would get the SPA's index.html and leave a broken icon. -->
+    <link rel="icon" href="data:," />
+    <link rel="apple-touch-icon" href="data:," />
+
+    <!-- PWA manifest: lo inyecta vite-plugin-pwa en el build (manifest.webmanifest),
+         versionado junto al service worker en vite.config.ts. El manifest.json
+         suelto de public/ quedó retirado para no servir dos manifests. -->
+
+    <!-- Aquí había un JSON-LD de tipo SoftwareApplication que declaraba el
+         producto —con precio 0— en app.cguardpro.com. Se retiró por lo mismo
+         que el resto: la ficha del producto tiene que colgar de la web que lo
+         vende, no de la pantalla de acceso, y en una página con noindex los
+         buscadores no la usan de todas formas. -->
+
+    <!-- Styles -->
+    <script>
+    /* Acento guardado ANTES del primer pintado. Sin esto, la app arranca en
+       mostaza y salta al color del usuario en cuanto React monta. */
+    (function () {
+      try {
+        var a = JSON.parse(localStorage.getItem('cguard-accent') || 'null');
+        if (a && typeof a.h === 'number') {
+          document.documentElement.style.setProperty('--brand-h', a.h);
+          document.documentElement.style.setProperty('--brand-c', a.c);
+        }
+      } catch (e) {}
+    })();
+    /* Host brand BEFORE the first paint (see `WhiteLabelContext`).
+       Our own hosts get our icons. A partner's host gets its LAST-KNOWN brand
+       (title, icon, hue) from this browser, its logos start downloading now,
+       and the brand request leaves NOW instead of after the whole bundle —
+       the provider picks it up from `window.__cgMarca`. Nothing here ever
+       paints our brand on a host that is not ours. */
+    (function () {
+      var d = document, w = window, h = '', web = false;
+      try {
+        h = String(location.hostname || '').toLowerCase();
+        web = /^https?:$/.test(location.protocol);
+      } catch (e) {}
+      var own = { app: 1, www: 1, api: 1, partners: 1, domains: 1 };
+      var ours = !web || !h || h === 'localhost' || h === '127.0.0.1' ||
+        h === '[::1]' || /\.localhost$/.test(h) || h === 'cguardpro.com' ||
+        (/\.cguardpro\.com$/.test(h) && own[h.slice(0, -14)] === 1);
+      var m = { ours: ours, cached: null, request: null };
+      w.__cgMarca = m;
+      function icons(icon, touch) {
+        var l = d.querySelectorAll('link[rel~="icon"]'), i;
+        for (i = 0; i < l.length; i++) l[i].href = icon;
+        l = d.querySelectorAll('link[rel="apple-touch-icon"]');
+        for (i = 0; i < l.length; i++) l[i].href = touch;
+      }
+      var local = function (u) {
+        return typeof u === 'string' && u.charAt(0) === '/' && u.charAt(1) !== '/' ? u : null;
+      };
+      if (ours) {
+        icons('/favicon-escudo.ico?v=2', '/assets/logo/c-guard-app-logo.png');
+        return;
+      }
+      var preview = false;
+      try { preview = /[?&]vistaPrevia=/.test(location.search); } catch (e) {}
+      if (!preview) {
+        try {
+          /* The brand the SERVER put in this page for this host (see backend
+             services/whitelabel/brandShell.ts) wins; this browser's copy is
+             the fallback for a page that came without it. */
+          var c = null;
+          try {
+            var el = d.getElementById('cg-marca-servidor');
+            var srv = el ? JSON.parse(el.textContent || 'null') : null;
+            if (srv && srv.scope === 'reseller' && srv.resellerPublicId) {
+              c = srv;
+              try {
+                localStorage.setItem('cg-marca:' + h, JSON.stringify({ v: 1, at: Date.now(), ctx: srv }));
+              } catch (e) {}
+            }
+          } catch (e) {}
+          if (!c) {
+            var g = JSON.parse(localStorage.getItem('cg-marca:' + h) || 'null');
+            c = g && g.v === 1 && g.ctx && g.ctx.scope === 'reseller' ? g.ctx : null;
+          }
+          if (c) {
+            m.cached = c;
+            if (typeof c.platformName === 'string' && c.platformName) d.title = c.platformName;
+            var ic = local(c.faviconUrl) || local(c.logoUrl);
+            /* Home-screen icon: the server renders the partner's art square. */
+            if (ic) icons(ic, '/api/platform/icon/180');
+            var s = d.documentElement.style;
+            if (typeof c.brandHue === 'number') {
+              s.setProperty('--brand-h', c.brandHue);
+              d.documentElement.setAttribute('data-marca-de-anfitrion', '1');
+            }
+            if (typeof c.brandChroma === 'number') s.setProperty('--brand-c', c.brandChroma);
+            [local(c.logoUrl), local(c.logoDarkUrl)].forEach(function (u) {
+              if (u) { var im = new Image(); im.src = u; }
+            });
+          }
+        } catch (e) {}
+        try {
+          m.request = fetch('/api/platform/context', {
+            credentials: 'omit', headers: { Accept: 'application/json' }
+          }).then(function (r) { return r.ok ? r.json() : null; })
+            .catch(function () { return null; });
+        } catch (e) {}
+      }
+    })();
+  </script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/publico/main.tsx"></script>
+  </body>
+</html>

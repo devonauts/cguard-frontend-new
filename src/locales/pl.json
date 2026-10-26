@@ -21248,5 +21248,13 @@
     "sinCorreoCorto": "Bez e-maila",
     "sinCorreoFicha": "Bez e-maila: zaproszenie nie jest wysyłane, dostajesz link do udostępnienia.",
     "sinRespuesta": "Nie udało się teraz sprawdzić; sprawdzimy przy zapisie."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Otwieranie panelu…",
+      "error": "Nie udało się otworzyć panelu. Zaloguj się ponownie.",
+      "reintentar": "Spróbuj ponownie",
+      "volverAEntrar": "Zaloguj się ponownie"
+    }
   }
 }

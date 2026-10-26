@@ -8,6 +8,7 @@
  * Returns the list of recent notifications and the live unread count.
  */
 
+import { cerrarSesionDeCodigo } from "@/lib/sesionDeCodigo";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { type Socket } from "socket.io-client";
 
@@ -459,6 +460,7 @@ export function useNotificationStream(
             } catch {
               /* ignore */
             }
+            void cerrarSesionDeCodigo();
             try {
               window.location.replace("/login");
             } catch {

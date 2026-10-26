@@ -20960,5 +20960,13 @@
     "sinCorreoCorto": "Sem e-mail",
     "sinCorreoFicha": "Sem e-mail: o convite não é enviado, damos o link para você compartilhar.",
     "sinRespuesta": "Não foi possível verificar agora; verificaremos ao salvar."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Abrindo seu painel…",
+      "error": "Não foi possível abrir o painel. Entre novamente.",
+      "reintentar": "Tentar de novo",
+      "volverAEntrar": "Entrar novamente"
+    }
   }
 }
