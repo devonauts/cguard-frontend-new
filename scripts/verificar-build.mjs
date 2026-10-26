@@ -166,3 +166,18 @@ if (!incrustada) {
 }
 
 console.log(`[verificar-build] ✓ API = ${url} · incrustada en el bundle`);
+
+// ── 4. Que el código propio va OFUSCADO (2026-10-25) ────────────────────────
+// Desde que un rastreador se llevó el CRM entero, producción nunca publica el
+// código sólo minificado: nombres hex y textos codificados (build/ofuscarCodigo).
+if (process.env.CG_SIN_OFUSCAR !== '1') {
+  const assets = path.join(DIST, 'assets');
+  const entrada = fs.existsSync(assets) ? fs.readdirSync(assets).find((f) => /^index-.*\.js$/.test(f)) : null;
+  if (!entrada) fallar('SIN BUNDLE DE ENTRADA', `  no hay assets/index-*.js en ${DIST}`);
+  const codigo = fs.readFileSync(path.join(assets, entrada), 'utf8');
+  const marcas = (codigo.match(/_0x[0-9a-f]{4,}/g) || []).length;
+  if (marcas < 200) {
+    fallar('EL CÓDIGO NO VA OFUSCADO', `  assets/${entrada}: ${marcas} identificadores ofuscados. ¿Falta el plugin cg-ofuscar-codigo?`);
+  }
+  console.log(`[verificar-build] ✓ código ofuscado (${marcas} identificadores en ${entrada})`);
+}
