@@ -22,6 +22,28 @@
  */
 import type { Plugin } from "vite";
 import JavaScriptObfuscator from "javascript-obfuscator";
+import { createHash } from "node:crypto";
+
+/**
+ * ONE NAME, ONE CONTENT (2026-10-26 incident).
+ *
+ * The file name's hash is computed BEFORE this pass, and the obfuscator used
+ * to be random: two builds of the same code gave the same name with different
+ * bytes. index.html pins every file with SRI (integrity), and /p/ is cached for
+ * a year by Cloudflare and by browsers, so after a rebuild the edge kept
+ * serving the morning's bytes under the evening's name: integrity failed and
+ * the CRM sign-in page was blank for every new visitor.
+ *
+ *   · The seed now comes from the chunk's own code: same code, same output.
+ *   · The names carry VERSION_DE_OFUSCACION. Bump it whenever the output can
+ *     change for the same code (these options, or a javascript-obfuscator
+ *     upgrade): every file gets a new name and no cache can hold the old bytes.
+ */
+export const VERSION_DE_OFUSCACION = "2";
+
+function semillaDe(codigo: string): number {
+  return parseInt(createHash("sha256").update(codigo).digest("hex").slice(0, 8), 16);
+}
 
 const NO_SE_OFUSCA = /(^|\/)(vendor-|rolldown-runtime|vite-precarga|workbox)/;
 
@@ -62,6 +84,16 @@ export function ofuscarCodigo(): Plugin {
     name: "cg-ofuscar-codigo",
     apply: "build",
     enforce: "post",
+    // The obfuscation version goes into every JS file name (see VERSION_DE_OFUSCACION).
+    outputOptions(salida: any) {
+      for (const clave of ["entryFileNames", "chunkFileNames"]) {
+        const actual = salida[clave] ?? "assets/[name]-[hash].js";
+        if (typeof actual === "string" && actual.includes("[hash]") && !actual.includes(`-o${VERSION_DE_OFUSCACION}`)) {
+          salida[clave] = actual.replace("[hash]", `[hash]-o${VERSION_DE_OFUSCACION}`);
+        }
+      }
+      return salida;
+    },
     configResolved(config) {
       apiUrl = String(config.env?.VITE_API_URL || process.env.VITE_API_URL || "");
     },
@@ -84,7 +116,10 @@ export function ofuscarCodigo(): Plugin {
       let n = 0;
       for (const [nombre, fichero] of Object.entries(bundle)) {
         if (fichero.type !== "chunk" || NO_SE_OFUSCA.test(nombre)) continue;
-        fichero.code = JavaScriptObfuscator.obfuscate(fichero.code, OPCIONES_DE_OFUSCACION).getObfuscatedCode();
+        fichero.code = JavaScriptObfuscator.obfuscate(fichero.code, {
+          ...OPCIONES_DE_OFUSCACION,
+          seed: semillaDe(fichero.code),
+        }).getObfuscatedCode();
         n += 1;
       }
       this.info?.(`ofuscados ${n} ficheros propios`);
