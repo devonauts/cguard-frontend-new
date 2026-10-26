@@ -6114,7 +6114,8 @@
     "notBilled": {
       "archived": "Senza accesso · non addebitato",
       "demo": "Dati di esempio · non addebitato",
-      "duplicate": "Duplicato · già addebitato una volta"
+      "duplicate": "Duplicato · già addebitato una volta",
+      "pending": "Account non ancora registrato · non addebitato"
     },
     "partner": {
       "activeMsg": "Il tuo abbonamento è in regola. L'addebito è automatico ogni mese.",

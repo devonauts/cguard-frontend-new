@@ -6114,7 +6114,8 @@
     "notBilled": {
       "archived": "Sans accès · non facturé",
       "demo": "Données d'exemple · non facturé",
-      "duplicate": "En double · déjà facturé une fois"
+      "duplicate": "En double · déjà facturé une fois",
+      "pending": "Compte pas encore créé · non facturé"
     },
     "partner": {
       "activeMsg": "Votre abonnement est à jour. Il est prélevé automatiquement chaque mois.",

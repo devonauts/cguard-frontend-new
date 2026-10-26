@@ -91,7 +91,7 @@ export interface BillableUser {
   roles: string[];
   status: string | null;
   /** Por qué NO se cobra. Ausente = se cobra. */
-  excludedReason?: "archived" | "demo" | "duplicate";
+  excludedReason?: "archived" | "demo" | "duplicate" | "pending";
 }
 
 export interface PlatformInvoice {

@@ -625,7 +625,8 @@
     "notBilled": {
       "archived": "No access · not billed",
       "demo": "Sample data · not billed",
-      "duplicate": "Duplicate · already billed once"
+      "duplicate": "Duplicate · already billed once",
+      "pending": "No registered account yet · not billed"
     },
     "plan": "Plan",
     "removeUser": "Stop paying for this person",

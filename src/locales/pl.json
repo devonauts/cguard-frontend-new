@@ -6116,7 +6116,8 @@
     "notBilled": {
       "archived": "Brak dostępu · bez opłaty",
       "demo": "Dane przykładowe · bez opłaty",
-      "duplicate": "Duplikat · już naliczony raz"
+      "duplicate": "Duplikat · już naliczony raz",
+      "pending": "Brak zarejestrowanego konta · nie naliczane"
     },
     "partner": {
       "activeMsg": "Twoja subskrypcja jest opłacona. Opłata pobierana jest automatycznie co miesiąc.",

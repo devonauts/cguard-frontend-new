@@ -625,7 +625,8 @@
     "notBilled": {
       "archived": "Sin acceso · no se cobra",
       "demo": "Datos de ejemplo · no se cobra",
-      "duplicate": "Repetida · ya se cobra una vez"
+      "duplicate": "Repetida · ya se cobra una vez",
+      "pending": "Sin cuenta registrada aún · no se cobra"
     },
     "plan": "Plan",
     "removeUser": "Dejar de pagar por esta persona",
