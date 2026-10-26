@@ -6,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { sinComentariosHtml } from "./build/sinComentariosHtml";
 import { precargaDeIdioma } from "./build/precargaDeIdioma";
+import { ofuscarCodigo } from "./build/ofuscarCodigo";
 
 /* En producción nginx pone la API detrás del MISMO origen (`/api`), y hay dos
    peticiones que cuentan con eso: `/api/platform/context` (la marca del
@@ -88,6 +89,8 @@ export default defineConfig({
     },
   },
   plugins: [
+    // Real obfuscation of our own chunks (after the minifier; vendor libraries untouched). See build/ofuscarCodigo.ts.
+    ofuscarCodigo(),
     react(),
     tailwindcss(),
     sinComentariosHtml(),
@@ -227,6 +230,8 @@ export default defineConfig({
           "assets/logo/**",
           "email/**",
           "icons/**",
+          // La mini-app pública (`/p/`) no es parte del CRM que se instala.
+          "p/**",
         ],
         // ── SÓLO EL ARRANQUE SE DESCARGA POR ADELANTADO ─────────────────────
         // Aun con las exclusiones de arriba quedaban ~440 ficheros que el SW se
@@ -265,6 +270,9 @@ export default defineConfig({
           // sin esto, quien ya tenía el SW del CRM veía el 404 de la SPA en vez
           // de la página de las 3 fotos (Mike, 2026-10-20).
           /^\/verificacion-humana/,
+          // La mini-app pública y la cookie del código (lib/sesionDeCodigo).
+          /^\/p\//,
+          /^\/__sesion/,
         ],
         // La API JAMÁS se cachea en el SW: es JSON autenticado por usuario y el
         // backend ya manda no-store. Sin runtimeCaching para /api, el SW la

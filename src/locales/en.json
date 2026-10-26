@@ -20960,5 +20960,13 @@
     "sinCorreoCorto": "No email",
     "sinCorreoFicha": "No email: the invitation isn't sent; we give you the link to share.",
     "sinRespuesta": "We couldn't check it now; it will be checked on save."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Opening your dashboard…",
+      "error": "We couldn't open the dashboard. Please sign in again.",
+      "reintentar": "Try again",
+      "volverAEntrar": "Sign in again"
+    }
   }
 }

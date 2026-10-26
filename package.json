@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node scripts/sellar-integridad.mjs && node scripts/verificar-build.mjs",
+    "build": "tsc && vite build && vite build -c vite.publico.config.ts && node scripts/publico-index.mjs && node scripts/sellar-integridad.mjs && node scripts/sellar-integridad.mjs dist/p && node scripts/verificar-build.mjs",
     "lint": "eslint --fix",
     "preview": "vite preview",
     "i18n:parity": "node scripts/i18n-parity.mjs",
@@ -98,6 +98,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-unused-imports": "4.4.1",
     "globals": "17.13.0",
+    "javascript-obfuscator": "4.2.2",
     "postcss": "8.5.30",
     "prettier": "3.9.10",
     "rollup": "^4.64.7",

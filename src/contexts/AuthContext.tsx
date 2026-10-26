@@ -1,4 +1,9 @@
 import {
+  abrirSesionDeCodigo,
+  cerrarSesionDeCodigo,
+  cerrarSesionDeCodigoConTope,
+} from "@/lib/sesionDeCodigo";
+import {
   createContext,
   useContext,
   useState,
@@ -585,6 +590,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Solo eliminamos token si estamos seguros que no sirve (401/invalid)
         if (e.status === 401) {
           localStorage.removeItem("authToken");
+          void cerrarSesionDeCodigo();
           setUser(null);
         }
         // 403 suele ser CORS, política o permisos. NO borres token aquí.
@@ -641,6 +647,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (response?.token) {
         localStorage.setItem("authToken", response.token);
+        // La cookie que desbloquea el código del CRM (lib/sesionDeCodigo).
+        void abrirSesionDeCodigo(response.token);
         // Sucursales: la primera pantalla del CRM pregunta dónde trabajar.
         marcarQueHayQuePreguntarElEspacio();
         try {
@@ -936,6 +944,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch {
         /* best-effort: la recarga de abajo sigue */
       }
+      // Sin sesión, el código del CRM deja de servirse: la recarga trae la
+      // mini-app pública (lib/sesionDeCodigo).
+      await cerrarSesionDeCodigoConTope();
       try {
         window.location.replace(destino);
       } catch {
@@ -961,6 +972,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithToken = async (token: string, userData?: any) => {
     try {
       localStorage.setItem("authToken", token);
+      void abrirSesionDeCodigo(token);
       marcarQueHayQuePreguntarElEspacio();
       try {
         setAuthToken(token);

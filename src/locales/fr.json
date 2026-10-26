@@ -20960,5 +20960,13 @@
     "sinCorreoCorto": "Sans e-mail",
     "sinCorreoFicha": "Sans e-mail : l'invitation n'est pas envoyée, nous vous donnons le lien à partager.",
     "sinRespuesta": "Impossible de vérifier maintenant ; ce sera vérifié à l'enregistrement."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Ouverture de votre tableau de bord…",
+      "error": "Impossible d'ouvrir le tableau de bord. Reconnectez-vous.",
+      "reintentar": "Réessayer",
+      "volverAEntrar": "Se reconnecter"
+    }
   }
 }

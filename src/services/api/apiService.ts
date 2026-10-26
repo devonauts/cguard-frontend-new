@@ -1,3 +1,4 @@
+import { cerrarSesionDeCodigo } from "@/lib/sesionDeCodigo";
 import { toast } from "sonner";
 import i18n from "@/i18n";
 import {
@@ -236,6 +237,7 @@ export class ApiService {
         try {
           localStorage.removeItem("authUserCache");
         } catch {}
+        void cerrarSesionDeCodigo();
         try {
           window.location.replace("/login");
         } catch {}

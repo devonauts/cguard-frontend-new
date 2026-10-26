@@ -20960,5 +20960,13 @@
     "sinCorreoCorto": "Senza e-mail",
     "sinCorreoFicha": "Senza e-mail: l'invito non viene inviato, ti diamo il link da condividere.",
     "sinRespuesta": "Non è stato possibile controllare ora; lo verifichiamo al salvataggio."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Apertura della dashboard…",
+      "error": "Impossibile aprire la dashboard. Accedi di nuovo.",
+      "reintentar": "Riprova",
+      "volverAEntrar": "Accedi di nuovo"
+    }
   }
 }

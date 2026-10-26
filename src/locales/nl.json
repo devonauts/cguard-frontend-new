@@ -20960,5 +20960,13 @@
     "sinCorreoCorto": "Geen e-mail",
     "sinCorreoFicha": "Zonder e-mail: de uitnodiging wordt niet verstuurd; je krijgt de link om te delen.",
     "sinRespuesta": "Kon nu niet worden gecontroleerd; dat gebeurt bij het opslaan."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Je dashboard wordt geopend…",
+      "error": "Het dashboard kon niet worden geopend. Log opnieuw in.",
+      "reintentar": "Opnieuw proberen",
+      "volverAEntrar": "Opnieuw inloggen"
+    }
   }
 }

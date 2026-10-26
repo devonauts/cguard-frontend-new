@@ -20960,5 +20960,13 @@
     "sinCorreoCorto": "Ohne E-Mail",
     "sinCorreoFicha": "Ohne E-Mail: Die Einladung wird nicht gesendet; Sie erhalten den Link zum Teilen.",
     "sinRespuesta": "Konnte jetzt nicht geprüft werden; wird beim Speichern geprüft."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Ihr Dashboard wird geöffnet…",
+      "error": "Das Dashboard konnte nicht geöffnet werden. Bitte melden Sie sich erneut an.",
+      "reintentar": "Erneut versuchen",
+      "volverAEntrar": "Erneut anmelden"
+    }
   }
 }

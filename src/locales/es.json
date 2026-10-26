@@ -20960,5 +20960,13 @@
     "sinCorreoCorto": "Sin correo",
     "sinCorreoFicha": "Sin correo: la invitación no se envía, te damos el enlace para compartirlo.",
     "sinRespuesta": "No pudimos comprobarlo ahora; lo revisamos al guardar."
+  },
+  "publico": {
+    "traspaso": {
+      "abriendo": "Abriendo tu panel…",
+      "error": "No se pudo abrir el panel. Vuelve a iniciar sesión.",
+      "reintentar": "Reintentar",
+      "volverAEntrar": "Iniciar sesión de nuevo"
+    }
   }
 }
