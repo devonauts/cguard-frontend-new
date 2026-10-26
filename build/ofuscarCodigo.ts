@@ -23,6 +23,7 @@
 import type { Plugin } from "vite";
 import JavaScriptObfuscator from "javascript-obfuscator";
 import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
 
 /**
  * ONE NAME, ONE CONTENT (2026-10-26 incident).
@@ -35,11 +36,13 @@ import { createHash } from "node:crypto";
  * the CRM sign-in page was blank for every new visitor.
  *
  *   · The seed now comes from the chunk's own code: same code, same output.
- *   · The names carry VERSION_DE_OFUSCACION. Bump it whenever the output can
- *     change for the same code (these options, or a javascript-obfuscator
- *     upgrade): every file gets a new name and no cache can hold the old bytes.
+ *   · The names carry VERSION_DE_OFUSCACION, which is COMPUTED from these
+ *     options and the installed javascript-obfuscator version (see below):
+ *     changing either renames every file, so no cache can hold the old bytes.
+ *     Nobody has to remember to bump anything.
+ *   · And the deploy refuses a name already published with other bytes, whatever
+ *     the cause (backend scripts/mismo-nombre-mismo-contenido.sh).
  */
-export const VERSION_DE_OFUSCACION = "2";
 
 function semillaDe(codigo: string): number {
   return parseInt(createHash("sha256").update(codigo).digest("hex").slice(0, 8), 16);
@@ -77,6 +80,20 @@ export const OPCIONES_DE_OFUSCACION = {
   selfDefending: false,
   debugProtection: false,
 };
+
+const versionDeLaLibreria: string = (() => {
+  try {
+    return createRequire(`${process.cwd()}/package.json`)("javascript-obfuscator/package.json").version;
+  } catch {
+    return "desconocida";
+  }
+})();
+
+/** Goes into every JS file name: same options + same library = same names. */
+export const VERSION_DE_OFUSCACION = createHash("sha256")
+  .update(JSON.stringify(OPCIONES_DE_OFUSCACION) + "|" + versionDeLaLibreria)
+  .digest("hex")
+  .slice(0, 6);
 
 export function ofuscarCodigo(): Plugin {
   let apiUrl = "";
