@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import {
+  leerMensajeDelMarco,
+  urlDelMarco,
+  usarMarcoDeCaptcha,
+  type TemaDelMarco,
+} from "./marcoDeCaptcha";
 
 /**
  * El captcha del alta (Cloudflare Turnstile).
@@ -10,6 +17,11 @@ import { useEffect, useRef, useState } from "react";
  *
  * El script se carga UNA vez por pestaña y bajo demanda: no tiene por qué
  * viajar en el paquete de quien sólo va a iniciar sesión.
+ *
+ * On a partner's own domain the Turnstile widget goes inside a frame served
+ * from app.cguardpro.com (see ./marcoDeCaptcha.ts): Cloudflare only accepts
+ * our key on our hostnames. Callers do not change: same props, same
+ * `onToken`.
  */
 
 export type ProveedorCaptcha = "turnstile" | "recaptcha";
@@ -79,13 +91,7 @@ function cuandoListo(prov: ProveedorCaptcha): Promise<void> {
   });
 }
 
-export default function Captcha({
-  siteKey,
-  provider = "turnstile",
-  action,
-  onToken,
-  className,
-}: {
+type PropsDelCaptcha = {
   siteKey: string;
   provider?: ProveedorCaptcha;
   /** Superficie protegida (Turnstile). El servidor la verifica. */
@@ -93,7 +99,96 @@ export default function Captcha({
   /** Se llama con el token, o con '' cuando caduca y hay que rehacerlo. */
   onToken: (token: string) => void;
   className?: string;
-}) {
+};
+
+export default function Captcha(props: PropsDelCaptcha) {
+  const enMarco =
+    (props.provider ?? "turnstile") === "turnstile" &&
+    typeof window !== "undefined" &&
+    usarMarcoDeCaptcha(window.location.hostname, import.meta.env.DEV);
+
+  return enMarco ? (
+    <CaptchaEnMarco {...props} />
+  ) : (
+    <CaptchaDirecto {...props} />
+  );
+}
+
+function temaActual(): TemaDelMarco {
+  if (typeof document === "undefined") return "auto";
+
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+
+/** The widget inside our frame (partner domains). The frame knows the site key. */
+function CaptchaEnMarco({ action, onToken, className }: PropsDelCaptcha) {
+  const marco = useRef<HTMLIFrameElement | null>(null);
+  const alAvisar = useRef(onToken);
+  const [alto, setAlto] = useState(65);
+  const [fallo, setFallo] = useState(false);
+
+  alAvisar.current = onToken;
+  const src = useMemo(
+    () =>
+      urlDelMarco({
+        base: import.meta.env.VITE_CAPTCHA_MARCO_URL,
+        origen: window.location.origin,
+        accion: action,
+        idioma: (document.documentElement.lang || navigator.language || "")
+          .slice(0, 2)
+          .toLowerCase(),
+        tema: temaActual(),
+      }),
+    [action],
+  );
+
+  useEffect(() => {
+    const origen = new URL(src).origin;
+    const oir = (e: MessageEvent) => {
+      const m = leerMensajeDelMarco(e, origen, marco.current?.contentWindow);
+
+      if (!m) return;
+      if (m.tipo === "token") alAvisar.current(m.token);
+      else if (m.tipo === "expirado") alAvisar.current("");
+      else if (m.tipo === "alto") setAlto(m.alto);
+      else {
+        alAvisar.current("");
+        // Cloudflare did not load inside the frame: like the direct widget,
+        // nobody is trapped; the server decides (and lets people in on an outage).
+        if (m.codigo === "carga") setFallo(true);
+      }
+    };
+
+    window.addEventListener("message", oir);
+
+    return () => window.removeEventListener("message", oir);
+  }, [src]);
+
+  if (fallo) return null;
+
+  return (
+    <div className={className}>
+      <iframe
+        ref={marco}
+        height={alto}
+        referrerPolicy="origin"
+        src={src}
+        style={{ border: 0, display: "block", maxWidth: "100%" }}
+        title="Captcha"
+        width={300}
+      />
+    </div>
+  );
+}
+
+/** The widget on our own page (our domain, dev and test hosts). */
+function CaptchaDirecto({
+  siteKey,
+  provider = "turnstile",
+  action,
+  onToken,
+  className,
+}: PropsDelCaptcha) {
   const caja = useRef<HTMLDivElement | null>(null);
   const widget = useRef<string | null>(null);
   const [fallo, setFallo] = useState(false);
