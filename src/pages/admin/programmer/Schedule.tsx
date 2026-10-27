@@ -10547,6 +10547,7 @@ export default function Schedule() {
                         ? jornadas
                         : jornadasPorTipo(
                             (estacionDelAsignado as any)?.scheduleType || "24h",
+                            estacionDelAsignado as any,
                           )
                     ).map(
                       (b: {
@@ -11910,7 +11911,10 @@ export default function Schedule() {
           const turnos = (
             deLasPlazas.length
               ? deLasPlazas
-              : jornadasPorTipo((estacionDestino as any)?.scheduleType || "24h")
+              : jornadasPorTipo(
+                  (estacionDestino as any)?.scheduleType || "24h",
+                  estacionDestino as any,
+                )
           ).map((b: { tipo: string; startTime: string; endTime: string }) => ({
             ini: b.startTime,
             fin: b.endTime,
