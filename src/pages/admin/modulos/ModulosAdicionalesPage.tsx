@@ -11,6 +11,7 @@ import {
   ScanFace,
   FileSpreadsheet,
   Receipt,
+  CalendarPlus,
 } from "lucide-react";
 
 /** El icono de cada módulo en la tienda; uno nuevo sin entrada sale con la pieza de puzle. */
@@ -19,6 +20,7 @@ const ICONO_DEL_MODULO: Record<string, React.ReactNode> = {
   reconocimiento_facial: <ScanFace />,
   payroll_slips: <FileSpreadsheet />,
   client_billing: <Receipt />,
+  dobletes: <CalendarPlus />,
 };
 
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";
