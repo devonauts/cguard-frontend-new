@@ -121,6 +121,12 @@ const FILAS: {
     modulo: "payroll_slips",
   },
   {
+    id: "dobletes-office",
+    labelKey: "misAvisos.fila.dobletesOffice",
+    label: "Dobletes: cubierto o sin aceptar",
+    modulo: "dobletes",
+  },
+  {
     id: "license-expiry",
     labelKey: "misAvisos.fila.licenseExpiry",
     label: "Credenciales por vencer",

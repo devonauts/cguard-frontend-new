@@ -103,6 +103,36 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
+    evento: "dobletes.campaign",
+    familia: "announcement",
+    prioridad: "low",
+    catalogado: true,
+  },
+  {
+    evento: "dobletes.exhausted",
+    familia: "coverage",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "dobletes.filled",
+    familia: "coverage",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
+    evento: "dobletes.lost",
+    familia: "coverage",
+    prioridad: "normal",
+    catalogado: true,
+  },
+  {
+    evento: "dobletes.offered",
+    familia: "coverage",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
     evento: "gusto.disconnected",
     familia: "attendance",
     prioridad: "important",

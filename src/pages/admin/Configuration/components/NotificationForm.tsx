@@ -264,6 +264,22 @@ export default function NotificationMatrix() {
         modulo: "payroll_slips",
       },
       {
+        id: "dobletes-office",
+        label: t("settings.notificationForm.dobletesOfficeLabel", {
+          defaultValue: "Dobletes: cubierto o sin aceptar",
+        }),
+        default: { dashboard: true, push: true },
+        modulo: "dobletes",
+      },
+      {
+        id: "dobletes-offers",
+        label: t("settings.notificationForm.dobletesOffersLabel", {
+          defaultValue: "Ofertas de dobletes (a los vigilantes)",
+        }),
+        default: { dashboard: true, push: true },
+        modulo: "dobletes",
+      },
+      {
         id: "license-expiry",
         label: t("settings.notificationForm.licenseExpiryLabel", {
           defaultValue: "Expiración de Licencia",
