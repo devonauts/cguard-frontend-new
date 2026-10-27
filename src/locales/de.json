@@ -5277,7 +5277,8 @@
       "plantillas": "Schichtvorlagen",
       "tiempo-libre": "Abwesenheit",
       "turnos-abiertos": "Offene Schichten",
-      "cobertura": "Besetzung live"
+      "cobertura": "Besetzung live",
+      "dobletes": "Doppelschichten"
     },
     "rastreador": {
       "historial": "Ortungsverlauf",
@@ -7446,7 +7447,9 @@
       "central.desc": "Wenn Sie eine Leitstelle rund um die Uhr betreiben: welches Objekt sie ist, ob ihre Operatoren Schichten übernehmen und wer die Alarme erhält.",
       "sms": "SMS-Guthaben",
       "idioma": "Sprache",
-      "idioma.desc": "In welcher Sprache Sie das CRM sehen. Automatisch oder die von Ihnen gewählte."
+      "idioma.desc": "In welcher Sprache Sie das CRM sehen. Automatisch oder die von Ihnen gewählte.",
+      "dobletes": "Doppelschichten",
+      "dobletes.desc": "Wellen, Boni, Punkte, Stufen und Rangliste der Reserve."
     },
     "section": {
       "mi_cuenta": "Mein Konto",
@@ -7949,7 +7952,12 @@
       "svPreviewYou": "Sie",
       "previewGuardName": "Juan Ramírez",
       "module_payslips_label": "Lohnabrechnungen",
-      "module_payslips_desc": "Die Arbeitskraft sieht und lädt ihre veröffentlichten Lohnabrechnungen herunter. Standardmäßig abgeschaltet; benötigt das Modul „Lohnabrechnungen“."
+      "module_payslips_desc": "Die Arbeitskraft sieht und lädt ihre veröffentlichten Lohnabrechnungen herunter. Standardmäßig abgeschaltet; benötigt das Modul „Lohnabrechnungen“.",
+      "module_dobletes_desc": "Angebote für Extraschichten, Beitritt zur Reserve, Verfügbarkeit melden und Kampagnen des Unternehmens. Standardmäßig aus.",
+      "module_dobletes_label": "Doppelschichten und Reserve",
+      "previewNextShift": "Nächste Schicht",
+      "previewOffDuty": "● Außer Dienst",
+      "previewTomorrowShift": "Morgen · 08:00 – 20:00"
     },
     "appearance": {
       "layoutTitle": "Erscheinungsbild",
@@ -20075,6 +20083,79 @@
           "corrida": "Geleistetes abgerechnet und in Ihrem Namen verschickt",
           "cobro": "Ihr Kunde zahlt über den Link, Ihre Forderungen sind aktuell"
         }
+      },
+      "dobletes": {
+        "campana": {
+          "boton": "Eintragen",
+          "texto": "Trag dich ein und verdiene $15 pro Doppelschicht.",
+          "titulo": "Ersatzkräfte für Nordtor gesucht",
+          "unido": "Du bist jetzt Ersatzkraft"
+        },
+        "empresa": "Cedar Bluff Security",
+        "escenas": {
+          "banca": "Die Ersatzbank",
+          "falta": "Jemand fällt aus"
+        },
+        "estado": {
+          "cubierto": "Besetzt",
+          "sinCubrir": "Unbesetzt"
+        },
+        "kpi": {
+          "altas": "Neuzugänge",
+          "toques": "Klicks",
+          "vistas": "Aufrufe"
+        },
+        "oferta": {
+          "acepto": "Angenommen",
+          "enviada": "Gesendet",
+          "no": "Kann nicht",
+          "perdio": "Zu spät"
+        },
+        "panel": {
+          "bono": "+ $15 Doppelschicht-Bonus",
+          "campanaLanzada": "Kampagne veröffentlicht",
+          "cobertura": "Besetzung live",
+          "falta": "Ausgefallen um 05:40",
+          "lanzarCampana": "Vorgeschlagene Kampagne starten",
+          "oleada": "Welle 1 · 3 Personen aus der Reserve",
+          "rol": "Lohnabrechnungen · Mariana",
+          "salud": "Zustand der Ersatzbank",
+          "suplentes": "Ersatzkräfte: {{n}}"
+        },
+        "pasos": {
+          "acepta": "Mariana nimmt in der App an: Die Schicht ist zugewiesen",
+          "alta": "Erste neue Ersatzkraft, direkt über die App",
+          "altas": "Nordtor hat jetzt 4 Ersatzkräfte",
+          "bono": "Der Doppelschicht-Bonus landet in ihrer Lohnabrechnung",
+          "campana": "Die vorgeschlagene Kampagne wird gestartet",
+          "falta": "Nordtor ist unbesetzt: Ramiro ist nicht erschienen",
+          "noPuede": "Luis kann heute nicht",
+          "oleada": "Die Doppelschicht wird angeboten: Sie geht an 3 Personen aus der Reserve",
+          "pocaBanca": "Nordtor hat nur 1 Ersatzkraft"
+        },
+        "personas": {
+          "carlos": "Carlos",
+          "luis": "Luis",
+          "mariana": "Mariana"
+        },
+        "puesto": "P-031 · Nordtor",
+        "puesto2": "P-014 · Einkaufszentrum",
+        "puesto3": "P-040 · Krankenhaus",
+        "resultado": {
+          "banca": "Die Ersatzbank füllt sich über die App der Sicherheitskräfte",
+          "falta": "In 4 Minuten besetzt, ohne einen einzigen Anruf"
+        },
+        "tel": {
+          "aceptar": "Schicht annehmen",
+          "bono": "Bonus: $15",
+          "campana": "Von deinem Unternehmen",
+          "fueraDeServicio": "Außer Dienst",
+          "horario": "Heute 06:00 – 18:00",
+          "oferta": "Doppelschicht verfügbar",
+          "reserva": "Reserve · heute verfügbar",
+          "sinNovedad": "Derzeit keine Angebote",
+          "tuyo": "Die Schicht gehört dir!"
+        }
       }
     }
   },
@@ -20968,6 +21049,325 @@
       "error": "Das Dashboard konnte nicht geöffnet werden. Bitte melden Sie sich erneut an.",
       "reintentar": "Erneut versuchen",
       "volverAEntrar": "Erneut anmelden"
+    }
+  },
+  "dobletes": {
+    "ajustes": {
+      "autoHintNo": "{{agente}} meldet den Ausfall – ob die Doppelschicht angeboten wird, entscheidet das Büro.",
+      "autoHintSi": "Bestätigt {{agente}} einen Ausfall, startet die Suche in Wellen mit dem Firmenbonus, und anschließend wird gemeldet, wer übernommen hat.",
+      "bono": "Doppelschicht-Bonus",
+      "bonoHint": "Betrag pro Doppelschicht. Kann bei jedem Angebot erhöht werden. Leer = kein Bonus.",
+      "bonos": "Boni",
+      "cuandoFalte": "Wenn jemand ausfällt",
+      "cubrir": "Fürs Übernehmen",
+      "cubrirHint": "Pro übernommener Doppelschicht. Standard: {{n}}.",
+      "dobletes": "Doppelschichten",
+      "guardados": "Einstellungen gespeichert",
+      "guardar": "Einstellungen speichern",
+      "min": "Min.",
+      "minutos": "Wartezeit zwischen Wellen",
+      "minutosHint": "Nimmt in dieser Zeit niemand an, startet die nächste Welle. Sind alle Wellen durch, gibt es eine Benachrichtigung.",
+      "niveles": "Monatsstufen",
+      "nivelesActivos": "Stufen verwenden",
+      "nivelesHint": "Bronze, Silber und Gold je nach übernommenen Doppelschichten im Monat. Gold sieht Angebote zuerst.",
+      "nivelesOrden": "Gold sollte mehr Doppelschichten erfordern als Silber.",
+      "ofrecerAuto": "Doppelschicht automatisch anbieten",
+      "ola1": "Erste Welle",
+      "ola2": "Nächste Welle",
+      "oleadas": "So wird angeboten",
+      "oleadasDesc": "Zuerst an die für diese Zeit verfügbare Reserve, Bestplatzierte zuerst (Gold vorneweg). Wer zuerst annimmt, bekommt die Schicht.",
+      "personas": "Personen",
+      "puntos": "Reservepunkte",
+      "puntosDesc": "Fließen in die Leistungsbewertung jeder Sicherheitskraft ein. Ein Nein zu einem Angebot zieht nie Punkte ab.",
+      "puntosPermiso": "Zum Ändern der Punkte ist die Berechtigung zum Bearbeiten von Sicherheitskräften nötig.",
+      "ranking": "Rangliste in der App",
+      "rankingHint": "Die Sicherheitskräfte sehen in der App, wer diesen Monat am meisten übernommen hat.",
+      "reconocimiento": "Anerkennung",
+      "relampago": "Blitz-Bonus",
+      "relampagoHint": "Für als dringend markierte Angebote.",
+      "respaldoHint": "Hebt hervor, wer im Monat die meisten Doppelschichten übernommen hat.",
+      "rolesActivo": "Jeder ausgezahlte Bonus erscheint in den Lohnabrechnungen als „Doppelschicht-Bonus“ im Zeitraum der Schicht.",
+      "rolesInactivo": "Mit dem Modul Lohnabrechnungen werden die Boni automatisch als „Doppelschicht-Bonus“ in die Abrechnung jeder Sicherheitskraft übernommen. Ohne das Modul stehen sie im Angebotsverlauf.",
+      "sinLimites": "Die Plattform setzt keine Grenzen für Arbeits- oder Ruhezeiten: Das entscheidet das Unternehmen. Beim Anbieten werden die Wochenstunden jeder Person nur zur Information angezeigt.",
+      "soloAvisar": "Nur das Büro benachrichtigen",
+      "temprano": "Extra für schnelles Annehmen",
+      "tempranoHint": "Extra für alle, die in den ersten {{n}} Minuten annehmen.",
+      "tempranoMinutos": "Gilt als schnell bis",
+      "tope": "Obergrenze",
+      "topeHint": "Maximale Reservepunkte pro Person. Standard: {{n}}.",
+      "verConcepto": "Lohnart ansehen",
+      "vigia": "Mit {{agente}} Pro",
+      "voluntario": "Für Bereitschaft",
+      "voluntarioHint": "Für den Beitritt oder eine Verfügbarkeitsmeldung. Standard: {{n}}.",
+      "voz": "Anruf als letztes Mittel",
+      "vozHint": "Hat nach allen Wellen niemand angenommen, ruft {{agente}} die Nächsten auf der Liste an; angenommen wird mit der Taste 1. Abgerechnet wird pro Minute über das Kommunikationsguthaben."
+    },
+    "campanas": {
+      "accion": "Funktion des Buttons",
+      "altas": "Neuzugänge",
+      "audiencia": "Zielgruppe",
+      "borrada": "Kampagne gelöscht",
+      "borrar": "Löschen",
+      "borrarMensaje": "Wird in der App nicht mehr angezeigt. Die Ergebnisse gehen verloren.",
+      "borrarTitulo": "Kampagne löschen?",
+      "boton": "Button-Text",
+      "botonVacio": "Button",
+      "cambiarImagen": "Bild ändern",
+      "conAviso": "mit Benachrichtigung",
+      "dePuestos": "Sicherheitskräfte dieser Posten",
+      "dePuestosHint": "Keiner ausgewählt = alle Posten.",
+      "desde": "Von",
+      "dias": "Tage",
+      "donde": "Wo sie erscheint",
+      "editar": "Kampagne bearbeiten",
+      "editarCorto": "Bearbeiten",
+      "enInicio": "Startseite (außer Dienst)",
+      "enReserva": "Reserve-Bildschirm",
+      "estado": {
+        "activa": "Aktiv",
+        "borrador": "Entwurf",
+        "programada": "Geplant",
+        "terminada": "Beendet"
+      },
+      "fechasInvalidas": "Das Ende liegt vor dem Beginn.",
+      "fuera": "Außerhalb der Reserve",
+      "fueraHint": "Nur wer der Reserve noch nicht beigetreten ist.",
+      "guardada": "Kampagne gespeichert",
+      "guardarBorrador": "Entwurf speichern",
+      "guardarCambios": "Änderungen speichern",
+      "hasta": "Bis",
+      "imagen": "Bild (optional)",
+      "imagenHint": "Querformat, wird auf 1600 px angepasst.",
+      "imagenPeso": "Das Bild ist größer als 8 MB.",
+      "imagenTipo": "Bitte ein PNG-, JPG- oder WebP-Bild verwenden.",
+      "intro": "Nachrichten des Unternehmens in der App der Sicherheitskräfte, damit sie der Reserve beitreten und ihre Verfügbarkeit aktuell halten. Nur außer Dienst sichtbar.",
+      "nueva": "Neue Kampagne",
+      "paraCubrir": "Zum Abdecken dieser Posten",
+      "paraCubrirHint": "Wer auf den Button tippt, wird als Ersatzkraft für diese Posten eingetragen.",
+      "pausada": "Kampagne pausiert",
+      "pausar": "Pausieren",
+      "periodo": "{{desde}} → {{hasta}}",
+      "plantilla": "Mit einer Vorlage beginnen",
+      "prioridad": "Priorität",
+      "prioridadHint": "Passen zwei Kampagnen auf dieselbe Person, wird zuerst die mit höherer Priorität angezeigt.",
+      "publicada": "Kampagne veröffentlicht",
+      "publicadaConPush": "Kampagne veröffentlicht. Die Benachrichtigung kommt unter Beachtung der Nicht-stören-Zeiten an.",
+      "publicar": "Veröffentlichen",
+      "push": "Beim Veröffentlichen benachrichtigen",
+      "pushHint": "Eine Push-Benachrichtigung beim Veröffentlichen, mit niedriger Priorität und unter Beachtung der Nicht-stören-Zeiten.",
+      "quitarImagen": "Entfernen",
+      "reglas": "Jede Sicherheitskraft sieht jeweils nur eine Kampagne, und zwar nur außer Dienst. Nie während der Schicht.",
+      "ruta": "App-Bildschirm",
+      "rutaInvalida": "Muss mit /guard/ beginnen",
+      "sinFechas": "Ohne Enddatum",
+      "subiendo": "Wird hochgeladen…",
+      "subirImagen": "Bild hochladen",
+      "texto": "Text",
+      "textoHint": "{{empresa}} und {{bono}} sind möglich: Sie werden durch den Firmennamen und den Doppelschicht-Bonus ersetzt.",
+      "textoVacio": "Der Text, den die Sicherheitskräfte sehen.",
+      "titulo": "Titel",
+      "tituloVacio": "Titel der Kampagne",
+      "toques": "Klicks",
+      "turnosCubiertos": "Übernommene Schichten",
+      "unBono": "einen Bonus",
+      "vacio": "Noch keine Kampagnen",
+      "vacioDesc": "Am besten mit „Werde Teil der Reserve“ beginnen: Diese Vorlage bringt die meisten Ersatzkräfte.",
+      "vieja": "Verfügbarkeit nicht aktualisiert",
+      "viejaDias": "Nicht aktualisiert seit",
+      "viejaHint": "Mitglieder, die ihre Verfügbarkeit länger nicht angepasst haben.",
+      "vistaPrevia": "So sieht es aus",
+      "vistas": "Aufrufe",
+      "volver": "Erneut anzeigen",
+      "volverHint": "Nach wie vielen Tagen sie nach dem Schließen wieder erscheinen kann."
+    },
+    "canal": {
+      "app": "App",
+      "voice": "Anruf",
+      "whatsapp": "WhatsApp"
+    },
+    "cobertura": {
+      "buscando": "Doppelschicht angeboten · {{n}} ausstehend",
+      "ofrecer": "Doppelschicht anbieten",
+      "verBusqueda": "Suche in Doppelschichten ansehen"
+    },
+    "cta": {
+      "available_today": "„Heute verfügbar“ melden",
+      "join_reserve": "Der Reserve beitreten",
+      "open_offers": "Offene Angebote ansehen",
+      "qualify_post": "Für einen weiteren Posten eintragen",
+      "route": "Einen App-Bildschirm öffnen"
+    },
+    "estadoBusqueda": {
+      "active": "Suche läuft",
+      "cancelled": "Abgebrochen",
+      "exhausted": "Niemand hat angenommen",
+      "filled": "Besetzt"
+    },
+    "estadoOferta": {
+      "accepted": "Angenommen",
+      "declined": "Kann nicht",
+      "expired": "Keine Antwort",
+      "failed": "Senden fehlgeschlagen",
+      "lost": "Zu spät",
+      "pending": "Wartet auf Antwort",
+      "withdrawn": "Zurückgezogen"
+    },
+    "franja": {
+      "D": "Tag",
+      "N": "Nacht",
+      "T": "Nachmittag"
+    },
+    "lanzar": {
+      "bono": "Bonus für diese Doppelschicht",
+      "bonoHint": "Sichtbar für alle, die das Angebot erhalten. Leer = kein Bonus.",
+      "conBono": "Angebotener Bonus: {{bono}}.",
+      "eligeHueco": "Den zu besetzenden Posten auswählen.",
+      "enReserva": "In der Reserve",
+      "enviadaA": "Angebot an {{n}} Person(en) gesendet. Wer zuerst annimmt, bekommt die Schicht.",
+      "enviadaOleadas": "Angebot an die erste Welle ({{n}}) gesendet. Wer zuerst annimmt, bekommt die Schicht.",
+      "enviar": "Doppelschicht anbieten",
+      "enviarA": "An {{n}} anbieten",
+      "explicaMano": "Nur die ausgewählten Personen erhalten das Angebot. Wer zuerst annimmt, bekommt die Schicht.",
+      "explicaOleadas": "Zuerst die für diese Zeit verfügbare Reserve, Bestplatzierte zuerst: {{a}} Personen, und nimmt innerhalb von {{min}} Min. niemand an, {{b}} weitere. Sind alle durch, gibt es eine Benachrichtigung.",
+      "horasInfo": "Diese Woche gearbeitete Stunden. Nur zur Information: Das Unternehmen entscheidet.",
+      "horasSemana": "{{h}} Std. diese Woche",
+      "hueco": "Unbesetzter Posten",
+      "marcaQuien": "Auswählen, wer das Angebot erhält",
+      "modoMano": "Manuell auswählen",
+      "modoOleadas": "In Wellen (automatisch)",
+      "quienesPrimero": "Wer es zuerst erhält",
+      "sinCandidatos": "Niemand frei",
+      "sinCandidatosDesc": "Zu dieser Zeit ist niemand frei. Das Angebot kann trotzdem gestartet werden: Wer sich aus der Reserve später verfügbar meldet, sieht es ebenfalls.",
+      "sinHuecos": "Keine unbesetzten Posten",
+      "sinHuecosDesc": "Sobald in Besetzung live eine Abwesenheit erfasst wird, erscheint der Posten hier zum Anbieten.",
+      "sinLimites": "Die Plattform setzt keine Grenzen für Arbeits- oder Ruhezeiten: Das entscheidet das Unternehmen. Verhindert wird nur, dass jemand gleichzeitig auf zwei Posten eingeteilt ist.",
+      "titulo": "Doppelschicht anbieten",
+      "urgente": "Dringend",
+      "urgenteHint": "Verwendet den Blitz-Bonus des Unternehmens und benachrichtigt mit hoher Priorität."
+    },
+    "modulo": {
+      "desc": "Mit dem Modul „Doppelschichten“ bedeuten Ausfälle und Kündigungen keine Nacht voller Anrufe mehr: Die Leute sehen das Angebot, nehmen es an und sind eingeteilt.",
+      "enlace": "In Zusatzmodulen ansehen",
+      "paso1": "Fällt jemand aus, geht die Schicht mit einem Tippen an die Reserve: zuerst an Verfügbare und Bestplatzierte, in Wellen.",
+      "paso2": "Wer zuerst in der App annimmt, bekommt die Schicht. Keine Einzelanrufe, keine Freigaben.",
+      "paso3": "Wer einspringt, wird belohnt: Doppelschicht-Bonus, Punkte, die Stufen Bronze, Silber und Gold und der „Einspringer des Monats“.",
+      "paso4": "Kampagnen in der App der Sicherheitskräfte halten die Ersatzbank voll, und es ist sichtbar, welchen Posten Ersatzkräfte fehlen.",
+      "titulo": "Jede Lücke besetzt – aus der eigenen Reserve"
+    },
+    "nivel": {
+      "bronce": "Bronze",
+      "oro": "Gold",
+      "plata": "Silber"
+    },
+    "ofertas": {
+      "activas": "Laufend",
+      "agotada": "Allen Verfügbaren angeboten, niemand hat angenommen. Manuell in Besetzung live abdecken oder mit höherem Bonus erneut anbieten.",
+      "bono": "Bonus {{bono}}",
+      "bonoSubido": "Bonus auf {{bono}} erhöht. Wer das Angebot bereits hat, wird benachrichtigt.",
+      "buscandoAhora": "Suche läuft",
+      "cancelada": "Suche abgebrochen",
+      "cancelar": "Suche abbrechen",
+      "cancelarMensaje": "Offene Angebote werden zurückgezogen, und die Empfänger erfahren, dass es nicht mehr verfügbar ist. Der Posten bleibt unbesetzt.",
+      "cancelarTitulo": "Suche abbrechen?",
+      "cubiertos": "Besetzt",
+      "falta": "{{nombre}} fehlt",
+      "loCubre": "{{nombre}} übernimmt: Die Schicht ist bereits zugewiesen, Einstempeln ist möglich.",
+      "minutos": "{{n}} Min.",
+      "nadieAcepto": "Niemand hat angenommen",
+      "nuevoBono": "Neuer Bonus ({{moneda}})",
+      "oleada": "Welle {{n}} von {{total}}",
+      "oleadaCorta": "Welle {{n}}",
+      "pendientes": "{{n}} warten auf Antwort",
+      "proximaOleada": "Nächste Welle in {{min}} Min.",
+      "subirBono": "Bonus erhöhen",
+      "subirBonoHint": "Wer das Angebot bereits hat, sieht den neuen Bonus, und die nächste Welle startet damit. Kann nur erhöht werden.",
+      "subirBonoTitulo": "Bonus für dieses Angebot erhöhen",
+      "tiempoMedio": "Durchschnittliche Zeit bis zur Besetzung",
+      "todas": "Alle",
+      "vacio": "Noch keine Doppelschicht angeboten",
+      "vacioActivas": "Keine laufende Suche",
+      "vacioDesc": "Fällt jemand aus, kann die Schicht hier oder in Besetzung live angeboten werden. Jedes Angebot ist in Echtzeit sichtbar."
+    },
+    "origen": {
+      "despachador": "Automatische Disposition",
+      "office": "Büro",
+      "supervisor_app": "Supervisor-App",
+      "vigia_chat": "Assistent"
+    },
+    "plantillas": {
+      "hoy": {
+        "boton": "Heute bin ich verfügbar",
+        "texto": "Melde dich verfügbar, dann bekommst du die heutigen Angebote zuerst.",
+        "titulo": "Heute frei?"
+      },
+      "ofertas": {
+        "boton": "Angebote ansehen",
+        "texto": "Sieh dir die offenen Angebote an: Wer zuerst annimmt, bekommt die Schicht.",
+        "titulo": "Diese Woche gibt es Extraschichten"
+      },
+      "puesto": {
+        "boton": "Eintragen",
+        "texto": "Trag dich für weitere Posten bei {{empresa}} ein: mehr Angebote für dich und {{bono}} pro Doppelschicht.",
+        "titulo": "Ersatzkräfte für weitere Posten gesucht"
+      },
+      "reserva": {
+        "boton": "Ich bin dabei",
+        "texto": "Übernimm Extraschichten, wann du willst, und verdiene {{bono}} pro Doppelschicht. Du wählst die Tage.",
+        "titulo": "Werde Teil der Reserve von {{empresa}}"
+      }
+    },
+    "ranking": {
+      "aceptadas": "Angenommen / erhalten",
+      "apagado": "Die Rangliste ist ausgeschaltet: Die Sicherheitskräfte sehen sie nicht in der App. Hier bleibt sie für das Büro verfügbar.",
+      "cubiertos": "Übernommen",
+      "mes": "Monat",
+      "puntos": "Punkte",
+      "reglaBronce": "In der Reserve sein",
+      "reglaN": "{{n}} Doppelschichten im Monat",
+      "reglaOro": "{{n}} Doppelschichten im Monat · sieht Angebote zuerst",
+      "respaldoDelMes": "Einspringer des Monats",
+      "respaldoResumen": "{{n}} Doppelschichten übernommen · {{puntos}} Punkte",
+      "respuesta": "Antwortzeit",
+      "titulo": "Wer am meisten übernommen hat",
+      "vacio": "Diesen Monat hat noch niemand eine Doppelschicht übernommen",
+      "vacioDesc": "Sobald jemand eine Doppelschicht annimmt, erscheint die Person hier mit ihren Punkten."
+    },
+    "reserva": {
+      "actualizada": "aktualisiert am {{fecha}}",
+      "alerta": "{{n}} Posten haben weniger als {{umbral}} Ersatzkräfte. Fällt dort jemand aus, reicht die Suche nicht weit. Die vorgeschlagene Kampagne lädt alle ein, die diese Posten abdecken können.",
+      "buscar": "Nach Name suchen",
+      "cubiertosMes": "{{n}} diesen Monat",
+      "disponibilidad": "Verfügbarkeit der Reserve",
+      "disponibilidadDesc": "Wie viele Personen aus der Reserve sich für Extraarbeit an jedem Tag und in jedem Zeitfenster verfügbar gemeldet haben.",
+      "enLaReserva": "In der Reserve",
+      "enPausa": "Pausiert",
+      "errorCarga": "Reserve konnte nicht geladen werden",
+      "errorCargaDesc": "Verbindung prüfen und erneut versuchen.",
+      "fuera": "Sicherheitskräfte außerhalb der Reserve",
+      "lanzarCampana": "Vorgeschlagene Kampagne starten",
+      "menosDe": "weniger als {{n}}",
+      "miembros": "Mitglieder ({{n}})",
+      "puestosCubiertos": "Posten mit Ersatzbank",
+      "puestosDebiles": "Posten mit wenigen Ersatzkräften",
+      "salud": "Zustand der Ersatzbank",
+      "sana": "Alle Posten haben mindestens {{umbral}} Ersatzkräfte.",
+      "sinDisponibilidad": "Keine Verfügbarkeit angegeben",
+      "sinPuestos": "Noch keine Posten eingerichtet.",
+      "suplentes": "Ersatzkräfte: {{n}}",
+      "vacio": "Noch niemand in der Reserve",
+      "vacioDesc": "Sicherheitskräfte treten über ihre App bei. Eine Kampagne füllt die Ersatzbank am schnellsten."
+    },
+    "subtitulo": "Fällt jemand aus, übernimmt die Reserve die Schicht: Das Angebot kommt in der App an, und wer zuerst annimmt, bekommt sie.",
+    "tab": {
+      "ajustes": "Einstellungen",
+      "campanas": "Kampagnen",
+      "ofertas": "Angebote",
+      "ranking": "Rangliste",
+      "reserva": "Reserve"
+    },
+    "titulo": "Doppelschichten",
+    "vigia": {
+      "masAjustes": "Weitere Einstellungen für Doppelschichten"
     }
   }
 }

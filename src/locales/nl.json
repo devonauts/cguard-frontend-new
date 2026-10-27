@@ -5277,7 +5277,8 @@
       "plantillas": "Dienstsjablonen",
       "tiempo-libre": "Verlof",
       "turnos-abiertos": "Open diensten",
-      "cobertura": "Live dekking"
+      "cobertura": "Live dekking",
+      "dobletes": "Dubbele diensten"
     },
     "rastreador": {
       "historial": "Volggeschiedenis",
@@ -7446,7 +7447,9 @@
       "central.desc": "Als u een 24/7-meldkamer heeft: welke post dat is, of de centralisten diensten overnemen en wie de alarmen krijgt.",
       "sms": "Sms-saldo",
       "idioma": "Taal",
-      "idioma.desc": "In welke taal u het CRM ziet. Automatisch of de taal die u kiest."
+      "idioma.desc": "In welke taal u het CRM ziet. Automatisch of de taal die u kiest.",
+      "dobletes": "Dubbele diensten",
+      "dobletes.desc": "Rondes, bonussen, punten, niveaus en ranglijst van de reserve."
     },
     "section": {
       "mi_cuenta": "Mijn account",
@@ -7949,7 +7952,12 @@
       "svPreviewYou": "Jij",
       "previewGuardName": "Jan Jansen",
       "module_payslips_label": "Loonstroken",
-      "module_payslips_desc": "De medewerker bekijkt en downloadt zijn gepubliceerde loonstroken. Standaard uitgeschakeld; vereist de module „Loonstroken”."
+      "module_payslips_desc": "De medewerker bekijkt en downloadt zijn gepubliceerde loonstroken. Standaard uitgeschakeld; vereist de module „Loonstroken”.",
+      "module_dobletes_desc": "Aanbiedingen voor extra diensten, aansluiten bij de reserve, beschikbaarheid aangeven en campagnes van het bedrijf. Standaard uit.",
+      "module_dobletes_label": "Dubbele diensten en reserve",
+      "previewNextShift": "Volgende dienst",
+      "previewOffDuty": "● Buiten dienst",
+      "previewTomorrowShift": "Morgen · 08:00 – 20:00"
     },
     "appearance": {
       "layoutTitle": "Weergave",
@@ -20075,6 +20083,79 @@
           "corrida": "Gewerkte uren gefactureerd en verstuurd op uw naam",
           "cobro": "Uw klant betaalt via de link en uw debiteuren zijn bij"
         }
+      },
+      "dobletes": {
+        "campana": {
+          "boton": "Inschrijven",
+          "texto": "Schrijf je in en verdien $15 per dubbele dienst.",
+          "titulo": "Invallers gezocht voor Noordpoort",
+          "unido": "Je bent nu invaller"
+        },
+        "empresa": "Cedar Bluff Security",
+        "escenas": {
+          "banca": "De invalpool",
+          "falta": "Iemand valt uit"
+        },
+        "estado": {
+          "cubierto": "Ingevuld",
+          "sinCubrir": "Onbezet"
+        },
+        "kpi": {
+          "altas": "Aanmeldingen",
+          "toques": "Tikken",
+          "vistas": "Weergaven"
+        },
+        "oferta": {
+          "acepto": "Geaccepteerd",
+          "enviada": "Verstuurd",
+          "no": "Kan niet",
+          "perdio": "Te laat"
+        },
+        "panel": {
+          "bono": "+ $15 Bonus dubbele dienst",
+          "campanaLanzada": "Campagne gepubliceerd",
+          "cobertura": "Live dekking",
+          "falta": "Niet verschenen om 05:40",
+          "lanzarCampana": "Voorgestelde campagne starten",
+          "oleada": "Golf 1 · 3 personen uit de reserve",
+          "rol": "Loonstroken · Mariana",
+          "salud": "Gezondheid van de invalpool",
+          "suplentes": "Invallers: {{n}}"
+        },
+        "pasos": {
+          "acepta": "Mariana accepteert in de app: de dienst is toegewezen",
+          "alta": "Eerste nieuwe invaller, via de app",
+          "altas": "Noordpoort heeft nu 4 invallers",
+          "bono": "De bonus dubbele dienst gaat naar haar loonstrook",
+          "campana": "Je start de voorgestelde campagne",
+          "falta": "Noordpoort zit zonder beveiliger: Ramiro is niet gekomen",
+          "noPuede": "Luis kan vandaag niet",
+          "oleada": "Je biedt de dubbele dienst aan: hij gaat naar 3 personen uit de reserve",
+          "pocaBanca": "Noordpoort heeft maar 1 invaller"
+        },
+        "personas": {
+          "carlos": "Carlos",
+          "luis": "Luis",
+          "mariana": "Mariana"
+        },
+        "puesto": "P-031 · Noordpoort",
+        "puesto2": "P-014 · Winkelcentrum",
+        "puesto3": "P-040 · Ziekenhuis",
+        "resultado": {
+          "banca": "De invalpool vult zich via de app van je beveiligers",
+          "falta": "Ingevuld in 4 minuten, zonder één telefoontje"
+        },
+        "tel": {
+          "aceptar": "Dienst accepteren",
+          "bono": "Bonus: $15",
+          "campana": "Van je bedrijf",
+          "fueraDeServicio": "Buiten dienst",
+          "horario": "Vandaag 06:00 – 18:00",
+          "oferta": "Dubbele dienst beschikbaar",
+          "reserva": "Reserve · vandaag beschikbaar",
+          "sinNovedad": "Op dit moment geen aanbiedingen",
+          "tuyo": "De dienst is van jou!"
+        }
       }
     }
   },
@@ -20968,6 +21049,325 @@
       "error": "Het dashboard kon niet worden geopend. Log opnieuw in.",
       "reintentar": "Opnieuw proberen",
       "volverAEntrar": "Opnieuw inloggen"
+    }
+  },
+  "dobletes": {
+    "ajustes": {
+      "autoHintNo": "{{agente}} meldt het verzuim en jij beslist of je de dubbele dienst aanbiedt.",
+      "autoHintSi": "Zodra {{agente}} een verzuim bevestigt, start de zoektocht in golven met de bonus van het bedrijf en hoor je wie de dienst heeft ingevuld.",
+      "bono": "Bonus dubbele dienst",
+      "bonoHint": "Wat je per dubbele dienst aanbiedt. Kan per aanbod worden verhoogd. Leeg = geen bonus.",
+      "bonos": "Bonussen",
+      "cuandoFalte": "Als iemand uitvalt",
+      "cubrir": "Voor invallen",
+      "cubrirHint": "Per ingevulde dubbele dienst. Standaard {{n}}.",
+      "dobletes": "dubbele diensten",
+      "guardados": "Instellingen opgeslagen",
+      "guardar": "Instellingen opslaan",
+      "min": "min",
+      "minutos": "Wachttijd tussen golven",
+      "minutosHint": "Accepteert niemand binnen deze tijd, dan gaat de volgende golf eruit. Zijn ze op, dan laten we het je weten.",
+      "niveles": "Niveaus van de maand",
+      "nivelesActivos": "Niveaus gebruiken",
+      "nivelesHint": "Brons, Zilver en Goud op basis van de ingevulde dubbele diensten in de maand. Goud ziet aanbiedingen als eerste.",
+      "nivelesOrden": "Goud zou meer dubbele diensten moeten vragen dan Zilver.",
+      "ofrecerAuto": "Dubbele dienst automatisch aanbieden",
+      "ola1": "Eerste golf",
+      "ola2": "Volgende golf",
+      "oleadas": "Zo wordt het aangeboden",
+      "oleadasDesc": "Eerst aan de reserve die op dat tijdstip beschikbaar is, best geplaatsten eerst (Goud voorop). Wie als eerste accepteert, krijgt de dienst.",
+      "personas": "personen",
+      "puntos": "Invalpunten",
+      "puntosDesc": "Tellen mee in de prestatiescore van elke beveiliger. Nee zeggen tegen een aanbod kost nooit punten.",
+      "puntosPermiso": "Voor het wijzigen van punten heb je de rechten nodig om beveiligers te bewerken.",
+      "ranking": "Ranglijst in de app",
+      "rankingHint": "Je beveiligers zien in de app wie deze maand het vaakst is ingevallen.",
+      "reconocimiento": "Erkenning",
+      "relampago": "Spoedbonus",
+      "relampagoHint": "Voor aanbiedingen die als dringend zijn gemarkeerd.",
+      "respaldoHint": "Zet wie in de maand de meeste dubbele diensten invulde in de schijnwerpers.",
+      "rolesActivo": "Elke uitbetaalde bonus komt in Loonstroken als ‘Bonus dubbele dienst’ in de periode van de dienst.",
+      "rolesInactivo": "Met de module Loonstroken worden de bonussen automatisch als ‘Bonus dubbele dienst’ op de loonstrook van elke beveiliger gezet. Zonder die module zie je ze in de geschiedenis van aanbiedingen.",
+      "sinLimites": "Het platform legt geen grenzen op aan werk- of rusttijden: dat bepaalt je bedrijf. Bij het aanbieden zie je de uren van elke persoon deze week alleen ter informatie.",
+      "soloAvisar": "Alleen het kantoor waarschuwen",
+      "temprano": "Extra voor snel accepteren",
+      "tempranoHint": "Extra voor wie binnen de eerste {{n}} minuten accepteert.",
+      "tempranoMinutos": "Telt als snel tot",
+      "tope": "Maximum",
+      "topeHint": "Maximaal aantal invalpunten per persoon. Standaard {{n}}.",
+      "verConcepto": "Looncomponent bekijken",
+      "vigia": "Met {{agente}} Pro",
+      "voluntario": "Voor aanmelden",
+      "voluntarioHint": "Voor lid worden of zich beschikbaar melden. Standaard {{n}}.",
+      "voz": "Bellen als laatste redmiddel",
+      "vozHint": "Heeft na alle golven niemand geaccepteerd, dan belt {{agente}} de volgenden op de lijst en accepteren ze met toets 1. Wordt per minuut afgeschreven van het communicatietegoed."
+    },
+    "campanas": {
+      "accion": "Wat de knop doet",
+      "altas": "Aanmeldingen",
+      "audiencia": "Voor wie",
+      "borrada": "Campagne verwijderd",
+      "borrar": "Verwijderen",
+      "borrarMensaje": "Hij verdwijnt uit de app. De resultaten gaan verloren.",
+      "borrarTitulo": "Campagne verwijderen?",
+      "boton": "Knoptekst",
+      "botonVacio": "Knop",
+      "cambiarImagen": "Afbeelding wijzigen",
+      "conAviso": "met melding",
+      "dePuestos": "Beveiligers van deze posten",
+      "dePuestosHint": "Niets aangevinkt = alle posten.",
+      "desde": "Vanaf",
+      "dias": "dagen",
+      "donde": "Waar hij verschijnt",
+      "editar": "Campagne bewerken",
+      "editarCorto": "Bewerken",
+      "enInicio": "Startscherm (buiten dienst)",
+      "enReserva": "Reservescherm",
+      "estado": {
+        "activa": "Actief",
+        "borrador": "Concept",
+        "programada": "Gepland",
+        "terminada": "Afgelopen"
+      },
+      "fechasInvalidas": "Het einde ligt vóór het begin.",
+      "fuera": "Buiten de reserve",
+      "fueraHint": "Alleen wie nog niet bij de reserve is aangesloten.",
+      "guardada": "Campagne opgeslagen",
+      "guardarBorrador": "Concept opslaan",
+      "guardarCambios": "Wijzigingen opslaan",
+      "hasta": "Tot",
+      "imagen": "Afbeelding (optioneel)",
+      "imagenHint": "Liggend, wordt aangepast naar 1600 px.",
+      "imagenPeso": "De afbeelding is groter dan 8 MB.",
+      "imagenTipo": "Gebruik een PNG-, JPG- of WebP-afbeelding.",
+      "intro": "Berichten van je bedrijf in de app van je beveiligers, zodat ze zich bij de reserve aansluiten en hun beschikbaarheid bijhouden. Alleen zichtbaar buiten dienst.",
+      "nueva": "Nieuwe campagne",
+      "paraCubrir": "Om deze posten te dekken",
+      "paraCubrirHint": "Wie op de knop tikt, wordt ingeschreven als invaller voor deze posten.",
+      "pausada": "Campagne gepauzeerd",
+      "pausar": "Pauzeren",
+      "periodo": "{{desde}} → {{hasta}}",
+      "plantilla": "Begin met een sjabloon",
+      "prioridad": "Prioriteit",
+      "prioridadHint": "Komt iemand in aanmerking voor twee campagnes, dan ziet die eerst de campagne met de hoogste prioriteit.",
+      "publicada": "Campagne gepubliceerd",
+      "publicadaConPush": "Campagne gepubliceerd. De melding komt aan met respect voor de stille uren.",
+      "publicar": "Publiceren",
+      "push": "Melding sturen bij publiceren",
+      "pushHint": "Eén pushmelding bij publiceren, met lage prioriteit en met respect voor de stille uren.",
+      "quitarImagen": "Verwijderen",
+      "reglas": "Elke beveiliger ziet één campagne tegelijk en alleen buiten dienst. Nooit tijdens de dienst.",
+      "ruta": "Scherm in de app",
+      "rutaInvalida": "Moet beginnen met /guard/",
+      "sinFechas": "Geen einddatum",
+      "subiendo": "Uploaden…",
+      "subirImagen": "Afbeelding uploaden",
+      "texto": "Tekst",
+      "textoHint": "Je kunt {{empresa}} en {{bono}} gebruiken: die worden vervangen door de naam van je bedrijf en de bonus per dubbele dienst.",
+      "textoVacio": "De tekst die je beveiligers zien.",
+      "titulo": "Titel",
+      "tituloVacio": "Titel van de campagne",
+      "toques": "Tikken",
+      "turnosCubiertos": "Ingevulde diensten",
+      "unBono": "een bonus",
+      "vacio": "Nog geen campagnes",
+      "vacioDesc": "Begin met ‘Sluit je aan bij de reserve’: dat sjabloon levert de meeste invallers op.",
+      "vieja": "Beschikbaarheid niet bijgewerkt",
+      "viejaDias": "Niet bijgewerkt sinds",
+      "viejaHint": "Leden die hun beschikbaarheid al een tijd niet hebben aangepast.",
+      "vistaPrevia": "Zo zien ze het",
+      "vistas": "Weergaven",
+      "volver": "Opnieuw tonen",
+      "volverHint": "Na hoeveel dagen iemand hem opnieuw ziet als die hem heeft gesloten."
+    },
+    "canal": {
+      "app": "App",
+      "voice": "Oproep",
+      "whatsapp": "WhatsApp"
+    },
+    "cobertura": {
+      "buscando": "Dubbele dienst aangeboden · {{n}} wachtend",
+      "ofrecer": "Dubbele dienst aanbieden",
+      "verBusqueda": "Zoektocht bekijken in Dubbele diensten"
+    },
+    "cta": {
+      "available_today": "‘Vandaag beschikbaar’ aangeven",
+      "join_reserve": "Aansluiten bij de reserve",
+      "open_offers": "Open aanbiedingen bekijken",
+      "qualify_post": "Inschrijven voor een andere post",
+      "route": "Een scherm in de app openen"
+    },
+    "estadoBusqueda": {
+      "active": "Bezig met zoeken",
+      "cancelled": "Geannuleerd",
+      "exhausted": "Niemand accepteerde",
+      "filled": "Ingevuld"
+    },
+    "estadoOferta": {
+      "accepted": "Geaccepteerd",
+      "declined": "Kan niet",
+      "expired": "Geen reactie",
+      "failed": "Verzenden mislukt",
+      "lost": "Te laat",
+      "pending": "Wacht op reactie",
+      "withdrawn": "Ingetrokken"
+    },
+    "franja": {
+      "D": "Dag",
+      "N": "Nacht",
+      "T": "Middag"
+    },
+    "lanzar": {
+      "bono": "Bonus voor deze dubbele dienst",
+      "bonoHint": "Zichtbaar voor wie het aanbod krijgt. Leeg = geen bonus.",
+      "conBono": "Aangeboden bonus: {{bono}}.",
+      "eligeHueco": "Kies de post die moet worden gedekt.",
+      "enReserva": "In de reserve",
+      "enviadaA": "Aanbod verstuurd naar {{n}} persoon/personen. Wie als eerste accepteert, krijgt de dienst.",
+      "enviadaOleadas": "Aanbod verstuurd naar de eerste golf ({{n}}). Wie als eerste accepteert, krijgt de dienst.",
+      "enviar": "Dubbele dienst aanbieden",
+      "enviarA": "Aanbieden aan {{n}}",
+      "explicaMano": "Alleen de personen die je aanvinkt krijgen het aanbod. Wie als eerste accepteert, krijgt de dienst.",
+      "explicaOleadas": "Eerst de reserve die op dat tijdstip beschikbaar is, best geplaatsten eerst: {{a}} personen, en als niemand binnen {{min}} min accepteert, nog {{b}}. Zijn ze op, dan laten we het je weten.",
+      "horasInfo": "Gewerkte uren deze week. Alleen ter informatie: het bedrijf beslist.",
+      "horasSemana": "{{h}} u deze week",
+      "hueco": "Onbezette post",
+      "marcaQuien": "Vink aan aan wie je het aanbiedt",
+      "modoMano": "Handmatig kiezen",
+      "modoOleadas": "In golven (automatisch)",
+      "quienesPrimero": "Wie het als eerste krijgt",
+      "sinCandidatos": "Niemand vrij",
+      "sinCandidatosDesc": "Niemand is vrij op dat tijdstip. Je kunt het toch aanbieden: wie uit de reserve zich later beschikbaar meldt, ziet het ook.",
+      "sinHuecos": "Geen onbezette posten",
+      "sinHuecosDesc": "Zodra je een afwezigheid registreert in Live dekking, verschijnt de post hier om aan te bieden.",
+      "sinLimites": "Het platform legt geen grenzen op aan werk- of rusttijden: dat bepaalt je bedrijf. Het voorkomt alleen dat iemand op twee posten tegelijk staat.",
+      "titulo": "Dubbele dienst aanbieden",
+      "urgente": "Dringend",
+      "urgenteHint": "Gebruikt de spoedbonus van het bedrijf en meldt met hoge prioriteit."
+    },
+    "modulo": {
+      "desc": "Met de module ‘Dubbele diensten’ zijn verzuim en ontslagen geen nacht vol telefoontjes meer: je mensen zien het aanbod, accepteren het en staan ingepland.",
+      "enlace": "Bekijken in Extra modules",
+      "paso1": "Valt iemand uit, dan bied je de dienst met één tik aan je reserve aan: eerst aan wie beschikbaar en het best geplaatst is, in golven.",
+      "paso2": "Wie als eerste accepteert in de app, krijgt de dienst. Geen telefoontjes één voor één en geen goedkeuringen.",
+      "paso3": "Je beloont wie invalt: bonus dubbele dienst, punten, de niveaus Brons, Zilver en Goud, en de ‘Invaller van de maand’.",
+      "paso4": "Je houdt de invalpool vol met campagnes in de app van je beveiligers en ziet welke posten zonder invallers zitten.",
+      "titulo": "Elk gat gevuld door je eigen reserve"
+    },
+    "nivel": {
+      "bronce": "Brons",
+      "oro": "Goud",
+      "plata": "Zilver"
+    },
+    "ofertas": {
+      "activas": "Lopend",
+      "agotada": "Aangeboden aan iedereen die beschikbaar was, maar niemand accepteerde. Vul het handmatig in via Live dekking, of bied het opnieuw aan met een hogere bonus.",
+      "bono": "Bonus {{bono}}",
+      "bonoSubido": "Bonus verhoogd naar {{bono}}. Wie het aanbod al had, krijgt een melding.",
+      "buscandoAhora": "Nu aan het zoeken",
+      "cancelada": "Zoektocht geannuleerd",
+      "cancelar": "Zoektocht annuleren",
+      "cancelarMensaje": "Openstaande aanbiedingen worden ingetrokken en wie ze heeft, hoort dat het niet meer beschikbaar is. De post blijft onbezet.",
+      "cancelarTitulo": "Zoektocht annuleren?",
+      "cubiertos": "Ingevuld",
+      "falta": "{{nombre}} ontbreekt",
+      "loCubre": "{{nombre}} valt in: de dienst is al toegewezen en die kan inklokken.",
+      "minutos": "{{n}} min",
+      "nadieAcepto": "Niemand accepteerde",
+      "nuevoBono": "Nieuwe bonus ({{moneda}})",
+      "oleada": "Golf {{n}} van {{total}}",
+      "oleadaCorta": "golf {{n}}",
+      "pendientes": "{{n}} wachten op reactie",
+      "proximaOleada": "Volgende golf over {{min}} min",
+      "subirBono": "Bonus verhogen",
+      "subirBonoHint": "Wie het aanbod al had, ziet de nieuwe bonus, en de volgende golf gaat ermee uit. Kan alleen omhoog.",
+      "subirBonoTitulo": "Bonus van dit aanbod verhogen",
+      "tiempoMedio": "Gemiddelde tijd tot ingevuld",
+      "todas": "Alle",
+      "vacio": "Er is nog geen dubbele dienst aangeboden",
+      "vacioActivas": "Geen lopende zoektochten",
+      "vacioDesc": "Valt iemand uit, bied de dienst dan hier of vanuit Live dekking aan. Je ziet elk aanbod live."
+    },
+    "origen": {
+      "despachador": "Automatische dispatcher",
+      "office": "Kantoor",
+      "supervisor_app": "Supervisor-app",
+      "vigia_chat": "Assistent"
+    },
+    "plantillas": {
+      "hoy": {
+        "boton": "Vandaag ben ik beschikbaar",
+        "texto": "Geef aan dat je beschikbaar bent en krijg de aanbiedingen van vandaag als eerste.",
+        "titulo": "Vandaag vrij?"
+      },
+      "ofertas": {
+        "boton": "Aanbiedingen bekijken",
+        "texto": "Bekijk de open aanbiedingen: wie als eerste accepteert, krijgt de dienst.",
+        "titulo": "Deze week zijn er extra diensten"
+      },
+      "puesto": {
+        "boton": "Inschrijven",
+        "texto": "Schrijf je in voor meer posten van {{empresa}}: meer aanbiedingen voor jou en {{bono}} per dubbele dienst.",
+        "titulo": "Invallers gezocht voor andere posten"
+      },
+      "reserva": {
+        "boton": "Ik doe mee",
+        "texto": "Draai extra diensten wanneer jij wilt en verdien {{bono}} per dubbele dienst. Jij kiest de dagen.",
+        "titulo": "Sluit je aan bij de reserve van {{empresa}}"
+      }
+    },
+    "ranking": {
+      "aceptadas": "Geaccepteerd / ontvangen",
+      "apagado": "De ranglijst staat uit: je beveiligers zien hem niet in de app. Hier blijft hij beschikbaar voor het kantoor.",
+      "cubiertos": "Ingevuld",
+      "mes": "Maand",
+      "puntos": "Punten",
+      "reglaBronce": "In de reserve zitten",
+      "reglaN": "{{n}} dubbele diensten in de maand",
+      "reglaOro": "{{n}} dubbele diensten in de maand · ziet aanbiedingen als eerste",
+      "respaldoDelMes": "Invaller van de maand",
+      "respaldoResumen": "{{n}} dubbele diensten ingevuld · {{puntos}} punten",
+      "respuesta": "Reageert binnen",
+      "titulo": "Wie het vaakst inviel",
+      "vacio": "Niemand heeft deze maand een dubbele dienst ingevuld",
+      "vacioDesc": "Zodra iemand een dubbele dienst accepteert, verschijnt die hier met zijn of haar punten."
+    },
+    "reserva": {
+      "actualizada": "bijgewerkt op {{fecha}}",
+      "alerta": "{{n}} post(en) hebben minder dan {{umbral}} invallers. Valt daar iemand uit, dan komt de zoektocht tekort. De voorgestelde campagne nodigt wie ze kan dekken uit.",
+      "buscar": "Zoeken op naam",
+      "cubiertosMes": "{{n}} deze maand",
+      "disponibilidad": "Beschikbaarheid van de reserve",
+      "disponibilidadDesc": "Hoeveel mensen uit de reserve zich per dag en dagdeel beschikbaar hebben gemeld om extra te werken.",
+      "enLaReserva": "In de reserve",
+      "enPausa": "Gepauzeerd",
+      "errorCarga": "Reserve kon niet worden geladen",
+      "errorCargaDesc": "Controleer je verbinding en probeer het opnieuw.",
+      "fuera": "Beveiligers buiten de reserve",
+      "lanzarCampana": "Voorgestelde campagne starten",
+      "menosDe": "minder dan {{n}}",
+      "miembros": "Leden ({{n}})",
+      "puestosCubiertos": "Posten met invallers",
+      "puestosDebiles": "Posten met weinig invallers",
+      "salud": "Gezondheid van de invalpool",
+      "sana": "Alle posten hebben minstens {{umbral}} invallers.",
+      "sinDisponibilidad": "Geen beschikbaarheid opgegeven",
+      "sinPuestos": "Er zijn nog geen posten ingesteld.",
+      "suplentes": "{{n}} invaller(s)",
+      "vacio": "Nog niemand in de reserve",
+      "vacioDesc": "Beveiligers sluiten zich aan via hun app. Een campagne is de snelste manier om de invalpool te vullen."
+    },
+    "subtitulo": "Valt iemand uit, dan vult je reserve de dienst in: het aanbod komt in de app binnen en wie als eerste accepteert, krijgt hem.",
+    "tab": {
+      "ajustes": "Instellingen",
+      "campanas": "Campagnes",
+      "ofertas": "Aanbiedingen",
+      "ranking": "Ranglijst",
+      "reserva": "Reserve"
+    },
+    "titulo": "Dubbele diensten",
+    "vigia": {
+      "masAjustes": "Meer instellingen voor dubbele diensten"
     }
   }
 }

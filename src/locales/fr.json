@@ -5277,7 +5277,8 @@
       "plantillas": "Modèles de vacation",
       "tiempo-libre": "Congés",
       "turnos-abiertos": "Vacations ouvertes",
-      "cobertura": "Couverture en direct"
+      "cobertura": "Couverture en direct",
+      "dobletes": "Doubles quarts"
     },
     "rastreador": {
       "historial": "Historique du suivi",
@@ -7446,7 +7447,9 @@
       "central.desc": "Si vous avez une console 24h/24 : quel poste c'est, si ses opérateurs partent en couverture et qui reçoit les alertes.",
       "sms": "Solde SMS",
       "idioma": "Langue",
-      "idioma.desc": "Dans quelle langue vous voyez le CRM. Automatique, ou celle que vous choisissez."
+      "idioma.desc": "Dans quelle langue vous voyez le CRM. Automatique, ou celle que vous choisissez.",
+      "dobletes": "Doubles quarts",
+      "dobletes.desc": "Vagues, primes, points, niveaux et classement de la réserve."
     },
     "section": {
       "mi_cuenta": "Mon compte",
@@ -7949,7 +7952,12 @@
       "svPreviewYou": "Vous",
       "previewGuardName": "Juan Ramírez",
       "module_payslips_label": "Bulletins de paie",
-      "module_payslips_desc": "Le travailleur consulte et télécharge ses bulletins de paie publiés. Désactivé par défaut ; nécessite le module « Bulletins de paie »."
+      "module_payslips_desc": "Le travailleur consulte et télécharge ses bulletins de paie publiés. Désactivé par défaut ; nécessite le module « Bulletins de paie ».",
+      "module_dobletes_desc": "Offres de quarts supplémentaires, adhésion à la réserve, indication des disponibilités et campagnes de l'entreprise. Désactivé par défaut.",
+      "module_dobletes_label": "Doubles quarts et réserve",
+      "previewNextShift": "Prochain quart",
+      "previewOffDuty": "● Hors service",
+      "previewTomorrowShift": "Demain · 08:00 – 20:00"
     },
     "appearance": {
       "layoutTitle": "Apparence",
@@ -20075,6 +20083,79 @@
           "corrida": "Le travail effectué, facturé et envoyé en votre nom",
           "cobro": "Votre client paie depuis le lien et vos créances se mettent à jour"
         }
+      },
+      "dobletes": {
+        "campana": {
+          "boton": "Je m'inscris",
+          "texto": "Inscrivez-vous et gagnez $15 par double quart.",
+          "titulo": "Nous cherchons des remplaçants pour Porte nord",
+          "unido": "Vous êtes remplaçant"
+        },
+        "empresa": "Cedar Bluff Security",
+        "escenas": {
+          "banca": "La réserve",
+          "falta": "Une absence"
+        },
+        "estado": {
+          "cubierto": "Couvert",
+          "sinCubrir": "Non couvert"
+        },
+        "kpi": {
+          "altas": "Inscriptions",
+          "toques": "Clics",
+          "vistas": "Vues"
+        },
+        "oferta": {
+          "acepto": "A accepté",
+          "enviada": "Envoyée",
+          "no": "Indisponible",
+          "perdio": "Trop tard"
+        },
+        "panel": {
+          "bono": "+ $15 Prime de double quart",
+          "campanaLanzada": "Campagne publiée",
+          "cobertura": "Couverture en direct",
+          "falta": "Absent à 05:40",
+          "lanzarCampana": "Lancer la campagne suggérée",
+          "oleada": "Vague 1 · 3 personnes de la réserve",
+          "rol": "Bulletins de paie · Mariana",
+          "salud": "Santé de la réserve",
+          "suplentes": "Remplaçants : {{n}}"
+        },
+        "pasos": {
+          "acepta": "Mariana accepte dans l'app : le quart lui est affecté",
+          "alta": "Premier nouveau remplaçant, depuis l'app",
+          "altas": "Porte nord a déjà 4 remplaçants",
+          "bono": "La prime de double quart arrive sur son bulletin de paie",
+          "campana": "Vous lancez la campagne suggérée",
+          "falta": "Porte nord se retrouve sans agent : Ramiro est absent",
+          "noPuede": "Luis n'est pas disponible aujourd'hui",
+          "oleada": "Vous proposez le double quart : il arrive à 3 personnes de la réserve",
+          "pocaBanca": "Porte nord n'a qu'un seul remplaçant"
+        },
+        "personas": {
+          "carlos": "Carlos",
+          "luis": "Luis",
+          "mariana": "Mariana"
+        },
+        "puesto": "P-031 · Porte nord",
+        "puesto2": "P-014 · Centre commercial",
+        "puesto3": "P-040 · Hôpital",
+        "resultado": {
+          "banca": "La réserve se remplit depuis l'app de vos agents",
+          "falta": "Couvert en 4 minutes, sans un seul appel"
+        },
+        "tel": {
+          "aceptar": "Accepter le quart",
+          "bono": "Prime : $15",
+          "campana": "De votre entreprise",
+          "fueraDeServicio": "Hors service",
+          "horario": "Aujourd'hui 06:00 – 18:00",
+          "oferta": "Double quart disponible",
+          "reserva": "Réserve · disponible aujourd'hui",
+          "sinNovedad": "Aucune offre pour l'instant",
+          "tuyo": "Le quart est à vous !"
+        }
       }
     }
   },
@@ -20968,6 +21049,325 @@
       "error": "Impossible d'ouvrir le tableau de bord. Reconnectez-vous.",
       "reintentar": "Réessayer",
       "volverAEntrar": "Se reconnecter"
+    }
+  },
+  "dobletes": {
+    "ajustes": {
+      "autoHintNo": "{{agente}} vous signale l'absence et vous décidez de proposer ou non le double quart.",
+      "autoHintSi": "Quand {{agente}} confirme une absence, il lance la recherche par vagues avec la prime de l'entreprise et vous indique qui l'a couvert.",
+      "bono": "Prime de double quart",
+      "bonoHint": "Montant proposé pour chaque double quart. Vous pouvez l'augmenter à chaque offre. Vide = pas de prime.",
+      "bonos": "Primes",
+      "cuandoFalte": "En cas d'absence",
+      "cubrir": "Pour une couverture",
+      "cubrirHint": "Par double quart couvert. Par défaut, {{n}}.",
+      "dobletes": "doubles quarts",
+      "guardados": "Paramètres enregistrés",
+      "guardar": "Enregistrer les paramètres",
+      "min": "min",
+      "minutos": "Délai entre les vagues",
+      "minutosHint": "Si personne n'accepte dans ce délai, la vague suivante est envoyée. Quand il n'y en a plus, nous vous prévenons.",
+      "niveles": "Niveaux du mois",
+      "nivelesActivos": "Utiliser les niveaux",
+      "nivelesHint": "Bronze, Argent et Or selon les doubles quarts couverts dans le mois. Le niveau Or voit les offres en premier.",
+      "nivelesOrden": "Le niveau Or devrait exiger plus de doubles quarts que le niveau Argent.",
+      "ofrecerAuto": "Proposer le double quart automatiquement",
+      "ola1": "Première vague",
+      "ola2": "Vague suivante",
+      "oleadas": "Envoi de l'offre",
+      "oleadasDesc": "D'abord à la réserve disponible sur ce créneau, les mieux classés en premier (Or d'abord). La première personne qui accepte obtient le quart.",
+      "personas": "personnes",
+      "puntos": "Points de renfort",
+      "puntosDesc": "Ils s'ajoutent à la note de performance de chaque agent. Refuser une offre ne fait jamais perdre de points.",
+      "puntosPermiso": "Pour modifier les points, il faut l'autorisation de modifier les agents.",
+      "ranking": "Classement dans l'app",
+      "rankingHint": "Vos agents voient dans l'app qui a le plus couvert ce mois-ci.",
+      "reconocimiento": "Reconnaissance",
+      "relampago": "Prime éclair",
+      "relampagoHint": "Pour les offres marquées comme urgentes.",
+      "respaldoHint": "Met en avant la personne qui a couvert le plus de doubles quarts dans le mois.",
+      "rolesActivo": "Chaque prime versée arrive dans Bulletins de paie sous « Prime de double quart », sur la période du quart.",
+      "rolesInactivo": "Avec le module Bulletins de paie, les primes s'ajoutent automatiquement au bulletin de chaque agent sous « Prime de double quart ». Sans ce module, vous les retrouvez dans l'historique des offres.",
+      "sinLimites": "La plateforme n'impose aucune limite d'heures ni de repos : c'est votre entreprise qui décide. Au moment de proposer, vous verrez les heures de chaque personne sur la semaine, à titre indicatif.",
+      "soloAvisar": "Prévenir uniquement le bureau",
+      "temprano": "Bonus de réponse rapide",
+      "tempranoHint": "Bonus pour qui accepte dans les {{n}} premières minutes.",
+      "tempranoMinutos": "Réponse rapide jusqu'à",
+      "tope": "Plafond",
+      "topeHint": "Nombre maximum de points de renfort cumulés par personne. Par défaut, {{n}}.",
+      "verConcepto": "Voir la rubrique de paie",
+      "vigia": "Avec {{agente}} Pro",
+      "voluntario": "Pour se porter volontaire",
+      "voluntarioHint": "Pour rejoindre la réserve ou se déclarer disponible. Par défaut, {{n}}.",
+      "voz": "Appel en dernier recours",
+      "vozHint": "Si personne n'a accepté après toutes les vagues, {{agente}} appelle les personnes suivantes de la liste, qui acceptent en tapant 1. Facturé à la minute sur le solde de communications."
+    },
+    "campanas": {
+      "accion": "Action du bouton",
+      "altas": "Inscriptions",
+      "audiencia": "Destinataires",
+      "borrada": "Campagne supprimée",
+      "borrar": "Supprimer",
+      "borrarMensaje": "Elle ne s'affichera plus dans l'app. Ses résultats seront perdus.",
+      "borrarTitulo": "Supprimer la campagne ?",
+      "boton": "Texte du bouton",
+      "botonVacio": "Bouton",
+      "cambiarImagen": "Changer l'image",
+      "conAviso": "avec notification",
+      "dePuestos": "Agents de ces postes",
+      "dePuestosHint": "Aucun coché = tous les postes.",
+      "desde": "Début",
+      "dias": "jours",
+      "donde": "Emplacement",
+      "editar": "Modifier la campagne",
+      "editarCorto": "Modifier",
+      "enInicio": "Accueil (hors service)",
+      "enReserva": "Écran de la réserve",
+      "estado": {
+        "activa": "Active",
+        "borrador": "Brouillon",
+        "programada": "Programmée",
+        "terminada": "Terminée"
+      },
+      "fechasInvalidas": "La date de fin précède la date de début.",
+      "fuera": "Hors de la réserve",
+      "fueraHint": "Uniquement les personnes qui n'ont pas encore rejoint la réserve.",
+      "guardada": "Campagne enregistrée",
+      "guardarBorrador": "Enregistrer le brouillon",
+      "guardarCambios": "Enregistrer les modifications",
+      "hasta": "Fin",
+      "imagen": "Image (facultatif)",
+      "imagenHint": "Format paysage, redimensionnée à 1600 px.",
+      "imagenPeso": "L'image dépasse 8 Mo.",
+      "imagenTipo": "Utilisez une image PNG, JPG ou WebP.",
+      "intro": "Des messages de votre entreprise dans l'app de vos agents, pour qu'ils rejoignent la réserve et la tiennent à jour. Visibles uniquement hors service.",
+      "nueva": "Nouvelle campagne",
+      "paraCubrir": "Pour couvrir ces postes",
+      "paraCubrirHint": "Toute personne qui appuie sur le bouton est inscrite comme remplaçante sur ces postes.",
+      "pausada": "Campagne en pause",
+      "pausar": "Mettre en pause",
+      "periodo": "{{desde}} → {{hasta}}",
+      "plantilla": "Partir d'un modèle",
+      "prioridad": "Priorité",
+      "prioridadHint": "Si une personne est ciblée par deux campagnes, elle voit d'abord celle dont la priorité est la plus haute.",
+      "publicada": "Campagne publiée",
+      "publicadaConPush": "Campagne publiée. La notification respectera les heures calmes.",
+      "publicar": "Publier",
+      "push": "Notifier à la publication",
+      "pushHint": "Une notification sur le téléphone à la publication, en priorité basse et dans le respect des heures calmes.",
+      "quitarImagen": "Retirer",
+      "reglas": "Chaque agent voit une seule campagne à la fois, uniquement hors service. Jamais pendant son quart.",
+      "ruta": "Écran de l'app",
+      "rutaInvalida": "Doit commencer par /guard/",
+      "sinFechas": "Sans date de fin",
+      "subiendo": "Envoi en cours…",
+      "subirImagen": "Ajouter une image",
+      "texto": "Texte",
+      "textoHint": "Vous pouvez écrire {{empresa}} et {{bono}} : ils seront remplacés par le nom de votre entreprise et la prime de double quart.",
+      "textoVacio": "Le texte que verront vos agents.",
+      "titulo": "Titre",
+      "tituloVacio": "Titre de la campagne",
+      "toques": "Clics",
+      "turnosCubiertos": "Quarts couverts",
+      "unBono": "une prime",
+      "vacio": "Aucune campagne pour l'instant",
+      "vacioDesc": "Commencez par « Rejoignez la réserve » : c'est le modèle qui attire le plus de remplaçants.",
+      "vieja": "Disponibilité non mise à jour",
+      "viejaDias": "Non mise à jour depuis",
+      "viejaHint": "Membres qui n'ont pas mis à jour leur disponibilité depuis un moment.",
+      "vistaPrevia": "Aperçu",
+      "vistas": "Vues",
+      "volver": "Réafficher après",
+      "volverHint": "Si la personne la ferme, nombre de jours avant de pouvoir la revoir."
+    },
+    "canal": {
+      "app": "App",
+      "voice": "Appel",
+      "whatsapp": "WhatsApp"
+    },
+    "cobertura": {
+      "buscando": "Double quart proposé · {{n}} en attente",
+      "ofrecer": "Proposer un double quart",
+      "verBusqueda": "Voir la recherche dans Doubles quarts"
+    },
+    "cta": {
+      "available_today": "Indiquer « Disponible aujourd'hui »",
+      "join_reserve": "Rejoindre la réserve",
+      "open_offers": "Voir les offres ouvertes",
+      "qualify_post": "S'inscrire pour couvrir un autre poste",
+      "route": "Ouvrir un écran de l'app"
+    },
+    "estadoBusqueda": {
+      "active": "Recherche en cours",
+      "cancelled": "Annulée",
+      "exhausted": "Personne n'a accepté",
+      "filled": "Couvert"
+    },
+    "estadoOferta": {
+      "accepted": "A accepté",
+      "declined": "Indisponible",
+      "expired": "Sans réponse",
+      "failed": "Envoi impossible",
+      "lost": "Trop tard",
+      "pending": "En attente de réponse",
+      "withdrawn": "Retirée"
+    },
+    "franja": {
+      "D": "Jour",
+      "N": "Nuit",
+      "T": "Après-midi"
+    },
+    "lanzar": {
+      "bono": "Prime pour ce double quart",
+      "bonoHint": "Visible par les personnes qui reçoivent l'offre. Vide = pas de prime.",
+      "conBono": "Prime proposée : {{bono}}.",
+      "eligeHueco": "Choisissez le poste à couvrir.",
+      "enReserva": "Dans la réserve",
+      "enviadaA": "Offre envoyée à {{n}} personne(s). La première qui accepte obtient le quart.",
+      "enviadaOleadas": "Offre envoyée à la première vague ({{n}}). La première personne qui accepte obtient le quart.",
+      "enviar": "Proposer le double quart",
+      "enviarA": "Proposer à {{n}}",
+      "explicaMano": "Seules les personnes cochées reçoivent l'offre. La première qui accepte obtient le quart.",
+      "explicaOleadas": "D'abord la réserve disponible sur ce créneau, les mieux classés en premier : {{a}} personnes, puis {{b}} de plus si personne n'accepte en {{min}} min. Quand il n'y en a plus, nous vous prévenons.",
+      "horasInfo": "Heures travaillées cette semaine. À titre indicatif : c'est l'entreprise qui décide.",
+      "horasSemana": "{{h}} h cette semaine",
+      "hueco": "Poste non couvert",
+      "marcaQuien": "Cochez les personnes à qui le proposer",
+      "modoMano": "Choisir manuellement",
+      "modoOleadas": "Par vagues (automatique)",
+      "quienesPrimero": "Qui le reçoit en premier",
+      "sinCandidatos": "Personne de libre",
+      "sinCandidatosDesc": "Personne n'est libre sur ce créneau. Vous pouvez quand même lancer l'offre : les membres de la réserve qui se déclarent disponibles ensuite la verront aussi.",
+      "sinHuecos": "Aucun poste à couvrir",
+      "sinHuecosDesc": "Quand vous enregistrez une absence dans Couverture en direct, le poste apparaît ici pour être proposé.",
+      "sinLimites": "La plateforme n'impose aucune limite d'heures ni de repos : c'est votre entreprise qui décide. Elle empêche seulement d'être sur deux postes en même temps.",
+      "titulo": "Proposer un double quart",
+      "urgente": "Urgent",
+      "urgenteHint": "Applique la prime éclair de l'entreprise et envoie une notification en priorité haute."
+    },
+    "modulo": {
+      "desc": "Avec le module « Doubles quarts », les absences et les démissions ne sont plus synonymes de nuits au téléphone : vos équipes voient l'offre, l'acceptent et sont affectées.",
+      "enlace": "Voir dans Modules complémentaires",
+      "paso1": "En cas d'absence, vous proposez le quart à votre réserve d'un simple geste : d'abord aux personnes disponibles et les mieux classées, par vagues.",
+      "paso2": "La première personne qui accepte dans l'app obtient le quart. Plus d'appels un par un, plus de validations.",
+      "paso3": "Vous récompensez ceux qui couvrent : prime de double quart, points, niveaux Bronze, Argent et Or, et le « Renfort du mois ».",
+      "paso4": "Vous gardez une réserve bien fournie grâce aux campagnes dans l'app de vos agents, et vous voyez quels postes manquent de remplaçants.",
+      "titulo": "Chaque absence couverte par votre propre réserve"
+    },
+    "nivel": {
+      "bronce": "Bronze",
+      "oro": "Or",
+      "plata": "Argent"
+    },
+    "ofertas": {
+      "activas": "En cours",
+      "agotada": "L'offre a été proposée à toutes les personnes disponibles et personne n'a accepté. Couvrez le poste manuellement dans Couverture en direct, ou proposez-le à nouveau avec une prime plus élevée.",
+      "bono": "Prime {{bono}}",
+      "bonoSubido": "Prime augmentée à {{bono}}. Les personnes qui avaient déjà l'offre sont prévenues.",
+      "buscandoAhora": "Recherche en cours",
+      "cancelada": "Recherche annulée",
+      "cancelar": "Annuler la recherche",
+      "cancelarMensaje": "Les offres en attente sont retirées et leurs destinataires sont informés qu'elles ne sont plus disponibles. Le poste reste à couvrir.",
+      "cancelarTitulo": "Annuler la recherche ?",
+      "cubiertos": "Couverts",
+      "falta": "absence de {{nombre}}",
+      "loCubre": "{{nombre}} assure la couverture : le quart est déjà affecté et le pointage est possible.",
+      "minutos": "{{n}} min",
+      "nadieAcepto": "Personne n'a accepté",
+      "nuevoBono": "Nouvelle prime ({{moneda}})",
+      "oleada": "Vague {{n}} sur {{total}}",
+      "oleadaCorta": "vague {{n}}",
+      "pendientes": "{{n}} en attente de réponse",
+      "proximaOleada": "Prochaine vague dans {{min}} min",
+      "subirBono": "Augmenter la prime",
+      "subirBonoHint": "Les personnes qui avaient déjà l'offre voient la nouvelle prime, et la vague suivante part avec. La prime peut seulement être augmentée.",
+      "subirBonoTitulo": "Augmenter la prime de cette offre",
+      "tiempoMedio": "Délai moyen de couverture",
+      "todas": "Toutes",
+      "vacio": "Aucun double quart proposé pour l'instant",
+      "vacioActivas": "Aucune recherche en cours",
+      "vacioDesc": "En cas d'absence, proposez le quart d'ici ou depuis Couverture en direct. Vous suivrez chaque offre en temps réel."
+    },
+    "origen": {
+      "despachador": "Répartiteur automatique",
+      "office": "Bureau",
+      "supervisor_app": "App superviseur",
+      "vigia_chat": "Assistant"
+    },
+    "plantillas": {
+      "hoy": {
+        "boton": "Je suis disponible aujourd'hui",
+        "texto": "Indiquez que vous êtes disponible et recevez en premier les offres du jour.",
+        "titulo": "Libre aujourd'hui ?"
+      },
+      "ofertas": {
+        "boton": "Voir les offres",
+        "texto": "Consultez les offres ouvertes : la première personne qui accepte obtient le quart.",
+        "titulo": "Des quarts supplémentaires cette semaine"
+      },
+      "puesto": {
+        "boton": "Je m'inscris",
+        "texto": "Inscrivez-vous pour couvrir plus de postes de {{empresa}} : plus d'offres pour vous et {{bono}} par double quart.",
+        "titulo": "Nous cherchons des remplaçants pour d'autres postes"
+      },
+      "reserva": {
+        "boton": "Je veux en faire partie",
+        "texto": "Couvrez des quarts supplémentaires quand vous le souhaitez et gagnez {{bono}} par double quart. C'est vous qui choisissez les jours.",
+        "titulo": "Rejoignez la réserve de {{empresa}}"
+      }
+    },
+    "ranking": {
+      "aceptadas": "Acceptées / reçues",
+      "apagado": "Le classement est désactivé : vos agents ne le voient pas dans l'app. Il reste disponible ici pour le bureau.",
+      "cubiertos": "Couverts",
+      "mes": "Mois",
+      "puntos": "Points",
+      "reglaBronce": "Faire partie de la réserve",
+      "reglaN": "{{n}} doubles quarts dans le mois",
+      "reglaOro": "{{n}} doubles quarts dans le mois · voit les offres en premier",
+      "respaldoDelMes": "Renfort du mois",
+      "respaldoResumen": "{{n}} doubles quarts couverts · {{puntos}} points",
+      "respuesta": "Répond en",
+      "titulo": "Qui a le plus couvert",
+      "vacio": "Personne n'a couvert de double quart ce mois-ci",
+      "vacioDesc": "Dès qu'une personne accepte un double quart, elle apparaît ici avec ses points."
+    },
+    "reserva": {
+      "actualizada": "mise à jour le {{fecha}}",
+      "alerta": "{{n}} poste(s) ont moins de {{umbral}} remplaçants. En cas d'absence sur ces postes, la recherche risque de ne pas aboutir. La campagne suggérée invite les personnes qui peuvent les couvrir.",
+      "buscar": "Rechercher par nom",
+      "cubiertosMes": "{{n}} ce mois-ci",
+      "disponibilidad": "Disponibilité de la réserve",
+      "disponibilidadDesc": "Nombre de membres de la réserve disponibles pour travailler en plus, par jour et par créneau.",
+      "enLaReserva": "Dans la réserve",
+      "enPausa": "En pause",
+      "errorCarga": "Impossible de charger la réserve",
+      "errorCargaDesc": "Vérifiez votre connexion et réessayez.",
+      "fuera": "Agents hors de la réserve",
+      "lanzarCampana": "Lancer la campagne suggérée",
+      "menosDe": "moins de {{n}}",
+      "miembros": "Membres ({{n}})",
+      "puestosCubiertos": "Postes avec remplaçants",
+      "puestosDebiles": "Postes avec peu de remplaçants",
+      "salud": "Santé de la réserve",
+      "sana": "Tous les postes ont au moins {{umbral}} remplaçants.",
+      "sinDisponibilidad": "Aucune disponibilité indiquée",
+      "sinPuestos": "Aucun poste configuré pour l'instant.",
+      "suplentes": "{{n}} remplaçant(s)",
+      "vacio": "Personne dans la réserve pour l'instant",
+      "vacioDesc": "Les agents rejoignent la réserve depuis leur app. Une campagne est le moyen le plus rapide de la remplir."
+    },
+    "subtitulo": "En cas d'absence, votre réserve couvre le quart : l'offre arrive dans l'app et la première personne qui accepte l'obtient.",
+    "tab": {
+      "ajustes": "Paramètres",
+      "campanas": "Campagnes",
+      "ofertas": "Offres",
+      "ranking": "Classement",
+      "reserva": "Réserve"
+    },
+    "titulo": "Doubles quarts",
+    "vigia": {
+      "masAjustes": "Plus de paramètres des doubles quarts"
     }
   }
 }

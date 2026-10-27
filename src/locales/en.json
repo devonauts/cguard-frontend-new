@@ -5747,7 +5747,8 @@
       "plantillas": "Shift Templates",
       "tiempo-libre": "Time Off",
       "turnos-abiertos": "Open Shifts",
-      "cobertura": "Live coverage"
+      "cobertura": "Live coverage",
+      "dobletes": "Double shifts"
     },
     "rastreador": {
       "historial": "Tracking History",
@@ -6943,7 +6944,9 @@
       "central.desc": "If you run a 24/7 console: which post it is, whether its operators cover shifts, and who gets the alerts.",
       "sms": "SMS balance",
       "idioma": "Language",
-      "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick."
+      "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick.",
+      "dobletes": "Double shifts",
+      "dobletes.desc": "Waves, bonuses, points, levels and ranking of the reserve."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -7446,7 +7449,12 @@
       "svPreviewYou": "You",
       "previewGuardName": "Juan Ramírez",
       "module_payslips_label": "Payslips",
-      "module_payslips_desc": "The worker views and downloads their published payslips. Off by default; requires the \"Payslips\" module."
+      "module_payslips_desc": "The worker views and downloads their published payslips. Off by default; requires the \"Payslips\" module.",
+      "module_dobletes_desc": "Extra shift offers, joining the reserve, marking availability and company campaigns. Off by default.",
+      "module_dobletes_label": "Double shifts & reserve",
+      "previewNextShift": "Next shift",
+      "previewOffDuty": "● Off duty",
+      "previewTomorrowShift": "Tomorrow · 08:00 – 20:00"
     },
     "appearance": {
       "layoutTitle": "Appearance",
@@ -20075,6 +20083,79 @@
           "corrida": "Hours worked, invoiced and sent in your name",
           "cobro": "Your client pays from the link and your receivables catch up"
         }
+      },
+      "dobletes": {
+        "campana": {
+          "boton": "Sign me up",
+          "texto": "Sign up and earn $15 for every double shift.",
+          "titulo": "We need backups for North Gate",
+          "unido": "You're a backup now"
+        },
+        "empresa": "Cedar Bluff Security",
+        "escenas": {
+          "banca": "The bench",
+          "falta": "Someone doesn't show"
+        },
+        "estado": {
+          "cubierto": "Covered",
+          "sinCubrir": "Uncovered"
+        },
+        "kpi": {
+          "altas": "Sign-ups",
+          "toques": "Taps",
+          "vistas": "Views"
+        },
+        "oferta": {
+          "acepto": "Accepted",
+          "enviada": "Sent",
+          "no": "Can't make it",
+          "perdio": "Too late"
+        },
+        "panel": {
+          "bono": "+ $15 Double shift bonus",
+          "campanaLanzada": "Campaign published",
+          "cobertura": "Live coverage",
+          "falta": "No-show at 05:40",
+          "lanzarCampana": "Launch suggested campaign",
+          "oleada": "Wave 1 · 3 people from the reserve",
+          "rol": "Payslips · Mariana",
+          "salud": "Bench health",
+          "suplentes": "Backups: {{n}}"
+        },
+        "pasos": {
+          "acepta": "Mariana accepts in the app: the shift is assigned",
+          "alta": "First new backup, straight from the app",
+          "altas": "North Gate now has 4 backups",
+          "bono": "The double shift bonus goes on her payslip",
+          "campana": "You launch the suggested campaign",
+          "falta": "North Gate is left without a guard: Ramiro didn't show",
+          "noPuede": "Luis can't make it today",
+          "oleada": "You offer the double shift: it goes to 3 people from the reserve",
+          "pocaBanca": "North Gate has only 1 backup"
+        },
+        "personas": {
+          "carlos": "Carlos",
+          "luis": "Luis",
+          "mariana": "Mariana"
+        },
+        "puesto": "P-031 · North Gate",
+        "puesto2": "P-014 · Shopping mall",
+        "puesto3": "P-040 · Hospital",
+        "resultado": {
+          "banca": "The bench fills up from your guards' app",
+          "falta": "Covered in 4 minutes, without a single phone call"
+        },
+        "tel": {
+          "aceptar": "Accept the shift",
+          "bono": "Bonus: $15",
+          "campana": "From your company",
+          "fueraDeServicio": "Off duty",
+          "horario": "Today 06:00 – 18:00",
+          "oferta": "Double shift available",
+          "reserva": "Reserve · available today",
+          "sinNovedad": "No offers right now",
+          "tuyo": "The shift is yours!"
+        }
       }
     }
   },
@@ -20968,6 +21049,325 @@
       "error": "We couldn't open the dashboard. Please sign in again.",
       "reintentar": "Try again",
       "volverAEntrar": "Sign in again"
+    }
+  },
+  "dobletes": {
+    "ajustes": {
+      "autoHintNo": "{{agente}} lets you know about the absence, and you decide whether to offer the double shift.",
+      "autoHintSi": "When {{agente}} confirms an absence, it starts the search in waves with the company bonus and tells you who covered it.",
+      "bono": "Double shift bonus",
+      "bonoHint": "What's offered for each double shift. You can raise it on any offer. Empty = no bonus.",
+      "bonos": "Bonuses",
+      "cuandoFalte": "When someone doesn't show",
+      "cubrir": "For covering",
+      "cubrirHint": "Per double shift covered. Default: {{n}}.",
+      "dobletes": "double shifts",
+      "guardados": "Settings saved",
+      "guardar": "Save settings",
+      "min": "min",
+      "minutos": "Wait between waves",
+      "minutosHint": "If no one accepts within this time, the next wave goes out. When there are none left, we'll let you know.",
+      "niveles": "Monthly levels",
+      "nivelesActivos": "Use levels",
+      "nivelesHint": "Bronze, Silver and Gold based on double shifts covered in the month. Gold sees offers first.",
+      "nivelesOrden": "Gold should require more double shifts than Silver.",
+      "ofrecerAuto": "Offer the double shift automatically",
+      "ola1": "First wave",
+      "ola2": "Next wave",
+      "oleadas": "How it's offered",
+      "oleadasDesc": "First to reserve members available for that time slot, highest ranked first (Gold goes first). The first to accept gets the shift.",
+      "personas": "people",
+      "puntos": "Backup points",
+      "puntosDesc": "They're added to each guard's performance score. Saying no to an offer never takes points away.",
+      "puntosPermiso": "Changing points requires permission to edit guards.",
+      "ranking": "In-app ranking",
+      "rankingHint": "Your guards see in the app who covered the most this month.",
+      "reconocimiento": "Recognition",
+      "relampago": "Flash bonus",
+      "relampagoHint": "For offers marked as urgent.",
+      "respaldoHint": "Highlights whoever covered the most double shifts in the month.",
+      "rolesActivo": "Every bonus paid goes to Payslips as “Double shift bonus” in the shift's pay period.",
+      "rolesInactivo": "With the Payslips module, bonuses are added automatically to each guard's payslip as “Double shift bonus”. Without it, you'll see them in the offer history.",
+      "sinLimites": "The platform doesn't set limits on hours or rest: your company decides. When offering, you'll see each person's hours for the week for reference only.",
+      "soloAvisar": "Just notify the office",
+      "temprano": "Extra for accepting quickly",
+      "tempranoHint": "Extra for whoever accepts within the first {{n}} minutes.",
+      "tempranoMinutos": "Counts as quick up to",
+      "tope": "Cap",
+      "topeHint": "Maximum backup points one person can earn. Default: {{n}}.",
+      "verConcepto": "View pay item",
+      "vigia": "With {{agente}} Pro",
+      "voluntario": "For volunteering",
+      "voluntarioHint": "For joining or marking themselves available. Default: {{n}}.",
+      "voz": "Phone call as a last resort",
+      "vozHint": "If no one has accepted after all the waves, {{agente}} calls the next people on the list, and they accept by pressing 1. Billed per minute from your communications balance."
+    },
+    "campanas": {
+      "accion": "What the button does",
+      "altas": "Sign-ups",
+      "audiencia": "Audience",
+      "borrada": "Campaign deleted",
+      "borrar": "Delete",
+      "borrarMensaje": "It will no longer appear in the app, and its results will be lost.",
+      "borrarTitulo": "Delete the campaign?",
+      "boton": "Button text",
+      "botonVacio": "Button",
+      "cambiarImagen": "Change image",
+      "conAviso": "with notification",
+      "dePuestos": "Guards at these posts",
+      "dePuestosHint": "None selected = all posts.",
+      "desde": "From",
+      "dias": "days",
+      "donde": "Where it appears",
+      "editar": "Edit campaign",
+      "editarCorto": "Edit",
+      "enInicio": "Home (off duty)",
+      "enReserva": "Reserve screen",
+      "estado": {
+        "activa": "Active",
+        "borrador": "Draft",
+        "programada": "Scheduled",
+        "terminada": "Ended"
+      },
+      "fechasInvalidas": "It ends before it starts.",
+      "fuera": "Not in the reserve",
+      "fueraHint": "Only those who haven't joined the reserve yet.",
+      "guardada": "Campaign saved",
+      "guardarBorrador": "Save draft",
+      "guardarCambios": "Save changes",
+      "hasta": "Until",
+      "imagen": "Image (optional)",
+      "imagenHint": "Landscape, resized to 1600 px.",
+      "imagenPeso": "The image is larger than 8 MB.",
+      "imagenTipo": "Use a PNG, JPG or WebP image.",
+      "intro": "Messages from your company inside your guards' app to get them to join the reserve and keep it up to date. Shown only when they're off duty.",
+      "nueva": "New campaign",
+      "paraCubrir": "To cover these posts",
+      "paraCubrirHint": "Anyone who taps the button is signed up as a backup for these posts.",
+      "pausada": "Campaign paused",
+      "pausar": "Pause",
+      "periodo": "{{desde}} → {{hasta}}",
+      "plantilla": "Start from a template",
+      "prioridad": "Priority",
+      "prioridadHint": "If someone qualifies for two, they see the higher-priority one first.",
+      "publicada": "Campaign published",
+      "publicadaConPush": "Campaign published. The notification will respect quiet hours.",
+      "publicar": "Publish",
+      "push": "Notify when published",
+      "pushHint": "A phone notification when it's published, low priority and respecting quiet hours.",
+      "quitarImagen": "Remove",
+      "reglas": "Each guard sees one campaign at a time, only when off duty. Never during their shift.",
+      "ruta": "App screen",
+      "rutaInvalida": "Must start with /guard/",
+      "sinFechas": "No end date",
+      "subiendo": "Uploading…",
+      "subirImagen": "Upload image",
+      "texto": "Text",
+      "textoHint": "You can type {{empresa}} and {{bono}}: they're replaced with your company name and the double shift bonus.",
+      "textoVacio": "The text your guards will see.",
+      "titulo": "Title",
+      "tituloVacio": "Campaign title",
+      "toques": "Taps",
+      "turnosCubiertos": "Shifts covered",
+      "unBono": "a bonus",
+      "vacio": "No campaigns yet",
+      "vacioDesc": "Start with “Join the reserve”: it's the template that brings in the most backups.",
+      "vieja": "Availability not updated",
+      "viejaDias": "Not updated for",
+      "viejaHint": "Members who haven't updated their availability in a while.",
+      "vistaPrevia": "What they'll see",
+      "vistas": "Views",
+      "volver": "Show again after",
+      "volverHint": "If they close it, how many days until they can see it again."
+    },
+    "canal": {
+      "app": "App",
+      "voice": "Call",
+      "whatsapp": "WhatsApp"
+    },
+    "cobertura": {
+      "buscando": "Double shift offered · {{n}} waiting",
+      "ofrecer": "Offer double shift",
+      "verBusqueda": "View the search in Double shifts"
+    },
+    "cta": {
+      "available_today": "Mark “I'm available today”",
+      "join_reserve": "Join the reserve",
+      "open_offers": "View open offers",
+      "qualify_post": "Sign up to cover another post",
+      "route": "Open an app screen"
+    },
+    "estadoBusqueda": {
+      "active": "Searching",
+      "cancelled": "Canceled",
+      "exhausted": "No one accepted",
+      "filled": "Covered"
+    },
+    "estadoOferta": {
+      "accepted": "Accepted",
+      "declined": "Can't make it",
+      "expired": "No answer",
+      "failed": "Couldn't send",
+      "lost": "Too late",
+      "pending": "Awaiting response",
+      "withdrawn": "Withdrawn"
+    },
+    "franja": {
+      "D": "Day",
+      "N": "Night",
+      "T": "Afternoon"
+    },
+    "lanzar": {
+      "bono": "Bonus for this double shift",
+      "bonoHint": "Shown to whoever gets the offer. Empty = no bonus.",
+      "conBono": "Bonus offered: {{bono}}.",
+      "eligeHueco": "Choose the post that needs covering.",
+      "enReserva": "In the reserve",
+      "enviadaA": "Offer sent to {{n}} person(s). The first to accept gets the shift.",
+      "enviadaOleadas": "Offer sent to the first wave ({{n}}). The first to accept gets the shift.",
+      "enviar": "Offer double shift",
+      "enviarA": "Offer to {{n}}",
+      "explicaMano": "Only the people you select get the offer. The first to accept gets the shift.",
+      "explicaOleadas": "First to reserve members available for that time slot, highest ranked first: {{a}} people, and if no one accepts within {{min}} min, {{b}} more. If they run out, we'll let you know.",
+      "horasInfo": "Hours worked this week. For reference only: the company decides.",
+      "horasSemana": "{{h}} h this week",
+      "hueco": "Uncovered post",
+      "marcaQuien": "Select who to offer it to",
+      "modoMano": "Choose manually",
+      "modoOleadas": "In waves (automatic)",
+      "quienesPrimero": "Who gets it first",
+      "sinCandidatos": "No one available",
+      "sinCandidatosDesc": "No one is free at that time. You can send it anyway: reserve members who mark themselves available later will see it too.",
+      "sinHuecos": "No uncovered posts",
+      "sinHuecosDesc": "When you record an absence in Live coverage, the post shows up here so you can offer it.",
+      "sinLimites": "The platform doesn't set limits on hours or rest: your company decides. It only prevents someone from being at two posts at once.",
+      "titulo": "Offer double shift",
+      "urgente": "Urgent",
+      "urgenteHint": "Uses the company's flash bonus and sends a high-priority notification."
+    },
+    "modulo": {
+      "desc": "With the “Double shifts” module, absences and resignations no longer mean a night of phone calls: your people see the offer, accept it and get assigned.",
+      "enlace": "View in Add-on modules",
+      "paso1": "When someone doesn't show, you offer the shift to your reserve with one tap: first to those who are available and highest ranked, in waves.",
+      "paso2": "The first to accept in the app gets the shift. No calling people one by one, no approvals.",
+      "paso3": "You reward whoever covers: double shift bonus, points, Bronze, Silver and Gold levels, and “Backup of the month”.",
+      "paso4": "You keep the bench full with campaigns inside your guards' app and see which posts are left without backups.",
+      "titulo": "Every gap, covered by your own reserve"
+    },
+    "nivel": {
+      "bronce": "Bronze",
+      "oro": "Gold",
+      "plata": "Silver"
+    },
+    "ofertas": {
+      "activas": "In progress",
+      "agotada": "It was offered to everyone available and no one accepted. Cover it manually in Live coverage, or offer it again with a higher bonus.",
+      "bono": "Bonus {{bono}}",
+      "bonoSubido": "Bonus raised to {{bono}}. Everyone who already had the offer is notified.",
+      "buscandoAhora": "Searching now",
+      "cancelada": "Search canceled",
+      "cancelar": "Cancel search",
+      "cancelarMensaje": "Pending offers are withdrawn, and those who have them are told it's no longer available. The post stays uncovered.",
+      "cancelarTitulo": "Cancel the search?",
+      "cubiertos": "Covered",
+      "falta": "{{nombre}} absent",
+      "loCubre": "{{nombre}} is covering: the shift is already assigned and they can clock in.",
+      "minutos": "{{n}} min",
+      "nadieAcepto": "No one accepted",
+      "nuevoBono": "New bonus ({{moneda}})",
+      "oleada": "Wave {{n}} of {{total}}",
+      "oleadaCorta": "wave {{n}}",
+      "pendientes": "{{n}} awaiting response",
+      "proximaOleada": "Next wave in {{min}} min",
+      "subirBono": "Raise bonus",
+      "subirBonoHint": "Those who already had the offer see the new bonus, and the next wave goes out with it. It can only go up.",
+      "subirBonoTitulo": "Raise the bonus for this offer",
+      "tiempoMedio": "Average time to cover",
+      "todas": "All",
+      "vacio": "No double shifts offered yet",
+      "vacioActivas": "No searches in progress",
+      "vacioDesc": "When someone doesn't show, offer the shift from here or from Live coverage. You'll see every offer in real time."
+    },
+    "origen": {
+      "despachador": "Auto-dispatcher",
+      "office": "Office",
+      "supervisor_app": "Supervisor app",
+      "vigia_chat": "Assistant"
+    },
+    "plantillas": {
+      "hoy": {
+        "boton": "I'm available today",
+        "texto": "Let us know you're available and you'll get today's offers first.",
+        "titulo": "Free today?"
+      },
+      "ofertas": {
+        "boton": "View offers",
+        "texto": "Check out the open offers: the first to accept gets the shift.",
+        "titulo": "Extra shifts available this week"
+      },
+      "puesto": {
+        "boton": "Sign me up",
+        "texto": "Sign up to cover more {{empresa}} posts: more offers for you and {{bono}} for every double shift.",
+        "titulo": "We need backups for other posts"
+      },
+      "reserva": {
+        "boton": "I want to join",
+        "texto": "Pick up extra shifts whenever you want and earn {{bono}} for every double shift. You choose the days.",
+        "titulo": "Join the {{empresa}} reserve"
+      }
+    },
+    "ranking": {
+      "aceptadas": "Accepted / received",
+      "apagado": "The ranking is turned off: your guards don't see it in the app. It's still available here for the office.",
+      "cubiertos": "Covered",
+      "mes": "Month",
+      "puntos": "Points",
+      "reglaBronce": "Be in the reserve",
+      "reglaN": "{{n}} double shifts in the month",
+      "reglaOro": "{{n}} double shifts in the month · sees offers first",
+      "respaldoDelMes": "Backup of the month",
+      "respaldoResumen": "{{n}} double shifts covered · {{puntos}} points",
+      "respuesta": "Responds in",
+      "titulo": "Who covered the most",
+      "vacio": "No one has covered a double shift this month",
+      "vacioDesc": "When someone accepts a double shift, they show up here with their points."
+    },
+    "reserva": {
+      "actualizada": "updated {{fecha}}",
+      "alerta": "{{n}} post(s) have fewer than {{umbral}} backups. If someone doesn't show there, the search will come up short. The suggested campaign invites those who can cover them.",
+      "buscar": "Search by name",
+      "cubiertosMes": "{{n}} this month",
+      "disponibilidad": "Reserve availability",
+      "disponibilidadDesc": "How many reserve members marked themselves available for extra work on each day and time slot.",
+      "enLaReserva": "In the reserve",
+      "enPausa": "Paused",
+      "errorCarga": "Couldn't load the reserve",
+      "errorCargaDesc": "Check your connection and try again.",
+      "fuera": "Guards not in the reserve",
+      "lanzarCampana": "Launch suggested campaign",
+      "menosDe": "fewer than {{n}}",
+      "miembros": "Members ({{n}})",
+      "puestosCubiertos": "Posts with backups",
+      "puestosDebiles": "Posts with few backups",
+      "salud": "Bench health",
+      "sana": "Every post has at least {{umbral}} backups.",
+      "sinDisponibilidad": "No availability set",
+      "sinPuestos": "No posts set up yet.",
+      "suplentes": "{{n}} backup(s)",
+      "vacio": "No one in the reserve yet",
+      "vacioDesc": "Guards join from their app. A campaign is the fastest way to fill the bench."
+    },
+    "subtitulo": "When someone doesn't show, your reserve covers the shift: the offer goes to the app and the first to accept gets it.",
+    "tab": {
+      "ajustes": "Settings",
+      "campanas": "Campaigns",
+      "ofertas": "Offers",
+      "ranking": "Ranking",
+      "reserva": "Reserve"
+    },
+    "titulo": "Double shifts",
+    "vigia": {
+      "masAjustes": "More double shift settings"
     }
   }
 }

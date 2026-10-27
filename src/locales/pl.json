@@ -5279,7 +5279,8 @@
       "plantillas": "Szablony zmian",
       "tiempo-libre": "Urlop",
       "turnos-abiertos": "Wolne zmiany",
-      "cobertura": "Obsada na żywo"
+      "cobertura": "Obsada na żywo",
+      "dobletes": "Podwójne zmiany"
     },
     "rastreador": {
       "historial": "Historia śledzenia",
@@ -7456,7 +7457,9 @@
       "central.desc": "Jeśli mają Państwo konsolę 24/7: który to posterunek, czy jej operatorzy wychodzą na zastępstwa i kto otrzymuje alarmy.",
       "sms": "Saldo SMS",
       "idioma": "Język",
-      "idioma.desc": "W jakim języku wyświetla się CRM. Automatycznie lub wybrany ręcznie."
+      "idioma.desc": "W jakim języku wyświetla się CRM. Automatycznie lub wybrany ręcznie.",
+      "dobletes": "Podwójne zmiany",
+      "dobletes.desc": "Tury, premie, punkty, poziomy i ranking rezerwy."
     },
     "section": {
       "mi_cuenta": "Moje konto",
@@ -7959,7 +7962,12 @@
       "svPreviewYou": "Ty",
       "previewGuardName": "Jan Kowalski",
       "module_payslips_label": "Paski wypłaty",
-      "module_payslips_desc": "Pracownik przegląda i pobiera swoje opublikowane paski wypłaty. Domyślnie wyłączone; wymaga modułu „Paski wypłaty”."
+      "module_payslips_desc": "Pracownik przegląda i pobiera swoje opublikowane paski wypłaty. Domyślnie wyłączone; wymaga modułu „Paski wypłaty”.",
+      "module_dobletes_desc": "Oferty dodatkowych zmian, dołączanie do rezerwy, oznaczanie dostępności i kampanie firmy. Domyślnie wyłączone.",
+      "module_dobletes_label": "Podwójne zmiany i rezerwa",
+      "previewNextShift": "Następna zmiana",
+      "previewOffDuty": "● Poza służbą",
+      "previewTomorrowShift": "Jutro · 08:00 – 20:00"
     },
     "appearance": {
       "layoutTitle": "Wygląd",
@@ -20359,6 +20367,79 @@
           "corrida": "Przepracowane godziny zafakturowane i wysłane w Twoim imieniu",
           "cobro": "Klient płaci z linku, a Twoje należności są aktualne"
         }
+      },
+      "dobletes": {
+        "campana": {
+          "boton": "Zapisz mnie",
+          "texto": "Zapisz się i zarabiaj $15 za każdą podwójną zmianę.",
+          "titulo": "Szukamy zmienników na Bramę północną",
+          "unido": "Jesteś już zmiennikiem"
+        },
+        "empresa": "Cedar Bluff Security",
+        "escenas": {
+          "banca": "Ławka rezerwowych",
+          "falta": "Kogoś brakuje"
+        },
+        "estado": {
+          "cubierto": "Obsadzone",
+          "sinCubrir": "Nieobsadzone"
+        },
+        "kpi": {
+          "altas": "Zapisy",
+          "toques": "Kliknięcia",
+          "vistas": "Wyświetlenia"
+        },
+        "oferta": {
+          "acepto": "Przyjęła",
+          "enviada": "Wysłana",
+          "no": "Nie może",
+          "perdio": "Za późno"
+        },
+        "panel": {
+          "bono": "+ $15 Premia za podwójną zmianę",
+          "campanaLanzada": "Kampania opublikowana",
+          "cobertura": "Obsada na żywo",
+          "falta": "Nie przyszedł o 05:40",
+          "lanzarCampana": "Uruchom sugerowaną kampanię",
+          "oleada": "Fala 1 · 3 osoby z rezerwy",
+          "rol": "Paski wypłaty · Mariana",
+          "salud": "Kondycja ławki rezerwowych",
+          "suplentes": "Zmiennicy: {{n}}"
+        },
+        "pasos": {
+          "acepta": "Mariana przyjmuje w aplikacji: zmiana jest przypisana",
+          "alta": "Pierwszy nowy zmiennik, prosto z aplikacji",
+          "altas": "Brama północna ma już 4 zmienników",
+          "bono": "Premia za podwójną zmianę trafia na jej pasek wypłaty",
+          "campana": "Uruchamiasz sugerowaną kampanię",
+          "falta": "Brama północna zostaje bez ochroniarza: Ramiro nie przyszedł",
+          "noPuede": "Luis dziś nie może",
+          "oleada": "Oferujesz podwójną zmianę: trafia do 3 osób z rezerwy",
+          "pocaBanca": "Brama północna ma tylko 1 zmiennika"
+        },
+        "personas": {
+          "carlos": "Carlos",
+          "luis": "Luis",
+          "mariana": "Mariana"
+        },
+        "puesto": "P-031 · Brama północna",
+        "puesto2": "P-014 · Centrum handlowe",
+        "puesto3": "P-040 · Szpital",
+        "resultado": {
+          "banca": "Ławka rezerwowych zapełnia się z aplikacji twoich ochroniarzy",
+          "falta": "Obsadzone w 4 minuty, bez ani jednego telefonu"
+        },
+        "tel": {
+          "aceptar": "Przyjmij zmianę",
+          "bono": "Premia: $15",
+          "campana": "Od twojej firmy",
+          "fueraDeServicio": "Poza służbą",
+          "horario": "Dziś 06:00 – 18:00",
+          "oferta": "Dostępna podwójna zmiana",
+          "reserva": "Rezerwa · dziś dostępny",
+          "sinNovedad": "Na razie brak ofert",
+          "tuyo": "Zmiana jest twoja!"
+        }
       }
     }
   },
@@ -21256,6 +21337,325 @@
       "error": "Nie udało się otworzyć panelu. Zaloguj się ponownie.",
       "reintentar": "Spróbuj ponownie",
       "volverAEntrar": "Zaloguj się ponownie"
+    }
+  },
+  "dobletes": {
+    "ajustes": {
+      "autoHintNo": "{{agente}} powiadamia cię o nieobecności, a ty decydujesz, czy zaproponować podwójną zmianę.",
+      "autoHintSi": "Gdy {{agente}} potwierdzi nieobecność, uruchamia wyszukiwanie falami z premią firmy i informuje cię, kto obsadził zmianę.",
+      "bono": "Premia za podwójną zmianę",
+      "bonoHint": "Kwota oferowana za każdą podwójną zmianę. Można ją podnieść przy każdej ofercie. Puste = bez premii.",
+      "bonos": "Premie",
+      "cuandoFalte": "Gdy kogoś zabraknie",
+      "cubrir": "Za obsadzenie",
+      "cubrirHint": "Za każdą obsadzoną podwójną zmianę. Domyślnie {{n}}.",
+      "dobletes": "podwójnych zmian",
+      "guardados": "Ustawienia zapisane",
+      "guardar": "Zapisz ustawienia",
+      "min": "min",
+      "minutos": "Odstęp między falami",
+      "minutosHint": "Jeśli nikt nie przyjmie oferty w tym czasie, rusza kolejna fala. Gdy fale się skończą, damy ci znać.",
+      "niveles": "Poziomy miesiąca",
+      "nivelesActivos": "Używaj poziomów",
+      "nivelesHint": "Brąz, Srebro i Złoto według liczby obsadzonych podwójnych zmian w miesiącu. Złoto widzi oferty jako pierwsze.",
+      "nivelesOrden": "Złoto powinno wymagać więcej podwójnych zmian niż Srebro.",
+      "ofrecerAuto": "Automatycznie oferuj podwójną zmianę",
+      "ola1": "Pierwsza fala",
+      "ola2": "Kolejna fala",
+      "oleadas": "Jak wysyłamy ofertę",
+      "oleadasDesc": "Najpierw do rezerwy dostępnej w tych godzinach, od najwyżej sklasyfikowanych (Złoto przed innymi). Kto pierwszy przyjmie, ten bierze zmianę.",
+      "personas": "osób",
+      "puntos": "Punkty zmiennika",
+      "puntosDesc": "Doliczają się do oceny pracy każdego ochroniarza. Odmowa oferty nigdy nie odejmuje punktów.",
+      "puntosPermiso": "Zmiana punktów wymaga uprawnienia do edycji ochroniarzy.",
+      "ranking": "Ranking w aplikacji",
+      "rankingHint": "Twoi ochroniarze widzą w aplikacji, kto w tym miesiącu najczęściej zastępował innych.",
+      "reconocimiento": "Wyróżnienia",
+      "relampago": "Premia ekspresowa",
+      "relampagoHint": "Dla ofert oznaczonych jako pilne.",
+      "respaldoHint": "Wyróżnia osobę, która obsadziła najwięcej podwójnych zmian w miesiącu.",
+      "rolesActivo": "Każda wypłacona premia trafia do Pasków wypłaty jako „Premia za podwójną zmianę” w okresie, w którym była zmiana.",
+      "rolesInactivo": "Z modułem Paski wypłaty premie same dopisują się do paska każdego ochroniarza jako „Premia za podwójną zmianę”. Bez niego zobaczysz je w historii ofert.",
+      "sinLimites": "Platforma nie narzuca limitów godzin ani odpoczynku: decyduje o tym twoja firma. Przy wysyłaniu oferty zobaczysz godziny każdej osoby w tym tygodniu, wyłącznie informacyjnie.",
+      "soloAvisar": "Tylko powiadom biuro",
+      "temprano": "Dodatek za szybkie przyjęcie",
+      "tempranoHint": "Dodatek dla tych, którzy przyjmą ofertę w ciągu pierwszych {{n}} min.",
+      "tempranoMinutos": "Liczy się jako szybkie do",
+      "tope": "Limit",
+      "topeHint": "Maksymalna liczba punktów zmiennika na osobę. Domyślnie {{n}}.",
+      "verConcepto": "Zobacz składnik wypłaty",
+      "vigia": "Z {{agente}} Pro",
+      "voluntario": "Za zgłoszenie się",
+      "voluntarioHint": "Za dołączenie lub oznaczenie się jako dostępny. Domyślnie {{n}}.",
+      "voz": "Telefon w ostateczności",
+      "vozHint": "Jeśli po wszystkich falach nikt nie przyjął oferty, {{agente}} dzwoni do kolejnych osób z listy, a one przyjmują, wciskając 1. Opłata za minutę pobierana jest z salda komunikacji."
+    },
+    "campanas": {
+      "accion": "Co robi przycisk",
+      "altas": "Zapisy",
+      "audiencia": "Do kogo",
+      "borrada": "Kampania usunięta",
+      "borrar": "Usuń",
+      "borrarMensaje": "Zniknie z aplikacji. Jej wyniki zostaną utracone.",
+      "borrarTitulo": "Usunąć kampanię?",
+      "boton": "Tekst przycisku",
+      "botonVacio": "Przycisk",
+      "cambiarImagen": "Zmień obraz",
+      "conAviso": "z powiadomieniem",
+      "dePuestos": "Ochroniarze z tych posterunków",
+      "dePuestosHint": "Nic nie zaznaczono = wszystkie posterunki.",
+      "desde": "Od",
+      "dias": "dni",
+      "donde": "Gdzie się wyświetla",
+      "editar": "Edytuj kampanię",
+      "editarCorto": "Edytuj",
+      "enInicio": "Ekran główny (poza służbą)",
+      "enReserva": "Ekran rezerwy",
+      "estado": {
+        "activa": "Aktywna",
+        "borrador": "Szkic",
+        "programada": "Zaplanowana",
+        "terminada": "Zakończona"
+      },
+      "fechasInvalidas": "Data końca jest wcześniejsza niż data początku.",
+      "fuera": "Spoza rezerwy",
+      "fueraHint": "Tylko osoby, które jeszcze nie dołączyły do rezerwy.",
+      "guardada": "Kampania zapisana",
+      "guardarBorrador": "Zapisz szkic",
+      "guardarCambios": "Zapisz zmiany",
+      "hasta": "Do",
+      "imagen": "Obraz (opcjonalnie)",
+      "imagenHint": "Poziomy, dopasowywany do 1600 px.",
+      "imagenPeso": "Obraz waży ponad 8 MB.",
+      "imagenTipo": "Użyj obrazu PNG, JPG lub WebP.",
+      "intro": "Komunikaty twojej firmy w aplikacji twoich ochroniarzy, aby dołączali do rezerwy i aktualizowali swoją dostępność. Widoczne tylko poza służbą.",
+      "nueva": "Nowa kampania",
+      "paraCubrir": "Do obsadzenia tych posterunków",
+      "paraCubrirHint": "Kto dotknie przycisku, zostanie zapisany jako zmiennik na tych posterunkach.",
+      "pausada": "Kampania wstrzymana",
+      "pausar": "Wstrzymaj",
+      "periodo": "{{desde}} → {{hasta}}",
+      "plantilla": "Zacznij od szablonu",
+      "prioridad": "Priorytet",
+      "prioridadHint": "Jeśli ktoś kwalifikuje się do dwóch kampanii, najpierw zobaczy tę o wyższym priorytecie.",
+      "publicada": "Kampania opublikowana",
+      "publicadaConPush": "Kampania opublikowana. Powiadomienie dotrze z uwzględnieniem godzin ciszy.",
+      "publicar": "Opublikuj",
+      "push": "Powiadom przy publikacji",
+      "pushHint": "Jedno powiadomienie na telefon przy publikacji, z niskim priorytetem i z uwzględnieniem godzin ciszy.",
+      "quitarImagen": "Usuń",
+      "reglas": "Każdy ochroniarz widzi jedną kampanię naraz i tylko poza służbą. Nigdy w trakcie zmiany.",
+      "ruta": "Ekran aplikacji",
+      "rutaInvalida": "Musi zaczynać się od /guard/",
+      "sinFechas": "Bez daty końca",
+      "subiendo": "Przesyłanie…",
+      "subirImagen": "Prześlij obraz",
+      "texto": "Tekst",
+      "textoHint": "Możesz wpisać {{empresa}} i {{bono}}: zostaną zastąpione nazwą twojej firmy i premią za podwójną zmianę.",
+      "textoVacio": "Tekst, który zobaczą twoi ochroniarze.",
+      "titulo": "Tytuł",
+      "tituloVacio": "Tytuł kampanii",
+      "toques": "Kliknięcia",
+      "turnosCubiertos": "Obsadzone zmiany",
+      "unBono": "premię",
+      "vacio": "Nie ma jeszcze kampanii",
+      "vacioDesc": "Zacznij od „Dołącz do rezerwy”: ten szablon przyciąga najwięcej zmienników.",
+      "vieja": "Nieaktualna dostępność",
+      "viejaDias": "Bez aktualizacji od",
+      "viejaHint": "Członkowie, którzy dawno nie zmieniali swojej dostępności.",
+      "vistaPrevia": "Tak to zobaczą",
+      "vistas": "Wyświetlenia",
+      "volver": "Pokaż ponownie",
+      "volverHint": "Po ilu dniach od zamknięcia może zobaczyć ją ponownie."
+    },
+    "canal": {
+      "app": "Aplikacja",
+      "voice": "Połączenie",
+      "whatsapp": "WhatsApp"
+    },
+    "cobertura": {
+      "buscando": "Podwójna zmiana zaoferowana · oczekujące: {{n}}",
+      "ofrecer": "Zaoferuj podwójną zmianę",
+      "verBusqueda": "Zobacz wyszukiwanie w Podwójnych zmianach"
+    },
+    "cta": {
+      "available_today": "Oznacz „dziś jestem dostępny”",
+      "join_reserve": "Dołącz do rezerwy",
+      "open_offers": "Zobacz otwarte oferty",
+      "qualify_post": "Zapisz się na inny posterunek",
+      "route": "Otwórz ekran aplikacji"
+    },
+    "estadoBusqueda": {
+      "active": "Wyszukiwanie",
+      "cancelled": "Anulowane",
+      "exhausted": "Nikt nie przyjął",
+      "filled": "Obsadzone"
+    },
+    "estadoOferta": {
+      "accepted": "Przyjął",
+      "declined": "Nie może",
+      "expired": "Bez odpowiedzi",
+      "failed": "Nie udało się wysłać",
+      "lost": "Za późno",
+      "pending": "Czeka na odpowiedź",
+      "withdrawn": "Wycofana"
+    },
+    "franja": {
+      "D": "Dzień",
+      "N": "Noc",
+      "T": "Popołudnie"
+    },
+    "lanzar": {
+      "bono": "Premia za tę podwójną zmianę",
+      "bonoHint": "Widzi ją osoba, która dostaje ofertę. Puste = bez premii.",
+      "conBono": "Oferowana premia: {{bono}}.",
+      "eligeHueco": "Wybierz posterunek do obsadzenia.",
+      "enReserva": "W rezerwie",
+      "enviadaA": "Oferta wysłana do osób: {{n}}. Kto pierwszy przyjmie, ten bierze zmianę.",
+      "enviadaOleadas": "Oferta wysłana do pierwszej fali ({{n}}). Kto pierwszy przyjmie, ten bierze zmianę.",
+      "enviar": "Zaoferuj podwójną zmianę",
+      "enviarA": "Zaoferuj ({{n}})",
+      "explicaMano": "Ofertę dostają tylko zaznaczone osoby. Kto pierwszy przyjmie, ten bierze zmianę.",
+      "explicaOleadas": "Najpierw rezerwa dostępna w tych godzinach, od najwyżej sklasyfikowanych: {{a}} os., a jeśli nikt nie przyjmie w ciągu {{min}} min, kolejne {{b}}. Gdy się skończą, damy ci znać.",
+      "horasInfo": "Godziny przepracowane w tym tygodniu. Tylko informacyjnie: decyduje firma.",
+      "horasSemana": "{{h}} godz. w tym tygodniu",
+      "hueco": "Nieobsadzony posterunek",
+      "marcaQuien": "Zaznacz, komu zaoferować",
+      "modoMano": "Wybierz ręcznie",
+      "modoOleadas": "Falami (automatycznie)",
+      "quienesPrimero": "Kto dostanie ją najpierw",
+      "sinCandidatos": "Brak wolnych osób",
+      "sinCandidatosDesc": "Nikt nie jest wolny w tych godzinach. Możesz mimo to wysłać ofertę: zobaczą ją też osoby z rezerwy, które później oznaczą się jako dostępne.",
+      "sinHuecos": "Brak nieobsadzonych posterunków",
+      "sinHuecosDesc": "Gdy zarejestrujesz nieobecność w Obsadzie na żywo, posterunek pojawi się tutaj do zaoferowania.",
+      "sinLimites": "Platforma nie narzuca limitów godzin ani odpoczynku: decyduje o tym twoja firma. Blokuje tylko bycie na dwóch posterunkach jednocześnie.",
+      "titulo": "Zaoferuj podwójną zmianę",
+      "urgente": "Pilne",
+      "urgenteHint": "Używa premii ekspresowej firmy i powiadamia z wysokim priorytetem."
+    },
+    "modulo": {
+      "desc": "Z modułem „Podwójne zmiany” nieobecności i odejścia przestają oznaczać noc spędzoną na telefonach: twoi ludzie widzą ofertę, przyjmują ją i są przypisani.",
+      "enlace": "Zobacz w Modułach dodatkowych",
+      "paso1": "Gdy kogoś brakuje, jednym dotknięciem oferujesz zmianę swojej rezerwie: najpierw dostępnym i najwyżej sklasyfikowanym, falami.",
+      "paso2": "Kto pierwszy przyjmie w aplikacji, ten bierze zmianę. Bez dzwonienia po kolei i bez zatwierdzeń.",
+      "paso3": "Nagradzasz tych, którzy zastępują: premia za podwójną zmianę, punkty, poziomy Brąz, Srebro i Złoto oraz „Zmiennik miesiąca”.",
+      "paso4": "Utrzymujesz pełną ławkę rezerwowych dzięki kampaniom w aplikacji twoich ochroniarzy i widzisz, którym posterunkom brakuje zmienników.",
+      "titulo": "Każda luka obsadzona przez twoją własną rezerwę"
+    },
+    "nivel": {
+      "bronce": "Brąz",
+      "oro": "Złoto",
+      "plata": "Srebro"
+    },
+    "ofertas": {
+      "activas": "W toku",
+      "agotada": "Zaoferowano wszystkim dostępnym i nikt nie przyjął. Obsadź ręcznie w Obsadzie na żywo albo zaoferuj ponownie z wyższą premią.",
+      "bono": "Premia {{bono}}",
+      "bonoSubido": "Premia podniesiona do {{bono}}. Osoby, które już miały ofertę, dostaną powiadomienie.",
+      "buscandoAhora": "Trwa wyszukiwanie",
+      "cancelada": "Wyszukiwanie anulowane",
+      "cancelar": "Anuluj wyszukiwanie",
+      "cancelarMensaje": "Oczekujące oferty zostaną wycofane, a ich odbiorcy dostaną informację, że nie są już dostępne. Posterunek pozostaje nieobsadzony.",
+      "cancelarTitulo": "Anulować wyszukiwanie?",
+      "cubiertos": "Obsadzone",
+      "falta": "brak: {{nombre}}",
+      "loCubre": "Zastępuje {{nombre}}: zmiana jest już przypisana i można się odbić.",
+      "minutos": "{{n}} min",
+      "nadieAcepto": "Nikt nie przyjął",
+      "nuevoBono": "Nowa premia ({{moneda}})",
+      "oleada": "Fala {{n}} z {{total}}",
+      "oleadaCorta": "fala {{n}}",
+      "pendientes": "Czeka na odpowiedź: {{n}}",
+      "proximaOleada": "Kolejna fala za {{min}} min",
+      "subirBono": "Podnieś premię",
+      "subirBonoHint": "Osoby, które już mają ofertę, zobaczą nową premię, a kolejna fala wyjdzie już z nią. Premię można tylko podnieść.",
+      "subirBonoTitulo": "Podnieś premię za tę ofertę",
+      "tiempoMedio": "Średni czas obsadzenia",
+      "todas": "Wszystkie",
+      "vacio": "Nie zaoferowano jeszcze żadnej podwójnej zmiany",
+      "vacioActivas": "Brak trwających wyszukiwań",
+      "vacioDesc": "Gdy kogoś zabraknie, zaoferuj zmianę stąd albo z Obsady na żywo. Każdą ofertę zobaczysz w czasie rzeczywistym."
+    },
+    "origen": {
+      "despachador": "Automatyczny dyspozytor",
+      "office": "Biuro",
+      "supervisor_app": "Aplikacja przełożonego",
+      "vigia_chat": "Asystent"
+    },
+    "plantillas": {
+      "hoy": {
+        "boton": "Dziś jestem dostępny",
+        "texto": "Oznacz, że jesteś dostępny, a dzisiejsze oferty dostaniesz jako pierwszy.",
+        "titulo": "Masz dziś wolne?"
+      },
+      "ofertas": {
+        "boton": "Zobacz oferty",
+        "texto": "Sprawdź otwarte oferty: kto pierwszy przyjmie, ten bierze zmianę.",
+        "titulo": "W tym tygodniu są dodatkowe zmiany"
+      },
+      "puesto": {
+        "boton": "Zapisz mnie",
+        "texto": "Zapisz się na więcej posterunków {{empresa}}: więcej ofert dla ciebie i {{bono}} za każdą podwójną zmianę.",
+        "titulo": "Szukamy zmienników na inne posterunki"
+      },
+      "reserva": {
+        "boton": "Chcę dołączyć",
+        "texto": "Bierz dodatkowe zmiany, kiedy chcesz, i zarabiaj {{bono}} za każdą podwójną zmianę. Ty wybierasz dni.",
+        "titulo": "Dołącz do rezerwy {{empresa}}"
+      }
+    },
+    "ranking": {
+      "aceptadas": "Przyjęte / otrzymane",
+      "apagado": "Ranking jest wyłączony: twoi ochroniarze nie widzą go w aplikacji. Tutaj nadal jest dostępny dla biura.",
+      "cubiertos": "Obsadzone",
+      "mes": "Miesiąc",
+      "puntos": "Punkty",
+      "reglaBronce": "Bycie w rezerwie",
+      "reglaN": "Podwójne zmiany w miesiącu: {{n}}",
+      "reglaOro": "Podwójne zmiany w miesiącu: {{n}} · widzi oferty jako pierwszy",
+      "respaldoDelMes": "Zmiennik miesiąca",
+      "respaldoResumen": "Obsadzone podwójne zmiany: {{n}} · punkty: {{puntos}}",
+      "respuesta": "Czas odpowiedzi",
+      "titulo": "Kto najczęściej zastępował",
+      "vacio": "W tym miesiącu nikt nie obsadził jeszcze podwójnej zmiany",
+      "vacioDesc": "Gdy ktoś przyjmie podwójną zmianę, pojawi się tutaj ze swoimi punktami."
+    },
+    "reserva": {
+      "actualizada": "zaktualizowano {{fecha}}",
+      "alerta": "Posterunki z mniej niż {{umbral}} zmiennikami: {{n}}. Jeśli ktoś tam nie przyjdzie, wyszukiwanie może nie wystarczyć. Sugerowana kampania zaprasza osoby, które mogą je obsadzić.",
+      "buscar": "Szukaj po nazwisku",
+      "cubiertosMes": "W tym miesiącu: {{n}}",
+      "disponibilidad": "Dostępność rezerwy",
+      "disponibilidadDesc": "Ile osób z rezerwy oznaczyło się jako dostępne do dodatkowej pracy w każdym dniu i porze.",
+      "enLaReserva": "W rezerwie",
+      "enPausa": "Wstrzymani",
+      "errorCarga": "Nie udało się wczytać rezerwy",
+      "errorCargaDesc": "Sprawdź połączenie i spróbuj ponownie.",
+      "fuera": "Ochroniarze spoza rezerwy",
+      "lanzarCampana": "Uruchom sugerowaną kampanię",
+      "menosDe": "mniej niż {{n}}",
+      "miembros": "Członkowie ({{n}})",
+      "puestosCubiertos": "Posterunki z rezerwą",
+      "puestosDebiles": "Posterunki z małą liczbą zmienników",
+      "salud": "Kondycja ławki rezerwowych",
+      "sana": "Każdy posterunek ma co najmniej {{umbral}} zmienników.",
+      "sinDisponibilidad": "Brak oznaczonej dostępności",
+      "sinPuestos": "Nie skonfigurowano jeszcze posterunków.",
+      "suplentes": "Zmiennicy: {{n}}",
+      "vacio": "Nikogo jeszcze nie ma w rezerwie",
+      "vacioDesc": "Ochroniarze dołączają przez swoją aplikację. Kampania to najszybszy sposób, by zapełnić ławkę rezerwowych."
+    },
+    "subtitulo": "Gdy kogoś brakuje, twoja rezerwa obsadza zmianę: oferta trafia do aplikacji, a kto pierwszy przyjmie, ten ją bierze.",
+    "tab": {
+      "ajustes": "Ustawienia",
+      "campanas": "Kampanie",
+      "ofertas": "Oferty",
+      "ranking": "Ranking",
+      "reserva": "Rezerwa"
+    },
+    "titulo": "Podwójne zmiany",
+    "vigia": {
+      "masAjustes": "Więcej ustawień podwójnych zmian"
     }
   }
 }

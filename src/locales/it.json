@@ -5277,7 +5277,8 @@
       "plantillas": "Modelli di turno",
       "tiempo-libre": "Permesso",
       "turnos-abiertos": "Turni scoperti",
-      "cobertura": "Copertura in diretta"
+      "cobertura": "Copertura in diretta",
+      "dobletes": "Doppi turni"
     },
     "rastreador": {
       "historial": "Storico degli spostamenti",
@@ -7446,7 +7447,9 @@
       "central.desc": "Se hai una sala operativa 24/7: qual è il suo posto, se i suoi operatori escono a coprire e a chi arrivano gli allarmi.",
       "sms": "Saldo SMS",
       "idioma": "Lingua",
-      "idioma.desc": "In quale lingua vedi il CRM. Automatica o quella che scegli tu."
+      "idioma.desc": "In quale lingua vedi il CRM. Automatica o quella che scegli tu.",
+      "dobletes": "Doppi turni",
+      "dobletes.desc": "Ondate, bonus, punti, livelli e classifica della riserva."
     },
     "section": {
       "mi_cuenta": "Il mio account",
@@ -7949,7 +7952,12 @@
       "svPreviewYou": "Tu",
       "previewGuardName": "Mario Rossi",
       "module_payslips_label": "Buste paga",
-      "module_payslips_desc": "Il lavoratore vede e scarica le sue buste paga pubblicate. Disattivato di fabbrica; richiede il modulo «Buste paga»."
+      "module_payslips_desc": "Il lavoratore vede e scarica le sue buste paga pubblicate. Disattivato di fabbrica; richiede il modulo «Buste paga».",
+      "module_dobletes_desc": "Offerte di turni extra, ingresso nella riserva, disponibilità e campagne dell'azienda. Disattivato per impostazione predefinita.",
+      "module_dobletes_label": "Doppi turni e riserva",
+      "previewNextShift": "Prossimo turno",
+      "previewOffDuty": "● Fuori servizio",
+      "previewTomorrowShift": "Domani · 08:00 – 20:00"
     },
     "appearance": {
       "layoutTitle": "Aspetto",
@@ -20075,6 +20083,79 @@
           "corrida": "Il lavoro svolto, fatturato e inviato a tuo nome",
           "cobro": "Il cliente paga dal link e i tuoi crediti si aggiornano"
         }
+      },
+      "dobletes": {
+        "campana": {
+          "boton": "Mi iscrivo",
+          "texto": "Iscriviti e guadagna $15 per ogni doppio turno.",
+          "titulo": "Cerchiamo sostituti per Ingresso nord",
+          "unido": "Sei già un sostituto"
+        },
+        "empresa": "Cedar Bluff Security",
+        "escenas": {
+          "banca": "La riserva",
+          "falta": "Manca qualcuno"
+        },
+        "estado": {
+          "cubierto": "Coperto",
+          "sinCubrir": "Scoperto"
+        },
+        "kpi": {
+          "altas": "Iscrizioni",
+          "toques": "Clic",
+          "vistas": "Visualizzazioni"
+        },
+        "oferta": {
+          "acepto": "Ha accettato",
+          "enviada": "Inviata",
+          "no": "Non può",
+          "perdio": "Arrivato tardi"
+        },
+        "panel": {
+          "bono": "+ $15 Bonus doppio turno",
+          "campanaLanzada": "Campagna pubblicata",
+          "cobertura": "Copertura in diretta",
+          "falta": "Assente alle 05:40",
+          "lanzarCampana": "Lancia la campagna suggerita",
+          "oleada": "Ondata 1 · 3 persone della riserva",
+          "rol": "Buste paga · Mariana",
+          "salud": "Salute della riserva",
+          "suplentes": "Sostituti: {{n}}"
+        },
+        "pasos": {
+          "acepta": "Mariana accetta nell'app: il turno è assegnato",
+          "alta": "Primo nuovo sostituto, dall'app",
+          "altas": "Ingresso nord ha già 4 sostituti",
+          "bono": "Il bonus doppio turno finisce nella sua busta paga",
+          "campana": "Lanci la campagna suggerita",
+          "falta": "Ingresso nord resta senza guardia: Ramiro è assente",
+          "noPuede": "Luis oggi non può",
+          "oleada": "Offri il doppio turno: arriva a 3 persone della riserva",
+          "pocaBanca": "Ingresso nord ha un solo sostituto"
+        },
+        "personas": {
+          "carlos": "Carlos",
+          "luis": "Luis",
+          "mariana": "Mariana"
+        },
+        "puesto": "P-031 · Ingresso nord",
+        "puesto2": "P-014 · Centro commerciale",
+        "puesto3": "P-040 · Ospedale",
+        "resultado": {
+          "banca": "La riserva si riempie dall'app delle tue guardie",
+          "falta": "Coperto in 4 minuti, senza una sola chiamata"
+        },
+        "tel": {
+          "aceptar": "Accetta il turno",
+          "bono": "Bonus: $15",
+          "campana": "Dalla tua azienda",
+          "fueraDeServicio": "Fuori servizio",
+          "horario": "Oggi 06:00 – 18:00",
+          "oferta": "Doppio turno disponibile",
+          "reserva": "Riserva · disponibile oggi",
+          "sinNovedad": "Nessuna offerta per ora",
+          "tuyo": "Il turno è tuo!"
+        }
       }
     }
   },
@@ -20968,6 +21049,325 @@
       "error": "Impossibile aprire la dashboard. Accedi di nuovo.",
       "reintentar": "Riprova",
       "volverAEntrar": "Accedi di nuovo"
+    }
+  },
+  "dobletes": {
+    "ajustes": {
+      "autoHintNo": "{{agente}} ti avvisa dell'assenza e decidi tu se offrire il doppio turno.",
+      "autoHintSi": "Quando {{agente}} conferma un'assenza, avvia la ricerca a ondate con il bonus dell'azienda e ti dice chi l'ha coperto.",
+      "bono": "Bonus doppio turno",
+      "bonoHint": "Quanto si offre per ogni doppio turno. Puoi aumentarlo in ogni offerta. Vuoto = nessun bonus.",
+      "bonos": "Bonus",
+      "cuandoFalte": "Quando manca qualcuno",
+      "cubrir": "Per la copertura",
+      "cubrirHint": "Per ogni doppio turno coperto. Predefinito: {{n}}.",
+      "dobletes": "doppi turni",
+      "guardados": "Impostazioni salvate",
+      "guardar": "Salva impostazioni",
+      "min": "min",
+      "minutos": "Attesa tra un'ondata e l'altra",
+      "minutosHint": "Se nessuno accetta entro questo tempo, parte l'ondata successiva. Quando sono finite, ti avvisiamo.",
+      "niveles": "Livelli del mese",
+      "nivelesActivos": "Usa i livelli",
+      "nivelesHint": "Bronzo, Argento e Oro in base ai doppi turni coperti nel mese. Chi è Oro vede le offerte per primo.",
+      "nivelesOrden": "Oro dovrebbe richiedere più doppi turni di Argento.",
+      "ofrecerAuto": "Offri il doppio turno automaticamente",
+      "ola1": "Prima ondata",
+      "ola2": "Ondata successiva",
+      "oleadas": "Come viene offerto",
+      "oleadasDesc": "Prima alla riserva disponibile per quell'orario, partendo dai meglio classificati (prima l'Oro). Il primo che accetta si prende il turno.",
+      "personas": "persone",
+      "puntos": "Punti rinforzo",
+      "puntosDesc": "Si sommano al punteggio di rendimento di ogni guardia. Rifiutare un'offerta non toglie mai punti.",
+      "puntosPermiso": "Per modificare i punti serve il permesso di modificare le guardie.",
+      "ranking": "Classifica nell'app",
+      "rankingHint": "Le tue guardie vedono nell'app chi ha coperto di più questo mese.",
+      "reconocimiento": "Riconoscimenti",
+      "relampago": "Bonus lampo",
+      "relampagoHint": "Per le offerte segnate come urgenti.",
+      "respaldoHint": "Mette in evidenza chi ha coperto più doppi turni nel mese.",
+      "rolesActivo": "Ogni bonus pagato arriva in Buste paga come «Bonus doppio turno» nel periodo del turno.",
+      "rolesInactivo": "Con il modulo Buste paga, i bonus si aggiungono da soli alla busta paga di ogni guardia come «Bonus doppio turno». Senza il modulo, li trovi nello storico delle offerte.",
+      "sinLimites": "La piattaforma non impone limiti di ore né di riposo: decide la tua azienda. Quando offri un turno, vedrai le ore settimanali di ogni persona solo a titolo informativo.",
+      "soloAvisar": "Avvisa solo l'ufficio",
+      "temprano": "Extra per chi accetta subito",
+      "tempranoHint": "Extra per chi accetta nei primi {{n}} minuti.",
+      "tempranoMinutos": "Conta come risposta rapida fino a",
+      "tope": "Tetto massimo",
+      "topeHint": "Massimo di punti rinforzo che una persona può accumulare. Predefinito: {{n}}.",
+      "verConcepto": "Vedi la voce in busta paga",
+      "vigia": "Con {{agente}} Pro",
+      "voluntario": "Per la disponibilità",
+      "voluntarioHint": "Per entrare nella riserva o segnarsi disponibile. Predefinito: {{n}}.",
+      "voz": "Chiamata come ultima risorsa",
+      "vozHint": "Se dopo tutte le ondate nessuno ha accettato, {{agente}} chiama i successivi della lista, che accettano premendo 1. Si paga al minuto dal credito comunicazioni."
+    },
+    "campanas": {
+      "accion": "Cosa fa il pulsante",
+      "altas": "Iscrizioni",
+      "audiencia": "Destinatari",
+      "borrada": "Campagna eliminata",
+      "borrar": "Elimina",
+      "borrarMensaje": "Non sarà più visibile nell'app. I suoi risultati andranno persi.",
+      "borrarTitulo": "Eliminare la campagna?",
+      "boton": "Testo del pulsante",
+      "botonVacio": "Pulsante",
+      "cambiarImagen": "Cambia immagine",
+      "conAviso": "con notifica",
+      "dePuestos": "Guardie di queste postazioni",
+      "dePuestosHint": "Nessuna selezionata = tutte le postazioni.",
+      "desde": "Dal",
+      "dias": "giorni",
+      "donde": "Dove appare",
+      "editar": "Modifica campagna",
+      "editarCorto": "Modifica",
+      "enInicio": "Home (fuori servizio)",
+      "enReserva": "Schermata della riserva",
+      "estado": {
+        "activa": "Attiva",
+        "borrador": "Bozza",
+        "programada": "Programmata",
+        "terminada": "Conclusa"
+      },
+      "fechasInvalidas": "La data di fine è prima di quella di inizio.",
+      "fuera": "Fuori dalla riserva",
+      "fueraHint": "Solo chi non è ancora entrato nella riserva.",
+      "guardada": "Campagna salvata",
+      "guardarBorrador": "Salva bozza",
+      "guardarCambios": "Salva modifiche",
+      "hasta": "Al",
+      "imagen": "Immagine (facoltativa)",
+      "imagenHint": "Orizzontale, ridimensionata a 1600 px.",
+      "imagenPeso": "L'immagine supera gli 8 MB.",
+      "imagenTipo": "Usa un'immagine PNG, JPG o WebP.",
+      "intro": "Messaggi della tua azienda dentro l'app delle tue guardie, perché entrino nella riserva e la tengano aggiornata. Si vedono solo fuori servizio.",
+      "nueva": "Nuova campagna",
+      "paraCubrir": "Per coprire queste postazioni",
+      "paraCubrirHint": "Chi tocca il pulsante viene iscritto come sostituto per queste postazioni.",
+      "pausada": "Campagna in pausa",
+      "pausar": "Metti in pausa",
+      "periodo": "{{desde}} → {{hasta}}",
+      "plantilla": "Parti da un modello",
+      "prioridad": "Priorità",
+      "prioridadHint": "Se una persona rientra in due campagne, vede prima quella con priorità più alta.",
+      "publicada": "Campagna pubblicata",
+      "publicadaConPush": "Campagna pubblicata. La notifica arriva rispettando le ore di silenzio.",
+      "publicar": "Pubblica",
+      "push": "Notifica alla pubblicazione",
+      "pushHint": "Una notifica sul telefono alla pubblicazione, con priorità bassa e nel rispetto delle ore di silenzio.",
+      "quitarImagen": "Rimuovi",
+      "reglas": "Ogni guardia vede una campagna alla volta, solo quando è fuori servizio. Mai durante il turno.",
+      "ruta": "Schermata dell'app",
+      "rutaInvalida": "Deve iniziare con /guard/",
+      "sinFechas": "Senza data di fine",
+      "subiendo": "Caricamento…",
+      "subirImagen": "Carica immagine",
+      "texto": "Testo",
+      "textoHint": "Puoi scrivere {{empresa}} e {{bono}}: vengono sostituiti dal nome della tua azienda e dal bonus doppio turno.",
+      "textoVacio": "Il testo che vedranno le tue guardie.",
+      "titulo": "Titolo",
+      "tituloVacio": "Titolo della campagna",
+      "toques": "Clic",
+      "turnosCubiertos": "Turni coperti",
+      "unBono": "un bonus",
+      "vacio": "Ancora nessuna campagna",
+      "vacioDesc": "Inizia con «Entra nella riserva»: è il modello che porta più sostituti.",
+      "vieja": "Disponibilità non aggiornata",
+      "viejaDias": "Non aggiornata da",
+      "viejaHint": "Membri che non aggiornano la propria disponibilità da tempo.",
+      "vistaPrevia": "Ecco come la vedranno",
+      "vistas": "Visualizzazioni",
+      "volver": "Mostra di nuovo",
+      "volverHint": "Se la chiude, dopo quanti giorni può rivederla."
+    },
+    "canal": {
+      "app": "App",
+      "voice": "Chiamata",
+      "whatsapp": "WhatsApp"
+    },
+    "cobertura": {
+      "buscando": "Doppio turno offerto · {{n}} in attesa",
+      "ofrecer": "Offri doppio turno",
+      "verBusqueda": "Vedi la ricerca in Doppi turni"
+    },
+    "cta": {
+      "available_today": "Segna «Oggi sono disponibile»",
+      "join_reserve": "Entra nella riserva",
+      "open_offers": "Vedi le offerte aperte",
+      "qualify_post": "Iscriviti per coprire un'altra postazione",
+      "route": "Apri una schermata dell'app"
+    },
+    "estadoBusqueda": {
+      "active": "In ricerca",
+      "cancelled": "Annullata",
+      "exhausted": "Nessuno ha accettato",
+      "filled": "Coperto"
+    },
+    "estadoOferta": {
+      "accepted": "Ha accettato",
+      "declined": "Non può",
+      "expired": "Nessuna risposta",
+      "failed": "Invio non riuscito",
+      "lost": "Arrivato tardi",
+      "pending": "In attesa di risposta",
+      "withdrawn": "Ritirata"
+    },
+    "franja": {
+      "D": "Giorno",
+      "N": "Notte",
+      "T": "Pomeriggio"
+    },
+    "lanzar": {
+      "bono": "Bonus per questo doppio turno",
+      "bonoHint": "Lo vede chi riceve l'offerta. Vuoto = nessun bonus.",
+      "conBono": "Bonus offerto: {{bono}}.",
+      "eligeHueco": "Scegli la postazione da coprire.",
+      "enReserva": "Nella riserva",
+      "enviadaA": "Offerta inviata a {{n}} persona/e. Il primo che accetta si prende il turno.",
+      "enviadaOleadas": "Offerta inviata alla prima ondata ({{n}}). Il primo che accetta si prende il turno.",
+      "enviar": "Offri doppio turno",
+      "enviarA": "Offri a {{n}}",
+      "explicaMano": "Ricevono l'offerta solo le persone che selezioni. Il primo che accetta si prende il turno.",
+      "explicaOleadas": "Prima la riserva disponibile per quell'orario, partendo dai meglio classificati: {{a}} persone, e se nessuno accetta entro {{min}} min, altre {{b}}. Quando sono finite, ti avvisiamo.",
+      "horasInfo": "Ore lavorate questa settimana. Solo a titolo informativo: decide l'azienda.",
+      "horasSemana": "{{h}} h questa settimana",
+      "hueco": "Postazione scoperta",
+      "marcaQuien": "Seleziona a chi offrirlo",
+      "modoMano": "Scegli manualmente",
+      "modoOleadas": "A ondate (automatico)",
+      "quienesPrimero": "Chi lo riceve per primo",
+      "sinCandidatos": "Nessuno libero",
+      "sinCandidatosDesc": "Nessuno è libero in quell'orario. Puoi lanciarla comunque: anche chi della riserva si segna disponibile dopo la vedrà.",
+      "sinHuecos": "Nessuna postazione scoperta",
+      "sinHuecosDesc": "Quando registri un'assenza in Copertura in diretta, la postazione compare qui per poterla offrire.",
+      "sinLimites": "La piattaforma non impone limiti di ore né di riposo: decide la tua azienda. Impedisce solo di stare in due postazioni contemporaneamente.",
+      "titulo": "Offri doppio turno",
+      "urgente": "Urgente",
+      "urgenteHint": "Usa il bonus lampo dell'azienda e avvisa con priorità alta."
+    },
+    "modulo": {
+      "desc": "Con il modulo «Doppi turni», assenze e dimissioni non sono più una notte passata al telefono: la tua squadra vede l'offerta, la accetta e viene assegnata.",
+      "enlace": "Vedi in Moduli aggiuntivi",
+      "paso1": "Quando manca qualcuno, offri il turno alla tua riserva con un tocco: prima a chi è disponibile e meglio classificato, a ondate.",
+      "paso2": "Il primo che accetta nell'app si prende il turno. Niente chiamate una per una e niente approvazioni.",
+      "paso3": "Premi chi copre: bonus doppio turno, punti, livelli Bronzo, Argento e Oro e il «Rinforzo del mese».",
+      "paso4": "Tieni la riserva piena con campagne dentro l'app delle tue guardie e vedi quali postazioni restano senza sostituti.",
+      "titulo": "Ogni buco coperto dalla tua riserva"
+    },
+    "nivel": {
+      "bronce": "Bronzo",
+      "oro": "Oro",
+      "plata": "Argento"
+    },
+    "ofertas": {
+      "activas": "In corso",
+      "agotada": "È stato offerto a tutti i disponibili e nessuno ha accettato. Coprilo manualmente in Copertura in diretta, oppure offrilo di nuovo con un bonus più alto.",
+      "bono": "Bonus {{bono}}",
+      "bonoSubido": "Bonus aumentato a {{bono}}. Avvisiamo chi aveva già ricevuto l'offerta.",
+      "buscandoAhora": "Ricerca in corso",
+      "cancelada": "Ricerca annullata",
+      "cancelar": "Annulla ricerca",
+      "cancelarMensaje": "Le offerte in sospeso vengono ritirate e chi le ha ricevute viene avvisato che non sono più disponibili. La postazione resta scoperta.",
+      "cancelarTitulo": "Annullare la ricerca?",
+      "cubiertos": "Coperti",
+      "falta": "manca {{nombre}}",
+      "loCubre": "Lo copre {{nombre}}: il turno è già assegnato e può timbrare.",
+      "minutos": "{{n}} min",
+      "nadieAcepto": "Nessuno ha accettato",
+      "nuevoBono": "Nuovo bonus ({{moneda}})",
+      "oleada": "Ondata {{n}} di {{total}}",
+      "oleadaCorta": "ondata {{n}}",
+      "pendientes": "{{n}} in attesa di risposta",
+      "proximaOleada": "Prossima ondata tra {{min}} min",
+      "subirBono": "Aumenta bonus",
+      "subirBonoHint": "Chi aveva già l'offerta vede il nuovo bonus, e l'ondata successiva parte con questo importo. Si può solo aumentare.",
+      "subirBonoTitulo": "Aumenta il bonus di questa offerta",
+      "tiempoMedio": "Tempo medio di copertura",
+      "todas": "Tutte",
+      "vacio": "Non è ancora stato offerto nessun doppio turno",
+      "vacioActivas": "Nessuna ricerca in corso",
+      "vacioDesc": "Quando manca qualcuno, offri il turno da qui o da Copertura in diretta. Vedrai ogni offerta in tempo reale."
+    },
+    "origen": {
+      "despachador": "Smistamento automatico",
+      "office": "Ufficio",
+      "supervisor_app": "App del supervisore",
+      "vigia_chat": "Assistente"
+    },
+    "plantillas": {
+      "hoy": {
+        "boton": "Oggi sono disponibile",
+        "texto": "Segnati come disponibile e le offerte di oggi arriveranno prima a te.",
+        "titulo": "Libero oggi?"
+      },
+      "ofertas": {
+        "boton": "Vedi le offerte",
+        "texto": "Guarda le offerte aperte: il primo che accetta si prende il turno.",
+        "titulo": "Ci sono turni extra questa settimana"
+      },
+      "puesto": {
+        "boton": "Mi iscrivo",
+        "texto": "Iscriviti per coprire più postazioni di {{empresa}}: più offerte per te e {{bono}} per ogni doppio turno.",
+        "titulo": "Cerchiamo sostituti per altre postazioni"
+      },
+      "reserva": {
+        "boton": "Voglio entrare",
+        "texto": "Copri turni extra quando vuoi e guadagna {{bono}} per ogni doppio turno. I giorni li scegli tu.",
+        "titulo": "Entra nella riserva di {{empresa}}"
+      }
+    },
+    "ranking": {
+      "aceptadas": "Accettate / ricevute",
+      "apagado": "La classifica è disattivata: le tue guardie non la vedono nell'app. Qui resta disponibile per l'ufficio.",
+      "cubiertos": "Coperti",
+      "mes": "Mese",
+      "puntos": "Punti",
+      "reglaBronce": "Far parte della riserva",
+      "reglaN": "{{n}} doppi turni nel mese",
+      "reglaOro": "{{n}} doppi turni nel mese · vede le offerte per primo",
+      "respaldoDelMes": "Rinforzo del mese",
+      "respaldoResumen": "{{n}} doppi turni coperti · {{puntos}} punti",
+      "respuesta": "Risponde in",
+      "titulo": "Chi ha coperto di più",
+      "vacio": "Nessuno ha coperto doppi turni questo mese",
+      "vacioDesc": "Quando qualcuno accetta un doppio turno, compare qui con i suoi punti."
+    },
+    "reserva": {
+      "actualizada": "aggiornata il {{fecha}}",
+      "alerta": "{{n}} postazione/i hanno meno di {{umbral}} sostituti. Se lì manca qualcuno, la ricerca rischia di non bastare. La campagna suggerita invita chi può coprirle.",
+      "buscar": "Cerca per nome",
+      "cubiertosMes": "{{n}} questo mese",
+      "disponibilidad": "Disponibilità della riserva",
+      "disponibilidadDesc": "Quante persone della riserva si sono segnate disponibili per lavorare extra, per giorno e fascia oraria.",
+      "enLaReserva": "Nella riserva",
+      "enPausa": "In pausa",
+      "errorCarga": "Impossibile caricare la riserva",
+      "errorCargaDesc": "Controlla la connessione e riprova.",
+      "fuera": "Guardie fuori dalla riserva",
+      "lanzarCampana": "Lancia la campagna suggerita",
+      "menosDe": "meno di {{n}}",
+      "miembros": "Membri ({{n}})",
+      "puestosCubiertos": "Postazioni con sostituti",
+      "puestosDebiles": "Postazioni con pochi sostituti",
+      "salud": "Salute della riserva",
+      "sana": "Tutte le postazioni hanno almeno {{umbral}} sostituti.",
+      "sinDisponibilidad": "Nessuna disponibilità segnata",
+      "sinPuestos": "Non ci sono ancora postazioni configurate.",
+      "suplentes": "{{n}} sostituto/i",
+      "vacio": "Ancora nessuno nella riserva",
+      "vacioDesc": "Le guardie entrano nella riserva dalla loro app. Una campagna è il modo più rapido per riempirla."
+    },
+    "subtitulo": "Quando manca qualcuno, la tua riserva copre il turno: l'offerta arriva nell'app e il primo che accetta se lo prende.",
+    "tab": {
+      "ajustes": "Impostazioni",
+      "campanas": "Campagne",
+      "ofertas": "Offerte",
+      "ranking": "Classifica",
+      "reserva": "Riserva"
+    },
+    "titulo": "Doppi turni",
+    "vigia": {
+      "masAjustes": "Altre impostazioni dei doppi turni"
     }
   }
 }

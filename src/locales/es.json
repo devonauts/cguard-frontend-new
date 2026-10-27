@@ -5748,7 +5748,8 @@
       "plantillas": "Plantillas de turno",
       "tiempo-libre": "Tiempo libre",
       "turnos-abiertos": "Turnos abiertos",
-      "cobertura": "Cobertura en vivo"
+      "cobertura": "Cobertura en vivo",
+      "dobletes": "Dobletes"
     },
     "rastreador": {
       "historial": "Historial de seguimiento",
@@ -6943,7 +6944,9 @@
       "central.desc": "Si tienes consola 24/7: qué puesto es, si sus operadores salen a cubrir y a quién llegan las alertas.",
       "sms": "Saldo SMS",
       "idioma": "Idioma",
-      "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas."
+      "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas.",
+      "dobletes": "Dobletes",
+      "dobletes.desc": "Oleadas, bonos, puntos, niveles y ranking de la reserva."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -7446,7 +7449,12 @@
       "svPreviewYou": "Tú",
       "previewGuardName": "Juan Ramírez",
       "module_payslips_label": "Roles de pago",
-      "module_payslips_desc": "El trabajador ve y descarga sus roles de pago publicados. Apagado de fábrica; necesita el módulo «Roles de pago»."
+      "module_payslips_desc": "El trabajador ve y descarga sus roles de pago publicados. Apagado de fábrica; necesita el módulo «Roles de pago».",
+      "module_dobletes_desc": "Ofertas de turnos extra, unirse a la reserva, marcar disponibilidad y las campañas de la empresa. Apagado de fábrica.",
+      "module_dobletes_label": "Dobletes y reserva",
+      "previewNextShift": "Próximo turno",
+      "previewOffDuty": "● Fuera de servicio",
+      "previewTomorrowShift": "Mañana · 08:00 – 20:00"
     },
     "appearance": {
       "layoutTitle": "Apariencia",
@@ -20075,6 +20083,79 @@
           "corrida": "Lo trabajado, facturado y enviado con tu nombre",
           "cobro": "Tu cliente paga desde el enlace y tu cartera se pone al día"
         }
+      },
+      "dobletes": {
+        "campana": {
+          "boton": "Apuntarme",
+          "texto": "Apúntate y gana $15 por cada doblete.",
+          "titulo": "Buscamos suplentes para Puerta norte",
+          "unido": "Ya eres suplente"
+        },
+        "empresa": "Cedar Bluff Security",
+        "escenas": {
+          "banca": "La banca",
+          "falta": "Falta alguien"
+        },
+        "estado": {
+          "cubierto": "Cubierto",
+          "sinCubrir": "Sin cubrir"
+        },
+        "kpi": {
+          "altas": "Altas",
+          "toques": "Toques",
+          "vistas": "Vistas"
+        },
+        "oferta": {
+          "acepto": "Aceptó",
+          "enviada": "Enviada",
+          "no": "No puede",
+          "perdio": "Llegó tarde"
+        },
+        "panel": {
+          "bono": "+ $15 Bono por doblete",
+          "campanaLanzada": "Campaña publicada",
+          "cobertura": "Cobertura en vivo",
+          "falta": "Faltó a las 05:40",
+          "lanzarCampana": "Lanzar campaña sugerida",
+          "oleada": "Oleada 1 · 3 personas de la reserva",
+          "rol": "Roles de pago · Mariana",
+          "salud": "Salud de la banca",
+          "suplentes": "Suplentes: {{n}}"
+        },
+        "pasos": {
+          "acepta": "Mariana acepta en la app: el turno queda asignado",
+          "alta": "Primer suplente nuevo, desde la app",
+          "altas": "Puerta norte ya tiene 4 suplentes",
+          "bono": "El bono por doblete va a su rol de pago",
+          "campana": "Lanzas la campaña sugerida",
+          "falta": "Puerta norte se queda sin vigilante: faltó Ramiro",
+          "noPuede": "Luis no puede hoy",
+          "oleada": "Ofreces el doblete: llega a 3 personas de la reserva",
+          "pocaBanca": "Puerta norte tiene 1 solo suplente"
+        },
+        "personas": {
+          "carlos": "Carlos",
+          "luis": "Luis",
+          "mariana": "Mariana"
+        },
+        "puesto": "P-031 · Puerta norte",
+        "puesto2": "P-014 · Centro comercial",
+        "puesto3": "P-040 · Hospital",
+        "resultado": {
+          "banca": "La banca se llena desde la app de tus vigilantes",
+          "falta": "Cubierto en 4 minutos, sin una sola llamada"
+        },
+        "tel": {
+          "aceptar": "Aceptar el turno",
+          "bono": "Bono: $15",
+          "campana": "De tu empresa",
+          "fueraDeServicio": "Fuera de servicio",
+          "horario": "Hoy 06:00 – 18:00",
+          "oferta": "Doblete disponible",
+          "reserva": "Reserva · disponible hoy",
+          "sinNovedad": "Sin ofertas por ahora",
+          "tuyo": "¡El turno es tuyo!"
+        }
       }
     }
   },
@@ -20968,6 +21049,325 @@
       "error": "No se pudo abrir el panel. Vuelve a iniciar sesión.",
       "reintentar": "Reintentar",
       "volverAEntrar": "Iniciar sesión de nuevo"
+    }
+  },
+  "dobletes": {
+    "ajustes": {
+      "autoHintNo": "{{agente}} te avisa de la falta y tú decides si ofreces el doblete.",
+      "autoHintSi": "Cuando {{agente}} confirma una falta, lanza la búsqueda por oleadas con el bono de la empresa y te cuenta quién lo cubrió.",
+      "bono": "Bono por doblete",
+      "bonoHint": "Lo que se ofrece por cada doblete. Se puede subir en cada oferta. Vacío = sin bono.",
+      "bonos": "Bonos",
+      "cuandoFalte": "Cuando falte alguien",
+      "cubrir": "Por cubrir",
+      "cubrirHint": "Por cada doblete cubierto. De fábrica, {{n}}.",
+      "dobletes": "dobletes",
+      "guardados": "Ajustes guardados",
+      "guardar": "Guardar ajustes",
+      "min": "min",
+      "minutos": "Espera entre oleadas",
+      "minutosHint": "Si nadie acepta en este tiempo, sale la siguiente oleada. Cuando se acaban, te avisamos.",
+      "niveles": "Niveles del mes",
+      "nivelesActivos": "Usar niveles",
+      "nivelesHint": "Bronce, Plata y Oro según los dobletes cubiertos en el mes. Oro ve las ofertas primero.",
+      "nivelesOrden": "Oro debería pedir más dobletes que Plata.",
+      "ofrecerAuto": "Ofrecer el doblete automáticamente",
+      "ola1": "Primera oleada",
+      "ola2": "Siguiente oleada",
+      "oleadas": "Cómo se ofrece",
+      "oleadasDesc": "Primero a la reserva disponible para ese horario, mejor clasificados primero (Oro antes). El primero que acepta se queda el turno.",
+      "personas": "personas",
+      "puntos": "Puntos de respaldo",
+      "puntosDesc": "Se suman a la nota de desempeño de cada vigilante. Decir que no a una oferta nunca resta.",
+      "puntosPermiso": "Cambiar los puntos pide permiso para editar vigilantes.",
+      "ranking": "Ranking en la app",
+      "rankingHint": "Tus vigilantes ven en la app quién más cubrió este mes.",
+      "reconocimiento": "Reconocimiento",
+      "relampago": "Bono relámpago",
+      "relampagoHint": "Para las ofertas marcadas como urgentes.",
+      "respaldoHint": "Destaca a quien más dobletes cubrió en el mes.",
+      "rolesActivo": "Cada bono pagado llega a Roles de pago como «Bono por doblete» en el periodo del turno.",
+      "rolesInactivo": "Con el módulo Roles de pago, los bonos se suman solos al rol de cada vigilante como «Bono por doblete». Sin él, los ves en el historial de ofertas.",
+      "sinLimites": "La plataforma no pone límites de horas ni de descanso: lo decide tu empresa. Al ofrecer, verás las horas de cada persona en la semana sólo como información.",
+      "soloAvisar": "Solo avisar a la oficina",
+      "temprano": "Extra por aceptar rápido",
+      "tempranoHint": "Extra para quien acepta en los primeros {{n}} minutos.",
+      "tempranoMinutos": "Cuenta como rápido hasta",
+      "tope": "Tope",
+      "topeHint": "Máximo de puntos de respaldo que suma una persona. De fábrica, {{n}}.",
+      "verConcepto": "Ver el concepto",
+      "vigia": "Con {{agente}} Pro",
+      "voluntario": "Por ofrecerse",
+      "voluntarioHint": "Por unirse o marcarse disponible. De fábrica, {{n}}.",
+      "voz": "Llamada como último recurso",
+      "vozHint": "Si después de todas las oleadas nadie aceptó, {{agente}} llama a los siguientes de la lista y aceptan marcando 1. Se cobra por minuto del saldo de comunicaciones."
+    },
+    "campanas": {
+      "accion": "Qué hace el botón",
+      "altas": "Altas",
+      "audiencia": "A quién",
+      "borrada": "Campaña eliminada",
+      "borrar": "Eliminar",
+      "borrarMensaje": "Deja de verse en la app. Sus resultados se pierden.",
+      "borrarTitulo": "¿Eliminar la campaña?",
+      "boton": "Texto del botón",
+      "botonVacio": "Botón",
+      "cambiarImagen": "Cambiar imagen",
+      "conAviso": "con aviso",
+      "dePuestos": "Vigilantes de estos puestos",
+      "dePuestosHint": "Ninguno marcado = todos los puestos.",
+      "desde": "Desde",
+      "dias": "días",
+      "donde": "Dónde aparece",
+      "editar": "Editar campaña",
+      "editarCorto": "Editar",
+      "enInicio": "Inicio (fuera de servicio)",
+      "enReserva": "Pantalla de la reserva",
+      "estado": {
+        "activa": "Activa",
+        "borrador": "Borrador",
+        "programada": "Programada",
+        "terminada": "Terminada"
+      },
+      "fechasInvalidas": "Termina antes de empezar.",
+      "fuera": "Fuera de la reserva",
+      "fueraHint": "Sólo quienes todavía no se han unido a la reserva.",
+      "guardada": "Campaña guardada",
+      "guardarBorrador": "Guardar borrador",
+      "guardarCambios": "Guardar cambios",
+      "hasta": "Hasta",
+      "imagen": "Imagen (opcional)",
+      "imagenHint": "Horizontal, se ajusta a 1600 px.",
+      "imagenPeso": "La imagen pesa más de 8 MB.",
+      "imagenTipo": "Usa una imagen PNG, JPG o WebP.",
+      "intro": "Mensajes de tu empresa dentro de la app de tus vigilantes para que se unan a la reserva y la mantengan al día. Se ven sólo fuera de servicio.",
+      "nueva": "Nueva campaña",
+      "paraCubrir": "Para cubrir estos puestos",
+      "paraCubrirHint": "Quien toque el botón queda apuntado como suplente de estos puestos.",
+      "pausada": "Campaña en pausa",
+      "pausar": "Pausar",
+      "periodo": "{{desde}} → {{hasta}}",
+      "plantilla": "Empieza con una plantilla",
+      "prioridad": "Prioridad",
+      "prioridadHint": "Si a alguien le tocan dos, ve primero la de mayor prioridad.",
+      "publicada": "Campaña publicada",
+      "publicadaConPush": "Campaña publicada. El aviso llega respetando las horas de silencio.",
+      "publicar": "Publicar",
+      "push": "Avisar al publicar",
+      "pushHint": "Un aviso al teléfono al publicar, con prioridad baja y respetando las horas de silencio.",
+      "quitarImagen": "Quitar",
+      "reglas": "Cada vigilante ve una campaña a la vez, sólo cuando está fuera de servicio. Nunca durante su turno.",
+      "ruta": "Pantalla de la app",
+      "rutaInvalida": "Debe empezar por /guard/",
+      "sinFechas": "Sin fecha de fin",
+      "subiendo": "Subiendo…",
+      "subirImagen": "Subir imagen",
+      "texto": "Texto",
+      "textoHint": "Puedes escribir {{empresa}} y {{bono}}: se reemplazan por el nombre de tu empresa y el bono por doblete.",
+      "textoVacio": "El texto que verán tus vigilantes.",
+      "titulo": "Título",
+      "tituloVacio": "Título de la campaña",
+      "toques": "Toques",
+      "turnosCubiertos": "Turnos cubiertos",
+      "unBono": "un bono",
+      "vacio": "Todavía no hay campañas",
+      "vacioDesc": "Empieza con «Únete a la reserva»: es la plantilla que más suplentes trae.",
+      "vieja": "Disponibilidad sin actualizar",
+      "viejaDias": "Sin actualizar desde hace",
+      "viejaHint": "Miembros que no tocan su disponibilidad hace tiempo.",
+      "vistaPrevia": "Así lo verán",
+      "vistas": "Vistas",
+      "volver": "Volver a mostrar",
+      "volverHint": "Si la cierra, cuántos días después puede volver a verla."
+    },
+    "canal": {
+      "app": "App",
+      "voice": "Llamada",
+      "whatsapp": "WhatsApp"
+    },
+    "cobertura": {
+      "buscando": "Doblete ofrecido · {{n}} esperando",
+      "ofrecer": "Ofrecer doblete",
+      "verBusqueda": "Ver la búsqueda en Dobletes"
+    },
+    "cta": {
+      "available_today": "Marcar «hoy estoy disponible»",
+      "join_reserve": "Unirse a la reserva",
+      "open_offers": "Ver ofertas abiertas",
+      "qualify_post": "Apuntarse para cubrir otro puesto",
+      "route": "Abrir una pantalla de la app"
+    },
+    "estadoBusqueda": {
+      "active": "Buscando",
+      "cancelled": "Cancelada",
+      "exhausted": "Nadie aceptó",
+      "filled": "Cubierto"
+    },
+    "estadoOferta": {
+      "accepted": "Aceptó",
+      "declined": "No puede",
+      "expired": "No contestó",
+      "failed": "No se pudo enviar",
+      "lost": "Llegó tarde",
+      "pending": "Esperando respuesta",
+      "withdrawn": "Retirada"
+    },
+    "franja": {
+      "D": "Día",
+      "N": "Noche",
+      "T": "Tarde"
+    },
+    "lanzar": {
+      "bono": "Bono por este doblete",
+      "bonoHint": "Lo ve quien recibe la oferta. Vacío = sin bono.",
+      "conBono": "Bono ofrecido: {{bono}}.",
+      "eligeHueco": "Elige el puesto que hay que cubrir.",
+      "enReserva": "En la reserva",
+      "enviadaA": "Oferta enviada a {{n}} persona(s). El primero que acepte se queda el turno.",
+      "enviadaOleadas": "Oferta enviada a la primera oleada ({{n}}). El primero que acepte se queda el turno.",
+      "enviar": "Ofrecer doblete",
+      "enviarA": "Ofrecer a {{n}}",
+      "explicaMano": "Sólo las personas que marques reciben la oferta. El primero que acepta se queda el turno.",
+      "explicaOleadas": "Primero la reserva disponible para ese horario, mejor clasificados primero: {{a}} personas, y si nadie acepta en {{min}} min, {{b}} más. Si se acaban, te avisamos.",
+      "horasInfo": "Horas trabajadas esta semana. Sólo informativo: la empresa decide.",
+      "horasSemana": "{{h}} h esta semana",
+      "hueco": "Puesto sin cubrir",
+      "marcaQuien": "Marca a quién ofrecerlo",
+      "modoMano": "Elegir a mano",
+      "modoOleadas": "Por oleadas (automático)",
+      "quienesPrimero": "Quiénes lo reciben primero",
+      "sinCandidatos": "Sin personas libres",
+      "sinCandidatosDesc": "Nadie está libre en ese horario. Puedes lanzar igual: la reserva que se marque disponible después también lo verá.",
+      "sinHuecos": "No hay puestos sin cubrir",
+      "sinHuecosDesc": "Cuando registres una ausencia en Cobertura en vivo, el puesto aparece aquí para ofrecerlo.",
+      "sinLimites": "La plataforma no pone límites de horas ni de descanso: lo decide tu empresa. Sólo impide estar en dos puestos a la vez.",
+      "titulo": "Ofrecer doblete",
+      "urgente": "Urgente",
+      "urgenteHint": "Usa el bono relámpago de la empresa y avisa con prioridad alta."
+    },
+    "modulo": {
+      "desc": "Con el módulo «Dobletes», las ausencias y renuncias dejan de ser una noche de llamadas: tu gente ve la oferta, la acepta y queda asignada.",
+      "enlace": "Ver en Módulos adicionales",
+      "paso1": "Cuando falta alguien, ofreces el turno a tu reserva con un toque: primero a quienes están disponibles y mejor clasificados, por oleadas.",
+      "paso2": "El primero que acepta en la app se queda el turno. Sin llamadas una por una y sin aprobaciones.",
+      "paso3": "Premias a quien cubre: bono por doblete, puntos, niveles Bronce, Plata y Oro, y el «Respaldo del mes».",
+      "paso4": "Mantienes la banca llena con campañas dentro de la app de tus vigilantes y ves qué puestos se quedan sin suplentes.",
+      "titulo": "Cada hueco, cubierto por tu propia reserva"
+    },
+    "nivel": {
+      "bronce": "Bronce",
+      "oro": "Oro",
+      "plata": "Plata"
+    },
+    "ofertas": {
+      "activas": "En curso",
+      "agotada": "Se ofreció a todos los disponibles y nadie aceptó. Cúbrelo a mano en Cobertura en vivo, o vuelve a ofrecerlo con más bono.",
+      "bono": "Bono {{bono}}",
+      "bonoSubido": "Bono subido a {{bono}}. Se avisa a quienes ya tenían la oferta.",
+      "buscandoAhora": "Buscando ahora",
+      "cancelada": "Búsqueda cancelada",
+      "cancelar": "Cancelar búsqueda",
+      "cancelarMensaje": "Las ofertas pendientes se retiran y a quienes las tienen les llega que ya no está disponible. El puesto sigue sin cubrir.",
+      "cancelarTitulo": "¿Cancelar la búsqueda?",
+      "cubiertos": "Cubiertos",
+      "falta": "falta {{nombre}}",
+      "loCubre": "Lo cubre {{nombre}}: ya tiene el turno asignado y puede fichar.",
+      "minutos": "{{n}} min",
+      "nadieAcepto": "Nadie aceptó",
+      "nuevoBono": "Nuevo bono ({{moneda}})",
+      "oleada": "Oleada {{n}} de {{total}}",
+      "oleadaCorta": "oleada {{n}}",
+      "pendientes": "{{n}} esperando respuesta",
+      "proximaOleada": "Siguiente oleada en {{min}} min",
+      "subirBono": "Subir bono",
+      "subirBonoHint": "Quien ya tenía la oferta ve el bono nuevo, y la siguiente oleada sale con él. Sólo se puede subir.",
+      "subirBonoTitulo": "Subir el bono de esta oferta",
+      "tiempoMedio": "Tiempo medio para cubrir",
+      "todas": "Todas",
+      "vacio": "Todavía no se ha ofrecido ningún doblete",
+      "vacioActivas": "Ninguna búsqueda en curso",
+      "vacioDesc": "Cuando falte alguien, ofrece el turno desde aquí o desde Cobertura en vivo. Verás cada oferta en tiempo real."
+    },
+    "origen": {
+      "despachador": "Despachador automático",
+      "office": "Oficina",
+      "supervisor_app": "App del supervisor",
+      "vigia_chat": "Asistente"
+    },
+    "plantillas": {
+      "hoy": {
+        "boton": "Hoy estoy disponible",
+        "texto": "Marca que estás disponible y las ofertas de hoy te llegan primero.",
+        "titulo": "¿Libre hoy?"
+      },
+      "ofertas": {
+        "boton": "Ver ofertas",
+        "texto": "Mira las ofertas abiertas: el primero que acepta se queda el turno.",
+        "titulo": "Hay turnos extra esta semana"
+      },
+      "puesto": {
+        "boton": "Apuntarme",
+        "texto": "Apúntate para cubrir más puestos de {{empresa}}: más ofertas para ti y {{bono}} por cada doblete.",
+        "titulo": "Buscamos suplentes para otros puestos"
+      },
+      "reserva": {
+        "boton": "Quiero unirme",
+        "texto": "Cubre turnos extra cuando tú quieras y gana {{bono}} por cada doblete. Tú eliges los días.",
+        "titulo": "Únete a la reserva de {{empresa}}"
+      }
+    },
+    "ranking": {
+      "aceptadas": "Aceptó / recibió",
+      "apagado": "El ranking está apagado: tus vigilantes no lo ven en la app. Aquí sigue disponible para la oficina.",
+      "cubiertos": "Cubiertos",
+      "mes": "Mes",
+      "puntos": "Puntos",
+      "reglaBronce": "Estar en la reserva",
+      "reglaN": "{{n}} dobletes en el mes",
+      "reglaOro": "{{n}} dobletes en el mes · ve las ofertas primero",
+      "respaldoDelMes": "Respaldo del mes",
+      "respaldoResumen": "{{n}} dobletes cubiertos · {{puntos}} puntos",
+      "respuesta": "Responde en",
+      "titulo": "Quién más cubrió",
+      "vacio": "Nadie ha cubierto dobletes este mes",
+      "vacioDesc": "Cuando alguien acepte un doblete, aparece aquí con sus puntos."
+    },
+    "reserva": {
+      "actualizada": "actualizada el {{fecha}}",
+      "alerta": "{{n}} puesto(s) tienen menos de {{umbral}} suplentes. Si falta alguien ahí, la búsqueda se queda corta. La campaña sugerida invita a quienes pueden cubrirlos.",
+      "buscar": "Buscar por nombre",
+      "cubiertosMes": "{{n}} este mes",
+      "disponibilidad": "Disponibilidad de la reserva",
+      "disponibilidadDesc": "Cuántas personas de la reserva se marcaron disponibles para trabajar extra en cada día y franja.",
+      "enLaReserva": "En la reserva",
+      "enPausa": "En pausa",
+      "errorCarga": "No se pudo cargar la reserva",
+      "errorCargaDesc": "Revisa tu conexión y vuelve a intentarlo.",
+      "fuera": "Vigilantes fuera de la reserva",
+      "lanzarCampana": "Lanzar campaña sugerida",
+      "menosDe": "menos de {{n}}",
+      "miembros": "Miembros ({{n}})",
+      "puestosCubiertos": "Puestos con banca",
+      "puestosDebiles": "Puestos con pocos suplentes",
+      "salud": "Salud de la banca",
+      "sana": "Todos los puestos tienen al menos {{umbral}} suplentes.",
+      "sinDisponibilidad": "Sin disponibilidad marcada",
+      "sinPuestos": "Todavía no hay puestos configurados.",
+      "suplentes": "{{n}} suplente(s)",
+      "vacio": "Nadie en la reserva todavía",
+      "vacioDesc": "Los vigilantes se unen desde su app. Una campaña es la forma más rápida de llenar la banca."
+    },
+    "subtitulo": "Cuando falta alguien, tu reserva cubre el turno: la oferta llega a la app y el primero que acepta se lo queda.",
+    "tab": {
+      "ajustes": "Ajustes",
+      "campanas": "Campañas",
+      "ofertas": "Ofertas",
+      "ranking": "Ranking",
+      "reserva": "Reserva"
+    },
+    "titulo": "Dobletes",
+    "vigia": {
+      "masAjustes": "Más ajustes de dobletes"
     }
   }
 }
