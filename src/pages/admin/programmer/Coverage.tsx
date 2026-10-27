@@ -10,10 +10,15 @@ import {
   RefreshCw,
   Undo2,
   CalendarRange,
+  CalendarPlus,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
+
+import LanzarDoblete, { type HuecoElegido } from "@/pages/admin/dobletes/LanzarDoblete";
+import { ChipDeBusqueda, useDobletesEnCobertura } from "@/pages/admin/dobletes/EnCobertura";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -103,6 +108,10 @@ export default function Coverage() {
 
   // Cover-post modal
   const [coverFor, setCoverFor] = useState<any | null>(null);
+  /* «Ofrecer doblete» (módulo Dobletes): the gap goes to the reserve as an
+     offer instead of being assigned by hand; the live state shows in the row. */
+  const dobletes = useDobletesEnCobertura();
+  const [dobleteFor, setDobleteFor] = useState<HuecoElegido | null>(null);
   const [candidates, setCandidates] = useState<any[] | null>(null);
 
   // Transfer modal. A traslado is temporary by construction: it moves only the
@@ -656,6 +665,26 @@ export default function Coverage() {
               })}
             </p>
           </div>
+          {dobletes.porHueco.get(ev.id) ? (
+            <ChipDeBusqueda s={dobletes.porHueco.get(ev.id)!} />
+          ) : (
+            dobletes.puede && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() =>
+                  setDobleteFor({
+                    id: ev.id,
+                    titulo: stationLabel({ stationName: st.stationName, nickname: st.nickname }),
+                    detalle: REASON_LABEL[ev.reason] || ev.reason,
+                  })
+                }
+              >
+                <CalendarPlus className="mr-1 size-3.5" />{" "}
+                {t("dobletes.cobertura.ofrecer", "Ofrecer doblete")}
+              </Button>
+            )
+          )}
           <Button size="sm" onClick={() => openCover(ev)}>
             <UserPlus className="mr-1 size-3.5" />{" "}
             {t("ui.Coverage.cubrir", "Cubrir")}
@@ -677,6 +706,14 @@ export default function Coverage() {
                 <UserPlus className="mr-1.5 size-4" />{" "}
                 {t("ui.Coverage.reemplazoPorVacaciones", "Reemplazo por vacaciones")}
               </Button>
+              {dobletes.tiene && (
+                <Button asChild variant="outline">
+                  <Link to="/dobletes">
+                    <CalendarPlus className="mr-1.5 size-4" />{" "}
+                    {t("dobletes.titulo", "Dobletes")}
+                  </Link>
+                </Button>
+              )}
               <Button disabled={busy} variant="outline" onClick={load}>
                 <RefreshCw className="mr-1.5 size-4" />{" "}
                 {t("app.refresh", "Actualizar")}
@@ -891,6 +928,27 @@ export default function Coverage() {
                             ? t("ui.Coverage.quedoSinCubrir", "Quedó sin cubrir")
                             : ev.status}
                     </StatusBadge>
+                    {ev.status === "open" &&
+                      (dobletes.porHueco.get(ev.id) ? (
+                        <ChipDeBusqueda s={dobletes.porHueco.get(ev.id)!} />
+                      ) : (
+                        dobletes.puede && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              setDobleteFor({
+                                id: ev.id,
+                                titulo: stationLabel(ev.originStation),
+                                detalle: REASON_LABEL[ev.reason] || ev.reason,
+                              })
+                            }
+                          >
+                            <CalendarPlus className="mr-1 size-3.5" />{" "}
+                            {t("dobletes.cobertura.ofrecer", "Ofrecer doblete")}
+                          </Button>
+                        )
+                      ))}
                     {ev.status === "open" && (
                       <Button size="sm" onClick={() => openCover(ev)}>
                         <UserPlus className="mr-1 size-3.5" />{" "}
@@ -1197,6 +1255,19 @@ export default function Coverage() {
             </div>
           </div>
         </Modal>
+
+        {/* ── Offer the gap to the reserve (Dobletes) ─────────────────────── */}
+        {dobletes.puede && (
+          <LanzarDoblete
+            hueco={dobleteFor}
+            open={!!dobleteFor}
+            onLanzado={() => {
+              void dobletes.recargar();
+              void load();
+            }}
+            onOpenChange={(o) => !o && setDobleteFor(null)}
+          />
+        )}
 
         {/* ── Cover an empty post ──────────────────────────────────────────── */}
         <Modal

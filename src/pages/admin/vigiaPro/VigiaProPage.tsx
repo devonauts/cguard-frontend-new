@@ -49,6 +49,7 @@ import { useAgente } from "@/lib/agenteDeMarca";
 import ComoFuncionaVigiaPro from "@/components/vigia/ComoFuncionaVigiaPro";
 import GuiaConectarWhatsApp from "@/components/vigia/GuiaConectarWhatsApp";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
+import ConDobletes from "@/pages/admin/dobletes/ConVigiaPro";
 import { fechaYHora, soloHora } from "@/lib/horaDeLaEmpresa";
 import {
   vigiaProService,
@@ -529,6 +530,7 @@ export default function VigiaProPage() {
               saving={guardando}
               onSave={guardar}
             />
+            {info.data.tieneModulo && <ConDobletes />}
           </div>
         )}
       </PageContainer>

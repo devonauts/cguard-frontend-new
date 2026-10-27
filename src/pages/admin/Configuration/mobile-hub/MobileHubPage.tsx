@@ -45,6 +45,7 @@ import {
   Bell,
   Menu,
   Navigation,
+  CalendarPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -76,7 +77,7 @@ import { useEntitlement } from "@/hooks/useEntitlement";
    aplica una app nativa que no comparte los tokens del panel. Por eso van
    escritos y no salen de `--brand`.
    ──────────────────────────────────────────────────────────────────────────── */
-const DEFAULT_ACCENT = "#d4a017"; // el dorado de fábrica de las apps
+export const DEFAULT_ACCENT = "#d4a017"; // el dorado de fábrica de las apps
 
 const PRESET_ACCENTS = [
   DEFAULT_ACCENT,
@@ -100,7 +101,7 @@ interface MobileAppSettings {
   modules: Record<ModuleKey, boolean>;
 }
 
-type ModuleKey =
+export type ModuleKey =
   | "training"
   | "performance"
   | "visitors"
@@ -108,7 +109,8 @@ type ModuleKey =
   | "backup"
   | "map"
   | "radioNativa"
-  | "payslips";
+  | "payslips"
+  | "dobletes";
 
 const MODULE_META: {
   key: ModuleKey;
@@ -164,6 +166,12 @@ const MODULE_META: {
     desc: "El trabajador ve y descarga sus roles de pago publicados. Apagado de fábrica.",
     icon: <FileSpreadsheet size={16} />,
   },
+  {
+    key: "dobletes",
+    label: "Dobletes y reserva",
+    desc: "Ofertas de turnos extra, unirse a la reserva, marcar disponibilidad y las campañas de la empresa. Apagado de fábrica.",
+    icon: <CalendarPlus size={16} />,
+  },
 ];
 
 const DEFAULTS: MobileAppSettings = {
@@ -182,6 +190,7 @@ const DEFAULTS: MobileAppSettings = {
     map: true,
     radioNativa: false,
     payslips: false,
+    dobletes: false,
   },
 };
 
@@ -198,6 +207,14 @@ type SettingsRow = {
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
+/** App switches that only exist with a paid module. */
+function moduloDisponible(key: ModuleKey, rolesDePago: boolean, dobletes: boolean): boolean {
+  if (key === "payslips") return rolesDePago;
+  if (key === "dobletes" || key === "backup") return dobletes;
+
+  return true;
+}
+
 export default function MobileHubPage() {
   const { platformName: nombreDeMarca } = useWhiteLabel();
   const { t } = useTranslation();
@@ -205,8 +222,10 @@ export default function MobileHubPage() {
   const canEdit = hasPermission("settingsEdit");
   // «Roles de pago» en la app sólo se puede encender con el módulo activo.
   const tieneRolesDePago = useEntitlement("payroll_slips");
-  // Sin el módulo, la fila de «Roles de pago» ni aparece ni cuenta en el total.
-  const modulosVisibles = MODULE_META.filter((m) => m.key !== "payslips" || tieneRolesDePago);
+  // «Dobletes» (offers, reserve, campaigns) and the volunteer screen
+  // («Respaldo»), which moved behind that module, need it too.
+  const tieneDobletes = useEntitlement("dobletes");
+  const modulosVisibles = MODULE_META.filter((m) => moduloDisponible(m.key, tieneRolesDePago, tieneDobletes));
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -281,7 +300,7 @@ export default function MobileHubPage() {
 
   const modulosActivos = useMemo(
     () => modulosVisibles.filter((m) => cfg.modules[m.key]).length,
-    [cfg.modules, tieneRolesDePago],
+    [cfg.modules, tieneRolesDePago, tieneDobletes],
   );
 
   const preview = useMemo(
@@ -653,7 +672,7 @@ export default function MobileHubPage() {
                         </div>
                         <Switch
                           checked={cfg.modules[m.key]}
-                          disabled={!canEdit || (m.key === "payslips" && !tieneRolesDePago)}
+                          disabled={!canEdit || !moduloDisponible(m.key, tieneRolesDePago, tieneDobletes)}
                           onCheckedChange={(v) =>
                             setCfg((c) => ({
                               ...c,
@@ -741,7 +760,7 @@ const FAMILIA_FUENTE: Record<string, string | undefined> = {
   manrope: '"Manrope", system-ui, sans-serif',
 };
 
-function PhonePreview({
+export function PhonePreview({
   accent,
   name,
   tagline,
@@ -749,6 +768,7 @@ function PhonePreview({
   light,
   modules,
   font,
+  banner,
 }: {
   accent: string;
   name: string;
@@ -757,6 +777,12 @@ function PhonePreview({
   light: boolean;
   modules: Record<ModuleKey, boolean>;
   font: string;
+  /**
+   * A company campaign (Dobletes). Campaigns only show OFF duty, so with a
+   * banner the home screen is the off-duty dashboard and the radio button
+   * (on-duty only) goes away. Receives the app's own colours.
+   */
+  banner?: (c: { accent: string; card: string; text: string; muted: string; border: string }) => React.ReactNode;
 }) {
   const { t } = useTranslation();
   const [pantalla, setPantalla] = useState<
@@ -869,7 +895,56 @@ function PhonePreview({
 
   /* ── Pantallas ──────────────────────────────────────────────────────────── */
 
-  const inicio = (
+  const fueraDeServicio = banner ? (
+    <div className="space-y-3">
+      <Tarjeta>
+        <div className="flex items-center justify-between">
+          <span
+            className="text-[11px] font-bold uppercase tracking-wider"
+            style={{ color: muted }}
+          >
+            {t("settings.mobileHub.previewNextShift", {
+              defaultValue: "Próximo turno",
+            })}
+          </span>
+          <span
+            className="rounded-full px-2 py-0.5 text-[10px] font-bold"
+            style={{ background: `${muted}22`, color: muted }}
+          >
+            {t("settings.mobileHub.previewOffDuty", {
+              defaultValue: "● Fuera de servicio",
+            })}
+          </span>
+        </div>
+        <p className="mt-1.5 text-[22px] font-bold leading-tight">
+          {t("settings.mobileHub.previewTomorrowShift", {
+            defaultValue: "Mañana · 08:00 – 20:00",
+          })}
+        </p>
+      </Tarjeta>
+      {banner({ accent, card, text, muted, border })}
+      <Fila
+        icon={<CalendarDays size={16} />}
+        label={t("settings.mobileHub.navSchedule", { defaultValue: "Horario" })}
+      />
+      {modules.training && (
+        <Fila
+          icon={<GraduationCap size={16} />}
+          label={t("settings.mobileHub.previewTraining", {
+            defaultValue: "Entrenamiento",
+          })}
+        />
+      )}
+      <Fila
+        icon={<UserIcon size={16} />}
+        label={t("settings.mobileHub.previewMyData", {
+          defaultValue: "Mis datos",
+        })}
+      />
+    </div>
+  ) : null;
+
+  const inicio = fueraDeServicio ?? (
     <div className="space-y-3">
       <Tarjeta acento>
         <div className="flex items-center justify-between">
@@ -1603,7 +1678,7 @@ function PhonePreview({
                 quede tapada para siempre debajo del micrófono. */}
             <div
               className="absolute inset-x-0 bottom-[86px] top-[104px] overflow-y-auto px-4"
-              style={{ paddingBottom: activa === "inicio" ? 76 : 16 }}
+              style={{ paddingBottom: activa === "inicio" && !banner ? 76 : 16 }}
             >
               {PANTALLAS[activa]}
             </div>
@@ -1611,7 +1686,7 @@ function PhonePreview({
             {/* Botón flotante de radio — existe de verdad en la app
                 (`components/FloatingRadioButton`) y sólo mientras se está en
                 servicio, que es el estado que enseña esta maqueta. */}
-            {activa === "inicio" && (
+            {activa === "inicio" && !banner && (
               <div className="absolute bottom-[100px] right-5">
                 <span
                   className="grid h-14 w-14 place-items-center rounded-full"
