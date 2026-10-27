@@ -195,7 +195,7 @@ export default function EditorDeCampana({
   moneda: string;
   decimales: 0 | 2;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const et = useEtiquetasDobletes();
   const { platformName } = useWhiteLabel();
@@ -210,8 +210,8 @@ export default function EditorDeCampana({
   }, [open, inicial]);
 
   const servidor = useQuery({
-    queryKey: ["dobletes", "templates"],
-    queryFn: () => dobletesService.templates(),
+    queryKey: ["dobletes", "templates", i18n.language],
+    queryFn: () => dobletesService.templates(i18n.language),
     enabled: open,
     staleTime: 10 * 60_000,
   });

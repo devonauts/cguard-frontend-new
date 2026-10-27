@@ -8353,7 +8353,9 @@
       "vehicleOverstayLabel": "Pojazd z przekroczonym czasem postoju",
       "vehicleOverstayHint": "Pojazd przebywa wewnątrz dłużej niż liczba minut ustawiona w Kontrola pojazdów › Zasady posterunku. Powiadomienie wysyłane jest raz na pojazd",
       "columnPush": "Telefon",
-      "payslipPublishedLabel": "Opublikowano pasek wypłaty"
+      "payslipPublishedLabel": "Opublikowano pasek wypłaty",
+      "dobletesOfficeLabel": "Podwójne zmiany: obsadzone lub nikt nie przyjął",
+      "dobletesOffersLabel": "Oferty podwójnych zmian (dla ochroniarzy)"
     },
     "festivos": {
       "loadError": "Nie udało się wczytać dni świątecznych.",
@@ -19215,7 +19217,8 @@
       "panicButton": "Alarm napadowy",
       "ptoRequest": "Wnioski o wolne",
       "taskCompleted": "Wykonane zadania",
-      "payslipPublished": "Opublikowano pasek wypłaty"
+      "payslipPublished": "Opublikowano pasek wypłaty",
+      "dobletesOffice": "Podwójne zmiany: obsadzone lub nikt nie przyjął"
     },
     "hint": {
       "coverageUncovered": "Nikt nie stawił się na posterunku",
@@ -21388,7 +21391,10 @@
       "voluntario": "Za zgłoszenie się",
       "voluntarioHint": "Za dołączenie lub oznaczenie się jako dostępny. Domyślnie {{n}}.",
       "voz": "Telefon w ostateczności",
-      "vozHint": "Jeśli po wszystkich falach nikt nie przyjął oferty, {{agente}} dzwoni do kolejnych osób z listy, a one przyjmują, wciskając 1. Opłata za minutę pobierana jest z salda komunikacji."
+      "vozHint": "Jeśli po wszystkich falach nikt nie przyjął oferty, {{agente}} dzwoni do kolejnych osób z listy, a one przyjmują, wciskając 1. Opłata za minutę pobierana jest z salda komunikacji.",
+      "asistencia": "Minimalna frekwencja",
+      "whatsapp": "Oferuj też przez WhatsApp",
+      "whatsappHint": "Przez konto WhatsApp Twojej firmy, w ramach dziennego limitu wiadomości."
     },
     "campanas": {
       "accion": "Co robi przycisk",
@@ -21466,7 +21472,8 @@
       "vistaPrevia": "Tak to zobaczą",
       "vistas": "Wyświetlenia",
       "volver": "Pokaż ponownie",
-      "volverHint": "Po ilu dniach od zamknięcia może zobaczyć ją ponownie."
+      "volverHint": "Po ilu dniach od zamknięcia może zobaczyć ją ponownie.",
+      "conversion": "Konwersja"
     },
     "canal": {
       "app": "Aplikacja",
@@ -21574,7 +21581,9 @@
       "todas": "Wszystkie",
       "vacio": "Nie zaoferowano jeszcze żadnej podwójnej zmiany",
       "vacioActivas": "Brak trwających wyszukiwań",
-      "vacioDesc": "Gdy kogoś zabraknie, zaoferuj zmianę stąd albo z Obsady na żywo. Każdą ofertę zobaczysz w czasie rzeczywistym."
+      "vacioDesc": "Gdy kogoś zabraknie, zaoferuj zmianę stąd albo z Obsady na żywo. Każdą ofertę zobaczysz w czasie rzeczywistym.",
+      "retirada": "Oferta wycofana",
+      "retirar": "Wycofaj"
     },
     "origen": {
       "despachador": "Automatyczny dyspozytor",
@@ -21605,20 +21614,19 @@
       }
     },
     "ranking": {
-      "aceptadas": "Przyjęte / otrzymane",
       "apagado": "Ranking jest wyłączony: twoi ochroniarze nie widzą go w aplikacji. Tutaj nadal jest dostępny dla biura.",
       "cubiertos": "Obsadzone",
       "mes": "Miesiąc",
-      "puntos": "Punkty",
       "reglaBronce": "Bycie w rezerwie",
       "reglaN": "Podwójne zmiany w miesiącu: {{n}}",
       "reglaOro": "Podwójne zmiany w miesiącu: {{n}} · widzi oferty jako pierwszy",
       "respaldoDelMes": "Zmiennik miesiąca",
-      "respaldoResumen": "Obsadzone podwójne zmiany: {{n}} · punkty: {{puntos}}",
-      "respuesta": "Czas odpowiedzi",
       "titulo": "Kto najczęściej zastępował",
       "vacio": "W tym miesiącu nikt nie obsadził jeszcze podwójnej zmiany",
-      "vacioDesc": "Gdy ktoś przyjmie podwójną zmianę, pojawi się tutaj ze swoimi punktami."
+      "vacioDesc": "Gdy ktoś przyjmie podwójną zmianę, pojawi się tutaj ze swoimi punktami.",
+      "bonos": "Premie",
+      "cumplidos": "Odbyte",
+      "respaldoCumplidos": "Odbyte podwójne zmiany w tym miesiącu: {{n}}"
     },
     "reserva": {
       "actualizada": "zaktualizowano {{fecha}}",
@@ -21643,7 +21651,13 @@
       "sinPuestos": "Nie skonfigurowano jeszcze posterunków.",
       "suplentes": "Zmiennicy: {{n}}",
       "vacio": "Nikogo jeszcze nie ma w rezerwie",
-      "vacioDesc": "Ochroniarze dołączają przez swoją aplikację. Kampania to najszybszy sposób, by zapełnić ławkę rezerwowych."
+      "vacioDesc": "Ochroniarze dołączają przez swoją aplikację. Kampania to najszybszy sposób, by zapełnić ławkę rezerwowych.",
+      "editar": "Posterunki i status",
+      "guardado": "Rezerwa zaktualizowana",
+      "puedeCubrir": "Może obsadzić te posterunki",
+      "puedeCubrirHint": "Oprócz własnego posterunku. Liczy się jako zmiennik w kondycji ławki rezerwowych.",
+      "sacar": "Usuń z rezerwy",
+      "sacarMensaje": "Przestaje otrzymywać oferty. Może wrócić przez aplikację."
     },
     "subtitulo": "Gdy kogoś brakuje, twoja rezerwa obsadza zmianę: oferta trafia do aplikacji, a kto pierwszy przyjmie, ten ją bierze.",
     "tab": {

@@ -12,7 +12,10 @@ import { Radio } from "lucide-react";
 import { MODULO, usePuedeGestionarDobletes } from "./comun";
 
 import { useEntitlement } from "@/hooks/useEntitlement";
-import dobletesService, { type OfferSearch } from "@/lib/api/dobletesService";
+import dobletesService, {
+  pendientesDe,
+  type OfferSearch,
+} from "@/lib/api/dobletesService";
 
 /** Live searches by gap id, plus whether this person may launch new ones. */
 export function useDobletesEnCobertura() {
@@ -44,9 +47,7 @@ export function useDobletesEnCobertura() {
 /** «Buscando · oleada 1 · 3 esperando» — opens the search in Dobletes. */
 export function ChipDeBusqueda({ s }: { s: OfferSearch }) {
   const { t } = useTranslation();
-  const pendientes = (s.offers ?? []).filter(
-    (o) => o.status === "pending",
-  ).length;
+  const pendientes = pendientesDe(s);
 
   return (
     <Link

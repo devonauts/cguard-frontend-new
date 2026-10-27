@@ -45,7 +45,10 @@ import {
   StatCard,
   StatusBadge,
 } from "@/components/kit";
-import dobletesService, { type OfferSearch } from "@/lib/api/dobletesService";
+import dobletesService, {
+  pendientesDe,
+  type OfferSearch,
+} from "@/lib/api/dobletesService";
 import { fechaYHora, soloHora } from "@/lib/horaDeLaEmpresa";
 import { REASON_LABEL } from "@/lib/api/coverageService";
 
@@ -225,12 +228,33 @@ function TarjetaDeBusqueda({
   const [subir, setSubir] = useState(false);
   const [nuevoBono, setNuevoBono] = useState<number | null>(s.bonusCents);
   const [ocupado, setOcupado] = useState(false);
-  const ofertas = s.offers ?? [];
   const activa = s.status === "active";
+  // The list brings counts only; each card reads its offers from the detail
+  // (live every 10 s while the search runs).
+  const detalle = useQuery({
+    queryKey: ["dobletes", "search", s.id],
+    queryFn: () => dobletesService.search(s.id),
+    enabled: !s.offers,
+    refetchInterval: activa ? 10_000 : false,
+  });
+  const ofertas = detalle.data?.offers ?? s.offers ?? [];
   const proxima = minutosHasta(s.nextWaveAt, ahora);
   const plan = s.waveSizes?.length ? s.waveSizes : [3, 5];
   const ganador = ofertas.find((o) => o.status === "accepted");
-  const pendientes = ofertas.filter((o) => o.status === "pending").length;
+  const pendientes = pendientesDe(detalle.data ?? s);
+
+  const retirar = async (offerId: string) => {
+    setOcupado(true);
+    try {
+      await dobletesService.withdraw(s.id, offerId);
+      toast.success(t("dobletes.ofertas.retirada", "Oferta retirada"));
+      void qc.invalidateQueries({ queryKey: ["dobletes"] });
+    } catch {
+      /* shown by the API layer */
+    } finally {
+      setOcupado(false);
+    }
+  };
 
   const cancelar = async () => {
     const ok = await confirmDialog({
@@ -418,6 +442,17 @@ function TarjetaDeBusqueda({
               <StatusBadge tone={TONO_OFERTA[o.status]}>
                 {et.oferta[o.status] ?? o.status}
               </StatusBadge>
+              {activa && puede && o.status === "pending" && (
+                <Button
+                  disabled={ocupado}
+                  size="sm"
+                  title={t("dobletes.ofertas.retirar", "Retirar")}
+                  variant="ghost"
+                  onClick={() => retirar(o.id)}
+                >
+                  <X className="size-3.5" />
+                </Button>
+              )}
             </li>
           ))}
         </ul>

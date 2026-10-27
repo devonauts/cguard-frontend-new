@@ -8343,7 +8343,9 @@
       "vehicleOverstayLabel": "Véhicule en dépassement de durée",
       "vehicleOverstayHint": "Un véhicule est à l'intérieur depuis plus longtemps que les minutes fixées dans Contrôle véhicules › Règles du poste. L'avis n'est envoyé qu'une fois par véhicule",
       "columnPush": "Téléphone",
-      "payslipPublishedLabel": "Bulletin de paie publié"
+      "payslipPublishedLabel": "Bulletin de paie publié",
+      "dobletesOfficeLabel": "Doubles quarts : couvert ou personne n'a accepté",
+      "dobletesOffersLabel": "Offres de doubles quarts (aux agents)"
     },
     "festivos": {
       "loadError": "Impossible de charger les jours fériés.",
@@ -18935,7 +18937,8 @@
       "panicButton": "Bouton panique",
       "ptoRequest": "Demandes de congé",
       "taskCompleted": "Tâches terminées",
-      "payslipPublished": "Bulletin de paie publié"
+      "payslipPublished": "Bulletin de paie publié",
+      "dobletesOffice": "Doubles quarts : couvert ou personne n'a accepté"
     },
     "hint": {
       "coverageUncovered": "Personne n'est arrivé au poste",
@@ -21100,7 +21103,10 @@
       "voluntario": "Pour se porter volontaire",
       "voluntarioHint": "Pour rejoindre la réserve ou se déclarer disponible. Par défaut, {{n}}.",
       "voz": "Appel en dernier recours",
-      "vozHint": "Si personne n'a accepté après toutes les vagues, {{agente}} appelle les personnes suivantes de la liste, qui acceptent en tapant 1. Facturé à la minute sur le solde de communications."
+      "vozHint": "Si personne n'a accepté après toutes les vagues, {{agente}} appelle les personnes suivantes de la liste, qui acceptent en tapant 1. Facturé à la minute sur le solde de communications.",
+      "asistencia": "Assiduité minimale",
+      "whatsapp": "Proposer aussi par WhatsApp",
+      "whatsappHint": "Via le compte WhatsApp de votre entreprise, dans la limite quotidienne de messages."
     },
     "campanas": {
       "accion": "Action du bouton",
@@ -21178,7 +21184,8 @@
       "vistaPrevia": "Aperçu",
       "vistas": "Vues",
       "volver": "Réafficher après",
-      "volverHint": "Si la personne la ferme, nombre de jours avant de pouvoir la revoir."
+      "volverHint": "Si la personne la ferme, nombre de jours avant de pouvoir la revoir.",
+      "conversion": "Conversion"
     },
     "canal": {
       "app": "App",
@@ -21286,7 +21293,9 @@
       "todas": "Toutes",
       "vacio": "Aucun double quart proposé pour l'instant",
       "vacioActivas": "Aucune recherche en cours",
-      "vacioDesc": "En cas d'absence, proposez le quart d'ici ou depuis Couverture en direct. Vous suivrez chaque offre en temps réel."
+      "vacioDesc": "En cas d'absence, proposez le quart d'ici ou depuis Couverture en direct. Vous suivrez chaque offre en temps réel.",
+      "retirada": "Offre retirée",
+      "retirar": "Retirer"
     },
     "origen": {
       "despachador": "Répartiteur automatique",
@@ -21317,20 +21326,19 @@
       }
     },
     "ranking": {
-      "aceptadas": "Acceptées / reçues",
       "apagado": "Le classement est désactivé : vos agents ne le voient pas dans l'app. Il reste disponible ici pour le bureau.",
       "cubiertos": "Couverts",
       "mes": "Mois",
-      "puntos": "Points",
       "reglaBronce": "Faire partie de la réserve",
       "reglaN": "{{n}} doubles quarts dans le mois",
       "reglaOro": "{{n}} doubles quarts dans le mois · voit les offres en premier",
       "respaldoDelMes": "Renfort du mois",
-      "respaldoResumen": "{{n}} doubles quarts couverts · {{puntos}} points",
-      "respuesta": "Répond en",
       "titulo": "Qui a le plus couvert",
       "vacio": "Personne n'a couvert de double quart ce mois-ci",
-      "vacioDesc": "Dès qu'une personne accepte un double quart, elle apparaît ici avec ses points."
+      "vacioDesc": "Dès qu'une personne accepte un double quart, elle apparaît ici avec ses points.",
+      "bonos": "Primes",
+      "cumplidos": "Effectués",
+      "respaldoCumplidos": "{{n}} doubles quarts effectués ce mois-ci"
     },
     "reserva": {
       "actualizada": "mise à jour le {{fecha}}",
@@ -21355,7 +21363,13 @@
       "sinPuestos": "Aucun poste configuré pour l'instant.",
       "suplentes": "{{n}} remplaçant(s)",
       "vacio": "Personne dans la réserve pour l'instant",
-      "vacioDesc": "Les agents rejoignent la réserve depuis leur app. Une campagne est le moyen le plus rapide de la remplir."
+      "vacioDesc": "Les agents rejoignent la réserve depuis leur app. Une campagne est le moyen le plus rapide de la remplir.",
+      "editar": "Postes et statut",
+      "guardado": "Réserve mise à jour",
+      "puedeCubrir": "Peut couvrir ces postes",
+      "puedeCubrirHint": "En plus de son propre poste. Compte comme remplaçant dans la santé de la réserve.",
+      "sacar": "Retirer de la réserve",
+      "sacarMensaje": "Il ne reçoit plus d'offres. Il peut revenir depuis son application."
     },
     "subtitulo": "En cas d'absence, votre réserve couvre le quart : l'offre arrive dans l'app et la première personne qui accepte l'obtient.",
     "tab": {

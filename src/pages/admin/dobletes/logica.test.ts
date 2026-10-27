@@ -16,6 +16,10 @@ import {
   mergeSettings,
   sinModulo,
   DEFAULT_SETTINGS,
+  normalizarBanca,
+  normalizarBusqueda,
+  pendientesDe,
+  decimalesDe,
 } from "../../../lib/api/dobletesService";
 
 import {
@@ -128,11 +132,28 @@ describe("dobletes · ajustes de la empresa", () => {
   it("respeta lo guardado y completa las reglas de niveles a medias", () => {
     const s = mergeSettings({
       waveSizes: [2],
-      levels: { enabled: false, rules: { oro: 8 } as never },
+      levels: { enabled: false, rules: { oro: { minCovered: 8 } } as never },
     });
 
     expect(s.waveSizes).toEqual([2]);
-    expect(s.levels).toEqual({ enabled: false, rules: { plata: 2, oro: 8 } });
+    expect(s.levels).toEqual({
+      enabled: false,
+      rules: {
+        plata: { minCovered: 1, minAttendancePct: 90 },
+        oro: { minCovered: 8, minAttendancePct: 95 },
+      },
+    });
+  });
+
+  it("acepta la forma vieja (sólo el número de dobletes)", () => {
+    const s = mergeSettings({
+      levels: { enabled: true, rules: { plata: 2 } as never },
+    });
+
+    expect(s.levels.rules.plata).toEqual({
+      minCovered: 2,
+      minAttendancePct: 90,
+    });
   });
 
   it("una lista de oleadas vacía no deja a la empresa sin oleadas", () => {
@@ -146,5 +167,117 @@ describe("dobletes · sin el módulo", () => {
     expect(sinModulo({ status: 403, code: "addon_required" })).toBe(true);
     expect(sinModulo({ status: 500 })).toBe(false);
     expect(sinModulo(null)).toBe(false);
+  });
+});
+
+describe("dobletes · lo que manda el servidor", () => {
+  it("la banca cuenta suplentes sin repetir y enseña también los puestos SIN nadie", () => {
+    const b = normalizarBanca(
+      {
+        members: [
+          {
+            userId: "u1",
+            name: "Pedro",
+            level: "plata",
+            weekly: [{ weekday: 1, slots: ["D", "N"] }],
+          },
+        ],
+        grid: [
+          {
+            date: "2026-10-26",
+            weekday: 1,
+            slots: { D: ["u1", "u2"], T: [], N: ["u1"] },
+          },
+          {
+            date: "2026-10-27",
+            weekday: 2,
+            slots: { D: [], T: ["u2"], N: [] },
+          },
+        ],
+        posts: [
+          {
+            stationId: "s1",
+            stationName: "Garita",
+            relief: ["g9", "u1"],
+            qualified: ["u1"],
+          },
+        ],
+        names: {},
+      },
+      [
+        { stationId: "s1", stationName: "Garita", nickname: "A-1" },
+        { stationId: "s2", stationName: "Puerta", nickname: null },
+      ],
+    );
+
+    expect(b.stations.find((p) => p.stationId === "s1")).toMatchObject({
+      suplentes: 2,
+      nickname: "A-1",
+    });
+    expect(b.stations.find((p) => p.stationId === "s2")?.suplentes).toBe(0);
+    expect(b.grid.find((g) => g.weekday === 1 && g.slot === "D")?.count).toBe(
+      2,
+    );
+    expect(b.grid.find((g) => g.weekday === 2 && g.slot === "T")?.count).toBe(
+      1,
+    );
+    expect(b.grid).toHaveLength(21);
+    expect(b.members[0]).toMatchObject({ active: true, level: "plata" });
+    expect(b.healthThreshold).toBe(2);
+  });
+
+  it("una búsqueda de la lista trae conteos; el detalle, las ofertas", () => {
+    const lista = normalizarBusqueda({
+      id: "b1",
+      status: "active",
+      source: "office",
+      coverageEventId: "e1",
+      event: {
+        id: "e1",
+        stationId: "s1",
+        stationName: "Garita",
+        windowStart: "x",
+        windowEnd: "y",
+      },
+      startedById: "u9",
+      startedByName: "Carlos",
+      counts: { pending: 3 },
+      createdAt: "2026-10-26T10:00:00Z",
+      filledAt: null,
+    });
+
+    expect(lista.event?.station).toEqual({
+      id: "s1",
+      stationName: "Garita",
+      nickname: null,
+    });
+    expect(lista.startedBy).toEqual({ id: "u9", name: "Carlos" });
+    expect(lista.offers).toBeUndefined();
+    expect(pendientesDe(lista)).toBe(3);
+
+    const detalle = normalizarBusqueda({
+      id: "b1",
+      status: "filled",
+      createdAt: "2026-10-26T10:00:00Z",
+      filledAt: "2026-10-26T10:07:00Z",
+      offers: [
+        {
+          id: "o1",
+          guardUserId: "g1",
+          status: "accepted",
+          reasons: ["level_oro"],
+        },
+        { id: "o2", guardUserId: "g2", status: "pending" },
+      ],
+    });
+
+    expect(detalle.updatedAt).toBe("2026-10-26T10:07:00Z");
+    expect(detalle.offers?.[0].level).toBe("oro");
+    expect(pendientesDe(detalle)).toBe(1);
+  });
+
+  it("monedas sin centavos", () => {
+    expect(decimalesDe("CLP")).toBe(0);
+    expect(decimalesDe("mxn")).toBe(2);
   });
 });

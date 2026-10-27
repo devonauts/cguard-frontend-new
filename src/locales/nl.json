@@ -8343,7 +8343,9 @@
       "vehicleOverstayLabel": "Voertuig staat te lang binnen",
       "vehicleOverstayHint": "Een voertuig staat langer binnen dan het aantal minuten dat u heeft ingesteld bij Voertuigcontrole › Regels van de post. Er volgt één melding per voertuig",
       "columnPush": "Telefoon",
-      "payslipPublishedLabel": "Loonstrook gepubliceerd"
+      "payslipPublishedLabel": "Loonstrook gepubliceerd",
+      "dobletesOfficeLabel": "Dubbele diensten: gedekt of niemand geaccepteerd",
+      "dobletesOffersLabel": "Aanbiedingen dubbele diensten (aan beveiligers)"
     },
     "festivos": {
       "loadError": "De feestdagen konden niet worden geladen.",
@@ -18935,7 +18937,8 @@
       "panicButton": "Paniekknop",
       "ptoRequest": "Verlofaanvragen",
       "taskCompleted": "Afgeronde taken",
-      "payslipPublished": "Loonstrook gepubliceerd"
+      "payslipPublished": "Loonstrook gepubliceerd",
+      "dobletesOffice": "Dubbele diensten: gedekt of niemand geaccepteerd"
     },
     "hint": {
       "coverageUncovered": "Er is niemand op de post verschenen",
@@ -21100,7 +21103,10 @@
       "voluntario": "Voor aanmelden",
       "voluntarioHint": "Voor lid worden of zich beschikbaar melden. Standaard {{n}}.",
       "voz": "Bellen als laatste redmiddel",
-      "vozHint": "Heeft na alle golven niemand geaccepteerd, dan belt {{agente}} de volgenden op de lijst en accepteren ze met toets 1. Wordt per minuut afgeschreven van het communicatietegoed."
+      "vozHint": "Heeft na alle golven niemand geaccepteerd, dan belt {{agente}} de volgenden op de lijst en accepteren ze met toets 1. Wordt per minuut afgeschreven van het communicatietegoed.",
+      "asistencia": "Minimale aanwezigheid",
+      "whatsapp": "Ook via WhatsApp aanbieden",
+      "whatsappHint": "Via het WhatsApp-account van je bedrijf, binnen de dagelijkse berichtenlimiet."
     },
     "campanas": {
       "accion": "Wat de knop doet",
@@ -21178,7 +21184,8 @@
       "vistaPrevia": "Zo zien ze het",
       "vistas": "Weergaven",
       "volver": "Opnieuw tonen",
-      "volverHint": "Na hoeveel dagen iemand hem opnieuw ziet als die hem heeft gesloten."
+      "volverHint": "Na hoeveel dagen iemand hem opnieuw ziet als die hem heeft gesloten.",
+      "conversion": "Conversie"
     },
     "canal": {
       "app": "App",
@@ -21286,7 +21293,9 @@
       "todas": "Alle",
       "vacio": "Er is nog geen dubbele dienst aangeboden",
       "vacioActivas": "Geen lopende zoektochten",
-      "vacioDesc": "Valt iemand uit, bied de dienst dan hier of vanuit Live dekking aan. Je ziet elk aanbod live."
+      "vacioDesc": "Valt iemand uit, bied de dienst dan hier of vanuit Live dekking aan. Je ziet elk aanbod live.",
+      "retirada": "Aanbod ingetrokken",
+      "retirar": "Intrekken"
     },
     "origen": {
       "despachador": "Automatische dispatcher",
@@ -21317,20 +21326,19 @@
       }
     },
     "ranking": {
-      "aceptadas": "Geaccepteerd / ontvangen",
       "apagado": "De ranglijst staat uit: je beveiligers zien hem niet in de app. Hier blijft hij beschikbaar voor het kantoor.",
       "cubiertos": "Ingevuld",
       "mes": "Maand",
-      "puntos": "Punten",
       "reglaBronce": "In de reserve zitten",
       "reglaN": "{{n}} dubbele diensten in de maand",
       "reglaOro": "{{n}} dubbele diensten in de maand · ziet aanbiedingen als eerste",
       "respaldoDelMes": "Invaller van de maand",
-      "respaldoResumen": "{{n}} dubbele diensten ingevuld · {{puntos}} punten",
-      "respuesta": "Reageert binnen",
       "titulo": "Wie het vaakst inviel",
       "vacio": "Niemand heeft deze maand een dubbele dienst ingevuld",
-      "vacioDesc": "Zodra iemand een dubbele dienst accepteert, verschijnt die hier met zijn of haar punten."
+      "vacioDesc": "Zodra iemand een dubbele dienst accepteert, verschijnt die hier met zijn of haar punten.",
+      "bonos": "Bonussen",
+      "cumplidos": "Gewerkt",
+      "respaldoCumplidos": "{{n}} dubbele diensten gewerkt deze maand"
     },
     "reserva": {
       "actualizada": "bijgewerkt op {{fecha}}",
@@ -21355,7 +21363,13 @@
       "sinPuestos": "Er zijn nog geen posten ingesteld.",
       "suplentes": "{{n}} invaller(s)",
       "vacio": "Nog niemand in de reserve",
-      "vacioDesc": "Beveiligers sluiten zich aan via hun app. Een campagne is de snelste manier om de invalpool te vullen."
+      "vacioDesc": "Beveiligers sluiten zich aan via hun app. Een campagne is de snelste manier om de invalpool te vullen.",
+      "editar": "Posten en status",
+      "guardado": "Reserve bijgewerkt",
+      "puedeCubrir": "Kan deze posten dekken",
+      "puedeCubrirHint": "Naast de eigen post. Telt als invaller in de gezondheid van de invalpool.",
+      "sacar": "Uit de reserve halen",
+      "sacarMensaje": "Ontvangt geen aanbiedingen meer. Kan via de app opnieuw meedoen."
     },
     "subtitulo": "Valt iemand uit, dan vult je reserve de dienst in: het aanbod komt in de app binnen en wie als eerste accepteert, krijgt hem.",
     "tab": {

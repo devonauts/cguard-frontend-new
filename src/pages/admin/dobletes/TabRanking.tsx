@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Award, Crown, Medal, Trophy } from "lucide-react";
 
-import { NivelBadge, mesActual } from "./comun";
+import { NivelBadge, dinero, mesActual } from "./comun";
 
 import {
   Avatar,
@@ -19,7 +19,7 @@ import {
   SkeletonCards,
 } from "@/components/kit";
 import { Input } from "@/components/ui/input";
-import dobletesService from "@/lib/api/dobletesService";
+import dobletesService, { decimalesDe } from "@/lib/api/dobletesService";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
 
@@ -39,6 +39,7 @@ export default function TabRanking() {
   const s = ajustes.data?.settings;
   const filas = ranking.data?.rows ?? [];
   const respaldo = ranking.data?.reserveOfMonth ?? null;
+  const moneda = ranking.data?.currency || "USD";
   const nombreDelMes = (() => {
     try {
       return new Intl.DateTimeFormat(localeActual(), {
@@ -94,10 +95,9 @@ export default function TabRanking() {
               {respaldo.name || "—"}
             </p>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              {t("dobletes.ranking.respaldoResumen", {
-                defaultValue: "{{n}} dobletes cubiertos · {{puntos}} puntos",
-                n: respaldo.covered,
-                puntos: respaldo.points,
+              {t("dobletes.ranking.respaldoCumplidos", {
+                defaultValue: "{{n}} dobletes cumplidos este mes",
+                n: respaldo.confirmed,
               })}
             </p>
           </div>
@@ -118,7 +118,7 @@ export default function TabRanking() {
               nivel: t("dobletes.nivel.plata", "Plata"),
               regla: t("dobletes.ranking.reglaN", {
                 defaultValue: "{{n}} dobletes en el mes",
-                n: s.levels.rules.plata,
+                n: s.levels.rules.plata.minCovered,
               }),
             },
             {
@@ -127,7 +127,7 @@ export default function TabRanking() {
               regla: t("dobletes.ranking.reglaOro", {
                 defaultValue:
                   "{{n}} dobletes en el mes · ve las ofertas primero",
-                n: s.levels.rules.oro,
+                n: s.levels.rules.oro.minCovered,
               }),
             },
           ].map((x) => (
@@ -185,13 +185,10 @@ export default function TabRanking() {
                     {t("dobletes.ranking.cubiertos", "Cubiertos")}
                   </th>
                   <th className="cg-eyebrow py-2 text-right">
-                    {t("dobletes.ranking.aceptadas", "Aceptó / recibió")}
+                    {t("dobletes.ranking.cumplidos", "Cumplidos")}
                   </th>
                   <th className="cg-eyebrow py-2 text-right">
-                    {t("dobletes.ranking.respuesta", "Responde en")}
-                  </th>
-                  <th className="cg-eyebrow py-2 text-right">
-                    {t("dobletes.ranking.puntos", "Puntos")}
+                    {t("dobletes.ranking.bonos", "Bonos")}
                   </th>
                 </tr>
               </thead>
@@ -208,7 +205,7 @@ export default function TabRanking() {
                         color: i < 3 ? "var(--brand-text)" : "var(--ink-soft)",
                       }}
                     >
-                      {i + 1}
+                      {r.position}
                     </td>
                     <td className="py-2.5">
                       <span className="flex items-center gap-2">
@@ -226,21 +223,12 @@ export default function TabRanking() {
                       className="py-2.5 text-right tabular-nums"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      {r.accepted}/{r.offered}
-                    </td>
-                    <td
-                      className="py-2.5 text-right tabular-nums"
-                      style={{ color: "var(--ink-soft)" }}
-                    >
-                      {r.avgResponseMinutes == null
-                        ? "—"
-                        : t("dobletes.ofertas.minutos", {
-                            defaultValue: "{{n}} min",
-                            n: Math.round(r.avgResponseMinutes),
-                          })}
+                      {r.confirmed}
                     </td>
                     <td className="py-2.5 text-right font-semibold tabular-nums">
-                      {r.points}
+                      {r.bonusCents
+                        ? dinero(r.bonusCents, moneda, decimalesDe(moneda))
+                        : "—"}
                     </td>
                   </tr>
                 ))}

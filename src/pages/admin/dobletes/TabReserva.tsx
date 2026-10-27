@@ -6,14 +6,18 @@
  * one absence away from a night of phone calls. It is flagged, and one click
  * opens a campaign already aimed at the guards who could fill it.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   CalendarDays,
+  Check,
   HeartPulse,
   Megaphone,
+  Settings2,
   ShieldAlert,
+  UserMinus,
   Users,
 } from "lucide-react";
 
@@ -22,6 +26,7 @@ import {
   SLOTS,
   nombreDePuesto,
   useEtiquetasDobletes,
+  usePuedeGestionarDobletes,
 } from "./comun";
 
 import MeterBar from "@/components/charts/MeterBar";
@@ -36,9 +41,12 @@ import {
   SkeletonCards,
   StatCard,
   StatusBadge,
+  Modal,
 } from "@/components/kit";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import dobletesService, {
   type Bench,
+  type BenchStation,
   type ReserveMember,
 } from "@/lib/api/dobletesService";
 import { soloFecha } from "@/lib/horaDeLaEmpresa";
@@ -72,7 +80,7 @@ export default function TabReserva({
     <div className="space-y-4">
       <Salud banca={banca.data} onCampanaSugerida={onCampanaSugerida} />
       <Disponibilidad banca={banca.data} />
-      <Miembros miembros={banca.data.members} />
+      <Miembros miembros={banca.data.members} puestos={banca.data.stations} />
     </div>
   );
 }
@@ -282,10 +290,20 @@ function Disponibilidad({ banca }: { banca: Bench }) {
   );
 }
 
-function Miembros({ miembros }: { miembros: ReserveMember[] }) {
+const NIVEL_ORDEN = { oro: 3, plata: 2, bronce: 1 } as const;
+
+function Miembros({
+  miembros,
+  puestos,
+}: {
+  miembros: ReserveMember[];
+  puestos: BenchStation[];
+}) {
   const { t } = useTranslation();
   const et = useEtiquetasDobletes();
+  const puede = usePuedeGestionarDobletes();
   const [q, setQ] = useState("");
+  const [editando, setEditando] = useState<ReserveMember | null>(null);
   const filas = useMemo(() => {
     const n = q.trim().toLowerCase();
 
@@ -294,7 +312,9 @@ function Miembros({ miembros }: { miembros: ReserveMember[] }) {
       .sort(
         (a, b) =>
           Number(b.active) - Number(a.active) ||
-          b.coveredThisMonth - a.coveredThisMonth,
+          (b.coveredThisMonth ?? 0) - (a.coveredThisMonth ?? 0) ||
+          (b.level ? NIVEL_ORDEN[b.level] : 0) -
+            (a.level ? NIVEL_ORDEN[a.level] : 0),
       );
   }, [miembros, q]);
 
@@ -340,6 +360,18 @@ function Miembros({ miembros }: { miembros: ReserveMember[] }) {
           {filas.map((m) => (
             <ListRow
               key={m.userId}
+              actions={
+                puede ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditando(m)}
+                  >
+                    <Settings2 className="mr-1 size-3.5" />
+                    {t("dobletes.reserva.editar", "Puestos y estado")}
+                  </Button>
+                ) : undefined
+              }
               avatar={<Avatar name={m.name || "?"} size="sm" />}
               badges={
                 <>
@@ -352,15 +384,17 @@ function Miembros({ miembros }: { miembros: ReserveMember[] }) {
                 </>
               }
               meta={
-                <span
-                  className="text-xs tabular-nums"
-                  style={{ color: "var(--ink-soft)" }}
-                >
-                  {t("dobletes.reserva.cubiertosMes", {
-                    defaultValue: "{{n}} este mes",
-                    n: m.coveredThisMonth,
-                  })}
-                </span>
+                m.coveredThisMonth != null ? (
+                  <span
+                    className="text-xs tabular-nums"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t("dobletes.reserva.cubiertosMes", {
+                      defaultValue: "{{n}} este mes",
+                      n: m.coveredThisMonth,
+                    })}
+                  </span>
+                ) : undefined
               }
               subtitle={
                 <>
@@ -378,6 +412,128 @@ function Miembros({ miembros }: { miembros: ReserveMember[] }) {
           ))}
         </div>
       )}
+      <EditarMiembro
+        m={editando}
+        puestos={puestos}
+        onClose={() => setEditando(null)}
+      />
     </Section>
+  );
+}
+
+/**
+ * The office edits a member: the posts they can cover besides their own
+ * (they count as suplentes there), or takes them out of the reserve.
+ */
+function EditarMiembro({
+  m,
+  puestos,
+  onClose,
+}: {
+  m: ReserveMember | null;
+  puestos: BenchStation[];
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [sel, setSel] = useState<string[]>([]);
+  const [ocupado, setOcupado] = useState(false);
+
+  useEffect(() => {
+    if (m) setSel(m.qualifiedStationIds);
+  }, [m]);
+
+  const guardar = async (cuerpo: {
+    active?: boolean;
+    qualifiedStationIds?: string[];
+  }) => {
+    if (!m) return;
+    setOcupado(true);
+    try {
+      await dobletesService.saveReserve(m.userId, cuerpo);
+      toast.success(t("dobletes.reserva.guardado", "Reserva actualizada"));
+      void qc.invalidateQueries({ queryKey: ["dobletes", "bench"] });
+      onClose();
+    } catch {
+      /* shown by the API layer */
+    } finally {
+      setOcupado(false);
+    }
+  };
+
+  const sacar = async () => {
+    const ok = await confirmDialog({
+      title: t("dobletes.reserva.sacar", "Sacar de la reserva"),
+      message: t(
+        "dobletes.reserva.sacarMensaje",
+        "Deja de recibir ofertas. Puede volver a unirse desde su app.",
+      ),
+      confirmText: t("dobletes.reserva.sacar", "Sacar de la reserva"),
+      tone: "danger",
+    });
+
+    if (ok) await guardar({ active: false });
+  };
+
+  return (
+    <Modal
+      description={m?.name || undefined}
+      footer={
+        <>
+          <Button disabled={ocupado} variant="ghost" onClick={sacar}>
+            <UserMinus className="mr-1.5 size-4" />
+            {t("dobletes.reserva.sacar", "Sacar de la reserva")}
+          </Button>
+          <Button
+            disabled={ocupado}
+            variant="brand"
+            onClick={() => guardar({ qualifiedStationIds: sel })}
+          >
+            {t("dobletes.ajustes.guardar", "Guardar ajustes")}
+          </Button>
+        </>
+      }
+      icon={<Settings2 />}
+      open={!!m}
+      title={t("dobletes.reserva.editar", "Puestos y estado")}
+      onOpenChange={(o) => !o && onClose()}
+    >
+      <p className="text-sm font-medium">
+        {t("dobletes.reserva.puedeCubrir", "Puede cubrir estos puestos")}
+      </p>
+      <p className="mb-3 text-sm" style={{ color: "var(--ink-soft)" }}>
+        {t(
+          "dobletes.reserva.puedeCubrirHint",
+          "Además de su propio puesto. Cuenta como suplente en la salud de la banca.",
+        )}
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {puestos.map((p) => {
+          const on = sel.includes(p.stationId);
+
+          return (
+            <button
+              key={p.stationId}
+              aria-pressed={on}
+              className="cg-focus inline-flex h-7 items-center gap-1 rounded-full border px-2.5 text-xs font-medium"
+              style={{
+                borderColor: on ? "var(--brand-line)" : "var(--hairline)",
+                background: on ? "var(--brand-wash)" : "transparent",
+                color: on ? "var(--brand-text)" : "var(--ink-soft)",
+              }}
+              type="button"
+              onClick={() =>
+                setSel((x) =>
+                  on ? x.filter((v) => v !== p.stationId) : [...x, p.stationId],
+                )
+              }
+            >
+              {on && <Check className="size-3" />}
+              {nombreDePuesto(p)}
+            </button>
+          );
+        })}
+      </div>
+    </Modal>
   );
 }

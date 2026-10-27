@@ -39,6 +39,7 @@ import { useAgente } from "@/lib/agenteDeMarca";
 import dobletesService, {
   DEFAULT_POINTS,
   type DobletesSettings,
+  type LevelRule,
   type PointsSettings,
 } from "@/lib/api/dobletesService";
 
@@ -92,6 +93,21 @@ export default function TabAjustes() {
 
   const moneda = ajustes.data?.currency || "USD";
   const decimales = ajustes.data?.decimals ?? 2;
+  const regla = (nv: "plata" | "oro", x: Partial<LevelRule>) =>
+    setB((v) =>
+      v
+        ? {
+            ...v,
+            levels: {
+              ...v.levels,
+              rules: {
+                ...v.levels.rules,
+                [nv]: { ...v.levels.rules[nv], ...x },
+              },
+            },
+          }
+        : v,
+    );
   const cambiar = (x: Partial<DobletesSettings>) =>
     setB((v) => (v ? { ...v, ...x } : v));
   const ola = (i: number, n: number | null) =>
@@ -374,52 +390,51 @@ export default function TabAjustes() {
           }
         >
           {b.levels.enabled && (
-            <div className="mt-2 grid max-w-xl gap-x-6 sm:grid-cols-2">
-              <NumberRow
-                disabled={!puede}
-                label={t("dobletes.nivel.plata", "Plata")}
-                max={60}
-                min={1}
-                suffix={t("dobletes.ajustes.dobletes", "dobletes")}
-                value={b.levels.rules.plata}
-                onChange={(n) =>
-                  cambiar({
-                    levels: {
-                      ...b.levels,
-                      rules: { ...b.levels.rules, plata: n ?? 2 },
-                    },
-                  })
-                }
-              />
-              <NumberRow
-                disabled={!puede}
-                label={t("dobletes.nivel.oro", "Oro")}
-                max={60}
-                min={1}
-                suffix={t("dobletes.ajustes.dobletes", "dobletes")}
-                value={b.levels.rules.oro}
-                onChange={(n) =>
-                  cambiar({
-                    levels: {
-                      ...b.levels,
-                      rules: { ...b.levels.rules, oro: n ?? 5 },
-                    },
-                  })
-                }
-              />
+            <div className="mt-2 grid max-w-2xl gap-x-6 sm:grid-cols-2">
+              {(["plata", "oro"] as const).map((nv) => (
+                <div key={nv}>
+                  <p className="cg-eyebrow mt-3">
+                    {nv === "plata"
+                      ? t("dobletes.nivel.plata", "Plata")
+                      : t("dobletes.nivel.oro", "Oro")}
+                  </p>
+                  <NumberRow
+                    disabled={!puede}
+                    label={t("dobletes.ranking.cubiertos", "Cubiertos")}
+                    max={60}
+                    min={1}
+                    suffix={t("dobletes.ajustes.dobletes", "dobletes")}
+                    value={b.levels.rules[nv].minCovered}
+                    onChange={(n) => regla(nv, { minCovered: n ?? 1 })}
+                  />
+                  <NumberRow
+                    disabled={!puede}
+                    label={t(
+                      "dobletes.ajustes.asistencia",
+                      "Asistencia mínima",
+                    )}
+                    max={100}
+                    min={0}
+                    suffix="%"
+                    value={b.levels.rules[nv].minAttendancePct}
+                    onChange={(n) => regla(nv, { minAttendancePct: n ?? 90 })}
+                  />
+                </div>
+              ))}
             </div>
           )}
         </ToggleRow>
-        {b.levels.enabled && b.levels.rules.oro <= b.levels.rules.plata && (
-          <div className="py-3">
-            <InfoNote tone="warn">
-              {t(
-                "dobletes.ajustes.nivelesOrden",
-                "Oro debería pedir más dobletes que Plata.",
-              )}
-            </InfoNote>
-          </div>
-        )}
+        {b.levels.enabled &&
+          b.levels.rules.oro.minCovered <= b.levels.rules.plata.minCovered && (
+            <div className="py-3">
+              <InfoNote tone="warn">
+                {t(
+                  "dobletes.ajustes.nivelesOrden",
+                  "Oro debería pedir más dobletes que Plata.",
+                )}
+              </InfoNote>
+            </div>
+          )}
       </Section>
 
       <Section
@@ -500,6 +515,19 @@ export default function TabAjustes() {
                   })
             }
             label={t("dobletes.ajustes.cuandoFalte", "Cuando falte alguien")}
+          />
+          <ToggleRow
+            checked={b.whatsappWithVigiaPro}
+            disabled={!puede}
+            hint={t(
+              "dobletes.ajustes.whatsappHint",
+              "Por la cuenta de WhatsApp de tu empresa, dentro del tope diario de mensajes.",
+            )}
+            label={t(
+              "dobletes.ajustes.whatsapp",
+              "Ofrecer también por WhatsApp",
+            )}
+            onCheckedChange={(v) => cambiar({ whatsappWithVigiaPro: v })}
           />
           <ToggleRow
             checked={b.voiceAsLastChannel}

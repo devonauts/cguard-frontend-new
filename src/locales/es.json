@@ -7840,7 +7840,9 @@
       "vehicleOverstayLabel": "Vehículo con permanencia excedida",
       "vehicleOverstayHint": "Un vehículo lleva dentro más de los minutos que fijaste en Control vehicular › Reglas del puesto. Se avisa una sola vez por vehículo",
       "columnPush": "Teléfono",
-      "payslipPublishedLabel": "Rol de pago publicado"
+      "payslipPublishedLabel": "Rol de pago publicado",
+      "dobletesOfficeLabel": "Dobletes: cubierto o sin aceptar",
+      "dobletesOffersLabel": "Ofertas de dobletes (a los vigilantes)"
     },
     "festivos": {
       "loadError": "No se pudieron cargar los festivos.",
@@ -18935,7 +18937,8 @@
       "panicButton": "Botón de pánico",
       "ptoRequest": "Solicitudes de tiempo libre",
       "taskCompleted": "Tareas completadas",
-      "payslipPublished": "Rol de pago publicado"
+      "payslipPublished": "Rol de pago publicado",
+      "dobletesOffice": "Dobletes: cubierto o sin aceptar"
     },
     "hint": {
       "coverageUncovered": "Nadie llegó al puesto",
@@ -21100,7 +21103,10 @@
       "voluntario": "Por ofrecerse",
       "voluntarioHint": "Por unirse o marcarse disponible. De fábrica, {{n}}.",
       "voz": "Llamada como último recurso",
-      "vozHint": "Si después de todas las oleadas nadie aceptó, {{agente}} llama a los siguientes de la lista y aceptan marcando 1. Se cobra por minuto del saldo de comunicaciones."
+      "vozHint": "Si después de todas las oleadas nadie aceptó, {{agente}} llama a los siguientes de la lista y aceptan marcando 1. Se cobra por minuto del saldo de comunicaciones.",
+      "asistencia": "Asistencia mínima",
+      "whatsapp": "Ofrecer también por WhatsApp",
+      "whatsappHint": "Por la cuenta de WhatsApp de tu empresa, dentro del tope diario de mensajes."
     },
     "campanas": {
       "accion": "Qué hace el botón",
@@ -21178,7 +21184,8 @@
       "vistaPrevia": "Así lo verán",
       "vistas": "Vistas",
       "volver": "Volver a mostrar",
-      "volverHint": "Si la cierra, cuántos días después puede volver a verla."
+      "volverHint": "Si la cierra, cuántos días después puede volver a verla.",
+      "conversion": "Conversión"
     },
     "canal": {
       "app": "App",
@@ -21286,7 +21293,9 @@
       "todas": "Todas",
       "vacio": "Todavía no se ha ofrecido ningún doblete",
       "vacioActivas": "Ninguna búsqueda en curso",
-      "vacioDesc": "Cuando falte alguien, ofrece el turno desde aquí o desde Cobertura en vivo. Verás cada oferta en tiempo real."
+      "vacioDesc": "Cuando falte alguien, ofrece el turno desde aquí o desde Cobertura en vivo. Verás cada oferta en tiempo real.",
+      "retirada": "Oferta retirada",
+      "retirar": "Retirar"
     },
     "origen": {
       "despachador": "Despachador automático",
@@ -21317,20 +21326,19 @@
       }
     },
     "ranking": {
-      "aceptadas": "Aceptó / recibió",
       "apagado": "El ranking está apagado: tus vigilantes no lo ven en la app. Aquí sigue disponible para la oficina.",
       "cubiertos": "Cubiertos",
       "mes": "Mes",
-      "puntos": "Puntos",
       "reglaBronce": "Estar en la reserva",
       "reglaN": "{{n}} dobletes en el mes",
       "reglaOro": "{{n}} dobletes en el mes · ve las ofertas primero",
       "respaldoDelMes": "Respaldo del mes",
-      "respaldoResumen": "{{n}} dobletes cubiertos · {{puntos}} puntos",
-      "respuesta": "Responde en",
       "titulo": "Quién más cubrió",
       "vacio": "Nadie ha cubierto dobletes este mes",
-      "vacioDesc": "Cuando alguien acepte un doblete, aparece aquí con sus puntos."
+      "vacioDesc": "Cuando alguien acepte un doblete, aparece aquí con sus puntos.",
+      "bonos": "Bonos",
+      "cumplidos": "Cumplidos",
+      "respaldoCumplidos": "{{n}} dobletes cumplidos este mes"
     },
     "reserva": {
       "actualizada": "actualizada el {{fecha}}",
@@ -21355,7 +21363,13 @@
       "sinPuestos": "Todavía no hay puestos configurados.",
       "suplentes": "{{n}} suplente(s)",
       "vacio": "Nadie en la reserva todavía",
-      "vacioDesc": "Los vigilantes se unen desde su app. Una campaña es la forma más rápida de llenar la banca."
+      "vacioDesc": "Los vigilantes se unen desde su app. Una campaña es la forma más rápida de llenar la banca.",
+      "editar": "Puestos y estado",
+      "guardado": "Reserva actualizada",
+      "puedeCubrir": "Puede cubrir estos puestos",
+      "puedeCubrirHint": "Además de su propio puesto. Cuenta como suplente en la salud de la banca.",
+      "sacar": "Sacar de la reserva",
+      "sacarMensaje": "Deja de recibir ofertas. Puede volver a unirse desde su app."
     },
     "subtitulo": "Cuando falta alguien, tu reserva cubre el turno: la oferta llega a la app y el primero que acepta se lo queda.",
     "tab": {

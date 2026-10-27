@@ -238,11 +238,10 @@ function crearEstado() {
   const members = PERSONAS.slice(0, 7).map((p, i) => ({
     userId: p.id,
     name: p.nombre,
-    active: i !== 5,
+    active: true,
     optedInAt: haceMin(60 * 24 * (40 - i * 4)),
     level: p.nivel,
     coveredThisMonth: [7, 6, 3, 2, 1, 0, 1][i] ?? 0,
-    pointsThisMonth: [12, 12, 12, 8, 4, 0, 4][i] ?? 0,
     weekly:
       i % 3 === 0
         ? disp([1, 2, 3, 4, 5], ["D", "T"])
@@ -284,7 +283,8 @@ function crearEstado() {
         seen: 168,
         cta: 41,
         converted: 12,
-        coveredShifts: 9,
+        coveredShifts: null,
+        conversionPct: 5.6,
       },
     },
     {
@@ -434,6 +434,31 @@ export function crearApiDeDemo(): DobletesApi {
 
       return s;
     },
+    async withdraw(sid, offerId) {
+      await espera();
+      const s = e.searches.find((x) => x.id === sid)!;
+
+      s.offers = (s.offers ?? []).map((o) =>
+        o.id === offerId ? { ...o, status: "withdrawn" } : o,
+      );
+
+      return s;
+    },
+    async saveReserve(userId, body) {
+      await espera();
+      e.members = e.members.map((m) =>
+        m.userId === userId
+          ? {
+              ...m,
+              ...(body.qualifiedStationIds
+                ? { qualifiedStationIds: body.qualifiedStationIds }
+                : {}),
+            }
+          : m,
+      );
+      if (body.active === false)
+        e.members = e.members.filter((m) => m.userId !== userId);
+    },
     async cancel(sid) {
       await espera();
       const s = e.searches.find((x) => x.id === sid)!;
@@ -453,7 +478,7 @@ export function crearApiDeDemo(): DobletesApi {
         fullName: p.nombre,
         reason:
           i < 7 ? "Disponible en la reserva para esa franja" : "Libre ese día",
-        score: 100 - i * 7,
+        points: 100 - i * 7,
         hoursThisWeek: p.horas,
         inReserve: i < 7,
         available: true,
@@ -479,20 +504,34 @@ export function crearApiDeDemo(): DobletesApi {
     async ranking(month) {
       await espera();
       const rows = e.members
+        .filter((m) => (m.coveredThisMonth ?? 0) > 0)
+        .sort((a, b) => (b.coveredThisMonth ?? 0) - (a.coveredThisMonth ?? 0))
         .map((m, i) => ({
           userId: m.userId,
           name: m.name,
-          covered: m.coveredThisMonth,
-          points: m.pointsThisMonth ?? 0,
-          offered: m.coveredThisMonth + 3 + (i % 3),
-          accepted: m.coveredThisMonth,
-          avgResponseMinutes: m.coveredThisMonth ? 2 + i * 1.5 : null,
+          covered: m.coveredThisMonth ?? 0,
+          confirmed: Math.max(0, (m.coveredThisMonth ?? 0) - (i % 2)),
+          bonusCents: (m.coveredThisMonth ?? 0) * 1500,
+          inReserve: true,
           level: m.level,
-        }))
-        .filter((r) => r.covered > 0)
-        .sort((a, b) => b.covered - a.covered);
+          position: i + 1,
+        }));
+      const r = rows[0];
 
-      return { month, rows, reserveOfMonth: rows[0] ?? null };
+      return {
+        month,
+        currency: "USD",
+        rankingEnabled: true,
+        rows,
+        reserveOfMonth: r
+          ? {
+              userId: r.userId,
+              name: r.name,
+              confirmed: r.confirmed,
+              level: r.level,
+            }
+          : null,
+      };
     },
     async campaigns() {
       await espera();

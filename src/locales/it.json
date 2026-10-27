@@ -8343,7 +8343,9 @@
       "vehicleOverstayLabel": "Veicolo con permanenza superata",
       "vehicleOverstayHint": "Un veicolo è dentro da più minuti di quelli che hai fissato in Controllo veicoli › Regole del posto. Si avvisa una sola volta per veicolo",
       "columnPush": "Telefono",
-      "payslipPublishedLabel": "Busta paga pubblicata"
+      "payslipPublishedLabel": "Busta paga pubblicata",
+      "dobletesOfficeLabel": "Doppi turni: coperto o nessuno ha accettato",
+      "dobletesOffersLabel": "Offerte di doppi turni (alle guardie)"
     },
     "festivos": {
       "loadError": "Impossibile caricare le festività.",
@@ -18935,7 +18937,8 @@
       "panicButton": "Pulsante antipanico",
       "ptoRequest": "Richieste di permesso",
       "taskCompleted": "Attività completate",
-      "payslipPublished": "Busta paga pubblicata"
+      "payslipPublished": "Busta paga pubblicata",
+      "dobletesOffice": "Doppi turni: coperto o nessuno ha accettato"
     },
     "hint": {
       "coverageUncovered": "Nessuno è arrivato al posto",
@@ -21100,7 +21103,10 @@
       "voluntario": "Per la disponibilità",
       "voluntarioHint": "Per entrare nella riserva o segnarsi disponibile. Predefinito: {{n}}.",
       "voz": "Chiamata come ultima risorsa",
-      "vozHint": "Se dopo tutte le ondate nessuno ha accettato, {{agente}} chiama i successivi della lista, che accettano premendo 1. Si paga al minuto dal credito comunicazioni."
+      "vozHint": "Se dopo tutte le ondate nessuno ha accettato, {{agente}} chiama i successivi della lista, che accettano premendo 1. Si paga al minuto dal credito comunicazioni.",
+      "asistencia": "Presenza minima",
+      "whatsapp": "Offri anche su WhatsApp",
+      "whatsappHint": "Tramite l'account WhatsApp della tua azienda, entro il limite giornaliero di messaggi."
     },
     "campanas": {
       "accion": "Cosa fa il pulsante",
@@ -21178,7 +21184,8 @@
       "vistaPrevia": "Ecco come la vedranno",
       "vistas": "Visualizzazioni",
       "volver": "Mostra di nuovo",
-      "volverHint": "Se la chiude, dopo quanti giorni può rivederla."
+      "volverHint": "Se la chiude, dopo quanti giorni può rivederla.",
+      "conversion": "Conversione"
     },
     "canal": {
       "app": "App",
@@ -21286,7 +21293,9 @@
       "todas": "Tutte",
       "vacio": "Non è ancora stato offerto nessun doppio turno",
       "vacioActivas": "Nessuna ricerca in corso",
-      "vacioDesc": "Quando manca qualcuno, offri il turno da qui o da Copertura in diretta. Vedrai ogni offerta in tempo reale."
+      "vacioDesc": "Quando manca qualcuno, offri il turno da qui o da Copertura in diretta. Vedrai ogni offerta in tempo reale.",
+      "retirada": "Offerta ritirata",
+      "retirar": "Ritira"
     },
     "origen": {
       "despachador": "Smistamento automatico",
@@ -21317,20 +21326,19 @@
       }
     },
     "ranking": {
-      "aceptadas": "Accettate / ricevute",
       "apagado": "La classifica è disattivata: le tue guardie non la vedono nell'app. Qui resta disponibile per l'ufficio.",
       "cubiertos": "Coperti",
       "mes": "Mese",
-      "puntos": "Punti",
       "reglaBronce": "Far parte della riserva",
       "reglaN": "{{n}} doppi turni nel mese",
       "reglaOro": "{{n}} doppi turni nel mese · vede le offerte per primo",
       "respaldoDelMes": "Rinforzo del mese",
-      "respaldoResumen": "{{n}} doppi turni coperti · {{puntos}} punti",
-      "respuesta": "Risponde in",
       "titulo": "Chi ha coperto di più",
       "vacio": "Nessuno ha coperto doppi turni questo mese",
-      "vacioDesc": "Quando qualcuno accetta un doppio turno, compare qui con i suoi punti."
+      "vacioDesc": "Quando qualcuno accetta un doppio turno, compare qui con i suoi punti.",
+      "bonos": "Bonus",
+      "cumplidos": "Svolti",
+      "respaldoCumplidos": "{{n}} doppi turni svolti questo mese"
     },
     "reserva": {
       "actualizada": "aggiornata il {{fecha}}",
@@ -21355,7 +21363,13 @@
       "sinPuestos": "Non ci sono ancora postazioni configurate.",
       "suplentes": "{{n}} sostituto/i",
       "vacio": "Ancora nessuno nella riserva",
-      "vacioDesc": "Le guardie entrano nella riserva dalla loro app. Una campagna è il modo più rapido per riempirla."
+      "vacioDesc": "Le guardie entrano nella riserva dalla loro app. Una campagna è il modo più rapido per riempirla.",
+      "editar": "Postazioni e stato",
+      "guardado": "Riserva aggiornata",
+      "puedeCubrir": "Può coprire queste postazioni",
+      "puedeCubrirHint": "Oltre alla propria postazione. Conta come sostituto nella salute della riserva.",
+      "sacar": "Togli dalla riserva",
+      "sacarMensaje": "Non riceve più offerte. Può rientrare dalla sua app."
     },
     "subtitulo": "Quando manca qualcuno, la tua riserva copre il turno: l'offerta arriva nell'app e il primo che accetta se lo prende.",
     "tab": {

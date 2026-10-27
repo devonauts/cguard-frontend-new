@@ -7840,7 +7840,9 @@
       "vehicleOverstayLabel": "Vehicle staying too long",
       "vehicleOverstayHint": "A vehicle has been inside longer than the minutes you set in Vehicle control › Post rules. Notified once per vehicle",
       "columnPush": "Phone",
-      "payslipPublishedLabel": "Payslip published"
+      "payslipPublishedLabel": "Payslip published",
+      "dobletesOfficeLabel": "Double shifts: covered or nobody accepted",
+      "dobletesOffersLabel": "Double shift offers (to guards)"
     },
     "festivos": {
       "loadError": "The holidays couldn't be loaded.",
@@ -18935,7 +18937,8 @@
       "panicButton": "Panic button",
       "ptoRequest": "Time-off requests",
       "taskCompleted": "Tasks completed",
-      "payslipPublished": "Payslip published"
+      "payslipPublished": "Payslip published",
+      "dobletesOffice": "Double shifts: covered or nobody accepted"
     },
     "hint": {
       "coverageUncovered": "Nobody showed up at the post",
@@ -21100,7 +21103,10 @@
       "voluntario": "For volunteering",
       "voluntarioHint": "For joining or marking themselves available. Default: {{n}}.",
       "voz": "Phone call as a last resort",
-      "vozHint": "If no one has accepted after all the waves, {{agente}} calls the next people on the list, and they accept by pressing 1. Billed per minute from your communications balance."
+      "vozHint": "If no one has accepted after all the waves, {{agente}} calls the next people on the list, and they accept by pressing 1. Billed per minute from your communications balance.",
+      "asistencia": "Minimum attendance",
+      "whatsapp": "Also offer by WhatsApp",
+      "whatsappHint": "Through your company's WhatsApp account, within the daily message cap."
     },
     "campanas": {
       "accion": "What the button does",
@@ -21178,7 +21184,8 @@
       "vistaPrevia": "What they'll see",
       "vistas": "Views",
       "volver": "Show again after",
-      "volverHint": "If they close it, how many days until they can see it again."
+      "volverHint": "If they close it, how many days until they can see it again.",
+      "conversion": "Conversion"
     },
     "canal": {
       "app": "App",
@@ -21286,7 +21293,9 @@
       "todas": "All",
       "vacio": "No double shifts offered yet",
       "vacioActivas": "No searches in progress",
-      "vacioDesc": "When someone doesn't show, offer the shift from here or from Live coverage. You'll see every offer in real time."
+      "vacioDesc": "When someone doesn't show, offer the shift from here or from Live coverage. You'll see every offer in real time.",
+      "retirada": "Offer withdrawn",
+      "retirar": "Withdraw"
     },
     "origen": {
       "despachador": "Auto-dispatcher",
@@ -21317,20 +21326,19 @@
       }
     },
     "ranking": {
-      "aceptadas": "Accepted / received",
       "apagado": "The ranking is turned off: your guards don't see it in the app. It's still available here for the office.",
       "cubiertos": "Covered",
       "mes": "Month",
-      "puntos": "Points",
       "reglaBronce": "Be in the reserve",
       "reglaN": "{{n}} double shifts in the month",
       "reglaOro": "{{n}} double shifts in the month · sees offers first",
       "respaldoDelMes": "Backup of the month",
-      "respaldoResumen": "{{n}} double shifts covered · {{puntos}} points",
-      "respuesta": "Responds in",
       "titulo": "Who covered the most",
       "vacio": "No one has covered a double shift this month",
-      "vacioDesc": "When someone accepts a double shift, they show up here with their points."
+      "vacioDesc": "When someone accepts a double shift, they show up here with their points.",
+      "bonos": "Bonuses",
+      "cumplidos": "Worked",
+      "respaldoCumplidos": "{{n}} double shifts worked this month"
     },
     "reserva": {
       "actualizada": "updated {{fecha}}",
@@ -21355,7 +21363,13 @@
       "sinPuestos": "No posts set up yet.",
       "suplentes": "{{n}} backup(s)",
       "vacio": "No one in the reserve yet",
-      "vacioDesc": "Guards join from their app. A campaign is the fastest way to fill the bench."
+      "vacioDesc": "Guards join from their app. A campaign is the fastest way to fill the bench.",
+      "editar": "Posts and status",
+      "guardado": "Reserve updated",
+      "puedeCubrir": "Can cover these posts",
+      "puedeCubrirHint": "Besides their own post. Counts as a backup in bench health.",
+      "sacar": "Remove from the reserve",
+      "sacarMensaje": "They stop receiving offers. They can rejoin from their app."
     },
     "subtitulo": "When someone doesn't show, your reserve covers the shift: the offer goes to the app and the first to accept gets it.",
     "tab": {

@@ -8343,7 +8343,9 @@
       "vehicleOverstayLabel": "Fahrzeug überschreitet Aufenthaltsdauer",
       "vehicleOverstayHint": "Ein Fahrzeug befindet sich länger auf dem Gelände als die unter Fahrzeugkontrolle › Objektregeln festgelegten Minuten. Es wird nur einmal pro Fahrzeug benachrichtigt",
       "columnPush": "Telefon",
-      "payslipPublishedLabel": "Lohnabrechnung veröffentlicht"
+      "payslipPublishedLabel": "Lohnabrechnung veröffentlicht",
+      "dobletesOfficeLabel": "Doppelschichten: besetzt oder niemand angenommen",
+      "dobletesOffersLabel": "Doppelschicht-Angebote (an Sicherheitskräfte)"
     },
     "festivos": {
       "loadError": "Die Feiertage konnten nicht geladen werden.",
@@ -18935,7 +18937,8 @@
       "panicButton": "Notruftaste",
       "ptoRequest": "Abwesenheitsanträge",
       "taskCompleted": "Erledigte Aufgaben",
-      "payslipPublished": "Lohnabrechnung veröffentlicht"
+      "payslipPublished": "Lohnabrechnung veröffentlicht",
+      "dobletesOffice": "Doppelschichten: besetzt oder niemand angenommen"
     },
     "hint": {
       "coverageUncovered": "Niemand ist am Objekt erschienen",
@@ -21100,7 +21103,10 @@
       "voluntario": "Für Bereitschaft",
       "voluntarioHint": "Für den Beitritt oder eine Verfügbarkeitsmeldung. Standard: {{n}}.",
       "voz": "Anruf als letztes Mittel",
-      "vozHint": "Hat nach allen Wellen niemand angenommen, ruft {{agente}} die Nächsten auf der Liste an; angenommen wird mit der Taste 1. Abgerechnet wird pro Minute über das Kommunikationsguthaben."
+      "vozHint": "Hat nach allen Wellen niemand angenommen, ruft {{agente}} die Nächsten auf der Liste an; angenommen wird mit der Taste 1. Abgerechnet wird pro Minute über das Kommunikationsguthaben.",
+      "asistencia": "Mindestanwesenheit",
+      "whatsapp": "Auch per WhatsApp anbieten",
+      "whatsappHint": "Über das WhatsApp-Konto Ihres Unternehmens, innerhalb des täglichen Nachrichtenlimits."
     },
     "campanas": {
       "accion": "Funktion des Buttons",
@@ -21178,7 +21184,8 @@
       "vistaPrevia": "So sieht es aus",
       "vistas": "Aufrufe",
       "volver": "Erneut anzeigen",
-      "volverHint": "Nach wie vielen Tagen sie nach dem Schließen wieder erscheinen kann."
+      "volverHint": "Nach wie vielen Tagen sie nach dem Schließen wieder erscheinen kann.",
+      "conversion": "Konversion"
     },
     "canal": {
       "app": "App",
@@ -21286,7 +21293,9 @@
       "todas": "Alle",
       "vacio": "Noch keine Doppelschicht angeboten",
       "vacioActivas": "Keine laufende Suche",
-      "vacioDesc": "Fällt jemand aus, kann die Schicht hier oder in Besetzung live angeboten werden. Jedes Angebot ist in Echtzeit sichtbar."
+      "vacioDesc": "Fällt jemand aus, kann die Schicht hier oder in Besetzung live angeboten werden. Jedes Angebot ist in Echtzeit sichtbar.",
+      "retirada": "Angebot zurückgezogen",
+      "retirar": "Zurückziehen"
     },
     "origen": {
       "despachador": "Automatische Disposition",
@@ -21317,20 +21326,19 @@
       }
     },
     "ranking": {
-      "aceptadas": "Angenommen / erhalten",
       "apagado": "Die Rangliste ist ausgeschaltet: Die Sicherheitskräfte sehen sie nicht in der App. Hier bleibt sie für das Büro verfügbar.",
       "cubiertos": "Übernommen",
       "mes": "Monat",
-      "puntos": "Punkte",
       "reglaBronce": "In der Reserve sein",
       "reglaN": "{{n}} Doppelschichten im Monat",
       "reglaOro": "{{n}} Doppelschichten im Monat · sieht Angebote zuerst",
       "respaldoDelMes": "Einspringer des Monats",
-      "respaldoResumen": "{{n}} Doppelschichten übernommen · {{puntos}} Punkte",
-      "respuesta": "Antwortzeit",
       "titulo": "Wer am meisten übernommen hat",
       "vacio": "Diesen Monat hat noch niemand eine Doppelschicht übernommen",
-      "vacioDesc": "Sobald jemand eine Doppelschicht annimmt, erscheint die Person hier mit ihren Punkten."
+      "vacioDesc": "Sobald jemand eine Doppelschicht annimmt, erscheint die Person hier mit ihren Punkten.",
+      "bonos": "Boni",
+      "cumplidos": "Geleistet",
+      "respaldoCumplidos": "{{n}} Doppelschichten in diesem Monat geleistet"
     },
     "reserva": {
       "actualizada": "aktualisiert am {{fecha}}",
@@ -21355,7 +21363,13 @@
       "sinPuestos": "Noch keine Posten eingerichtet.",
       "suplentes": "Ersatzkräfte: {{n}}",
       "vacio": "Noch niemand in der Reserve",
-      "vacioDesc": "Sicherheitskräfte treten über ihre App bei. Eine Kampagne füllt die Ersatzbank am schnellsten."
+      "vacioDesc": "Sicherheitskräfte treten über ihre App bei. Eine Kampagne füllt die Ersatzbank am schnellsten.",
+      "editar": "Posten und Status",
+      "guardado": "Reserve aktualisiert",
+      "puedeCubrir": "Kann diese Posten übernehmen",
+      "puedeCubrirHint": "Zusätzlich zum eigenen Posten. Zählt als Ersatzkraft für die Gesundheit der Ersatzbank.",
+      "sacar": "Aus der Reserve nehmen",
+      "sacarMensaje": "Erhält keine Angebote mehr. Kann über die App wieder beitreten."
     },
     "subtitulo": "Fällt jemand aus, übernimmt die Reserve die Schicht: Das Angebot kommt in der App an, und wer zuerst annimmt, bekommt sie.",
     "tab": {

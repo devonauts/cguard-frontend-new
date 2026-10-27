@@ -13,6 +13,7 @@ import {
   Megaphone,
   Pause,
   Pencil,
+  Percent,
   Play,
   Plus,
   ShieldCheck,
@@ -198,7 +199,7 @@ function TarjetaDeCampana({
     seen: 0,
     cta: 0,
     converted: 0,
-    coveredShifts: 0,
+    coveredShifts: null,
   };
 
   const alternar = async () => {
@@ -258,11 +259,24 @@ function TarjetaDeCampana({
       valor: s.converted,
       etiqueta: t("dobletes.campanas.altas", "Altas"),
     },
-    {
-      icono: <ShieldCheck />,
-      valor: s.coveredShifts,
-      etiqueta: t("dobletes.campanas.turnosCubiertos", "Turnos cubiertos"),
-    },
+    // «Turnos cubiertos» when the server counts them; otherwise how many of
+    // those who saw it joined.
+    s.coveredShifts != null
+      ? {
+          icono: <ShieldCheck />,
+          valor: s.coveredShifts,
+          etiqueta: t("dobletes.campanas.turnosCubiertos", "Turnos cubiertos"),
+        }
+      : {
+          icono: <Percent />,
+          valor:
+            s.conversionPct != null
+              ? `${Math.round(s.conversionPct)} %`
+              : s.shown
+                ? `${Math.round((s.converted / s.shown) * 100)} %`
+                : "—",
+          etiqueta: t("dobletes.campanas.conversion", "Conversión"),
+        },
   ];
 
   return (
