@@ -43,6 +43,7 @@ import {
   ventanaDeRelevos,
 } from "@/lib/eventos";
 import { EditorDeRelevos } from "@/components/stations/RelevosDelEvento";
+import { etiquetaDeHorario, resumenDeHorario } from "@/lib/jornadasDePlazas";
 interface StationDetail extends Station {
   name?: string;
   latitude?: number | string | null;
@@ -600,6 +601,9 @@ export default function StationOverview({
     const turnoInfo = TURNO_LABELS.find(
       (o) => o.key === scheduleTypeToTurno(station.scheduleType),
     );
+    // El horario REAL del puesto: horas y ventana propias («8h Diurno ·
+    // 09:00–17:00»); el molde de 12 h sólo si el puesto no dice nada.
+    const resumen = resumenDeHorario(station.scheduleType, station);
     const fijos =
       station.scheduleType === "24h"
         ? 2
@@ -741,21 +745,25 @@ export default function StationOverview({
           <StatCard
             accent="brand"
             hint={
-              turnoInfo
-                ? turnoInfo.subKey
-                  ? t(turnoInfo.subKey, turnoInfo.sub)
-                  : turnoInfo.sub
-                : t(
-                    "station.overview.useEditToAssign",
-                    "Usa Editar para asignarlo",
-                  )
+              resumen.ventana
+                ? resumen.ventana
+                : turnoInfo
+                  ? turnoInfo.subKey
+                    ? t(turnoInfo.subKey, turnoInfo.sub)
+                    : turnoInfo.sub
+                  : t(
+                      "station.overview.useEditToAssign",
+                      "Usa Editar para asignarlo",
+                    )
             }
             icon={<Clock />}
             label={t("comun.horario")}
             value={
-              turnoInfo
-                ? t(turnoInfo.labelKey, turnoInfo.label)
-                : t("station.overview.notConfigured", "Sin configurar")
+              resumen.clave
+                ? etiquetaDeHorario(t, resumen)
+                : turnoInfo
+                  ? t(turnoInfo.labelKey, turnoInfo.label)
+                  : t("station.overview.notConfigured", "Sin configurar")
             }
           />
           )}
@@ -1104,12 +1112,31 @@ export default function StationOverview({
                 type="button"
                 onClick={() => setTurno(o.key)}
               >
-                <div className="text-xs font-semibold text-foreground">
-                  {t(o.labelKey, o.label)}
-                </div>
-                <div className="text-[10px] text-muted-foreground">
-                  {o.subKey ? t(o.subKey, o.sub) : o.sub}
-                </div>
+                {/* El tipo que YA tiene el puesto enseña su horario real
+                    («8h Diurno · 09:00–17:00»); los demás, el molde. */}
+                {(() => {
+                  const propio =
+                    o.key === scheduleTypeToTurno(station.scheduleType)
+                      ? resumenDeHorario(station.scheduleType, station)
+                      : null;
+
+                  return (
+                    <>
+                      <div className="text-xs font-semibold text-foreground">
+                        {propio?.ventana
+                          ? etiquetaDeHorario(t, propio)
+                          : t(o.labelKey, o.label)}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">
+                        {propio?.ventana
+                          ? propio.ventana
+                          : o.subKey
+                            ? t(o.subKey, o.sub)
+                            : o.sub}
+                      </div>
+                    </>
+                  );
+                })()}
               </button>
             ))}
           </div>

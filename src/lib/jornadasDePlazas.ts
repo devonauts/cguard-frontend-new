@@ -190,13 +190,52 @@ export function jornadasDePlazas(
   return jornadas.sort((a, b) => a.startTime.localeCompare(b.startTime));
 }
 
+/** La ventana propia del puesto (`startingTimeInDay` / `finishTimeInDay`). */
+export interface VentanaDePuesto {
+  startingTimeInDay?: string | null;
+  finishTimeInDay?: string | null;
+}
+
+/** `HH:MM` normalizado (acepta `9:00` y `09:00:00`), o null si no es una hora. */
+function horaCorta(hhmm: unknown): string | null {
+  if (typeof hhmm !== "string") return null;
+  const m = hhmm.trim().match(/^(\d{1,2}):(\d{2})/);
+  if (!m || Number(m[1]) > 23 || Number(m[2]) > 59) return null;
+  return `${m[1].padStart(2, "0")}:${m[2]}`;
+}
+
+/** La ventana del puesto si trae dos horas legibles y distintas; si no, null. */
+export function ventanaDelPuesto(
+  v?: VentanaDePuesto | null,
+): { inicio: string; fin: string } | null {
+  const inicio = horaCorta(v?.startingTimeInDay);
+  const fin = horaCorta(v?.finishTimeInDay);
+  if (!inicio || !fin || inicio === fin) return null;
+  return { inicio, fin };
+}
+
+/** Etiqueta de una ventana por su HORA de inicio: mismo umbral 18/6 que el resto. */
+function tipoDeVentana(inicio: string, fin: string): string {
+  const largo = minutosDeVentana(inicio, fin);
+  const hora = Math.floor((minutosDeHora(inicio) ?? 0) / 60);
+  return largo >= 23 * 60 ? "24 horas" : hora >= 18 || hora < 6 ? "Nocturno" : "Diurno";
+}
+
 /**
  * Las jornadas que un puesto SIN plazas debería tener, según su tipo de
  * horario. Para que una estación recién creada enseñe su cobertura prevista en
  * vez de un hueco.
+ *
+ * ── LA HORA LA PONE LA EMPRESA ──────────────────────────────────────────────
+ * Si el puesto tiene su propia ventana (`startingTimeInDay`/`finishTimeInDay`),
+ * ésa es la jornada: un «12h-day» de 09:00 a 17:00 es una jornada diurna de
+ * 09:00 a 17:00, no «07:00–19:00». El molde de las 07:00 sólo vale cuando el
+ * puesto no dice nada (GTR, 2026-10-27: la ficha de «Oficina GTR» decía
+ * «12h Diurno 07:00–19:00» encima de su propio 09:00–17:00).
  */
 export function jornadasPorTipo(
   scheduleType?: string | null,
+  ventana?: VentanaDePuesto | null,
 ): JornadaDePuesto[] {
   const j = (
     tipo: string,
@@ -209,9 +248,115 @@ export function jornadasPorTipo(
     guardsCount: 1,
     days: TODOS_LOS_DIAS,
   });
+  const propia = scheduleType ? ventanaDelPuesto(ventana) : null;
+
+  if (propia) {
+    const tipo = tipoDeVentana(propia.inicio, propia.fin);
+
+    // Un 24 h con ventana de medio día son sus dos mitades: la ventana y su
+    // complemento (la rotación lleva a cada plaza a la suya).
+    if (scheduleType === "24h" && minutosDeVentana(propia.inicio, propia.fin) < 23 * 60) {
+      return [
+        j(tipo, propia.inicio, propia.fin),
+        j(tipo === "Nocturno" ? "Diurno" : "Nocturno", propia.fin, propia.inicio),
+      ].sort((a, b) => a.startTime.localeCompare(b.startTime));
+    }
+
+    return [j(tipo, propia.inicio, propia.fin)];
+  }
   if (scheduleType === "24h")
     return [j("Diurno", "07:00", "19:00"), j("Nocturno", "19:00", "07:00")];
   if (scheduleType === "12h-day") return [j("Diurno", "07:00", "19:00")];
   if (scheduleType === "12h-night") return [j("Nocturno", "19:00", "07:00")];
   return [];
+}
+
+/* ── EL RESUMEN QUE PINTAN LOS BADGES ──────────────────────────────────────
+   «8h Diurno · 09:00–17:00»: la clave (día/noche/24h/a medida), las horas que
+   dura y la ventana. Las horas y la ventana salen del puesto; sólo sin ventana
+   se cae al molde de 12 h del tipo. Una sola función para la ficha, la lista
+   de estaciones y cualquier otro sitio: ésta era la aritmética que se repetía. */
+export interface ResumenDeHorario {
+  clave: "diurno" | "nocturno" | "24h" | "custom" | null;
+  /** Horas de la jornada (a media hora); null si no se saben. */
+  horas: number | null;
+  /** «09:00–17:00», o null sin ventana propia. */
+  ventana: string | null;
+}
+
+export function resumenDeHorario(
+  scheduleType?: string | null,
+  ventana?: VentanaDePuesto | null,
+): ResumenDeHorario {
+  const base: ResumenDeHorario["clave"] =
+    scheduleType === "12h-day"
+      ? "diurno"
+      : scheduleType === "12h-night"
+        ? "nocturno"
+        : scheduleType === "24h"
+          ? "24h"
+          : scheduleType === "custom"
+            ? "custom"
+            : null;
+
+  if (!base) return { clave: null, horas: null, ventana: null };
+  const propia = ventanaDelPuesto(ventana);
+
+  if (!propia) {
+    return {
+      clave: base,
+      horas: base === "24h" ? 24 : base === "custom" ? null : 12,
+      ventana: null,
+    };
+  }
+  const largo = minutosDeVentana(propia.inicio, propia.fin);
+  const texto = `${propia.inicio}–${propia.fin}`;
+
+  if (base === "24h") {
+    // Dos mitades: se enseñan las dos ventanas; la jornada del puesto son 24 h.
+    return {
+      clave: "24h",
+      horas: 24,
+      ventana: largo >= 23 * 60 ? texto : `${texto} · ${propia.fin}–${propia.inicio}`,
+    };
+  }
+  const horas = Math.round((largo / 60) * 2) / 2;
+
+  if (base === "custom") return { clave: "custom", horas, ventana: texto };
+  const tipo = tipoDeVentana(propia.inicio, propia.fin);
+
+  return {
+    clave: tipo === "Nocturno" ? "nocturno" : tipo === "24 horas" ? "24h" : "diurno",
+    horas,
+    ventana: texto,
+  };
+}
+
+/** El texto del badge: «8h Diurno», «12h Nocturno», «24 Horas», «Personalizado». */
+export function etiquetaDeHorario(
+  t: (k: string, d: string, o?: any) => unknown,
+  r: ResumenDeHorario,
+): string {
+  const h = r.horas == null ? null : Number.isInteger(r.horas) ? String(r.horas) : String(r.horas);
+
+  if (r.clave === "24h") return String(t("ui.StationOverview.turno.24h", "24 Horas"));
+  if (r.clave === "diurno") {
+    return String(
+      h ? t("ui.horario.hDiurno", "{{h}}h Diurno", { h }) : t("ui.StationOverview.turno.diurno", "12h Diurno"),
+    );
+  }
+  if (r.clave === "nocturno") {
+    return String(
+      h ? t("ui.horario.hNocturno", "{{h}}h Nocturno", { h }) : t("ui.StationOverview.turno.nocturno", "12h Nocturno"),
+    );
+  }
+  if (r.clave === "custom") {
+    return String(
+      h
+        ? t("ui.horario.hPersonalizado", "{{h}}h Personalizado", { h })
+        : t("ui.StationOverview.turno.custom", "Personalizado"),
+    );
+  }
+
+  return "";
 }

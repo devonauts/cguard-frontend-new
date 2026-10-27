@@ -9075,6 +9075,11 @@
     }
   },
   "ui": {
+    "horario": {
+      "hDiurno": "{{h}}h Dzień",
+      "hNocturno": "{{h}}h Noc",
+      "hPersonalizado": "{{h}}h Niestandardowy"
+    },
     "AddStation": {
       "patron": "Wzorzec"
     },

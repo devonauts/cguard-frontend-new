@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StatusBadge, EmptyState, IconTile } from "@/components/kit";
+import { etiquetaDeHorario, resumenDeHorario } from "@/lib/jornadasDePlazas";
 
 /* Constante de MÓDULO: guarda la CLAVE con el español de respaldo; se traduce
    al pintar, dentro del componente (llamar a t() aquí congelaría el idioma). */
@@ -46,6 +47,9 @@ export interface StationCard {
   numberOfGuardsInStation?: string | number | null;
   assignedGuards?: unknown[];
   scheduleType?: string | null;
+  /** La ventana propia del puesto: de ella salen las horas y el rango del rótulo. */
+  startingTimeInDay?: string | null;
+  finishTimeInDay?: string | null;
   jornadas?: unknown[];
   hasPolygon?: boolean;
   geofenceRadius?: number | null;
@@ -100,9 +104,17 @@ export default function StationCardsGrid({
                 ventana: ventanaDeRelevos(st.relevos),
               })
           : st.scheduleType
-            ? schedEntry
-              ? t(schedEntry.labelKey, schedEntry.label)
-              : st.scheduleType
+            ? (() => {
+                // «8h Diurno · 09:00–17:00»: horas y rango del propio puesto.
+                const r = resumenDeHorario(st.scheduleType, st);
+                const texto = r.clave
+                  ? etiquetaDeHorario(t, r)
+                  : schedEntry
+                    ? t(schedEntry.labelKey, schedEntry.label)
+                    : st.scheduleType;
+
+                return r.ventana ? `${texto} · ${r.ventana}` : texto;
+              })()
             : Array.isArray(st.jornadas) && st.jornadas.length
               ? t("ui.StationCardsGrid.nJornadas", {
                   defaultValue: "{{count}} jornadas",
