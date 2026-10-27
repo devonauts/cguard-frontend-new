@@ -21190,7 +21190,8 @@
       "vistas": "Vues",
       "volver": "Réafficher après",
       "volverHint": "Si la personne la ferme, nombre de jours avant de pouvoir la revoir.",
-      "conversion": "Conversion"
+      "conversion": "Conversion",
+      "cubiertosExplica": "Postes couverts grâce à la campagne : ceux acceptés par les personnes inscrites via elle, dans les {{dias}} jours suivant leur inscription. Déjà pointés : {{cumplidos}}."
     },
     "canal": {
       "app": "App",

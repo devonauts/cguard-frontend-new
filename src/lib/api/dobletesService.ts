@@ -212,8 +212,10 @@ export interface BenchStation {
   stationId: string;
   stationName: string | null;
   nickname: string | null;
-  /** Relief guards of the post plus reserve members qualified for it. */
+  /** Distinct relief people for the post (server `count`). */
   suplentes: number;
+  /** Fewer than the threshold (server `short`). */
+  short: boolean;
 }
 
 export interface Bench {
@@ -299,9 +301,21 @@ export interface CampaignStats {
   seen: number;
   cta: number;
   converted: number;
-  /** Shifts covered by people who joined through it — when the server sends it. */
-  coveredShifts?: number | null;
+  /**
+   * Shifts covered thanks to the campaign: offers ACCEPTED by people who
+   * converted through it, within `windowDays` (30) of their first conversion;
+   * `confirmed` = of those, clocked in. Null when the server does not send it.
+   */
+  coveredShifts?: CoveredByCampaign | null;
   conversionPct?: number | null;
+}
+
+export interface CoveredByCampaign {
+  windowDays: number;
+  people: number;
+  accepted: number;
+  confirmed: number;
+  bonusCents: number;
 }
 
 export interface CampaignTemplate {
@@ -483,7 +497,7 @@ function normalizarCampana(r: Raw): Campaign {
   };
 }
 
-function normalizarEstadisticas(r: Raw): CampaignStats {
+export function normalizarEstadisticas(r: Raw): CampaignStats {
   // `{ people: {shown, seen, dismissed, cta, converted}, total, conversionPct, ctaPct }`
   const p = (r.people ?? r) as Raw;
 
@@ -492,8 +506,30 @@ function normalizarEstadisticas(r: Raw): CampaignStats {
     seen: Number(p.seen) || 0,
     cta: Number(p.cta) || 0,
     converted: Number(p.converted) || 0,
-    coveredShifts: r.coveredShifts ?? p.coveredShifts ?? null,
+    coveredShifts: normalizarCubiertos(r.coveredShifts ?? p.coveredShifts),
     conversionPct: r.conversionPct ?? null,
+  };
+}
+
+function normalizarCubiertos(c: unknown): CoveredByCampaign | null {
+  if (c == null) return null;
+  // An older/demo shape carried just the number.
+  if (typeof c === "number")
+    return {
+      windowDays: 30,
+      people: 0,
+      accepted: c,
+      confirmed: c,
+      bonusCents: 0,
+    };
+  const x = c as Raw;
+
+  return {
+    windowDays: Number(x.windowDays) || 30,
+    people: Number(x.people) || 0,
+    accepted: Number(x.accepted) || 0,
+    confirmed: Number(x.confirmed) || 0,
+    bonusCents: Number(x.bonusCents) || 0,
   };
 }
 
@@ -520,18 +556,11 @@ function cuerpoDeCampana(c: CampaignDraft): Raw {
 }
 
 /**
- * The server's bench lists only posts that have someone (relief guards or
- * qualified members). The health panel must also see the posts with NOBODY,
- * so the stations of the live coverage board are merged in with 0.
+ * The server's bench: members, availability per date and band, and EVERY post
+ * in scope (also those with nobody), emptiest first, with `count` (distinct
+ * relief people) and `short` (fewer than 2).
  */
-export function normalizarBanca(
-  r: Raw,
-  puestos: Array<{
-    stationId: string;
-    stationName: string | null;
-    nickname: string | null;
-  }> = [],
-): Bench {
+export function normalizarBanca(r: Raw): Bench {
   const names = (r.names ?? {}) as Record<string, string>;
   const members: ReserveMember[] = (r.members ?? []).map((m: Raw) => ({
     userId: String(m.userId),
@@ -580,37 +609,37 @@ export function normalizarBanca(
       });
     }
 
-  const porPuesto = new Map<string, BenchStation>();
+  const umbral = Number(r.healthThreshold) || 2;
+  const vistos = new Set<string>();
+  const stations: BenchStation[] = [];
 
-  for (const p of puestos)
-    porPuesto.set(String(p.stationId), {
-      stationId: String(p.stationId),
-      stationName: p.stationName ?? null,
-      nickname: p.nickname ?? null,
-      suplentes: 0,
-    });
   for (const p of (r.posts ?? r.stations ?? []) as Raw[]) {
     const id = String(p.stationId);
-    const suplentes =
-      typeof p.suplentes === "number"
-        ? p.suplentes
-        : new Set([...(p.relief ?? []), ...(p.qualified ?? [])].map(String))
-            .size;
-    const antes = porPuesto.get(id);
 
-    porPuesto.set(id, {
+    if (vistos.has(id)) continue;
+    vistos.add(id);
+    const suplentes =
+      typeof p.count === "number"
+        ? p.count
+        : typeof p.suplentes === "number"
+          ? p.suplentes
+          : new Set([...(p.relief ?? []), ...(p.qualified ?? [])].map(String))
+              .size;
+
+    stations.push({
       stationId: id,
-      stationName: p.stationName ?? antes?.stationName ?? null,
-      nickname: p.nickname ?? antes?.nickname ?? null,
+      stationName: p.stationName ?? null,
+      nickname: p.nickname ?? null,
       suplentes,
+      short: typeof p.short === "boolean" ? p.short : suplentes < umbral,
     });
   }
 
   return {
     members,
     grid,
-    stations: [...porPuesto.values()],
-    healthThreshold: Number(r.healthThreshold) || 2,
+    stations,
+    healthThreshold: umbral,
     guardsNotInReserve: r.guardsNotInReserve ?? null,
   };
 }
@@ -755,20 +784,9 @@ const real = {
     return out;
   },
   async bench(): Promise<Bench> {
-    const [r, vivo] = await Promise.all([
-      api.get(`${base()}/bench?days=7`, SILENT).then((x) => unwrap<Raw>(x)),
-      api
-        .get(`/tenant/${tenantId()}/coverage/live`, SILENT)
-        .then((x) => unwrap<Raw>(x))
-        .catch(() => null),
-    ]);
-    const puestos = ((vivo?.stations ?? []) as Raw[]).map((s) => ({
-      stationId: String(s.stationId),
-      stationName: s.stationName ?? null,
-      nickname: s.nickname ?? null,
-    }));
-
-    return normalizarBanca(r, puestos);
+    return normalizarBanca(
+      unwrap(await api.get(`${base()}/bench?days=7`, SILENT)),
+    );
   },
   /** Office edits a member: pause/return, or the posts they can cover. */
   async saveReserve(

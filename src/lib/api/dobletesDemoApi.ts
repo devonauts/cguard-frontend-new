@@ -283,7 +283,13 @@ function crearEstado() {
         seen: 168,
         cta: 41,
         converted: 12,
-        coveredShifts: null,
+        coveredShifts: {
+          windowDays: 30,
+          people: 7,
+          accepted: 9,
+          confirmed: 8,
+          bonusCents: 13500,
+        },
         conversionPct: 5.6,
       },
     },
@@ -345,12 +351,13 @@ export function crearApiDeDemo(): DobletesApi {
               m.weekly.some((w) => w.weekday === d && w.slots.includes(s)),
           ).length,
         });
-    const stations = PUESTOS.map((p) => ({
-      ...p,
-      suplentes: e.members.filter(
+    const stations = PUESTOS.map((p) => {
+      const suplentes = e.members.filter(
         (m) => m.active && m.qualifiedStationIds.includes(p.stationId),
-      ).length,
-    }));
+      ).length;
+
+      return { ...p, suplentes, short: suplentes < 2 };
+    }).sort((a, b) => a.suplentes - b.suplentes);
 
     return {
       members: e.members,
@@ -575,7 +582,7 @@ export function crearApiDeDemo(): DobletesApi {
           seen: 0,
           cta: 0,
           converted: 0,
-          coveredShifts: 0,
+          coveredShifts: null,
         }
       );
     },

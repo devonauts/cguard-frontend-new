@@ -21190,7 +21190,8 @@
       "vistas": "Vistas",
       "volver": "Volver a mostrar",
       "volverHint": "Si la cierra, cuántos días después puede volver a verla.",
-      "conversion": "Conversión"
+      "conversion": "Conversión",
+      "cubiertosExplica": "Turnos cubiertos gracias a la campaña: los que aceptaron quienes se unieron por ella, en los {{dias}} días siguientes a su alta. Ya fichados: {{cumplidos}}."
     },
     "canal": {
       "app": "App",

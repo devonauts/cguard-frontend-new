@@ -21190,7 +21190,8 @@
       "vistas": "Visualizzazioni",
       "volver": "Mostra di nuovo",
       "volverHint": "Se la chiude, dopo quanti giorni può rivederla.",
-      "conversion": "Conversione"
+      "conversion": "Conversione",
+      "cubiertosExplica": "Turni coperti grazie alla campagna: quelli accettati da chi si è unito tramite essa, entro {{dias}} giorni dall'adesione. Già timbrati: {{cumplidos}}."
     },
     "canal": {
       "app": "App",

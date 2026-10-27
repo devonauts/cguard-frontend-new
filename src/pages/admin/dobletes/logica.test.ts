@@ -17,6 +17,7 @@ import {
   sinModulo,
   DEFAULT_SETTINGS,
   normalizarBanca,
+  normalizarEstadisticas,
   normalizarBusqueda,
   pendientesDe,
   decimalesDe,
@@ -171,50 +172,57 @@ describe("dobletes · sin el módulo", () => {
 });
 
 describe("dobletes · lo que manda el servidor", () => {
-  it("la banca cuenta suplentes sin repetir y enseña también los puestos SIN nadie", () => {
-    const b = normalizarBanca(
-      {
-        members: [
-          {
-            userId: "u1",
-            name: "Pedro",
-            level: "plata",
-            weekly: [{ weekday: 1, slots: ["D", "N"] }],
-          },
-        ],
-        grid: [
-          {
-            date: "2026-10-26",
-            weekday: 1,
-            slots: { D: ["u1", "u2"], T: [], N: ["u1"] },
-          },
-          {
-            date: "2026-10-27",
-            weekday: 2,
-            slots: { D: [], T: ["u2"], N: [] },
-          },
-        ],
-        posts: [
-          {
-            stationId: "s1",
-            stationName: "Garita",
-            relief: ["g9", "u1"],
-            qualified: ["u1"],
-          },
-        ],
-        names: {},
-      },
-      [
-        { stationId: "s1", stationName: "Garita", nickname: "A-1" },
-        { stationId: "s2", stationName: "Puerta", nickname: null },
+  it("la banca usa la lista del servidor: todos los puestos, con count y short, sin repetir", () => {
+    const b = normalizarBanca({
+      members: [
+        {
+          userId: "u1",
+          name: "Pedro",
+          level: "plata",
+          weekly: [{ weekday: 1, slots: ["D", "N"] }],
+        },
       ],
-    );
-
-    expect(b.stations.find((p) => p.stationId === "s1")).toMatchObject({
-      suplentes: 2,
-      nickname: "A-1",
+      grid: [
+        {
+          date: "2026-10-26",
+          weekday: 1,
+          slots: { D: ["u1", "u2"], T: [], N: ["u1"] },
+        },
+        { date: "2026-10-27", weekday: 2, slots: { D: [], T: ["u2"], N: [] } },
+      ],
+      posts: [
+        {
+          stationId: "s2",
+          stationName: "Puerta",
+          relief: [],
+          qualified: [],
+          count: 0,
+          short: true,
+        },
+        {
+          stationId: "s1",
+          stationName: "Garita",
+          relief: ["g9", "u1"],
+          qualified: ["u1"],
+          count: 2,
+          short: false,
+        },
+        {
+          stationId: "s1",
+          stationName: "Garita",
+          relief: [],
+          qualified: [],
+          count: 9,
+          short: false,
+        },
+      ],
+      names: {},
     });
-    expect(b.stations.find((p) => p.stationId === "s2")?.suplentes).toBe(0);
+
+    expect(b.stations.map((p) => [p.stationId, p.suplentes, p.short])).toEqual([
+      ["s2", 0, true],
+      ["s1", 2, false],
+    ]);
     expect(b.grid.find((g) => g.weekday === 1 && g.slot === "D")?.count).toBe(
       2,
     );
@@ -224,6 +232,14 @@ describe("dobletes · lo que manda el servidor", () => {
     expect(b.grid).toHaveLength(21);
     expect(b.members[0]).toMatchObject({ active: true, level: "plata" });
     expect(b.healthThreshold).toBe(2);
+  });
+
+  it("sin `short` del servidor, un puesto con menos de 2 suplentes está corto", () => {
+    const b = normalizarBanca({
+      posts: [{ stationId: "s1", relief: ["a"], qualified: [] }],
+    });
+
+    expect(b.stations[0]).toMatchObject({ suplentes: 1, short: true });
   });
 
   it("una búsqueda de la lista trae conteos; el detalle, las ofertas", () => {
@@ -274,6 +290,38 @@ describe("dobletes · lo que manda el servidor", () => {
     expect(detalle.updatedAt).toBe("2026-10-26T10:07:00Z");
     expect(detalle.offers?.[0].level).toBe("oro");
     expect(pendientesDe(detalle)).toBe(1);
+  });
+
+  it("las cifras de una campaña: personas y turnos cubiertos gracias a ella", () => {
+    const st = normalizarEstadisticas({
+      people: { shown: 40, seen: 30, dismissed: 5, cta: 9, converted: 4 },
+      total: { shown: 90 },
+      conversionPct: 10,
+      coveredShifts: {
+        windowDays: 30,
+        people: 3,
+        accepted: 5,
+        confirmed: 4,
+        bonusCents: 7500,
+      },
+    });
+
+    expect(st).toMatchObject({
+      shown: 40,
+      cta: 9,
+      converted: 4,
+      conversionPct: 10,
+    });
+    expect(st.coveredShifts).toEqual({
+      windowDays: 30,
+      people: 3,
+      accepted: 5,
+      confirmed: 4,
+      bonusCents: 7500,
+    });
+    expect(
+      normalizarEstadisticas({ people: { shown: 1 } }).coveredShifts,
+    ).toBeNull();
   });
 
   it("monedas sin centavos", () => {

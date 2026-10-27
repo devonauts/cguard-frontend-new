@@ -21190,7 +21190,8 @@
       "vistas": "Aufrufe",
       "volver": "Erneut anzeigen",
       "volverHint": "Nach wie vielen Tagen sie nach dem Schließen wieder erscheinen kann.",
-      "conversion": "Konversion"
+      "conversion": "Konversion",
+      "cubiertosExplica": "Dank der Kampagne besetzte Schichten: von Personen angenommen, die über sie beigetreten sind, innerhalb von {{dias}} Tagen nach dem Beitritt. Bereits eingestempelt: {{cumplidos}}."
     },
     "canal": {
       "app": "App",

@@ -21190,7 +21190,8 @@
       "vistas": "Visualizações",
       "volver": "Mostrar de novo",
       "volverHint": "Se a pessoa fechar, quantos dias depois ela pode ver de novo.",
-      "conversion": "Conversão"
+      "conversion": "Conversão",
+      "cubiertosExplica": "Turnos cobertos graças à campanha: os aceitos por quem entrou por ela, nos {{dias}} dias seguintes à adesão. Já com ponto batido: {{cumplidos}}."
     },
     "canal": {
       "app": "App",

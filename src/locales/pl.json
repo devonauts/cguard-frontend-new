@@ -21478,7 +21478,8 @@
       "vistas": "Wyświetlenia",
       "volver": "Pokaż ponownie",
       "volverHint": "Po ilu dniach od zamknięcia może zobaczyć ją ponownie.",
-      "conversion": "Konwersja"
+      "conversion": "Konwersja",
+      "cubiertosExplica": "Zmiany obsadzone dzięki kampanii: przyjęte przez osoby, które dołączyły przez nią, w ciągu {{dias}} dni od dołączenia. Już odbite: {{cumplidos}}."
     },
     "canal": {
       "app": "Aplikacja",

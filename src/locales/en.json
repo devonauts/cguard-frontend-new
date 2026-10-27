@@ -21190,7 +21190,8 @@
       "vistas": "Views",
       "volver": "Show again after",
       "volverHint": "If they close it, how many days until they can see it again.",
-      "conversion": "Conversion"
+      "conversion": "Conversion",
+      "cubiertosExplica": "Shifts covered thanks to the campaign: those accepted by people who joined through it, within {{dias}} days of joining. Already clocked in: {{cumplidos}}."
     },
     "canal": {
       "app": "App",

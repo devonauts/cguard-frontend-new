@@ -264,7 +264,7 @@ function TarjetaDeCampana({
     s.coveredShifts != null
       ? {
           icono: <ShieldCheck />,
-          valor: s.coveredShifts,
+          valor: s.coveredShifts.accepted,
           etiqueta: t("dobletes.campanas.turnosCubiertos", "Turnos cubiertos"),
         }
       : {
@@ -343,6 +343,16 @@ function TarjetaDeCampana({
           </div>
         ))}
       </div>
+      {s.coveredShifts && estado !== "borrador" && (
+        <p className="mt-2 text-[11px]" style={{ color: "var(--ink-faint)" }}>
+          {t("dobletes.campanas.cubiertosExplica", {
+            defaultValue:
+              "Turnos cubiertos gracias a la campaña: los que aceptaron quienes se unieron por ella, en los {{dias}} días siguientes a su alta. Ya fichados: {{cumplidos}}.",
+            dias: s.coveredShifts.windowDays,
+            cumplidos: s.coveredShifts.confirmed,
+          })}
+        </p>
+      )}
 
       {puede && (
         <div className="cg-acciones mt-3 flex flex-wrap justify-end gap-2">

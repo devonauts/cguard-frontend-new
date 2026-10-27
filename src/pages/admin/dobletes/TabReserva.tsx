@@ -98,7 +98,7 @@ function Salud({
     () => [...banca.stations].sort((a, b) => a.suplentes - b.suplentes),
     [banca.stations],
   );
-  const debiles = puestos.filter((p) => p.suplentes < umbral);
+  const debiles = puestos.filter((p) => p.short);
   const activos = banca.members.filter((m) => m.active).length;
   const max = Math.max(umbral * 2, ...puestos.map((p) => p.suplentes), 1);
 
@@ -179,7 +179,7 @@ function Salud({
         ) : (
           <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
             {puestos.map((p) => {
-              const debil = p.suplentes < umbral;
+              const debil = p.short;
 
               return (
                 <li key={p.stationId}>

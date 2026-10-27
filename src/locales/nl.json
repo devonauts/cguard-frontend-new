@@ -21190,7 +21190,8 @@
       "vistas": "Weergaven",
       "volver": "Opnieuw tonen",
       "volverHint": "Na hoeveel dagen iemand hem opnieuw ziet als die hem heeft gesloten.",
-      "conversion": "Conversie"
+      "conversion": "Conversie",
+      "cubiertosExplica": "Diensten gedekt dankzij de campagne: geaccepteerd door mensen die via de campagne meededen, binnen {{dias}} dagen na hun aanmelding. Al ingeklokt: {{cumplidos}}."
     },
     "canal": {
       "app": "App",
