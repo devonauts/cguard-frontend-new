@@ -8540,6 +8540,11 @@
     "required_fields": "Please fill in the required fields"
   },
   "ui": {
+    "horario": {
+      "hDiurno": "{{h}}h Day",
+      "hNocturno": "{{h}}h Night",
+      "hPersonalizado": "{{h}}h Custom"
+    },
     "AddStation": {
       "patron": "Pattern"
     },

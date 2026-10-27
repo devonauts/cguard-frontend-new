@@ -1260,7 +1260,7 @@ export default function PostSiteWizard({
                `catch` se lo tragaba, así que una estación sin plazas salía en
                blanco y en silencio. */
             if (!jornadas.length) {
-              jornadas = jornadasPorTipo((r as any).scheduleType).map((j) => ({
+              jornadas = jornadasPorTipo((r as any).scheduleType, r as any).map((j) => ({
                 id: `${j.startTime}-${j.endTime}`,
                 nombre:
                   j.tipo === "Nocturno"

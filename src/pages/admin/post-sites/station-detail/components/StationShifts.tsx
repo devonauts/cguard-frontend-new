@@ -411,7 +411,9 @@ export default function StationShifts({
     const desdePlazas = jornadasDePlazas(positions as any[], tipoDeHorario, rotacionDelPuesto);
 
     return (
-      desdePlazas.length ? desdePlazas : jornadasPorTipo(tipoDeHorario)
+      desdePlazas.length
+        ? desdePlazas
+        : jornadasPorTipo(tipoDeHorario, station as any)
     ) as any;
   }, [station, positions, rotacionDelPuesto]);
 

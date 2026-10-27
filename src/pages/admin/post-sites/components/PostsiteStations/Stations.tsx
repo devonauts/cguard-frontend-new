@@ -102,7 +102,7 @@ function jornadasDeEstacion(r: any): any[] {
   const desdePlazas = jornadasDePlazas(r?.positions, r?.scheduleType);
   const base = desdePlazas.length
     ? desdePlazas
-    : jornadasPorTipo(r?.scheduleType);
+    : jornadasPorTipo(r?.scheduleType, r);
 
   return base.map((j) => {
     const clave = j.tipo.toLowerCase();
@@ -237,6 +237,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
             numberOfGuardsInStation: r.numberOfGuardsInStation,
             assignedGuards: r.assignedGuards,
             scheduleType: r.scheduleType || null,
+            startingTimeInDay: r.startingTimeInDay || null,
+            finishTimeInDay: r.finishTimeInDay || null,
             relevos: esEvento(r?.postSite)
               ? relevosDeLaEstacion(r?.positions)
               : null,
