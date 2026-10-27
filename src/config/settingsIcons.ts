@@ -36,6 +36,7 @@ import {
   BellRing,
   Headphones,
   Languages,
+  CalendarPlus,
   type LucideIcon,
 } from "lucide-react";
 
@@ -78,6 +79,7 @@ export const SETTINGS_ICONS: Record<string, LucideIcon> = {
   BellRing,
   Headphones,
   Languages,
+  CalendarPlus,
 };
 
 export function settingsIcon(name?: string): LucideIcon {

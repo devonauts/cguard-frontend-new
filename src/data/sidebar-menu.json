@@ -387,6 +387,15 @@
         ]
       },
       {
+        "id": "dobletes",
+        "name": "Dobletes",
+        "path": "/dobletes",
+        "modulo": "dobletes",
+        "permission": [
+          "dobletesManage"
+        ]
+      },
+      {
         "id": "estado",
         "name": "Estado de Turno",
         "path": "/shift-status",

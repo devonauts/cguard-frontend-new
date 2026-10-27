@@ -432,6 +432,8 @@ const ShiftExchange = lazy(
 const ShiftStatus = lazy(() => import("./pages/admin/programmer/ShiftStatus"));
 const OpenShifts = lazy(() => import("./pages/admin/programmer/OpenShifts"));
 const Coverage = lazy(() => import("./pages/admin/programmer/Coverage"));
+// Dobletes (módulo `dobletes`): ofertas, reserva, campañas, ranking, ajustes.
+const DobletesPage = lazy(() => import("./pages/admin/dobletes/DobletesPage"));
 const Planificador = lazy(
   () => import("./pages/admin/programmer/Planificador"),
 );
@@ -2265,6 +2267,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/coverage"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <DobletesPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/dobletes"
                               />
                               <Route
                                 element={

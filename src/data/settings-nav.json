@@ -167,6 +167,15 @@
             "keywords": "rol de pago roles de pago nomina planilla sueldo salario recibo boleta liquidacion holerite pago renta impuesto conceptos deducciones aportes prestamo multa bono contratista"
           },
           {
+            "id": "dobletes",
+            "label": "Dobletes",
+            "path": "/dobletes?tab=ajustes",
+            "icon": "CalendarPlus",
+            "modulo": "dobletes",
+            "desc": "Oleadas, bonos, puntos, niveles y ranking de la reserva.",
+            "keywords": "doblete dobletes doblar turno extra reserva suplente suplentes banca oferta ofertas oleada bono relampago puntos nivel bronce plata oro ranking respaldo del mes campana banner ausencia cobertura"
+          },
+          {
             "id": "publishing-sites",
             "label": "Reglas de puestos y geocercas",
             "path": "/setting/publishing-sites",
