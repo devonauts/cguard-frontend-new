@@ -1,3 +1,5 @@
+import { modoDemoDeDobletes } from "@/lib/dobletesDemo";
+
 /**
  * Frontend entitlement helpers — read the current tenant's plan features and
  * billing state off the authenticated user (populated by /auth/me and signin).
@@ -38,6 +40,7 @@ export const MODULE_KEYS = [
   "reconocimiento_facial",
   "payroll_slips",
   "client_billing",
+  "dobletes",
 ] as const;
 
 export type ModuleKey = (typeof MODULE_KEYS)[number];
@@ -95,6 +98,8 @@ export function getPlanFeatures(user: any): string[] | null {
 export function hasFeature(user: any, key: string): boolean {
   const feats = getPlanFeatures(user);
 
+  // Development only: the Dobletes demo fake also lends the module.
+  if (key === "dobletes" && modoDemoDeDobletes()) return true;
   if (isModuleKey(key)) return Array.isArray(feats) && feats.includes(key);
 
   if (!feats || feats.length === 0) return true; // fail open

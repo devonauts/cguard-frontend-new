@@ -300,6 +300,11 @@ const SPECIAL_PERMISSION_LABELS: Record<string, Localized3> = {
     en: 'Connect and manage external payroll (Gusto)',
     pt: 'Conectar e gerenciar a folha externa (Gusto)',
   },
+  dobletesManage: {
+    es: 'Gestionar dobletes: ofrecer turnos, reserva, campañas y ajustes',
+    en: 'Manage double shifts: offer shifts, reserve, campaigns and settings',
+    pt: 'Gerenciar dobras de turno: ofertas, reserva, campanhas e ajustes',
+  },
   payrollSlipRead: {
     es: 'Ver roles de pago y planillas',
     en: 'View payslips and payroll sheets',

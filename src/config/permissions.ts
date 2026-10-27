@@ -83,6 +83,8 @@ export const PERMISSIONS: string[] = [
   "quizAttemptCreate","quizAttemptRead",
   // ── Cobertura de turnos ──
   "backupConfirm","backupVolunteer","backupEventRead",
+  // Dobletes (módulo): ofrecer turnos a la reserva, campañas, ajustes.
+  "dobletesManage",
   // ── Autoservicio apps móviles ──
   "staffMe","supervisorMe"
 ,
