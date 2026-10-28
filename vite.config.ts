@@ -75,6 +75,20 @@ const GRUPOS: Record<string, string[]> = {
   // initial entry. Combined with route-level React.lazy, these only
   // download when a user actually opens radio / maps.
   "vendor-livekit": ["livekit-client"],
+  // ── EL TIEMPO REAL, FUERA DE LA OFUSCACIÓN (2026-10-28) ─────────────
+  // Sin grupo propio, socket.io caía en el trozo de arranque, que SÍ se
+  // ofusca (build/ofuscarCodigo.ts sólo respeta `vendor-*`). Ofuscado, su
+  // decodificador rechazaba el saludo del servidor («parse error»): el CRM
+  // se conectaba y se desconectaba cada segundo y no llegaba ningún aviso
+  // en vivo (ni pánico, ni entradas, ni el sonido) en ningún dominio.
+  "vendor-socket": [
+    "socket.io-client",
+    "socket.io-parser",
+    "engine.io-client",
+    "engine.io-parser",
+    "@socket.io/component-emitter",
+    "xmlhttprequest-ssl",
+  ],
   "vendor-maps": ["leaflet", "react-leaflet"],
 };
 
