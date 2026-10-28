@@ -190,3 +190,22 @@ if (process.env.CG_SIN_OFUSCAR !== '1') {
   }
   console.log(`[verificar-build] ✓ código ofuscado (${marcas} identificadores en ${entrada})`);
 }
+
+// ── 5. Que el tiempo real NO va ofuscado (2026-10-28) ───────────────────────
+// Ofuscado, el decodificador de socket.io rechazaba el saludo del servidor
+// («parse error»): todos los CRM se conectaban y desconectaban cada segundo y
+// no llegaba ningún aviso en vivo, ni el pánico. socket.io va en su propio
+// trozo `vendor-socket` (vite.config.ts), que la ofuscación no toca; si ese
+// trozo falta o llega ofuscado, el build se para aquí.
+if (process.env.CG_SIN_OFUSCAR !== '1') {
+  const assets = path.join(DIST, 'assets');
+  const trozo = fs.readdirSync(assets).find((f) => /^vendor-socket-.*\.js$/.test(f));
+  if (!trozo) {
+    fallar('EL TIEMPO REAL NO TIENE SU TROZO', `  no hay assets/vendor-socket-*.js: socket.io caería en un trozo ofuscado y el CRM no recibiría avisos en vivo. Revisa el grupo "vendor-socket" en vite.config.ts.`);
+  }
+  const codigo = fs.readFileSync(path.join(assets, trozo), 'utf8');
+  if (!codigo.includes('unknown packet type') || !codigo.includes('parse error')) {
+    fallar('EL TIEMPO REAL VA OFUSCADO', `  assets/${trozo} no contiene el decodificador de socket.io en claro.`);
+  }
+  console.log(`[verificar-build] ✓ tiempo real sin ofuscar (${trozo})`);
+}
