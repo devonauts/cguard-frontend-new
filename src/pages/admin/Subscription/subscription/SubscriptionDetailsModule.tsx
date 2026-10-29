@@ -25,6 +25,8 @@ import {
   nombreDelPlan,
 } from "@/lib/api/subscriptionBillingService";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
+import FreePlanBilling from "@/components/FreePlanBilling";
+import { isFreeTierSummary } from "@/lib/freeTier";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type BillingPeriod = "monthly" | "annual";
@@ -61,6 +63,7 @@ const STATUS_META: Record<
   string,
   { label: string; labelKey: string; tone: BadgeTone }
 > = {
+  free: { label: "Plan gratis", labelKey: "billing.free.title", tone: "ok" },
   trialing: {
     label: "Prueba gratuita",
     labelKey: "billing.statusTrialing",
@@ -152,6 +155,19 @@ export default function SubscriptionDetailsModule() {
      condiciones de una relación comercial que no tienen con nosotros. */
   const esDeProveedor =
     data?.billingOwnership === "reseller" || status === "reseller_managed";
+
+  /* Free tier («Plan gratis»): no offer, no plans, no trial, nothing to manage. */
+  if (!loading && isFreeTierSummary(data)) {
+    return (
+      <PageContainer width="wide">
+        <PageHeader
+          icon={<CreditCard />}
+          title={t("ui.SubscriptionDetailsModule.suscripcion", "Suscripción")}
+        />
+        <FreePlanBilling />
+      </PageContainer>
+    );
+  }
 
   if (!loading && esDeProveedor) {
     return (

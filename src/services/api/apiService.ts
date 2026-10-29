@@ -8,6 +8,7 @@ import {
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
+import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 import { resolveApiBase } from "@/lib/apiBase";
 import {
@@ -262,8 +263,10 @@ export class ApiService {
         const codigo402 = data?.code;
 
         if (
-          codigo402 === "subscription_required" ||
-          codigo402 === "payment_past_due"
+          (codigo402 === "subscription_required" ||
+            codigo402 === "payment_past_due") &&
+          // Free tier («Plan gratis»): never a «pay» notice.
+          !isFreeTierSession()
         ) {
           try {
             toast.error(

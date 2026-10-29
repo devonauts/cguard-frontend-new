@@ -40,6 +40,11 @@ import {
   FadeIn,
 } from "@/components/kit";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  FREE_TIER_STORE_REASON,
+  isFreeTierUser,
+  storeReasonForCompany,
+} from "@/lib/freeTier";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
 import {
@@ -83,8 +88,12 @@ function precio(cents: number, currency: string, lang: string) {
 export default function ModulosAdicionalesPage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, user } = useAuth();
   const { data, isLoading, isError } = useTiendaDeModulos();
+  /* Free tier («Plan gratis»): the server's «subscription not active» reasons
+     become `plan_gratis` — never a prompt to pay or a link to billing. */
+  const gratis = isFreeTierUser(user);
+  const motivo = storeReasonForCompany(data?.reason, gratis);
   const [comprando, setComprando] = useState<string | null>(null);
 
   const textoDeMotivo = (reason?: string | null) =>
@@ -129,7 +138,9 @@ export default function ModulosAdicionalesPage() {
       }
       await qc.invalidateQueries({ queryKey: ["modulos-adicionales"] });
     } catch (e: any) {
-      toast.error(textoDeMotivo(e?.data?.reason));
+      toast.error(
+        textoDeMotivo(storeReasonForCompany(e?.data?.reason, gratis)),
+      );
       await qc.invalidateQueries({ queryKey: ["modulos-adicionales"] });
     } finally {
       setComprando(null);
@@ -188,15 +199,17 @@ export default function ModulosAdicionalesPage() {
             )}
             {!data.canPurchase &&
               !esDeSocio &&
-              data.reason &&
+              motivo &&
               data.modules.some((m) => m.billingType !== "monthly_tiers") && (
                 <FadeIn>
                   <Section>
                     <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                      {textoDeMotivo(data.reason)}{" "}
-                      <Link className="underline" to="/setting/billing">
-                        {t("modulosAdicionales.irAFacturacion")}
-                      </Link>
+                      {textoDeMotivo(motivo)}{" "}
+                      {motivo !== FREE_TIER_STORE_REASON && (
+                        <Link className="underline" to="/setting/billing">
+                          {t("modulosAdicionales.irAFacturacion")}
+                        </Link>
+                      )}
                     </p>
                   </Section>
                 </FadeIn>
@@ -212,7 +225,7 @@ export default function ModulosAdicionalesPage() {
                       delay={i * 0.08}
                       esDeSocio={esDeSocio}
                       m={m}
-                      reason={data.reason}
+                      reason={motivo}
                     />
                   );
                 }

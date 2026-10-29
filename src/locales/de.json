@@ -6229,6 +6229,10 @@
       "bodyUnnamed": "Ihr Anbieter legt fest, wie viele Benutzer Ihr Unternehmen haben kann. Wenn Sie mehr brauchen, wenden Sie sich an ihn.",
       "full": "Sie haben Ihr Maximum erreicht. Um weitere Benutzer hinzuzufügen, wenden Sie sich an {{proveedor}}.",
       "fullUnnamed": "Sie haben Ihr Maximum erreicht. Um weitere Benutzer hinzuzufügen, wenden Sie sich an Ihren Anbieter."
+    },
+    "free": {
+      "title": "Kostenloser Tarif",
+      "body": "{{marca}} stellt Ihrem Unternehmen den Dienst kostenlos zur Verfügung."
     }
   },
   "brand": {
@@ -19747,7 +19751,8 @@
       "error": "Der Kauf konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
       "prueba_usada": "Dieses Unternehmen hat den Gratistest bereits genutzt.",
       "sin_prueba": "Dieses Modul hat keinen Gratistest.",
-      "sin_suscripcion": "Für die monatliche Aktivierung braucht es Ihr aktives Abo. Siehe Abrechnung."
+      "sin_suscripcion": "Für die monatliche Aktivierung braucht es Ihr aktives Abo. Siehe Abrechnung.",
+      "plan_gratis": "Ihr Unternehmen nutzt den kostenlosen Tarif. Wenn Sie ein Modul interessiert, wenden Sie sich an den Support."
     },
     "mensual": {
       "porMes": "/Monat",

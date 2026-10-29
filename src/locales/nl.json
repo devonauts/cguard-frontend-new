@@ -6229,6 +6229,10 @@
       "bodyUnnamed": "Je leverancier bepaalt hoeveel gebruikers je bedrijf kan hebben. Heb je er meer nodig, vraag het hen.",
       "full": "Je hebt je maximum bereikt. Vraag {{proveedor}} om meer gebruikers toe te voegen.",
       "fullUnnamed": "Je hebt je maximum bereikt. Vraag je leverancier om meer gebruikers toe te voegen."
+    },
+    "free": {
+      "title": "Gratis abonnement",
+      "body": "{{marca}} levert de dienst kosteloos aan uw bedrijf."
     }
   },
   "brand": {
@@ -19747,7 +19751,8 @@
       "error": "De aankoop kon niet worden afgerond. Probeer het opnieuw.",
       "prueba_usada": "Dit bedrijf heeft de gratis proef al gebruikt.",
       "sin_prueba": "Deze module heeft geen gratis proef.",
-      "sin_suscripcion": "Voor maandelijkse activering is een actief abonnement nodig. Zie Facturatie."
+      "sin_suscripcion": "Voor maandelijkse activering is een actief abonnement nodig. Zie Facturatie.",
+      "plan_gratis": "Uw bedrijf heeft het gratis abonnement. Interesse in een module? Neem contact op met support."
     },
     "mensual": {
       "porMes": "/maand",

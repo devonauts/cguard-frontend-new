@@ -6231,6 +6231,10 @@
       "bodyUnnamed": "Twój dostawca ustala, ilu użytkowników może mieć Twoja firma. Jeśli potrzebujesz więcej, poproś go o to.",
       "full": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś {{proveedor}}.",
       "fullUnnamed": "Osiągnięto maksimum. Aby dodać więcej użytkowników, poproś swojego dostawcę."
+    },
+    "free": {
+      "title": "Plan bezpłatny",
+      "body": "{{marca}} zapewnia Twojej firmie usługę bez opłat."
     }
   },
   "brand": {
@@ -20031,7 +20035,8 @@
       "error": "Nie udało się dokończyć zakupu. Spróbuj ponownie.",
       "prueba_usada": "Ta firma wykorzystała już darmową próbę.",
       "sin_prueba": "Ten moduł nie ma darmowej próby.",
-      "sin_suscripcion": "Do aktywacji miesięcznej potrzebna jest aktywna subskrypcja. Zobacz Rozliczenia."
+      "sin_suscripcion": "Do aktywacji miesięcznej potrzebna jest aktywna subskrypcja. Zobacz Rozliczenia.",
+      "plan_gratis": "Twoja firma korzysta z planu bezpłatnego. Jeśli interesuje Cię moduł, skontaktuj się z pomocą techniczną."
     },
     "mensual": {
       "porMes": "/mies.",

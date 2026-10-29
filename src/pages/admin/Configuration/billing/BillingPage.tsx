@@ -24,6 +24,13 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import PartnerSeatLimit from "@/components/PartnerSeatLimit";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
+import FreePlanBilling from "@/components/FreePlanBilling";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  isFreeTierPartnerBilling,
+  isFreeTierSummary,
+  isFreeTierUser,
+} from "@/lib/freeTier";
 import { Button } from "@/components/ui/button";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { EVENTOS, medir } from "@/lib/analiticaDeMarca";
@@ -63,6 +70,7 @@ function money(cents: number, currency = "USD") {
    haya elegido el rojo como color de marca. */
 type BadgeTone = "info" | "ok" | "bad" | "warn" | "neutral";
 const STATUS_TONE: Record<string, BadgeTone> = {
+  free: "ok",
   trialing: "info",
   active: "ok",
   past_due: "bad",
@@ -119,6 +127,10 @@ export default function BillingPage() {
 
 function BillingPageDeLaPrincipal() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  /* Free tier («Plan gratis», set by a platform superadmin): the session says
+     so before any request, and the summaries confirm it (`status: 'free'`). */
+  const freeBySession = isFreeTierUser(user);
   const [data, setData] = useState<BillingSummary | null>(null);
   const [users, setUsers] = useState<BillableUser[]>([]);
   const [cambiandoUsuario, setCambiandoUsuario] = useState<string | null>(null);
@@ -146,6 +158,12 @@ function BillingPageDeLaPrincipal() {
 
   /** `enSilencio`: tras pagar o cambiar la tarjeta — refresca sin volver al esqueleto. */
   const load = async (enSilencio = false) => {
+    // Free tier: nothing to load — no seats, invoices, trial or card.
+    if (freeBySession) {
+      setLoading(false);
+
+      return;
+    }
     if (!enSilencio) setLoading(true);
     let resumen: BillingSummary | null = null;
     /* Una empresa de socio PAUSADA por impago recibe 402 en todo menos en su
@@ -166,6 +184,12 @@ function BillingPageDeLaPrincipal() {
           }),
         );
       }
+    }
+
+    if (isFreeTierSummary(resumen)) {
+      setLoading(false);
+
+      return;
     }
 
     const deProveedor =
@@ -381,6 +405,7 @@ function BillingPageDeLaPrincipal() {
 
   const status = data?.status || "trialing";
   const statusLabels: Record<string, string> = {
+    free: t("billing.free.title", { defaultValue: "Plan gratis" }),
     trialing: t("billing.statusTrialing", { defaultValue: "Prueba gratuita" }),
     active: t("billing.statusActive", { defaultValue: "Activo" }),
     past_due: t("billing.statusPastDue", { defaultValue: "Pago vencido" }),
@@ -419,13 +444,21 @@ function BillingPageDeLaPrincipal() {
     !cobroDelSocio.enabled &&
     cobroDelSocio.status === "paused";
   const visibleInvoices = invoices.filter((inv) => inv.status !== "draft");
+  const esGratis =
+    freeBySession ||
+    isFreeTierSummary(data) ||
+    isFreeTierPartnerBilling(cobroDelSocio);
 
   return (
     <AppLayout>
       <PageContainer width="narrow">
         <PageHeader
           badges={
-            /* Con cobro en línea del socio, el estado lo lleva su propia
+            esGratis ? (
+              <StatusBadge tone={STATUS_TONE.free}>
+                {statusLabels.free}
+              </StatusBadge>
+            ) : /* Con cobro en línea del socio, el estado lo lleva su propia
                sección: la etiqueta de la suscripción directa no aplica.
                Provider-billed companies (`reseller_managed`) have no status
                of ours either: their unknown status used to fall back to
@@ -450,7 +483,10 @@ function BillingPageDeLaPrincipal() {
             seats={data.seats}
           />
         )}
-        {loading ? (
+        {esGratis ? (
+          /* Plan gratis: just say so. No trial, no prices, no «activate». */
+          <FreePlanBilling />
+        ) : loading ? (
           <SkeletonCards count={4} />
         ) : esDeProveedor && cobroEnLinea ? (
           /* El socio cobra en línea con su propia pasarela: plan, tarjeta,

@@ -12,6 +12,7 @@ import {
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
+import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 import { resolveApiBase } from "@/lib/apiBase";
 
@@ -248,6 +249,9 @@ api.interceptors.response.use(
 
     // Subscription paywall: a blocked tenant gets a 402. Nudge them to billing.
     if (apiError.status === 402 && apiError.code === "subscription_required") {
+      // Free tier («Plan gratis»): never paywalled by the server; a stale 402
+      // must not push «activate your subscription» or a jump to billing.
+      if (isFreeTierSession()) return Promise.reject(apiError);
       const now = Date.now();
       const msg = apiError.message ||
         i18n.t(

@@ -1,6 +1,8 @@
 import i18n from "@/i18n";
 import { toast } from "sonner";
 
+import { isFreeTierSession } from "@/lib/freeTier";
+
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * LOS 402 DEL COBRO DEL SOCIO — lo mismo para los dos clientes HTTP del CRM
@@ -66,6 +68,15 @@ export function manejarPagoRequerido(
   { silencioso = false }: { silencioso?: boolean } = {},
 ): boolean {
   if (status !== 402) return false;
+
+  /* Free tier («Plan gratis»): the server never pauses such a company. If a
+     stale 402 still arrives, it is swallowed — never a «pay» notice or a jump
+     to billing for a company that has nothing to pay. */
+  if (
+    (codigo === CODIGO_PAGO_DEL_SOCIO || codigo === CODIGO_PAGO_DE_EMPRESA) &&
+    isFreeTierSession()
+  )
+    return true;
 
   if (codigo === CODIGO_PAGO_DEL_SOCIO) {
     if (!silencioso)

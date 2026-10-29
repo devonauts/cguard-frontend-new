@@ -14,6 +14,12 @@ import {
 import { esFacturadaPorSocio, finDePruebaDelSocio } from "@/lib/avisosDelSocio";
 import { esDiaCivil } from "@/pages/admin/Configuration/billing/cobroDelSocio";
 import { soloFecha, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  isFreeTierPartnerBilling,
+  isFreeTierSummary,
+  isFreeTierUser,
+} from "@/lib/freeTier";
 
 const CACHE_KEY = "cg_billing_summary";
 const PARTNER_CACHE_KEY = "cg_partner_billing_summary";
@@ -48,12 +54,17 @@ function guardarCache(clave: string, data: unknown): void {
 export default function TrialBanner() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
+  /* Free tier («Plan gratis»): CGuard Pro never bills this company, so there
+     is no trial, no «activate» and no payment banner — nothing is fetched. */
+  const freeTier = isFreeTierUser(user);
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [cobroDelSocio, setCobroDelSocio] = useState<CobroDelSocio | null>(
     null,
   );
 
   useEffect(() => {
+    if (freeTier) return;
     let mounted = true;
 
     // Use a fresh cached value if available.
@@ -77,14 +88,14 @@ export default function TrialBanner() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [freeTier]);
 
   /* A partner-billed company: its trial is with the PARTNER, and the only
      thing worth saying is when it ends and that a card is needed. */
   const deSocio = esFacturadaPorSocio(summary);
 
   useEffect(() => {
-    if (!deSocio) return;
+    if (!deSocio || freeTier) return;
     let mounted = true;
     const cached = leerCache<CobroDelSocio>(PARTNER_CACHE_KEY);
 
@@ -106,9 +117,16 @@ export default function TrialBanner() {
     return () => {
       mounted = false;
     };
-  }, [deSocio]);
+  }, [deSocio, freeTier]);
 
-  if (!summary || summary.status === "active") return null;
+  if (
+    freeTier ||
+    !summary ||
+    summary.status === "active" ||
+    isFreeTierSummary(summary) ||
+    isFreeTierPartnerBilling(cobroDelSocio)
+  )
+    return null;
 
   const go = () => navigate("/setting/billing");
 
