@@ -23,6 +23,8 @@ export interface PatronDeCiclo {
   nightShifts?: number | null;
   restDays?: number | null;
   sequence?: string | null;
+  /** Weekly style: `sequence` is 7 letters anchored to the calendar (0 = Monday). */
+  weekly?: boolean | null;
 }
 
 export interface CicloLeido {
@@ -157,6 +159,9 @@ export function personasQueSeTurnanCon(
 ): number {
   const c = cicloDe(rot);
 
+  // A weekly style has no phases to tile: the post opens only on those
+  // weekdays, so one person covers each seat.
+  if (esSemanal(rot)) return 1;
   if (c.trabajo <= 0 || c.largo <= 0) return 1;
   if (c.largo % c.trabajo === 0) return Math.min(4, c.largo / c.trabajo);
   if (c.secuencia && complementoDeSecuencia(c.secuencia)) return 2;
@@ -170,7 +175,185 @@ export function necesitaComplemento(
 ): string | null {
   const c = cicloDe(rot);
 
+  if (esSemanal(rot)) return null;
   if (!c.secuencia || c.trabajo <= 0 || c.largo % c.trabajo === 0) return null;
 
   return complementoDeSecuencia(c.secuencia);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   WEEKLY STYLES («Por días de la semana»).
+
+   A weekly rotation style is a `sequence` of exactly 7 letters anchored to the
+   CALENDAR: index 0 = Monday … 6 = Sunday. The guard works those weekdays no
+   matter the start date, so there is no phase to pick and nothing to «run»
+   (the server refuses «Correr ciclo» for these). Office hours read the same way:
+   «Lunes a viernes».
+   ════════════════════════════════════════════════════════════════════════ */
+
+/** Weekday keys of the API, Monday first. */
+export const DIAS_ISO = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+export type DiaIso = (typeof DIAS_ISO)[number];
+
+/** The station form's weekday keys, Monday first (same order as `DIAS_ISO`). */
+const DIAS_FORMULARIO = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
+
+/** Long and short i18n keys of each weekday, Monday first. */
+const CLAVES_DIA = [
+  ["lunes", "lun"],
+  ["martes", "mar"],
+  ["miercoles", "mie"],
+  ["jueves", "jue"],
+  ["viernes", "vie"],
+  ["sabado", "sab"],
+  ["domingo", "dom"],
+] as const;
+const LARGO_ES = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
+const CORTO_ES = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+/** Monday-first index (0 = Monday … 6 = Sunday) of a weekday key ('mon' or 'lun'), or -1. */
+export function indiceDeDia(d: unknown): number {
+  const k = String(d ?? "").toLowerCase();
+  const a = (DIAS_ISO as readonly string[]).indexOf(k);
+
+  return a >= 0 ? a : DIAS_FORMULARIO.indexOf(k);
+}
+
+/** Monday-first weekday index of a local date. */
+export const diaLunesPrimero = (d: Date): number => (d.getDay() + 6) % 7;
+
+/** Weekdays ('mon'… or 'lun'…) → the 7-letter weekly sequence, or null when none is picked. */
+export function secuenciaSemanal(dias: readonly unknown[]): string | null {
+  const on = new Set(
+    (Array.isArray(dias) ? dias : []).map(indiceDeDia).filter((i) => i >= 0),
+  );
+
+  if (!on.size) return null;
+
+  return Array.from({ length: 7 }, (_, i) => (on.has(i) ? "D" : "L")).join("");
+}
+
+/** A clean weekly sequence (7 letters D/N/L with at least one working day) or null. */
+export function secuenciaSemanalLimpia(v: unknown): string | null {
+  const s = secuenciaLimpia(v);
+
+  return s && s.length === 7 ? s : null;
+}
+
+/** Is this rotation style a weekly («por días de la semana») one? */
+export function esSemanal(
+  rot: (PatronDeCiclo & { weekly?: boolean | null }) | null | undefined,
+): boolean {
+  return !!rot?.weekly && !!secuenciaSemanalLimpia(rot.sequence);
+}
+
+/** Monday-first indices the weekly sequence works. */
+export function diasDeSecuenciaSemanal(seq: unknown): number[] {
+  const s = secuenciaSemanalLimpia(seq);
+
+  if (!s) return [];
+
+  return s
+    .split("")
+    .map((ch, i) => (ch === "L" ? -1 : i))
+    .filter((i) => i >= 0);
+}
+
+/** Monday-first indices → API weekday keys ('mon'…). */
+export const diasIsoDe = (indices: number[]): DiaIso[] =>
+  [...new Set(indices)]
+    .filter((i) => i >= 0 && i < 7)
+    .sort((a, b) => a - b)
+    .map((i) => DIAS_ISO[i]);
+
+/** The letter a weekly sequence gives a calendar date (anchored to Monday). */
+export function letraSemanalDe(seq: string, fecha: Date): string {
+  const s = secuenciaSemanalLimpia(seq);
+
+  return s ? s.charAt(diaLunesPrimero(fecha)) : "L";
+}
+
+/**
+ * The real calendar of a weekly sequence: `semanas` weeks starting on the
+ * MONDAY of the week of `desde`. Unlike the cyclic preview, the start day never
+ * matters — a weekly style has no phase.
+ */
+export function previaSemanal(
+  seq: string,
+  desde: Date,
+  semanas = 2,
+): { fecha: Date; letra: string }[] {
+  const s = secuenciaSemanalLimpia(seq);
+
+  if (!s) return [];
+  const lunes = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate());
+
+  lunes.setDate(lunes.getDate() - diaLunesPrimero(lunes));
+
+  return Array.from({ length: Math.max(1, semanas) * 7 }, (_, i) => {
+    const fecha = new Date(lunes.getFullYear(), lunes.getMonth(), lunes.getDate() + i);
+
+    return { fecha, letra: s.charAt(i % 7) };
+  });
+}
+
+/** Minimal translator signature (i18next's `t` fits). */
+export type Traductor = (clave: string, opciones?: any) => string;
+
+const capital = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+/** Long localized weekday name (0 = Monday). */
+export function nombreDeDia(i: number, t: Traductor): string {
+  return t(`ui.RotationStyleSelect.${CLAVES_DIA[i][0]}`, {
+    defaultValue: LARGO_ES[i],
+  });
+}
+
+/** Short localized weekday name (0 = Monday): «Lun», «Mon». */
+export function nombreCortoDeDia(i: number, t: Traductor): string {
+  return t(`ui.semana.${CLAVES_DIA[i][1]}`, { defaultValue: CORTO_ES[i] });
+}
+
+/**
+ * The name of a set of weekdays, localized: «Todos los días», «Lunes a
+ * viernes» (a run of three or more), or «Lun, Mié, Vie».
+ */
+export function nombreDeDias(indices: number[], t: Traductor): string {
+  const on = [...new Set(indices)].filter((i) => i >= 0 && i < 7).sort((a, b) => a - b);
+
+  if (!on.length) return t("ui.semana.ningunDia", { defaultValue: "Ningún día" });
+  if (on.length === 7)
+    return t("ui.semana.todosLosDias", { defaultValue: "Todos los días" });
+  const seguidos = on[on.length - 1] - on[0] === on.length - 1;
+
+  if (seguidos && on.length >= 3)
+    return capital(
+      t("ui.semana.rango", {
+        defaultValue: "{{desde}} a {{hasta}}",
+        desde: nombreDeDia(on[0], t),
+        hasta: nombreDeDia(on[on.length - 1], t),
+      }),
+    );
+  if (on.length === 1) return capital(nombreDeDia(on[0], t));
+
+  return on.map((i) => nombreCortoDeDia(i, t)).join(", ");
+}
+
+/** The name of a weekly sequence: «Lunes a viernes», «Lun, Mié, Vie». */
+export function nombreSemanal(seq: unknown, t: Traductor): string {
+  return nombreDeDias(diasDeSecuenciaSemanal(seq), t);
+}
+
+/**
+ * The name to SHOW for a rotation style. A weekly style is named from its
+ * letters in the viewer's language («Monday to Friday»), never from the name
+ * stored on creation (Spanish, from whoever created it).
+ */
+export function nombreDeEstilo(
+  s: (PatronDeCiclo & { weekly?: boolean | null; name?: string | null }) | null | undefined,
+  t: Traductor,
+): string {
+  if (!s) return "";
+
+  return esSemanal(s) ? nombreSemanal(s.sequence, t) : String(s.name || "");
 }

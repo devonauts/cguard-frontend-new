@@ -7,6 +7,8 @@ export interface RotationStyle {
   restDays: number;
   /** Secuencia libre (una letra por día: D/N/L); nula en los patrones de tres números. */
   sequence?: string | null;
+  /** Weekly style: `sequence` is 7 letters anchored to the calendar (0 = Monday). */
+  weekly?: boolean;
   isSystem: boolean;
 }
 export interface StationPosition {

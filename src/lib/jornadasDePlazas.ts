@@ -1,4 +1,4 @@
-import { cicloDe } from "@/lib/secuenciaDeRotacion";
+import { cicloDe, esSemanal } from "@/lib/secuenciaDeRotacion";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -71,6 +71,7 @@ export interface RotacionDelPuesto {
   nightShifts?: number | null;
   restDays?: number | null;
   sequence?: string | null;
+  weekly?: boolean | null;
 }
 
 /**
@@ -85,6 +86,8 @@ export function aLaVezSegunLaRotacion(
   rot?: RotacionDelPuesto | null,
 ): number {
   if (!rot) return plazas;
+  // Weekly: every seat works the same weekdays, so they are all on at once.
+  if (esSemanal(rot)) return plazas;
   const { trabajo, largo } = cicloDe(rot);
 
   if (!(largo > 0) || !(trabajo > 0)) return plazas;

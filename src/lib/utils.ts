@@ -59,6 +59,8 @@ export interface RotationCycle {
   restDays: number;
   /** Secuencia libre (D/N/L por día); nula en los patrones de tres números. */
   sequence?: string | null;
+  /** Weekly style: `sequence` is 7 letters anchored to the calendar (0 = Monday). */
+  weekly?: boolean | null;
 }
 
 /** Las reglas de un patrón, con su secuencia si la tiene. */
@@ -70,6 +72,7 @@ export function reglasDelPatron(
     alternatesDayNight: extra?.alternatesDayNight ?? style.alternatesDayNight,
     sundayDoubleRest: extra?.sundayDoubleRest ?? style.sundayDoubleRest,
     secuencia: extra?.secuencia ?? style.sequence ?? null,
+    semanal: extra?.semanal ?? style.weekly ?? null,
   };
 }
 
@@ -105,6 +108,8 @@ export interface ReglasDeRotacion {
   sundayDoubleRest?: boolean | null;
   /** La secuencia libre del patrón (D/N/L por día): cuando viene, manda. */
   secuencia?: string | null;
+  /** Weekly style: the 7-letter `secuencia` is read by WEEKDAY, never by phase. */
+  semanal?: boolean | null;
 }
 
 /** ¿Ese día es domingo? `dse` cuenta desde la época 2024-01-01, que fue lunes. */
@@ -152,6 +157,14 @@ export function estadoDeRotacionCliente(
   reglas?: ReglasDeRotacion | null,
 ): "day" | "night" | "rest" {
   const secuencia = secuenciaLimpia(reglas?.secuencia);
+
+  // A weekly style ignores offset and anchor: day `dse` is a weekday
+  // (dse 0 = 2024-01-01, a Monday — see `esDomingoDse`).
+  if (reglas?.semanal && secuencia && secuencia.length === 7) {
+    const ch = secuencia.charAt(((dse % 7) + 7) % 7);
+
+    return ch === "D" ? "day" : ch === "N" ? "night" : "rest";
+  }
   const ciclo = secuencia ? secuencia.length : dayShifts + nightShifts + restDays;
   if (ciclo <= 0) return "rest";
 

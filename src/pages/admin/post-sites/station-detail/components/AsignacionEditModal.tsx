@@ -1,4 +1,4 @@
-import { cicloDe as leerCiclo } from "@/lib/secuenciaDeRotacion";
+import { cicloDe as leerCiclo, esSemanal } from "@/lib/secuenciaDeRotacion";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -539,7 +539,15 @@ export default function AsignacionEditModal({
             className="flex flex-wrap items-center justify-end gap-2 border-t pt-3"
             style={{ borderColor: "var(--hairline)" }}
           >
-            {!esRelevo && (secuencia || stationRotationStyleId) && (
+            {!esRelevo &&
+              (secuencia || stationRotationStyleId) &&
+              // Weekly styles have no cycle to run (the server answers 409).
+              !esSemanal(
+                estilos.find(
+                  (s) =>
+                    String(s.id) === String(secuencia || stationRotationStyleId),
+                ),
+              ) && (
               <Button
                 className="mr-auto"
                 disabled={guardando}

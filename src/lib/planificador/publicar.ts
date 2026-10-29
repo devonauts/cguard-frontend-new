@@ -298,6 +298,12 @@ export function planificarPublicacion(
         );
       else if (!pu)
         no.push(`${nombreDe(p)}: su puesto ya no existe en el borrador.`);
+      // A weekly style is anchored to the calendar: there is no cycle to run
+      // and the server refuses it. Its days change in the post, not here.
+      else if (en.semanal || p.semanal)
+        no.push(
+          `${nombreDe(p)}: trabaja por días de la semana; su horario no se corre. Cambia sus días en la configuración del puesto.`,
+        );
       // Sin plaza el generador real no rota: le escribiría un ciclo que nunca
       // usa y lo dejaría con un turno suelto (pasó en local). Mejor decirlo.
       else if (en.conPlaza === false)

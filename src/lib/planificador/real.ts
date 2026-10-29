@@ -17,7 +17,7 @@
  * enseña — si es bajo, el borrador no se parece al horario real y hay que
  * saberlo antes de fiarse.
  */
-import { cicloDe as leerCiclo } from "@/lib/secuenciaDeRotacion";
+import { esSemanal, cicloDe as leerCiclo } from "@/lib/secuenciaDeRotacion";
 import {
   FRANCO,
   LIBRE,
@@ -61,6 +61,8 @@ export interface Enlace {
       relevo: boolean;
       rotationStyleId: string | null;
       /** Tiene plaza: el generador real sólo rota a quien la tiene. */ conPlaza?: boolean;
+      /** Weekly style («por días de la semana»): its phase is the calendar. */
+      semanal?: boolean;
     }
   >;
   puestos: Record<
@@ -598,12 +600,26 @@ export function planDesdeHorarioReal(
     let patron: string[] | null = null;
     let desfase = 0;
     let errores = comparables;
+    /* A WEEKLY style is read by weekday, never guessed: index 0 of its 7
+       letters is Monday, so the phase is the weekday of day 0 of the plan. */
+    const semanal = !relevo && esSemanal(rot);
+
+    if (semanal) {
+      patron = String(rot.sequence)
+        .toUpperCase()
+        .split("")
+        .map((ch) => (ch === "L" ? FRANCO : ch === "N" ? d2 : d1));
+      const [by, bm, bd] = base.split("-").map(Number);
+
+      desfase = (new Date(Date.UTC(by, bm - 1, bd)).getUTCDay() + 6) % 7;
+      errores = fallos(patron, desfase);
+    }
 
     // 1) La rotación que de verdad lleva: el tramo más corto que, repetido
     //    desde su primer día, reproduce sus turnos (se le perdonan dos días
     //    sueltos: un cambio, una falta). Manda sobre el ciclo declarado, porque
     //    es lo que pasa en el puesto.
-    if (hechos.size)
+    if (hechos.size && !semanal)
       for (let n = 1; n <= 14 && !patron; n++) {
         const pat = tramo(n);
 
@@ -713,6 +729,7 @@ export function planDesdeHorarioReal(
       relevo,
       rotationStyleId: a.rotationStyleId ? String(a.rotationStyleId) : null,
       conPlaza: !!a.positionId && a.kind !== "adhoc",
+      ...(semanal ? { semanal: true } : {}),
     };
     turnosDe(guardId, pid);
     const persona: Persona = {
@@ -723,6 +740,7 @@ export function planDesdeHorarioReal(
       desfase,
       manual: {},
       ausencias: [],
+      ...(semanal ? { semanal: true } : {}),
     };
 
     if (relevo) {

@@ -16,10 +16,17 @@ import { rangoDelEvento, vigenciaDe } from "@/lib/eventos";
 import { horaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   cicloDe,
+  diasIsoDe,
+  indiceDeDia,
   necesitaComplemento,
+  nombreCortoDeDia,
+  nombreDeDias,
   nombreDeSecuencia,
   personasQueSeTurnanCon,
+  previaSemanal,
   secuenciaDeTexto,
+  secuenciaSemanal,
+  type Traductor,
 } from "@/lib/secuenciaDeRotacion";
 
 import { AvisosDeRelevos } from "./AvisosDeRelevos";
@@ -231,6 +238,84 @@ export interface Rotacion {
   noRepresentable: boolean;
   /** La secuencia libre (D/N/L por día), cuando el ciclo se escribió así. */
   secuencia?: string | null;
+  /** «Por días de la semana»: `secuencia` is 7 letters anchored to Monday. */
+  semanal?: boolean;
+  /** Weekly mode: the API weekday keys ('mon'…). */
+  diasIso?: string[];
+}
+
+/** Monday to Friday, in the form's weekday keys. */
+export const DIAS_LABORABLES = ["lun", "mar", "mie", "jue", "vie"];
+
+/**
+ * «POR DÍAS DE LA SEMANA» — the guard works those weekdays whatever his start
+ * date (an office post, a bank branch: Monday to Friday). Saved as a WEEKLY
+ * rotation style (`{ weekly: true, weekdays }`); null when no day is picked.
+ */
+export function rotacionSemanal(dias: string[], t: Traductor): Rotacion | null {
+  const seq = secuenciaSemanal(dias);
+
+  if (!seq) return null;
+  const indices = seq
+    .split("")
+    .map((ch, i) => (ch === "L" ? -1 : i))
+    .filter((i) => i >= 0);
+
+  return {
+    dayShifts: indices.length,
+    nightShifts: 0,
+    restDays: 7 - indices.length,
+    alterna: false,
+    dominical: false,
+    nombre: nombreDeDias(indices, t),
+    largo: 7,
+    noRepresentable: false,
+    secuencia: seq,
+    semanal: true,
+    diasIso: diasIsoDe(indices),
+  };
+}
+
+/** The `POST rotation-style` body for a rotation (created, or reused if it exists). */
+export function cuerpoDePatron(r: Rotacion): Record<string, unknown> {
+  if (r.semanal) return { weekly: true, weekdays: r.diasIso || [] };
+
+  return {
+    name: r.nombre,
+    dayShifts: r.dayShifts,
+    nightShifts: r.nightShifts,
+    restDays: r.restDays,
+    alternatesDayNight: r.alterna,
+    sundayDoubleRest: r.dominical,
+    sequence: r.secuencia || undefined,
+    reuseIfExists: true,
+  };
+}
+
+/**
+ * The `franjas` sent to `auto-positions`. In weekly mode every slot opens on
+ * the chosen weekdays, the same ones the guards work. Empty = every day.
+ */
+export function franjasParaGuardar(
+  ordenadas: Pick<Franja, "start" | "end" | "guards" | "days">[],
+  diasSemanales: string[] | null,
+): { start: string; end: string; guards: number; days: string[] }[] {
+  const semanales = diasSemanales
+    ? [...new Set(diasSemanales)]
+        .filter((d) => indiceDeDia(d) >= 0)
+        .sort((a, b) => indiceDeDia(a) - indiceDeDia(b))
+    : null;
+
+  return ordenadas.map((f) => {
+    const days = semanales ?? f.days;
+
+    return {
+      start: f.start,
+      end: f.end,
+      guards: Math.max(1, f.guards),
+      days: days.length && days.length < 7 ? [...days] : [],
+    };
+  });
 }
 
 /**
@@ -310,6 +395,8 @@ export function rotacionDe(
     tapa sus libres. El servidor crea una plaza por persona (teselado). */
 export function personasQueSeTurnan(r: Rotacion | null): number {
   if (!r) return 1;
+  // Weekly: the post opens only those weekdays, one guard per seat.
+  if (r.semanal) return 1;
   if (r.secuencia) return personasQueSeTurnanCon({ sequence: r.secuencia });
   const trabajo = r.dayShifts + r.nightShifts;
 
@@ -518,6 +605,10 @@ export default function StationCreateForm({
      contadores, para lo que no cabe en «tantos, tantos, tantos libres». */
   const [secuenciaLibre, setSecuenciaLibre] = useState(false);
   const [secuenciaTexto, setSecuenciaTexto] = useState("");
+  /* POR DÍAS DE LA SEMANA: the guards work fixed weekdays (Monday to Friday),
+     anchored to the calendar instead of a cycle. */
+  const [semanal, setSemanal] = useState(false);
+  const [diasSemana, setDiasSemana] = useState<string[]>(DIAS_LABORABLES);
   const cicloDe = (k: string): Ciclo => ciclos[k] || CICLO_VACIO;
   const ponerCiclo = (k: string, l: keyof Ciclo, v: number) =>
     setCiclos((cs) => ({
@@ -526,10 +617,12 @@ export default function StationCreateForm({
     }));
   const rotacion = useMemo(
     () =>
-      secuenciaLibre
-        ? rotacionDeSecuencia(secuenciaTexto, tramos, dominical)
-        : rotacionDe(cicloDe("*"), tramos, alterna, dominical),
-    [ciclos, tramos, alterna, dominical, secuenciaLibre, secuenciaTexto],
+      semanal
+        ? rotacionSemanal(diasSemana, t as Traductor)
+        : secuenciaLibre
+          ? rotacionDeSecuencia(secuenciaTexto, tramos, dominical)
+          : rotacionDe(cicloDe("*"), tramos, alterna, dominical),
+    [ciclos, tramos, alterna, dominical, secuenciaLibre, secuenciaTexto, semanal, diasSemana, t],
   ); // eslint-disable-line react-hooks/exhaustive-deps
   const rotacionesPorPlaza = useMemo(
     () =>
@@ -547,12 +640,15 @@ export default function StationCreateForm({
   /* Cuánta gente fija pide el puesto con estos ciclos: por asiento, k que se
      turnan (ciclo que cierra exacto) o 1 fijo cuyos libres tapa el sacafranco. */
   const rotacionesEfectivas =
-    porPlaza && !secuenciaLibre ? rotacionesPorPlaza : plazas.map(() => rotacion);
+    porPlaza && !secuenciaLibre && !semanal
+      ? rotacionesPorPlaza
+      : plazas.map(() => rotacion);
   const necesarios = rotacionesEfectivas.some(Boolean)
     ? rotacionesEfectivas.reduce((acc, r) => acc + personasQueSeTurnan(r), 0)
     : 0;
   const conSacafranco = rotacionesEfectivas.some(
-    (r) => r && !r.noRepresentable && personasQueSeTurnan(r) === 1,
+    (r) =>
+      r && !r.semanal && !r.noRepresentable && personasQueSeTurnan(r) === 1,
   );
 
   /* EL RADIO EN LA UNIDAD DE LA EMPRESA. En EE. UU. se piensa en pies; el
@@ -672,18 +768,7 @@ export default function StationCreateForm({
         try {
           const res: any = await ApiService.post(
             `/tenant/${tenantId}/rotation-style`,
-            {
-              data: {
-                name: r.nombre,
-                dayShifts: r.dayShifts,
-                nightShifts: r.nightShifts,
-                restDays: r.restDays,
-                alternatesDayNight: r.alterna,
-                sundayDoubleRest: r.dominical,
-                sequence: r.secuencia || undefined,
-                reuseIfExists: true,
-              },
-            },
+            { data: cuerpoDePatron(r) },
           );
 
           return res?.id || res?.data?.id || "";
@@ -696,7 +781,7 @@ export default function StationCreateForm({
       let rotationStyleId = "";
       let positionRotationStyleIds: string[] | undefined;
 
-      if (porPlaza && !secuenciaLibre) {
+      if (porPlaza && !secuenciaLibre && !semanal) {
         positionRotationStyleIds = [];
         for (const r of rotacionesPorPlaza)
           positionRotationStyleIds.push(await crearPatron(r));
@@ -717,12 +802,11 @@ export default function StationCreateForm({
                 scheduleType: tipo,
                 rotationStyleId: rotationStyleId || undefined,
                 positionRotationStyleIds,
-                franjas: ordenadas.map((f) => ({
-                  start: f.start,
-                  end: f.end,
-                  guards: Math.max(1, f.guards),
-                  days: f.days.length && f.days.length < 7 ? f.days : [],
-                })),
+                // Weekly mode: the post opens the same weekdays its guards work.
+                franjas: franjasParaGuardar(
+                  ordenadas,
+                  semanal ? diasSemana : null,
+                ),
               },
             },
           );
@@ -1396,6 +1480,7 @@ export default function StationCreateForm({
                     onClick={() => {
                       setPorPlaza(pp);
                       setSecuenciaLibre(false);
+                      setSemanal(false);
                     }}
                   >
                     {pp
@@ -1430,6 +1515,7 @@ export default function StationCreateForm({
                   onClick={() => {
                     setSecuenciaLibre(true);
                     setPorPlaza(false);
+                    setSemanal(false);
                   }}
                 >
                   {t(
@@ -1437,10 +1523,134 @@ export default function StationCreateForm({
                     "Escribir la secuencia (1-2-2-2)",
                   )}
                 </button>
+                {/* Fixed weekdays, anchored to the calendar: «Lunes a viernes». */}
+                <button
+                  aria-pressed={semanal}
+                  className="cg-focus rounded-full border px-3 py-1 text-xs font-semibold"
+                  style={
+                    semanal
+                      ? {
+                          background: "var(--brand)",
+                          color: "var(--brand-ink)",
+                          borderColor: "var(--brand)",
+                        }
+                      : {
+                          background: "var(--glass)",
+                          color: "var(--ink)",
+                          borderColor: "var(--hairline)",
+                        }
+                  }
+                  type="button"
+                  onClick={() => {
+                    if (!semanal && diasGlobal.length > 0 && diasGlobal.length < 7)
+                      setDiasSemana(diasGlobal);
+                    setSemanal(true);
+                    setSecuenciaLibre(false);
+                    setPorPlaza(false);
+                  }}
+                >
+                  {t(
+                    "ui.StationCreateForm.porDiasDeLaSemana",
+                    "Por días de la semana",
+                  )}
+                </button>
               </div>
-              {(porPlaza && !secuenciaLibre
-                ? plazas.map((f, i) => ({ k: String(i), f, i }))
-                : [{ k: "*", f: null, i: -1 }]
+              {semanal && (
+                <div className="mb-3 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="flex gap-0.5">
+                      {DIAS.map((d) => {
+                        const on = diasSemana.includes(d);
+
+                        return (
+                          <button
+                            key={d}
+                            aria-pressed={on}
+                            className="cg-focus h-8 w-10 rounded text-[11px] font-bold"
+                            style={
+                              on
+                                ? {
+                                    background:
+                                      "color-mix(in oklab, var(--brand) 22%, transparent)",
+                                    color: "var(--brand-text)",
+                                  }
+                                : {
+                                    background: "var(--glass-sunken)",
+                                    color: "var(--ink-faint)",
+                                  }
+                            }
+                            type="button"
+                            onClick={() =>
+                              setDiasSemana((xs) =>
+                                on ? xs.filter((x) => x !== d) : [...xs, d],
+                              )
+                            }
+                          >
+                            {nombreCortoDeDia(indiceDeDia(d), t as Traductor)}
+                          </button>
+                        );
+                      })}
+                    </span>
+                    {rotacion?.semanal && (
+                      <span className="text-xs font-semibold" style={{ color: "var(--brand-text)" }}>
+                        = {rotacion.nombre}
+                      </span>
+                    )}
+                  </div>
+                  {!rotacion ? (
+                    <p className="text-xs font-semibold" style={{ color: "var(--bad-text)" }}>
+                      {t(
+                        "ui.StationCreateForm.semanalSinDias",
+                        "Elige al menos un día de la semana.",
+                      )}
+                    </p>
+                  ) : (
+                    <>
+                      {/* The real calendar, Monday first: two weeks from this one. */}
+                      <div
+                        className="inline-grid gap-[3px]"
+                        style={{ gridTemplateColumns: "repeat(7, 2rem)" }}
+                      >
+                        {DIAS.map((d) => (
+                          <span
+                            key={d}
+                            className="text-center text-[9px] font-semibold uppercase"
+                            style={{ color: "var(--ink-faint)" }}
+                          >
+                            {nombreCortoDeDia(indiceDeDia(d), t as Traductor)}
+                          </span>
+                        ))}
+                        {previaSemanal(rotacion.secuencia || "", new Date(), 2).map(
+                          ({ fecha, letra }) => (
+                            <span
+                              key={fecha.toISOString()}
+                              className="grid h-7 place-items-center rounded-md text-[11px] font-bold tabular-nums"
+                              style={
+                                letra === "L"
+                                  ? { background: "var(--glass)", color: "var(--ink-faint)" }
+                                  : { background: "var(--brand)", color: "var(--brand-ink)" }
+                              }
+                            >
+                              {fecha.getDate()}
+                            </span>
+                          ),
+                        )}
+                      </div>
+                      <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                        {t(
+                          "ui.StationCreateForm.semanalExplica",
+                          "Cada vigilante trabaja esos días de la semana, empiece cuando empiece, y el puesto se cubre solo esos días. Un vigilante por plaza, sin sacafranco.",
+                        )}
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+              {(semanal
+                ? []
+                : porPlaza && !secuenciaLibre
+                  ? plazas.map((f, i) => ({ k: String(i), f, i }))
+                  : [{ k: "*", f: null, i: -1 }]
               ).map(({ k, f, i }) => {
                 const c = cicloDe(k);
                 const r = porPlaza ? rotacionesPorPlaza[i] : rotacion;
@@ -1634,7 +1844,11 @@ export default function StationCreateForm({
                     : ""}
                 </p>
               )}
-              <div className="mt-1 flex flex-wrap items-center gap-4 text-xs">
+              <div
+                className={
+                  semanal ? "hidden" : "mt-1 flex flex-wrap items-center gap-4 text-xs"
+                }
+              >
                 {tramos.length >= 2 && (
                   <label className="inline-flex items-center gap-1.5">
                     <input
