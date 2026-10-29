@@ -1134,8 +1134,12 @@ export default function StationCreateForm({
                       })}
                     </span>
                   </span>
-                  {/* Un evento no tiene «días de la semana»: tiene sus fechas. */}
-                  {!esModoEvento && (
+                  {/* Un evento no tiene «días de la semana»: tiene sus fechas.
+                      ONE place for the days (Mike, 2026-10-29: «no quiero
+                      confundir a la gente»): in «Por días de la semana» they are
+                      chosen below, so these chips hide; leaving a day out here
+                      switches to that mode. */}
+                  {!esModoEvento && !semanal && (
                     <>
                       <span
                         className="h-5 w-px"
@@ -1180,6 +1184,13 @@ export default function StationCreateForm({
                                     ? actuales.filter((x) => x !== d)
                                     : [...actuales, d];
 
+                                  if (sig.length > 0 && sig.length < 7) {
+                                    // Fewer days than all of them = a weekly schedule.
+                                    setDiasSemana(DIAS.filter((x) => sig.includes(x)));
+                                    setSemanal(true);
+                                    setSecuenciaLibre(false);
+                                    setPorPlaza(false);
+                                  }
                                   setDiasGlobal(sig.length === 7 ? [] : sig);
                                 }}
                               >
@@ -1488,6 +1499,8 @@ export default function StationCreateForm({
                     onClick={() => {
                       setPorPlaza(pp);
                       setSecuenciaLibre(false);
+                      // A cycle covers every day: leaving the weekly mode reopens them.
+                      if (semanal) setDiasGlobal([]);
                       setSemanal(false);
                     }}
                   >
@@ -1523,6 +1536,7 @@ export default function StationCreateForm({
                   onClick={() => {
                     setSecuenciaLibre(true);
                     setPorPlaza(false);
+                    if (semanal) setDiasGlobal([]);
                     setSemanal(false);
                   }}
                 >

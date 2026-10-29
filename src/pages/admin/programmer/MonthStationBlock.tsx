@@ -27,6 +27,8 @@ import { COL_W } from "./gridBand";
 
 import { Button } from "@/components/ui/button";
 import { nombreDeVigilante } from "@/lib/guardName";
+import { diasCompactos, diasDeLasPlazas } from "@/lib/diasDeLaSemana";
+import { etiquetaDeHorario as etiquetaDeJornada, resumenDeHorario } from "@/lib/jornadasDePlazas";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -284,7 +286,7 @@ function MonthStationBlockInner({
   cartaElegida,
   h,
 }: MonthStationBlockProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const hasPositions = stationPositions.length > 0;
 
   /* Horas distintas entre los fijos ⇒ cada fila es dueña de su mitad (diurno
@@ -809,11 +811,26 @@ function MonthStationBlockInner({
               )}
               onClick={() => h.configureStation(station)}
             >
-              {station.scheduleType
-                ? SCHEDULE_TYPE_KEY[station.scheduleType]
-                  ? t(SCHEDULE_TYPE_KEY[station.scheduleType])
-                  : station.scheduleType
-                : t("ui.MonthStationBlock.sinConfigurar", "Sin configurar")}
+              {(() => {
+                /* The REAL schedule, like the station cards: «8h Diurno ·
+                   09:00–17:00 · lun–vie». It used to print only the type
+                   («Diurno (12h)») for a 09:00–17:00 post (Mike, 2026-10-29). */
+                if (!station.scheduleType)
+                  return t("ui.MonthStationBlock.sinConfigurar", "Sin configurar");
+                const fija: any = (stationPositions as any[]).find((p) => p.type !== "sacafranco");
+                const r = resumenDeHorario(station.scheduleType, {
+                  startingTimeInDay: (station as any).startingTimeInDay ?? fija?.startTime,
+                  finishTimeInDay: (station as any).finishTimeInDay ?? fija?.endTime,
+                });
+                const tipo = r.clave
+                  ? etiquetaDeJornada(t as any, r)
+                  : SCHEDULE_TYPE_KEY[station.scheduleType]
+                    ? t(SCHEDULE_TYPE_KEY[station.scheduleType])
+                    : station.scheduleType;
+                const dias = diasCompactos(diasDeLasPlazas(stationPositions as any[]), i18n.language);
+
+                return [tipo, r.ventana, dias].filter(Boolean).join(" · ");
+              })()}
             </button>
             {stationAlert && (
               <div className="mt-1 flex items-center gap-1 flex-wrap">
