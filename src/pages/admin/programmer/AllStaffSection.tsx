@@ -26,7 +26,9 @@ import {
   filtrarPersonas,
   normalizarPersonas,
   rotuloDeDonde,
-  ventanaDePersonal,
+  tramosDe,
+  unirPersonas,
+  ventanaParaLaHoja,
   type DiaDePersona,
   type FiltroDeTipo,
   type PersonaDelHorario,
@@ -120,12 +122,17 @@ function AllStaffSection({
 
     setCargando(true);
     try {
-      const r = await ApiService.get(
-        `/tenant/${tenantId()}/scheduler/people?startDate=${w.desde}&endDate=${w.hasta}`,
+      // The endpoint takes ≤ 62 days; the painted sheet can be wider.
+      const respuestas = await Promise.all(
+        tramosDe(w.desde, w.hasta).map((tr) =>
+          ApiService.get(
+            `/tenant/${tenantId()}/scheduler/people?startDate=${tr.desde}&endDate=${tr.hasta}`,
+          ),
+        ),
       );
 
       if (yo !== pedido.current) return;
-      setPersonas(normalizarPersonas(r));
+      setPersonas(unirPersonas(respuestas.map(normalizarPersonas)));
       setCargado(w);
       setError(false);
     } catch {
@@ -141,7 +148,7 @@ function AllStaffSection({
   useEffect(() => {
     if (!visDesde || cubreLaVentana(cargado, visDesde, visHasta)) return;
     const id = window.setTimeout(
-      () => void pedir(ventanaDePersonal(visDesde, ultimo)),
+      () => void pedir(ventanaParaLaHoja(visDesde, visHasta, ultimo)),
       cargado ? 250 : 0,
     );
 

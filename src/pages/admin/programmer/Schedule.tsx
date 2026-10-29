@@ -6670,7 +6670,7 @@ export default function Schedule() {
                       border: "1px solid var(--hairline)",
                       /* Everyone can be a long list: it scrolls inside so the
                          timeline below keeps its room. */
-                      maxHeight: "45vh",
+                      maxHeight: "60vh",
                     }}
                   >
                     <SupervisionSection

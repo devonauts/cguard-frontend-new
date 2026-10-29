@@ -268,9 +268,10 @@ export function ventanaDePersonal(
 }
 
 /**
- * Does the loaded range already cover the visible one? A visible window wider
- * than the endpoint allows counts as covered once its first
- * `MAX_DIAS_PERSONAL` days are — otherwise it would refetch forever.
+ * Does the loaded range already cover the painted one? The sheet paints more
+ * than fits on screen (overscan), and the whole painted range must be loaded:
+ * covering only its first `MAX_DIAS_PERSONAL` days left the days after it
+ * blank (seen 2026-10-28: everything after Nov 1 empty after «Hoy»).
  */
 export function cubreLaVentana(
   cargado: { desde: string; hasta: string } | null,
@@ -278,8 +279,66 @@ export function cubreLaVentana(
   hasta: string,
 ): boolean {
   if (!cargado) return false;
-  const tope = sumarDias(desde, MAX_DIAS_PERSONAL - 1);
-  const fin = hasta < tope ? hasta : tope;
 
-  return cargado.desde <= desde && cargado.hasta >= fin;
+  return cargado.desde <= desde && cargado.hasta >= hasta;
+}
+
+/**
+ * The range to load for a painted window: at least the whole window, and at
+ * least `MAX_DIAS_PERSONAL` days so a short scroll does not refetch, never past
+ * `limiteFin` (the last day the sheet paints).
+ */
+export function ventanaParaLaHoja(
+  desde: string,
+  hasta: string,
+  limiteFin?: string,
+): { desde: string; hasta: string } {
+  const minimo = ventanaDePersonal(desde, limiteFin).hasta;
+  let fin = hasta > minimo ? hasta : minimo;
+
+  if (limiteFin && fin > limiteFin) fin = limiteFin < desde ? desde : limiteFin;
+
+  return { desde, hasta: fin };
+}
+
+/** Splits a range into requests the endpoint accepts (≤ `MAX_DIAS_PERSONAL` days each). */
+export function tramosDe(desde: string, hasta: string): Array<{ desde: string; hasta: string }> {
+  const out: Array<{ desde: string; hasta: string }> = [];
+  let a = desde;
+
+  while (a <= hasta) {
+    const b = sumarDias(a, MAX_DIAS_PERSONAL - 1);
+    const fin = b < hasta ? b : hasta;
+
+    out.push({ desde: a, hasta: fin });
+    a = sumarDias(fin, 1);
+  }
+
+  return out;
+}
+
+/** Joins the people of several ranges: one row per person, days in date order, no repeats. */
+export function unirPersonas(listas: PersonaDelHorario[][]): PersonaDelHorario[] {
+  const porId = new Map<string, PersonaDelHorario>();
+
+  for (const lista of listas) {
+    for (const p of lista) {
+      const ya = porId.get(p.userId);
+
+      if (!ya) {
+        porId.set(p.userId, { ...p, days: [...p.days] });
+        continue;
+      }
+      const fechas = new Set(ya.days.map((d) => d.date));
+
+      for (const d of p.days) if (!fechas.has(d.date)) ya.days.push(d);
+      ya.hasSchedule = ya.hasSchedule || p.hasSchedule;
+      ya.assigned = ya.assigned || p.assigned;
+    }
+  }
+  const out = [...porId.values()];
+
+  for (const p of out) p.days.sort((x, y) => (x.date < y.date ? -1 : x.date > y.date ? 1 : 0));
+
+  return out;
 }

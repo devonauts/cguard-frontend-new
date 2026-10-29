@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Plus, X } from "lucide-react";
@@ -609,6 +609,12 @@ export default function StationCreateForm({
      anchored to the calendar instead of a cycle. */
   const [semanal, setSemanal] = useState(false);
   const [diasSemana, setDiasSemana] = useState<string[]>(DIAS_LABORABLES);
+  /* Weekly mode: the slot's «días» chips show the same weekdays, so the
+     screen never says «every day» while the post opens Monday to Friday. */
+  useEffect(() => {
+    if (!semanal) return;
+    setDiasGlobal(diasSemana.length === 7 ? [] : diasSemana.filter((d) => (DIAS as readonly string[]).includes(d)));
+  }, [semanal, diasSemana]);
   const cicloDe = (k: string): Ciclo => ciclos[k] || CICLO_VACIO;
   const ponerCiclo = (k: string, l: keyof Ciclo, v: number) =>
     setCiclos((cs) => ({
@@ -1464,7 +1470,9 @@ export default function StationCreateForm({
                     key={String(pp)}
                     className="cg-focus rounded-full border px-3 py-1 text-xs font-semibold"
                     style={
-                      porPlaza === pp
+                      /* Only ONE way of working is lit: the sequence and the
+                         weekly modes are their own chips. */
+                      porPlaza === pp && !secuenciaLibre && !semanal
                         ? {
                             background: "var(--brand)",
                             color: "var(--brand-ink)",

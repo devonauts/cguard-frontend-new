@@ -9,6 +9,9 @@ import {
   normalizarPersonas,
   rotuloDeDonde,
   ventanaDePersonal,
+  ventanaParaLaHoja,
+  tramosDe,
+  unirPersonas,
 } from "./personalDelHorario";
 import { plazasElegibles } from "../pages/admin/programmer/AsignarAPuestoModal";
 
@@ -116,7 +119,8 @@ describe("Todo el personal · the range asked for", () => {
     expect(cubreLaVentana(w, "2026-01-10", "2026-02-10")).toBe(true);
     expect(cubreLaVentana(w, "2025-12-31", "2026-01-10")).toBe(false);
     expect(cubreLaVentana(w, "2026-02-20", "2026-03-10")).toBe(false);
-    expect(cubreLaVentana(w, "2026-01-01", "2026-06-30")).toBe(true);
+    // The whole painted range must be loaded (days after the first 62 were left blank).
+    expect(cubreLaVentana(w, "2026-01-01", "2026-06-30")).toBe(false);
     expect(cubreLaVentana(null, "2026-01-01", "2026-01-02")).toBe(false);
   });
 });
@@ -138,5 +142,25 @@ describe("Asignar a un puesto · seats", () => {
 
     expect(out.map((p) => [p.positionId, p.libres])).toEqual([["p2", 1], ["p1", 0]]);
     expect(out[1]).toMatchObject({ puesto: "P-01 · Garita", horas: "07:00–19:00" });
+  });
+});
+
+describe("loading a painted sheet wider than 62 days", () => {
+  it("loads the whole painted window, split into accepted ranges", () => {
+    const w = ventanaParaLaHoja("2026-09-01", "2026-11-30", "2026-11-30");
+    expect(w).toEqual({ desde: "2026-09-01", hasta: "2026-11-30" });
+    const tr = tramosDe(w.desde, w.hasta);
+    expect(tr).toEqual([
+      { desde: "2026-09-01", hasta: "2026-11-01" },
+      { desde: "2026-11-02", hasta: "2026-11-30" },
+    ]);
+    expect(ventanaParaLaHoja("2026-10-25", "2026-11-05")).toEqual({ desde: "2026-10-25", hasta: "2026-12-25" });
+  });
+  it("joins ranges into one row per person with every day once, in order", () => {
+    const a = [{ userId: "u", name: "U", roles: [], kind: "office", hasSchedule: false, assigned: true, days: [{ date: "2026-11-01", status: "off", start: null, end: null, where: null, absence: null }] }] as any;
+    const b = [{ userId: "u", name: "U", roles: [], kind: "office", hasSchedule: true, assigned: true, days: [{ date: "2026-11-02", status: "work", start: "08:00", end: "17:00", where: null, absence: null }, { date: "2026-11-01", status: "off", start: null, end: null, where: null, absence: null }] }] as any;
+    const [u] = unirPersonas([b, a]);
+    expect(u.days.map((d: any) => d.date)).toEqual(["2026-11-01", "2026-11-02"]);
+    expect(u.hasSchedule).toBe(true);
   });
 });
