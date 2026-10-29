@@ -16898,7 +16898,22 @@
       "todasLasSedes": "Alle locaties"
     },
     "PuestaEnMarcha": {
-      "titulo": "Aan de slag · {{hechos}} van {{total}}"
+      "titulo": "Aan de slag · {{hechos}} van {{total}}",
+      "cliente": "Opdrachtgever",
+      "sede": "Locatie",
+      "puestos": "Posten",
+      "vigilantes": "Beveiligers",
+      "horario": "Rooster",
+      "faltaCliente": "De opdrachtgever moet nog worden aangevuld",
+      "irCliente": "Opdrachtgever aanvullen",
+      "faltaSede": "De locatie moet nog worden ingericht: welke dienst en waarmee",
+      "irSede": "Locatie inrichten",
+      "faltaPuestos": "Maak de posten aan en hoeveel uur elke post dekt",
+      "irPuestos": "Posten aanmaken",
+      "faltaVigilantes": "Wijs beveiligers toe aan de posten",
+      "irVigilantes": "Beveiligers toewijzen",
+      "faltaHorario": "Stel het rooster op: rotaties, vrije dagen en vervanging",
+      "irHorario": "Planner openen"
     },
     "Sacafranco": {
       "disponible": "Beschikbaar",

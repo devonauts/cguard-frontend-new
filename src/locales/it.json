@@ -16898,7 +16898,22 @@
       "todasLasSedes": "Tutte le sedi"
     },
     "PuestaEnMarcha": {
-      "titulo": "Avvio · {{hechos}} di {{total}}"
+      "titulo": "Avvio · {{hechos}} di {{total}}",
+      "cliente": "Committente",
+      "sede": "Sede",
+      "puestos": "Postazioni",
+      "vigilantes": "Guardie",
+      "horario": "Turni",
+      "faltaCliente": "Manca da completare il committente",
+      "irCliente": "Completa il committente",
+      "faltaSede": "Manca da configurare la sede: quale servizio e con cosa",
+      "irSede": "Configura la sede",
+      "faltaPuestos": "Mancano le postazioni e le ore che copre ciascuna",
+      "irPuestos": "Crea le postazioni",
+      "faltaVigilantes": "Mancano le guardie assegnate alle postazioni",
+      "irVigilantes": "Assegna guardie",
+      "faltaHorario": "Manca da sistemare i turni: rotazioni, riposi e sostituzioni",
+      "irHorario": "Apri il pianificatore"
     },
     "Sacafranco": {
       "disponible": "Disponibile",

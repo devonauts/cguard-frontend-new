@@ -16898,7 +16898,22 @@
       "todasLasSedes": "Tous les sites"
     },
     "PuestaEnMarcha": {
-      "titulo": "Mise en route · {{hechos}} sur {{total}}"
+      "titulo": "Mise en route · {{hechos}} sur {{total}}",
+      "cliente": "Client",
+      "sede": "Site",
+      "puestos": "Postes",
+      "vigilantes": "Agents",
+      "horario": "Planning",
+      "faltaCliente": "Il reste à compléter le client",
+      "irCliente": "Compléter le client",
+      "faltaSede": "Il reste à configurer le site : quel service et avec quoi",
+      "irSede": "Configurer le site",
+      "faltaPuestos": "Il reste à créer les postes et leurs heures de couverture",
+      "irPuestos": "Créer les postes",
+      "faltaVigilantes": "Il reste à affecter des agents aux postes",
+      "irVigilantes": "Affecter des agents",
+      "faltaHorario": "Il reste à caler le planning : rotations, repos et remplacements",
+      "irHorario": "Ouvrir le planificateur"
     },
     "Sacafranco": {
       "disponible": "Disponible",

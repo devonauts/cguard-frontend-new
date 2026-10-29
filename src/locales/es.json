@@ -16363,7 +16363,22 @@
       "todasLasSedes": "Todas las sedes"
     },
     "PuestaEnMarcha": {
-      "titulo": "Puesta en marcha · {{hechos}} de {{total}}"
+      "titulo": "Puesta en marcha · {{hechos}} de {{total}}",
+      "cliente": "Cliente",
+      "sede": "Sede",
+      "puestos": "Puestos",
+      "vigilantes": "Vigilantes",
+      "horario": "Horario",
+      "faltaCliente": "Falta completar el cliente",
+      "irCliente": "Completar cliente",
+      "faltaSede": "Falta configurar la sede: qué servicio se presta y con qué",
+      "irSede": "Configurar la sede",
+      "faltaPuestos": "Falta crear los puestos de vigilancia y decir cuántas horas cubre cada uno",
+      "irPuestos": "Crear los puestos",
+      "faltaVigilantes": "Falta asignar vigilantes a los puestos",
+      "irVigilantes": "Asignar vigilantes",
+      "faltaHorario": "Falta cuadrar el horario: rotaciones, francos y quién cubre",
+      "irHorario": "Abrir el Planificador"
     },
     "Sacafranco": {
       "disponible": "Disponible",

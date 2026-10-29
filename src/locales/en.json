@@ -16363,7 +16363,22 @@
       "todasLasSedes": "All sites"
     },
     "PuestaEnMarcha": {
-      "titulo": "Getting started · {{hechos}} of {{total}}"
+      "titulo": "Getting started · {{hechos}} of {{total}}",
+      "cliente": "Client",
+      "sede": "Site",
+      "puestos": "Posts",
+      "vigilantes": "Guards",
+      "horario": "Schedule",
+      "faltaCliente": "The client still needs its details",
+      "irCliente": "Complete client",
+      "faltaSede": "The site still needs setting up: what service it gets and with what",
+      "irSede": "Set up the site",
+      "faltaPuestos": "Create the guard posts and how many hours each one covers",
+      "irPuestos": "Create posts",
+      "faltaVigilantes": "Assign guards to the posts",
+      "irVigilantes": "Assign guards",
+      "faltaHorario": "Work out the schedule: rotations, days off and who covers",
+      "irHorario": "Open the Planner"
     },
     "Sacafranco": {
       "disponible": "Available",
