@@ -11246,7 +11246,10 @@
       "seValidaTuUbicacion": "La tua posizione viene verificata rispetto al tuo ufficio (max {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "La tua posizione viene verificata rispetto al tuo ufficio ({{address}}) (max {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Il tuo account non può registrare presenze da qui. Se sei personale amministrativo e devi timbrare il tuo orario, chiedi a un amministratore di abilitarti l'orologio.",
-      "tuCuentaNoTieneOficina": "Il tuo account non ha un ufficio configurato, quindi si registra senza geofence."
+      "tuCuentaNoTieneOficina": "Il tuo account non ha un ufficio configurato, quindi si registra senza geofence.",
+      "aTiempo": "Puntuale",
+      "tardeNMin": "In ritardo di {{n}} min",
+      "sinHorario": "Senza orario"
     },
     "Notification": {
       "configuracionDeAvisos": "Impostazioni degli avvisi"

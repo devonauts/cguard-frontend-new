@@ -10711,7 +10711,10 @@
       "seValidaTuUbicacion": "Sua localização é validada com o seu escritório (máx. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Sua localização é validada com o seu escritório ({{address}}) (máx. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Sua conta não pode registrar presença daqui. Se você é da equipe administrativa e precisa registrar seu horário, peça a um administrador para habilitar o relógio.",
-      "tuCuentaNoTieneOficina": "Sua conta não tem um escritório configurado, então o registro é feito sem geocerca."
+      "tuCuentaNoTieneOficina": "Sua conta não tem um escritório configurado, então o registro é feito sem geocerca.",
+      "aTiempo": "No horário",
+      "tardeNMin": "Atrasado {{n}} min",
+      "sinHorario": "Sem horário"
     },
     "Notification": {
       "configuracionDeAvisos": "Configuração de avisos"

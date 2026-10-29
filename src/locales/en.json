@@ -10711,7 +10711,10 @@
       "seValidaTuUbicacion": "Your location is checked against your office (max. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Your location is checked against your office ({{address}}) (max. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Your account can't record attendance from here. If you're administrative staff and need to clock your hours, ask an administrator to enable the time clock for you.",
-      "tuCuentaNoTieneOficina": "Your account has no office configured, so it's recorded without a geofence."
+      "tuCuentaNoTieneOficina": "Your account has no office configured, so it's recorded without a geofence.",
+      "aTiempo": "On time",
+      "tardeNMin": "Late {{n}} min",
+      "sinHorario": "No schedule"
     },
     "Notification": {
       "configuracionDeAvisos": "Notification settings"

@@ -10711,7 +10711,10 @@
       "seValidaTuUbicacion": "Se valida tu ubicación contra tu oficina (máx. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Se valida tu ubicación contra tu oficina ({{address}}) (máx. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Tu cuenta no puede registrar asistencia desde aquí. Si eres personal administrativo y necesitas marcar tu horario, pide a un administrador que te habilite el reloj.",
-      "tuCuentaNoTieneOficina": "Tu cuenta no tiene una oficina configurada, así que se registra sin geocerca."
+      "tuCuentaNoTieneOficina": "Tu cuenta no tiene una oficina configurada, así que se registra sin geocerca.",
+      "aTiempo": "A tiempo",
+      "tardeNMin": "Tarde {{n}} min",
+      "sinHorario": "Sin horario"
     },
     "Notification": {
       "configuracionDeAvisos": "Configuración de avisos"

@@ -11288,7 +11288,10 @@
       "seValidaTuUbicacion": "Twoja lokalizacja jest sprawdzana względem biura (maks. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Twoja lokalizacja jest sprawdzana względem biura ({{address}}) (maks. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Twoje konto nie może tu rejestrować obecności. Jeśli jesteś pracownikiem administracyjnym i musisz odbijać godziny pracy, poproś administratora o włączenie zegara.",
-      "tuCuentaNoTieneOficina": "Twoje konto nie ma skonfigurowanego biura, więc rejestracja odbywa się bez geostrefy."
+      "tuCuentaNoTieneOficina": "Twoje konto nie ma skonfigurowanego biura, więc rejestracja odbywa się bez geostrefy.",
+      "aTiempo": "Punktualnie",
+      "tardeNMin": "Spóźnienie {{n}} min",
+      "sinHorario": "Bez grafiku"
     },
     "Notification": {
       "configuracionDeAvisos": "Ustawienia powiadomień"

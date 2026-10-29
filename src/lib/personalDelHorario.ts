@@ -23,6 +23,9 @@ export interface DondeEsta {
   stationName: string | null;
   postSiteId: string | null;
   postSiteName: string | null;
+  /** Supervisors: their supervision position. */
+  positionId?: string | null;
+  positionName?: string | null;
 }
 
 export interface DiaDePersona {
@@ -85,12 +88,16 @@ function diaLimpio(d: any): DiaDePersona | null {
   const status: EstadoDelDia = ESTADOS.includes(d?.status) ? d.status : "none";
   const w = d?.where;
   const where: DondeEsta | null =
-    w && typeof w === "object" && (texto(w.stationId) || texto(w.postSiteId))
+    w &&
+    typeof w === "object" &&
+    (texto(w.stationId) || texto(w.postSiteId) || texto(w.positionId))
       ? {
           stationId: texto(w.stationId),
           stationName: texto(w.stationName),
           postSiteId: texto(w.postSiteId),
           postSiteName: texto(w.postSiteName),
+          positionId: texto(w.positionId),
+          positionName: texto(w.positionName),
         }
       : null;
 
@@ -216,7 +223,9 @@ export function accionDePersona(
 /** «Sitio · Estación» of a day, or null. */
 export function rotuloDeDonde(w: DondeEsta | null | undefined): string | null {
   if (!w) return null;
-  const partes = [w.postSiteName, w.stationName].filter(Boolean) as string[];
+  const partes = [w.postSiteName, w.stationName || w.positionName].filter(
+    Boolean,
+  ) as string[];
 
   return partes.length ? partes.join(" · ") : null;
 }

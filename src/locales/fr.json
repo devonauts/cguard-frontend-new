@@ -11246,7 +11246,10 @@
       "seValidaTuUbicacion": "Votre position est vérifiée par rapport à votre bureau (max. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Votre position est vérifiée par rapport à votre bureau ({{address}}) (max. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Votre compte ne peut pas enregistrer de présence ici. Si vous faites partie du personnel administratif et devez pointer vos heures, demandez à un administrateur d'activer la pointeuse.",
-      "tuCuentaNoTieneOficina": "Votre compte n'a pas de bureau configuré ; le pointage se fait donc sans géorepérage."
+      "tuCuentaNoTieneOficina": "Votre compte n'a pas de bureau configuré ; le pointage se fait donc sans géorepérage.",
+      "aTiempo": "À l’heure",
+      "tardeNMin": "En retard de {{n}} min",
+      "sinHorario": "Sans horaire"
     },
     "Notification": {
       "configuracionDeAvisos": "Paramètres des avis"

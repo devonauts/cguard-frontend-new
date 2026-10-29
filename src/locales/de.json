@@ -11246,7 +11246,10 @@
       "seValidaTuUbicacion": "Ihr Standort wird mit Ihrem Büro abgeglichen (max. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Ihr Standort wird mit Ihrem Büro abgeglichen ({{address}}) (max. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Ihr Konto kann hier keine Anwesenheit erfassen. Wenn Sie Verwaltungspersonal sind und Ihre Zeiten stempeln müssen, bitten Sie einen Administrator, die Stempeluhr freizuschalten.",
-      "tuCuentaNoTieneOficina": "Ihr Konto hat kein Büro konfiguriert, daher wird ohne Geofence erfasst."
+      "tuCuentaNoTieneOficina": "Ihr Konto hat kein Büro konfiguriert, daher wird ohne Geofence erfasst.",
+      "aTiempo": "Pünktlich",
+      "tardeNMin": "{{n}} Min. zu spät",
+      "sinHorario": "Ohne Dienstplan"
     },
     "Notification": {
       "configuracionDeAvisos": "Einstellungen für Benachrichtigungen"

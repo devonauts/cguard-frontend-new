@@ -95,6 +95,12 @@ describe("Todo el personal · filters and actions", () => {
 
     expect(rotuloDeDonde(dondeEstaEl(ana, "2026-10-26"))).toBe("Condominio Sol · Garita Norte");
     expect(dondeEstaEl(ps.find((p) => p.userId === "o1")!, "2026-10-26")).toBeNull();
+    // A supervisor is «where» his supervision position is.
+    const [sup] = normalizarPersonas({
+      people: [{ userId: "s9", name: "S", kind: "supervisor", days: [dia("2026-10-26", { where: { positionId: "sp1", positionName: "Ronda Norte" } })] }],
+    });
+
+    expect(rotuloDeDonde(dondeEstaEl(sup, "2026-10-26"))).toBe("Ronda Norte");
   });
 });
 

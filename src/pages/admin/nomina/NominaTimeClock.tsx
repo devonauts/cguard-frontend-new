@@ -256,7 +256,12 @@ export default function NominaTimeClock() {
         selfiePhoto = await attendanceService.uploadClockInSelfie(foto);
       }
 
-      const res: { success?: boolean; message?: string } =
+      const res: {
+        success?: boolean;
+        message?: string;
+        /** Office clock-in: punctuality against the person's weekly hours. */
+        shift?: { status?: string; lateMinutes?: number | null };
+      } =
         mode === "guard"
           ? await attendanceService.clockIn({
               stationId,
@@ -271,7 +276,22 @@ export default function NominaTimeClock() {
             t("nomina.timeClock.clockInError", "No se pudo marcar entrada"),
         );
       } else {
-        toast.success(t("ui.NominaTimeClock.entradaRegistrada", "Entrada registrada"));
+        const entrada = t("ui.NominaTimeClock.entradaRegistrada", "Entrada registrada");
+        const puntualidad = mode === "guard" ? null : res?.shift?.status;
+
+        // Office punches say how they compare with the weekly schedule.
+        if (puntualidad === "late")
+          toast.warning(
+            `${entrada} · ${t("ui.NominaTimeClock.tardeNMin", {
+              defaultValue: "Tarde {{n}} min",
+              n: Math.max(0, Math.round(Number(res.shift?.lateMinutes) || 0)),
+            })}`,
+          );
+        else if (puntualidad === "on_time")
+          toast.success(`${entrada} · ${t("ui.NominaTimeClock.aTiempo", "A tiempo")}`);
+        else if (puntualidad === "no_schedule")
+          toast.success(`${entrada} · ${t("ui.NominaTimeClock.sinHorario", "Sin horario")}`);
+        else toast.success(entrada);
         refresh();
       }
     } catch (e) {

@@ -11246,7 +11246,10 @@
       "seValidaTuUbicacion": "Je locatie wordt gecontroleerd ten opzichte van je kantoor (max. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Je locatie wordt gecontroleerd ten opzichte van je kantoor ({{address}}) (max. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Je account kan hier geen aanwezigheid registreren. Ben je administratief personeel en moet je je uren klokken, vraag dan een beheerder de prikklok voor je in te schakelen.",
-      "tuCuentaNoTieneOficina": "Je account heeft geen kantoor ingesteld, dus er wordt geregistreerd zonder geofence."
+      "tuCuentaNoTieneOficina": "Je account heeft geen kantoor ingesteld, dus er wordt geregistreerd zonder geofence.",
+      "aTiempo": "Op tijd",
+      "tardeNMin": "{{n}} min te laat",
+      "sinHorario": "Geen rooster"
     },
     "Notification": {
       "configuracionDeAvisos": "Instellingen voor meldingen"
