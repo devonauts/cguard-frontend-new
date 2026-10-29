@@ -7165,6 +7165,10 @@
       "bodyUnnamed": "Seu provedor define quantos usuários sua empresa pode ter. Se precisar de mais, peça a eles.",
       "full": "Você atingiu o seu máximo. Para adicionar mais usuários, peça a {{proveedor}}.",
       "fullUnnamed": "Você atingiu o seu máximo. Para adicionar mais usuários, peça ao seu provedor."
+    },
+    "free": {
+      "title": "Plano gratuito",
+      "body": "{{marca}} oferece o serviço à sua empresa sem custo."
     }
   },
   "suscripcion": {
@@ -19747,7 +19751,8 @@
       "error": "Não foi possível concluir a compra. Tente novamente.",
       "prueba_usada": "Esta empresa já usou o teste grátis.",
       "sin_prueba": "Este módulo não tem teste grátis.",
-      "sin_suscripcion": "Para ativar mensalmente é preciso ter a assinatura ativa. Veja Faturamento."
+      "sin_suscripcion": "Para ativar mensalmente é preciso ter a assinatura ativa. Veja Faturamento.",
+      "plan_gratis": "Sua empresa tem o plano gratuito. Se tiver interesse em um módulo, fale com o suporte."
     },
     "mensual": {
       "porMes": "/mês",

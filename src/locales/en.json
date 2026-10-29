@@ -658,6 +658,10 @@
       "bodyUnnamed": "Your provider sets how many users your company can have. If you need more, ask them.",
       "full": "You've reached your maximum. To add more users, ask {{proveedor}}.",
       "fullUnnamed": "You've reached your maximum. To add more users, ask your provider."
+    },
+    "free": {
+      "title": "Free plan",
+      "body": "{{marca}} provides the service to your company at no cost."
     }
   },
   "categories": {
@@ -19747,7 +19751,8 @@
       "error": "The purchase could not be completed. Please try again.",
       "prueba_usada": "This company already used its free trial.",
       "sin_prueba": "This module has no free trial.",
-      "sin_suscripcion": "A monthly activation needs your active subscription. Check Billing."
+      "sin_suscripcion": "A monthly activation needs your active subscription. Check Billing.",
+      "plan_gratis": "Your company is on the free plan. If you're interested in a module, contact support."
     },
     "mensual": {
       "porMes": "/mo",

@@ -2,6 +2,7 @@ import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import { taxIdLabelFor } from "@/lib/validators/id";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { isFreeTierTenant } from "@/lib/freeTier";
 // Shared helpers for the first-login business onboarding feature.
 // Keeps tenant extraction, completeness, trial math and timezone options
 // consistent across the wizard, banner, header badge and provider.
@@ -29,6 +30,8 @@ export interface OnboardingTenant {
   billingStatus?: string | null;
   /** `'reseller'` = a esta empresa la factura su distribuidor, no CGuard Pro. */
   billingOwnership?: string | null;
+  /** Free tier («Plan gratis»): never billed, so no trial and no payment prompt. */
+  freeTier?: boolean;
   onboardingCompleted?: boolean;
   raw?: any;
 }
@@ -163,8 +166,12 @@ export function extractOnboardingTenant(user: any): OnboardingTenant | null {
   }
 
   // billing / trial / onboarding come from either the entry or the relation.
-  const trialEndsAt =
-    firstNonEmpty(entry.trialEndsAt, rel?.trialEndsAt) ?? null;
+  // A free-tier company has no trial: its leftover trialEndsAt is dropped so
+  // no banner, badge or wizard step counts days down.
+  const freeTier = isFreeTierTenant(entry);
+  const trialEndsAt = freeTier
+    ? null
+    : (firstNonEmpty(entry.trialEndsAt, rel?.trialEndsAt) ?? null);
   const billingStatus =
     firstNonEmpty(entry.billingStatus, rel?.billingStatus) ?? null;
   const billingOwnership =
@@ -195,6 +202,7 @@ export function extractOnboardingTenant(user: any): OnboardingTenant | null {
     trialEndsAt,
     billingStatus,
     billingOwnership,
+    freeTier,
     onboardingCompleted,
     raw: rel,
   };

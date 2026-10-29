@@ -23,6 +23,8 @@ export default function TrialDaysBadge() {
   const tenant = useMemo(() => extractOnboardingTenant(user), [user]);
 
   if (!tenant || !isTrialing(tenant.billingStatus)) return null;
+  // Free tier («Plan gratis»): no trial to count down, nothing to pay.
+  if (tenant.freeTier) return null;
   /* A una empresa que factura su distribuidor no se le enseña el aviso de
      prueba de CGuard Pro: esa prueba es de una relación de cobro que no tiene
      con nosotros, y el aviso lleva a una pantalla de pago que no le sirve.

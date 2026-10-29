@@ -6229,6 +6229,10 @@
       "bodyUnnamed": "Votre fournisseur fixe le nombre d'utilisateurs de votre entreprise. S'il vous en faut plus, demandez-le-lui.",
       "full": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à {{proveedor}}.",
       "fullUnnamed": "Vous avez atteint votre maximum. Pour ajouter des utilisateurs, demandez à votre fournisseur."
+    },
+    "free": {
+      "title": "Formule gratuite",
+      "body": "{{marca}} fournit le service à votre entreprise gratuitement."
     }
   },
   "brand": {
@@ -19747,7 +19751,8 @@
       "error": "L’achat n’a pas pu être finalisé. Réessayez.",
       "prueba_usada": "Cette entreprise a déjà utilisé son essai gratuit.",
       "sin_prueba": "Ce module n’a pas d’essai gratuit.",
-      "sin_suscripcion": "Une activation mensuelle nécessite votre abonnement actif. Voir Facturation."
+      "sin_suscripcion": "Une activation mensuelle nécessite votre abonnement actif. Voir Facturation.",
+      "plan_gratis": "Votre entreprise bénéficie de la formule gratuite. Si un module vous intéresse, contactez le support."
     },
     "mensual": {
       "porMes": "/mois",

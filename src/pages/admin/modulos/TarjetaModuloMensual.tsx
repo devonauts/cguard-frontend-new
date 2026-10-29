@@ -12,6 +12,11 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import { StatusBadge } from "@/components/kit";
 import BotonDemo from "@/components/modulos/demo/BotonDemo";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  FREE_TIER_STORE_REASON,
+  isFreeTierUser,
+  storeReasonForCompany,
+} from "@/lib/freeTier";
 import { soloFecha } from "@/lib/horaDeLaEmpresa";
 import {
   modulosAdicionalesService,
@@ -93,7 +98,10 @@ export default function TarjetaModuloMensual({
 }) {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, user } = useAuth();
+  const gratis = isFreeTierUser(user);
+  /* Free tier («Plan gratis»): no link to billing — there is nothing to pay. */
+  const conEnlaceAFacturacion = !!reason && reason !== FREE_TIER_STORE_REASON;
   const [intervalo, setIntervalo] = useState<"month" | "year">(
     m.interval === "year" ? "year" : "month",
   );
@@ -130,7 +138,7 @@ export default function TarjetaModuloMensual({
       toast.success(exito);
       await recargar();
     } catch (e: any) {
-      toast.error(motivo(e?.data?.reason));
+      toast.error(motivo(storeReasonForCompany(e?.data?.reason, gratis)));
       await recargar();
     } finally {
       setOcupado(false);
@@ -426,17 +434,20 @@ export default function TarjetaModuloMensual({
       {!contratado &&
         !puedeEncender &&
         !esDeSocio &&
-        reason &&
+        conEnlaceAFacturacion &&
         estado !== "pending_payment" && (
           <Link className="shrink-0 underline" to="/setting/billing">
             {t("modulosAdicionales.irAFacturacion")}
           </Link>
         )}
-      {enPruebaConAcceso && !canPurchase && reason && !esDeSocio && (
-        <Link className="shrink-0 underline" to="/setting/billing">
-          {t("modulosAdicionales.irAFacturacion")}
-        </Link>
-      )}
+      {enPruebaConAcceso &&
+        !canPurchase &&
+        conEnlaceAFacturacion &&
+        !esDeSocio && (
+          <Link className="shrink-0 underline" to="/setting/billing">
+            {t("modulosAdicionales.irAFacturacion")}
+          </Link>
+        )}
     </span>
   );
 
