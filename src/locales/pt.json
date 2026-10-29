@@ -16363,7 +16363,22 @@
       "todasLasSedes": "Todas as unidades"
     },
     "PuestaEnMarcha": {
-      "titulo": "Primeiros passos · {{hechos}} de {{total}}"
+      "titulo": "Primeiros passos · {{hechos}} de {{total}}",
+      "cliente": "Cliente",
+      "sede": "Unidade",
+      "puestos": "Postos",
+      "vigilantes": "Vigilantes",
+      "horario": "Escala",
+      "faltaCliente": "Falta completar o cliente",
+      "irCliente": "Completar cliente",
+      "faltaSede": "Falta configurar a unidade: qual serviço é prestado e com o quê",
+      "irSede": "Configurar a unidade",
+      "faltaPuestos": "Falta criar os postos e dizer quantas horas cada um cobre",
+      "irPuestos": "Criar os postos",
+      "faltaVigilantes": "Falta designar vigilantes aos postos",
+      "irVigilantes": "Designar vigilantes",
+      "faltaHorario": "Falta acertar a escala: rodízios, folgas e quem cobre",
+      "irHorario": "Abrir o Planejador"
     },
     "Sacafranco": {
       "disponible": "Disponível",

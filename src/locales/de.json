@@ -16898,7 +16898,22 @@
       "todasLasSedes": "Alle Standorte"
     },
     "PuestaEnMarcha": {
-      "titulo": "Einrichtung · {{hechos}} von {{total}}"
+      "titulo": "Einrichtung · {{hechos}} von {{total}}",
+      "cliente": "Auftraggeber",
+      "sede": "Standort",
+      "puestos": "Posten",
+      "vigilantes": "Sicherheitskräfte",
+      "horario": "Dienstplan",
+      "faltaCliente": "Der Auftraggeber ist noch unvollständig",
+      "irCliente": "Auftraggeber vervollständigen",
+      "faltaSede": "Der Standort ist noch nicht eingerichtet: welcher Dienst und womit",
+      "irSede": "Standort einrichten",
+      "faltaPuestos": "Posten anlegen und festlegen, wie viele Stunden jeder abdeckt",
+      "irPuestos": "Posten anlegen",
+      "faltaVigilantes": "Den Posten Sicherheitskräfte zuweisen",
+      "irVigilantes": "Sicherheitskräfte zuweisen",
+      "faltaHorario": "Dienstplan abstimmen: Rotation, freie Tage und Vertretungen",
+      "irHorario": "Planer öffnen"
     },
     "Sacafranco": {
       "disponible": "Verfügbar",

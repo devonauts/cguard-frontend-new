@@ -17118,7 +17118,22 @@
       "todasLasSedes": "Wszystkie obiekty"
     },
     "PuestaEnMarcha": {
-      "titulo": "Uruchomienie · {{hechos}} z {{total}}"
+      "titulo": "Uruchomienie · {{hechos}} z {{total}}",
+      "cliente": "Zleceniodawca",
+      "sede": "Obiekt",
+      "puestos": "Posterunki",
+      "vigilantes": "Ochrona",
+      "horario": "Grafik",
+      "faltaCliente": "Trzeba uzupełnić dane zleceniodawcy",
+      "irCliente": "Uzupełnij zleceniodawcę",
+      "faltaSede": "Trzeba skonfigurować obiekt: jaka usługa i czym",
+      "irSede": "Skonfiguruj obiekt",
+      "faltaPuestos": "Trzeba utworzyć posterunki i godziny ich obsady",
+      "irPuestos": "Utwórz posterunki",
+      "faltaVigilantes": "Trzeba przypisać pracowników ochrony do posterunków",
+      "irVigilantes": "Przypisz ochronę",
+      "faltaHorario": "Trzeba ułożyć grafik: rotacje, dni wolne i zastępstwa",
+      "irHorario": "Otwórz planer"
     },
     "Sacafranco": {
       "disponible": "Dostępny",
