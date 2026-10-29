@@ -516,6 +516,7 @@ function PlazaFila({
     }
     const igual = estilos.find(
       (s) =>
+        !(s as { weekly?: boolean }).weekly &&
         s.dayShifts === propio &&
         s.nightShifts === siguiente &&
         s.restDays === libres,

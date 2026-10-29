@@ -85,6 +85,11 @@ export interface Persona {
    * moviendo» y la vuelta completa no es el largo de la rotación.
    */
   francoDobleDomingo?: boolean;
+  /**
+   * Weekly style («por días de la semana»): the pattern is 7 days anchored to
+   * the calendar, so its phase is not something to optimize or «run».
+   */
+  semanal?: boolean;
 }
 
 export interface Reglas {
@@ -995,12 +1000,14 @@ export function acomodar(
 
   for (const p of plan.personas)
     if (esSacafranco(p)) for (const f of p.fijos || []) conFijo.add(f);
-  const mover = plan.personas.filter((p) =>
-    ids
-      ? ids.includes(p.id)
-      : esSacafranco(p)
-        ? (p.fijos || []).length > 0
-        : !!p.puesto && conFijo.has(p.puesto),
+  const mover = plan.personas.filter(
+    (p) =>
+      !p.semanal &&
+      (ids
+        ? ids.includes(p.id)
+        : esSacafranco(p)
+          ? (p.fijos || []).length > 0
+          : !!p.puesto && conFijo.has(p.puesto)),
   );
   const antes = costo(plan, d0, d1);
   let actual = antes;

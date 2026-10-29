@@ -11246,7 +11246,10 @@
       "seValidaTuUbicacion": "Votre position est vérifiée par rapport à votre bureau (max. {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "Votre position est vérifiée par rapport à votre bureau ({{address}}) (max. {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Votre compte ne peut pas enregistrer de présence ici. Si vous faites partie du personnel administratif et devez pointer vos heures, demandez à un administrateur d'activer la pointeuse.",
-      "tuCuentaNoTieneOficina": "Votre compte n'a pas de bureau configuré ; le pointage se fait donc sans géorepérage."
+      "tuCuentaNoTieneOficina": "Votre compte n'a pas de bureau configuré ; le pointage se fait donc sans géorepérage.",
+      "aTiempo": "À l’heure",
+      "tardeNMin": "En retard de {{n}} min",
+      "sinHorario": "Sans horaire"
     },
     "Notification": {
       "configuracionDeAvisos": "Paramètres des avis"
@@ -11973,7 +11976,9 @@
       "yNLibres_one": " et {{count}} jour de repos",
       "yNLibres_other": " et {{count}} jours de repos",
       "fijoSinDescanso": "Fixe sans repos",
-      "secuencia": "séquence {{s}}"
+      "secuencia": "séquence {{s}}",
+      "porDiasDeLaSemana": "par jours de la semaine",
+      "semanalExplica": "Travaille ces jours de la semaine, quelle que soit la date de début. Aucun cycle à décaler."
     },
     "RouteForm": {
       "asignacion": "Affectation",
@@ -17019,7 +17024,10 @@
       "secuenciaAyuda": "Blocs de travail et de repos, en commençant par le travail : 1-2-2-2 = un jour de 24 h, deux de repos, deux jours, deux de repos. Aussi avec des lettres : D travaille, N l'autre tranche, L repos. Le jour 1 de la séquence est la date de début de chaque agent.",
       "secuenciaInvalida": "Écrivez la séquence comme 1-2-2-2 ou avec les lettres D, N et L (N seulement avec deux tranches)",
       "secuenciaComplemento": "2 agents : un avec {{a}} et un avec le complément {{b}} (travaille les jours de repos du premier), sans remplaçant",
-      "secuenciaAyudaDiaCompleto": "Blocs de travail et de repos, en commençant par le travail : 1-2-2-2 = une journée complète de 24 h, deux de repos, deux journées complètes, deux de repos. Aussi avec des lettres : F journée complète, L repos. Le jour 1 de la séquence est la date de début de chaque agent."
+      "secuenciaAyudaDiaCompleto": "Blocs de travail et de repos, en commençant par le travail : 1-2-2-2 = une journée complète de 24 h, deux de repos, deux journées complètes, deux de repos. Aussi avec des lettres : F journée complète, L repos. Le jour 1 de la séquence est la date de début de chaque agent.",
+      "porDiasDeLaSemana": "Par jours de la semaine",
+      "semanalSinDias": "Choisissez au moins un jour de la semaine.",
+      "semanalExplica": "Chaque agent travaille ces jours de la semaine, quelle que soit sa date de début, et le poste n’est couvert que ces jours-là. Un agent par place, sans relève."
     },
     "Planificador": {
       "noSePudoCargar": "Impossible de charger le planning.",
@@ -18735,6 +18743,73 @@
       "vacioFiltro": "Aucun devis ne correspond à ce filtre",
       "vacio": "Aucun devis pour l'instant",
       "vacioDesc": "Rédigez le premier : postes à l'heure, forfaits mensuels et frais ponctuels. Le prospect le signe depuis le lien de l'e-mail."
+    },
+    "semana": {
+      "dom": "Dim",
+      "jue": "Jeu",
+      "lun": "Lun",
+      "mar": "Mar",
+      "mie": "Mer",
+      "ningunDia": "Aucun jour",
+      "rango": "du {{desde}} au {{hasta}}",
+      "sab": "Sam",
+      "todosLosDias": "Tous les jours",
+      "vie": "Ven"
+    },
+    "AllStaff": {
+      "asignarAPuesto": "Affecter à un poste",
+      "asignarHorario": "Définir l’horaire",
+      "ausente": "Absent",
+      "buscar": "Rechercher une personne ou un poste…",
+      "buscarPuesto": "Rechercher un poste…",
+      "contraer": "Réduire tout le personnel",
+      "enOficina": "Bureau",
+      "errorCargar": "Impossible de charger le personnel.",
+      "expandir": "Développer tout le personnel",
+      "libre": "Repos",
+      "mostrarTodos_one": "Afficher tout le monde ({{count}})",
+      "mostrarTodos_other": "Afficher tout le monde ({{count}})",
+      "nOficina_one": "{{count}} bureau",
+      "nOficina_other": "{{count}} bureau",
+      "nSinHorario_one": "{{count}} sans horaire",
+      "nSinHorario_other": "{{count}} sans horaire",
+      "nSupervisores_one": "{{count}} superviseur",
+      "nSupervisores_other": "{{count}} superviseurs",
+      "nVigilantes_one": "{{count}} agent",
+      "nVigilantes_other": "{{count}} agents",
+      "nadie": "Pas encore de personnel actif.",
+      "nadieConEseFiltro": "Personne ne correspond au filtre.",
+      "oficina": "Bureau",
+      "plazaOcupada": "Occupée",
+      "plazaVacante": "Vacante",
+      "reintentar": "Réessayer",
+      "sinHorario": "Sans horaire",
+      "sinPlazas": "Aucune place. Créez d’abord un poste sur le site.",
+      "sinPuesto": "Sans poste",
+      "sinTurnoVisible": "Pas de service ces jours-ci",
+      "supervision": "Supervision",
+      "supervisores": "Superviseurs",
+      "tipoOficina": "Bureau",
+      "tipoSupervisor": "Superviseur",
+      "tipoVigilante": "Agent",
+      "titulo": "Tout le personnel",
+      "todos": "Tous",
+      "trabaja": "Travaille",
+      "verSinHorario": "Voir qui n’a pas d’horaire",
+      "vigilantes": "Agents"
+    },
+    "OfficeHours": {
+      "copiarLunes": "Copier le lundi partout",
+      "desde": "À partir du",
+      "desdeAyuda": "Facultatif. Vide = à partir d’aujourd’hui.",
+      "horaInvalida": "Saisissez l’heure comme 08:00",
+      "lunesLibre": "Le lundi est en repos : aucune heure à copier",
+      "mismaHora": "La fin ne peut pas être à la même heure que le début",
+      "ningunDia": "Cochez au moins un jour. Pour le laisser sans horaire, utilisez « Retirer l’horaire ».",
+      "presetLunesAViernes": "Du lundi au vendredi 08:00–17:00",
+      "presetSabadoMedio": "Du lundi au vendredi + samedi demi-journée (08:00–12:00)",
+      "quitado": "Horaire retiré",
+      "quitarHorario": "Retirer l’horaire"
     }
   },
   "visitantes": {

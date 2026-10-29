@@ -42,6 +42,7 @@ export default function EditarAsignacionModal({
   asignacion,
   nombre,
   estaciones,
+  semanal = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -50,6 +51,8 @@ export default function EditarAsignacionModal({
   asignacion: AsignacionCruda;
   nombre: string;
   estaciones: EstacionParaSacafranco[];
+  /** Weekly style: its days off are weekdays, there is no franco to move. */
+  semanal?: boolean;
 }) {
   const { t } = useTranslation();
   const relevo = !!asignacion.isRelief;
@@ -223,6 +226,7 @@ export default function EditarAsignacionModal({
               onChange={setCiclo}
             />
           </LabeledField>
+          {!semanal && (
           <LabeledField
             label={t(
               "ui.EditarAsignacion.proximoLibre",
@@ -245,6 +249,7 @@ export default function EditarAsignacionModal({
               )}
             </p>
           </LabeledField>
+          )}
         </div>
         {relevo && (
           <LabeledField

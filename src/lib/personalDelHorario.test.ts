@@ -1,0 +1,166 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  accionDePersona,
+  contarPersonas,
+  cubreLaVentana,
+  dondeEstaEl,
+  filtrarPersonas,
+  normalizarPersonas,
+  rotuloDeDonde,
+  ventanaDePersonal,
+  ventanaParaLaHoja,
+  tramosDe,
+  unirPersonas,
+} from "./personalDelHorario";
+import { plazasElegibles } from "../pages/admin/programmer/AsignarAPuestoModal";
+
+const dia = (date: string, extra: Record<string, unknown> = {}) => ({
+  date,
+  status: "work",
+  start: "07:00",
+  end: "19:00",
+  where: null,
+  absence: null,
+  ...extra,
+});
+
+const respuesta = {
+  data: {
+    startDate: "2026-10-26",
+    endDate: "2026-10-27",
+    people: [
+      {
+        userId: "g1", name: "Ana Pérez", roles: ["securityGuard"], kind: "guard", hasSchedule: true, assigned: true,
+        days: [dia("2026-10-27", { where: { stationId: "st1", stationName: "Garita Norte", postSiteId: "ps1", postSiteName: "Condominio Sol" } }),
+          dia("2026-10-26", { status: "off", start: null, end: null })],
+      },
+      { userId: "g2", name: "Beto Ruiz", roles: ["securityGuard"], kind: "guard", hasSchedule: false, assigned: false, days: [dia("2026-10-26", { status: "none" })] },
+      { userId: "o1", name: "Carla Díaz", roles: ["admin"], kind: "office", hasSchedule: false, assigned: false, days: [] },
+      { userId: "s1", name: "Dario Soto", roles: ["supervisor"], kind: "supervisor", hasSchedule: true, assigned: true, days: [] },
+      // The same person twice (two roles): must appear once, days merged.
+      { userId: "g1", name: "Ana Pérez", roles: ["securityGuard"], kind: "guard", hasSchedule: true, assigned: true, days: [dia("2026-10-28")] },
+      { userId: "", name: "ghost", kind: "guard", days: [] },
+      { userId: "o2", name: "Elena", kind: "weird", days: [{ date: "bad" }, { date: "2026-10-26", status: "absence", absence: "V" }] },
+    ],
+  },
+};
+
+describe("Todo el personal · rows", () => {
+  const ps = normalizarPersonas(respuesta);
+
+  it("everyone once, nobody without id, supervisor → office → guard", () => {
+    expect(ps.map((p) => p.userId)).toEqual(["s1", "o1", "o2", "g1", "g2"]);
+    expect(ps.filter((p) => p.userId === "g1")).toHaveLength(1);
+  });
+
+  it("merges and sorts days; cleans what came back odd", () => {
+    const ana = ps.find((p) => p.userId === "g1")!;
+
+    expect(ana.days.map((d) => d.date)).toEqual(["2026-10-26", "2026-10-27", "2026-10-28"]);
+    const elena = ps.find((p) => p.userId === "o2")!;
+
+    expect(elena.kind).toBe("office");
+    expect(elena.days).toHaveLength(1);
+    expect(elena.days[0]).toMatchObject({ status: "absence", absence: "V" });
+  });
+
+  it("counts, with «sin horario»", () => {
+    expect(contarPersonas(ps)).toEqual({ total: 5, guard: 2, supervisor: 1, office: 2, sinHorario: 3 });
+  });
+
+  it("accepts a bare answer and an empty one", () => {
+    expect(normalizarPersonas({ people: [{ userId: "x", name: "X", kind: "guard" }] })).toHaveLength(1);
+    expect(normalizarPersonas(null)).toEqual([]);
+  });
+});
+
+describe("Todo el personal · filters and actions", () => {
+  const ps = normalizarPersonas(respuesta);
+
+  it("by kind, by «sin horario», by name or place (accent-insensitive)", () => {
+    expect(filtrarPersonas(ps, "guard", "").map((p) => p.userId)).toEqual(["g1", "g2"]);
+    expect(filtrarPersonas(ps, "sinHorario", "").map((p) => p.userId)).toEqual(["o1", "o2", "g2"]);
+    expect(filtrarPersonas(ps, "all", "perez").map((p) => p.userId)).toEqual(["g1"]);
+    expect(filtrarPersonas(ps, "all", "garita").map((p) => p.userId)).toEqual(["g1"]);
+  });
+
+  it("office/supervisor without schedule → weekly editor; guard without assignment → a post", () => {
+    expect(accionDePersona({ kind: "office", hasSchedule: false, assigned: false })).toBe("asignarHorario");
+    expect(accionDePersona({ kind: "supervisor", hasSchedule: false, assigned: false })).toBe("asignarHorario");
+    expect(accionDePersona({ kind: "guard", hasSchedule: false, assigned: false })).toBe("asignarPuesto");
+    expect(accionDePersona({ kind: "guard", hasSchedule: false, assigned: true })).toBeNull();
+    expect(accionDePersona({ kind: "office", hasSchedule: true, assigned: false })).toBeNull();
+  });
+
+  it("where they are: that day, else the first place seen", () => {
+    const ana = ps.find((p) => p.userId === "g1")!;
+
+    expect(rotuloDeDonde(dondeEstaEl(ana, "2026-10-26"))).toBe("Condominio Sol · Garita Norte");
+    expect(dondeEstaEl(ps.find((p) => p.userId === "o1")!, "2026-10-26")).toBeNull();
+    // A supervisor is «where» his supervision position is.
+    const [sup] = normalizarPersonas({
+      people: [{ userId: "s9", name: "S", kind: "supervisor", days: [dia("2026-10-26", { where: { positionId: "sp1", positionName: "Ronda Norte" } })] }],
+    });
+
+    expect(rotuloDeDonde(dondeEstaEl(sup, "2026-10-26"))).toBe("Ronda Norte");
+  });
+});
+
+describe("Todo el personal · the range asked for", () => {
+  it("never more than 62 days, never past the sheet", () => {
+    expect(ventanaDePersonal("2026-01-01")).toEqual({ desde: "2026-01-01", hasta: "2026-03-03" });
+    expect(ventanaDePersonal("2026-12-20", "2026-12-31")).toEqual({ desde: "2026-12-20", hasta: "2026-12-31" });
+  });
+
+  it("covered when the loaded range holds the visible one (or its first 62 days)", () => {
+    const w = { desde: "2026-01-01", hasta: "2026-03-03" };
+
+    expect(cubreLaVentana(w, "2026-01-10", "2026-02-10")).toBe(true);
+    expect(cubreLaVentana(w, "2025-12-31", "2026-01-10")).toBe(false);
+    expect(cubreLaVentana(w, "2026-02-20", "2026-03-10")).toBe(false);
+    // The whole painted range must be loaded (days after the first 62 were left blank).
+    expect(cubreLaVentana(w, "2026-01-01", "2026-06-30")).toBe(false);
+    expect(cubreLaVentana(null, "2026-01-01", "2026-01-02")).toBe(false);
+  });
+});
+
+describe("Asignar a un puesto · seats", () => {
+  it("vacant seats first, sacafranco and shadows aside", () => {
+    const out = plazasElegibles(
+      [{ id: "st1", stationName: "Garita", nickname: "P-01" }, { id: "st2", stationName: "Lobby" }],
+      [
+        { id: "p1", stationId: "st1", name: "Fijo 1", type: "fijo", startTime: "07:00:00", endTime: "19:00:00", guardsNeeded: 1 },
+        { id: "p2", stationId: "st2", name: "Fijo 1", type: "fijo", startTime: "08:00", endTime: "17:00", guardsNeeded: 1 },
+        { id: "sf", stationId: "st1", name: "SF", type: "sacafranco" },
+      ],
+      [
+        { positionId: "p1", status: "active" },
+        { positionId: "p2", status: "active", role: "shadow" },
+      ],
+    );
+
+    expect(out.map((p) => [p.positionId, p.libres])).toEqual([["p2", 1], ["p1", 0]]);
+    expect(out[1]).toMatchObject({ puesto: "P-01 · Garita", horas: "07:00–19:00" });
+  });
+});
+
+describe("loading a painted sheet wider than 62 days", () => {
+  it("loads the whole painted window, split into accepted ranges", () => {
+    const w = ventanaParaLaHoja("2026-09-01", "2026-11-30", "2026-11-30");
+    expect(w).toEqual({ desde: "2026-09-01", hasta: "2026-11-30" });
+    const tr = tramosDe(w.desde, w.hasta);
+    expect(tr).toEqual([
+      { desde: "2026-09-01", hasta: "2026-11-01" },
+      { desde: "2026-11-02", hasta: "2026-11-30" },
+    ]);
+    expect(ventanaParaLaHoja("2026-10-25", "2026-11-05")).toEqual({ desde: "2026-10-25", hasta: "2026-12-25" });
+  });
+  it("joins ranges into one row per person with every day once, in order", () => {
+    const a = [{ userId: "u", name: "U", roles: [], kind: "office", hasSchedule: false, assigned: true, days: [{ date: "2026-11-01", status: "off", start: null, end: null, where: null, absence: null }] }] as any;
+    const b = [{ userId: "u", name: "U", roles: [], kind: "office", hasSchedule: true, assigned: true, days: [{ date: "2026-11-02", status: "work", start: "08:00", end: "17:00", where: null, absence: null }, { date: "2026-11-01", status: "off", start: null, end: null, where: null, absence: null }] }] as any;
+    const [u] = unirPersonas([b, a]);
+    expect(u.days.map((d: any) => d.date)).toEqual(["2026-11-01", "2026-11-02"]);
+    expect(u.hasSchedule).toBe(true);
+  });
+});

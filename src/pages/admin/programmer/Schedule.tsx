@@ -62,7 +62,8 @@ import {
   type PuntoDePulsacion,
 } from "./pulsacionLarga";
 import SupervisionSection from "./SupervisionSection";
-import StaffScheduleSection from "./StaffScheduleSection";
+import AllStaffSection from "./AllStaffSection";
+import AsignarAPuestoModal from "./AsignarAPuestoModal";
 import MonthStationBlock, {
   type BlockSel,
   type MonthGridHandlers,
@@ -114,6 +115,11 @@ import {
   etiquetaSegundoTramo,
 } from "@/components/schedule/tramos";
 import { stationLabel } from "@/lib/stationName";
+import {
+  esSemanal,
+  nombreDeEstilo,
+  type Traductor,
+} from "@/lib/secuenciaDeRotacion";
 import { localeActual } from "@/lib/localeActual";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
 import { sePuedeMarcar, fechaMinimaEditable } from "@/lib/ventanaDeEdicion";
@@ -641,6 +647,8 @@ export default function Schedule() {
   const [loading, setLoading] = useState(true); // initial load only
   const [refreshing, setRefreshing] = useState(false); // silent refetches (grid stays mounted)
   const hasLoadedRef = useRef(false);
+  /** Bumped after every load so «Todo el personal» reloads with the sheet. */
+  const [personalVersion, setPersonalVersion] = useState(0);
 
   // View state
   const [currentDate, setCurrentDate] = useState(() => {
@@ -1240,6 +1248,7 @@ export default function Schedule() {
         );
 
         hasLoadedRef.current = true;
+        setPersonalVersion((v) => v + 1);
       } catch (e: any) {
         console.error("[Scheduler] fetch error", e);
         toast.error(t("ui.Schedule.errorAlCargarHorario"));
@@ -1254,6 +1263,37 @@ export default function Schedule() {
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  /* ── «TODO EL PERSONAL» ─────────────────────────────────────────────────
+     Stable props so the memoized band does not repaint on every drag of the
+     sheet: the tints read the same precomputed arrays as the sheet, and the
+     «Asignar a un puesto» handler goes through a ref. */
+  const tintPersonalMes = useCallback(
+    (_d: Date, i: number) =>
+      monthDayStrs[i] === tzToday()
+        ? TINT_TODAY
+        : monthDaySunday[i]
+          ? TINT_SUNDAY
+          : undefined,
+    [monthDayStrs, monthDaySunday],
+  );
+  const tintPersonalLinea = useCallback(
+    (d: Date) =>
+      fmtDate(d) === tzToday()
+        ? TINT_TODAY
+        : d.getDay() === 0
+          ? TINT_SUNDAY
+          : undefined,
+    [],
+  );
+  const [asignarPersona, setAsignarPersona] = useState<{
+    userId: string;
+    name: string;
+  } | null>(null);
+  const abrirAsignarPersona = useCallback(
+    (p: { userId: string; name: string }) => setAsignarPersona(p),
+    [],
+  );
 
   /* ── EL HORARIO SE ENTERA SOLO DE LOS TURNOS NUEVOS ──────────────────────
      Al crear una estación o asignar a alguien, los turnos se generan EN
@@ -1516,13 +1556,13 @@ export default function Schedule() {
       ? rotationStyles.find((r) => r.id === String(configStation.rotationStyleId))
       : null;
     const cicloDe = (a: GuardAssignment | null) => {
-      if (!a) return heredado ? heredado.name : "";
+      if (!a) return heredado ? nombreDeEstilo(heredado, t as Traductor) : "";
       const propio = a.rotationStyleId
         ? rotationStyles.find((r) => r.id === String(a.rotationStyleId))
         : null;
       const rot = propio || heredado;
 
-      return rot ? rot.name : "";
+      return rot ? nombreDeEstilo(rot, t as Traductor) : "";
     };
 
     const filas: Fila[] = (positionsByStation.get(String(configStation.id)) || [])
@@ -2879,6 +2919,9 @@ export default function Schedule() {
 
         if (
           !rota ||
+          // A weekly style is anchored to the calendar: there is no cycle to
+          // run (the server refuses it with 409).
+          esSemanal(rota) ||
           c.isRelief ||
           pz?.type === "sacafranco" ||
           c.role === "shadow"
@@ -4122,6 +4165,7 @@ export default function Schedule() {
 
     const igual = rotationStyles.find(
       (r) =>
+        !r.weekly &&
         r.dayShifts === d &&
         r.nightShifts === n &&
         r.restDays === l &&
@@ -4846,7 +4890,9 @@ export default function Schedule() {
             ? rotationStylesById.get(station.rotationStyleId)
             : null) || assignment?.rotationStyle;
 
-        if (isFijo && rot && rot.restDays > 0) {
+        // A weekly style has no franco to move: its days off are weekdays
+        // (the server answers 409). It falls through to «solo este día».
+        if (isFijo && rot && rot.restDays > 0 && !esSemanal(rot)) {
           const dayMs = 86400000;
           const toLocal = (s: string) => new Date(s + "T00:00:00");
           const fmt = (d: Date) =>
@@ -6619,8 +6665,13 @@ export default function Schedule() {
                       fuera una estación de verdad dejaría dibujar un turno contra
                       un `stationId` inventado. Aquí se lee; se dibuja abajo. */}
                   <div
-                    className="shrink-0 overflow-x-auto rounded-xl"
-                    style={{ border: "1px solid var(--hairline)" }}
+                    className="shrink-0 overflow-auto rounded-xl"
+                    style={{
+                      border: "1px solid var(--hairline)",
+                      /* Everyone can be a long list: it scrolls inside so the
+                         timeline below keeps its room. */
+                      maxHeight: "60vh",
+                    }}
                   >
                     <SupervisionSection
                       colA={0}
@@ -6635,6 +6686,20 @@ export default function Schedule() {
                             ? TINT_SUNDAY
                             : undefined
                       }
+                    />
+                    {/* TODO EL PERSONAL — also in Semana/Día: whoever has no
+                        seat was invisible here too. Same columns, with zero-width
+                        pads where the year sheet keeps its virtualized margins. */}
+                    <AllStaffSection
+                      colA={0}
+                      colB={timelineDays.length}
+                      colWidth={64}
+                      gridCols={`${COL_STICKY_W}px 0px repeat(${timelineDays.length}, minmax(64px, 1fr)) 0px`}
+                      monthDays={timelineDays}
+                      refreshKey={personalVersion}
+                      tintFor={tintPersonalLinea}
+                      todayStr={todayStr}
+                      onAsignarAPuesto={abrirAsignarPersona}
                     />
                   </div>
                   <div className="flex min-h-0 flex-1">
@@ -6773,22 +6838,20 @@ export default function Schedule() {
                       }
                     />
 
-                    {/* OFICINA — misma rejilla, otro modelo: aquí no se gira, se
-                      trabaja una semana. Va debajo de Supervisión y encima de
-                      los puestos, que es el orden en que se lee la operación:
-                      quien supervisa, quien administra, quien está en el puesto. */}
-                    <StaffScheduleSection
+                    {/* TODO EL PERSONAL — misma rejilla. Una fila por PERSONA
+                      (vigilantes, supervisores y oficina), con dónde está y sus
+                      horas cada día, y «Sin horario» en ámbar. Sustituye a la
+                      banda «Oficina»: la jornada semanal se edita desde aquí.
+                      Va debajo de Supervisión y encima de los puestos. */}
+                    <AllStaffSection
                       colA={colA}
                       colB={colB}
                       gridCols={gridCols}
                       monthDays={monthDays}
-                      tintFor={(_d, i) =>
-                        monthDayStrs[i] === todayStr
-                          ? TINT_TODAY
-                          : monthDaySunday[i]
-                            ? TINT_SUNDAY
-                            : undefined
-                      }
+                      refreshKey={personalVersion}
+                      tintFor={tintPersonalMes}
+                      todayStr={todayStr}
+                      onAsignarAPuesto={abrirAsignarPersona}
                     />
 
                     {/* Station rows — cada puesto es un componente MEMOIZADO
@@ -8025,6 +8088,24 @@ export default function Schedule() {
         onClose={() => setTransferTarget(null)}
         onDone={() => fetchAll({ silent: true })}
       />
+      {/* «Asignar a un puesto» desde Todo el personal: se elige la plaza y se
+          abre el MISMO formulario de asignar que abre el arrastre. */}
+      {asignarPersona && (
+        <AsignarAPuestoModal
+          assignments={assignments}
+          nombre={asignarPersona.name}
+          positions={positions}
+          stations={stations}
+          onClose={() => setAsignarPersona(null)}
+          onPick={(stationId, positionId) => {
+            const guardId = asignarPersona.userId;
+
+            setAsignarPersona(null);
+            openAssignForm(stationId, positionId);
+            setAssignGuard(guardId);
+          }}
+        />
+      )}
       {correrCiclo && (
         <CorrerCicloModal
           open
@@ -10733,7 +10814,7 @@ export default function Schedule() {
                           </option>
                           {rotationStyles.map((r) => (
                             <option key={r.id} value={r.id}>
-                              {r.name}
+                              {nombreDeEstilo(r, t as Traductor)}
                               {ciclo(r) ? ` · ${ciclo(r)}` : ""}
                               {st?.rotationStyleId === r.id
                                 ? t(

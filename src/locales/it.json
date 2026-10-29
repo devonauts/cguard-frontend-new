@@ -11246,7 +11246,10 @@
       "seValidaTuUbicacion": "La tua posizione viene verificata rispetto al tuo ufficio (max {{radius}} m).",
       "seValidaTuUbicacionConDireccion": "La tua posizione viene verificata rispetto al tuo ufficio ({{address}}) (max {{radius}} m).",
       "tuCuentaNoPuedeRegistrarAsistencia": "Il tuo account non può registrare presenze da qui. Se sei personale amministrativo e devi timbrare il tuo orario, chiedi a un amministratore di abilitarti l'orologio.",
-      "tuCuentaNoTieneOficina": "Il tuo account non ha un ufficio configurato, quindi si registra senza geofence."
+      "tuCuentaNoTieneOficina": "Il tuo account non ha un ufficio configurato, quindi si registra senza geofence.",
+      "aTiempo": "Puntuale",
+      "tardeNMin": "In ritardo di {{n}} min",
+      "sinHorario": "Senza orario"
     },
     "Notification": {
       "configuracionDeAvisos": "Impostazioni degli avvisi"
@@ -11973,7 +11976,9 @@
       "yNLibres_one": " e {{count}} giorno di riposo",
       "yNLibres_other": " e {{count}} giorni di riposo",
       "fijoSinDescanso": "Fisso senza riposo",
-      "secuencia": "sequenza {{s}}"
+      "secuencia": "sequenza {{s}}",
+      "porDiasDeLaSemana": "per giorni della settimana",
+      "semanalExplica": "Lavora quei giorni della settimana, qualunque sia la data d’inizio. Non c’è un ciclo da spostare."
     },
     "RouteForm": {
       "asignacion": "Assegnazione",
@@ -17019,7 +17024,10 @@
       "secuenciaAyuda": "Blocchi di lavoro e riposo, iniziando dal lavoro: 1-2-2-2 = un giorno di 24 h, due liberi, due giorni, due liberi. Anche con lettere: D lavora, N l'altra fascia, L libero. Il giorno 1 della sequenza è la data di inizio di ogni guardia.",
       "secuenciaInvalida": "Scrivi la sequenza come 1-2-2-2 o con le lettere D, N e L (la N solo con due fasce)",
       "secuenciaComplemento": "2 guardie: una con {{a}} e una con il complemento {{b}} (lavora nei giorni liberi della prima), senza jolly",
-      "secuenciaAyudaDiaCompleto": "Blocchi di lavoro e riposo, iniziando dal lavoro: 1-2-2-2 = un giorno intero di 24 h, due liberi, due giorni interi, due liberi. Anche con lettere: F giorno intero, L libero. Il giorno 1 della sequenza è la data di inizio di ogni guardia."
+      "secuenciaAyudaDiaCompleto": "Blocchi di lavoro e riposo, iniziando dal lavoro: 1-2-2-2 = un giorno intero di 24 h, due liberi, due giorni interi, due liberi. Anche con lettere: F giorno intero, L libero. Il giorno 1 della sequenza è la data di inizio di ogni guardia.",
+      "porDiasDeLaSemana": "Per giorni della settimana",
+      "semanalSinDias": "Scegli almeno un giorno della settimana.",
+      "semanalExplica": "Ogni guardia lavora quei giorni della settimana, qualunque sia la data d’inizio, e la postazione è coperta solo quei giorni. Una guardia per posto, senza jolly."
     },
     "Planificador": {
       "noSePudoCargar": "Impossibile caricare l'orario.",
@@ -18735,6 +18743,73 @@
       "vacioFiltro": "Nessun preventivo con questo filtro",
       "vacio": "Ancora nessun preventivo",
       "vacioDesc": "Scrivi il primo: postazioni a ore, canoni mensili e voci una tantum. Il potenziale cliente lo firma dal link nell'e-mail."
+    },
+    "semana": {
+      "dom": "Dom",
+      "jue": "Gio",
+      "lun": "Lun",
+      "mar": "Mar",
+      "mie": "Mer",
+      "ningunDia": "Nessun giorno",
+      "rango": "da {{desde}} a {{hasta}}",
+      "sab": "Sab",
+      "todosLosDias": "Tutti i giorni",
+      "vie": "Ven"
+    },
+    "AllStaff": {
+      "asignarAPuesto": "Assegna a una postazione",
+      "asignarHorario": "Assegna orario",
+      "ausente": "Assente",
+      "buscar": "Cerca persona o postazione…",
+      "buscarPuesto": "Cerca postazione…",
+      "contraer": "Comprimi tutto il personale",
+      "enOficina": "Ufficio",
+      "errorCargar": "Impossibile caricare il personale.",
+      "expandir": "Espandi tutto il personale",
+      "libre": "Riposo",
+      "mostrarTodos_one": "Mostra tutti ({{count}})",
+      "mostrarTodos_other": "Mostra tutti ({{count}})",
+      "nOficina_one": "{{count}} ufficio",
+      "nOficina_other": "{{count}} ufficio",
+      "nSinHorario_one": "{{count}} senza orario",
+      "nSinHorario_other": "{{count}} senza orario",
+      "nSupervisores_one": "{{count}} supervisore",
+      "nSupervisores_other": "{{count}} supervisori",
+      "nVigilantes_one": "{{count}} guardia",
+      "nVigilantes_other": "{{count}} guardie",
+      "nadie": "Ancora nessun personale attivo.",
+      "nadieConEseFiltro": "Nessuno corrisponde al filtro.",
+      "oficina": "Ufficio",
+      "plazaOcupada": "Occupata",
+      "plazaVacante": "Vacante",
+      "reintentar": "Riprova",
+      "sinHorario": "Senza orario",
+      "sinPlazas": "Nessun posto. Crea prima una postazione nella sede.",
+      "sinPuesto": "Senza postazione",
+      "sinTurnoVisible": "Nessun turno in questi giorni",
+      "supervision": "Supervisione",
+      "supervisores": "Supervisori",
+      "tipoOficina": "Ufficio",
+      "tipoSupervisor": "Supervisore",
+      "tipoVigilante": "Guardia",
+      "titulo": "Tutto il personale",
+      "todos": "Tutti",
+      "trabaja": "Lavora",
+      "verSinHorario": "Vedi chi non ha un orario",
+      "vigilantes": "Guardie"
+    },
+    "OfficeHours": {
+      "copiarLunes": "Copia il lunedì su tutti",
+      "desde": "Dal",
+      "desdeAyuda": "Facoltativo. Vuoto = da oggi.",
+      "horaInvalida": "Scrivi l’ora come 08:00",
+      "lunesLibre": "Il lunedì è libero: nessun orario da copiare",
+      "mismaHora": "L’uscita non può essere alla stessa ora dell’entrata",
+      "ningunDia": "Seleziona almeno un giorno. Per lasciarlo senza orario usa «Rimuovi orario».",
+      "presetLunesAViernes": "Da lunedì a venerdì 08:00–17:00",
+      "presetSabadoMedio": "Da lunedì a venerdì + sabato mezza giornata (08:00–12:00)",
+      "quitado": "Orario rimosso",
+      "quitarHorario": "Rimuovi orario"
     }
   },
   "visitantes": {

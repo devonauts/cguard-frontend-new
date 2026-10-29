@@ -5,8 +5,11 @@ import { Loader2, Plus, X } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
 import {
+  esSemanal,
   nombreDeSecuencia,
+  nombreSemanal,
   secuenciaDeTexto,
+  type Traductor,
 } from "@/lib/secuenciaDeRotacion";
 
 export type RotationStyle = {
@@ -17,6 +20,8 @@ export type RotationStyle = {
   restDays: number;
   /** Secuencia libre (D/N/L por día), cuando el patrón se escribió así. */
   sequence?: string | null;
+  /** Weekly style: `sequence` is 7 letters anchored to the calendar (0 = Monday). */
+  weekly?: boolean;
   isSystem?: boolean;
 };
 
@@ -106,6 +111,11 @@ export default function SecuenciaPropiaSelect({
   }, [tenantId]);
 
   const describir = (s: RotationStyle) => {
+    if (esSemanal(s))
+      return `${nombreSemanal(s.sequence, t as Traductor)} · ${t(
+        "ui.RotationStyleSelect.porDiasDeLaSemana",
+        "por días de la semana",
+      )}`;
     if (s.sequence)
       return `${s.name} — ${t("ui.RotationStyleSelect.secuencia", {
         defaultValue: "secuencia {{s}}",
@@ -134,7 +144,7 @@ export default function SecuenciaPropiaSelect({
     const vistos = new Set<string>();
 
     return styles.filter((s) => {
-      const k = `${s.dayShifts}|${s.nightShifts}|${s.restDays}|${s.sequence || ""}`;
+      const k = `${s.dayShifts}|${s.nightShifts}|${s.restDays}|${s.sequence || ""}|${s.weekly ? "w" : ""}`;
 
       if (vistos.has(k) && s.id !== value) return false;
       vistos.add(k);
@@ -157,7 +167,9 @@ export default function SecuenciaPropiaSelect({
 
         return;
       }
-      const igualSeq = styles.find((s) => s.sequence === seq);
+      // A weekly style with the same letters means something else (anchored to
+      // the calendar), so it is never reused for a free sequence.
+      const igualSeq = styles.find((s) => s.sequence === seq && !s.weekly);
 
       if (igualSeq) {
         onChange(igualSeq.id);
@@ -211,7 +223,10 @@ export default function SecuenciaPropiaSelect({
     // Reutiliza uno idéntico en vez de acumular duplicados en el catálogo.
     const igual = styles.find(
       (s) =>
-        s.dayShifts === work && s.nightShifts === night && s.restDays === rest,
+        !s.weekly &&
+        s.dayShifts === work &&
+        s.nightShifts === night &&
+        s.restDays === rest,
     );
 
     if (igual) {

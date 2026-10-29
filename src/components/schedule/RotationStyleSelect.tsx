@@ -4,6 +4,13 @@ import { toast } from "sonner";
 import { Loader2, Plus } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
+import {
+  esSemanal,
+  nombreCortoDeDia,
+  nombreDeEstilo,
+  nombreSemanal,
+  type Traductor,
+} from "@/lib/secuenciaDeRotacion";
 
 export type RotationStyle = {
   id: string;
@@ -15,6 +22,8 @@ export type RotationStyle = {
   sundayDoubleRest?: boolean;
   /** Secuencia libre (D/N/L por día), cuando el patrón se escribió así. */
   sequence?: string | null;
+  /** Weekly style: `sequence` is 7 letters anchored to the calendar (0 = Monday). */
+  weekly?: boolean;
   isSystem?: boolean;
 };
 
@@ -307,6 +316,7 @@ export default function RotationStyleSelect({
     () =>
       styles.find(
         (x) =>
+          !x.weekly &&
           (x.nightShifts || 0) === 0 &&
           x.restDays === 0 &&
           (x.dayShifts || 0) > 0,
@@ -365,6 +375,12 @@ export default function RotationStyleSelect({
   }, [value, styles]);
 
   const describe = (s: RotationStyle) => {
+    // A weekly style reads as weekdays: «Lunes a viernes · por días de la semana».
+    if (esSemanal(s))
+      return `${nombreSemanal(s.sequence, t as Traductor)} · ${t(
+        "ui.RotationStyleSelect.porDiasDeLaSemana",
+        "por días de la semana",
+      )}`;
     // Una secuencia libre se enseña tal cual: su nombre ya dice los bloques.
     if (s.sequence)
       return `${s.name} — ${t("ui.RotationStyleSelect.secuencia", {
@@ -432,6 +448,8 @@ export default function RotationStyleSelect({
     // mismo ciclo creado dos veces son dos filas que luego hay que distinguir.
     const igual = styles.find(
       (s) =>
+        // Same numbers on a weekly style is a different thing (calendar days).
+        !s.weekly &&
         s.dayShifts === work &&
         s.nightShifts === night &&
         s.restDays === rest &&
@@ -682,7 +700,7 @@ export default function RotationStyleSelect({
               >
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-semibold text-foreground">
-                    {s.name}
+                    {nombreDeEstilo(s, t as Traductor)}
                   </span>
                   {!encaja(s) && !fijos && (
                     <span
@@ -723,6 +741,38 @@ export default function RotationStyleSelect({
               {t("ui.RotationStyleSelect.noHayPatronesCreaUno")}
             </div>
           )}
+        </div>
+      )}
+
+      {/* A weekly style has no start day to pick: its week IS the calendar,
+          Monday first, whatever day the guard starts. */}
+      {estiloActual && esSemanal(estiloActual) && (
+        <div className="rounded-xl border border-border/40 bg-muted/10 p-3">
+          <div className="flex gap-[3px]">
+            {String(estiloActual.sequence)
+              .toUpperCase()
+              .split("")
+              .map((c, i) => (
+                <span
+                  key={i}
+                  className="grid h-9 w-9 place-items-center rounded-md text-[10px] font-bold"
+                  style={{
+                    background:
+                      c === "L" ? "var(--glass-sunken)" : "var(--warn-soft, #fbf0dc)",
+                    color: c === "L" ? "var(--ink-faint)" : "var(--warn, #b5761a)",
+                  }}
+                  title={c === "L" ? t("ui.AllStaff.libre", "Libre") : undefined}
+                >
+                  {nombreCortoDeDia(i, t as Traductor)}
+                </span>
+              ))}
+          </div>
+          <p className="mt-1.5 text-[10px]" style={{ color: "var(--ink-soft)" }}>
+            {t(
+              "ui.RotationStyleSelect.semanalExplica",
+              "Trabaja esos días de la semana, empiece cuando empiece. No hay ciclo que correr.",
+            )}
+          </p>
         </div>
       )}
 

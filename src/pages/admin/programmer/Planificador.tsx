@@ -1430,6 +1430,7 @@ export default function Planificador() {
               }
               estaciones={estacionesParaSf}
               nombre={editando.nombre}
+              semanal={!!leido!.enlace.personas[editando.id].semanal}
               tenantId={tenantId}
               onClose={() => setEditando(null)}
               onSaved={() => {
@@ -2041,7 +2042,8 @@ function FilasDePuesto({
                   >
                     {etiquetaDe(plan, p)}
                   </button>
-                  {p.patron.length > 1 && (
+                  {/* A weekly style is anchored to the calendar: no shifting it. */}
+                  {p.patron.length > 1 && !p.semanal && (
                     <>
                       <Icono
                         title={t(
@@ -2314,7 +2316,7 @@ function FilaDeSacafranco({
           </button>
           {/* El sacafranco también corre su ciclo: moverlo uno o dos días es
               lo que cuadra sus libres con los huecos de los fijos. */}
-          {s.patron.length > 1 && (
+          {s.patron.length > 1 && !s.semanal && (
             <>
               <Icono
                 title={t(
