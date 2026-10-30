@@ -11249,7 +11249,14 @@
       "tuCuentaNoTieneOficina": "Je account heeft geen kantoor ingesteld, dus er wordt geregistreerd zonder geofence.",
       "aTiempo": "Op tijd",
       "tardeNMin": "{{n}} min te laat",
-      "sinHorario": "Geen rooster"
+      "sinHorario": "Geen rooster",
+      "buenProvecho": "Eet smakelijk. Tik op „Terug” als je terug bent.",
+      "deVuelta": "Welkom terug. De lunch telt niet als werktijd.",
+      "enAlmuerzo": "Met lunch",
+      "tuHorarioHoy": "Je uren vandaag: {{start}}–{{end}}",
+      "almuerzoDeA": "lunch {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Terug van de lunch",
+      "salirAAlmorzar": "Naar de lunch"
     },
     "Notification": {
       "configuracionDeAvisos": "Instellingen voor meldingen"
@@ -18797,7 +18804,8 @@
       "todos": "Iedereen",
       "trabaja": "Werkt",
       "verSinHorario": "Bekijk wie geen rooster heeft",
-      "vigilantes": "Beveiligers"
+      "vigilantes": "Beveiligers",
+      "almuerzo": "lunch {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Maandag naar alle kopiëren",
@@ -18810,7 +18818,17 @@
       "presetLunesAViernes": "Maandag t/m vrijdag 08:00–17:00",
       "presetSabadoMedio": "Maandag t/m vrijdag + zaterdag halve dag (08:00–12:00)",
       "quitado": "Rooster verwijderd",
-      "quitarHorario": "Rooster verwijderen"
+      "quitarHorario": "Rooster verwijderen",
+      "almuerzoFuera": "De lunch moet binnen de werkdag vallen",
+      "horasNetas": "Werkuren, zonder lunch",
+      "almuerzo": "Lunch",
+      "agregarAlmuerzo": "Lunch toevoegen",
+      "almuerzoDesde": "Lunchtijd",
+      "duracionAlmuerzo": "Duur van de lunch",
+      "nHoras": "{{count}} u",
+      "nMinutos": "{{count}} min",
+      "hasta": "tot {{hora}}",
+      "notaAlmuerzo": "De lunch wordt niet betaald: op de prikklok tikt de persoon „Naar de lunch” en „Terug”."
     }
   },
   "visitantes": {

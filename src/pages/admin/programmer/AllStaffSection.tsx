@@ -233,7 +233,13 @@ function AllStaffSection({
     const que =
       d.status === "work"
         ? d.start && d.end
-          ? `${d.start}–${d.end}`
+          ? d.lunch
+            ? `${d.start}–${d.end} · ${t("ui.AllStaff.almuerzo", {
+                defaultValue: "almuerzo {{start}}–{{end}}",
+                start: d.lunch.start,
+                end: d.lunch.end,
+              })}`
+            : `${d.start}–${d.end}`
           : t("ui.AllStaff.trabaja", "Trabaja")
         : d.status === "off"
           ? t("ui.AllStaff.libre", "Libre")

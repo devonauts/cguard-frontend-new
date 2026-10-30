@@ -11249,7 +11249,14 @@
       "tuCuentaNoTieneOficina": "Votre compte n'a pas de bureau configuré ; le pointage se fait donc sans géorepérage.",
       "aTiempo": "À l’heure",
       "tardeNMin": "En retard de {{n}} min",
-      "sinHorario": "Sans horaire"
+      "sinHorario": "Sans horaire",
+      "buenProvecho": "Bon appétit. Appuyez sur « Retour » en revenant.",
+      "deVuelta": "De retour. Le déjeuner ne compte pas comme travail.",
+      "enAlmuerzo": "En pause déjeuner",
+      "tuHorarioHoy": "Vos horaires aujourd’hui : {{start}}–{{end}}",
+      "almuerzoDeA": "déjeuner {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Retour du déjeuner",
+      "salirAAlmorzar": "Partir déjeuner"
     },
     "Notification": {
       "configuracionDeAvisos": "Paramètres des avis"
@@ -18797,7 +18804,8 @@
       "todos": "Tous",
       "trabaja": "Travaille",
       "verSinHorario": "Voir qui n’a pas d’horaire",
-      "vigilantes": "Agents"
+      "vigilantes": "Agents",
+      "almuerzo": "déjeuner {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Copier le lundi partout",
@@ -18810,7 +18818,17 @@
       "presetLunesAViernes": "Du lundi au vendredi 08:00–17:00",
       "presetSabadoMedio": "Du lundi au vendredi + samedi demi-journée (08:00–12:00)",
       "quitado": "Horaire retiré",
-      "quitarHorario": "Retirer l’horaire"
+      "quitarHorario": "Retirer l’horaire",
+      "almuerzoFuera": "Le déjeuner doit tomber dans la journée de travail",
+      "horasNetas": "Heures de travail, déjeuner non compris",
+      "almuerzo": "Déjeuner",
+      "agregarAlmuerzo": "Ajouter le déjeuner",
+      "almuerzoDesde": "Heure du déjeuner",
+      "duracionAlmuerzo": "Durée du déjeuner",
+      "nHoras": "{{count}} h",
+      "nMinutos": "{{count}} min",
+      "hasta": "jusqu’à {{hora}}",
+      "notaAlmuerzo": "Le déjeuner n’est pas payé : sur la pointeuse, la personne appuie sur « Partir déjeuner » puis « Retour »."
     }
   },
   "visitantes": {

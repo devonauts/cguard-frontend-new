@@ -11249,7 +11249,14 @@
       "tuCuentaNoTieneOficina": "Il tuo account non ha un ufficio configurato, quindi si registra senza geofence.",
       "aTiempo": "Puntuale",
       "tardeNMin": "In ritardo di {{n}} min",
-      "sinHorario": "Senza orario"
+      "sinHorario": "Senza orario",
+      "buenProvecho": "Buon appetito. Tocca «Rientro» quando torni.",
+      "deVuelta": "Bentornato. Il pranzo non conta come lavoro.",
+      "enAlmuerzo": "In pausa pranzo",
+      "tuHorarioHoy": "Il tuo orario oggi: {{start}}–{{end}}",
+      "almuerzoDeA": "pranzo {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Rientro dal pranzo",
+      "salirAAlmorzar": "Vado a pranzo"
     },
     "Notification": {
       "configuracionDeAvisos": "Impostazioni degli avvisi"
@@ -18797,7 +18804,8 @@
       "todos": "Tutti",
       "trabaja": "Lavora",
       "verSinHorario": "Vedi chi non ha un orario",
-      "vigilantes": "Guardie"
+      "vigilantes": "Guardie",
+      "almuerzo": "pranzo {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Copia il lunedì su tutti",
@@ -18810,7 +18818,17 @@
       "presetLunesAViernes": "Da lunedì a venerdì 08:00–17:00",
       "presetSabadoMedio": "Da lunedì a venerdì + sabato mezza giornata (08:00–12:00)",
       "quitado": "Orario rimosso",
-      "quitarHorario": "Rimuovi orario"
+      "quitarHorario": "Rimuovi orario",
+      "almuerzoFuera": "Il pranzo deve stare dentro la giornata",
+      "horasNetas": "Ore di lavoro, pranzo escluso",
+      "almuerzo": "Pranzo",
+      "agregarAlmuerzo": "Aggiungi pranzo",
+      "almuerzoDesde": "Ora del pranzo",
+      "duracionAlmuerzo": "Durata del pranzo",
+      "nHoras": "{{count}} h",
+      "nMinutos": "{{count}} min",
+      "hasta": "fino alle {{hora}}",
+      "notaAlmuerzo": "Il pranzo non è pagato: sull’orologio la persona tocca «Vado a pranzo» e «Rientro»."
     }
   },
   "visitantes": {

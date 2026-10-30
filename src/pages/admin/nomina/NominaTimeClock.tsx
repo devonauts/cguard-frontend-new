@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Clock, MapPin, LogIn, LogOut, Loader2, UserX } from "lucide-react";
+import { Clock, Loader2, LogIn, LogOut, MapPin, UserX, Utensils } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,14 @@ export default function NominaTimeClock() {
     radiusM: number;
     address: string | null;
   } | null>(null);
+  /** Office staff: today's planned day and lunch, from the weekly schedule. */
+  const [hoy, setHoy] = useState<{
+    start: string;
+    end: string;
+    lunch: { start: string; end: string; minutes: number } | null;
+  } | null>(null);
+  /** Office staff: out to lunch right now (an open break on the open shift). */
+  const [enAlmuerzo, setEnAlmuerzo] = useState(false);
 
   /** El estado del fichaje de oficina. Devuelve si ese camino está disponible. */
   const cargarStaff = async (aplicar: boolean) => {
@@ -59,7 +67,16 @@ export default function NominaTimeClock() {
       const s: {
         isClockedIn?: boolean;
         office?: { radiusM: number; address: string | null } | null;
+        shift?: { onBreak?: boolean } | null;
+        today?: {
+          start: string;
+          end: string;
+          lunch: { start: string; end: string; minutes: number } | null;
+        } | null;
       } = await attendanceService.staffStatus();
+
+      setHoy(s?.today || null);
+      setEnAlmuerzo(!!s?.shift?.onBreak);
 
       setOffice(
         s?.office
@@ -332,6 +349,24 @@ export default function NominaTimeClock() {
     }
   };
 
+  const doAlmuerzo = async (salir: boolean) => {
+    setBusy(true);
+    try {
+      if (salir) await attendanceService.staffBreakStart();
+      else await attendanceService.staffBreakEnd();
+      setEnAlmuerzo(salir);
+      toast.success(
+        salir
+          ? t("ui.NominaTimeClock.buenProvecho", "Buen provecho. Marca «Volver» al regresar.")
+          : t("ui.NominaTimeClock.deVuelta", "De vuelta. El almuerzo no se cuenta como trabajo."),
+      );
+    } catch (e) {
+      toast.error((e as { message?: string })?.message || "Error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <AppLayout>
       <PageContainer className="max-w-md" width="narrow">
@@ -366,12 +401,30 @@ export default function NominaTimeClock() {
           ) : (
             <>
               <div className="mt-2 flex justify-center">
-                <StatusBadge tone={isClockedIn ? "ok" : "neutral"}>
+                <StatusBadge tone={isClockedIn ? (enAlmuerzo && mode === "staff" ? "warn" : "ok") : "neutral"}>
                   {isClockedIn
-                    ? t("ui.NominaTimeClock.enServicio", "En servicio")
+                    ? enAlmuerzo && mode === "staff"
+                      ? t("ui.NominaTimeClock.enAlmuerzo", "En almuerzo")
+                      : t("ui.NominaTimeClock.enServicio", "En servicio")
                     : t("ui.NominaTimeClock.fueraDeServicio", "Fuera de servicio")}
                 </StatusBadge>
               </div>
+              {mode === "staff" && hoy && (
+                <p className="mt-2 text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
+                  {t("ui.NominaTimeClock.tuHorarioHoy", {
+                    defaultValue: "Tu horario hoy: {{start}}–{{end}}",
+                    start: hoy.start,
+                    end: hoy.end,
+                  })}
+                  {hoy.lunch
+                    ? ` · ${t("ui.NominaTimeClock.almuerzoDeA", {
+                        defaultValue: "almuerzo {{start}}–{{end}}",
+                        start: hoy.lunch.start,
+                        end: hoy.lunch.end,
+                      })}`
+                    : ""}
+                </p>
+              )}
 
               {/* LOS DOS SOMBREROS: quien puede fichar de las dos formas elige.
                   Con el turno ya abierto no se ofrece — cambiar de camino a
@@ -474,7 +527,22 @@ export default function NominaTimeClock() {
                 </p>
               )}
 
-              <div className="mt-6">
+              {mode === "staff" && isClockedIn && (
+                <div className="mt-6">
+                  <Button
+                    className="w-full py-5 text-sm"
+                    disabled={busy}
+                    variant={enAlmuerzo ? "brand" : "outline"}
+                    onClick={() => doAlmuerzo(!enAlmuerzo)}
+                  >
+                    <Utensils className="mr-2 h-4 w-4" />
+                    {enAlmuerzo
+                      ? t("ui.NominaTimeClock.volverDelAlmuerzo", "Volver del almuerzo")
+                      : t("ui.NominaTimeClock.salirAAlmorzar", "Salir a almorzar")}
+                  </Button>
+                </div>
+              )}
+              <div className={mode === "staff" && isClockedIn ? "mt-3" : "mt-6"}>
                 {isClockedIn ? (
                   <Button
                     className="w-full py-6 text-base"

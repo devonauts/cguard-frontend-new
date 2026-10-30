@@ -596,6 +596,17 @@ const attendanceService = {
 
     return unwrap(await api.post(`/tenant/${t}/staff/me/clock-out`, { data }));
   },
+  /** Office staff: going to lunch / back (the time is not paid). */
+  async staffBreakStart() {
+    const t = getTenantId();
+
+    return unwrap(await api.post(`/tenant/${t}/staff/me/break/start`, {}));
+  },
+  async staffBreakEnd() {
+    const t = getTenantId();
+
+    return unwrap(await api.post(`/tenant/${t}/staff/me/break/end`, {}));
+  },
 
   async getSettings() {
     const t = getTenantId();

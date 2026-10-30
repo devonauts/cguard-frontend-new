@@ -10714,7 +10714,14 @@
       "tuCuentaNoTieneOficina": "Sua conta não tem um escritório configurado, então o registro é feito sem geocerca.",
       "aTiempo": "No horário",
       "tardeNMin": "Atrasado {{n}} min",
-      "sinHorario": "Sem horário"
+      "sinHorario": "Sem horário",
+      "buenProvecho": "Bom apetite. Toque «Voltar» ao retornar.",
+      "deVuelta": "De volta. O almoço não conta como trabalho.",
+      "enAlmuerzo": "No almoço",
+      "tuHorarioHoy": "Seu horário hoje: {{start}}–{{end}}",
+      "almuerzoDeA": "almoço {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Voltar do almoço",
+      "salirAAlmorzar": "Sair para almoçar"
     },
     "Notification": {
       "configuracionDeAvisos": "Configuração de avisos"
@@ -18262,7 +18269,8 @@
       "todos": "Todos",
       "trabaja": "Trabalha",
       "verSinHorario": "Ver quem não tem horário",
-      "vigilantes": "Vigilantes"
+      "vigilantes": "Vigilantes",
+      "almuerzo": "almoço {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Copiar segunda para todos",
@@ -18275,7 +18283,17 @@
       "presetLunesAViernes": "Segunda a sexta 08:00–17:00",
       "presetSabadoMedio": "Segunda a sexta + sábado meio dia (08:00–12:00)",
       "quitado": "Horário removido",
-      "quitarHorario": "Remover horário"
+      "quitarHorario": "Remover horário",
+      "almuerzoFuera": "O almoço precisa ficar dentro da jornada",
+      "horasNetas": "Horas de trabalho, sem o almoço",
+      "almuerzo": "Almoço",
+      "agregarAlmuerzo": "Adicionar almoço",
+      "almuerzoDesde": "Hora do almoço",
+      "duracionAlmuerzo": "Duração do almoço",
+      "nHoras": "{{count}} h",
+      "nMinutos": "{{count}} min",
+      "hasta": "até {{hora}}",
+      "notaAlmuerzo": "O almoço não é pago: no relógio, a pessoa toca «Sair para almoçar» e «Voltar»."
     }
   },
   "map": {

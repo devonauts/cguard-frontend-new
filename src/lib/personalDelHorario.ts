@@ -35,6 +35,8 @@ export interface DiaDePersona {
   end: string | null;
   where: DondeEsta | null;
   absence: CodigoDeAusencia | null;
+  /** Office staff: the planned lunch of that day. */
+  lunch?: { start: string; end: string } | null;
 }
 
 export interface PersonaDelHorario {

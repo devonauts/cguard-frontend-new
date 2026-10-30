@@ -10714,7 +10714,14 @@
       "tuCuentaNoTieneOficina": "Your account has no office configured, so it's recorded without a geofence.",
       "aTiempo": "On time",
       "tardeNMin": "Late {{n}} min",
-      "sinHorario": "No schedule"
+      "sinHorario": "No schedule",
+      "buenProvecho": "Enjoy your lunch. Tap «Back» when you return.",
+      "deVuelta": "Welcome back. Lunch does not count as work time.",
+      "enAlmuerzo": "At lunch",
+      "tuHorarioHoy": "Your hours today: {{start}}–{{end}}",
+      "almuerzoDeA": "lunch {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Back from lunch",
+      "salirAAlmorzar": "Go to lunch"
     },
     "Notification": {
       "configuracionDeAvisos": "Notification settings"
@@ -18262,7 +18269,8 @@
       "todos": "All",
       "trabaja": "Working",
       "verSinHorario": "See who has no schedule",
-      "vigilantes": "Guards"
+      "vigilantes": "Guards",
+      "almuerzo": "lunch {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Copy Monday to all",
@@ -18275,7 +18283,17 @@
       "presetLunesAViernes": "Monday to Friday 08:00–17:00",
       "presetSabadoMedio": "Monday to Friday + Saturday half day (08:00–12:00)",
       "quitado": "Schedule removed",
-      "quitarHorario": "Remove schedule"
+      "quitarHorario": "Remove schedule",
+      "almuerzoFuera": "Lunch has to fall inside the working day",
+      "horasNetas": "Working hours, lunch not included",
+      "almuerzo": "Lunch",
+      "agregarAlmuerzo": "Add lunch",
+      "almuerzoDesde": "Lunch time",
+      "duracionAlmuerzo": "Lunch length",
+      "nHoras": "{{count}} h",
+      "nMinutos": "{{count}} min",
+      "hasta": "until {{hora}}",
+      "notaAlmuerzo": "Lunch is unpaid: on the time clock the person taps «Go to lunch» and «Back»."
     }
   },
   "map": {

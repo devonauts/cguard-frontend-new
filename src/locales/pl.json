@@ -11291,7 +11291,14 @@
       "tuCuentaNoTieneOficina": "Twoje konto nie ma skonfigurowanego biura, więc rejestracja odbywa się bez geostrefy.",
       "aTiempo": "Punktualnie",
       "tardeNMin": "Spóźnienie {{n}} min",
-      "sinHorario": "Bez grafiku"
+      "sinHorario": "Bez grafiku",
+      "buenProvecho": "Smacznego. Naciśnij „Wracam” po powrocie.",
+      "deVuelta": "Witaj z powrotem. Obiad nie liczy się jako praca.",
+      "enAlmuerzo": "Na obiedzie",
+      "tuHorarioHoy": "Twoje godziny dziś: {{start}}–{{end}}",
+      "almuerzoDeA": "obiad {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Wracam z obiadu",
+      "salirAAlmorzar": "Idę na obiad"
     },
     "Notification": {
       "configuracionDeAvisos": "Ustawienia powiadomień"
@@ -19087,7 +19094,8 @@
       "todos": "Wszyscy",
       "trabaja": "Pracuje",
       "verSinHorario": "Pokaż, kto nie ma grafiku",
-      "vigilantes": "Ochroniarze"
+      "vigilantes": "Ochroniarze",
+      "almuerzo": "obiad {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Kopiuj poniedziałek do wszystkich",
@@ -19100,7 +19108,17 @@
       "presetLunesAViernes": "Poniedziałek–piątek 08:00–17:00",
       "presetSabadoMedio": "Poniedziałek–piątek + sobota pół dnia (08:00–12:00)",
       "quitado": "Grafik usunięty",
-      "quitarHorario": "Usuń grafik"
+      "quitarHorario": "Usuń grafik",
+      "almuerzoFuera": "Przerwa obiadowa musi mieścić się w dniu pracy",
+      "horasNetas": "Godziny pracy bez przerwy obiadowej",
+      "almuerzo": "Obiad",
+      "agregarAlmuerzo": "Dodaj obiad",
+      "almuerzoDesde": "Godzina obiadu",
+      "duracionAlmuerzo": "Długość obiadu",
+      "nHoras": "{{count}} godz.",
+      "nMinutos": "{{count}} min",
+      "hasta": "do {{hora}}",
+      "notaAlmuerzo": "Obiad nie jest płatny: na zegarze osoba naciska „Idę na obiad” i „Wracam”."
     }
   },
   "visitantes": {
