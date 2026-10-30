@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   MARCA_DE_PLATAFORMA,
+  MARCA_NEUTRA,
   marcaGuardada,
   normalizarContexto,
   pedirContexto,
@@ -725,10 +726,17 @@ describe("2026-10-22 · la marca del socio desde el primer instante", () => {
     expect(r.ctx.platformName).not.toBe(MARCA_DE_PLATAFORMA.platformName);
   });
 
-  it("sin red y sin nada guardado, sigue entrando con la de plataforma", async () => {
+  it("sin red y sin nada guardado, sigue entrando — con la marca de NADIE, no la nuestra", async () => {
+    /* 2026-10-30 (ENTEC): this used to fall back to CGuard Pro, which flashed
+       our name and logo on the partner's own domain during every deploy. The
+       point of this case was that the person can still get in, and they can:
+       the neutral identity paints the app without anybody's brand. */
     navegadorDeSocio();
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
-    expect((await pedirContexto()).ctx).toEqual(MARCA_DE_PLATAFORMA);
+    const r = await pedirContexto();
+    expect(r.degradado).toBe(true);
+    expect(r.ctx).toEqual(MARCA_NEUTRA);
+    expect(r.ctx.platformName).not.toBe(MARCA_DE_PLATAFORMA.platformName);
   });
 
   it("lo guardado se valida como una respuesta fresca", () => {

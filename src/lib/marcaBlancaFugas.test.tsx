@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 
 /**
@@ -183,7 +183,12 @@ describe("5 · app download screens after an invitation", () => {
 });
 
 describe("6 · the assistant's name before `/assistant/identity` answers", () => {
+  afterEach(() => vi.unstubAllEnvs());
   it("a partner's host: a neutral localized word, not ours", () => {
+    /* `esAnfitrionDePlataforma` treats every host as ours when VITE_API_URL is
+       unset (a relative base is same-origin). Production builds set it; a git
+       worktree has no .env, so pin it here instead of depending on that file. */
+    vi.stubEnv("VITE_API_URL", "https://api.mainconnector.com/api");
     (globalThis as any).window = { location: { hostname: "portal.entecdigital.mx" } };
     const { AGENTE_POR_DEFECTO, NOMBRE_GLOBAL, NOMBRE_HISPANO } = AG;
 

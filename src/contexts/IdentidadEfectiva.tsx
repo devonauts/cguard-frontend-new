@@ -5,6 +5,8 @@ import {
   ContextoDeMarcaReact,
   EsqueletoNeutro,
   MARCA_DE_PLATAFORMA,
+  MARCA_NEUTRA,
+  esMarcaNeutra,
   aplicarMarca,
   puedeUsarArteDePlataforma,
   useWhiteLabel,
@@ -107,11 +109,21 @@ export function IdentidadEfectivaProvider({ children }: { children: ReactNode })
   const anfitrionEsDeSocio = !!anfitrion.resellerPublicId;
 
   const efectiva: ContextoDeMarca | null = useMemo(() => {
-    if (!anfitrionEsDeSocio) return MARCA_DE_PLATAFORMA;
+    /* A partner's host whose brand could not be read stays neutral. */
+    if (!anfitrionEsDeSocio) return esMarcaNeutra(anfitrion) ? MARCA_NEUTRA : MARCA_DE_PLATAFORMA;
     if (estado === "sin-sesion") return anfitrion;
     if (estado === "sin-resolver") return null; // neutro: no se arriesga marca ajena
 
-    const v = compatibilidad(empresaActiva(user, tenantId), {
+    /* «Resolved» also covers a profile request that FAILED (a deploy, a
+       restart: a 502 on /auth/me) and a session with no company. Nothing then
+       proves whose company this is, and `compatibilidad(null)` reads that as a
+       direct company: our name and logo on the partner's own domain until the
+       next good answer (ENTEC, 2026-10-30). Unknown is neutral: neither the
+       partner's brand (it may not be theirs) nor ours. */
+    const empresa = empresaActiva(user, tenantId);
+    if (!empresa) return MARCA_NEUTRA;
+
+    const v = compatibilidad(empresa, {
       resellerPublicId: anfitrion.resellerPublicId,
     });
 
