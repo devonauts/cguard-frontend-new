@@ -92,6 +92,29 @@ export const MARCA_DE_PLATAFORMA: ContextoDeMarca = {
   analytics: { ga4: null, gtm: null },
 };
 
+/**
+ * Nobody's identity: no name, no logo, no attribution.
+ *
+ * What a partner's host paints when it cannot know whose brand to show — the
+ * brand service did not answer and this browser has none saved, or a session
+ * whose company could not be read (the profile request failed). Before, both
+ * cases fell back to CGuard Pro, so a deploy or a restart flashed our name and
+ * logo on a partner's own domain (ENTEC, 2026-10-30). The partner's brand is
+ * not safe either while the company is unknown: a direct company entering
+ * through a partner's host must not see that partner.
+ */
+export const MARCA_NEUTRA: ContextoDeMarca = {
+  ...MARCA_DE_PLATAFORMA,
+  scope: "reseller",
+  platformName: "",
+  showPlatformAttribution: false,
+};
+
+/** Is this the neutral identity (a partner scope with no partner behind it)? */
+export function esMarcaNeutra(ctx: Pick<ContextoDeMarca, "scope" | "resellerPublicId">): boolean {
+  return esMarcaDeSocio(ctx) && !ctx.resellerPublicId;
+}
+
 /** Los recursos de plataforma, para cuando un socio no tiene los suyos. */
 const LOGO_DE_PLATAFORMA = "/assets/logo/c-guard-logo.png";
 const FAVICON_DE_PLATAFORMA = "/favicon-escudo.ico?v=2";
@@ -564,8 +587,18 @@ export async function pedirContexto(): Promise<{ ctx: ContextoDeMarca; degradado
  * used to show our logo exactly when the partner could least explain it.
  */
 export function respaldoSinRed(): ContextoDeMarca {
-  return marcaGuardada() ?? MARCA_DE_PLATAFORMA;
+  const guardada = marcaGuardada();
+  if (guardada) return guardada;
+  /* The inline script in index.html already decided whether this host is ours.
+     On a partner's host with nothing saved, our brand would be a leak: paint
+     nobody's until the service answers (the provider keeps retrying). */
+  return marcaTemprana()?.ours === false ? MARCA_NEUTRA : MARCA_DE_PLATAFORMA;
 }
+
+/** Retry schedule while the brand could not be read (ms after the first try). */
+export const REINTENTOS_DE_MARCA_MS = [5000, 15000, 30000, 60000];
+const REINTENTO_DE_MARCA_CONTINUO_MS = 60000;
+const REINTENTO_DE_MARCA_MAXIMO_MS = 15 * 60000;
 
 /* ── El proveedor ────────────────────────────────────────────────────────── */
 
@@ -626,20 +659,42 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     montado.current = true;
-    (async () => {
+    let reloj: ReturnType<typeof setTimeout> | null = null;
+    let intento = 0;
+    const inicio = Date.now();
+    let resuelto = false;
+
+    const leer = async () => {
+      if (reloj) { clearTimeout(reloj); reloj = null; }
       const r = await pedirContexto();
-      if (!montado.current) return;
+      if (!montado.current || resuelto) return;
       /* Only an answer from the server is remembered; a fallback is not. */
       if (!r.degradado) recordarMarca(r.ctx);
       aplicarMarca(r.ctx);
       /* La medición del socio, en cuanto se sabe de quién es este anfitrión.
          Antes no: cargarla con el contexto de plataforma metería las visitas
          de nuestro CRM en la cuenta de un socio. */
-      cargarAnaliticaDeMarca(r.ctx.analytics);
+      if (!r.degradado) cargarAnaliticaDeMarca(r.ctx.analytics);
       setDegradado(r.degradado);
       setCtx(r.ctx);
-    })();
-    return () => { montado.current = false; };
+      if (!r.degradado) { resuelto = true; return; }
+      /* Degraded (a deploy, a restart, a bad network): ask again, so the real
+         brand replaces the fallback as soon as the service is back, without
+         waiting for the person to reload. */
+      if (Date.now() - inicio > REINTENTO_DE_MARCA_MAXIMO_MS) return;
+      const espera = REINTENTOS_DE_MARCA_MS[intento] ?? REINTENTO_DE_MARCA_CONTINUO_MS;
+      intento += 1;
+      reloj = setTimeout(() => { void leer(); }, espera);
+    };
+    const alVolverLaRed = () => { if (!resuelto) void leer(); };
+
+    void leer();
+    try { window.addEventListener("online", alVolverLaRed); } catch { /* no window */ }
+    return () => {
+      montado.current = false;
+      if (reloj) clearTimeout(reloj);
+      try { window.removeEventListener("online", alVolverLaRed); } catch { /* no window */ }
+    };
   }, []);
 
   /* Preview mode: the partner's panel sends what they are changing right now
