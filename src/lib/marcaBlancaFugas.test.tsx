@@ -230,3 +230,125 @@ describe("9 · trial under review: support goes to the partner, never to us", ()
     expect(src).not.toContain("mailto:${CORREO_DE_SOPORTE}");
   });
 });
+
+describe("10 · the customer app's name follows the host", () => {
+  it("«Mi Seguridad» on our hosts, the partner's name on theirs", async () => {
+    const { nombreDeLaAppDelCliente } = await import("./appDelCliente");
+
+    expect(nombreDeLaAppDelCliente(valor(false))).toBe("Mi Seguridad");
+    expect(nombreDeLaAppDelCliente(valor(true))).toBe("Entec Digital");
+    expect(nombreDeLaAppDelCliente(valor(true, { platformName: "" }))).toBe("");
+  });
+
+  it("the field app's deep link is opened by a button, never shown as a link", () => {
+    const src = soloCodigo(leer("src/pages/auth/reset-password.tsx"));
+
+    expect(src).not.toMatch(/href=["{`]*cguardpro:/);
+    expect(src).toContain("window.location.href = ESQUEMA_DE_LA_APP_DE_CAMPO");
+  });
+
+  it("the style guide (our design system) sends a partner's host home", () => {
+    const src = soloCodigo(leer("src/pages/StyleGuide.tsx"));
+
+    expect(src).toContain('if (esMarcaDeSocio(marca)) return <Navigate replace to="/" />;');
+  });
+});
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * 11 · NO NEW SOURCE FILE PRINTS OUR BRAND (2026-10-30)
+ *
+ * Owner's rule after ENTEC asked for it: «ellos no quieren que salga el nombre
+ * de cguardpro en su entorno en ningún motivo». The catalogs are guarded by
+ * `locales/marcaEnLosTextos.test.ts`; this guards the code: every string
+ * literal and JSX text in src/ that carries our name, our domain, our logo
+ * files or our customer app's name. The files below are the only ones allowed
+ * to, each because its use is gated to OUR hosts (or never rendered). A new
+ * file on this list needs the same kind of reason — and usually the answer is
+ * `useWhiteLabel()` instead.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+describe("11 · our brand in the code only where it is gated to our hosts", () => {
+  const MARCA_EN_CODIGO =
+    /CGuard|Cguard|C-Guard|CGUARD|C-GUARD|cguardpro\.com|cguardpro:\/\/|\/assets\/logo\/|Mi Seguridad/;
+  /** An i18n key (`ui.Foo.bar`) names a string; it is never printed. */
+  const CLAVE_I18N = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)+$/;
+
+  const PERMITIDOS = new Map<string, string>([
+    ["src/contexts/WhiteLabelContext.tsx", "the platform's own identity; the one file that decides the scope"],
+    ["src/contexts/IdentidadEfectiva.tsx", "our logo only when `puedeUsarArteDePlataforma`"],
+    ["src/components/BrandLockup.tsx", "our lockup only when `puedeUsarArteDePlataforma`"],
+    ["src/components/onboarding/OnboardingWizard.tsx", "our shield only when `puedeUsarArteDePlataforma`"],
+    ["src/pages/auth/CortinaDescifrado.tsx", "our art only when `puedeUsarArteDePlataforma`"],
+    ["src/pages/auth/RevisaTuCorreo.tsx", "our shield only on our hosts (block 2)"],
+    ["src/pages/auth/AuthShell.tsx", "our copyright only when the host is not a partner's"],
+    ["src/pages/auth/Boveda.tsx", "our copyright only when the host is not a partner's"],
+    ["src/pages/auth/AccesoBloqueado.tsx", "our support mailbox only on our hosts"],
+    ["src/components/PruebaEnRevisionScreen.tsx", "our support mailbox only on our hosts (block 9)"],
+    ["src/lib/enlacesLegales.ts", "our legal pages only on our hosts (block 4)"],
+    ["src/lib/appDelCliente.ts", "our customer app's name, only when `puedeUsarArteDePlataforma`"],
+    ["src/pages/client/registration.tsx", "our app art gated (block 5); store links kept by owner's decision"],
+    ["src/pages/supervisor/registration.tsx", "store search URLs, kept by owner's decision (block 5)"],
+    ["src/pages/StyleGuide.tsx", "our design system; partner hosts are redirected (block 10)"],
+    ["src/pages/auth/reset-password.tsx", "the app's URL scheme, opened by a button and never displayed"],
+    ["src/lib/centinela.ts", "host allow-list; never rendered"],
+    ["src/components/auth/marcoDeCaptcha.ts", "captcha frame URL and host test; never rendered as text"],
+  ]);
+
+  function fuentes(dir: string): string[] {
+    return fs.readdirSync(path.join(raiz, dir), { withFileTypes: true }).flatMap((e) => {
+      const rel = `${dir}/${e.name}`;
+      if (e.isDirectory()) return e.name === "locales" ? [] : fuentes(rel);
+      return /\.(ts|tsx)$/.test(e.name) && !/\.test\.|\.d\.ts$/.test(e.name) ? [rel] : [];
+    });
+  }
+
+  /** Each source file → the literals and JSX texts in it that carry our brand. */
+  const conMarca = new Map<string, string[]>();
+
+  beforeAll(() => {
+    for (const rel of fuentes("src")) {
+      const src = soloCodigo(leer(rel));
+      const hits: string[] = [];
+      const literal = /(["'`])((?:\\.|(?!\1)[^\\\n])*)\1/g;
+
+      for (const m of src.matchAll(literal)) {
+        if (MARCA_EN_CODIGO.test(m[2]) && !CLAVE_I18N.test(m[2])) hits.push(m[2]);
+      }
+      for (const m of src.replace(literal, '""').matchAll(/>([^<>{}]+)</g)) {
+        if (MARCA_EN_CODIGO.test(m[1])) hits.push(m[1].trim());
+      }
+      if (hits.length) conMarca.set(rel, hits);
+    }
+  });
+
+  it("no file outside the gated list writes our brand", () => {
+    const fugas = [...conMarca].filter(([rel]) => !PERMITIDOS.has(rel)).map(([rel, h]) => `${rel}: ${h.join(" · ")}`);
+
+    expect(
+      fugas,
+      "Read the brand from useWhiteLabel() (platformName / logo) or useAppDelCliente().",
+    ).toEqual([]);
+  });
+
+  it("and every exemption is still needed: a dead one hides the next leak", () => {
+    const muertas = [...PERMITIDOS.keys()].filter((rel) => !conMarca.has(rel));
+
+    expect(muertas).toEqual([]);
+  });
+});
+
+describe("12 · live support from the platform, seen on a partner's host", () => {
+  it("never prints the server's support name (ours) where our art may not show", () => {
+    const src = soloCodigo(leer("src/components/soporte/SoporteEnVivo.tsx"));
+
+    expect(src).toContain("const plataformaSinNombre = !!soporte?.viaSocio && !arteDePlataforma;");
+    expect(src).toContain('t("soporte.enVivoPlataforma")');
+    for (const l of ["es", "en", "pt", "fr", "de", "it", "nl", "pl"]) {
+      const c = JSON.parse(leer(`src/locales/${l}.json`));
+
+      expect(c.soporte.enVivoPlataforma, l).toBeTruthy();
+      expect(c.soporte.enVivoTicketPlataforma, l).toContain("{{ticket}}");
+    }
+  });
+});

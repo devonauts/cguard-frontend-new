@@ -21,7 +21,7 @@ export default function VerifyEmail() {
     if (calledRef.current) return;
     calledRef.current = true;
     document.title = tituloConMarca(
-      t("auth.verify_email_title") || "Verificando correo | Cguard",
+      t("auth.verify_email_title") || "Verificando correo",
     );
     (async () => {
       const params = new URLSearchParams(location.search);

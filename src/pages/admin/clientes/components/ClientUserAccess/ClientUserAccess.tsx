@@ -23,6 +23,7 @@ import {
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { clientService } from "@/lib/api/clientService";
 import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
+import { useAppDelCliente } from "@/lib/appDelCliente";
 import {
   Section,
   EmptyState,
@@ -48,6 +49,7 @@ interface AccessUser {
 
 export default function ClientUserAccess({ client }: Props) {
   const { t } = useTranslation();
+  const app = useAppDelCliente();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useScrollToTopOnMount(containerRef);
@@ -183,7 +185,7 @@ export default function ClientUserAccess({ client }: Props) {
                 {t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
               </Button>
             }
-            description={t("ui.ClientUserAccess.invitaAlTitularOAgrega")}
+            description={t("ui.ClientUserAccess.invitaAlTitularOAgrega", { app })}
             icon={<Users className="h-5 w-5" />}
             title={t("comun.sinUsuariosConAcceso")}
           />
@@ -287,7 +289,7 @@ export default function ClientUserAccess({ client }: Props) {
                 [
                   [
                     "app",
-                    t("ui.ClientUserAccess.appMiSeguridad", "App Mi Seguridad"),
+                    t("ui.ClientUserAccess.appMiSeguridad", { defaultValue: "App {{app}}", app }),
                   ],
                   ["portal", t("ui.ClientUserAccess.portalWeb", "Portal web")],
                 ] as const

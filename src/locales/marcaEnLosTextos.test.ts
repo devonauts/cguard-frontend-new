@@ -27,28 +27,33 @@ const LOCALES: Record<string, unknown> = { es, en, pt, fr, de, it: it_, nl, pl }
  * hay React). En el anfitrión de la plataforma sale «C-Guard Pro» y no cambia
  * nada; en el de un socio, el suyo.
  *
- * ── LAS TRES EXCEPCIONES, UNA A UNA ───────────────────────────────────────
- * Los `*_title` pasan por `tituloConMarca`, que se queda con lo de ANTES del
- * «|» y le pega el nombre del anfitrión: el sufijo del catálogo no se enseña
- * nunca. Y `landing.copyright` es la atribución, que sólo se pinta cuando el
- * socio la tiene ACTIVADA — con ella apagada, `AuthShell` pone su nombre.
+ * ── LA ÚNICA EXCEPCIÓN ─────────────────────────────────────────────────────
+ * `landing.copyright` es nuestro pie, y `AuthShell`/`Boveda` sólo lo pintan en
+ * NUESTROS anfitriones; en el de un socio ponen el suyo. Los `*_title` ya no
+ * llevan sufijo «| Cguard» (2026-10-30): `tituloConMarca` le pega el nombre del
+ * anfitrión, y un catálogo sin nuestro nombre no puede filtrarlo por ningún
+ * otro camino.
+ *
+ * ── TAMPOCO EL NOMBRE DE NUESTRA APP ───────────────────────────────────────
+ * «Mi Seguridad» es nuestra app del cliente. Las cadenas que hablan de ella
+ * llevan `{{app}}` y la pantalla pasa `useAppDelCliente()`: «Mi Seguridad» en
+ * nuestros anfitriones, el nombre del socio en el suyo.
  * ════════════════════════════════════════════════════════════════════════════
  */
 
 /** Claves donde nombrarnos es correcto, con el motivo al lado. */
 const PERMITIDAS = new Map<string, string>([
-  ["auth.login_title", "sufijo que `tituloConMarca` descarta"],
-  ["auth.register_title", "sufijo que `tituloConMarca` descarta"],
-  ["auth.reset_title", "sufijo que `tituloConMarca` descarta"],
-  ["invite.staff.doc_title", "sufijo que `tituloConMarca` descarta"],
-  ["auth.landing.copyright", "la atribución, sólo con `showPlatformAttribution`"],
-  ["sidebar.auth.login_title", "duplicado del catálogo"],
-  ["sidebar.auth.register_title", "duplicado del catálogo"],
-  ["sidebar.auth.reset_title", "duplicado del catálogo"],
-  ["sidebar.auth.landing.copyright", "duplicado del catálogo"],
+  ["auth.landing.copyright", "our footer, painted only on our own hosts"],
+  ["sidebar.auth.landing.copyright", "duplicate of the catalog"],
+  ["ui.registration.tuCuentaConEstaListaDescarga", "rendered only when `puedeUsarArteDePlataforma`"],
 ]);
 
-const MARCA = /CGUARD|CGuard|C-Guard|cguardpro/i;
+/**
+ * Our brand and our customer app's name, in each language it was ever
+ * translated into ("My Security Company" is a sample company name, not ours).
+ */
+const MARCA =
+  /C-?GUARD|cguardpro|Mi Seguridad|Minha Seguran|My Security(?! Company)|Ma S[ée]curit[ée]|Meine Sicherheit\b|La Mia Sicurezza|Mijn Beveiliging\b|Moje Bezpiecze/i;
 
 function cadenasConMarca(objeto: unknown, ruta = ""): string[] {
   if (typeof objeto === "string") {
@@ -63,10 +68,11 @@ function cadenasConMarca(objeto: unknown, ruta = ""): string[] {
 }
 
 /**
- * The two identity slots: the product name (`{{marca}}`) and the assistant's
- * name (`{{agente}}`, which a partner can rename).
+ * The identity slots: the product name (`{{marca}}`), the assistant's name
+ * (`{{agente}}`, which a partner can rename) and the customer app's name
+ * (`{{app}}`, see `lib/appDelCliente`).
  */
-const HUECOS = ["{{marca}}", "{{agente}}"] as const;
+const HUECOS = ["{{marca}}", "{{agente}}", "{{app}}"] as const;
 
 /** Dotted paths of every string that contains `hueco`. */
 function rutasConHueco(objeto: unknown, hueco: string, ruta = ""): string[] {
@@ -125,5 +131,13 @@ describe.each(Object.entries(LOCALES))("la marca no se escribe a mano en los tex
       (es as any).security.event.providerAccess,
     ];
     for (const texto of conHueco) expect(texto).toContain("{{marca}}");
+
+    const conApp = [
+      (es as any).ui.ClientPortal.invitarALaAppMi,
+      (es as any).ui.ClientUserAccess.appMiSeguridad,
+      (es as any).settings.mobil.guardVisDesc,
+      (es as any).vigiaPro.demo.partes.app.portal,
+    ];
+    for (const texto of conApp) expect(texto).toContain("{{app}}");
   });
 });

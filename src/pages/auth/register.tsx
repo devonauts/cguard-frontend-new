@@ -152,7 +152,7 @@ export default function Register() {
 
   useEffect(() => {
     document.title = tituloConMarca(
-      t("auth.register_title") || "Registro | Cguard",
+      t("auth.register_title") || "Registro",
     );
   }, [language]);
 

@@ -29,6 +29,7 @@ import { clientDisplayName } from "@/lib/clientName";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { clientService } from "@/lib/api/clientService";
 import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
+import { useAppDelCliente } from "@/lib/appDelCliente";
 import {
   Section,
   StatusBadge,
@@ -192,6 +193,7 @@ function Kpi({
 
 export default function ClientPortal({ client }: Props) {
   const { t } = useTranslation();
+  const app = useAppDelCliente();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -319,9 +321,9 @@ export default function ClientPortal({ client }: Props) {
   const kindLabel = useMemo(
     () =>
       confirm === "app"
-        ? t("ui.ClientPortal.aLaAppMiSeguridad", "a la app Mi Seguridad")
+        ? t("ui.ClientPortal.aLaAppMiSeguridad", { defaultValue: "a la app {{app}}", app })
         : t("ui.ClientPortal.alPortalDelCliente", "al portal del cliente"),
-    [confirm, t],
+    [confirm, t, app],
   );
 
   return (
@@ -351,7 +353,7 @@ export default function ClientPortal({ client }: Props) {
             "ui.ClientPortal.appMovilDelCliente",
             "App móvil del cliente",
           )}
-          value="Mi Seguridad"
+          value={app || "—"}
         />
         <Kpi
           accent={email ? "green" : "orange"}
@@ -502,7 +504,7 @@ export default function ClientPortal({ client }: Props) {
                   onClick={() => setConfirm("app")}
                 >
                   <Smartphone className="mr-1.5 h-4 w-4" />{" "}
-                  {t("ui.ClientPortal.invitarALaAppMi")}
+                  {t("ui.ClientPortal.invitarALaAppMi", { app })}
                 </Button>
               )}
             </div>
@@ -675,10 +677,10 @@ export default function ClientPortal({ client }: Props) {
                   "ui.ClientPortal.paso2",
                   "El cliente abre el enlace y crea su contraseña.",
                 ),
-                t(
-                  "ui.ClientPortal.paso3",
-                  "Inicia sesión en el portal web o en la app Mi Seguridad.",
-                ),
+                t("ui.ClientPortal.paso3", {
+                  defaultValue: "Inicia sesión en el portal web o en la app {{app}}.",
+                  app,
+                }),
                 t(
                   "ui.ClientPortal.paso4",
                   "Accede en tiempo real a su operación de seguridad.",

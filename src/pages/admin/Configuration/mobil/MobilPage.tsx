@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDelCliente } from "@/lib/appDelCliente";
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/SettingsLayout';
 import { Button } from '@/components/ui/button';
@@ -168,6 +169,7 @@ const defaultCertificationForm = {
 
 export default function MobilPage() {
   const { t } = useTranslation();
+  const appDelCliente = useAppDelCliente();
   const [loading, setLoading] = useState(false);
   const [guardVis, setGuardVis] = useState<{
     name: boolean;
@@ -544,11 +546,11 @@ export default function MobilPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title={t('settings.mobil.layoutTitle', { defaultValue: 'App del cliente (Mi Seguridad)' })}>
+      <SettingsLayout navKey="configuracion" title={t('settings.mobil.layoutTitle', { defaultValue: 'App del cliente' })}>
         <PageContainer width="wide">
           <PageHeader
             icon={<Smartphone />}
-            title={t('settings.mobil.pageTitle', { defaultValue: 'App móvil del cliente (Mi Seguridad)' })}
+            title={t('settings.mobil.pageTitle', { defaultValue: 'App móvil del cliente' })}
             subtitle={t('settings.mobil.pageSubtitle', { defaultValue: 'Configura los banners, servicios y certificaciones. La vista previa muestra cómo se verá en el teléfono mientras editas.' })}
             badges={
               <>
@@ -1026,7 +1028,7 @@ export default function MobilPage() {
                   contentClassName="space-y-4"
                 >
                   <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-                    {t('settings.mobil.guardVisDesc', { defaultValue: 'Elige qué datos del vigilante ve el cliente en la app Mi Seguridad. El cambio se aplica de inmediato, sin actualizar la app. El puesto y el estado (en turno) siempre se muestran; los datos de RRHH (nacimiento, tipo de sangre, estado civil, etc.) nunca se comparten.' })}
+                    {t('settings.mobil.guardVisDesc', { app: appDelCliente, defaultValue: 'Elige qué datos del vigilante ve el cliente en la app {{app}}. El cambio se aplica de inmediato, sin actualizar la app. El puesto y el estado (en turno) siempre se muestran; los datos de RRHH (nacimiento, tipo de sangre, estado civil, etc.) nunca se comparten.' })}
                   </p>
                   <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
                     <div>

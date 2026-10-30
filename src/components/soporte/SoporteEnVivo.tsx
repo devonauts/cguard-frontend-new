@@ -38,7 +38,9 @@ const COLOR = "#b45309";
  */
 export default function SoporteEnVivo() {
   const { t } = useTranslation();
-  const marca = useWhiteLabel()?.platformName || "";
+  const identidad = useWhiteLabel();
+  const marca = identidad?.platformName || "";
+  const arteDePlataforma = !!identidad?.puedeUsarArteDePlataforma;
   const [soporte, setSoporte] = useState<Soporte | null>(null);
   const [soyElSoporte, setSoyElSoporte] = useState<boolean>(() => !!leerSesionDeSoporte());
   const vivo = useRef(true);
@@ -118,6 +120,10 @@ export default function SoporteEnVivo() {
     : soporte?.quien === "plataforma"
       ? marca || soporte.nombreDelSoporte
       : soporte?.nombreDelSoporte || "";
+  /* ...but never by OUR name on a partner's host (owner's rule, 2026-10-30:
+     «en ningún motivo»). The server sends «CGuardPro» as that support's name;
+     on a partner's host a sentence without any name says who it is. */
+  const plataformaSinNombre = !!soporte?.viaSocio && !arteDePlataforma;
 
   return (
     <>
@@ -146,9 +152,13 @@ export default function SoporteEnVivo() {
             className="inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-white"
           />
           <span className="truncate">
-            {soporte?.ticketAsunto
-              ? t("soporte.enVivoTicket", { quien, ticket: soporte.ticketAsunto })
-              : t("soporte.enVivo", { quien })}
+            {plataformaSinNombre
+              ? soporte?.ticketAsunto
+                ? t("soporte.enVivoTicketPlataforma", { ticket: soporte.ticketAsunto })
+                : t("soporte.enVivoPlataforma")
+              : soporte?.ticketAsunto
+                ? t("soporte.enVivoTicket", { quien, ticket: soporte.ticketAsunto })
+                : t("soporte.enVivo", { quien })}
           </span>
         </div>
       )}
