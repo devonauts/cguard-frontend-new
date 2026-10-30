@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -93,6 +94,20 @@ const PLACE_TYPE_KEYS: Record<string, string> = {
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
+
+/**
+ * The stored place type, in the reader's language. It is saved in Spanish as
+ * «Kind - detail» («Departamento - 304»); the guard app saves vehicles as
+ * «vehiculo». Showing the raw value put Spanish words in every other language.
+ */
+function lugarLegible(t: TFunction, v?: string | null): string {
+  const raw = String(v || "").trim();
+  if (!raw) return "-";
+  const [kind, ...rest] = raw.split(" - ");
+  const key = kind.toLowerCase() === "vehiculo" ? "station.parking.col.vehicle" : PLACE_TYPE_KEYS[kind];
+  const label = key ? t(key, kind) : kind;
+  return [label, rest.join(" - ")].filter(Boolean).join(" - ");
+}
 
 function fmt(v: any) {
   if (!v) return "-";
@@ -1065,7 +1080,7 @@ export default function StationVisitors({ stationId }: Props) {
                         className="px-2 py-2.5"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        {r.placeType || "-"}
+                        {lugarLegible(t, r.placeType)}
                       </td>
                       <td
                         className="px-2 py-2.5 font-mono text-xs"
