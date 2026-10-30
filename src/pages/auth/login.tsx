@@ -108,7 +108,7 @@ export default function Login() {
 
   useEffect(() => {
     document.title = tituloConMarca(
-      t("auth.login_title") || "Iniciar Sesión | Cguard",
+      t("auth.login_title") || "Iniciar Sesión",
     );
   }, []);
 

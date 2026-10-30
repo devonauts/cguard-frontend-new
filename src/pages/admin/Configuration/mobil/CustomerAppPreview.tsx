@@ -51,6 +51,7 @@ import {
 
 import { Segmented } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
+import { APP_DEL_CLIENTE_DE_PLATAFORMA, useAppDelCliente } from "@/lib/appDelCliente";
 
 /** Named icons templated services can pass to the app (no upload needed). */
 export const SERVICE_ICONS: Record<string, LucideIcon> = {
@@ -138,6 +139,7 @@ export default function CustomerAppPreview({
      mentiría sobre lo que verá el cliente. El chasis del teléfono y los controles
      de alrededor sí van con el sistema de cristal. */
   const { t: tr } = useTranslation();
+  const app = useAppDelCliente();
   const [dark, setDark] = useState(true);
   const [slide, setSlide] = useState(0);
   const bannerItems = banners.length
@@ -521,7 +523,11 @@ export default function CustomerAppPreview({
               { icon: <Home className="size-4" />, l: tr("ui.CustomerAppPreview.inicio", "Inicio"), active: true },
               {
                 icon: <ShieldCheck className="size-4" />,
-                l: "Mi Seguridad",
+                /* The real app's tab. Our app's name only on our hosts; on a
+                   partner's host a neutral word. */
+                l: app === APP_DEL_CLIENTE_DE_PLATAFORMA
+                  ? app
+                  : tr("ui.CustomerAppPreview.seguridad", "Seguridad"),
                 active: false,
               },
               {
@@ -541,10 +547,10 @@ export default function CustomerAppPreview({
         </div>
       </div>
       <p className="text-center text-xs" style={{ color: "var(--ink-faint)" }}>
-        {tr(
-          "ui.CustomerAppPreview.vistaPreviaAppMiSeguridadCliente",
-          "Vista previa · app Mi Seguridad (cliente)",
-        )}
+        {tr("ui.CustomerAppPreview.vistaPreviaAppMiSeguridadCliente", {
+          defaultValue: "Vista previa · app {{app}} (cliente)",
+          app,
+        })}
       </p>
     </div>
   );

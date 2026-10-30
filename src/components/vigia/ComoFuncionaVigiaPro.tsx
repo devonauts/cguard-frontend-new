@@ -4,6 +4,7 @@ import { useReducedMotion } from "framer-motion";
 
 import { Segmented } from "@/components/kit";
 import { useAgente } from "@/lib/agenteDeMarca";
+import { useAppDelCliente } from "@/lib/appDelCliente";
 
 import "./ComoFuncionaVigiaPro.css";
 
@@ -494,6 +495,9 @@ export default function ComoFuncionaVigiaPro({
 }) {
   const { t, i18n } = useTranslation();
   const agente = useAgente().nombre;
+  /* The customer app on the demo phone: the host's name, never ours on a
+     partner's host (a neutral label when the partner has none). */
+  const appDelCliente = useAppDelCliente() || t("ui.ClientPortal.appMovilDelCliente");
   const placa = placaDe(agente, i18n.language || "");
   const quieto = !!useReducedMotion();
 
@@ -612,7 +616,8 @@ export default function ComoFuncionaVigiaPro({
     };
   }, [pulso?.id, quieto]);
 
-  const T = (k: string) => t(`vigiaPro.demo.${escena}.${k}`, { agente });
+  const T = (k: string) =>
+    t(`vigiaPro.demo.${escena}.${k}`, { agente, app: appDelCliente });
 
   return (
     <div className={`cfv ${className ?? ""}`}>

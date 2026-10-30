@@ -2,6 +2,7 @@ import type { Client } from "@/types/client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useAppDelCliente } from "@/lib/appDelCliente";
 import {
   EllipsisVertical,
   Filter,
@@ -136,6 +137,7 @@ const getServerErrorMessage = (error: any, defaultMessage = "Error") => {
 
 export default function ClientesPage() {
   const { t } = useTranslation();
+  const appDelCliente = useAppDelCliente();
 
   usePageTitle(t("clients.nav.title", "Clientes"));
   const { hasPermission } = usePermissions();
@@ -1995,7 +1997,7 @@ export default function ClientesPage() {
                       {t("ui.ClientsPage.seEnviaraInvitacionApp", {
                         defaultValue:
                           "Se enviará una invitación para descargar y usar la app {{app}} a {{email}}.",
-                        app: "Mi Seguridad",
+                        app: appDelCliente,
                         email: appInviteClient?.email,
                       })}
                     </p>
@@ -2014,10 +2016,10 @@ export default function ClientesPage() {
                       </p>
                       <ul className="list-disc list-inside space-y-0.5">
                         <li>
-                          {t(
-                            "ui.Clients.presentacionDeLaAppMi",
-                            "Presentación de la app Mi Seguridad",
-                          )}
+                          {t("ui.Clients.presentacionDeLaAppMi", {
+                            defaultValue: "Presentación de la app {{app}}",
+                            app: appDelCliente,
+                          })}
                         </li>
                         <li>
                           {t(

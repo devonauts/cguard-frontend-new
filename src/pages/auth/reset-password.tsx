@@ -18,6 +18,9 @@ import { FadeIn, IconTile } from "@/components/kit";
 import { AuthService } from "@/services/auth/authService";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
+/** The field app's sign-in deep link (registered by the app itself). */
+const ESQUEMA_DE_LA_APP_DE_CAMPO = "cguardpro://login";
+
 export default function ResetPassword() {
   const { t } = useTranslation();
   /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
@@ -40,7 +43,7 @@ export default function ResetPassword() {
 
   useEffect(() => {
     document.title = tituloConMarca(t("auth.reset_title", {
-      defaultValue: "Reset password | Cguard",
+      defaultValue: "Reset password",
     }));
   }, []);
 
@@ -133,13 +136,23 @@ export default function ResetPassword() {
               marca: nombreDeMarca,
             })}
           </p>
-          <a className={BOTON_PRINCIPAL} href="cguardpro://login">
+          {/* A button, not a link: the field app's URL scheme names our
+              product, and a link's address shows on hover and on long-press —
+              on a partner's host too. The button opens the same scheme
+              without ever displaying it. */}
+          <button
+            className={BOTON_PRINCIPAL}
+            type="button"
+            onClick={() => {
+              window.location.href = ESQUEMA_DE_LA_APP_DE_CAMPO;
+            }}
+          >
             <Smartphone className="h-4.5 w-4.5" />
             {t("auth.reset_open_app", {
               defaultValue: "Abrir la app de {{marca}}",
               marca: nombreDeMarca,
             })}
-          </a>
+          </button>
         </FadeIn>
       </AuthShell>
     );

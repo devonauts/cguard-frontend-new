@@ -31,7 +31,7 @@ export default function ForgotPassword() {
   useEffect(() => {
     document.title = tituloConMarca(
       t("auth.forgot_title", {
-        defaultValue: "Forgot password | Cguard",
+        defaultValue: "Forgot password",
       }),
     );
   }, []);

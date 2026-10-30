@@ -130,7 +130,7 @@ export default function AcceptInvitation() {
   useEffect(() => {
     document.title = tituloConMarca(t(
       "invite.staff.doc_title",
-      "Activa tu cuenta | CGuard Pro",
+      "Activa tu cuenta",
     ));
     const run = async () => {
       if (!inviteToken) {
