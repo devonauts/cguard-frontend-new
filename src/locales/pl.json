@@ -5878,7 +5878,8 @@
       "administrativeSupervisor": "Kierownik administracyjny",
       "dispatcher": "Dyspozytor",
       "secretary": "Sekretariat / recepcja",
-      "securitySupervisor": "Nadzorca ochrony"
+      "securitySupervisor": "Nadzorca ochrony",
+      "branchManager": "Kierownik oddziału"
     },
     "rowActions": {
       "delete": "Usuń",

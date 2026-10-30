@@ -608,10 +608,17 @@ const attendanceService = {
     return unwrap(await api.post(`/tenant/${t}/staff/me/break/end`, {}));
   },
 
-  async getSettings() {
+  /** `silent`: a caller that copes with a refusal (e.g. a role without
+   *  payroll settings) asks the client not to toast it. */
+  async getSettings(opts: { silent?: boolean } = {}) {
     const t = getTenantId();
 
-    return unwrap(await api.get(`/tenant/${t}/attendance/settings`));
+    return unwrap(
+      await api.get(
+        `/tenant/${t}/attendance/settings`,
+        opts.silent ? { toast: { silentError: true } } : undefined,
+      ),
+    );
   },
 
   async saveSettings(data: Record<string, unknown>) {

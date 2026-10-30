@@ -119,7 +119,8 @@
       "administrativeSupervisor": "Administrative Supervisor",
       "dispatcher": "Dispatcher",
       "secretary": "Secretary / Receptionist",
-      "securitySupervisor": "Security supervisor"
+      "securitySupervisor": "Security supervisor",
+      "branchManager": "Branch manager"
     },
     "rowActions": {
       "delete": "Delete",

@@ -119,7 +119,8 @@
       "administrativeSupervisor": "Supervisor Administrativo",
       "dispatcher": "Despachador",
       "secretary": "Secretaria / Recepcionista",
-      "securitySupervisor": "Supervisor de Seguridad"
+      "securitySupervisor": "Supervisor de Seguridad",
+      "branchManager": "Gerente de sucursal"
     },
     "rowActions": {
       "delete": "Eliminar",

@@ -5876,7 +5876,8 @@
       "administrativeSupervisor": "Superviseur administratif",
       "dispatcher": "Répartiteur",
       "secretary": "Secrétaire / Réceptionniste",
-      "securitySupervisor": "Superviseur de sécurité"
+      "securitySupervisor": "Superviseur de sécurité",
+      "branchManager": "Responsable d’agence"
     },
     "rowActions": {
       "delete": "Supprimer",

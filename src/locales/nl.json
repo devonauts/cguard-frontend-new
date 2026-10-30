@@ -5876,7 +5876,8 @@
       "administrativeSupervisor": "Administratief supervisor",
       "dispatcher": "Meldkamer",
       "secretary": "Secretariaat / receptie",
-      "securitySupervisor": "Beveiligingssupervisor"
+      "securitySupervisor": "Beveiligingssupervisor",
+      "branchManager": "Filiaalmanager"
     },
     "rowActions": {
       "delete": "Verwijderen",

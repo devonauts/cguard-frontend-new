@@ -5876,7 +5876,8 @@
       "administrativeSupervisor": "Verwaltungsleitung",
       "dispatcher": "Leitstelle",
       "secretary": "Sekretariat / Empfang",
-      "securitySupervisor": "Einsatzleiter Sicherheit"
+      "securitySupervisor": "Einsatzleiter Sicherheit",
+      "branchManager": "Filialleiter"
     },
     "rowActions": {
       "delete": "Löschen",

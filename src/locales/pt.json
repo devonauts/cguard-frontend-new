@@ -6675,7 +6675,8 @@
       "administrativeSupervisor": "Supervisor administrativo",
       "dispatcher": "Despachante",
       "secretary": "Secretária / Recepcionista",
-      "securitySupervisor": "Supervisor de segurança"
+      "securitySupervisor": "Supervisor de segurança",
+      "branchManager": "Gerente de filial"
     },
     "rowActions": {
       "delete": "Excluir",

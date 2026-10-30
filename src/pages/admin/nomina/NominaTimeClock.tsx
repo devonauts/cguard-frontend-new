@@ -150,8 +150,9 @@ export default function NominaTimeClock() {
   const [exigeSelfie, setExigeSelfie] = useState(false);
 
   useEffect(() => {
+    // Silent: office staff may not read payroll settings; that is «no selfie», not an error.
     attendanceService
-      .getSettings()
+      .getSettings({ silent: true })
       .then((s: any) => setExigeSelfie(!!s?.general?.requireSelfie))
       .catch(() => setExigeSelfie(false));
   }, []);

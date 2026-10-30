@@ -5876,7 +5876,8 @@
       "administrativeSupervisor": "Responsabile amministrativo",
       "dispatcher": "Operatore di centrale",
       "secretary": "Segreteria / reception",
-      "securitySupervisor": "Supervisore della sicurezza"
+      "securitySupervisor": "Supervisore della sicurezza",
+      "branchManager": "Responsabile di filiale"
     },
     "rowActions": {
       "delete": "Elimina",

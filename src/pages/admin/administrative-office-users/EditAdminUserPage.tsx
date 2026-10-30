@@ -299,20 +299,29 @@ export default function EditAdminUserPage() {
         : candidate,
     );
 
-    const found = roleOptions.find((o) => {
-      if (!o) return false;
-      const nameNorm = normalize(o.name ?? o.label ?? o.id);
+    /* EXACT FIRST. A single pass that also accepted «contains» picked the
+       first option that was a substring: «administrativeAssistant» matched
+       «admin», so the form showed — and on save would have written —
+       Administrador for an assistant. Partial matching is now only a last
+       resort, and the longest (most specific) partial match wins. */
+    const nombreDe = (o: any) => normalize(o?.name ?? o?.label ?? o?.id);
+    const exacta = roleOptions.find(
+      (o) =>
+        !!o &&
+        (o.id === candidate ||
+          (!!candNorm && (nombreDe(o) === candNorm || normalize(o.id) === candNorm))),
+    );
+    const parciales = exacta
+      ? []
+      : roleOptions
+          .filter((o) => {
+            if (!o || !candNorm) return false;
+            const n = nombreDe(o);
 
-      // exact id match
-      if (o.id === candidate) return true;
-      // exact normalized match
-      if (candNorm && nameNorm === candNorm) return true;
-      // contains or partial match (e.g., 'gerente-general' vs 'Gerente General')
-      if (candNorm && nameNorm.includes(candNorm)) return true;
-      if (candNorm && candNorm.includes(nameNorm)) return true;
-
-      return false;
-    });
+            return !!n && (n.includes(candNorm) || candNorm.includes(n));
+          })
+          .sort((x, y) => nombreDe(y).length - nombreDe(x).length);
+    const found = exacta || parciales[0];
 
     if (found) setValue("accessLevel", String(found.id));
     setFetchedRoleCandidate(null);
