@@ -80,6 +80,8 @@ interface ParkingRow {
   vehicle_type?: string;
   vehicleColor?: string;
   vehicleMakeModel?: string;
+  /** State / region printed on the plate («Nebraska»). */
+  vehiclePlateState?: string | null;
   parkingLocation?: string;
   tagNumber?: string;
   vehiclePhoto?: any[] | null;
@@ -764,9 +766,11 @@ export default function StationParking({ stationId }: Props) {
                       >
                         {placa}
                       </span>
-                      {r.parkingLocation && (
+                      {(r.vehiclePlateState || r.parkingLocation) && (
                         <span className="block text-[11px] text-muted-foreground">
-                          {r.parkingLocation}
+                          {[r.vehiclePlateState, r.parkingLocation]
+                            .filter(Boolean)
+                            .join(" · ")}
                         </span>
                       )}
                     </td>
