@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -69,6 +70,7 @@ function lateBy(scheduledStart: string | null, createdAt: string): string {
 
 export default function NominaApprovals() {
   const { t } = useTranslation();
+  const aprobar = usePuede("asistencia.aprobarSolicitud");
   const [rows, setRows] = useState<CorrectionRow[]>([]);
   const [coRows, setCoRows] = useState<ClockOutReqRow[]>([]);
   const [ciRows, setCiRows] = useState<ClockInReqRow[]>([]);
@@ -249,7 +251,12 @@ export default function NominaApprovals() {
     {
       key: "actions",
       header: "",
-      render: (_v, r) => (
+      // Only who can decide sees the buttons (lib/reglasDeAcciones).
+      render: (_v, r) => !aprobar.puede ? (
+        <span className="text-xs" style={{ color: "var(--ink-soft)" }} title={aprobar.porQueNo}>
+          {t("ui.puede.soloLectura", "Solo lectura")}
+        </span>
+      ) : (
         <div className="flex gap-2">
           <Button
             disabled={busy}
@@ -317,7 +324,12 @@ export default function NominaApprovals() {
     {
       key: "actions",
       header: "",
-      render: (_v, r) => (
+      // Only who can decide sees the buttons (lib/reglasDeAcciones).
+      render: (_v, r) => !aprobar.puede ? (
+        <span className="text-xs" style={{ color: "var(--ink-soft)" }} title={aprobar.porQueNo}>
+          {t("ui.puede.soloLectura", "Solo lectura")}
+        </span>
+      ) : (
         <div className="flex gap-2">
           <Button
             disabled={busy}
@@ -376,7 +388,12 @@ export default function NominaApprovals() {
     {
       key: "actions",
       header: "",
-      render: (_v, r) => (
+      // Only who can decide sees the buttons (lib/reglasDeAcciones).
+      render: (_v, r) => !aprobar.puede ? (
+        <span className="text-xs" style={{ color: "var(--ink-soft)" }} title={aprobar.porQueNo}>
+          {t("ui.puede.soloLectura", "Solo lectura")}
+        </span>
+      ) : (
         <div className="flex gap-2">
           <Button
             disabled={busy}
@@ -422,7 +439,7 @@ export default function NominaApprovals() {
           }
           icon={<CheckCircle2 />}
           subtitle={t("ui.NominaApprovals.entradasTardiasSalidasAnticipadasY")}
-          title={t("sidebar.nomina.nomina-approvals", "Aprobaciones")}
+          title={t("sidebar.asistencia.aprobaciones", "Aprobaciones")}
         />
 
         {loading ? (

@@ -70,7 +70,7 @@
   },
   "adminOfficeUsers": {
     "searchPlaceholder": "Search user",
-    "title": "Administrative Office Users",
+    "title": "Office users",
     "actions": {
       "exportExcel": "Export as Excel",
       "exportPdf": "Export as PDF",
@@ -2892,7 +2892,8 @@
       },
       "myTickets": "My tickets",
       "myTicketsSub": "Support replies"
-    }
+    },
+    "timeClock": "Clock in/out"
   },
   "incidents": {
     "actionsLabel": "Actions",
@@ -4404,13 +4405,6 @@
       "ticket_closed": "Ticket closed",
       "view_details": "View details"
     },
-    "equipo": {
-      "guardias": "Security Guards",
-      "supervisores": "Supervisors",
-      "label": "Security Team",
-      "usuarios": "Admin Office Users",
-      "caras-registradas": "Registered faces"
-    },
     "facturador": {
       "elementos": "Items",
       "estimaciones": "Estimates",
@@ -5162,16 +5156,15 @@
       }
     },
     "nomina": {
+      "label": "Payroll",
+      "roles": "Pay slips",
+      "planillas": "Payroll runs",
+      "ajustes": "Payroll adjustments",
+      "perfiles": "Pay profiles",
+      "gusto": "Gusto",
       "ejecutar": "Generate Payroll",
       "horas-extras": "Overtime Multiplier",
-      "label": "Payroll",
-      "pasadas": "Past Payroll",
-      "nomina-dashboard": "Dashboard",
-      "nomina-time-clock": "Time clock",
-      "nomina-records": "Attendance records",
-      "nomina-exceptions": "Exceptions",
-      "nomina-approvals": "Approvals",
-      "nomina-settings": "Attendance settings"
+      "pasadas": "Past Payroll"
     },
     "parking": {
       "areas": "Parking Area",
@@ -5744,19 +5737,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Attendance",
-      "estado": "Shift Status",
-      "horario": "Schedule",
-      "planificador": "Planner",
-      "intercambio": "Shift Exchange",
-      "label": "Scheduler",
-      "plantillas": "Shift Templates",
-      "tiempo-libre": "Time Off",
-      "turnos-abiertos": "Open Shifts",
-      "cobertura": "Live coverage",
-      "dobletes": "Double shifts"
-    },
     "rastreador": {
       "historial": "Tracking History",
       "label": "GPS Tracker",
@@ -5972,16 +5952,21 @@
       }
     },
     "mfa": "Two-factor authentication",
-    "estaciones": "Stations",
+    "estaciones": {
+      "label": "Stations",
+      "estaciones-tablero": "All stations",
+      "pases-de-turno": "Shift handovers",
+      "puestos-supervision": "Supervision posts"
+    },
     "group": {
       "resumen": "Overview",
       "operacion": "Operations",
-      "personal": "Staff",
       "clientes": "Clients",
       "analisis": "Analytics",
       "sistema": "System",
       "otros": "Other",
-      "facturacion": "Billing"
+      "facturacion": "Billing",
+      "servicio": "Stations & staff"
     },
     "commandCenter": "Command center",
     "searchPlaceholder": "Search the menu…",
@@ -6020,7 +6005,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Dispatch",
-      "radio-dispositivos": "IP radios"
+      "radio-dispositivos": "IP radios",
+      "radio-canales": "Channels"
     },
     "tareas": {
       "label": "Tasks",
@@ -6038,7 +6024,6 @@
     "goToDashboard": "Go to the dashboard",
     "unreadMessages": "{{count}} unread messages",
     "emergencias": "Emergency Center",
-    "pases-de-turno": "Shift handovers",
     "modulos-adicionales": "Add-on modules",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Faces awaiting approval: {{count}}",
@@ -6049,6 +6034,33 @@
       "facturacion-antiguedad": "Aging",
       "facturacion-ajustes": "Billing settings",
       "facturacion-cotizaciones": "Quotes"
+    },
+    "personal": {
+      "label": "Staff",
+      "guardias": "Guards",
+      "supervisores": "Supervisors",
+      "usuarios": "Office users",
+      "caras-registradas": "Registered faces",
+      "ausencias": "Absences & leave"
+    },
+    "turnos": {
+      "label": "Shifts",
+      "horario": "Schedule",
+      "planificador": "Planner",
+      "sin-cubrir": "Uncovered",
+      "dobletes": "Double shifts",
+      "intercambio": "Shift Exchange"
+    },
+    "asistencia": {
+      "label": "Attendance",
+      "en-vivo": "Live",
+      "resumen-hoy": "Today's summary",
+      "marcaciones": "Punches",
+      "novedades": "Attendance issues",
+      "aprobaciones": "Approvals",
+      "horas-periodo": "Period hours",
+      "configuracion": "Settings",
+      "coberturaEnVivo": "Live coverage"
     }
   },
   "siteTour": {
@@ -10464,12 +10476,12 @@
     "NominaExceptions": {
       "describeQueSeHizoO": "Describe what was done, or why this exception is being closed…",
       "notaDeResolucionQuedaEn": "Resolution note (kept in the history)",
-      "desviacionesDeAsistenciaRegistroE": "Attendance exceptions — operational log and history",
+      "desviacionesDeAsistenciaRegistroE": "Late arrivals, no-shows and missed clock-outs: to resolve and as history",
       "noHayDesviacionesDeAsistencia": "There are no attendance exceptions for the selected filters.",
       "por": "By",
       "cerrarElAtraso": "Close the late arrival",
-      "sinExcepciones": "No exceptions",
-      "sinExcepcionesAbiertas": "No open exceptions",
+      "sinExcepciones": "No attendance issues",
+      "sinExcepcionesAbiertas": "No open attendance issues",
       "abiertas": "Open",
       "alcanzaAExcepciones": "covers {{count}} exceptions",
       "alcanzaAExcepcionesDeTipo": "covers {{count}} exceptions of type {{tipo}}",
@@ -10690,7 +10702,13 @@
       "losDiasDeVacacionesSon": "Vacation days are",
       "diasNaturales": "Calendar days",
       "diasLaborables": "Working days",
-      "selfieMovido": "Selfie and face at clock-in are now set in Settings › Team app or Supervisor app."
+      "selfieMovido": "Selfie and face at clock-in are now set in Settings › Team app or Supervisor app.",
+      "privacidad": "Leave privacy",
+      "quienVeElMotivo": "Who sees the reason for a leave request",
+      "motivoAprobadores": "Only people who approve leave (and the requester)",
+      "motivoRrhh": "Human resources and higher levels (and the requester)",
+      "motivoOficina": "All office staff",
+      "motivoAyuda": "The reason is often medical. Everyone else sees the request (who, dates, status) without the reason."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",
@@ -10828,7 +10846,7 @@
       "turnosSinVigilante": "Shifts with no guard",
       "estaSemana": "This week",
       "buscarPuestoOFecha": "Search by post or date",
-      "noHayTurnosAbiertos": "There are no open shifts",
+      "noHayTurnosAbiertos": "No uncovered shifts",
       "todosLosTurnosTienenVigilante": "Every shift has a guard assigned, or there are no shifts in the selected period.",
       "sinPuesto": "No post",
       "cargandoVigilantes": "Loading guards…",
@@ -11632,7 +11650,7 @@
       "reconfigurarElPuestoTipoDe": "Reconfigure the post (shift type and rotation)",
       "siguienteAvPag": "Next (Page Down)",
       "terminaAlDiaSiguiente": "· ends the next day",
-      "todaviaNoHayPuestosConfigurados": "No posts set up yet",
+      "todaviaNoHayPuestosConfigurados": "No stations yet",
       "todosLosVigilantesEstanAsignados": "Every guard is assigned.",
       "todosLosVigilantesYaEstan": "Every guard is already assigned",
       "tusPuestosAunNoTienen": "Your posts don't have hours yet.",
@@ -11645,7 +11663,7 @@
       "posicionEliminada": "Position deleted",
       "seleccionaCeldasDeUnPuesto": "Select cells from a post that has a guard assigned",
       "puestoSinVigilanteDobleClic": "Post with no guard — double-click to assign",
-      "creaUnPuestoDesdeLa": "Create a post from the Posts section and the schedule will show up here.",
+      "creaUnPuestoDesdeLa": "Create your first station in Stations (client → site → station) and its schedule will show up here.",
       "estePuestoNoTienePosiciones": "This post has no positions set up",
       "arrastraParaMoverClicPara": "Drag to move · Click to remove",
       "asignarVigilanteSacafranco": "Assign a relief guard",
@@ -11945,7 +11963,7 @@
       "noCuentaComoCobertura": "does not count as coverage",
       "noDivideLaCobertura": " (does not divide the coverage)",
       "noHayEstaciones": "No stations.",
-      "noHayPuestosTodavia": "No posts yet.",
+      "noHayPuestosTodavia": "No stations yet.",
       "noHaySacafrancos": "No relief guards. Use “Add” to create one and choose which station it goes to.",
       "noSePudoActualizarElTurno": "The shift could not be updated",
       "noSePudoCrearNingunTurno": "No shift could be created.",
@@ -12106,7 +12124,8 @@
       "yaTieneTurnoEseDiaSufijo": " · already has a shift that day",
       "yseRepite": "· and repeats",
       "eliminarTurnosYNovedades": "Delete the selected shifts and reports (Del)",
-      "menuCorrerCiclo": "Shift {{nombre}}'s cycle…"
+      "menuCorrerCiclo": "Shift {{nombre}}'s cycle…",
+      "irAEstaciones": "Go to Stations"
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",
@@ -12702,7 +12721,7 @@
       "hasta": "To*",
       "motivo": "Reason*",
       "describeElMotivo": "Describe the reason…",
-      "solicitudesDeTiempoLibre": "Time-off requests",
+      "solicitudesDeTiempoLibre": "Absence requests",
       "aprobadas": "Approved",
       "aprobar": "Approve",
       "ceroDeCero": "0 of 0",
@@ -14997,7 +15016,7 @@
     "NominaDashboard": {
       "aprobaciones": "Approvals",
       "errorAlCargarElPanel": "Error loading the dashboard",
-      "excepciones": "Exceptions",
+      "excepciones": "Attendance issues",
       "lasExcepcionesSeDetectan": "Exceptions (late, no-show, missed clock-out) are detected automatically every few minutes and appear in",
       "resumenDeAsistenciaDeHoy": "Today's attendance summary",
       "y": "and"
@@ -15114,7 +15133,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Reopen period",
       "reabrirPeriodoMensaje": "Punches, shifts and marks from that day on can be changed again. Timecards already approved or exported are not touched. Write the reason: it goes to the audit log.",
-      "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?"
+      "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?",
+      "generarCerrado": "This period is closed. Reopen it to recalculate."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",
@@ -17193,7 +17213,11 @@
         "tramoFijo": "Fixed amount",
         "anadirTramo": "Add bracket",
         "dobladaSiempreAparte": "With this pay method the double shift always goes on its own payslip line («Double-shift bonus»).",
-        "dobladaComoSeCuenta": "A double shift is a day when someone works 1.5 times or more their usual shift (the one their schedule sets). 24 h on 12-hour shifts is a double; 36 h is a triple and counts as two extra shifts. A scheduled 24-hour shift is not a double."
+        "dobladaComoSeCuenta": "A double shift is a day when someone works 1.5 times or more their usual shift (the one their schedule sets). 24 h on 12-hour shifts is a double; 36 h is a triple and counts as two extra shifts. A scheduled 24-hour shift is not a double.",
+        "horasTarjetaTitulo": "Timecard hours the payslip pays",
+        "horasTarjetaAyuda": "The timecard always computes them; the payslip only pays them if you turn this on. Approved payslips don't change.",
+        "pagarDescanso": "Pay hours worked on the rest day (the “Rest day hours” concept)",
+        "pagarExtraNocturna": "Pay night overtime on its own line (needs a “Night overtime hours” concept)"
       },
       "atras": "Back",
       "continuar": "Continue",
@@ -17265,7 +17289,8 @@
         "holiday": "Holiday hours",
         "rest_day": "Rest day hours",
         "sunday": "Sunday hours",
-        "double_shift": "Double shift hours"
+        "double_shift": "Double shift hours",
+        "night_overtime": "Night overtime hours"
       },
       "frecuencia": {
         "weekly": "Weekly",
@@ -18398,13 +18423,85 @@
         "sinLimiteDiario": "no daily limit",
         "sinLimiteSemanal": "no weekly limit",
         "tempranaNo": "not paid",
-        "tempranaSi": "paid"
+        "tempranaSi": "paid",
+        "extraNocturna": "Night overtime ({{desde}}:00–{{hasta}}:00): +{{pct}}% (or its tier, if higher)",
+        "extraNocturnaComoExtra": "Night overtime: like any overtime hour",
+        "descanso": "Rest day: each guard's day off in the rotation · supervisors and office: {{dia}}",
+        "descansoSinSemanal": "Rest day: each guard's day off in the rotation (supervisors and office: none)",
+        "noSePaga": "not paid",
+        "recargosV2": "Sunday {{domingo}} · Rest day worked {{descanso}} · Holiday {{feriado}}",
+        "combinaciones": "When they fall together — holiday and rest day: {{fd}} · holiday and Sunday: {{fo}} · Sunday and rest day: {{od}} · night on those days: {{noche}} · overtime on those days: {{extra}}",
+        "segunElDia": "depends on the day"
       },
       "semanaLaboralEmpieza": "The workweek starts on",
       "semanalAyuda": "Anything over this in the week is overtime (US: 40). 0 = no weekly rule.",
       "sinConfigurar": "Nobody has configured these rules yet: the working hours follow the country and no surcharge is applied. Review them and save.",
       "sinPais": "No country",
-      "sinPreset": "We have no saved rules for this country: set your agreement’s rules here."
+      "sinPreset": "We have no saved rules for this country: set your agreement’s rules here.",
+      "descansoAyuda": "Paid on the hours worked on each person's day off: the day off in their rotation, or a day marked «L» in the Schedule.",
+      "descansoSemanal": "Weekly rest day (supervisors and office)",
+      "descansoSemanalAyuda": "People without a rotation get the rest-day premium when they work on this day.",
+      "ninguno": "None",
+      "extraNocturna": "Night overtime with its own premium",
+      "extraNocturnaAyuda": "Overtime hours in this window are paid at this premium when it is higher than their tier (Colombia: 19–6 at 75%; Ecuador: 0–6 at 100%).",
+      "extraNocturnaDesde": "Night overtime: from (hour)",
+      "extraNocturnaHasta": "Night overtime: until (hour)",
+      "extraNocturnaPct": "Night overtime premium (%)",
+      "comb": {
+        "comoLaGeneral": "Same as the general rule ({{regla}})",
+        "titulo": "When several surcharges fall on the same hour",
+        "ayuda": "“Added”: both are paid (holiday 100% + rest day 100% = 200%). “Higher wins”: only the higher one (= 100%). Choose for each case.",
+        "general": "General rule between Sunday, rest day and holiday",
+        "feriadoDescanso": "Holiday that falls on their rest day",
+        "feriadoDomingo": "Holiday that falls on a Sunday",
+        "domingoDescanso": "Sunday that is their rest day",
+        "nocheDomingo": "Night and Sunday",
+        "nocheFeriado": "Night and holiday",
+        "nocheDescanso": "Night and rest day",
+        "extraDia": "Overtime on a Sunday, holiday or rest day"
+      },
+      "ej": {
+        "feriadoDescanso": "A daytime hour on a holiday that is also their rest day",
+        "domingoFeriado": "A daytime hour on a Sunday that is a holiday",
+        "domingoDescanso": "A daytime hour on a Sunday that is their rest day",
+        "nocheDomingo": "A night hour on a Sunday",
+        "nocheFeriadoDescanso": "A night hour on a holiday that is their rest day",
+        "extraFeriado": "An overtime hour (first tier) on a holiday",
+        "titulo": "What these rules pay",
+        "fila": "{{que}}: +{{pct}}%",
+        "turno": "A 12 h day shift on a holiday that is also their rest day, at {{tarifa}} an hour: {{ord}} h at +{{po}}% and {{extra}} h overtime at +{{pe}}% = {{total}}"
+      },
+      "queUsa": "What your company uses",
+      "usarSemanal": "Count overtime by the week",
+      "usarGracia": "Don't pay a short wait after the shift (grace)",
+      "tempranaAyuda": "Unticked, pay starts at the scheduled time even if the person clocks in earlier.",
+      "recargos": "Surcharges",
+      "recargosAyuda": "Switch a surcharge off to stop paying it without losing the percentage you typed.",
+      "rec": {
+        "noche": "Night surcharge",
+        "domingo": "Sunday surcharge",
+        "descanso": "Surcharge for working on the rest day",
+        "feriado": "Holiday surcharge",
+        "extra": "Overtime surcharge",
+        "extraAyuda": "Off, overtime is paid at straight time."
+      },
+      "ausenciasAyudaV2": "Ticked: paid. Unticked: still excused (not a fault), but deducted. A “personal” leave is paid or not as the leave itself says."
+    },
+    "puede": {
+      "sinPermiso": "Your role doesn't have permission for this. Ask an administrator.",
+      "sinNivel": "This is done by a higher level than your role's.",
+      "sinModulo": "Needs the Payroll slips module or Gusto connected.",
+      "soloLectura": "Read only",
+      "horarioSoloLectura": "Read only: your role can see the schedule, not change it."
+    },
+    "nivelDeRol": {
+      "titulo": "Level",
+      "ayuda": "Permissions say which screens it uses; the level, which sensitive data it reaches. It never reaches administrator or branch manager.",
+      "oficina": "Office: sees and works shifts, coverage and attendance",
+      "central": "Operations center: plus live monitoring (cameras, alarms, map)",
+      "rrhh": "Human resources: plus personnel data and pay",
+      "supervision": "Supervision: plus approves hours",
+      "gerencia": "Management: plus reports and executive actions"
     }
   },
   "map": {

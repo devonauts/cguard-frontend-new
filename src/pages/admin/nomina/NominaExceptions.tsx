@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -155,6 +156,9 @@ function FilterSelect({
 
 export default function NominaExceptions() {
   const { t } = useTranslation();
+  // Only who can resolve sees the buttons (lib/reglasDeAcciones).
+  const resolver = usePuede("asistencia.resolverNovedad");
+  const enLote = usePuede("asistencia.resolverEnLote");
   const [rows, setRows] = useState<ExceptionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState("");
@@ -364,7 +368,7 @@ export default function NominaExceptions() {
         <PageHeader
           icon={<AlertTriangle />}
           subtitle={t("ui.NominaExceptions.desviacionesDeAsistenciaRegistroE")}
-          title={t("ui.NominaDashboard.excepciones", "Excepciones")}
+          title={t("sidebar.asistencia.novedades", "Novedades")}
         />
 
         <Toolbar>
@@ -406,7 +410,7 @@ export default function NominaExceptions() {
             opción; dejarlas tampoco, porque entierran lo que llega después.
             El recuento se enseña ANTES de confirmar, y el filtro de tipo de
             arriba también acota el cierre. */}
-        {status === "open" && (
+        {status === "open" && enLote.puede && (
           <div
             className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border p-3"
             style={{ borderColor: "var(--hairline)" }}
@@ -472,7 +476,7 @@ export default function NominaExceptions() {
 
               return opt
                 ? t(opt.labelKey, opt.label)
-                : t("ui.NominaDashboard.excepciones", "Excepciones");
+                : t("sidebar.asistencia.novedades", "Novedades");
             })()
           }
         >
@@ -602,8 +606,14 @@ export default function NominaExceptions() {
                   </div>
                 )}
 
-                {/* Resolve / acknowledge (only while actionable) */}
-                {isOpenState && (
+                {/* Resolve / acknowledge (only while actionable, and only
+                    for who can: lib/reglasDeAcciones) */}
+                {isOpenState && !resolver.puede && (
+                  <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {resolver.porQueNo}
+                  </p>
+                )}
+                {isOpenState && resolver.puede && (
                   <div className="space-y-2 pt-1">
                     <p className="cg-eyebrow">
                       {t(

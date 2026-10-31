@@ -28,7 +28,7 @@ export type DoubleShiftMode = "overtime" | "normal_plus_advance" | "double" | "b
 export type ConceptKind = "earning" | "deduction" | "employer" | "info";
 export type ConceptMethod = "fixed" | "percent" | "hours" | "days" | "table" | "manual";
 export type ConceptBase = "base_salary" | "gross" | "ss_base" | "tax_base" | "legal_minimum" | "net";
-export type HoursOf = "ordinary" | "overtime1" | "overtime2" | "night" | "holiday" | "rest_day" | "sunday" | "double_shift";
+export type HoursOf = "ordinary" | "overtime1" | "overtime2" | "night" | "holiday" | "rest_day" | "sunday" | "double_shift" | "night_overtime";
 export type Population = "vigilante" | "supervisor" | "oficina";
 
 export interface TaxBracket { upTo: number | null; pct: number; fixed: number }
@@ -60,6 +60,8 @@ export interface SlipSettings {
   exemptMaxDailyHours: number;
   maxShiftHours: number;
   doubleShift: { mode: DoubleShiftMode; bonusPct: number; bonusCents: number; listSeparately: boolean };
+  /** Timecard hours the slips pay only when the company turns them on. */
+  cardHours?: { restDay: boolean; nightOvertime: boolean };
   incomeTax: IncomeTaxSettings;
   document: {
     prefix: string;

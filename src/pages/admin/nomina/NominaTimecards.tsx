@@ -17,6 +17,7 @@
  *     va vacío. Es lo que permite detectarlo antes de emitir el pago y no
  *     después.
  */
+import { usePuede } from "@/hooks/usePuede";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -125,8 +126,19 @@ export default function NominaTimecards() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { hasPermission } = usePermissions();
-  const puedeCerrar = hasPermission("attendanceSettingsEdit");
   const puedeVerAjustes = hasPermission("attendanceSettingsRead");
+  /* Each button mirrors its endpoint (lib/reglasDeAcciones). Without Roles de
+     pago or Gusto these are HOURS: no rate, no amount (the server already
+     leaves them out). */
+  const generarT = usePuede("tarjetas.generar");
+  const aprobarT = usePuede("tarjetas.aprobar");
+  const reabrirT = usePuede("tarjetas.reabrir");
+  const exportarT = usePuede("tarjetas.exportar");
+  const detalleT = usePuede("tarjetas.exportarDetalle");
+  const cerrarP = usePuede("tarjetas.cerrarPeriodo");
+  const reabrirP = usePuede("tarjetas.reabrirPeriodo");
+  const tarifasT = usePuede("tarjetas.tarifas");
+  const conDinero = tarifasT.motivo !== "modulo";
   const [desde, setDesde] = useState(isoDay(new Date(Date.now() - 14 * 864e5)));
   const [hasta, setHasta] = useState(isoDay(new Date()));
   const [rows, setRows] = useState<TarjetaDeNomina[]>([]);
@@ -656,9 +668,11 @@ export default function NominaTimecards() {
           // La fila abre los días: escribir la tarifa no debe abrirlos.
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
-          disabled={r.estado !== "borrador"}
+          disabled={r.estado !== "borrador" || !tarifasT.puede}
           title={
-            r.estado !== "borrador"
+            !tarifasT.puede
+              ? tarifasT.porQueNo
+              : r.estado !== "borrador"
               ? t(
                   "ui.NominaTimecards.laTarjetaYaEstaAprobada",
                   "La tarjeta ya está aprobada: su importe no se recalcula.",
@@ -713,7 +727,7 @@ export default function NominaTimecards() {
     <AppLayout>
       <PageContainer>
         <PageHeader
-          title={t("ui.NominaTimecards.tarjetasDeNomina", "Tarjetas de nómina")}
+          title={t("sidebar.asistencia.horas-periodo", "Horas del periodo")}
           subtitle={t(
             "ui.NominaTimecards.revisaElPeriodo",
             "Revisa el periodo, apruébalo y expórtalo para pagar.",
@@ -781,7 +795,16 @@ export default function NominaTimecards() {
             )}
           </div>
 
-          <Button onClick={generar} disabled={trabajando || calculando}>
+          {generarT.puede && (
+          <Button
+            onClick={generar}
+            disabled={trabajando || calculando || periodoCerrado}
+            title={
+              periodoCerrado
+                ? t("ui.NominaTimecards.generarCerrado", "Este periodo está cerrado. Reábrelo para volver a calcularlo.")
+                : undefined
+            }
+          >
             {calculando ? (
               <>
                 <Loader2 size={15} className="animate-spin" />{" "}
@@ -793,6 +816,8 @@ export default function NominaTimecards() {
               </>
             )}
           </Button>
+          )}
+          {aprobarT.puede && (
           <Button
             variant="outline"
             onClick={aprobar}
@@ -804,9 +829,10 @@ export default function NominaTimecards() {
               defaultValue: "Aprobar ({{count}})",
             })}
           </Button>
+          )}
           {/* Reopening and exporting release pay: the backend takes them only
               with attendanceSettingsEdit (payrollGate), same as closing. */}
-          {puedeCerrar && (
+          {reabrirT.puede && (
             <Button
               variant="outline"
               onClick={reabrir}
@@ -815,11 +841,12 @@ export default function NominaTimecards() {
               <RotateCcw size={15} /> {t("ui.NominaTimecards.reabrir", "Reabrir")}
             </Button>
           )}
-          {puedeCerrar && (
+          {exportarT.puede && (
             <Button variant="outline" onClick={exportar} disabled={trabajando || !sel.length}>
               <Download size={15} /> {t("ui.NominaRecords.exportar", "Exportar")}
             </Button>
           )}
+          {detalleT.puede && (
           <Button
             variant="outline"
             onClick={exportarDetalle}
@@ -827,7 +854,8 @@ export default function NominaTimecards() {
           >
             <FileSpreadsheet size={15} /> {t("ui.NominaTimecards.detalleDiaADia", "Detalle día a día")}
           </Button>
-          {puedeCerrar && !periodoCerrado && (
+          )}
+          {cerrarP.puede && !periodoCerrado && (
             <Button
               variant="outline"
               onClick={cerrarPeriodo}
@@ -836,7 +864,7 @@ export default function NominaTimecards() {
               <Lock size={15} /> {t("ui.NominaTimecards.cerrarPeriodo", "Cerrar periodo")}
             </Button>
           )}
-          {puedeCerrar && periodoCerrado && (
+          {reabrirP.puede && periodoCerrado && (
             <Button
               variant="outline"
               onClick={reabrirPeriodo}
@@ -866,6 +894,7 @@ export default function NominaTimecards() {
                 : undefined
             }
           />
+          {conDinero && (
           <MetricTile
             label={t("ui.NominaTimecards.sinTarifaCargada", "Sin tarifa cargada")}
             value={resumen.sinTarifa}
@@ -875,16 +904,23 @@ export default function NominaTimecards() {
                 : undefined
             }
           />
+          )}
+          {conDinero && (
           <MetricTile
             label={t("ui.NominaTimecards.importeCalculado", "Importe calculado")}
             value={resumen.importe ? dinero(resumen.importe, resumen.moneda) : "—"}
             icon={<Wallet />}
           />
+          )}
         </Stagger>
 
         <Section>
           <DataTable
-            columns={columns}
+            columns={
+              conDinero
+                ? columns
+                : columns.filter((c) => c.key !== "tarifaCentavos" && c.key !== "importeCentavos")
+            }
             data={rows}
             loading={cargando}
             selectedIds={sel}

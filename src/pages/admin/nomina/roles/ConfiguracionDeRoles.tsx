@@ -187,6 +187,36 @@ export default function ConfiguracionDeRoles() {
               <p className="mt-3 text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.RolesDePago.config.dobladaComoSeCuenta", "Hay doblada cuando alguien trabaja en un día 1,5 veces o más su turno habitual (el que le marca el horario). 24 h sobre turnos de 12 es una doblada; 36 h es una tripleta y cuenta como dos turnos extra. Un turno de 24 h programado no es doblada.")}</p>
             </Section>
 
+            <Section icon={<Repeat />} title={t("ui.RolesDePago.config.horasTarjetaTitulo", "Horas de la tarjeta que paga el rol")}>
+              <p className="mb-3 text-sm" style={{ color: "var(--ink-soft)" }}>
+                {t("ui.RolesDePago.config.horasTarjetaAyuda", "La tarjeta las calcula siempre; el rol sólo las paga si lo activas. Los roles ya aprobados no cambian.")}
+              </p>
+              <div className="space-y-2">
+                <label className="glass-flat flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
+                  <input
+                    checked={!!s.cardHours?.restDay}
+                    className="cg-focus size-4"
+                    disabled={!canEdit}
+                    style={{ accentColor: "var(--brand)" }}
+                    type="checkbox"
+                    onChange={(e) => set("cardHours", { restDay: e.target.checked, nightOvertime: !!s.cardHours?.nightOvertime })}
+                  />
+                  <span className="text-sm">{t("ui.RolesDePago.config.pagarDescanso", "Pagar las horas trabajadas en el día de descanso (concepto «Horas en día de descanso»)")}</span>
+                </label>
+                <label className="glass-flat flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
+                  <input
+                    checked={!!s.cardHours?.nightOvertime}
+                    className="cg-focus size-4"
+                    disabled={!canEdit}
+                    style={{ accentColor: "var(--brand)" }}
+                    type="checkbox"
+                    onChange={(e) => set("cardHours", { restDay: !!s.cardHours?.restDay, nightOvertime: e.target.checked })}
+                  />
+                  <span className="text-sm">{t("ui.RolesDePago.config.pagarExtraNocturna", "Pagar la hora extra nocturna en su propia línea (necesita un concepto de «Horas extra nocturnas»)")}</span>
+                </label>
+              </div>
+            </Section>
+
             <Section icon={<Percent />} title={t("ui.RolesDePago.config.rentaTitulo", "Impuesto a la renta")}>
               <Renta s={s} canEdit={canEdit} onChange={(v) => set("incomeTax", v)} />
             </Section>

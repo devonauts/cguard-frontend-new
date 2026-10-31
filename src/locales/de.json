@@ -3929,13 +3929,6 @@
       "ticket_closed": "Ticket geschlossen",
       "view_details": "Details ansehen"
     },
-    "equipo": {
-      "guardias": "Sicherheitskräfte",
-      "supervisores": "Einsatzleiter",
-      "label": "Sicherheitsteam",
-      "usuarios": "Büropersonal",
-      "caras-registradas": "Registrierte Gesichter"
-    },
     "facturador": {
       "elementos": "Leistungen",
       "estimaciones": "Angebote",
@@ -4687,16 +4680,15 @@
       }
     },
     "nomina": {
+      "label": "Lohnabrechnung",
+      "roles": "Lohnabrechnungen",
+      "planillas": "Lohnläufe",
+      "ajustes": "Lohnanpassungen",
+      "perfiles": "Lohnprofile",
+      "gusto": "Gusto",
       "ejecutar": "Lohnlauf starten",
       "horas-extras": "Überstundenfaktor",
-      "label": "Lohnabrechnung",
-      "pasadas": "Frühere Lohnläufe",
-      "nomina-dashboard": "Übersicht",
-      "nomina-time-clock": "Zeiterfassung",
-      "nomina-records": "Anwesenheitsdaten",
-      "nomina-exceptions": "Ausnahmen",
-      "nomina-approvals": "Freigaben",
-      "nomina-settings": "Zeiterfassung einrichten"
+      "pasadas": "Frühere Lohnläufe"
     },
     "parking": {
       "areas": "Parkbereich",
@@ -5269,19 +5261,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Anwesenheit",
-      "estado": "Schichtstatus",
-      "horario": "Dienstplan",
-      "planificador": "Planer",
-      "intercambio": "Schichttausch",
-      "label": "Dienstplanung",
-      "plantillas": "Schichtvorlagen",
-      "tiempo-libre": "Abwesenheit",
-      "turnos-abiertos": "Offene Schichten",
-      "cobertura": "Besetzung live",
-      "dobletes": "Doppelschichten"
-    },
     "rastreador": {
       "historial": "Ortungsverlauf",
       "label": "GPS-Ortung",
@@ -5496,16 +5475,21 @@
         "title": "Abonnement"
       }
     },
-    "estaciones": "Objekte",
+    "estaciones": {
+      "label": "Objekte",
+      "estaciones-tablero": "Alle Objekte",
+      "pases-de-turno": "Schichtübergaben",
+      "puestos-supervision": "Aufsichtsposten"
+    },
     "group": {
       "resumen": "Überblick",
       "operacion": "Einsatz",
-      "personal": "Personal",
       "clientes": "Auftraggeber",
       "analisis": "Analyse",
       "sistema": "System",
       "otros": "Sonstiges",
-      "facturacion": "Abrechnung"
+      "facturacion": "Abrechnung",
+      "servicio": "Objekte und Personal"
     },
     "commandCenter": "Kommandozentrale",
     "searchPlaceholder": "Im Menü suchen…",
@@ -5544,7 +5528,8 @@
     "radio": {
       "label": "Funk",
       "radio-despacho": "Leitstelle",
-      "radio-dispositivos": "IP-Funkgeräte"
+      "radio-dispositivos": "IP-Funkgeräte",
+      "radio-canales": "Kanäle"
     },
     "tareas": {
       "label": "Aufgaben",
@@ -5562,7 +5547,6 @@
     "goToDashboard": "Zur Übersicht",
     "unreadMessages": "{{count}} ungelesene Nachrichten",
     "emergencias": "Notfallzentrale",
-    "pases-de-turno": "Schichtübergaben",
     "modulos-adicionales": "Zusatzmodule",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Gesichter zur Freigabe: {{count}}",
@@ -5573,6 +5557,33 @@
       "facturacion-antiguedad": "Fälligkeitsanalyse",
       "facturacion-ajustes": "Abrechnungseinstellungen",
       "facturacion-cotizaciones": "Angebote"
+    },
+    "personal": {
+      "label": "Personal",
+      "guardias": "Wachleute",
+      "supervisores": "Einsatzleiter",
+      "usuarios": "Büronutzer",
+      "caras-registradas": "Registrierte Gesichter",
+      "ausencias": "Abwesenheiten und Urlaub"
+    },
+    "turnos": {
+      "label": "Schichten",
+      "horario": "Dienstplan",
+      "planificador": "Planer",
+      "sin-cubrir": "Unbesetzt",
+      "dobletes": "Doppelschichten",
+      "intercambio": "Schichttausch"
+    },
+    "asistencia": {
+      "label": "Anwesenheit",
+      "en-vivo": "Live",
+      "resumen-hoy": "Heute im Überblick",
+      "marcaciones": "Stempelungen",
+      "novedades": "Abweichungen",
+      "aprobaciones": "Freigaben",
+      "horas-periodo": "Stunden des Zeitraums",
+      "configuracion": "Einstellungen",
+      "coberturaEnVivo": "Besetzung live"
     }
   },
   "siteTour": {
@@ -6782,7 +6793,8 @@
       },
       "myTickets": "Meine Tickets",
       "myTicketsSub": "Antworten des Supports"
-    }
+    },
+    "timeClock": "Ein-/Ausstempeln"
   },
   "kit": {
     "pagination": {
@@ -11225,7 +11237,13 @@
       "losDiasDeVacacionesSon": "Urlaubstage sind",
       "diasNaturales": "Kalendertage",
       "diasLaborables": "Arbeitstage",
-      "selfieMovido": "Selfie und Gesicht beim Stempeln werden jetzt unter Einstellungen › Team-App oder Supervisor-App eingestellt."
+      "selfieMovido": "Selfie und Gesicht beim Stempeln werden jetzt unter Einstellungen › Team-App oder Supervisor-App eingestellt.",
+      "privacidad": "Datenschutz bei Abwesenheiten",
+      "quienVeElMotivo": "Wer den Grund einer Abwesenheit sieht",
+      "motivoAprobadores": "Nur wer Abwesenheiten genehmigt (und der Antragsteller)",
+      "motivoRrhh": "Personalwesen und höhere Stufen (und der Antragsteller)",
+      "motivoOficina": "Das gesamte Büropersonal",
+      "motivoAyuda": "Der Grund ist oft medizinisch. Die anderen sehen den Antrag (wer, Daten, Status) ohne den Grund."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",
@@ -12641,7 +12659,8 @@
       "yaTieneTurnoEseDiaSufijo": " · hat an diesem Tag bereits eine Schicht",
       "yseRepite": "· und wiederholt sich",
       "eliminarTurnosYNovedades": "Ausgewählte Schichten und Vorkommnisse löschen (Entf)",
-      "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…"
+      "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…",
+      "irAEstaciones": "Zu den Objekten"
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
@@ -15649,7 +15668,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Periode wieder öffnen",
       "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
-      "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?"
+      "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?",
+      "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen."
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",
@@ -17728,7 +17748,11 @@
         "tramoFijo": "Festbetrag",
         "anadirTramo": "Stufe hinzufügen",
         "dobladaSiempreAparte": "Bei dieser Vergütungsart steht die Doppelschicht immer in einer eigenen Zeile der Abrechnung („Doppelschicht-Prämie“).",
-        "dobladaComoSeCuenta": "Eine Doppelschicht liegt vor, wenn jemand an einem Tag das 1,5-Fache oder mehr seiner üblichen Schicht (laut Dienstplan) arbeitet. 24 Std. bei 12-Std.-Schichten sind eine Doppelschicht; 36 Std. sind eine Dreifachschicht und zählen als zwei zusätzliche Schichten. Eine geplante 24-Std.-Schicht ist keine Doppelschicht."
+        "dobladaComoSeCuenta": "Eine Doppelschicht liegt vor, wenn jemand an einem Tag das 1,5-Fache oder mehr seiner üblichen Schicht (laut Dienstplan) arbeitet. 24 Std. bei 12-Std.-Schichten sind eine Doppelschicht; 36 Std. sind eine Dreifachschicht und zählen als zwei zusätzliche Schichten. Eine geplante 24-Std.-Schicht ist keine Doppelschicht.",
+        "horasTarjetaTitulo": "Stunden der Zeitkarte, die die Abrechnung bezahlt",
+        "horasTarjetaAyuda": "Die Zeitkarte berechnet sie immer; die Abrechnung bezahlt sie nur, wenn Sie das einschalten. Genehmigte Abrechnungen ändern sich nicht.",
+        "pagarDescanso": "Am Ruhetag gearbeitete Stunden bezahlen (Posten „Stunden am Ruhetag“)",
+        "pagarExtraNocturna": "Nacht-Überstunden in eigener Zeile bezahlen (braucht einen Posten „Nacht-Überstunden“)"
       },
       "atras": "Zurück",
       "continuar": "Weiter",
@@ -17800,7 +17824,8 @@
         "holiday": "Feiertagsstunden",
         "rest_day": "Stunden am Ruhetag",
         "sunday": "Sonntagsstunden",
-        "double_shift": "Doppelschichtstunden"
+        "double_shift": "Doppelschichtstunden",
+        "night_overtime": "Nacht-Überstunden"
       },
       "frecuencia": {
         "weekly": "Wöchentlich",
@@ -18933,13 +18958,85 @@
         "sinLimiteDiario": "kein Tageslimit",
         "sinLimiteSemanal": "kein Wochenlimit",
         "tempranaNo": "nicht bezahlt",
-        "tempranaSi": "bezahlt"
+        "tempranaSi": "bezahlt",
+        "extraNocturna": "Nacht-Überstunde ({{desde}}:00–{{hasta}}:00): +{{pct}} % (oder ihre Stufe, falls höher)",
+        "extraNocturnaComoExtra": "Nacht-Überstunde: wie jede Überstunde",
+        "descanso": "Ruhetag: der freie Tag im Dienstplan jeder Wachkraft · Supervisoren und Büro: {{dia}}",
+        "descansoSinSemanal": "Ruhetag: der freie Tag im Dienstplan jeder Wachkraft (Supervisoren und Büro: keiner)",
+        "noSePaga": "wird nicht bezahlt",
+        "recargosV2": "Sonntag {{domingo}} · Gearbeiteter Ruhetag {{descanso}} · Feiertag {{feriado}}",
+        "combinaciones": "Wenn sie zusammenfallen — Feiertag und Ruhetag: {{fd}} · Feiertag und Sonntag: {{fo}} · Sonntag und Ruhetag: {{od}} · Nacht an diesen Tagen: {{noche}} · Überstunde an diesen Tagen: {{extra}}",
+        "segunElDia": "je nach Tag"
       },
       "semanaLaboralEmpieza": "Die Arbeitswoche beginnt am",
       "semanalAyuda": "Was darüber hinaus in der Woche geht, sind Überstunden (USA: 40). 0 = keine Wochenregel.",
       "sinConfigurar": "Niemand hat diese Regeln bisher eingerichtet: Die Arbeitszeit folgt dem Land und es gilt kein Zuschlag. Prüfen und speichern.",
       "sinPais": "Kein Land",
-      "sinPreset": "Für dieses Land sind keine Regeln hinterlegt: Tragen Sie hier die Ihres Tarifvertrags ein."
+      "sinPreset": "Für dieses Land sind keine Regeln hinterlegt: Tragen Sie hier die Ihres Tarifvertrags ein.",
+      "descansoAyuda": "Wird auf die Stunden gezahlt, die am freien Tag der Person gearbeitet werden: der freie Tag ihres Dienstplans oder ein im Dienstplan mit «L» markierter Tag.",
+      "descansoSemanal": "Wöchentlicher Ruhetag (Supervisoren und Büro)",
+      "descansoSemanalAyuda": "Wer keinen Dienstplan hat, erhält den Ruhetagszuschlag, wenn er an diesem Tag arbeitet.",
+      "ninguno": "Keiner",
+      "extraNocturna": "Nacht-Überstunde mit eigenem Zuschlag",
+      "extraNocturnaAyuda": "Überstunden in diesem Zeitfenster werden mit diesem Zuschlag bezahlt, wenn er höher ist als ihre Stufe (Kolumbien: 19–6 mit 75 %; Ecuador: 0–6 mit 100 %).",
+      "extraNocturnaDesde": "Nacht-Überstunde: ab (Uhr)",
+      "extraNocturnaHasta": "Nacht-Überstunde: bis (Uhr)",
+      "extraNocturnaPct": "Zuschlag für Nacht-Überstunden (%)",
+      "comb": {
+        "comoLaGeneral": "Wie die allgemeine Regel ({{regla}})",
+        "titulo": "Wenn mehrere Zuschläge auf dieselbe Stunde fallen",
+        "ayuda": "„Addieren“: beide werden bezahlt (Feiertag 100 % + Ruhetag 100 % = 200 %). „Der höhere gewinnt“: nur der höchste (= 100 %). Für jeden Fall wählen.",
+        "general": "Allgemeine Regel zwischen Sonntag, Ruhetag und Feiertag",
+        "feriadoDescanso": "Feiertag, der auf seinen Ruhetag fällt",
+        "feriadoDomingo": "Feiertag, der auf einen Sonntag fällt",
+        "domingoDescanso": "Sonntag, der sein Ruhetag ist",
+        "nocheDomingo": "Nacht und Sonntag",
+        "nocheFeriado": "Nacht und Feiertag",
+        "nocheDescanso": "Nacht und Ruhetag",
+        "extraDia": "Überstunde an Sonntag, Feiertag oder Ruhetag"
+      },
+      "ej": {
+        "feriadoDescanso": "Eine Tagesstunde an einem Feiertag, der auch sein Ruhetag ist",
+        "domingoFeriado": "Eine Tagesstunde an einem Sonntag, der Feiertag ist",
+        "domingoDescanso": "Eine Tagesstunde an einem Sonntag, der sein Ruhetag ist",
+        "nocheDomingo": "Eine Nachtstunde an einem Sonntag",
+        "nocheFeriadoDescanso": "Eine Nachtstunde an einem Feiertag, der sein Ruhetag ist",
+        "extraFeriado": "Eine Überstunde (erste Stufe) an einem Feiertag",
+        "titulo": "So wird mit diesen Regeln bezahlt",
+        "fila": "{{que}}: +{{pct}} %",
+        "turno": "12-Stunden-Tagesschicht an einem Feiertag, der auch sein Ruhetag ist, zu {{tarifa}} pro Stunde: {{ord}} h zu +{{po}} % und {{extra}} Überstunden zu +{{pe}} % = {{total}}"
+      },
+      "queUsa": "Was Ihr Unternehmen verwendet",
+      "usarSemanal": "Überstunden pro Woche zählen",
+      "usarGracia": "Kurze Wartezeit nach Schichtende nicht bezahlen (Kulanz)",
+      "tempranaAyuda": "Nicht angehakt beginnt die Bezahlung zur geplanten Zeit, auch wenn früher gestempelt wird.",
+      "recargos": "Zuschläge",
+      "recargosAyuda": "Schalten Sie einen Zuschlag aus, um ihn nicht mehr zu zahlen, ohne den Prozentsatz zu verlieren.",
+      "rec": {
+        "noche": "Nachtzuschlag",
+        "domingo": "Sonntagszuschlag",
+        "descanso": "Zuschlag für Arbeit am Ruhetag",
+        "feriado": "Feiertagszuschlag",
+        "extra": "Überstundenzuschlag",
+        "extraAyuda": "Aus: Überstunden werden zum normalen Satz bezahlt."
+      },
+      "ausenciasAyudaV2": "Angehakt: bezahlt. Nicht angehakt: bleibt entschuldigt (kein Fehlen), wird aber abgezogen. Ein „persönlicher“ Urlaub wird bezahlt oder nicht, wie der Antrag selbst sagt."
+    },
+    "puede": {
+      "sinPermiso": "Deine Rolle hat dafür keine Berechtigung. Frag einen Administrator.",
+      "sinNivel": "Das macht eine höhere Stufe als die deiner Rolle.",
+      "sinModulo": "Benötigt das Modul Lohnabrechnungen oder ein verbundenes Gusto.",
+      "soloLectura": "Nur lesen",
+      "horarioSoloLectura": "Nur lesen: deine Rolle kann den Dienstplan sehen, nicht ändern."
+    },
+    "nivelDeRol": {
+      "titulo": "Stufe",
+      "ayuda": "Die Berechtigungen bestimmen die Bildschirme; die Stufe, welche sensiblen Daten erreicht werden. Sie erreicht nie Administrator oder Filialleitung.",
+      "oficina": "Büro: sieht und bearbeitet Schichten, Abdeckung und Anwesenheit",
+      "central": "Einsatzzentrale: zusätzlich Live-Überwachung (Kameras, Alarme, Karte)",
+      "rrhh": "Personalwesen: zusätzlich Personaldaten und Lohn",
+      "supervision": "Aufsicht: genehmigt zusätzlich Stunden",
+      "gerencia": "Geschäftsleitung: zusätzlich Berichte und Leitungsaktionen"
     }
   },
   "visitantes": {

@@ -3929,13 +3929,6 @@
       "ticket_closed": "Ticket clôturé",
       "view_details": "Voir les détails"
     },
-    "equipo": {
-      "guardias": "Agents de sécurité",
-      "supervisores": "Superviseurs",
-      "label": "Équipe de sécurité",
-      "usuarios": "Utilisateurs administratifs",
-      "caras-registradas": "Visages enregistrés"
-    },
     "facturador": {
       "elementos": "Prestations",
       "estimaciones": "Devis",
@@ -4687,16 +4680,15 @@
       }
     },
     "nomina": {
+      "label": "Paie",
+      "roles": "Bulletins de paie",
+      "planillas": "Registres de paie",
+      "ajustes": "Ajustements de paie",
+      "perfiles": "Profils de paie",
+      "gusto": "Gusto",
       "ejecutar": "Générer la paie",
       "horas-extras": "Multiplicateur d'heures supplémentaires",
-      "label": "Paie",
-      "pasadas": "Paies précédentes",
-      "nomina-dashboard": "Tableau de bord",
-      "nomina-time-clock": "Pointeuse",
-      "nomina-records": "Registre des pointages",
-      "nomina-exceptions": "Exceptions",
-      "nomina-approvals": "Approbations",
-      "nomina-settings": "Paramètres de présence"
+      "pasadas": "Paies précédentes"
     },
     "parking": {
       "areas": "Zone de parking",
@@ -5269,19 +5261,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Présence",
-      "estado": "État de la vacation",
-      "horario": "Planning",
-      "planificador": "Planificateur",
-      "intercambio": "Échange de vacation",
-      "label": "Planificateur",
-      "plantillas": "Modèles de vacation",
-      "tiempo-libre": "Congés",
-      "turnos-abiertos": "Vacations ouvertes",
-      "cobertura": "Couverture en direct",
-      "dobletes": "Doubles quarts"
-    },
     "rastreador": {
       "historial": "Historique du suivi",
       "label": "Traceur GPS",
@@ -5496,16 +5475,21 @@
         "title": "Abonnement"
       }
     },
-    "estaciones": "Postes",
+    "estaciones": {
+      "label": "Postes",
+      "estaciones-tablero": "Tous les postes",
+      "pases-de-turno": "Relèves",
+      "puestos-supervision": "Postes de supervision"
+    },
     "group": {
       "resumen": "Résumé",
       "operacion": "Opérations",
-      "personal": "Personnel",
       "clientes": "Clients",
       "analisis": "Analyses",
       "sistema": "Système",
       "otros": "Autres",
-      "facturacion": "Facturation"
+      "facturacion": "Facturation",
+      "servicio": "Postes et personnel"
     },
     "commandCenter": "Centre de commandement",
     "searchPlaceholder": "Rechercher dans le menu…",
@@ -5544,7 +5528,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Répartition",
-      "radio-dispositivos": "Radios IP"
+      "radio-dispositivos": "Radios IP",
+      "radio-canales": "Canaux"
     },
     "tareas": {
       "label": "Tâches",
@@ -5562,7 +5547,6 @@
     "goToDashboard": "Aller au tableau de bord",
     "unreadMessages": "{{count}} messages non lus",
     "emergencias": "Centre des urgences",
-    "pases-de-turno": "Relèves",
     "modulos-adicionales": "Modules complémentaires",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Visages à approuver : {{count}}",
@@ -5573,6 +5557,33 @@
       "facturacion-antiguedad": "Balance âgée",
       "facturacion-ajustes": "Paramètres de facturation",
       "facturacion-cotizaciones": "Devis"
+    },
+    "personal": {
+      "label": "Personnel",
+      "guardias": "Agents",
+      "supervisores": "Superviseurs",
+      "usuarios": "Utilisateurs de bureau",
+      "caras-registradas": "Visages enregistrés",
+      "ausencias": "Absences et congés"
+    },
+    "turnos": {
+      "label": "Quarts",
+      "horario": "Planning",
+      "planificador": "Planificateur",
+      "sin-cubrir": "Non couverts",
+      "dobletes": "Doubles quarts",
+      "intercambio": "Échange de vacation"
+    },
+    "asistencia": {
+      "label": "Présence",
+      "en-vivo": "En direct",
+      "resumen-hoy": "Résumé du jour",
+      "marcaciones": "Pointages",
+      "novedades": "Anomalies",
+      "aprobaciones": "Approbations",
+      "horas-periodo": "Heures de la période",
+      "configuracion": "Paramètres",
+      "coberturaEnVivo": "Couverture en direct"
     }
   },
   "siteTour": {
@@ -6782,7 +6793,8 @@
       },
       "myTickets": "Mes tickets",
       "myTicketsSub": "Réponses du support"
-    }
+    },
+    "timeClock": "Pointer entrée/sortie"
   },
   "kit": {
     "pagination": {
@@ -11225,7 +11237,13 @@
       "losDiasDeVacacionesSon": "Les jours de congés sont",
       "diasNaturales": "Jours calendaires",
       "diasLaborables": "Jours ouvrables",
-      "selfieMovido": "Le selfie et le visage au pointage se règlent désormais dans Paramètres › App de l'équipe ou App du superviseur."
+      "selfieMovido": "Le selfie et le visage au pointage se règlent désormais dans Paramètres › App de l'équipe ou App du superviseur.",
+      "privacidad": "Confidentialité des absences",
+      "quienVeElMotivo": "Qui voit le motif d'une absence",
+      "motivoAprobadores": "Seulement qui approuve les absences (et le demandeur)",
+      "motivoRrhh": "Ressources humaines et niveaux supérieurs (et le demandeur)",
+      "motivoOficina": "Tout le personnel de bureau",
+      "motivoAyuda": "Le motif est souvent médical. Les autres voient la demande (qui, dates, statut) sans le motif."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
@@ -12641,7 +12659,8 @@
       "yaTieneTurnoEseDiaSufijo": " · a déjà un poste ce jour-là",
       "yseRepite": "· et se répète",
       "eliminarTurnosYNovedades": "Supprimer les vacations et événements sélectionnés (Suppr)",
-      "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…"
+      "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…",
+      "irAEstaciones": "Aller aux postes"
     },
     "ScheduleTimeline": {
       "duracion": "Durée :",
@@ -15649,7 +15668,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Rouvrir la période",
       "reabrirPeriodoMensaje": "Les pointages, postes et marques à partir de ce jour pourront être modifiés à nouveau. Les feuilles déjà approuvées ou exportées ne sont pas touchées. Indiquez le motif : il est consigné au journal.",
-      "reabrirPeriodoTitulo": "Rouvrir la paie à partir du {{desde}} ?"
+      "reabrirPeriodoTitulo": "Rouvrir la paie à partir du {{desde}} ?",
+      "generarCerrado": "Cette période est clôturée. Rouvrez-la pour la recalculer."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licences",
@@ -17728,7 +17748,11 @@
         "tramoFijo": "Part fixe",
         "anadirTramo": "Ajouter une tranche",
         "dobladaSiempreAparte": "Avec ce mode de paiement, le double poste figure toujours sur sa propre ligne du bulletin (« Prime de double poste »).",
-        "dobladaComoSeCuenta": "Il y a double poste quand quelqu’un travaille dans la journée 1,5 fois ou plus son poste habituel (celui de son planning). 24 h sur des postes de 12 h font un double ; 36 h font un triple, qui compte pour deux postes supplémentaires. Un poste de 24 h planifié n’est pas un double."
+        "dobladaComoSeCuenta": "Il y a double poste quand quelqu’un travaille dans la journée 1,5 fois ou plus son poste habituel (celui de son planning). 24 h sur des postes de 12 h font un double ; 36 h font un triple, qui compte pour deux postes supplémentaires. Un poste de 24 h planifié n’est pas un double.",
+        "horasTarjetaTitulo": "Heures de la carte que paie le bulletin",
+        "horasTarjetaAyuda": "La carte les calcule toujours ; le bulletin ne les paie que si vous l'activez. Les bulletins approuvés ne changent pas.",
+        "pagarDescanso": "Payer les heures travaillées le jour de repos (rubrique « Heures le jour de repos »)",
+        "pagarExtraNocturna": "Payer les heures sup. de nuit sur leur propre ligne (nécessite une rubrique « Heures sup. de nuit »)"
       },
       "atras": "Retour",
       "continuar": "Continuer",
@@ -17800,7 +17824,8 @@
         "holiday": "Heures de jour férié",
         "rest_day": "Heures de jour de repos",
         "sunday": "Heures du dimanche",
-        "double_shift": "Heures de double poste"
+        "double_shift": "Heures de double poste",
+        "night_overtime": "Heures sup. de nuit"
       },
       "frecuencia": {
         "weekly": "Hebdomadaire",
@@ -18933,13 +18958,85 @@
         "sinLimiteDiario": "pas de limite quotidienne",
         "sinLimiteSemanal": "pas de limite hebdomadaire",
         "tempranaNo": "non payée",
-        "tempranaSi": "payée"
+        "tempranaSi": "payée",
+        "extraNocturna": "Heure supplémentaire de nuit ({{desde}}:00–{{hasta}}:00) : +{{pct}} % (ou son palier, s'il est plus élevé)",
+        "extraNocturnaComoExtra": "Heure supplémentaire de nuit : comme toute heure supplémentaire",
+        "descanso": "Jour de repos : le repos de la rotation de chaque agent · superviseurs et bureau : {{dia}}",
+        "descansoSinSemanal": "Jour de repos : le repos de la rotation de chaque agent (superviseurs et bureau : aucun)",
+        "noSePaga": "non payé",
+        "recargosV2": "Dimanche {{domingo}} · Repos travaillé {{descanso}} · Jour férié {{feriado}}",
+        "combinaciones": "Quand ils coïncident — férié et repos : {{fd}} · férié et dimanche : {{fo}} · dimanche et repos : {{od}} · nuit ces jours-là : {{noche}} · heure sup. ces jours-là : {{extra}}",
+        "segunElDia": "selon le jour"
       },
       "semanaLaboralEmpieza": "La semaine de travail commence le",
       "semanalAyuda": "Au-delà, dans la semaine, ce sont des heures supplémentaires (États-Unis : 40). 0 = pas de règle hebdomadaire.",
       "sinConfigurar": "Personne n’a encore configuré ces règles : la durée suit celle du pays et aucune majoration n’est appliquée. Vérifiez-les et enregistrez.",
       "sinPais": "Aucun pays",
-      "sinPreset": "Nous n’avons pas de règles pour ce pays : déclarez ici celles de votre convention."
+      "sinPreset": "Nous n’avons pas de règles pour ce pays : déclarez ici celles de votre convention.",
+      "descansoAyuda": "Payée sur les heures travaillées le jour de repos de chaque personne : le repos de sa rotation, ou un jour marqué « L » dans le Planning.",
+      "descansoSemanal": "Jour de repos hebdomadaire (superviseurs et bureau)",
+      "descansoSemanalAyuda": "Les personnes sans rotation touchent la majoration de repos si elles travaillent ce jour-là.",
+      "ninguno": "Aucun",
+      "extraNocturna": "Heure supplémentaire de nuit avec sa propre majoration",
+      "extraNocturnaAyuda": "Les heures supplémentaires dans cette plage sont payées à cette majoration si elle dépasse leur palier (Colombie : 19–6 à 75 % ; Équateur : 0–6 à 100 %).",
+      "extraNocturnaDesde": "Supplémentaire de nuit : de (heure)",
+      "extraNocturnaHasta": "Supplémentaire de nuit : à (heure)",
+      "extraNocturnaPct": "Majoration de l'heure supplémentaire de nuit (%)",
+      "comb": {
+        "comoLaGeneral": "Comme la règle générale ({{regla}})",
+        "titulo": "Quand plusieurs majorations tombent sur la même heure",
+        "ayuda": "« S'additionnent » : les deux sont payées (férié 100 % + repos 100 % = 200 %). « Le plus élevé » : seulement le plus haut (= 100 %). Choisissez pour chaque cas.",
+        "general": "Règle générale entre dimanche, repos et férié",
+        "feriadoDescanso": "Férié qui tombe sur son jour de repos",
+        "feriadoDomingo": "Férié qui tombe un dimanche",
+        "domingoDescanso": "Dimanche qui est son jour de repos",
+        "nocheDomingo": "Nuit et dimanche",
+        "nocheFeriado": "Nuit et férié",
+        "nocheDescanso": "Nuit et jour de repos",
+        "extraDia": "Heure sup. un dimanche, férié ou jour de repos"
+      },
+      "ej": {
+        "feriadoDescanso": "Une heure de jour un jour férié qui est aussi son jour de repos",
+        "domingoFeriado": "Une heure de jour un dimanche férié",
+        "domingoDescanso": "Une heure de jour un dimanche qui est son jour de repos",
+        "nocheDomingo": "Une heure de nuit un dimanche",
+        "nocheFeriadoDescanso": "Une heure de nuit un jour férié qui est son jour de repos",
+        "extraFeriado": "Une heure sup. (premier palier) un jour férié",
+        "titulo": "Ce que paient ces règles",
+        "fila": "{{que}} : +{{pct}} %",
+        "turno": "Poste de jour de 12 h un jour férié qui est aussi son jour de repos, à {{tarifa}} l'heure : {{ord}} h à +{{po}} % et {{extra}} h sup. à +{{pe}} % = {{total}}"
+      },
+      "queUsa": "Ce qu'utilise votre entreprise",
+      "usarSemanal": "Compter les heures sup. par semaine",
+      "usarGracia": "Ne pas payer la courte attente en sortant (tolérance)",
+      "tempranaAyuda": "Décoché, la paie commence à l'heure prévue même si la personne pointe avant.",
+      "recargos": "Majorations",
+      "recargosAyuda": "Désactivez une majoration pour ne plus la payer sans perdre le pourcentage saisi.",
+      "rec": {
+        "noche": "Majoration de nuit",
+        "domingo": "Majoration du dimanche",
+        "descanso": "Majoration pour travail le jour de repos",
+        "feriado": "Majoration jour férié",
+        "extra": "Majoration des heures sup.",
+        "extraAyuda": "Désactivée, les heures sup. sont payées au taux normal."
+      },
+      "ausenciasAyudaV2": "Cochée : payée. Décochée : reste justifiée (pas une faute), mais déduite. Un congé « personnel » est payé ou non selon ce qu'indique le congé."
+    },
+    "puede": {
+      "sinPermiso": "Votre rôle n'a pas la permission pour cela. Demandez à un administrateur.",
+      "sinNivel": "Ceci relève d'un niveau supérieur à celui de votre rôle.",
+      "sinModulo": "Nécessite le module Fiches de paie ou Gusto connecté.",
+      "soloLectura": "Lecture seule",
+      "horarioSoloLectura": "Lecture seule : votre rôle peut voir le planning, pas le modifier."
+    },
+    "nivelDeRol": {
+      "titulo": "Niveau",
+      "ayuda": "Les permissions disent quels écrans il utilise ; le niveau, quelles données sensibles il atteint. Il n'atteint jamais administrateur ni responsable d'agence.",
+      "oficina": "Bureau : voit et gère les postes, la couverture et les présences",
+      "central": "Centre d'opérations : en plus la surveillance en direct (caméras, alarmes, carte)",
+      "rrhh": "Ressources humaines : en plus les données du personnel et la paie",
+      "supervision": "Supervision : en plus approuve les heures",
+      "gerencia": "Direction : en plus rapports et actions de direction"
     }
   },
   "visitantes": {

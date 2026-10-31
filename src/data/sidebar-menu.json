@@ -22,24 +22,6 @@
     ]
   },
   {
-    "id": "estaciones",
-    "name": "Estaciones",
-    "icon": "Radio",
-    "path": "/stations",
-    "permission": [
-      "stationRead"
-    ]
-  },
-  {
-    "id": "pases-de-turno",
-    "name": "Pases de turno",
-    "icon": "ClipboardSignature",
-    "path": "/passdowns",
-    "permission": [
-      "taskRead"
-    ]
-  },
-  {
     "id": "clientes",
     "name": "Clientes",
     "icon": "Users",
@@ -82,26 +64,49 @@
     ]
   },
   {
-    "id": "equipo",
-    "name": "Equipo de Seguridad",
+    "id": "estaciones",
+    "name": "Estaciones",
+    "icon": "Radio",
+    "expandable": true,
+    "subItems": [
+      {
+        "id": "estaciones-tablero",
+        "name": "Todas las estaciones",
+        "path": "/stations",
+        "permission": [
+          "stationRead"
+        ]
+      },
+      {
+        "id": "pases-de-turno",
+        "name": "Pases de turno",
+        "path": "/passdowns",
+        "permission": [
+          "stationRead"
+        ]
+      },
+      {
+        "id": "puestos-supervision",
+        "name": "Puestos de supervisión",
+        "path": "/supervisor-positions",
+        "permission": [
+          "securityGuardRead"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "personal",
+    "name": "Personal",
     "icon": "Shield",
     "expandable": true,
     "subItems": [
       {
         "id": "guardias",
-        "name": "security-guards",
+        "name": "Vigilantes",
         "path": "/security-guards",
         "permission": [
           "securityGuardRead"
-        ]
-      },
-      {
-        "id": "caras-registradas",
-        "name": "Caras registradas",
-        "path": "/security-guards/rostros",
-        "modulo": "reconocimiento_facial",
-        "permission": [
-          "attendanceRead"
         ]
       },
       {
@@ -114,11 +119,184 @@
       },
       {
         "id": "usuarios",
-        "name": "Usuarios de Oficina Administrativa",
+        "name": "Usuarios de oficina",
         "path": "/back-office",
         "permission": [
           "userRead"
         ]
+      },
+      {
+        "id": "caras-registradas",
+        "name": "Caras registradas",
+        "path": "/security-guards/rostros",
+        "modulo": "reconocimiento_facial",
+        "permission": [
+          "attendanceRead"
+        ]
+      },
+      {
+        "id": "ausencias",
+        "name": "Ausencias y permisos",
+        "path": "/time-off",
+        "permission": [
+          "timeOffRequestRead"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "turnos",
+    "name": "Turnos",
+    "icon": "Calendar",
+    "expandable": true,
+    "subItems": [
+      {
+        "id": "horario",
+        "name": "Horario",
+        "path": "/schedule",
+        "permission": [
+          "stationRead"
+        ]
+      },
+      {
+        "id": "planificador",
+        "name": "Planificador",
+        "path": "/planificador",
+        "permission": [
+          "stationRead"
+        ]
+      },
+      {
+        "id": "sin-cubrir",
+        "name": "Sin cubrir",
+        "path": "/open-shifts",
+        "permission": [
+          "shiftRead"
+        ]
+      },
+      {
+        "id": "dobletes",
+        "name": "Dobletes",
+        "path": "/dobletes",
+        "modulo": "dobletes",
+        "permission": [
+          "dobletesManage"
+        ]
+      },
+      {
+        "id": "intercambio",
+        "name": "Intercambio de turno",
+        "path": "/shift-exchange",
+        "permission": [
+          "shiftExchangeRequestRead"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "asistencia",
+    "name": "Asistencia",
+    "icon": "Clock",
+    "expandable": true,
+    "subItems": [
+      {
+        "id": "en-vivo",
+        "name": "En vivo",
+        "path": "/coverage",
+        "permission": [
+          "coverageRead"
+        ]
+      },
+      {
+        "id": "resumen-hoy",
+        "name": "Resumen de hoy",
+        "path": "/nomina/dashboard",
+        "permission": [
+          "attendanceRead"
+        ]
+      },
+      {
+        "id": "marcaciones",
+        "name": "Marcaciones",
+        "path": "/nomina/records",
+        "permission": [
+          "attendanceRead"
+        ]
+      },
+      {
+        "id": "novedades",
+        "name": "Novedades",
+        "path": "/nomina/exceptions",
+        "permission": [
+          "attendanceRead"
+        ]
+      },
+      {
+        "id": "aprobaciones",
+        "name": "Aprobaciones",
+        "path": "/nomina/approvals",
+        "permission": [
+          "attendanceRead"
+        ]
+      },
+      {
+        "id": "horas-periodo",
+        "name": "Horas del periodo",
+        "path": "/nomina/timecards",
+        "permission": [
+          "attendanceRead"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nomina",
+    "name": "Nómina",
+    "icon": "DollarSign",
+    "expandable": true,
+    "subItems": [
+      {
+        "id": "roles",
+        "name": "Roles de pago",
+        "path": "/nomina/roles",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollSlipRead"
+        ]
+      },
+      {
+        "id": "planillas",
+        "name": "Planillas",
+        "path": "/nomina/roles/planillas",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollSlipRead"
+        ],
+        "readableWhenPaused": true
+      },
+      {
+        "id": "ajustes",
+        "name": "Ajustes de nómina",
+        "path": "/nomina/roles/novedades",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollSlipRead"
+        ]
+      },
+      {
+        "id": "perfiles",
+        "name": "Perfiles de pago",
+        "path": "/nomina/roles/perfiles",
+        "modulo": "payroll_slips",
+        "permission": [
+          "payrollProfileRead"
+        ]
+      },
+      {
+        "id": "gusto",
+        "name": "Gusto",
+        "path": "/nomina/gusto",
+        "gusto": true
       }
     ]
   },
@@ -169,7 +347,6 @@
     "name": "Videovigilancia",
     "icon": "Cctv",
     "expandable": true,
-    "modulo": "video_surveillance",
     "subItems": [
       {
         "id": "video-monitoreo",
@@ -203,14 +380,14 @@
           "businessInfoRead"
         ]
       }
-    ]
+    ],
+    "modulo": "video_surveillance"
   },
   {
     "id": "monitoreo-alarmas",
     "name": "Central de Monitoreo",
     "icon": "Siren",
     "expandable": true,
-    "modulo": "monitoring_center",
     "subItems": [
       {
         "id": "alarm-panels",
@@ -244,7 +421,8 @@
           "businessInfoRead"
         ]
       }
-    ]
+    ],
+    "modulo": "monitoring_center"
   },
   {
     "id": "patrulla",
@@ -357,183 +535,6 @@
     "name": "Informes",
     "icon": "FileText",
     "path": "/reports"
-  },
-  {
-    "id": "programador",
-    "name": "Programador",
-    "icon": "Calendar",
-    "expandable": true,
-    "subItems": [
-      {
-        "id": "horario",
-        "name": "Horario",
-        "path": "/schedule",
-        "permission": [
-          "stationRead"
-        ]
-      },
-      {
-        "id": "planificador",
-        "name": "Planificador",
-        "path": "/planificador",
-        "permission": [
-          "stationRead"
-        ]
-      },
-      {
-        "id": "cobertura",
-        "name": "Cobertura en vivo",
-        "path": "/coverage",
-        "permission": [
-          "coverageRead"
-        ]
-      },
-      {
-        "id": "dobletes",
-        "name": "Dobletes",
-        "path": "/dobletes",
-        "modulo": "dobletes",
-        "permission": [
-          "dobletesManage"
-        ]
-      },
-      {
-        "id": "estado",
-        "name": "Estado de Turno",
-        "path": "/shift-status",
-        "permission": [
-          "shiftRead"
-        ]
-      },
-      {
-        "id": "turnos-abiertos",
-        "name": "Turnos Abiertos",
-        "path": "/open-shifts",
-        "permission": [
-          "shiftRead"
-        ]
-      },
-      {
-        "id": "intercambio",
-        "name": "Intercambio de Turno",
-        "path": "/shift-exchange",
-        "permission": [
-          "shiftExchangeRequestRead"
-        ]
-      },
-      {
-        "id": "tiempo-libre",
-        "name": "Tiempo Libre",
-        "path": "/time-off",
-        "permission": [
-          "timeOffRequestRead"
-        ]
-      }
-    ]
-  },
-  {
-    "id": "nomina",
-    "name": "Asistencia",
-    "icon": "Clock",
-    "expandable": true,
-    "subItems": [
-      {
-        "id": "nomina-dashboard",
-        "name": "Dashboard",
-        "path": "/nomina/dashboard",
-        "permission": [
-          "attendanceRead"
-        ]
-      },
-      {
-        "id": "nomina-time-clock",
-        "name": "Reloj de Asistencia",
-        "path": "/nomina/time-clock"
-      },
-      {
-        "id": "nomina-records",
-        "name": "Registros de Asistencia",
-        "path": "/nomina/records",
-        "permission": [
-          "attendanceRead"
-        ]
-      },
-      {
-        "id": "nomina-gusto",
-        "name": "Gusto",
-        "path": "/nomina/gusto",
-        "gusto": true
-      },
-      {
-        "id": "nomina-exceptions",
-        "name": "Excepciones",
-        "path": "/nomina/exceptions",
-        "permission": [
-          "attendanceRead"
-        ]
-      },
-      {
-        "id": "nomina-approvals",
-        "name": "Aprobaciones",
-        "path": "/nomina/approvals",
-        "permission": [
-          "attendanceRead"
-        ]
-      },
-      {
-        "id": "nomina-timecards",
-        "name": "Tarjetas de Nómina",
-        "path": "/nomina/timecards",
-        "permission": [
-          "attendanceRead"
-        ]
-      },
-      {
-        "id": "nomina-roles",
-        "name": "Roles de pago",
-        "path": "/nomina/roles",
-        "modulo": "payroll_slips",
-        "permission": [
-          "payrollSlipRead"
-        ]
-      },
-      {
-        "id": "nomina-roles-planillas",
-        "name": "Planillas de pago",
-        "path": "/nomina/roles/planillas",
-        "modulo": "payroll_slips",
-        "readableWhenPaused": true,
-        "permission": [
-          "payrollSlipRead"
-        ]
-      },
-      {
-        "id": "nomina-roles-novedades",
-        "name": "Novedades de nómina",
-        "path": "/nomina/roles/novedades",
-        "modulo": "payroll_slips",
-        "permission": [
-          "payrollSlipRead"
-        ]
-      },
-      {
-        "id": "nomina-roles-perfiles",
-        "name": "Perfiles de pago",
-        "path": "/nomina/roles/perfiles",
-        "modulo": "payroll_slips",
-        "permission": [
-          "payrollProfileRead"
-        ]
-      },
-      {
-        "id": "nomina-settings",
-        "name": "Configuración de Asistencia",
-        "path": "/nomina/settings",
-        "permission": [
-          "attendanceSettingsRead"
-        ]
-      }
-    ]
   },
   {
     "id": "facturacion",

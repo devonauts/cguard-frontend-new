@@ -84,7 +84,7 @@ export default function NovedadesDeNomina() {
       <PageContainer>
         <PageHeader
           icon={<ListPlus />}
-          title={t("ui.RolesDePago.novedades.titulo", "Novedades de nómina")}
+          title={t("sidebar.nomina.ajustes", "Ajustes de nómina")}
           subtitle={t("ui.RolesDePago.novedades.subtitulo", "Bonos, multas, anticipos, descuentos y préstamos. Lo pendiente entra en la próxima planilla; al publicarla queda registrado.")}
           actions={
             !sinModulo && canEdit ? (

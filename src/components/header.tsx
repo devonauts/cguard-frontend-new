@@ -29,6 +29,7 @@ import {
   Star,
   Radio,
   Palette,
+  Timer,
   CornerDownLeft,
   LayoutGrid,
   Settings2,
@@ -79,6 +80,7 @@ import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
 import { hasFeature } from "@/lib/entitlements";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
+import { useGusto } from "@/hooks/useGusto";
 import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
 import TenantSwitcher from "@/components/TenantSwitcher";
 import SelectorDeSucursal from "@/components/SelectorDeSucursal";
@@ -423,6 +425,7 @@ export default function Header({
   // «Módulos adicionales» sólo existe si la empresa tiene tienda: el buscador
   // no puede ofrecer una página que el menú esconde.
   const { visible: hayTienda } = useTiendaDeModulos();
+  const { disponible: hayGusto } = useGusto();
 
   /** El menú lateral y el índice de Configuración SON el mapa del producto: el
    *  buscador los reutiliza en vez de mantener una segunda lista que se queda
@@ -462,6 +465,7 @@ export default function Header({
         });
       for (const sub of (item.subItems ?? []) as any[]) {
         if (sub.modulo && !hasFeature(user, sub.modulo)) continue;
+        if (sub.gusto && !hayGusto) continue;
         if (!allowed(sub)) continue;
         const subNombre =
           etiqueta(`sidebar.${item.id}.${sub.id}`, `sidebar.${sub.id}`) ||
@@ -508,7 +512,7 @@ export default function Header({
     /* `agente.nombre` en las dependencias: sin él, el índice del buscador se
        calcula una vez con «VigIA» y se queda así aunque luego llegue el nombre
        del socio — y buscarlo por su nombre no encontraría su propia pantalla. */
-  }, [t, agente.nombre, hayTienda, user, hasAny]);
+  }, [t, agente.nombre, hayTienda, hayGusto, user, hasAny]);
 
   const resultados = useMemo(() => {
     const q = plano(consulta.trim());
@@ -1078,6 +1082,19 @@ export default function Header({
                   </div>
 
                   <div className="py-1.5" onClick={() => setOpenUser(false)}>
+                    {/* The person's own clock (office staff): it left the side
+                        menu, where it read as another attendance report. */}
+                    <NavLink
+                      className={enlaceMenu}
+                      style={{ color: "var(--ink)" }}
+                      to="/nomina/time-clock"
+                    >
+                      <Timer
+                        className="h-4 w-4"
+                        style={{ color: "var(--ink-faint)" }}
+                      />
+                      {t("header.timeClock", "Marcar entrada/salida")}
+                    </NavLink>
                     <NavLink
                       className={enlaceMenu}
                       style={{ color: "var(--ink)" }}

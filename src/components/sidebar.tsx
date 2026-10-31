@@ -168,9 +168,7 @@ const GROUPS: GroupDef[] = [
     id: "resumen",
     label: "Resumen",
     icon: Gauge,
-    // «pases-de-turno» va pegado a Estaciones: el pase es el registro del
-    // puesto en cada cambio de turno, no una tarea (antes colgaba de Tareas).
-    ids: ["panel", "actividad", "emergencias", "estaciones", "pases-de-turno"],
+    ids: ["panel", "actividad", "emergencias"],
   },
   {
     id: "operacion",
@@ -186,11 +184,24 @@ const GROUPS: GroupDef[] = [
       "inventario",
     ],
   },
+  /* Stations and staff, in the order an operator answers the questions:
+     what each station needs (Estaciones) → who can work (Personal) → who covers
+     each station (Turnos) → whether it was really covered (Asistencia) → what
+     is paid (Nómina, only with the payroll module or Gusto: every sub-item
+     carries `modulo`/`gusto`, and an expandable left empty is not shown). */
   {
-    id: "personal",
-    label: "Personal",
+    id: "servicio",
+    label: "Estaciones y personal",
     icon: Users,
-    ids: ["equipo", "programador", "nomina", "tareas", "entrenamiento"],
+    ids: [
+      "estaciones",
+      "personal",
+      "turnos",
+      "asistencia",
+      "nomina",
+      "tareas",
+      "entrenamiento",
+    ],
   },
   {
     id: "clientes",
@@ -956,13 +967,13 @@ export default function Sidebar({
      solo cuando entra un mensaje (la campana lo avisa) o al leer un hilo. */
   const mensajesSinLeer = useMessagesUnread(hasTenant);
   /* Caras por aprobar (módulo «Reconocimiento facial»): la cifra va en el
-     subelemento y también en «Equipo», que es lo que se ve con el menú
+     subelemento y también en «Personal», que es lo que se ve con el menú
      plegado. Sin el módulo es 0 y no se pregunta nada. */
   const rostrosPendientes = useRostrosPendientes();
   const insigniaDe = (itemId: string) =>
     itemId === "mensajeria"
       ? mensajesSinLeer
-      : itemId === "equipo"
+      : itemId === "personal"
         ? rostrosPendientes
         : 0;
   const etiquetaDeInsignia = (itemId: string, count: number) =>

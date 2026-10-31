@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
@@ -96,6 +97,10 @@ function formatDate(iso: string | null) {
 
 export default function TimeOff() {
   const { t } = useTranslation();
+  // Buttons follow the server's permissions (lib/reglasDeAcciones).
+  const crear = usePuede("permisos.crear");
+  const decidir = usePuede("permisos.decidir");
+  const borrar = usePuede("permisos.borrar");
   const [records, setRecords] = useState<TimeOffRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -406,7 +411,7 @@ export default function TimeOff() {
       <PageContainer width="wide">
         <PageHeader
           icon={<CalendarOff />}
-          title={t("sidebar.programador.tiempo-libre", "Tiempo libre")}
+          title={t("sidebar.personal.ausencias", "Ausencias y permisos")}
           subtitle={t("ui.TimeOff.solicitudesDeVacacionesEnfermedadY")}
         />
 
@@ -485,6 +490,7 @@ export default function TimeOff() {
 
             <div className="flex items-center gap-2">
               {/* New Request Sheet */}
+              {crear.puede && (
               <Sheet
                 open={isNewRequestOpen}
                 onOpenChange={(v) => {
@@ -664,6 +670,7 @@ export default function TimeOff() {
                   </SheetFooter>
                 </SheetContent>
               </Sheet>
+              )}
             </div>
           </div>
         </Toolbar>
@@ -737,7 +744,7 @@ export default function TimeOff() {
             }
             loading={loading}
             rowActions={(row: any) => [
-              ...(row.status === "pending"
+              ...(row.status === "pending" && decidir.puede
                 ? [
                     {
                       label: t("ui.TimeOff.aprobar", "Aprobar"),
@@ -753,7 +760,7 @@ export default function TimeOff() {
                     },
                   ]
                 : []),
-              ...(row.status === "approved"
+              ...(row.status === "approved" && decidir.puede
                 ? [
                     {
                       label: t(
@@ -765,12 +772,16 @@ export default function TimeOff() {
                     },
                   ]
                 : []),
-              {
-                label: t("common.delete", "Eliminar"),
-                icon: <Trash2 />,
-                destructive: true,
-                onClick: () => handleDelete(row.id),
-              },
+              ...(borrar.puede
+                ? [
+                    {
+                      label: t("common.delete", "Eliminar"),
+                      icon: <Trash2 />,
+                      destructive: true,
+                      onClick: () => handleDelete(row.id),
+                    },
+                  ]
+                : []),
             ]}
           />
         </Section>

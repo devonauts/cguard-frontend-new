@@ -151,9 +151,13 @@ const payrollService = {
     const t = getTenantId();
 
     return unwrap(
-      await api.post(`/tenant/${t}/payroll/timecards/generate`, {
-        data: periodo,
-      }),
+      // The page shows its own error toast; without this the API client
+      // showed the same message a second time.
+      await api.post(
+        `/tenant/${t}/payroll/timecards/generate`,
+        { data: periodo },
+        { toast: { silentError: true } } as any,
+      ),
     );
   },
 

@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
@@ -225,6 +226,22 @@ export default function NominaRecords() {
   const { hasPermission } = usePermissions();
   const puedeAprobar = hasPermission("attendanceApprove");
   const puedeEditar = hasPermission("attendanceEdit");
+  /* Money moves follow the server's payroll gate AND the payroll module
+     (lib/reglasDeAcciones): a supervisor or a company without Roles de pago /
+     Gusto no longer sees «Aprobar y enviar a pago» only to get an error. */
+  const paraPago = usePuede("asistencia.aprobarParaPago");
+  const pagado = usePuede("asistencia.marcarPagado");
+  const puedeExportar = usePuede("asistencia.exportar");
+  /** The payroll moves this person can make from `actual` (the server's rule). */
+  const movimientosPermitidos = (actual: string, siguientes: string[]) => {
+    const dineroAntes = actual === "approved" || actual === "paid";
+    return siguientes.filter((destino) => {
+      if (dineroAntes) return pagado.puede; // leaving approved/paid releases money
+      if (destino === "approved") return paraPago.puede;
+      if (destino === "paid") return pagado.puede;
+      return true;
+    });
+  };
 
   const [rangeStart, rangeEnd] = useMemo(
     () => rangeFor(period, anchor),
@@ -558,7 +575,7 @@ export default function NominaRecords() {
       header: t("ui.NominaRecords.estadoDeNomina", "Estado de nómina"),
       render: (_v, r) => {
         const actual = String(r.payrollStatus || "");
-        const siguientes = PAYROLL_FLOW_NEXT[actual] || [];
+        const siguientes = movimientosPermitidos(actual, PAYROLL_FLOW_NEXT[actual] || []);
         if (!actual || !puedeAprobar || !siguientes.length)
           return <PayrollBadge status={r.payrollStatus} />;
         return (
@@ -679,7 +696,7 @@ export default function NominaRecords() {
       <PageContainer width="wide">
         <PageHeader
           icon={<ClipboardCheck />}
-          title={t("ui.NominaRecords.registrosDeAsistencia")}
+          title={t("sidebar.asistencia.marcaciones", "Marcaciones")}
           subtitle={t("ui.NominaRecords.marcacionesDeEntradaSalida", "Marcaciones de entrada / salida")}
           actions={
             /* Tres formatos y UNA fuente: el archivo lo arma el servidor con el
@@ -701,6 +718,7 @@ export default function NominaRecords() {
                 </Link>
               </Button>
             )}
+            {puedeExportar.puede && (
             <ExportMenu
               onExport={exportar}
               busy={busy}
@@ -713,6 +731,7 @@ export default function NominaRecords() {
                   : t("ui.NominaRecords.exportar", "Exportar")
               }
             />
+            )}
             </div>
           }
         />
@@ -917,7 +936,9 @@ export default function NominaRecords() {
                           value: "pending_review",
                           label: t("ui.NominaRecords.devolverARevision", "Devolver a revisión"),
                         },
-                      ]}
+                      ].filter((a) =>
+                        a.value === "approved" ? paraPago.puede : a.value === "paid" ? pagado.puede : true,
+                      )}
                       onChange={(v) => void bulk(v)}
                     />
                   </div>

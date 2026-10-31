@@ -3929,13 +3929,6 @@
       "ticket_closed": "Ticket gesloten",
       "view_details": "Details bekijken"
     },
-    "equipo": {
-      "guardias": "Beveiligers",
-      "supervisores": "Supervisors",
-      "label": "Beveiligingsteam",
-      "usuarios": "Kantoorgebruikers",
-      "caras-registradas": "Geregistreerde gezichten"
-    },
     "facturador": {
       "elementos": "Diensten",
       "estimaciones": "Offertes",
@@ -4687,16 +4680,15 @@
       }
     },
     "nomina": {
+      "label": "Salaris",
+      "roles": "Loonstroken",
+      "planillas": "Loonruns",
+      "ajustes": "Loonaanpassingen",
+      "perfiles": "Loonprofielen",
+      "gusto": "Gusto",
       "ejecutar": "Loonrun starten",
       "horas-extras": "Overuren-toeslag",
-      "label": "Salaris",
-      "pasadas": "Eerdere loonruns",
-      "nomina-dashboard": "Dashboard",
-      "nomina-time-clock": "Tijdklok",
-      "nomina-records": "Aanwezigheidsregistraties",
-      "nomina-exceptions": "Uitzonderingen",
-      "nomina-approvals": "Goedkeuringen",
-      "nomina-settings": "Aanwezigheidsinstellingen"
+      "pasadas": "Eerdere loonruns"
     },
     "parking": {
       "areas": "Parkeerzone",
@@ -5269,19 +5261,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Aanwezigheid",
-      "estado": "Dienststatus",
-      "horario": "Rooster",
-      "planificador": "Planner",
-      "intercambio": "Dienstruil",
-      "label": "Planner",
-      "plantillas": "Dienstsjablonen",
-      "tiempo-libre": "Verlof",
-      "turnos-abiertos": "Open diensten",
-      "cobertura": "Live dekking",
-      "dobletes": "Dubbele diensten"
-    },
     "rastreador": {
       "historial": "Volggeschiedenis",
       "label": "GPS-tracker",
@@ -5496,16 +5475,21 @@
         "title": "Abonnement"
       }
     },
-    "estaciones": "Posten",
+    "estaciones": {
+      "label": "Posten",
+      "estaciones-tablero": "Alle posten",
+      "pases-de-turno": "Dienstoverdrachten",
+      "puestos-supervision": "Toezichtposten"
+    },
     "group": {
       "resumen": "Overzicht",
       "operacion": "Operatie",
-      "personal": "Personeel",
       "clientes": "Opdrachtgevers",
       "analisis": "Analyse",
       "sistema": "Systeem",
       "otros": "Overig",
-      "facturacion": "Facturatie"
+      "facturacion": "Facturatie",
+      "servicio": "Posten en personeel"
     },
     "commandCenter": "Commandocentrum",
     "searchPlaceholder": "Zoeken in het menu…",
@@ -5544,7 +5528,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Dispatch",
-      "radio-dispositivos": "IP-radio's"
+      "radio-dispositivos": "IP-radio's",
+      "radio-canales": "Kanalen"
     },
     "tareas": {
       "label": "Taken",
@@ -5562,7 +5547,6 @@
     "goToDashboard": "Naar het dashboard",
     "unreadMessages": "{{count}} ongelezen berichten",
     "emergencias": "Noodcentrale",
-    "pases-de-turno": "Dienstoverdrachten",
     "modulos-adicionales": "Extra modules",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Gezichten te keuren: {{count}}",
@@ -5573,6 +5557,33 @@
       "facturacion-antiguedad": "Ouderdomsanalyse",
       "facturacion-ajustes": "Factureringsinstellingen",
       "facturacion-cotizaciones": "Offertes"
+    },
+    "personal": {
+      "label": "Personeel",
+      "guardias": "Bewakers",
+      "supervisores": "Supervisors",
+      "usuarios": "Kantoorgebruikers",
+      "caras-registradas": "Geregistreerde gezichten",
+      "ausencias": "Afwezigheid en verlof"
+    },
+    "turnos": {
+      "label": "Diensten",
+      "horario": "Rooster",
+      "planificador": "Planner",
+      "sin-cubrir": "Onbezet",
+      "dobletes": "Dubbele diensten",
+      "intercambio": "Dienstruil"
+    },
+    "asistencia": {
+      "label": "Aanwezigheid",
+      "en-vivo": "Live",
+      "resumen-hoy": "Overzicht van vandaag",
+      "marcaciones": "Registraties",
+      "novedades": "Afwijkingen",
+      "aprobaciones": "Goedkeuringen",
+      "horas-periodo": "Uren van de periode",
+      "configuracion": "Instellingen",
+      "coberturaEnVivo": "Live dekking"
     }
   },
   "siteTour": {
@@ -6782,7 +6793,8 @@
       },
       "myTickets": "Mijn tickets",
       "myTicketsSub": "Antwoorden van support"
-    }
+    },
+    "timeClock": "In-/uitklokken"
   },
   "kit": {
     "pagination": {
@@ -11225,7 +11237,13 @@
       "losDiasDeVacacionesSon": "Vakantiedagen zijn",
       "diasNaturales": "Kalenderdagen",
       "diasLaborables": "Werkdagen",
-      "selfieMovido": "Selfie en gezicht bij inklokken stel je nu in via Instellingen › Team-app of Supervisor-app."
+      "selfieMovido": "Selfie en gezicht bij inklokken stel je nu in via Instellingen › Team-app of Supervisor-app.",
+      "privacidad": "Privacy van verlof",
+      "quienVeElMotivo": "Wie de reden van een verlofaanvraag ziet",
+      "motivoAprobadores": "Alleen wie verlof goedkeurt (en de aanvrager)",
+      "motivoRrhh": "Personeelszaken en hogere niveaus (en de aanvrager)",
+      "motivoOficina": "Al het kantoorpersoneel",
+      "motivoAyuda": "De reden is vaak medisch. De anderen zien de aanvraag (wie, data, status) zonder de reden."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",
@@ -12641,7 +12659,8 @@
       "yaTieneTurnoEseDiaSufijo": " · heeft die dag al een dienst",
       "yseRepite": "· en herhaalt zich",
       "eliminarTurnosYNovedades": "Geselecteerde diensten en bijzonderheden verwijderen (Del)",
-      "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…"
+      "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…",
+      "irAEstaciones": "Naar posten"
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",
@@ -15649,7 +15668,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Periode heropenen",
       "reabrirPeriodoMensaje": "Prikkingen, diensten en markeringen vanaf die dag kunnen weer worden gewijzigd. Al goedgekeurde of geëxporteerde tijdkaarten blijven ongewijzigd. Geef de reden op: die komt in het logboek.",
-      "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?"
+      "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?",
+      "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",
@@ -17728,7 +17748,11 @@
         "tramoFijo": "Vast bedrag",
         "anadirTramo": "Schijf toevoegen",
         "dobladaSiempreAparte": "Bij deze betaalwijze staat de dubbele dienst altijd op een eigen regel van de loonstrook („Premie dubbele dienst”).",
-        "dobladaComoSeCuenta": "Er is een dubbele dienst als iemand op een dag 1,5 keer of meer zijn gewone dienst (volgens het rooster) werkt. 24 u bij diensten van 12 is een dubbele; 36 u is een driedubbele en telt als twee extra diensten. Een ingeroosterde dienst van 24 u is geen dubbele."
+        "dobladaComoSeCuenta": "Er is een dubbele dienst als iemand op een dag 1,5 keer of meer zijn gewone dienst (volgens het rooster) werkt. 24 u bij diensten van 12 is een dubbele; 36 u is een driedubbele en telt als twee extra diensten. Een ingeroosterde dienst van 24 u is geen dubbele.",
+        "horasTarjetaTitulo": "Uren van de tijdkaart die de loonstrook betaalt",
+        "horasTarjetaAyuda": "De tijdkaart berekent ze altijd; de loonstrook betaalt ze alleen als u dit aanzet. Goedgekeurde loonstroken veranderen niet.",
+        "pagarDescanso": "Op de rustdag gewerkte uren betalen (post „Uren op rustdag”)",
+        "pagarExtraNocturna": "Nachtoveruren op een eigen regel betalen (vereist een post „Nachtoveruren”)"
       },
       "atras": "Terug",
       "continuar": "Doorgaan",
@@ -17800,7 +17824,8 @@
         "holiday": "Uren op feestdagen",
         "rest_day": "Uren op rustdag",
         "sunday": "Uren op zondag",
-        "double_shift": "Uren dubbele dienst"
+        "double_shift": "Uren dubbele dienst",
+        "night_overtime": "Nachtoveruren"
       },
       "frecuencia": {
         "weekly": "Wekelijks",
@@ -18933,13 +18958,85 @@
         "sinLimiteDiario": "geen daglimiet",
         "sinLimiteSemanal": "geen weeklimiet",
         "tempranaNo": "niet betaald",
-        "tempranaSi": "betaald"
+        "tempranaSi": "betaald",
+        "extraNocturna": "Nachtelijk overwerk ({{desde}}:00–{{hasta}}:00): +{{pct}} % (of de eigen schijf, als die hoger is)",
+        "extraNocturnaComoExtra": "Nachtelijk overwerk: zoals elk overuur",
+        "descanso": "Rustdag: de vrije dag in het rooster van elke beveiliger · supervisors en kantoor: {{dia}}",
+        "descansoSinSemanal": "Rustdag: de vrije dag in het rooster van elke beveiliger (supervisors en kantoor: geen)",
+        "noSePaga": "niet betaald",
+        "recargosV2": "Zondag {{domingo}} · Gewerkte rustdag {{descanso}} · Feestdag {{feriado}}",
+        "combinaciones": "Als ze samenvallen — feestdag en rustdag: {{fd}} · feestdag en zondag: {{fo}} · zondag en rustdag: {{od}} · nacht op die dagen: {{noche}} · overuur op die dagen: {{extra}}",
+        "segunElDia": "afhankelijk van de dag"
       },
       "semanaLaboralEmpieza": "De werkweek begint op",
       "semanalAyuda": "Wat daarboven in de week valt, zijn overuren (VS: 40). 0 = geen weekregel.",
       "sinConfigurar": "Niemand heeft deze regels nog ingesteld: de werktijd volgt het land en er geldt geen toeslag. Controleer ze en sla op.",
       "sinPais": "Geen land",
-      "sinPreset": "We hebben geen regels voor dit land: vul hier die van je cao in."
+      "sinPreset": "We hebben geen regels voor dit land: vul hier die van je cao in.",
+      "descansoAyuda": "Betaald over de uren gewerkt op de vrije dag van elke persoon: de vrije dag in het rooster, of een dag met «L» in de Planning.",
+      "descansoSemanal": "Wekelijkse rustdag (supervisors en kantoor)",
+      "descansoSemanalAyuda": "Wie geen rooster heeft, krijgt de rustdagtoeslag als hij op deze dag werkt.",
+      "ninguno": "Geen",
+      "extraNocturna": "Nachtelijk overwerk met een eigen toeslag",
+      "extraNocturnaAyuda": "Overuren in dit tijdvak worden met deze toeslag betaald als die hoger is dan hun schijf (Colombia: 19–6 tegen 75 %; Ecuador: 0–6 tegen 100 %).",
+      "extraNocturnaDesde": "Nachtelijk overwerk: vanaf (uur)",
+      "extraNocturnaHasta": "Nachtelijk overwerk: tot (uur)",
+      "extraNocturnaPct": "Toeslag nachtelijk overwerk (%)",
+      "comb": {
+        "comoLaGeneral": "Zoals de algemene regel ({{regla}})",
+        "titulo": "Als meerdere toeslagen op hetzelfde uur vallen",
+        "ayuda": "„Optellen”: beide worden betaald (feestdag 100% + rustdag 100% = 200%). „Hoogste wint”: alleen de hoogste (= 100%). Kies per geval.",
+        "general": "Algemene regel tussen zondag, rustdag en feestdag",
+        "feriadoDescanso": "Feestdag die op zijn rustdag valt",
+        "feriadoDomingo": "Feestdag die op zondag valt",
+        "domingoDescanso": "Zondag die zijn rustdag is",
+        "nocheDomingo": "Nacht en zondag",
+        "nocheFeriado": "Nacht en feestdag",
+        "nocheDescanso": "Nacht en rustdag",
+        "extraDia": "Overuur op zondag, feestdag of rustdag"
+      },
+      "ej": {
+        "feriadoDescanso": "Een uur overdag op een feestdag die ook zijn rustdag is",
+        "domingoFeriado": "Een uur overdag op een zondag die een feestdag is",
+        "domingoDescanso": "Een uur overdag op een zondag die zijn rustdag is",
+        "nocheDomingo": "Een nachtuur op zondag",
+        "nocheFeriadoDescanso": "Een nachtuur op een feestdag die zijn rustdag is",
+        "extraFeriado": "Een overuur (eerste trede) op een feestdag",
+        "titulo": "Zo betalen deze regels",
+        "fila": "{{que}}: +{{pct}}%",
+        "turno": "Dagdienst van 12 u op een feestdag die ook zijn rustdag is, tegen {{tarifa}} per uur: {{ord}} u tegen +{{po}}% en {{extra}} overuren tegen +{{pe}}% = {{total}}"
+      },
+      "queUsa": "Wat uw bedrijf gebruikt",
+      "usarSemanal": "Overuren per week tellen",
+      "usarGracia": "Korte wachttijd na de dienst niet betalen (marge)",
+      "tempranaAyuda": "Niet aangevinkt begint de betaling op het geplande tijdstip, ook als iemand eerder inklokt.",
+      "recargos": "Toeslagen",
+      "recargosAyuda": "Zet een toeslag uit om hem niet meer te betalen zonder het percentage te verliezen.",
+      "rec": {
+        "noche": "Nachttoeslag",
+        "domingo": "Zondagstoeslag",
+        "descanso": "Toeslag voor werken op de rustdag",
+        "feriado": "Feestdagtoeslag",
+        "extra": "Overurentoeslag",
+        "extraAyuda": "Uit: overuren worden tegen het normale tarief betaald."
+      },
+      "ausenciasAyudaV2": "Aangevinkt: betaald. Niet aangevinkt: blijft verantwoord (geen verzuim), maar wordt ingehouden. Een „persoonlijk” verlof wordt betaald of niet volgens het verlof zelf."
+    },
+    "puede": {
+      "sinPermiso": "Je rol heeft hier geen toestemming voor. Vraag het een beheerder.",
+      "sinNivel": "Dit doet een hoger niveau dan dat van je rol.",
+      "sinModulo": "Vereist de module Loonstroken of een gekoppeld Gusto.",
+      "soloLectura": "Alleen lezen",
+      "horarioSoloLectura": "Alleen lezen: je rol kan het rooster zien, niet wijzigen."
+    },
+    "nivelDeRol": {
+      "titulo": "Niveau",
+      "ayuda": "De rechten bepalen welke schermen; het niveau, welke gevoelige gegevens bereikt worden. Het wordt nooit beheerder of filiaalmanager.",
+      "oficina": "Kantoor: ziet en beheert diensten, dekking en aanwezigheid",
+      "central": "Meldkamer: plus live monitoring (camera's, alarmen, kaart)",
+      "rrhh": "Personeelszaken: plus personeelsgegevens en loon",
+      "supervision": "Toezicht: keurt ook uren goed",
+      "gerencia": "Directie: plus rapporten en directieacties"
     }
   },
   "visitantes": {

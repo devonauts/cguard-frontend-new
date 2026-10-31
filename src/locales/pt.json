@@ -31,13 +31,6 @@
     "panel": "Painel",
     "actividad": "Atividade",
     "clientes": "Clientes",
-    "equipo": {
-      "label": "Equipe de Segurança",
-      "guardias": "Seguranças",
-      "usuarios": "Usuários do Escritório Administrativo",
-      "supervisores": "Supervisores",
-      "caras-registradas": "Rostos registrados"
-    },
     "analiticas": {
       "label": "Análises",
       "informe": "Relatórios",
@@ -56,30 +49,16 @@
     },
     "mensajero": "Mensageiro",
     "informes": "Relatórios",
-    "programador": {
-      "label": "Agendador",
-      "horario": "Agenda",
-      "planificador": "Planejador",
-      "plantillas": "Modelos de turno",
-      "asistencia": "Presença",
-      "estado": "Status do turno",
-      "turnos-abiertos": "Turnos abertos",
-      "intercambio": "Troca de turno",
-      "tiempo-libre": "Folga",
-      "cobertura": "Cobertura ao vivo",
-      "dobletes": "Dobras de turno"
-    },
     "nomina": {
       "label": "Folha de Pagamento",
+      "roles": "Holerites",
+      "planillas": "Folhas de pagamento",
+      "ajustes": "Ajustes de folha",
+      "perfiles": "Perfis de pagamento",
+      "gusto": "Gusto",
       "ejecutar": "Gerar folha",
-      "pasadas": "Folhas passadas",
       "horas-extras": "Multiplicador de horas extras",
-      "nomina-dashboard": "Painel",
-      "nomina-time-clock": "Relógio de ponto",
-      "nomina-records": "Registros de presença",
-      "nomina-exceptions": "Exceções",
-      "nomina-approvals": "Aprovações",
-      "nomina-settings": "Configuração de presença"
+      "pasadas": "Folhas passadas"
     },
     "facturador": {
       "label": "Faturamento",
@@ -383,16 +362,21 @@
     "tipos-incidentes": "Tipos de incidentes",
     "tipos-licencias": "Tipos de licenças",
     "title": "Configurações",
-    "estaciones": "Estações",
+    "estaciones": {
+      "label": "Estações",
+      "estaciones-tablero": "Todas as estações",
+      "pases-de-turno": "Passagens de turno",
+      "puestos-supervision": "Postos de supervisão"
+    },
     "group": {
       "resumen": "Resumo",
       "operacion": "Operações",
-      "personal": "Pessoal",
       "clientes": "Clientes",
       "analisis": "Análise",
       "sistema": "Sistema",
       "otros": "Outros",
-      "facturacion": "Faturamento"
+      "facturacion": "Faturamento",
+      "servicio": "Estações e pessoal"
     },
     "commandCenter": "Central de comando",
     "searchPlaceholder": "Buscar no menu…",
@@ -431,7 +415,8 @@
     "radio": {
       "label": "Rádio",
       "radio-despacho": "Despacho",
-      "radio-dispositivos": "Rádios IP"
+      "radio-dispositivos": "Rádios IP",
+      "radio-canales": "Canais"
     },
     "tareas": {
       "label": "Tarefas",
@@ -2493,7 +2478,6 @@
       "viewDetails": "Ver detalhes",
       "website": "Site"
     },
-    "pases-de-turno": "Passagens de turno",
     "modulos-adicionales": "Módulos adicionais",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Rostos aguardando aprovação: {{count}}",
@@ -2504,6 +2488,33 @@
       "facturacion-antiguedad": "Antiguidade de saldos",
       "facturacion-ajustes": "Configurações de faturamento",
       "facturacion-cotizaciones": "Cotações"
+    },
+    "personal": {
+      "label": "Pessoal",
+      "guardias": "Vigilantes",
+      "supervisores": "Supervisores",
+      "usuarios": "Usuários de escritório",
+      "caras-registradas": "Rostos registrados",
+      "ausencias": "Ausências e licenças"
+    },
+    "turnos": {
+      "label": "Turnos",
+      "horario": "Agenda",
+      "planificador": "Planejador",
+      "sin-cubrir": "Sem cobertura",
+      "dobletes": "Dobras de turno",
+      "intercambio": "Troca de turno"
+    },
+    "asistencia": {
+      "label": "Presença",
+      "en-vivo": "Ao vivo",
+      "resumen-hoy": "Resumo de hoje",
+      "marcaciones": "Marcações",
+      "novedades": "Ocorrências",
+      "aprobaciones": "Aprovações",
+      "horas-periodo": "Horas do período",
+      "configuracion": "Configuração",
+      "coberturaEnVivo": "Cobertura ao vivo"
     }
   },
   "settings": {
@@ -5548,7 +5559,8 @@
       },
       "myTickets": "Meus tickets",
       "myTicketsSub": "Respostas do suporte"
-    }
+    },
+    "timeClock": "Registrar entrada/saída"
   },
   "dispatcher": {
     "noPermissionViewToast": "Você não tem permissão para ver Incidentes",
@@ -10690,7 +10702,13 @@
       "losDiasDeVacacionesSon": "Os dias de férias são",
       "diasNaturales": "Dias corridos",
       "diasLaborables": "Dias úteis",
-      "selfieMovido": "A selfie e o rosto ao bater o ponto agora se configuram em Configurações › App da equipe ou App do supervisor."
+      "selfieMovido": "A selfie e o rosto ao bater o ponto agora se configuram em Configurações › App da equipe ou App do supervisor.",
+      "privacidad": "Privacidade das ausências",
+      "quienVeElMotivo": "Quem vê o motivo de uma ausência",
+      "motivoAprobadores": "Só quem aprova ausências (e quem pediu)",
+      "motivoRrhh": "Recursos humanos e níveis superiores (e quem pediu)",
+      "motivoOficina": "Todo o pessoal de escritório",
+      "motivoAyuda": "O motivo costuma ser médico. Os demais veem o pedido (quem, datas, estado) sem o motivo."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",
@@ -12106,7 +12124,8 @@
       "yaTieneTurnoEseDiaSufijo": " · já tem turno nesse dia",
       "yseRepite": "· e se repete",
       "eliminarTurnosYNovedades": "Excluir os turnos e ocorrências da seleção (Del)",
-      "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…"
+      "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…",
+      "irAEstaciones": "Ir para Estações"
     },
     "ScheduleTimeline": {
       "duracion": "Duração:",
@@ -15114,7 +15133,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Reabrir período",
       "reabrirPeriodoMensaje": "Batidas, turnos e marcações a partir desse dia poderão ser alterados de novo. Cartões já aprovados ou exportados não são alterados. Escreva o motivo: fica no registro.",
-      "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?"
+      "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?",
+      "generarCerrado": "Este período está fechado. Reabra-o para recalcular."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenças",
@@ -17193,7 +17213,11 @@
         "tramoFijo": "Parcela fixa",
         "anadirTramo": "Adicionar faixa",
         "dobladaSiempreAparte": "Com esta forma de pagamento a dobra sempre sai em sua própria linha do holerite («Prêmio por dobra»).",
-        "dobladaComoSeCuenta": "Há dobra quando alguém trabalha num dia 1,5 vez ou mais o seu turno habitual (o que a escala define). 24 h sobre turnos de 12 é uma dobra; 36 h é uma tripla e conta como dois turnos extras. Um turno de 24 h programado não é dobra."
+        "dobladaComoSeCuenta": "Há dobra quando alguém trabalha num dia 1,5 vez ou mais o seu turno habitual (o que a escala define). 24 h sobre turnos de 12 é uma dobra; 36 h é uma tripla e conta como dois turnos extras. Um turno de 24 h programado não é dobra.",
+        "horasTarjetaTitulo": "Horas do cartão que o recibo paga",
+        "horasTarjetaAyuda": "O cartão calcula-as sempre; o recibo só as paga se ativar. Recibos já aprovados não mudam.",
+        "pagarDescanso": "Pagar as horas trabalhadas no dia de descanso (conceito «Horas em dia de descanso»)",
+        "pagarExtraNocturna": "Pagar a hora extra noturna na sua própria linha (precisa de um conceito «Horas extra noturnas»)"
       },
       "atras": "Voltar",
       "continuar": "Continuar",
@@ -17265,7 +17289,8 @@
         "holiday": "Horas em feriado",
         "rest_day": "Horas em dia de descanso",
         "sunday": "Horas em domingo",
-        "double_shift": "Horas de dobra de turno"
+        "double_shift": "Horas de dobra de turno",
+        "night_overtime": "Horas extra noturnas"
       },
       "frecuencia": {
         "weekly": "Semanal",
@@ -18398,13 +18423,85 @@
         "sinLimiteDiario": "sem limite diário",
         "sinLimiteSemanal": "sem limite semanal",
         "tempranaNo": "não é paga",
-        "tempranaSi": "é paga"
+        "tempranaSi": "é paga",
+        "extraNocturna": "Hora extra noturna ({{desde}}:00–{{hasta}}:00): +{{pct}} % (ou a sua faixa, se for maior)",
+        "extraNocturnaComoExtra": "Hora extra noturna: como qualquer hora extra",
+        "descanso": "Dia de descanso: a folga da escala de cada vigilante · supervisores e escritório: {{dia}}",
+        "descansoSinSemanal": "Dia de descanso: a folga da escala de cada vigilante (supervisores e escritório: nenhum)",
+        "noSePaga": "não é pago",
+        "recargosV2": "Domingo {{domingo}} · Descanso trabalhado {{descanso}} · Feriado {{feriado}}",
+        "combinaciones": "Quando coincidem — feriado e descanso: {{fd}} · feriado e domingo: {{fo}} · domingo e descanso: {{od}} · noite nesses dias: {{noche}} · hora extra nesses dias: {{extra}}",
+        "segunElDia": "conforme o dia"
       },
       "semanaLaboralEmpieza": "A semana de trabalho começa na",
       "semanalAyuda": "O que passar disto na semana é hora extra (EUA: 40). 0 = sem regra semanal.",
       "sinConfigurar": "Ninguém configurou estas regras ainda: a jornada segue a do país e nenhum adicional é aplicado. Revise e salve.",
       "sinPais": "Sem país",
-      "sinPreset": "Não temos regras salvas para este país: declare aqui as do seu acordo."
+      "sinPreset": "Não temos regras salvas para este país: declare aqui as do seu acordo.",
+      "descansoAyuda": "Pago sobre as horas trabalhadas no dia de folga de cada pessoa: a folga da escala, ou um dia marcado «L» no Horário.",
+      "descansoSemanal": "Dia de descanso semanal (supervisores e escritório)",
+      "descansoSemanalAyuda": "Quem não tem escala recebe o adicional de descanso se trabalhar neste dia.",
+      "ninguno": "Nenhum",
+      "extraNocturna": "Hora extra noturna com adicional próprio",
+      "extraNocturnaAyuda": "As horas extras nesta faixa são pagas com este adicional quando for maior que a sua faixa (Colômbia: 19–6 a 75 %; Equador: 0–6 a 100 %).",
+      "extraNocturnaDesde": "Extra noturna: das (hora)",
+      "extraNocturnaHasta": "Extra noturna: até (hora)",
+      "extraNocturnaPct": "Adicional da extra noturna (%)",
+      "comb": {
+        "comoLaGeneral": "Como a regra geral ({{regla}})",
+        "titulo": "Quando vários adicionais caem na mesma hora",
+        "ayuda": "«Somam-se»: pagam-se os dois (feriado 100 % + descanso 100 % = 200 %). «Ganha o maior»: só o mais alto (= 100 %). Escolha para cada caso.",
+        "general": "Regra geral entre domingo, descanso e feriado",
+        "feriadoDescanso": "Feriado que cai no seu dia de descanso",
+        "feriadoDomingo": "Feriado que cai num domingo",
+        "domingoDescanso": "Domingo que é o seu dia de descanso",
+        "nocheDomingo": "Noite e domingo",
+        "nocheFeriado": "Noite e feriado",
+        "nocheDescanso": "Noite e dia de descanso",
+        "extraDia": "Hora extra em domingo, feriado ou descanso"
+      },
+      "ej": {
+        "feriadoDescanso": "Uma hora diurna num feriado que também é o seu dia de descanso",
+        "domingoFeriado": "Uma hora diurna num domingo que é feriado",
+        "domingoDescanso": "Uma hora diurna num domingo que é o seu dia de descanso",
+        "nocheDomingo": "Uma hora noturna num domingo",
+        "nocheFeriadoDescanso": "Uma hora noturna num feriado que é o seu dia de descanso",
+        "extraFeriado": "Uma hora extra (primeiro escalão) num feriado",
+        "titulo": "Assim se paga com estas regras",
+        "fila": "{{que}}: +{{pct}} %",
+        "turno": "Turno diurno de 12 h num feriado que também é o seu dia de descanso, a {{tarifa}} a hora: {{ord}} h a +{{po}} % e {{extra}} h extra a +{{pe}} % = {{total}}"
+      },
+      "queUsa": "O que a sua empresa usa",
+      "usarSemanal": "Contar horas extra por semana",
+      "usarGracia": "Não pagar a espera curta ao sair (tolerância)",
+      "tempranaAyuda": "Desmarcado, o pagamento começa à hora prevista mesmo que a pessoa marque antes.",
+      "recargos": "Adicionais",
+      "recargosAyuda": "Desligue um adicional para deixar de pagá-lo sem perder a percentagem escrita.",
+      "rec": {
+        "noche": "Adicional noturno",
+        "domingo": "Adicional de domingo",
+        "descanso": "Adicional por trabalhar no dia de descanso",
+        "feriado": "Adicional de feriado",
+        "extra": "Adicional de horas extra",
+        "extraAyuda": "Desligado, as horas extra são pagas a valor simples."
+      },
+      "ausenciasAyudaV2": "Marcada: é paga. Desmarcada: continua justificada (não é falta), mas é descontada. Uma licença «pessoal» é paga ou não conforme a própria licença."
+    },
+    "puede": {
+      "sinPermiso": "Seu papel não tem permissão para isto. Peça a um administrador.",
+      "sinNivel": "Isto é feito por um nível acima do seu papel.",
+      "sinModulo": "Precisa do módulo Folhas de pagamento ou do Gusto conectado.",
+      "soloLectura": "Somente leitura",
+      "horarioSoloLectura": "Somente leitura: seu papel pode ver a escala, não alterá-la."
+    },
+    "nivelDeRol": {
+      "titulo": "Nível",
+      "ayuda": "As permissões dizem quais telas usa; o nível, quais dados sensíveis alcança. Nunca chega a administrador nem a gerente de filial.",
+      "oficina": "Escritório: vê e trabalha turnos, cobertura e presença",
+      "central": "Centro de operações: também monitoramento ao vivo (câmeras, alarmes, mapa)",
+      "rrhh": "Recursos humanos: também dados do pessoal e pagamento",
+      "supervision": "Supervisão: também aprova horas",
+      "gerencia": "Gerência: também relatórios e ações de direção"
     }
   },
   "map": {
