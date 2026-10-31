@@ -15,11 +15,13 @@ import {
   LogIn,
   Map as MapIcon,
   Settings2,
+  UserCog,
 } from "lucide-react";
 
 import { OperationsMap } from "../components/OperationsMap";
 import { Panel } from "../components/Panel";
 
+import { AccesoDelPersonal } from "./AccesoDelPersonal";
 import { CarruselDeSucursales } from "./CarruselDeSucursales";
 import { GLOBAL, useParadas, type Parada } from "./paradas";
 
@@ -46,6 +48,11 @@ import { sucursalElegida } from "@/lib/sucursalElegida";
  * se queda en ella. Organizar (crear, editar, mover sedes, accesos) abre el
  * carrusel de siempre en su modo organizar, y «Listo» vuelve aquí.
  *
+ * With the module off (`soloLectura`: paused or lapsed, branches already made)
+ * the map stays read-only: no organizing and no entering a branch (the server
+ * ignores the chosen branch without the module), but an admin can still open
+ * the staff access editor to free someone locked to a branch.
+ *
  * La parada puede llevarla quien está fuera (la comparativa de abajo mueve el
  * mapa al tocar una fila): `parada` + `onParada`.
  * ════════════════════════════════════════════════════════════════════════════
@@ -60,6 +67,7 @@ export function MapaDeSucursales({
   className,
   parada,
   onParada,
+  soloLectura = false,
 }: {
   lista: ListaDeSucursales;
   resumen?: ResumenDeSucursales;
@@ -70,11 +78,13 @@ export function MapaDeSucursales({
   className?: string;
   parada?: string;
   onParada?: (clave: string) => void;
+  soloLectura?: boolean;
 }) {
   const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const { entrar } = useEspacio();
   const [organizando, setOrganizando] = useState(false);
+  const [accesos, setAccesos] = useState(false);
   const todas = useParadas(lista, resumen, entities);
   // Trabajando dentro de una sucursal: sólo ella.
   const elegida = sucursalElegida();
@@ -199,124 +209,144 @@ export function MapaDeSucursales({
     p.global ? t("sucursales.espacio.global") : p.nombre;
 
   return (
-    <Panel
-      action={
-        <div className="flex items-center gap-1.5">
-          {hasPermission("settingsEdit") && (
-            <Button
-              size="sm"
-              type="button"
-              variant="outline"
-              onClick={() => setOrganizando(true)}
-            >
-              <Settings2 className="mr-1.5 size-3.5" />
-              {t("sucursales.organizar.boton")}
-            </Button>
-          )}
-          {paradas.length > 1 && (
-            <>
-              <button
-                aria-label={t("sucursales.anterior")}
-                className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
+    <>
+      <Panel
+        action={
+          <div className="flex items-center gap-1.5">
+            {hasPermission("settingsEdit") && soloLectura && (
+              <Button
+                size="sm"
                 type="button"
-                onClick={() => mover(-1)}
+                variant="outline"
+                onClick={() => setAccesos(true)}
               >
-                <ChevronLeft className="size-4" />
-              </button>
-              <button
-                aria-label={t("sucursales.siguiente")}
-                className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
+                <UserCog className="mr-1.5 size-3.5" />
+                {t("sucursales.acceso.boton")}
+              </Button>
+            )}
+            {hasPermission("settingsEdit") && !soloLectura && (
+              <Button
+                size="sm"
                 type="button"
-                onClick={() => mover(1)}
+                variant="outline"
+                onClick={() => setOrganizando(true)}
               >
-                <ChevronRight className="size-4" />
-              </button>
-            </>
-          )}
-        </div>
-      }
-      bodyClassName="flex flex-col"
-      className={className}
-      icon={<MapIcon />}
-      live={live}
-      subtitle={
-        actual
-          ? actual.global
-            ? t("sucursales.subtitulo", { count: paradas.length - 1 })
-            : nombre(actual)
-          : undefined
-      }
-      title={t("sucursales.mapa.titulo")}
-    >
-      <div
-        ref={caja}
-        aria-label={t("sucursales.mapa.titulo")}
-        aria-roledescription="carousel"
-        className="relative mt-3 flex-1 overflow-hidden rounded-2xl outline-none"
-        role="group"
-        style={{ minHeight: 560 }}
-      >
-        <div className="absolute inset-0 [&>div]:!h-full">
-          <OperationsMap
-            area="sucursales"
-            defaultCenter={defaultCenter}
-            encuadre={
-              actual ? { clave: actual.clave, puntos: actual.puntos } : null
-            }
-            entities={entities}
-            height={560}
-            hud={false}
-            prefs={prefs}
-          />
-        </div>
-
-        {/* La tira de paradas: se desliza con el dedo; la tarjeta centrada manda. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] pb-3">
-          <div
-            ref={tira}
-            className="pointer-events-auto flex snap-x snap-mandatory gap-3 overflow-x-auto px-[max(1rem,calc(50%-8.5rem))]"
-            style={{ scrollbarWidth: "none" }}
-            onPointerDown={marcarToque}
-            onScroll={alDeslizar}
-            onTouchStart={marcarToque}
-            onWheel={marcarToque}
-          >
-            {paradas.map((p, i) => (
-              <TarjetaDeParada
-                key={p.clave}
-                activa={i === indice}
-                nombre={nombre(p)}
-                parada={p}
-                puedeEntrar={!p.global && paradas.length > 1}
-                onElegir={() => ir(p.clave)}
-                onEntrar={() => entrar(p.clave)}
-              />
-            ))}
-          </div>
-          {paradas.length > 1 && (
-            <div className="pointer-events-auto mt-2 flex justify-center gap-1.5">
-              {paradas.map((p, i) => (
+                <Settings2 className="mr-1.5 size-3.5" />
+                {t("sucursales.organizar.boton")}
+              </Button>
+            )}
+            {paradas.length > 1 && (
+              <>
                 <button
-                  key={p.clave}
-                  aria-current={i === indice || undefined}
-                  aria-label={nombre(p)}
-                  className="cg-focus h-1.5 rounded-full transition-all duration-300"
-                  style={{
-                    width: i === indice ? 20 : 6,
-                    background:
-                      i === indice
-                        ? p.color
-                        : "color-mix(in oklab, var(--ink) 30%, transparent)",
-                  }}
+                  aria-label={t("sucursales.anterior")}
+                  className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
                   type="button"
-                  onClick={() => ir(p.clave)}
+                  onClick={() => mover(-1)}
+                >
+                  <ChevronLeft className="size-4" />
+                </button>
+                <button
+                  aria-label={t("sucursales.siguiente")}
+                  className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
+                  type="button"
+                  onClick={() => mover(1)}
+                >
+                  <ChevronRight className="size-4" />
+                </button>
+              </>
+            )}
+          </div>
+        }
+        bodyClassName="flex flex-col"
+        className={className}
+        icon={<MapIcon />}
+        live={live}
+        subtitle={
+          actual
+            ? actual.global
+              ? t("sucursales.subtitulo", { count: paradas.length - 1 })
+              : nombre(actual)
+            : undefined
+        }
+        title={t("sucursales.mapa.titulo")}
+      >
+        <div
+          ref={caja}
+          aria-label={t("sucursales.mapa.titulo")}
+          aria-roledescription="carousel"
+          className="relative mt-3 flex-1 overflow-hidden rounded-2xl outline-none"
+          role="group"
+          style={{ minHeight: 560 }}
+        >
+          <div className="absolute inset-0 [&>div]:!h-full">
+            <OperationsMap
+              area="sucursales"
+              defaultCenter={defaultCenter}
+              encuadre={
+                actual ? { clave: actual.clave, puntos: actual.puntos } : null
+              }
+              entities={entities}
+              height={560}
+              hud={false}
+              prefs={prefs}
+            />
+          </div>
+
+          {/* La tira de paradas: se desliza con el dedo; la tarjeta centrada manda. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] pb-3">
+            <div
+              ref={tira}
+              className="pointer-events-auto flex snap-x snap-mandatory gap-3 overflow-x-auto px-[max(1rem,calc(50%-8.5rem))]"
+              style={{ scrollbarWidth: "none" }}
+              onPointerDown={marcarToque}
+              onScroll={alDeslizar}
+              onTouchStart={marcarToque}
+              onWheel={marcarToque}
+            >
+              {paradas.map((p, i) => (
+                <TarjetaDeParada
+                  key={p.clave}
+                  activa={i === indice}
+                  nombre={nombre(p)}
+                  parada={p}
+                  puedeEntrar={!soloLectura && !p.global && paradas.length > 1}
+                  onElegir={() => ir(p.clave)}
+                  onEntrar={() => entrar(p.clave)}
                 />
               ))}
             </div>
-          )}
+            {paradas.length > 1 && (
+              <div className="pointer-events-auto mt-2 flex justify-center gap-1.5">
+                {paradas.map((p, i) => (
+                  <button
+                    key={p.clave}
+                    aria-current={i === indice || undefined}
+                    aria-label={nombre(p)}
+                    className="cg-focus h-1.5 rounded-full transition-all duration-300"
+                    style={{
+                      width: i === indice ? 20 : 6,
+                      background:
+                        i === indice
+                          ? p.color
+                          : "color-mix(in oklab, var(--ink) 30%, transparent)",
+                    }}
+                    type="button"
+                    onClick={() => ir(p.clave)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </Panel>
+      </Panel>
+      {soloLectura && (
+        <AccesoDelPersonal
+          abierto={accesos}
+          sucursales={lista.sucursales}
+          onCerrar={() => setAccesos(false)}
+        />
+      )}
+    </>
   );
 }
 

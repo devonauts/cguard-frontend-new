@@ -293,7 +293,7 @@ export default function ControlCenter() {
 
               {/* ── 2. MAPA (o SUCURSALES) + DIAL + RIEL ───────────────────── */}
               <div className="grid gap-5 xl:grid-cols-12">
-                {divididas > 0 && suc.lista.data ? (
+                {(divididas > 0 || suc.soloLectura) && suc.lista.data ? (
                   <MapaDeSucursales
                     className="xl:col-span-8"
                     defaultCenter={data.defaultCenter}
@@ -303,6 +303,7 @@ export default function ControlCenter() {
                     parada={parada}
                     prefs={prefs}
                     resumen={suc.resumen.data}
+                    soloLectura={suc.soloLectura}
                     onParada={setParada}
                   />
                 ) : (
