@@ -15,6 +15,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/kit";
 import { alarmService } from "@/lib/api/alarmService";
+import {
+  useHasModule,
+  MONITORING_CENTER,
+} from "@/components/modulos/ModuleGate";
 
 const ECV_EXEMPT = ["holdup", "panic", "fire", "medical"];
 
@@ -81,13 +85,18 @@ export default function AlarmECV({
   const canDispatch = exempt || ecvSatisfied;
   const closed = status === "closed" || status === "resolved";
 
+  // The panel's contact list belongs to the Monitoring Center module; without
+  // it the request would only get a 402, so it is not made (the case, its
+  // calls already logged and the police dispatch still work).
+  const hasMonitoring = useHasModule(MONITORING_CENTER);
+
   useEffect(() => {
-    if (panelId)
+    if (panelId && hasMonitoring)
       alarmService
         .contacts(panelId)
         .then((c) => setContacts(Array.isArray(c) ? c : []))
         .catch(() => {});
-  }, [panelId]);
+  }, [panelId, hasMonitoring]);
 
   const log = async (contact: any, outcome: string) => {
     setBusyKey(`${contact?.id || "x"}:${outcome}`);

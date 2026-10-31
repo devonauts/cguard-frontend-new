@@ -204,6 +204,8 @@ export default function NotificationMatrix() {
             "El panel dejó de dar señal de vida en el plazo que fijaste en su ficha. También avisa cuando vuelve",
         }),
         default: { dashboard: true, email: true },
+        // Alarm panels are the Monitoring Center module.
+        modulo: "monitoring_center",
       },
       {
         id: "attendance-exceptions",

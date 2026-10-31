@@ -19823,6 +19823,25 @@
     "truncated": "Últimos {{n}}"
   },
   "modulosAdicionales": {
+    "centrales": {
+      "activar": "Ativar em Módulos adicionais",
+      "monitoreo": {
+        "nombre": "Central de monitoramento",
+        "titulo": "O módulo Central de monitoramento não está ativo",
+        "desc": "Com a Central de monitoramento você recebe os sinais dos painéis de alarme dos seus clientes e os atende como uma central receptora. O Centro de Emergências (botões de pânico e SOS) continua incluído sem este módulo.",
+        "paso1": "Cadastre os painéis de alarme de cada cliente, com suas zonas, contatos e horários de abertura e fechamento.",
+        "paso2": "Cada sinal chega ao vivo e, se for um alarme, abre um caso com seu plano de ação, as chamadas de verificação e o despacho.",
+        "paso3": "Meça os alarmes falsos e os tempos de resposta, e exporte a auditoria de cada caso."
+      },
+      "video": {
+        "nombre": "Videovigilância",
+        "titulo": "O módulo Videovigilância não está ativo",
+        "desc": "Com a Videovigilância você conecta as câmeras, DVRs e NVRs dos seus clientes e as vê ao vivo daqui, junto à operação dos seus vigilantes.",
+        "paso1": "Conecte os gravadores e as câmeras de cada posto, diretamente ou a partir de um local remoto.",
+        "paso2": "Veja as câmeras ao vivo, mova as PTZ e registre os eventos de vídeo.",
+        "paso3": "Recorte clipes, compartilhe-os com o cliente por um link e transforme-os em incidentes ou em um despacho ao supervisor."
+      }
+    },
     "titulo": "Módulos adicionais",
     "subtitulo": "Funções contratadas à parte: pagamento único ou mensalidade fixa, conforme o módulo.",
     "pagoUnico": "pagamento único",

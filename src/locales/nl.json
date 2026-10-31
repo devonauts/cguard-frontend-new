@@ -19823,6 +19823,25 @@
     }
   },
   "modulosAdicionales": {
+    "centrales": {
+      "activar": "Activeren in Extra modules",
+      "monitoreo": {
+        "nombre": "Meldkamer",
+        "titulo": "De module Meldkamer is niet actief",
+        "desc": "Met de Meldkamer ontvangt u de signalen van de alarmpanelen van uw klanten en handelt u ze af als een alarmcentrale. De Noodcentrale (paniekknoppen en SOS) blijft ook zonder deze module inbegrepen.",
+        "paso1": "Registreer de alarmpanelen van elke klant, met hun zones, contactpersonen en openings- en sluitingstijden.",
+        "paso2": "Elk signaal komt live binnen en opent bij een alarm een zaak met het actieplan, de verificatiegesprekken en de inzet.",
+        "paso3": "Meet loze alarmen en reactietijden en exporteer het audittraject van elke zaak."
+      },
+      "video": {
+        "nombre": "Camerabewaking",
+        "titulo": "De module Camerabewaking is niet actief",
+        "desc": "Met Camerabewaking koppelt u de camera's, DVR's en NVR's van uw klanten en bekijkt u ze hier live, naast de inzet van uw beveiligers.",
+        "paso1": "Koppel de recorders en camera's van elke post, rechtstreeks of via een externe locatie.",
+        "paso2": "Bekijk de camera's live, bedien de PTZ-camera's en leg videogebeurtenissen vast.",
+        "paso3": "Knip clips bij, deel ze via een link met de klant en maak er incidenten of een inzet voor de supervisor van."
+      }
+    },
     "titulo": "Extra modules",
     "subtitulo": "Functies die u apart afneemt: eenmalig of met een vast maandbedrag, afhankelijk van de module.",
     "pagoUnico": "eenmalige betaling",

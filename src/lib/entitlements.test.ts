@@ -38,6 +38,15 @@ describe("entitlements · módulos adicionales", () => {
     ).toBe(true);
   });
 
+  it("monitoring center and video surveillance fail closed too", () => {
+    for (const k of ["monitoring_center", "video_surveillance"]) {
+      expect(MODULE_KEYS).toContain(k);
+      expect(hasFeature(conFunciones(undefined), k)).toBe(false);
+      expect(hasFeature(conFunciones(["rondas", "video"]), k)).toBe(false);
+      expect(hasFeature(conFunciones([k]), k)).toBe(true);
+    }
+  });
+
   it("las funciones de siempre siguen fallando abierto", () => {
     expect(hasFeature(conFunciones(undefined), "rondas")).toBe(true);
     expect(hasFeature(conFunciones([]), "radio")).toBe(true);

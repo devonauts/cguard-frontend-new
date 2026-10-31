@@ -13,7 +13,7 @@ import { useEntitlement } from "@/hooks/useEntitlement";
  *   </FeatureGate>
  *
  * Or with an upsell fallback:
- *   <FeatureGate feature="video" fallback={<UpgradePrompt feature="video" />}>
+ *   <FeatureGate feature="radio" fallback={<UpgradePrompt feature="radio" />}>
  *     <VideoModule />
  *   </FeatureGate>
  */

@@ -8,6 +8,7 @@ import {
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
+import { announceAddonRequired } from "@/lib/addonRequired";
 import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 import { resolveApiBase } from "@/lib/apiBase";
@@ -246,6 +247,9 @@ export class ApiService {
       // 402 del cobro del socio: el mismo aviso y el mismo salto a Facturación
       // que en el cliente axios (`lib/pagoRequerido`).
       if (response.status === 402) {
+        // A paid add-on module the company lacks: its gate swaps the screen
+        // for the module's presentation (`components/modulos/ModuleGate`).
+        announceAddonRequired(402, data);
         try {
           manejarPagoRequerido(
             402,

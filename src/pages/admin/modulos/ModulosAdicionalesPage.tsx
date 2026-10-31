@@ -12,6 +12,8 @@ import {
   FileSpreadsheet,
   Receipt,
   CalendarPlus,
+  Siren,
+  Cctv,
 } from "lucide-react";
 
 /** El icono de cada módulo en la tienda; uno nuevo sin entrada sale con la pieza de puzle. */
@@ -21,6 +23,9 @@ const ICONO_DEL_MODULO: Record<string, React.ReactNode> = {
   payroll_slips: <FileSpreadsheet />,
   client_billing: <Receipt />,
   dobletes: <CalendarPlus />,
+  // Same icons as their side-menu groups.
+  monitoring_center: <Siren />,
+  video_surveillance: <Cctv />,
 };
 
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";

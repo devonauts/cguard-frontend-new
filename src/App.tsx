@@ -72,6 +72,10 @@ import { ClientSelectionProvider } from "./contexts/ClientSelectionContext";
 import CoBrowseAgent from "./components/cobrowse/CoBrowseAgent";
 
 import { ProgresoDeRuta } from "@/components/kit/movimiento";
+import ModuleGate, {
+  MONITORING_CENTER,
+  VIDEO_SURVEILLANCE,
+} from "@/components/modulos/ModuleGate";
 
 const CompanyPoliciesPage = lazy(
   () =>
@@ -1494,7 +1498,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <VideoMonitoring />
+                                    <ModuleGate moduleKey={VIDEO_SURVEILLANCE}>
+                                      <VideoMonitoring />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/video/monitoring"
@@ -1502,7 +1508,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <VideoDevices />
+                                    <ModuleGate moduleKey={VIDEO_SURVEILLANCE}>
+                                      <VideoDevices />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/video/devices"
@@ -1510,7 +1518,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <VideoRelaySites />
+                                    <ModuleGate moduleKey={VIDEO_SURVEILLANCE}>
+                                      <VideoRelaySites />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/video/relays"
@@ -1518,7 +1528,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <VideoEvents />
+                                    <ModuleGate moduleKey={VIDEO_SURVEILLANCE}>
+                                      <VideoEvents />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/video/events"
@@ -1537,7 +1549,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <AlarmPanels />
+                                    <ModuleGate moduleKey={MONITORING_CENTER}>
+                                      <AlarmPanels />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/alarm/panels"
@@ -1545,7 +1559,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <AlarmSignals />
+                                    <ModuleGate moduleKey={MONITORING_CENTER}>
+                                      <AlarmSignals />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/alarm/signals"
@@ -1561,7 +1577,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <AlarmReports />
+                                    <ModuleGate moduleKey={MONITORING_CENTER}>
+                                      <AlarmReports />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/alarm/reports"
@@ -1569,7 +1587,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <AlarmAnalytics />
+                                    <ModuleGate moduleKey={MONITORING_CENTER}>
+                                      <AlarmAnalytics />
+                                    </ModuleGate>
                                   </ProtectedRoute>
                                 }
                                 path="/alarm/analytics"

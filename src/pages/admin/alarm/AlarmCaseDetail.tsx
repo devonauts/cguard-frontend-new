@@ -62,6 +62,10 @@ import {
   sourceTone,
 } from "./shared";
 import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
+import {
+  useHasModule,
+  VIDEO_SURVEILLANCE,
+} from "@/components/modulos/ModuleGate";
 
 /* ------------------------------------------------------------------ */
 /* Metadata                                                            */
@@ -135,6 +139,9 @@ const selectClass =
 
 export default function AlarmCaseDetail() {
   const { t } = useTranslation();
+  // Video verification belongs to the Video Surveillance module; the case
+  // itself (SOS, panic, alarm) is the Emergency Center and is for everyone.
+  const hasVideo = useHasModule(VIDEO_SURVEILLANCE);
   const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -503,9 +510,11 @@ export default function AlarmCaseDetail() {
         </div>
 
         {/* Video verification — live linked camera(s) + verification clips */}
-        <div className="mb-5">
-          <AlarmVideoVerification caseId={id} />
-        </div>
+        {hasVideo && (
+          <div className="mb-5">
+            <AlarmVideoVerification caseId={id} />
+          </div>
+        )}
 
         {/* ECV — enhanced call verification + police dispatch */}
         <div className="mb-5">

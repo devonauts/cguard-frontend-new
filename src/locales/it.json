@@ -19823,6 +19823,25 @@
     }
   },
   "modulosAdicionales": {
+    "centrales": {
+      "activar": "Attiva in Moduli aggiuntivi",
+      "monitoreo": {
+        "nombre": "Centrale di monitoraggio",
+        "titulo": "Il modulo Centrale di monitoraggio non è attivo",
+        "desc": "Con la Centrale di monitoraggio ricevi i segnali delle centrali d'allarme dei tuoi clienti e li gestisci come una centrale operativa. La Centrale emergenze (pulsanti antipanico e SOS) resta inclusa anche senza questo modulo.",
+        "paso1": "Registra le centrali d'allarme di ogni cliente, con zone, contatti e orari di apertura e chiusura.",
+        "paso2": "Ogni segnale arriva in tempo reale e, se è un allarme, apre un caso con il suo piano d'azione, le chiamate di verifica e l'intervento.",
+        "paso3": "Misura i falsi allarmi e i tempi di risposta, ed esporta il registro di audit di ogni caso."
+      },
+      "video": {
+        "nombre": "Videosorveglianza",
+        "titulo": "Il modulo Videosorveglianza non è attivo",
+        "desc": "Con la Videosorveglianza colleghi le telecamere, i DVR e gli NVR dei tuoi clienti e li guardi in diretta da qui, accanto all'operatività delle tue guardie.",
+        "paso1": "Collega i registratori e le telecamere di ogni postazione, direttamente o da un sito remoto.",
+        "paso2": "Guarda le telecamere in diretta, muovi le PTZ e registra gli eventi video.",
+        "paso3": "Ritaglia clip, condividile con il cliente tramite un link e trasformale in incidenti o in un intervento del supervisore."
+      }
+    },
     "titulo": "Moduli aggiuntivi",
     "subtitulo": "Funzioni da attivare a parte: pagamento unico o canone mensile fisso, secondo il modulo.",
     "pagoUnico": "pagamento unico",

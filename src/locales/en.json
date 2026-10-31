@@ -19823,6 +19823,25 @@
     "truncated": "Latest {{n}}"
   },
   "modulosAdicionales": {
+    "centrales": {
+      "activar": "Turn on in Add-on modules",
+      "monitoreo": {
+        "nombre": "Monitoring center",
+        "titulo": "The Monitoring center module is not active",
+        "desc": "With the Monitoring center you receive the signals from your clients' alarm panels and handle them like a central station. The Emergency Center (panic buttons and SOS) stays included without this module.",
+        "paso1": "Register each client's alarm panels, with their zones, contacts and open/close schedules.",
+        "paso2": "Every signal arrives live and, when it is an alarm, opens a case with its action plan, verification calls and dispatch.",
+        "paso3": "Measure false alarms and response times, and export the audit trail of every case."
+      },
+      "video": {
+        "nombre": "Video surveillance",
+        "titulo": "The Video surveillance module is not active",
+        "desc": "With Video surveillance you connect your clients' cameras, DVRs and NVRs and watch them live from here, next to your guards' operation.",
+        "paso1": "Connect the recorders and cameras of each post, directly or through a remote site.",
+        "paso2": "Watch the cameras live, move the PTZ cameras and log video events.",
+        "paso3": "Trim clips, share them with the client through a link and turn them into incidents or a dispatch to the supervisor."
+      }
+    },
     "titulo": "Add-on modules",
     "subtitulo": "Features you add separately: a one-time payment or a fixed monthly fee, depending on the module.",
     "pagoUnico": "one-time payment",

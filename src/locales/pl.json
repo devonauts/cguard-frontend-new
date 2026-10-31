@@ -20117,6 +20117,25 @@
     }
   },
   "modulosAdicionales": {
+    "centrales": {
+      "activar": "Włącz w Modułach dodatkowych",
+      "monitoreo": {
+        "nombre": "Centrum monitoringu",
+        "titulo": "Moduł Centrum monitoringu nie jest aktywny",
+        "desc": "Dzięki Centrum monitoringu odbierasz sygnały z central alarmowych swoich klientów i obsługujesz je jak stacja monitorowania. Centrum alarmowe (przyciski napadowe i SOS) pozostaje dostępne bez tego modułu.",
+        "paso1": "Dodaj centrale alarmowe każdego klienta wraz ze strefami, kontaktami oraz harmonogramem uzbrajania i rozbrajania.",
+        "paso2": "Każdy sygnał dociera na żywo, a jeśli to alarm, otwiera sprawę z planem działania, połączeniami weryfikacyjnymi i wysłaniem patrolu.",
+        "paso3": "Mierz fałszywe alarmy i czasy reakcji oraz eksportuj dziennik audytu każdej sprawy."
+      },
+      "video": {
+        "nombre": "Monitoring wizyjny",
+        "titulo": "Moduł Monitoring wizyjny nie jest aktywny",
+        "desc": "Dzięki Monitoringowi wizyjnemu podłączasz kamery, rejestratory DVR i NVR swoich klientów i oglądasz je na żywo tutaj, obok pracy swoich pracowników ochrony.",
+        "paso1": "Podłącz rejestratory i kamery każdego posterunku, bezpośrednio lub przez lokalizację zdalną.",
+        "paso2": "Oglądaj kamery na żywo, steruj kamerami PTZ i rejestruj zdarzenia wideo.",
+        "paso3": "Przycinaj klipy, udostępniaj je klientowi przez link i zamieniaj je w incydenty lub zlecenie dla supervisora."
+      }
+    },
     "titulo": "Moduły dodatkowe",
     "subtitulo": "Funkcje dokupowane osobno: jednorazowo lub za stałą opłatą miesięczną, zależnie od modułu.",
     "pagoUnico": "płatność jednorazowa",

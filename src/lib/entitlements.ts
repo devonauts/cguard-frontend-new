@@ -13,7 +13,8 @@ import { modoDemoDeDobletes } from "@/lib/dobletesDemo";
 /** Canonical gateable feature keys (mirror of backend lib/entitlements.ts). */
 export const FEATURE_KEYS = [
   "rondas",
-  "video",
+  // `video` was a plan feature until 2026-10-30 (never enforced); video
+  // surveillance is now the paid module `video_surveillance` (MODULE_KEYS).
   "entrenamiento",
   "messaging",
   "radio",
@@ -41,6 +42,11 @@ export const MODULE_KEYS = [
   "payroll_slips",
   "client_billing",
   "dobletes",
+  // Alarm-panel monitoring (/alarm/panels, signals, reports, analytics). The
+  // Emergency Center (/alarm/queue, panic/SOS cases) is never part of it.
+  "monitoring_center",
+  // Video surveillance (/video/*); the public shared clip stays open.
+  "video_surveillance",
 ] as const;
 
 export type ModuleKey = (typeof MODULE_KEYS)[number];

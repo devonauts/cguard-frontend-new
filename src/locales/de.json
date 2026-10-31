@@ -19823,6 +19823,25 @@
     }
   },
   "modulosAdicionales": {
+    "centrales": {
+      "activar": "In Zusatzmodulen aktivieren",
+      "monitoreo": {
+        "nombre": "Alarmzentrale",
+        "titulo": "Das Modul Alarmzentrale ist nicht aktiv",
+        "desc": "Mit der Alarmzentrale empfangen Sie die Signale der Alarmanlagen Ihrer Kunden und bearbeiten sie wie eine Notruf- und Serviceleitstelle. Die Notfallzentrale (Paniktasten und SOS) bleibt auch ohne dieses Modul enthalten.",
+        "paso1": "Erfassen Sie die Alarmanlagen jedes Kunden mit ihren Zonen, Kontakten sowie Öffnungs- und Schließzeiten.",
+        "paso2": "Jedes Signal kommt live an und eröffnet bei einem Alarm einen Fall mit Maßnahmenplan, Verifizierungsanrufen und Einsatz.",
+        "paso3": "Messen Sie Fehlalarme und Reaktionszeiten und exportieren Sie das Prüfprotokoll jedes Falls."
+      },
+      "video": {
+        "nombre": "Videoüberwachung",
+        "titulo": "Das Modul Videoüberwachung ist nicht aktiv",
+        "desc": "Mit der Videoüberwachung verbinden Sie die Kameras, DVRs und NVRs Ihrer Kunden und sehen sie hier live, direkt neben dem Einsatz Ihrer Wachleute.",
+        "paso1": "Verbinden Sie die Rekorder und Kameras jedes Postens, direkt oder über einen entfernten Standort.",
+        "paso2": "Sehen Sie die Kameras live, steuern Sie PTZ-Kameras und erfassen Sie Videoereignisse.",
+        "paso3": "Schneiden Sie Clips zu, teilen Sie sie per Link mit dem Kunden und machen Sie daraus Vorfälle oder einen Einsatz für den Supervisor."
+      }
+    },
     "titulo": "Zusatzmodule",
     "subtitulo": "Funktionen, die separat gebucht werden: einmalig oder mit fester Monatsgebühr, je nach Modul.",
     "pagoUnico": "Einmalzahlung",

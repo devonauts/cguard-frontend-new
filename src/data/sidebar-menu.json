@@ -169,6 +169,7 @@
     "name": "Videovigilancia",
     "icon": "Cctv",
     "expandable": true,
+    "modulo": "video_surveillance",
     "subItems": [
       {
         "id": "video-monitoreo",
@@ -209,6 +210,7 @@
     "name": "Central de Monitoreo",
     "icon": "Siren",
     "expandable": true,
+    "modulo": "monitoring_center",
     "subItems": [
       {
         "id": "alarm-panels",

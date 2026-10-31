@@ -49,6 +49,10 @@ import {
   type AlarmZoneType,
 } from "@/lib/api/alarmService";
 import { videoService, type Camera } from "@/lib/api/videoService";
+import {
+  useHasModule,
+  VIDEO_SURVEILLANCE,
+} from "@/components/modulos/ModuleGate";
 
 // ============================================================
 // Option labels (Spanish UI)
@@ -786,13 +790,18 @@ function ZonesManager({ panelId }: { panelId: string }) {
   const [zones, setZones] = useState<AlarmZone[]>([]);
   const [cameras, setCameras] = useState<Camera[]>([]);
   const [loading, setLoading] = useState(true);
+  // Linking a zone to a camera needs the Video Surveillance module: without
+  // it the camera list is not asked for and the camera column/field is hidden
+  // (a camera already linked is kept as is when the zone is saved).
+  const hasVideo = useHasModule(VIDEO_SURVEILLANCE);
 
   useEffect(() => {
+    if (!hasVideo) return;
     videoService
       .cameras()
       .then((c) => setCameras(Array.isArray(c) ? c : []))
       .catch(() => {});
-  }, []);
+  }, [hasVideo]);
   const cameraName = (id?: string | null) =>
     cameras.find((c) => c.id === id)?.name || (id ? t("ui.AlarmPanels.camaraVinculada", "Cámara vinculada") : "—");
   const [form, setForm] = useState<ZoneForm>(emptyZoneForm());
@@ -924,9 +933,11 @@ function ZonesManager({ panelId }: { panelId: string }) {
                 <th className="px-3 py-2">
                   {t("ui.AlarmPanels.particion", "Partición")}
                 </th>
-                <th className="px-3 py-2">
-                  {t("ui.AlarmPanels.camara", "Cámara")}
-                </th>
+                {hasVideo && (
+                  <th className="px-3 py-2">
+                    {t("ui.AlarmPanels.camara", "Cámara")}
+                  </th>
+                )}
                 <th className="px-3 py-2">{t("comun.estado")}</th>
                 <th className="px-3 py-2 text-right">
                   {t("ui.AlarmPanels.acciones", "Acciones")}
@@ -951,9 +962,11 @@ function ZonesManager({ panelId }: { panelId: string }) {
                     )}
                   </td>
                   <td className="px-3 py-2">{z.partition || "—"}</td>
-                  <td className="px-3 py-2 font-mono text-xs">
-                    {cameraName(z.linkedCameraId)}
-                  </td>
+                  {hasVideo && (
+                    <td className="px-3 py-2 font-mono text-xs">
+                      {cameraName(z.linkedCameraId)}
+                    </td>
+                  )}
                   <td className="px-3 py-2">
                     {z.bypassed ? (
                       <KitStatusBadge tone="warn">
@@ -1049,29 +1062,31 @@ function ZonesManager({ panelId }: { panelId: string }) {
             onChange={(e) => set("partition", e.target.value)}
           />
         </div>
-        <div>
-          <Label className="text-xs" htmlFor="z-camera">
-            {t(
-              "ui.AlarmPanels.camaraVinculadaVerificacionPorVideo",
-              "Cámara vinculada (verificación por video)",
-            )}
-          </Label>
-          <select
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            id="z-camera"
-            value={form.linkedCameraId}
-            onChange={(e) => set("linkedCameraId", e.target.value)}
-          >
-            <option value="">
-              {t("ui.AlarmPanels.sinCamara", "— Sin cámara —")}
-            </option>
-            {cameras.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name || c.id}
+        {hasVideo && (
+          <div>
+            <Label className="text-xs" htmlFor="z-camera">
+              {t(
+                "ui.AlarmPanels.camaraVinculadaVerificacionPorVideo",
+                "Cámara vinculada (verificación por video)",
+              )}
+            </Label>
+            <select
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              id="z-camera"
+              value={form.linkedCameraId}
+              onChange={(e) => set("linkedCameraId", e.target.value)}
+            >
+              <option value="">
+                {t("ui.AlarmPanels.sinCamara", "— Sin cámara —")}
               </option>
-            ))}
-          </select>
-        </div>
+              {cameras.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name || c.id}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div className="flex items-end gap-2 pb-1">
           <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input

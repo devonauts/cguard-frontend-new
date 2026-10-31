@@ -19823,6 +19823,25 @@
     }
   },
   "modulosAdicionales": {
+    "centrales": {
+      "activar": "Activer dans Modules complémentaires",
+      "monitoreo": {
+        "nombre": "Centre de télésurveillance",
+        "titulo": "Le module Centre de télésurveillance n'est pas actif",
+        "desc": "Avec le Centre de télésurveillance, vous recevez les signaux des centrales d'alarme de vos clients et les traitez comme un poste central. Le Centre des urgences (boutons de panique et SOS) reste inclus sans ce module.",
+        "paso1": "Enregistrez les centrales d'alarme de chaque client, avec leurs zones, contacts et horaires d'ouverture et de fermeture.",
+        "paso2": "Chaque signal arrive en direct et, s'il s'agit d'une alarme, ouvre un dossier avec son plan d'action, les appels de vérification et l'intervention.",
+        "paso3": "Mesurez les fausses alarmes et les temps de réponse, et exportez l'historique d'audit de chaque dossier."
+      },
+      "video": {
+        "nombre": "Vidéosurveillance",
+        "titulo": "Le module Vidéosurveillance n'est pas actif",
+        "desc": "Avec la Vidéosurveillance, vous connectez les caméras, DVR et NVR de vos clients et les regardez en direct d'ici, à côté de l'activité de vos agents.",
+        "paso1": "Connectez les enregistreurs et les caméras de chaque poste, directement ou depuis un site distant.",
+        "paso2": "Regardez les caméras en direct, pilotez les caméras PTZ et enregistrez les événements vidéo.",
+        "paso3": "Découpez des clips, partagez-les avec le client par un lien et transformez-les en incidents ou en intervention du superviseur."
+      }
+    },
     "titulo": "Modules complémentaires",
     "subtitulo": "Fonctions souscrites à part : paiement unique ou abonnement mensuel fixe, selon le module.",
     "pagoUnico": "paiement unique",
