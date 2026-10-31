@@ -20527,7 +20527,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Isso é com a matriz",
-      "soloPrincipalDesc": "Como gerente de filial você administra sua filial, mas pagamentos, módulos e a conta são geridos por um administrador da matriz."
+      "soloPrincipalDesc": "Como gerente de filial você administra sua filial, mas pagamentos, módulos e a conta são geridos por um administrador da matriz.",
+      "reglaDeEmpresaTitulo": "Esta configuração é de toda a empresa",
+      "reglaDeEmpresaDesc": "Como gerente de filial você pode vê-la, mas ela vale para todas as filiais: quem a altera é um administrador da matriz."
     },
     "cliente": {
       "campo": "Filial do cliente",
@@ -20562,6 +20564,10 @@
     "etiqueta": {
       "empresa": "Empresa",
       "columna": "Filial"
+    },
+    "sinAcceso": {
+      "titulo": "Você não tem nenhuma filial atribuída",
+      "desc": "Seu acesso é limitado a filiais e você não tem nenhuma, por isso não vê dados. Peça a um administrador da matriz que atribua a sua."
     }
   },
   "soporte": {

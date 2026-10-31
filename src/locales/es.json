@@ -20527,7 +20527,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Esto lo hace la principal",
-      "soloPrincipalDesc": "Como gerente de sucursal administras tu sucursal, pero los pagos, los módulos y la cuenta los gestiona un administrador de la principal."
+      "soloPrincipalDesc": "Como gerente de sucursal administras tu sucursal, pero los pagos, los módulos y la cuenta los gestiona un administrador de la principal.",
+      "reglaDeEmpresaTitulo": "Esta configuración es de toda la empresa",
+      "reglaDeEmpresaDesc": "Como gerente de sucursal puedes verla, pero vale para todas las sucursales: la cambia un administrador de la principal."
     },
     "cliente": {
       "campo": "Sucursal del cliente",
@@ -20562,6 +20564,10 @@
     "etiqueta": {
       "empresa": "Empresa",
       "columna": "Sucursal"
+    },
+    "sinAcceso": {
+      "titulo": "No tienes ninguna sucursal asignada",
+      "desc": "Tu acceso está limitado a sucursales y no tienes ninguna, por eso no ves datos. Pide a un administrador de la principal que te asigne la tuya."
     }
   },
   "soporte": {

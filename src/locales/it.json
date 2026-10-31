@@ -20527,7 +20527,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Se ne occupa la sede principale",
-      "soloPrincipalDesc": "Come responsabile di filiale gestisci la tua filiale, ma pagamenti, moduli e account li gestisce un amministratore della sede principale."
+      "soloPrincipalDesc": "Come responsabile di filiale gestisci la tua filiale, ma pagamenti, moduli e account li gestisce un amministratore della sede principale.",
+      "reglaDeEmpresaTitulo": "Questa impostazione vale per tutta l’azienda",
+      "reglaDeEmpresaDesc": "Come responsabile di filiale puoi vederla, ma vale per tutte le filiali: la modifica un amministratore della sede principale."
     },
     "cliente": {
       "campo": "Filiale del cliente",
@@ -20562,6 +20564,10 @@
     "etiqueta": {
       "empresa": "Azienda",
       "columna": "Filiale"
+    },
+    "sinAcceso": {
+      "titulo": "Non hai nessuna filiale assegnata",
+      "desc": "Il tuo accesso è limitato alle filiali e non ne hai nessuna, per questo non vedi dati. Chiedi a un amministratore della sede principale di assegnarti la tua."
     }
   },
   "soporte": {

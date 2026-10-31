@@ -20527,7 +20527,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Dit regelt het hoofdkantoor",
-      "soloPrincipalDesc": "Als vestigingsmanager beheer je je vestiging, maar betalingen, modules en het account regelt een beheerder van het hoofdkantoor."
+      "soloPrincipalDesc": "Als vestigingsmanager beheer je je vestiging, maar betalingen, modules en het account regelt een beheerder van het hoofdkantoor.",
+      "reglaDeEmpresaTitulo": "Deze instelling geldt voor het hele bedrijf",
+      "reglaDeEmpresaDesc": "Als vestigingsmanager kun je haar zien, maar ze geldt voor alle vestigingen: een beheerder van het hoofdkantoor wijzigt haar."
     },
     "cliente": {
       "campo": "Vestiging van de klant",
@@ -20562,6 +20564,10 @@
     "etiqueta": {
       "empresa": "Bedrijf",
       "columna": "Vestiging"
+    },
+    "sinAcceso": {
+      "titulo": "Je hebt geen vestiging toegewezen",
+      "desc": "Je toegang is beperkt tot vestigingen en je hebt er geen, daarom zie je geen gegevens. Vraag een beheerder van het hoofdkantoor om je de jouwe toe te wijzen."
     }
   },
   "soporte": {

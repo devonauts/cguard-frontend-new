@@ -20527,7 +20527,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "C’est le siège qui s’en charge",
-      "soloPrincipalDesc": "En tant que responsable d’agence, vous gérez votre agence, mais les paiements, les modules et le compte relèvent d’un administrateur du siège."
+      "soloPrincipalDesc": "En tant que responsable d’agence, vous gérez votre agence, mais les paiements, les modules et le compte relèvent d’un administrateur du siège.",
+      "reglaDeEmpresaTitulo": "Ce réglage concerne toute l’entreprise",
+      "reglaDeEmpresaDesc": "En tant que responsable d’agence, vous pouvez le consulter, mais il s’applique à toutes les agences : c’est un administrateur du siège qui le modifie."
     },
     "cliente": {
       "campo": "Agence du client",
@@ -20562,6 +20564,10 @@
     "etiqueta": {
       "empresa": "Entreprise",
       "columna": "Agence"
+    },
+    "sinAcceso": {
+      "titulo": "Aucune agence ne vous est attribuée",
+      "desc": "Votre accès est limité à des agences et vous n’en avez aucune : vous ne voyez donc aucune donnée. Demandez à un administrateur du siège de vous attribuer la vôtre."
     }
   },
   "soporte": {
