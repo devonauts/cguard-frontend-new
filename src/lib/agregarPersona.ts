@@ -129,7 +129,18 @@ export interface OficinaFisica {
 }
 
 export type Lugar =
-  | { tipo: "vigilante"; stationId: string; positionId: string; desde: string }
+  | {
+      tipo: "vigilante";
+      stationId: string;
+      positionId: string;
+      desde: string;
+      /**
+       * The seat (and its station) has no rotation yet: the first guard brings
+       * it, as in the Schedule's assign form, and it becomes the station's.
+       */
+      sinRotacion?: boolean;
+      rotationStyleId?: string | null;
+    }
   | { tipo: "supervisor"; positionId: string; desde: string }
   | {
       tipo: "oficina";
@@ -144,6 +155,7 @@ export type Horario = Lugar | null;
 export type ErrorDeLugar =
   | "eligePlaza"
   | "eligePuesto"
+  | "eligeRotacion"
   | "fechaInvalida"
   | "jornadaInvalida"
   | "ubicacionInvalida"
@@ -175,8 +187,11 @@ export function ubicacionValida(o: OficinaFisica | null): boolean {
 export function validarLugar(h: Horario): ErrorDeLugar {
   if (!h) return null;
   if (h.desde && !fechaValida(h.desde)) return "fechaInvalida";
-  if (h.tipo === "vigilante")
-    return h.stationId && h.positionId ? null : "eligePlaza";
+  if (h.tipo === "vigilante") {
+    if (!h.stationId || !h.positionId) return "eligePlaza";
+
+    return h.sinRotacion && !h.rotationStyleId ? "eligeRotacion" : null;
+  }
   if (h.tipo === "supervisor") return h.positionId ? null : "eligePuesto";
   if (!validarJornada(h.jornada, h.desde || null).ok) return "jornadaInvalida";
   if (!ubicacionValida(h.oficina)) return "ubicacionInvalida";
@@ -386,6 +401,7 @@ export function cuerpoDeVigilante(d: Datos) {
         inviteBy: "SMS",
         contact: limpio(d.celular),
         phoneNumber: limpio(d.celular),
+        ...(opcional(d.usuario) ? { username: limpio(d.usuario) } : {}),
       };
     }
 
@@ -455,6 +471,9 @@ export function cuerpoDeAsignacion(
     stationId: l.stationId,
     positionId: l.positionId,
     ...(l.desde ? { startDate: l.desde } : {}),
+    ...(l.sinRotacion && l.rotationStyleId
+      ? { rotationStyleId: l.rotationStyleId }
+      : {}),
   };
 }
 
@@ -526,7 +545,10 @@ export function pendientes(r: Resultado): Array<"horario" | "ubicacion"> {
   return out;
 }
 
-/** The person's sheet. */
+/**
+ * The person's sheet. A guard's sheet is keyed by the guard RECORD id
+ * (`/guards/:id`, see GuardsLayout); supervisors and office people by user id.
+ */
 export function fichaDe(tipo: TipoDePersona, id: string | null): string | null {
   if (!id) return null;
   if (tipo === "vigilante") return `/guards/${id}/resumen`;

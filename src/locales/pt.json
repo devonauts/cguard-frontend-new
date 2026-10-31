@@ -22021,6 +22021,10 @@
       "soloSedes": "Só algumas sedes"
     },
     "paso3": {
+      "puestoSinRotacionVig": "Este posto ainda não tem rotação",
+      "puestoSinRotacionVigTexto": "Escolha como trabalha. Será a rotação do posto e os próximos vão herdá-la.",
+      "comoTrabaja": "Como trabalha?",
+      "eligeRotacion": "Escolha como trabalha nesse posto",
       "vigilanteIntro": "Escolha o posto que vai cobrir. O horário é a rotação desse posto: não precisa montar à mão.",
       "supervisorIntro": "Escolha o posto de supervisão. O horário são as horas e a rotação desse posto.",
       "recargar": "Recarregar",

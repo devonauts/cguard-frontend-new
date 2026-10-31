@@ -22319,6 +22319,10 @@
       "soloSedes": "Tylko niektóre obiekty"
     },
     "paso3": {
+      "puestoSinRotacionVig": "Ten posterunek nie ma jeszcze rotacji",
+      "puestoSinRotacionVigTexto": "Wybierz, jak pracuje. To będzie rotacja posterunku, którą przejmą kolejne osoby.",
+      "comoTrabaja": "Jak pracuje?",
+      "eligeRotacion": "Wybierz, jak pracuje na tym posterunku",
       "vigilanteIntro": "Wybierz posterunek, który obsadzi. Grafik to rotacja tego posterunku: nie trzeba go układać ręcznie.",
       "supervisorIntro": "Wybierz stanowisko nadzoru. Grafik to godziny i rotacja tego stanowiska.",
       "recargar": "Odśwież",

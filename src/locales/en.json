@@ -22021,6 +22021,10 @@
       "soloSedes": "Only some sites"
     },
     "paso3": {
+      "puestoSinRotacionVig": "This post has no rotation yet",
+      "puestoSinRotacionVigTexto": "Choose how they work. It becomes the post’s rotation and the next people inherit it.",
+      "comoTrabaja": "How do they work?",
+      "eligeRotacion": "Choose how they work at that post",
       "vigilanteIntro": "Choose the post they will cover. Their schedule is that post’s rotation: no need to build it by hand.",
       "supervisorIntro": "Choose their supervision post. Their schedule is that post’s hours and rotation.",
       "recargar": "Reload",

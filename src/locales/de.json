@@ -22021,6 +22021,10 @@
       "soloSedes": "Nur einige Objekte"
     },
     "paso3": {
+      "puestoSinRotacionVig": "Dieser Posten hat noch keine Rotation",
+      "puestoSinRotacionVigTexto": "Wähle, wie die Person arbeitet. Das wird die Rotation des Postens, die Nachfolgende übernehmen.",
+      "comoTrabaja": "Wie arbeitet die Person?",
+      "eligeRotacion": "Wähle, wie die Person an diesem Posten arbeitet",
       "vigilanteIntro": "Wähle den Posten, den die Person besetzt. Der Dienstplan ist die Rotation dieses Postens: Nichts von Hand bauen.",
       "supervisorIntro": "Wähle den Supervisorposten. Der Dienstplan sind die Zeiten und die Rotation dieses Postens.",
       "recargar": "Neu laden",

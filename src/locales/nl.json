@@ -22021,6 +22021,10 @@
       "soloSedes": "Alleen sommige locaties"
     },
     "paso3": {
+      "puestoSinRotacionVig": "Deze post heeft nog geen rotatie",
+      "puestoSinRotacionVigTexto": "Kies hoe deze persoon werkt. Dat wordt de rotatie van de post, die volgende mensen overnemen.",
+      "comoTrabaja": "Hoe werkt deze persoon?",
+      "eligeRotacion": "Kies hoe deze persoon op die post werkt",
       "vigilanteIntro": "Kies de post die deze persoon bemant. Het rooster is de rotatie van die post: niets met de hand maken.",
       "supervisorIntro": "Kies de supervisiepost. Het rooster zijn de uren en de rotatie van die post.",
       "recargar": "Opnieuw laden",

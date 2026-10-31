@@ -67,6 +67,8 @@ import {
   rolesDeOficina,
   rolVeTodo,
   rotacionDePlaza,
+  rotacionEnPalabras,
+  horasDe,
   semanaEnPalabras,
   tipoDeParam,
   turnoEnPalabras,
@@ -384,6 +386,7 @@ export default function AgregarPersonaPage() {
 
       return {
         ...p,
+        sinRotacion: !rot,
         detalle: [
           p.plaza,
           turnoEnPalabras(rot, plaza?.startTime, plaza?.endTime, t),
@@ -392,6 +395,26 @@ export default function AgregarPersonaPage() {
           .join(" · "),
       };
     });
+  }, [overview, t]);
+
+  /** Rotation styles in words, for a seat that has none yet. */
+  const estilosDeRotacion = useMemo(() => {
+    const lista = (overview?.rotationStyles || []).map((s: any) => ({
+      id: String(s.id),
+      palabras: rotacionEnPalabras(s, t),
+      nombre: String(s.name || ""),
+    }));
+    const repetidas = new Set(
+      lista.map((x) => x.palabras).filter((p, i, a) => a.indexOf(p) !== i),
+    );
+
+    return lista.map((x) => ({
+      id: x.id,
+      etiqueta:
+        repetidas.has(x.palabras) && x.nombre
+          ? `${x.palabras} (${x.nombre})`
+          : x.palabras,
+    }));
   }, [overview, t]);
 
   const plazasVisibles = useMemo(() => {
@@ -484,6 +507,19 @@ export default function AgregarPersonaPage() {
       return [t("agregarPersona.resumen.horarioDespues", "Lo pondrás después")];
     if (h.tipo === "vigilante") {
       const p = plazas.find((x) => x.positionId === h.positionId);
+      const elegida = h.sinRotacion
+        ? estilosDeRotacion.find((x) => x.id === h.rotationStyleId)
+        : null;
+
+      if (p && elegida) {
+        const plaza = overview?.positions.find(
+          (x: any) => String(x.id) === h.positionId,
+        );
+
+        return [
+          `${p.puesto} · ${[p.plaza, elegida.etiqueta, horasDe(plaza?.startTime, plaza?.endTime)].filter(Boolean).join(" · ")}`,
+        ];
+      }
 
       return p ? [`${p.puesto} · ${p.detalle}`] : [];
     }
@@ -539,9 +575,10 @@ export default function AgregarPersonaPage() {
         ]);
 
         r.userId = resp?.userId ? String(resp.userId) : null;
-        r.fichaId =
-          r.userId ||
-          (resp?.securityGuardId ? String(resp.securityGuardId) : null);
+        // The guard sheet is keyed by the RECORD id; the assignment takes either.
+        r.fichaId = resp?.securityGuardId
+          ? String(resp.securityGuardId)
+          : r.userId;
         r.acceso = {
           username: resp?.username || null,
           link:
@@ -1238,11 +1275,56 @@ export default function AgregarPersonaPage() {
                                       ...horario,
                                       stationId: p.stationId,
                                       positionId: p.positionId,
+                                      sinRotacion: p.sinRotacion,
+                                      rotationStyleId: null,
                                     })
                                   }
                                 />
                               ))}
                             </div>
+                          )}
+                          {horario.sinRotacion && (
+                            <InfoNote
+                              title={t(
+                                "agregarPersona.paso3.puestoSinRotacionVig",
+                                "Este puesto todavía no tiene rotación",
+                              )}
+                              tone="warn"
+                            >
+                              <p className="mb-2">
+                                {t(
+                                  "agregarPersona.paso3.puestoSinRotacionVigTexto",
+                                  "Elige cómo trabaja. Será la rotación del puesto y la heredarán los que vengan después.",
+                                )}
+                              </p>
+                              <select
+                                aria-label={t(
+                                  "agregarPersona.paso3.comoTrabaja",
+                                  "¿Cómo trabaja?",
+                                )}
+                                className={FIELD_CLS}
+                                id="alta-rotacion"
+                                value={horario.rotationStyleId || ""}
+                                onChange={(e) =>
+                                  setHorario({
+                                    ...horario,
+                                    rotationStyleId: e.target.value || null,
+                                  })
+                                }
+                              >
+                                <option value="">
+                                  {t(
+                                    "agregarPersona.paso3.eligeRotacion",
+                                    "Elige cómo trabaja en ese puesto",
+                                  )}
+                                </option>
+                                {estilosDeRotacion.map((r) => (
+                                  <option key={r.id} value={r.id}>
+                                    {r.etiqueta}
+                                  </option>
+                                ))}
+                              </select>
+                            </InfoNote>
                           )}
                         </div>
                       )}
@@ -1460,10 +1542,15 @@ export default function AgregarPersonaPage() {
                     style={{ color: "var(--ink-soft)" }}
                   >
                     {horario?.tipo === "vigilante"
-                      ? t(
-                          "agregarPersona.paso3.eligePlaza",
-                          "Elige un puesto o toca «Lo hago después»",
-                        )
+                      ? validarLugar(horario) === "eligeRotacion"
+                        ? t(
+                            "agregarPersona.paso3.eligeRotacion",
+                            "Elige cómo trabaja en ese puesto",
+                          )
+                        : t(
+                            "agregarPersona.paso3.eligePlaza",
+                            "Elige un puesto o toca «Lo hago después»",
+                          )
                       : horario?.tipo === "supervisor"
                         ? t(
                             "agregarPersona.paso3.eligePuesto",

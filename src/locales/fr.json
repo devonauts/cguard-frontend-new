@@ -22021,6 +22021,10 @@
       "soloSedes": "Seulement certains sites"
     },
     "paso3": {
+      "puestoSinRotacionVig": "Ce poste n’a pas encore de rotation",
+      "puestoSinRotacionVigTexto": "Choisissez comment il travaille. Ce sera la rotation du poste, reprise par les suivants.",
+      "comoTrabaja": "Comment travaille-t-il ?",
+      "eligeRotacion": "Choisissez comment il travaille à ce poste",
       "vigilanteIntro": "Choisissez le poste qu’il couvrira. Son horaire est la rotation de ce poste : rien à construire à la main.",
       "supervisorIntro": "Choisissez son poste de supervision. Son horaire, ce sont les heures et la rotation de ce poste.",
       "recargar": "Recharger",

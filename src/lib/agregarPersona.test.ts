@@ -115,6 +115,36 @@ describe("agregarPersona · step 3 (where and when)", () => {
     expect(puedeSeguir(3, "vigilante", ana(), null)).toBe(true);
   });
 
+  it("a seat without a rotation asks for one, and the assignment carries it", () => {
+    const sinRot = {
+      tipo: "vigilante" as const,
+      stationId: "st",
+      positionId: "p",
+      desde: "",
+      sinRotacion: true,
+      rotationStyleId: null,
+    };
+
+    expect(validarLugar(sinRot)).toBe("eligeRotacion");
+    expect(validarLugar({ ...sinRot, rotationStyleId: "r1" })).toBeNull();
+    expect(
+      cuerpoDeAsignacion("u1", { ...sinRot, rotationStyleId: "r1" }),
+    ).toEqual({
+      guardId: "u1",
+      stationId: "st",
+      positionId: "p",
+      rotationStyleId: "r1",
+    });
+    // A seat that has its rotation never sends one (the station's wins).
+    expect(
+      cuerpoDeAsignacion("u1", {
+        ...sinRot,
+        sinRotacion: false,
+        rotationStyleId: "r1",
+      }),
+    ).not.toHaveProperty("rotationStyleId");
+  });
+
   it("a guard needs a seat; a supervisor needs a post", () => {
     expect(
       validarLugar({
@@ -320,6 +350,16 @@ describe("agregarPersona · request bodies", () => {
       contact: "0991234567",
       phoneNumber: "0991234567",
     });
+    expect(
+      cuerpoDeVigilante(
+        ana({
+          correo: "",
+          sinCorreo: true,
+          celular: "0991234567",
+          usuario: "aperez",
+        }),
+      ),
+    ).toMatchObject({ inviteBy: "SMS", username: "aperez" });
     expect(
       cuerpoDeVigilante(
         ana({ correo: "", sinCorreo: true, usuario: "aperez" }),
