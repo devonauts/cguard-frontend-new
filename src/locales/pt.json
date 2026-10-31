@@ -31,13 +31,6 @@
     "panel": "Painel",
     "actividad": "Atividade",
     "clientes": "Clientes",
-    "equipo": {
-      "label": "Equipe de Segurança",
-      "guardias": "Seguranças",
-      "usuarios": "Usuários do Escritório Administrativo",
-      "supervisores": "Supervisores",
-      "caras-registradas": "Rostos registrados"
-    },
     "analiticas": {
       "label": "Análises",
       "informe": "Relatórios",
@@ -56,30 +49,16 @@
     },
     "mensajero": "Mensageiro",
     "informes": "Relatórios",
-    "programador": {
-      "label": "Agendador",
-      "horario": "Agenda",
-      "planificador": "Planejador",
-      "plantillas": "Modelos de turno",
-      "asistencia": "Presença",
-      "estado": "Status do turno",
-      "turnos-abiertos": "Turnos abertos",
-      "intercambio": "Troca de turno",
-      "tiempo-libre": "Folga",
-      "cobertura": "Cobertura ao vivo",
-      "dobletes": "Dobras de turno"
-    },
     "nomina": {
       "label": "Folha de Pagamento",
+      "roles": "Holerites",
+      "planillas": "Folhas de pagamento",
+      "ajustes": "Ajustes de folha",
+      "perfiles": "Perfis de pagamento",
+      "gusto": "Gusto",
       "ejecutar": "Gerar folha",
-      "pasadas": "Folhas passadas",
       "horas-extras": "Multiplicador de horas extras",
-      "nomina-dashboard": "Painel",
-      "nomina-time-clock": "Relógio de ponto",
-      "nomina-records": "Registros de presença",
-      "nomina-exceptions": "Exceções",
-      "nomina-approvals": "Aprovações",
-      "nomina-settings": "Configuração de presença"
+      "pasadas": "Folhas passadas"
     },
     "facturador": {
       "label": "Faturamento",
@@ -383,16 +362,21 @@
     "tipos-incidentes": "Tipos de incidentes",
     "tipos-licencias": "Tipos de licenças",
     "title": "Configurações",
-    "estaciones": "Estações",
+    "estaciones": {
+      "label": "Estações",
+      "estaciones-tablero": "Todas as estações",
+      "pases-de-turno": "Passagens de turno",
+      "puestos-supervision": "Postos de supervisão"
+    },
     "group": {
       "resumen": "Resumo",
       "operacion": "Operações",
-      "personal": "Pessoal",
       "clientes": "Clientes",
       "analisis": "Análise",
       "sistema": "Sistema",
       "otros": "Outros",
-      "facturacion": "Faturamento"
+      "facturacion": "Faturamento",
+      "servicio": "Estações e pessoal"
     },
     "commandCenter": "Central de comando",
     "searchPlaceholder": "Buscar no menu…",
@@ -431,7 +415,8 @@
     "radio": {
       "label": "Rádio",
       "radio-despacho": "Despacho",
-      "radio-dispositivos": "Rádios IP"
+      "radio-dispositivos": "Rádios IP",
+      "radio-canales": "Canais"
     },
     "tareas": {
       "label": "Tarefas",
@@ -2493,7 +2478,6 @@
       "viewDetails": "Ver detalhes",
       "website": "Site"
     },
-    "pases-de-turno": "Passagens de turno",
     "modulos-adicionales": "Módulos adicionais",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Rostos aguardando aprovação: {{count}}",
@@ -2504,6 +2488,33 @@
       "facturacion-antiguedad": "Antiguidade de saldos",
       "facturacion-ajustes": "Configurações de faturamento",
       "facturacion-cotizaciones": "Cotações"
+    },
+    "personal": {
+      "label": "Pessoal",
+      "guardias": "Vigilantes",
+      "supervisores": "Supervisores",
+      "usuarios": "Usuários de escritório",
+      "caras-registradas": "Rostos registrados",
+      "ausencias": "Ausências e licenças"
+    },
+    "turnos": {
+      "label": "Turnos",
+      "horario": "Agenda",
+      "planificador": "Planejador",
+      "sin-cubrir": "Sem cobertura",
+      "dobletes": "Dobras de turno",
+      "intercambio": "Troca de turno"
+    },
+    "asistencia": {
+      "label": "Presença",
+      "en-vivo": "Ao vivo",
+      "resumen-hoy": "Resumo de hoje",
+      "marcaciones": "Marcações",
+      "novedades": "Ocorrências",
+      "aprobaciones": "Aprovações",
+      "horas-periodo": "Horas do período",
+      "configuracion": "Configuração",
+      "coberturaEnVivo": "Cobertura ao vivo"
     }
   },
   "settings": {
@@ -5548,7 +5559,8 @@
       },
       "myTickets": "Meus tickets",
       "myTicketsSub": "Respostas do suporte"
-    }
+    },
+    "timeClock": "Registrar entrada/saída"
   },
   "dispatcher": {
     "noPermissionViewToast": "Você não tem permissão para ver Incidentes",
@@ -12106,7 +12118,8 @@
       "yaTieneTurnoEseDiaSufijo": " · já tem turno nesse dia",
       "yseRepite": "· e se repete",
       "eliminarTurnosYNovedades": "Excluir os turnos e ocorrências da seleção (Del)",
-      "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…"
+      "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…",
+      "irAEstaciones": "Ir para Estações"
     },
     "ScheduleTimeline": {
       "duracion": "Duração:",

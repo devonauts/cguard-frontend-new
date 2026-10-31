@@ -10,6 +10,7 @@ import type { StationCard } from "@/lib/api/stationService";
 import { useTranslation } from "react-i18next";
 import {
   RadioTower,
+  Plus,
   Building2,
   Users,
   MapPin,
@@ -21,6 +22,8 @@ import {
   Route,
   QrCode,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
@@ -255,12 +258,15 @@ export default function StationCardsGrid({
   loading,
   onOpen,
   onOpenTab,
+  onAdd,
 }: {
   stations: StationCard[];
   loading: boolean;
   onOpen: (s: StationCard) => void;
   /** Abrir la estación DIRECTAMENTE en una pestaña (rondas, códigos QR…). */
   onOpenTab?: (s: StationCard, tab: string) => void;
+  /** Empty company: the empty state offers the same «Agregar estación». */
+  onAdd?: () => void;
 }) {
   // Módulo Sucursales (vista global): la etiqueta de sucursal de cada fila.
   const suc = useEtiquetasDeSucursal();
@@ -276,6 +282,14 @@ export default function StationCardsGrid({
   if (!stations.length) {
     return (
       <EmptyState
+        action={
+          onAdd ? (
+            <Button variant="brand" onClick={onAdd}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("ui.StationsPage.agregarEstacion", "Agregar estación")}
+            </Button>
+          ) : undefined
+        }
         description={t("stations.empty.description", {
           defaultValue:
             "Pulsa «Agregar estación» y elige el cliente y la sede; también se crean desde la sede.",

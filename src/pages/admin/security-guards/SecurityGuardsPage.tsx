@@ -1174,7 +1174,7 @@ export default function SecurityGuardsPage() {
             "guards.list.subtitle",
             "Gestiona el personal de seguridad de tu organización",
           )}
-          title={t("guards.list.headerTitle", "Vigilantes de Seguridad")}
+          title={t("sidebar.personal.guardias", "Vigilantes")}
         />
       </div>
 

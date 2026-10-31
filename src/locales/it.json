@@ -3929,13 +3929,6 @@
       "ticket_closed": "Ticket chiuso",
       "view_details": "Vedi dettagli"
     },
-    "equipo": {
-      "guardias": "Guardie giurate",
-      "supervisores": "Supervisori",
-      "label": "Squadra di sicurezza",
-      "usuarios": "Utenti amministrativi",
-      "caras-registradas": "Volti registrati"
-    },
     "facturador": {
       "elementos": "Servizi",
       "estimaciones": "Preventivi",
@@ -4687,16 +4680,15 @@
       }
     },
     "nomina": {
+      "label": "Paghe",
+      "roles": "Buste paga",
+      "planillas": "Elaborazioni paga",
+      "ajustes": "Rettifiche paga",
+      "perfiles": "Profili retributivi",
+      "gusto": "Gusto",
       "ejecutar": "Genera le buste paga",
       "horas-extras": "Moltiplicatore per gli straordinari",
-      "label": "Paghe",
-      "pasadas": "Buste paga passate",
-      "nomina-dashboard": "Cruscotto",
-      "nomina-time-clock": "Orologio presenze",
-      "nomina-records": "Registri di presenza",
-      "nomina-exceptions": "Eccezioni",
-      "nomina-approvals": "Approvazioni",
-      "nomina-settings": "Impostazioni presenze"
+      "pasadas": "Buste paga passate"
     },
     "parking": {
       "areas": "Area di parcheggio",
@@ -5269,19 +5261,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Presenze",
-      "estado": "Stato del turno",
-      "horario": "Orario",
-      "planificador": "Pianificatore",
-      "intercambio": "Scambio di turno",
-      "label": "Pianificatore",
-      "plantillas": "Modelli di turno",
-      "tiempo-libre": "Permesso",
-      "turnos-abiertos": "Turni scoperti",
-      "cobertura": "Copertura in diretta",
-      "dobletes": "Doppi turni"
-    },
     "rastreador": {
       "historial": "Storico degli spostamenti",
       "label": "Localizzatore GPS",
@@ -5496,16 +5475,21 @@
         "title": "Abbonamento"
       }
     },
-    "estaciones": "Postazioni",
+    "estaciones": {
+      "label": "Postazioni",
+      "estaciones-tablero": "Tutte le postazioni",
+      "pases-de-turno": "Consegne di turno",
+      "puestos-supervision": "Postazioni di supervisione"
+    },
     "group": {
       "resumen": "Riepilogo",
       "operacion": "Operatività",
-      "personal": "Personale",
       "clientes": "Committenti",
       "analisis": "Analisi",
       "sistema": "Sistema",
       "otros": "Altri",
-      "facturacion": "Fatturazione"
+      "facturacion": "Fatturazione",
+      "servicio": "Postazioni e personale"
     },
     "commandCenter": "Centrale operativa",
     "searchPlaceholder": "Cerca nel menu…",
@@ -5544,7 +5528,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Smistamento",
-      "radio-dispositivos": "Radio IP"
+      "radio-dispositivos": "Radio IP",
+      "radio-canales": "Canali"
     },
     "tareas": {
       "label": "Attività",
@@ -5562,7 +5547,6 @@
     "goToDashboard": "Vai al cruscotto",
     "unreadMessages": "{{count}} messaggi non letti",
     "emergencias": "Centrale emergenze",
-    "pases-de-turno": "Consegne di turno",
     "modulos-adicionales": "Moduli aggiuntivi",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Volti da approvare: {{count}}",
@@ -5573,6 +5557,33 @@
       "facturacion-antiguedad": "Scadenzario",
       "facturacion-ajustes": "Impostazioni di fatturazione",
       "facturacion-cotizaciones": "Preventivi"
+    },
+    "personal": {
+      "label": "Personale",
+      "guardias": "Guardie",
+      "supervisores": "Supervisori",
+      "usuarios": "Utenti d'ufficio",
+      "caras-registradas": "Volti registrati",
+      "ausencias": "Assenze e permessi"
+    },
+    "turnos": {
+      "label": "Turni",
+      "horario": "Orario",
+      "planificador": "Pianificatore",
+      "sin-cubrir": "Scoperti",
+      "dobletes": "Doppi turni",
+      "intercambio": "Scambio di turno"
+    },
+    "asistencia": {
+      "label": "Presenze",
+      "en-vivo": "In diretta",
+      "resumen-hoy": "Riepilogo di oggi",
+      "marcaciones": "Timbrature",
+      "novedades": "Anomalie",
+      "aprobaciones": "Approvazioni",
+      "horas-periodo": "Ore del periodo",
+      "configuracion": "Impostazioni",
+      "coberturaEnVivo": "Copertura in diretta"
     }
   },
   "siteTour": {
@@ -6782,7 +6793,8 @@
       },
       "myTickets": "I miei ticket",
       "myTicketsSub": "Risposte del supporto"
-    }
+    },
+    "timeClock": "Timbra entrata/uscita"
   },
   "kit": {
     "pagination": {
@@ -12641,7 +12653,8 @@
       "yaTieneTurnoEseDiaSufijo": " · ha già un turno quel giorno",
       "yseRepite": "· e si ripete",
       "eliminarTurnosYNovedades": "Elimina i turni e le segnalazioni selezionati (Canc)",
-      "menuCorrerCiclo": "Sposta il ciclo di {{nombre}}…"
+      "menuCorrerCiclo": "Sposta il ciclo di {{nombre}}…",
+      "irAEstaciones": "Vai alle postazioni"
     },
     "ScheduleTimeline": {
       "duracion": "Durata:",

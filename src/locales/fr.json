@@ -3929,13 +3929,6 @@
       "ticket_closed": "Ticket clôturé",
       "view_details": "Voir les détails"
     },
-    "equipo": {
-      "guardias": "Agents de sécurité",
-      "supervisores": "Superviseurs",
-      "label": "Équipe de sécurité",
-      "usuarios": "Utilisateurs administratifs",
-      "caras-registradas": "Visages enregistrés"
-    },
     "facturador": {
       "elementos": "Prestations",
       "estimaciones": "Devis",
@@ -4687,16 +4680,15 @@
       }
     },
     "nomina": {
+      "label": "Paie",
+      "roles": "Bulletins de paie",
+      "planillas": "Registres de paie",
+      "ajustes": "Ajustements de paie",
+      "perfiles": "Profils de paie",
+      "gusto": "Gusto",
       "ejecutar": "Générer la paie",
       "horas-extras": "Multiplicateur d'heures supplémentaires",
-      "label": "Paie",
-      "pasadas": "Paies précédentes",
-      "nomina-dashboard": "Tableau de bord",
-      "nomina-time-clock": "Pointeuse",
-      "nomina-records": "Registre des pointages",
-      "nomina-exceptions": "Exceptions",
-      "nomina-approvals": "Approbations",
-      "nomina-settings": "Paramètres de présence"
+      "pasadas": "Paies précédentes"
     },
     "parking": {
       "areas": "Zone de parking",
@@ -5269,19 +5261,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Présence",
-      "estado": "État de la vacation",
-      "horario": "Planning",
-      "planificador": "Planificateur",
-      "intercambio": "Échange de vacation",
-      "label": "Planificateur",
-      "plantillas": "Modèles de vacation",
-      "tiempo-libre": "Congés",
-      "turnos-abiertos": "Vacations ouvertes",
-      "cobertura": "Couverture en direct",
-      "dobletes": "Doubles quarts"
-    },
     "rastreador": {
       "historial": "Historique du suivi",
       "label": "Traceur GPS",
@@ -5496,16 +5475,21 @@
         "title": "Abonnement"
       }
     },
-    "estaciones": "Postes",
+    "estaciones": {
+      "label": "Postes",
+      "estaciones-tablero": "Tous les postes",
+      "pases-de-turno": "Relèves",
+      "puestos-supervision": "Postes de supervision"
+    },
     "group": {
       "resumen": "Résumé",
       "operacion": "Opérations",
-      "personal": "Personnel",
       "clientes": "Clients",
       "analisis": "Analyses",
       "sistema": "Système",
       "otros": "Autres",
-      "facturacion": "Facturation"
+      "facturacion": "Facturation",
+      "servicio": "Postes et personnel"
     },
     "commandCenter": "Centre de commandement",
     "searchPlaceholder": "Rechercher dans le menu…",
@@ -5544,7 +5528,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Répartition",
-      "radio-dispositivos": "Radios IP"
+      "radio-dispositivos": "Radios IP",
+      "radio-canales": "Canaux"
     },
     "tareas": {
       "label": "Tâches",
@@ -5562,7 +5547,6 @@
     "goToDashboard": "Aller au tableau de bord",
     "unreadMessages": "{{count}} messages non lus",
     "emergencias": "Centre des urgences",
-    "pases-de-turno": "Relèves",
     "modulos-adicionales": "Modules complémentaires",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Visages à approuver : {{count}}",
@@ -5573,6 +5557,33 @@
       "facturacion-antiguedad": "Balance âgée",
       "facturacion-ajustes": "Paramètres de facturation",
       "facturacion-cotizaciones": "Devis"
+    },
+    "personal": {
+      "label": "Personnel",
+      "guardias": "Agents",
+      "supervisores": "Superviseurs",
+      "usuarios": "Utilisateurs de bureau",
+      "caras-registradas": "Visages enregistrés",
+      "ausencias": "Absences et congés"
+    },
+    "turnos": {
+      "label": "Quarts",
+      "horario": "Planning",
+      "planificador": "Planificateur",
+      "sin-cubrir": "Non couverts",
+      "dobletes": "Doubles quarts",
+      "intercambio": "Échange de vacation"
+    },
+    "asistencia": {
+      "label": "Présence",
+      "en-vivo": "En direct",
+      "resumen-hoy": "Résumé du jour",
+      "marcaciones": "Pointages",
+      "novedades": "Anomalies",
+      "aprobaciones": "Approbations",
+      "horas-periodo": "Heures de la période",
+      "configuracion": "Paramètres",
+      "coberturaEnVivo": "Couverture en direct"
     }
   },
   "siteTour": {
@@ -6782,7 +6793,8 @@
       },
       "myTickets": "Mes tickets",
       "myTicketsSub": "Réponses du support"
-    }
+    },
+    "timeClock": "Pointer entrée/sortie"
   },
   "kit": {
     "pagination": {
@@ -12641,7 +12653,8 @@
       "yaTieneTurnoEseDiaSufijo": " · a déjà un poste ce jour-là",
       "yseRepite": "· et se répète",
       "eliminarTurnosYNovedades": "Supprimer les vacations et événements sélectionnés (Suppr)",
-      "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…"
+      "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…",
+      "irAEstaciones": "Aller aux postes"
     },
     "ScheduleTimeline": {
       "duracion": "Durée :",

@@ -313,7 +313,7 @@ export default function NominaSettings() {
               </label>
             </SettingsSection>
 
-            <SettingsSection icon={<CheckSquare />} title={t("sidebar.nomina.nomina-approvals", "Aprobaciones")}>
+            <SettingsSection icon={<CheckSquare />} title={t("sidebar.asistencia.aprobaciones", "Aprobaciones")}>
               <Toggle
                 label={t("ui.NominaSettings.autoAprobarMarcacionesNormales", "Auto-aprobar marcaciones normales")}
                 path="approval.autoApproveNormal"

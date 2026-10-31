@@ -173,6 +173,7 @@ export default function StationsPage() {
             stations={filtered}
             onOpen={openStation}
             onOpenTab={openStationTab}
+            onAdd={() => setEligiendo(true)}
           />
         )}
         <ElegirSedeParaEstacion open={eligiendo} onOpenChange={setEligiendo} />

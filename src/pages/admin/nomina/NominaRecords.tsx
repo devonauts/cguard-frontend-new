@@ -679,7 +679,7 @@ export default function NominaRecords() {
       <PageContainer width="wide">
         <PageHeader
           icon={<ClipboardCheck />}
-          title={t("ui.NominaRecords.registrosDeAsistencia")}
+          title={t("sidebar.asistencia.marcaciones", "Marcaciones")}
           subtitle={t("ui.NominaRecords.marcacionesDeEntradaSalida", "Marcaciones de entrada / salida")}
           actions={
             /* Tres formatos y UNA fuente: el archivo lo arma el servidor con el

@@ -729,7 +729,7 @@ export default function Coverage() {
                 })
               : t("ui.Coverage.todosLosPuestosCubiertos", "Todos los puestos cubiertos")
           }
-          title={t("sidebar.programador.cobertura", "Cobertura en vivo")}
+          title={t("sidebar.asistencia.coberturaEnVivo", "Cobertura en vivo")}
         />
 
         <StatsStrip className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

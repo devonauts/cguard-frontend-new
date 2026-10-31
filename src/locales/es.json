@@ -70,7 +70,7 @@
   },
   "adminOfficeUsers": {
     "searchPlaceholder": "Buscar usuario",
-    "title": "Usuarios de Oficina Administrativa",
+    "title": "Usuarios de oficina",
     "actions": {
       "exportExcel": "Exportar como Excel",
       "exportPdf": "Exportar como PDF",
@@ -2892,7 +2892,8 @@
       },
       "myTickets": "Mis tickets",
       "myTicketsSub": "Respuestas de soporte"
-    }
+    },
+    "timeClock": "Marcar entrada/salida"
   },
   "incidents": {
     "actionsLabel": "Acciones",
@@ -4405,13 +4406,6 @@
       "ticket_closed": "Ticket cerrado",
       "view_details": "Ver detalles"
     },
-    "equipo": {
-      "guardias": "Vigilantes de seguridad",
-      "supervisores": "Supervisores",
-      "label": "Equipo de seguridad",
-      "usuarios": "Usuarios administrativos",
-      "caras-registradas": "Caras registradas"
-    },
     "facturador": {
       "elementos": "Servicios",
       "estimaciones": "Estimaciones",
@@ -5163,16 +5157,15 @@
       }
     },
     "nomina": {
+      "label": "Nómina",
+      "roles": "Roles de pago",
+      "planillas": "Planillas",
+      "ajustes": "Ajustes de nómina",
+      "perfiles": "Perfiles de pago",
+      "gusto": "Gusto",
       "ejecutar": "Generar nómina",
       "horas-extras": "Multiplicador de horas extra",
-      "label": "Nómina",
-      "pasadas": "Nóminas pasadas",
-      "nomina-dashboard": "Dashboard",
-      "nomina-time-clock": "Reloj de Asistencia",
-      "nomina-records": "Registros de Asistencia",
-      "nomina-exceptions": "Excepciones",
-      "nomina-approvals": "Aprobaciones",
-      "nomina-settings": "Configuración de Asistencia"
+      "pasadas": "Nóminas pasadas"
     },
     "parking": {
       "areas": "Área de parking",
@@ -5745,19 +5738,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Asistencia",
-      "estado": "Estado del turno",
-      "horario": "Horario",
-      "planificador": "Planificador",
-      "intercambio": "Intercambio de turno",
-      "label": "Programador",
-      "plantillas": "Plantillas de turno",
-      "tiempo-libre": "Tiempo libre",
-      "turnos-abiertos": "Turnos abiertos",
-      "cobertura": "Cobertura en vivo",
-      "dobletes": "Dobletes"
-    },
     "rastreador": {
       "historial": "Historial de seguimiento",
       "label": "Rastreador GPS",
@@ -5972,16 +5952,21 @@
         "title": "Suscripción"
       }
     },
-    "estaciones": "Estaciones",
+    "estaciones": {
+      "label": "Estaciones",
+      "estaciones-tablero": "Todas las estaciones",
+      "pases-de-turno": "Pases de turno",
+      "puestos-supervision": "Puestos de supervisión"
+    },
     "group": {
       "resumen": "Resumen",
       "operacion": "Operación",
-      "personal": "Personal",
       "clientes": "Clientes",
       "analisis": "Análisis",
       "sistema": "Sistema",
       "otros": "Otros",
-      "facturacion": "Facturación"
+      "facturacion": "Facturación",
+      "servicio": "Estaciones y personal"
     },
     "commandCenter": "Centro de mando",
     "searchPlaceholder": "Buscar en el menú…",
@@ -6020,7 +6005,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Despacho",
-      "radio-dispositivos": "Radios IP"
+      "radio-dispositivos": "Radios IP",
+      "radio-canales": "Canales"
     },
     "tareas": {
       "label": "Tareas",
@@ -6038,7 +6024,6 @@
     "goToDashboard": "Ir al panel de control",
     "unreadMessages": "{{count}} mensajes sin leer",
     "emergencias": "Centro de Emergencias",
-    "pases-de-turno": "Pases de turno",
     "modulos-adicionales": "Módulos adicionales",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Caras por aprobar: {{count}}",
@@ -6049,6 +6034,33 @@
       "facturacion-antiguedad": "Antigüedad de saldos",
       "facturacion-ajustes": "Ajustes de facturación",
       "facturacion-cotizaciones": "Cotizaciones"
+    },
+    "personal": {
+      "label": "Personal",
+      "guardias": "Vigilantes",
+      "supervisores": "Supervisores",
+      "usuarios": "Usuarios de oficina",
+      "caras-registradas": "Caras registradas",
+      "ausencias": "Ausencias y permisos"
+    },
+    "turnos": {
+      "label": "Turnos",
+      "horario": "Horario",
+      "planificador": "Planificador",
+      "sin-cubrir": "Sin cubrir",
+      "dobletes": "Dobletes",
+      "intercambio": "Intercambio de turno"
+    },
+    "asistencia": {
+      "label": "Asistencia",
+      "en-vivo": "En vivo",
+      "resumen-hoy": "Resumen de hoy",
+      "marcaciones": "Marcaciones",
+      "novedades": "Novedades",
+      "aprobaciones": "Aprobaciones",
+      "horas-periodo": "Horas del periodo",
+      "configuracion": "Configuración",
+      "coberturaEnVivo": "Cobertura en vivo"
     }
   },
   "siteTour": {
@@ -10464,12 +10476,12 @@
     "NominaExceptions": {
       "describeQueSeHizoO": "Describe qué se hizo o por qué se cierra esta excepción…",
       "notaDeResolucionQuedaEn": "Nota de resolución (queda en el historial)",
-      "desviacionesDeAsistenciaRegistroE": "Desviaciones de asistencia — registro e historial de operación",
+      "desviacionesDeAsistenciaRegistroE": "Atrasos, faltas y salidas sin marcar: para resolver y como historial",
       "noHayDesviacionesDeAsistencia": "No hay desviaciones de asistencia para los filtros seleccionados.",
       "por": "Por",
       "cerrarElAtraso": "Cerrar el atraso",
-      "sinExcepciones": "Sin excepciones",
-      "sinExcepcionesAbiertas": "Sin excepciones abiertas",
+      "sinExcepciones": "Sin novedades",
+      "sinExcepcionesAbiertas": "Sin novedades abiertas",
       "abiertas": "Abiertas",
       "alcanzaAExcepciones": "alcanza a {{count}} excepciones",
       "alcanzaAExcepcionesDeTipo": "alcanza a {{count}} excepciones de tipo {{tipo}}",
@@ -10828,7 +10840,7 @@
       "turnosSinVigilante": "Turnos sin vigilante",
       "estaSemana": "Esta semana",
       "buscarPuestoOFecha": "Buscar puesto o fecha",
-      "noHayTurnosAbiertos": "No hay turnos abiertos",
+      "noHayTurnosAbiertos": "No hay turnos sin cubrir",
       "todosLosTurnosTienenVigilante": "Todos los turnos tienen vigilante asignado o no hay turnos en el período seleccionado.",
       "sinPuesto": "Sin puesto",
       "cargandoVigilantes": "Cargando vigilantes…",
@@ -11632,7 +11644,7 @@
       "reconfigurarElPuestoTipoDe": "Reconfigurar el puesto (tipo de horario y rotación)",
       "siguienteAvPag": "Siguiente (Av Pág)",
       "terminaAlDiaSiguiente": "· termina al día siguiente",
-      "todaviaNoHayPuestosConfigurados": "Todavía no hay puestos configurados",
+      "todaviaNoHayPuestosConfigurados": "Todavía no hay estaciones",
       "todosLosVigilantesEstanAsignados": "Todos los vigilantes están asignados.",
       "todosLosVigilantesYaEstan": "Todos los vigilantes ya están asignados",
       "tusPuestosAunNoTienen": "Tus puestos aún no tienen horario.",
@@ -11645,7 +11657,7 @@
       "posicionEliminada": "Posición eliminada",
       "seleccionaCeldasDeUnPuesto": "Selecciona celdas de un puesto con vigilante asignado",
       "puestoSinVigilanteDobleClic": "Puesto sin vigilante — doble clic para asignar",
-      "creaUnPuestoDesdeLa": "Crea un puesto desde la sección de Puestos y el horario aparecerá aquí.",
+      "creaUnPuestoDesdeLa": "Crea tu primera estación en Estaciones (cliente → sede → estación) y su horario aparecerá aquí.",
       "estePuestoNoTienePosiciones": "Este puesto no tiene posiciones configuradas",
       "arrastraParaMoverClicPara": "Arrastra para mover · Clic para quitar",
       "asignarVigilanteSacafranco": "Asignar vigilante sacafranco",
@@ -11945,7 +11957,7 @@
       "noCuentaComoCobertura": "no cuenta como cobertura",
       "noDivideLaCobertura": " (no divide la cobertura)",
       "noHayEstaciones": "No hay estaciones.",
-      "noHayPuestosTodavia": "No hay puestos todavía.",
+      "noHayPuestosTodavia": "No hay estaciones todavía.",
       "noHaySacafrancos": "No hay sacafrancos. Con «Agregar» creas uno y eliges en qué estación va.",
       "noSePudoActualizarElTurno": "No se pudo actualizar el turno",
       "noSePudoCrearNingunTurno": "No se pudo crear ningún turno.",
@@ -12106,7 +12118,8 @@
       "yaTieneTurnoEseDiaSufijo": " · ya tiene turno ese día",
       "yseRepite": "· y se repite",
       "eliminarTurnosYNovedades": "Eliminar los turnos y novedades de la selección (Supr)",
-      "menuCorrerCiclo": "Correr ciclo de {{nombre}}…"
+      "menuCorrerCiclo": "Correr ciclo de {{nombre}}…",
+      "irAEstaciones": "Ir a Estaciones"
     },
     "ScheduleTimeline": {
       "duracion": "Duración:",
@@ -12702,7 +12715,7 @@
       "hasta": "Hasta*",
       "motivo": "Motivo*",
       "describeElMotivo": "Describe el motivo…",
-      "solicitudesDeTiempoLibre": "Solicitudes de tiempo libre",
+      "solicitudesDeTiempoLibre": "Solicitudes de ausencia",
       "aprobadas": "Aprobadas",
       "aprobar": "Aprobar",
       "ceroDeCero": "0 de 0",
@@ -14997,8 +15010,8 @@
     "NominaDashboard": {
       "aprobaciones": "Aprobaciones",
       "errorAlCargarElPanel": "Error al cargar el panel",
-      "excepciones": "Excepciones",
-      "lasExcepcionesSeDetectan": "Las excepciones (tarde, inasistencia, sin marcar salida) se detectan automáticamente cada pocos minutos y aparecen en",
+      "excepciones": "Novedades",
+      "lasExcepcionesSeDetectan": "Las novedades (atraso, falta, salida sin marcar) se detectan automáticamente cada pocos minutos y aparecen en",
       "resumenDeAsistenciaDeHoy": "Resumen de asistencia de hoy",
       "y": "y"
     },

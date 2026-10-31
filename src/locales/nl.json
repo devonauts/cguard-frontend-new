@@ -3929,13 +3929,6 @@
       "ticket_closed": "Ticket gesloten",
       "view_details": "Details bekijken"
     },
-    "equipo": {
-      "guardias": "Beveiligers",
-      "supervisores": "Supervisors",
-      "label": "Beveiligingsteam",
-      "usuarios": "Kantoorgebruikers",
-      "caras-registradas": "Geregistreerde gezichten"
-    },
     "facturador": {
       "elementos": "Diensten",
       "estimaciones": "Offertes",
@@ -4687,16 +4680,15 @@
       }
     },
     "nomina": {
+      "label": "Salaris",
+      "roles": "Loonstroken",
+      "planillas": "Loonruns",
+      "ajustes": "Loonaanpassingen",
+      "perfiles": "Loonprofielen",
+      "gusto": "Gusto",
       "ejecutar": "Loonrun starten",
       "horas-extras": "Overuren-toeslag",
-      "label": "Salaris",
-      "pasadas": "Eerdere loonruns",
-      "nomina-dashboard": "Dashboard",
-      "nomina-time-clock": "Tijdklok",
-      "nomina-records": "Aanwezigheidsregistraties",
-      "nomina-exceptions": "Uitzonderingen",
-      "nomina-approvals": "Goedkeuringen",
-      "nomina-settings": "Aanwezigheidsinstellingen"
+      "pasadas": "Eerdere loonruns"
     },
     "parking": {
       "areas": "Parkeerzone",
@@ -5269,19 +5261,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Aanwezigheid",
-      "estado": "Dienststatus",
-      "horario": "Rooster",
-      "planificador": "Planner",
-      "intercambio": "Dienstruil",
-      "label": "Planner",
-      "plantillas": "Dienstsjablonen",
-      "tiempo-libre": "Verlof",
-      "turnos-abiertos": "Open diensten",
-      "cobertura": "Live dekking",
-      "dobletes": "Dubbele diensten"
-    },
     "rastreador": {
       "historial": "Volggeschiedenis",
       "label": "GPS-tracker",
@@ -5496,16 +5475,21 @@
         "title": "Abonnement"
       }
     },
-    "estaciones": "Posten",
+    "estaciones": {
+      "label": "Posten",
+      "estaciones-tablero": "Alle posten",
+      "pases-de-turno": "Dienstoverdrachten",
+      "puestos-supervision": "Toezichtposten"
+    },
     "group": {
       "resumen": "Overzicht",
       "operacion": "Operatie",
-      "personal": "Personeel",
       "clientes": "Opdrachtgevers",
       "analisis": "Analyse",
       "sistema": "Systeem",
       "otros": "Overig",
-      "facturacion": "Facturatie"
+      "facturacion": "Facturatie",
+      "servicio": "Posten en personeel"
     },
     "commandCenter": "Commandocentrum",
     "searchPlaceholder": "Zoeken in het menu…",
@@ -5544,7 +5528,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Dispatch",
-      "radio-dispositivos": "IP-radio's"
+      "radio-dispositivos": "IP-radio's",
+      "radio-canales": "Kanalen"
     },
     "tareas": {
       "label": "Taken",
@@ -5562,7 +5547,6 @@
     "goToDashboard": "Naar het dashboard",
     "unreadMessages": "{{count}} ongelezen berichten",
     "emergencias": "Noodcentrale",
-    "pases-de-turno": "Dienstoverdrachten",
     "modulos-adicionales": "Extra modules",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Gezichten te keuren: {{count}}",
@@ -5573,6 +5557,33 @@
       "facturacion-antiguedad": "Ouderdomsanalyse",
       "facturacion-ajustes": "Factureringsinstellingen",
       "facturacion-cotizaciones": "Offertes"
+    },
+    "personal": {
+      "label": "Personeel",
+      "guardias": "Bewakers",
+      "supervisores": "Supervisors",
+      "usuarios": "Kantoorgebruikers",
+      "caras-registradas": "Geregistreerde gezichten",
+      "ausencias": "Afwezigheid en verlof"
+    },
+    "turnos": {
+      "label": "Diensten",
+      "horario": "Rooster",
+      "planificador": "Planner",
+      "sin-cubrir": "Onbezet",
+      "dobletes": "Dubbele diensten",
+      "intercambio": "Dienstruil"
+    },
+    "asistencia": {
+      "label": "Aanwezigheid",
+      "en-vivo": "Live",
+      "resumen-hoy": "Overzicht van vandaag",
+      "marcaciones": "Registraties",
+      "novedades": "Afwijkingen",
+      "aprobaciones": "Goedkeuringen",
+      "horas-periodo": "Uren van de periode",
+      "configuracion": "Instellingen",
+      "coberturaEnVivo": "Live dekking"
     }
   },
   "siteTour": {
@@ -6782,7 +6793,8 @@
       },
       "myTickets": "Mijn tickets",
       "myTicketsSub": "Antwoorden van support"
-    }
+    },
+    "timeClock": "In-/uitklokken"
   },
   "kit": {
     "pagination": {
@@ -12641,7 +12653,8 @@
       "yaTieneTurnoEseDiaSufijo": " · heeft die dag al een dienst",
       "yseRepite": "· en herhaalt zich",
       "eliminarTurnosYNovedades": "Geselecteerde diensten en bijzonderheden verwijderen (Del)",
-      "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…"
+      "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…",
+      "irAEstaciones": "Naar posten"
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",

@@ -713,7 +713,7 @@ export default function NominaTimecards() {
     <AppLayout>
       <PageContainer>
         <PageHeader
-          title={t("ui.NominaTimecards.tarjetasDeNomina", "Tarjetas de nómina")}
+          title={t("sidebar.asistencia.horas-periodo", "Horas del periodo")}
           subtitle={t(
             "ui.NominaTimecards.revisaElPeriodo",
             "Revisa el periodo, apruébalo y expórtalo para pagar.",

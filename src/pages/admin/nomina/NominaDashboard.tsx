@@ -133,7 +133,7 @@ export default function NominaDashboard() {
           }
           icon={<ClipboardList />}
           subtitle={t("ui.NominaDashboard.resumenDeAsistenciaDeHoy", "Resumen de asistencia de hoy")}
-          title={t("nomina.dashboard.cards.attendancePct", "Asistencia")}
+          title={t("sidebar.asistencia.resumen-hoy", "Resumen de hoy")}
         />
 
         {error && (
