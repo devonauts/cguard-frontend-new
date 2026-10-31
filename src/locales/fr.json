@@ -18926,13 +18926,26 @@
         "sinLimiteDiario": "pas de limite quotidienne",
         "sinLimiteSemanal": "pas de limite hebdomadaire",
         "tempranaNo": "non payée",
-        "tempranaSi": "payée"
+        "tempranaSi": "payée",
+        "extraNocturna": "Heure supplémentaire de nuit ({{desde}}:00–{{hasta}}:00) : +{{pct}} % (ou son palier, s'il est plus élevé)",
+        "extraNocturnaComoExtra": "Heure supplémentaire de nuit : comme toute heure supplémentaire",
+        "descanso": "Jour de repos : le repos de la rotation de chaque agent · superviseurs et bureau : {{dia}}",
+        "descansoSinSemanal": "Jour de repos : le repos de la rotation de chaque agent (superviseurs et bureau : aucun)"
       },
       "semanaLaboralEmpieza": "La semaine de travail commence le",
       "semanalAyuda": "Au-delà, dans la semaine, ce sont des heures supplémentaires (États-Unis : 40). 0 = pas de règle hebdomadaire.",
       "sinConfigurar": "Personne n’a encore configuré ces règles : la durée suit celle du pays et aucune majoration n’est appliquée. Vérifiez-les et enregistrez.",
       "sinPais": "Aucun pays",
-      "sinPreset": "Nous n’avons pas de règles pour ce pays : déclarez ici celles de votre convention."
+      "sinPreset": "Nous n’avons pas de règles pour ce pays : déclarez ici celles de votre convention.",
+      "descansoAyuda": "Payée sur les heures travaillées le jour de repos de chaque personne : le repos de sa rotation, ou un jour marqué « L » dans le Planning.",
+      "descansoSemanal": "Jour de repos hebdomadaire (superviseurs et bureau)",
+      "descansoSemanalAyuda": "Les personnes sans rotation touchent la majoration de repos si elles travaillent ce jour-là.",
+      "ninguno": "Aucun",
+      "extraNocturna": "Heure supplémentaire de nuit avec sa propre majoration",
+      "extraNocturnaAyuda": "Les heures supplémentaires dans cette plage sont payées à cette majoration si elle dépasse leur palier (Colombie : 19–6 à 75 % ; Équateur : 0–6 à 100 %).",
+      "extraNocturnaDesde": "Supplémentaire de nuit : de (heure)",
+      "extraNocturnaHasta": "Supplémentaire de nuit : à (heure)",
+      "extraNocturnaPct": "Majoration de l'heure supplémentaire de nuit (%)"
     }
   },
   "visitantes": {

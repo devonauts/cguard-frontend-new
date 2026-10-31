@@ -18926,13 +18926,26 @@
         "sinLimiteDiario": "kein Tageslimit",
         "sinLimiteSemanal": "kein Wochenlimit",
         "tempranaNo": "nicht bezahlt",
-        "tempranaSi": "bezahlt"
+        "tempranaSi": "bezahlt",
+        "extraNocturna": "Nacht-Überstunde ({{desde}}:00–{{hasta}}:00): +{{pct}} % (oder ihre Stufe, falls höher)",
+        "extraNocturnaComoExtra": "Nacht-Überstunde: wie jede Überstunde",
+        "descanso": "Ruhetag: der freie Tag im Dienstplan jeder Wachkraft · Supervisoren und Büro: {{dia}}",
+        "descansoSinSemanal": "Ruhetag: der freie Tag im Dienstplan jeder Wachkraft (Supervisoren und Büro: keiner)"
       },
       "semanaLaboralEmpieza": "Die Arbeitswoche beginnt am",
       "semanalAyuda": "Was darüber hinaus in der Woche geht, sind Überstunden (USA: 40). 0 = keine Wochenregel.",
       "sinConfigurar": "Niemand hat diese Regeln bisher eingerichtet: Die Arbeitszeit folgt dem Land und es gilt kein Zuschlag. Prüfen und speichern.",
       "sinPais": "Kein Land",
-      "sinPreset": "Für dieses Land sind keine Regeln hinterlegt: Tragen Sie hier die Ihres Tarifvertrags ein."
+      "sinPreset": "Für dieses Land sind keine Regeln hinterlegt: Tragen Sie hier die Ihres Tarifvertrags ein.",
+      "descansoAyuda": "Wird auf die Stunden gezahlt, die am freien Tag der Person gearbeitet werden: der freie Tag ihres Dienstplans oder ein im Dienstplan mit «L» markierter Tag.",
+      "descansoSemanal": "Wöchentlicher Ruhetag (Supervisoren und Büro)",
+      "descansoSemanalAyuda": "Wer keinen Dienstplan hat, erhält den Ruhetagszuschlag, wenn er an diesem Tag arbeitet.",
+      "ninguno": "Keiner",
+      "extraNocturna": "Nacht-Überstunde mit eigenem Zuschlag",
+      "extraNocturnaAyuda": "Überstunden in diesem Zeitfenster werden mit diesem Zuschlag bezahlt, wenn er höher ist als ihre Stufe (Kolumbien: 19–6 mit 75 %; Ecuador: 0–6 mit 100 %).",
+      "extraNocturnaDesde": "Nacht-Überstunde: ab (Uhr)",
+      "extraNocturnaHasta": "Nacht-Überstunde: bis (Uhr)",
+      "extraNocturnaPct": "Zuschlag für Nacht-Überstunden (%)"
     }
   },
   "visitantes": {

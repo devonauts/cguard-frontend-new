@@ -18391,13 +18391,26 @@
         "sinLimiteDiario": "no daily limit",
         "sinLimiteSemanal": "no weekly limit",
         "tempranaNo": "not paid",
-        "tempranaSi": "paid"
+        "tempranaSi": "paid",
+        "extraNocturna": "Night overtime ({{desde}}:00–{{hasta}}:00): +{{pct}}% (or its tier, if higher)",
+        "extraNocturnaComoExtra": "Night overtime: like any overtime hour",
+        "descanso": "Rest day: each guard's day off in the rotation · supervisors and office: {{dia}}",
+        "descansoSinSemanal": "Rest day: each guard's day off in the rotation (supervisors and office: none)"
       },
       "semanaLaboralEmpieza": "The workweek starts on",
       "semanalAyuda": "Anything over this in the week is overtime (US: 40). 0 = no weekly rule.",
       "sinConfigurar": "Nobody has configured these rules yet: the working hours follow the country and no surcharge is applied. Review them and save.",
       "sinPais": "No country",
-      "sinPreset": "We have no saved rules for this country: set your agreement’s rules here."
+      "sinPreset": "We have no saved rules for this country: set your agreement’s rules here.",
+      "descansoAyuda": "Paid on the hours worked on each person's day off: the day off in their rotation, or a day marked «L» in the Schedule.",
+      "descansoSemanal": "Weekly rest day (supervisors and office)",
+      "descansoSemanalAyuda": "People without a rotation get the rest-day premium when they work on this day.",
+      "ninguno": "None",
+      "extraNocturna": "Night overtime with its own premium",
+      "extraNocturnaAyuda": "Overtime hours in this window are paid at this premium when it is higher than their tier (Colombia: 19–6 at 75%; Ecuador: 0–6 at 100%).",
+      "extraNocturnaDesde": "Night overtime: from (hour)",
+      "extraNocturnaHasta": "Night overtime: until (hour)",
+      "extraNocturnaPct": "Night overtime premium (%)"
     }
   },
   "map": {

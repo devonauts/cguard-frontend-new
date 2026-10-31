@@ -18926,13 +18926,26 @@
         "sinLimiteDiario": "geen daglimiet",
         "sinLimiteSemanal": "geen weeklimiet",
         "tempranaNo": "niet betaald",
-        "tempranaSi": "betaald"
+        "tempranaSi": "betaald",
+        "extraNocturna": "Nachtelijk overwerk ({{desde}}:00–{{hasta}}:00): +{{pct}} % (of de eigen schijf, als die hoger is)",
+        "extraNocturnaComoExtra": "Nachtelijk overwerk: zoals elk overuur",
+        "descanso": "Rustdag: de vrije dag in het rooster van elke beveiliger · supervisors en kantoor: {{dia}}",
+        "descansoSinSemanal": "Rustdag: de vrije dag in het rooster van elke beveiliger (supervisors en kantoor: geen)"
       },
       "semanaLaboralEmpieza": "De werkweek begint op",
       "semanalAyuda": "Wat daarboven in de week valt, zijn overuren (VS: 40). 0 = geen weekregel.",
       "sinConfigurar": "Niemand heeft deze regels nog ingesteld: de werktijd volgt het land en er geldt geen toeslag. Controleer ze en sla op.",
       "sinPais": "Geen land",
-      "sinPreset": "We hebben geen regels voor dit land: vul hier die van je cao in."
+      "sinPreset": "We hebben geen regels voor dit land: vul hier die van je cao in.",
+      "descansoAyuda": "Betaald over de uren gewerkt op de vrije dag van elke persoon: de vrije dag in het rooster, of een dag met «L» in de Planning.",
+      "descansoSemanal": "Wekelijkse rustdag (supervisors en kantoor)",
+      "descansoSemanalAyuda": "Wie geen rooster heeft, krijgt de rustdagtoeslag als hij op deze dag werkt.",
+      "ninguno": "Geen",
+      "extraNocturna": "Nachtelijk overwerk met een eigen toeslag",
+      "extraNocturnaAyuda": "Overuren in dit tijdvak worden met deze toeslag betaald als die hoger is dan hun schijf (Colombia: 19–6 tegen 75 %; Ecuador: 0–6 tegen 100 %).",
+      "extraNocturnaDesde": "Nachtelijk overwerk: vanaf (uur)",
+      "extraNocturnaHasta": "Nachtelijk overwerk: tot (uur)",
+      "extraNocturnaPct": "Toeslag nachtelijk overwerk (%)"
     }
   },
   "visitantes": {

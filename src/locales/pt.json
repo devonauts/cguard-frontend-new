@@ -18391,13 +18391,26 @@
         "sinLimiteDiario": "sem limite diário",
         "sinLimiteSemanal": "sem limite semanal",
         "tempranaNo": "não é paga",
-        "tempranaSi": "é paga"
+        "tempranaSi": "é paga",
+        "extraNocturna": "Hora extra noturna ({{desde}}:00–{{hasta}}:00): +{{pct}} % (ou a sua faixa, se for maior)",
+        "extraNocturnaComoExtra": "Hora extra noturna: como qualquer hora extra",
+        "descanso": "Dia de descanso: a folga da escala de cada vigilante · supervisores e escritório: {{dia}}",
+        "descansoSinSemanal": "Dia de descanso: a folga da escala de cada vigilante (supervisores e escritório: nenhum)"
       },
       "semanaLaboralEmpieza": "A semana de trabalho começa na",
       "semanalAyuda": "O que passar disto na semana é hora extra (EUA: 40). 0 = sem regra semanal.",
       "sinConfigurar": "Ninguém configurou estas regras ainda: a jornada segue a do país e nenhum adicional é aplicado. Revise e salve.",
       "sinPais": "Sem país",
-      "sinPreset": "Não temos regras salvas para este país: declare aqui as do seu acordo."
+      "sinPreset": "Não temos regras salvas para este país: declare aqui as do seu acordo.",
+      "descansoAyuda": "Pago sobre as horas trabalhadas no dia de folga de cada pessoa: a folga da escala, ou um dia marcado «L» no Horário.",
+      "descansoSemanal": "Dia de descanso semanal (supervisores e escritório)",
+      "descansoSemanalAyuda": "Quem não tem escala recebe o adicional de descanso se trabalhar neste dia.",
+      "ninguno": "Nenhum",
+      "extraNocturna": "Hora extra noturna com adicional próprio",
+      "extraNocturnaAyuda": "As horas extras nesta faixa são pagas com este adicional quando for maior que a sua faixa (Colômbia: 19–6 a 75 %; Equador: 0–6 a 100 %).",
+      "extraNocturnaDesde": "Extra noturna: das (hora)",
+      "extraNocturnaHasta": "Extra noturna: até (hora)",
+      "extraNocturnaPct": "Adicional da extra noturna (%)"
     }
   },
   "map": {
