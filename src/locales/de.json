@@ -8363,6 +8363,8 @@
       "vehicleOverstayHint": "Ein Fahrzeug befindet sich länger auf dem Gelände als die unter Fahrzeugkontrolle › Objektregeln festgelegten Minuten. Es wird nur einmal pro Fahrzeug benachrichtigt",
       "columnPush": "Telefon",
       "payslipPublishedLabel": "Lohnabrechnung veröffentlicht",
+      "scheduleChangesLabel": "Dienstplanänderungen (an die Wachkraft)",
+      "scheduleChangesHint": "Eine Mitteilung pro Änderung: neue, entfernte oder verschobene Schichten, ein neuer oder ein abgegebener Posten. Ausschalten, wenn Sie selbst Bescheid geben",
       "dobletesOfficeLabel": "Doppelschichten: besetzt oder niemand angenommen",
       "dobletesOffersLabel": "Doppelschicht-Angebote (an Sicherheitskräfte)"
     },

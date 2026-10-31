@@ -7861,6 +7861,8 @@
       "vehicleOverstayHint": "Un vehículo lleva dentro más de los minutos que fijaste en Control vehicular › Reglas del puesto. Se avisa una sola vez por vehículo",
       "columnPush": "Teléfono",
       "payslipPublishedLabel": "Rol de pago publicado",
+      "scheduleChangesLabel": "Cambios de horario (al vigilante)",
+      "scheduleChangesHint": "Un solo aviso por cambio: turnos nuevos, quitados o movidos, un puesto nuevo o uno que deja. Apágalo si prefieres avisarle tú",
       "dobletesOfficeLabel": "Dobletes: cubierto o sin aceptar",
       "dobletesOffersLabel": "Ofertas de dobletes (a los vigilantes)"
     },

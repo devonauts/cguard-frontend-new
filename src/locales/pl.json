@@ -8373,6 +8373,8 @@
       "vehicleOverstayHint": "Pojazd przebywa wewnątrz dłużej niż liczba minut ustawiona w Kontrola pojazdów › Zasady posterunku. Powiadomienie wysyłane jest raz na pojazd",
       "columnPush": "Telefon",
       "payslipPublishedLabel": "Opublikowano pasek wypłaty",
+      "scheduleChangesLabel": "Zmiany grafiku (dla pracownika ochrony)",
+      "scheduleChangesHint": "Jedno powiadomienie na zmianę: nowe, usunięte lub przesunięte zmiany, nowy posterunek lub opuszczony. Wyłącz, jeśli wolisz informować samodzielnie",
       "dobletesOfficeLabel": "Podwójne zmiany: obsadzone lub nikt nie przyjął",
       "dobletesOffersLabel": "Oferty podwójnych zmian (dla ochroniarzy)"
     },

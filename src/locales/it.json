@@ -8363,6 +8363,8 @@
       "vehicleOverstayHint": "Un veicolo è dentro da più minuti di quelli che hai fissato in Controllo veicoli › Regole del posto. Si avvisa una sola volta per veicolo",
       "columnPush": "Telefono",
       "payslipPublishedLabel": "Busta paga pubblicata",
+      "scheduleChangesLabel": "Cambi di turno (alla guardia)",
+      "scheduleChangesHint": "Un solo avviso per cambio: turni nuovi, rimossi o spostati, un posto nuovo o uno che lascia. Disattivalo se preferisci avvisarla tu",
       "dobletesOfficeLabel": "Doppi turni: coperto o nessuno ha accettato",
       "dobletesOffersLabel": "Offerte di doppi turni (alle guardie)"
     },

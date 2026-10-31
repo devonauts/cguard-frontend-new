@@ -3490,6 +3490,8 @@
       "vehicleOverstayHint": "Um veículo está há mais tempo do que os minutos definidos em Controle veicular › Regras do posto. Avisa uma única vez por veículo",
       "columnPush": "Telefone",
       "payslipPublishedLabel": "Holerite publicado",
+      "scheduleChangesLabel": "Mudanças de horário (ao vigilante)",
+      "scheduleChangesHint": "Um único aviso por mudança: turnos novos, removidos ou alterados, um posto novo ou um que deixa. Desative se preferir avisar você mesmo",
       "dobletesOfficeLabel": "Dobras: coberta ou ninguém aceitou",
       "dobletesOffersLabel": "Ofertas de dobras (aos vigilantes)"
     },

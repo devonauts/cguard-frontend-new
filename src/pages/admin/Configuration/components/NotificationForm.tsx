@@ -258,6 +258,18 @@ export default function NotificationMatrix() {
         default: { dashboard: true },
       },
       {
+        // One coalesced notice to the guard per schedule change (phase 2).
+        id: "schedule-changes",
+        label: t("settings.notificationForm.scheduleChangesLabel", {
+          defaultValue: "Cambios de horario (al vigilante)",
+        }),
+        hint: t("settings.notificationForm.scheduleChangesHint", {
+          defaultValue:
+            "Un solo aviso por cambio: turnos nuevos, quitados o movidos, un puesto nuevo o uno que deja. Apágalo si prefieres avisarle tú",
+        }),
+        default: { dashboard: true, push: true },
+      },
+      {
         id: "payslip-published",
         label: t("settings.notificationForm.payslipPublishedLabel", {
           defaultValue: "Rol de pago publicado",

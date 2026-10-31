@@ -8363,6 +8363,8 @@
       "vehicleOverstayHint": "Een voertuig staat langer binnen dan het aantal minuten dat u heeft ingesteld bij Voertuigcontrole › Regels van de post. Er volgt één melding per voertuig",
       "columnPush": "Telefoon",
       "payslipPublishedLabel": "Loonstrook gepubliceerd",
+      "scheduleChangesLabel": "Roosterwijzigingen (aan de beveiliger)",
+      "scheduleChangesHint": "Eén melding per wijziging: diensten toegevoegd, verwijderd of verplaatst, een nieuwe post of een post die vervalt. Zet uit als je het liever zelf laat weten",
       "dobletesOfficeLabel": "Dubbele diensten: gedekt of niemand geaccepteerd",
       "dobletesOffersLabel": "Aanbiedingen dubbele diensten (aan beveiligers)"
     },
