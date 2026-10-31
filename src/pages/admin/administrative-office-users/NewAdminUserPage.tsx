@@ -79,7 +79,7 @@ export default function NewAdminUserPage() {
     reset,
   } = form;
 
-  type RoleOption = { id: string; name: string; slug?: string };
+  type RoleOption = { id: string; name: string; slug?: string; permissionCount?: number };
 
   const [clientOptions, setClientOptions] = useState<
     Array<{ id: string; name: string }>
@@ -109,7 +109,7 @@ export default function NewAdminUserPage() {
         slug === "administrativesupervisor"
       ) {
         return t("adminOfficeUsers.roleNames.administrativeSupervisor", {
-          defaultValue: "Supervisor Administrativo",
+          defaultValue: "Supervisor de oficina",
         });
       }
       if (
@@ -360,6 +360,9 @@ export default function NewAdminUserPage() {
             id: id || name || slug || "",
             name: name || slug || id || "",
             slug,
+            permissionCount: Array.isArray(r.permissions)
+              ? r.permissions.length
+              : undefined,
           };
         });
 
@@ -372,24 +375,22 @@ export default function NewAdminUserPage() {
           ? withoutSecuritySupervisor
           : [adminRole, ...withoutSecuritySupervisor];
 
-        setRoleOptions(mappedRolesWithAdmin);
-
-        if (!accessLevelValue) {
-          setValue("accessLevel", adminRole.id);
-        }
+        // Least power first, and nothing preselected (audit 2026-10-31): a new
+        // office person used to start as «Administrador», the role that can do
+        // everything, unless someone noticed and changed it.
+        setRoleOptions(
+          [...mappedRolesWithAdmin].sort(
+            (a, b) =>
+              (a.permissionCount ?? Number.MAX_SAFE_INTEGER) -
+                (b.permissionCount ?? Number.MAX_SAFE_INTEGER) ||
+              getRoleDisplayName(a).localeCompare(getRoleDisplayName(b)),
+          ),
+        );
       } catch (err) {
         console.error("Error cargando datos iniciales", err);
       }
     })();
   }, [accessLevelValue, setValue]);
-
-  useEffect(() => {
-    if (!accessLevelValue && roleOptions.length > 0) {
-      const adminRole = findAdminRole(roleOptions) ?? roleOptions[0];
-
-      setValue("accessLevel", adminRole.id);
-    }
-  }, [accessLevelValue, roleOptions, setValue, findAdminRole]);
 
   // load sites whenever selected clients change
   useEffect(() => {
@@ -1098,7 +1099,15 @@ export default function NewAdminUserPage() {
                             className="text-xs"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            {roleDisplayDescription(field.value)}
+                            {(() => {
+                              const elegido = roleOptions.find(
+                                (r) => r.id === field.value,
+                              );
+
+                              return roleDisplayDescription(
+                                elegido?.slug || elegido?.name || field.value,
+                              );
+                            })()}
                           </p>
                         )}
                         <FormMessage />
@@ -1395,7 +1404,7 @@ export default function NewAdminUserPage() {
                   </DialogContent>
                 </Dialog>
                 <Button
-                  disabled={formState.isSubmitting}
+                  disabled={formState.isSubmitting || !accessLevelValue}
                   type="submit"
                   variant="brand"
                 >

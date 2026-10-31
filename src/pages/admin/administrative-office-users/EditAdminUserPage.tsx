@@ -168,7 +168,7 @@ export default function EditAdminUserPage() {
         slug === "administrativesupervisor"
       ) {
         return t("adminOfficeUsers.roleNames.administrativeSupervisor", {
-          defaultValue: "Supervisor Administrativo",
+          defaultValue: "Supervisor de oficina",
         });
       }
       if (
