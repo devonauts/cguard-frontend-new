@@ -168,6 +168,14 @@ describe("agregarPersona · step 3 (where and when)", () => {
     expect(
       validarLugar({
         tipo: "supervisor",
+        positionId: "p1",
+        desde: "",
+        sinRotacion: true,
+      }),
+    ).toBe("puestoSinRotacion");
+    expect(
+      validarLugar({
+        tipo: "supervisor",
         positionId: "p",
         desde: "02/11/2026",
       }),

@@ -22364,7 +22364,7 @@
       "crearPuesto": "Utwórz stanowisko nadzoru",
       "sinPuestosSup": "Brak stanowisk nadzoru",
       "sinPuestosSupTexto": "Utwórz je przez „Utwórz stanowisko nadzoru”, kliknij „Odśwież” albo zostaw grafik na później.",
-      "puestoSinRotacion": "To stanowisko nie ma rotacji. Sprawdź je w Stanowiskach nadzoru, żeby grafik był poprawny.",
+      "puestoSinRotacion": "To stanowisko nie ma jeszcze rotacji, więc nie da żadnych zmian. Dodaj ją w Stanowiskach nadzoru i dotknij «Odśwież» albo wybierz inne stanowisko.",
       "desde": "Zaczyna",
       "desdeOficina": "Ten grafik zaczyna się",
       "despuesTitulo": "Grafik ustawisz później",
@@ -22373,7 +22373,8 @@
       "eligePlaza": "Wybierz posterunek albo kliknij „Zrobię to później”",
       "eligePuesto": "Wybierz stanowisko nadzoru albo kliknij „Zrobię to później”",
       "revisaJornada": "Sprawdź godziny zaznaczone na czerwono",
-      "ningunDia": "Zaznacz co najmniej jeden dzień albo kliknij „Zrobię to później”."
+      "ningunDia": "Zaznacz co najmniej jeden dzień albo kliknij „Zrobię to później”.",
+      "puestoSinRotacionCorto": "To stanowisko nie ma jeszcze rotacji"
     },
     "oficina": {
       "titulo": "Biuro (opcjonalnie)",

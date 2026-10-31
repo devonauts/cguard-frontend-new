@@ -1401,7 +1401,11 @@ export default function AgregarPersonaPage() {
                                   libre={p.libre}
                                   titulo={p.titulo}
                                   onClick={() =>
-                                    setHorario({ ...horario, positionId: p.id })
+                                    setHorario({
+                                      ...horario,
+                                      positionId: p.id,
+                                      sinRotacion: !!p.sinRotacion,
+                                    })
                                   }
                                 />
                               ))}
@@ -1412,7 +1416,7 @@ export default function AgregarPersonaPage() {
                             <InfoNote tone="warn">
                               {t(
                                 "agregarPersona.paso3.puestoSinRotacion",
-                                "Este puesto no tiene rotación definida. Revísalo en Puestos de supervisión para que el horario salga bien.",
+                                "Este puesto todavía no tiene rotación, así que no le daría turnos. Ponle una en Puestos de supervisión y toca «Recargar», o elige otro puesto.",
                               )}
                             </InfoNote>
                           )}
@@ -1552,10 +1556,15 @@ export default function AgregarPersonaPage() {
                             "Elige un puesto o toca «Lo hago después»",
                           )
                       : horario?.tipo === "supervisor"
-                        ? t(
-                            "agregarPersona.paso3.eligePuesto",
-                            "Elige un puesto de supervisión o toca «Lo hago después»",
-                          )
+                        ? validarLugar(horario) === "puestoSinRotacion"
+                          ? t(
+                              "agregarPersona.paso3.puestoSinRotacionCorto",
+                              "Ese puesto no tiene rotación todavía",
+                            )
+                          : t(
+                              "agregarPersona.paso3.eligePuesto",
+                              "Elige un puesto de supervisión o toca «Lo hago después»",
+                            )
                         : t(
                             "agregarPersona.paso3.revisaJornada",
                             "Revisa las horas marcadas en rojo",

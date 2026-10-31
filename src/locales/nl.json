@@ -22060,7 +22060,7 @@
       "crearPuesto": "Supervisiepost aanmaken",
       "sinPuestosSup": "Nog geen supervisieposten",
       "sinPuestosSupTexto": "Maak er een met „Supervisiepost aanmaken”, tik op „Opnieuw laden”, of laat het rooster voor later.",
-      "puestoSinRotacion": "Deze post heeft geen rotatie. Controleer hem bij Supervisieposten zodat het rooster klopt.",
+      "puestoSinRotacion": "Deze post heeft nog geen rotatie, dus er komen geen diensten uit. Voeg er een toe bij Supervisieposten en tik op «Opnieuw laden», of kies een andere post.",
       "desde": "Begint op",
       "desdeOficina": "Dit rooster begint op",
       "despuesTitulo": "Je stelt het rooster later in",
@@ -22069,7 +22069,8 @@
       "eligePlaza": "Kies een post of tik op „Later”",
       "eligePuesto": "Kies een supervisiepost of tik op „Later”",
       "revisaJornada": "Controleer de rood gemarkeerde uren",
-      "ningunDia": "Vink minstens één dag aan, of tik op „Later”."
+      "ningunDia": "Vink minstens één dag aan, of tik op „Later”.",
+      "puestoSinRotacionCorto": "Deze post heeft nog geen rotatie"
     },
     "oficina": {
       "titulo": "Het kantoor (optioneel)",

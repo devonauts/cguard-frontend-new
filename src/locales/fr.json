@@ -22060,7 +22060,7 @@
       "crearPuesto": "Créer un poste de supervision",
       "sinPuestosSup": "Pas encore de postes de supervision",
       "sinPuestosSupTexto": "Créez-en un avec « Créer un poste de supervision », appuyez sur « Recharger », ou laissez l’horaire pour plus tard.",
-      "puestoSinRotacion": "Ce poste n’a pas de rotation. Vérifiez-le dans Postes de supervision pour que l’horaire soit juste.",
+      "puestoSinRotacion": "Ce poste n'a pas encore de rotation, il ne lui donnerait donc aucun service. Ajoutez-en une dans Postes de supervision et touchez «Recharger», ou choisissez un autre poste.",
       "desde": "Commence le",
       "desdeOficina": "Cet horaire commence le",
       "despuesTitulo": "Vous définirez l’horaire plus tard",
@@ -22069,7 +22069,8 @@
       "eligePlaza": "Choisissez un poste ou appuyez sur « Plus tard »",
       "eligePuesto": "Choisissez un poste de supervision ou appuyez sur « Plus tard »",
       "revisaJornada": "Vérifiez les heures en rouge",
-      "ningunDia": "Cochez au moins un jour, ou appuyez sur « Plus tard »."
+      "ningunDia": "Cochez au moins un jour, ou appuyez sur « Plus tard ».",
+      "puestoSinRotacionCorto": "Ce poste n'a pas encore de rotation"
     },
     "oficina": {
       "titulo": "Son bureau (facultatif)",

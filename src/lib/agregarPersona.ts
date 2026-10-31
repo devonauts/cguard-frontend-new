@@ -141,7 +141,13 @@ export type Lugar =
       sinRotacion?: boolean;
       rotationStyleId?: string | null;
     }
-  | { tipo: "supervisor"; positionId: string; desde: string }
+  | {
+      tipo: "supervisor";
+      positionId: string;
+      desde: string;
+      /** The post has no rotation: the server refuses the assignment (no shifts would come out). */
+      sinRotacion?: boolean;
+    }
   | {
       tipo: "oficina";
       jornada: Jornada;
@@ -156,6 +162,7 @@ export type ErrorDeLugar =
   | "eligePlaza"
   | "eligePuesto"
   | "eligeRotacion"
+  | "puestoSinRotacion"
   | "fechaInvalida"
   | "jornadaInvalida"
   | "ubicacionInvalida"
@@ -192,7 +199,11 @@ export function validarLugar(h: Horario): ErrorDeLugar {
 
     return h.sinRotacion && !h.rotationStyleId ? "eligeRotacion" : null;
   }
-  if (h.tipo === "supervisor") return h.positionId ? null : "eligePuesto";
+  if (h.tipo === "supervisor") {
+    if (!h.positionId) return "eligePuesto";
+
+    return h.sinRotacion ? "puestoSinRotacion" : null;
+  }
   if (!validarJornada(h.jornada, h.desde || null).ok) return "jornadaInvalida";
   if (!ubicacionValida(h.oficina)) return "ubicacionInvalida";
 

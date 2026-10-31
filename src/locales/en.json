@@ -22060,7 +22060,7 @@
       "crearPuesto": "Create a supervision post",
       "sinPuestosSup": "No supervision posts yet",
       "sinPuestosSupTexto": "Create one with «Create a supervision post», tap «Reload», or leave the schedule for later.",
-      "puestoSinRotacion": "This post has no rotation. Check it in Supervision posts so the schedule comes out right.",
+      "puestoSinRotacion": "This post has no rotation yet, so it would give them no shifts. Add one in Supervisor posts and tap «Reload», or pick another post.",
       "desde": "Starts on",
       "desdeOficina": "This schedule starts on",
       "despuesTitulo": "You’ll set the schedule later",
@@ -22069,7 +22069,8 @@
       "eligePlaza": "Choose a post or tap «I’ll do it later»",
       "eligePuesto": "Choose a supervision post or tap «I’ll do it later»",
       "revisaJornada": "Check the hours marked in red",
-      "ningunDia": "Tick at least one day, or tap «I’ll do it later»."
+      "ningunDia": "Tick at least one day, or tap «I’ll do it later».",
+      "puestoSinRotacionCorto": "That post has no rotation yet"
     },
     "oficina": {
       "titulo": "Their office (optional)",

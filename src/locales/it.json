@@ -22060,7 +22060,7 @@
       "crearPuesto": "Crea un posto di supervisione",
       "sinPuestosSup": "Ancora nessun posto di supervisione",
       "sinPuestosSupTexto": "Creane uno con «Crea un posto di supervisione», tocca «Ricarica», o lascia l’orario per dopo.",
-      "puestoSinRotacion": "Questo posto non ha una rotazione. Controllalo in Posti di supervisione perché l’orario risulti corretto.",
+      "puestoSinRotacion": "Questa postazione non ha ancora una rotazione, quindi non gli darebbe turni. Aggiungine una in Postazioni di supervisione e tocca «Ricarica», oppure scegli un'altra postazione.",
       "desde": "Inizia il",
       "desdeOficina": "Questo orario inizia il",
       "despuesTitulo": "Imposterai l’orario dopo",
@@ -22069,7 +22069,8 @@
       "eligePlaza": "Scegli un posto o tocca «Lo faccio dopo»",
       "eligePuesto": "Scegli un posto di supervisione o tocca «Lo faccio dopo»",
       "revisaJornada": "Controlla le ore segnate in rosso",
-      "ningunDia": "Seleziona almeno un giorno, o tocca «Lo faccio dopo»."
+      "ningunDia": "Seleziona almeno un giorno, o tocca «Lo faccio dopo».",
+      "puestoSinRotacionCorto": "Questa postazione non ha ancora una rotazione"
     },
     "oficina": {
       "titulo": "Il suo ufficio (facoltativo)",
