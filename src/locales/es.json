@@ -2217,7 +2217,8 @@
         "inviteNoContact": "Este vigilante no tiene correo: añádele uno para poder invitarlo.",
         "deletedWithShifts_one": "Eliminado. Se canceló {{count}} turno: queda como hueco en el Horario.",
         "deletedWithShifts_other": "Eliminado. Se cancelaron {{count}} turnos: quedan como huecos en el Horario.",
-        "bulkActionError": "No se pudo completar la acción: {{msg}}"
+        "bulkActionError": "No se pudo completar la acción: {{msg}}",
+        "archiveScheduled": "Baja programada: el acceso se corta al terminar el {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2228,7 +2229,8 @@
           "notePh": "Detalle del motivo",
           "rehire": "Elegible para recontratación",
           "note": "Nota (opcional)",
-          "reason": "Motivo"
+          "reason": "Motivo",
+          "futureHint": "Trabaja hasta ese día. Sus turnos posteriores se quitan ahora y el acceso se corta al terminar ese día."
         },
         "bulk": {
           "archiveDescription": "¿Estás seguro de que deseas archivar {{count}} vigilante(s)? Esta acción se puede revertir desde el filtro de archivados.",
@@ -6657,7 +6659,8 @@
       "sacaTitle": "Agregar sacafranco",
       "title": "Vigilantes Asignados",
       "editShift": "Editar turno",
-      "eventoSub": "Vigilante para las fechas del evento"
+      "eventoSub": "Vigilante para las fechas del evento",
+      "stationFull": "Todas las plazas de este puesto ya tienen vigilante. Si el cliente pide uno más, agrega una plaza en el horario del puesto y vuelve a asignar."
     },
     "incidents": {
       "col": {
@@ -7876,7 +7879,9 @@
       "emptyDescription": "Agrega los feriados de tu país y los días propios de tu empresa.",
       "kindNationalBadge": "De ley",
       "kindCompanyBadge": "De la empresa",
-      "deleteAriaLabel": "Borrar {{name}}"
+      "deleteAriaLabel": "Borrar {{name}}",
+      "recargoUnico": "Recargo",
+      "recargoUnicoAyuda": "Es el mismo para todos los feriados y se define en las reglas de pago."
     },
     "userRoles": {
       "actionBtn": "Acción",
@@ -11171,7 +11176,8 @@
       },
       "creaCadaEstacionEvento": "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
       "eventoConEstaciones_one": "{{count}} estación. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
-      "eventoConEstaciones_other": "{{count}} estaciones. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento."
+      "eventoConEstaciones_other": "{{count}} estaciones. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
+      "horarioNoGuardado": "La estación se guardó, pero su horario no. Revísalo en la ficha de la estación."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Buena iluminación — evite sombras y contraluz",
@@ -12716,7 +12722,21 @@
       "rechazar": "Rechazar",
       "todos": "Todos",
       "vacaciones": "Vacaciones",
-      "eligeAlVigilante": "Elige a quién corresponde el permiso."
+      "eligeAlVigilante": "Elige a quién corresponde el permiso.",
+      "conGoceDeSueldo": "Con goce de sueldo (si no se marca, se descuenta)",
+      "aprobadoConHuecos": "Permiso aprobado. {{n}} turno(s) quedan como hueco en Cobertura para que alguien los cubra.",
+      "aprobadoSinTurnos": "Permiso aprobado. No tenía turnos esos días.",
+      "turnosYaMarcados": "{{n}} turno(s) con entrada marcada se dejaron como trabajados.",
+      "aprobadoAntesSinRegistro": "Este permiso se aprobó antes de que el sistema guardara lo que cambiaba en el horario. Revisa sus días en el Horario y quita las marcas a mano.",
+      "turnosDevueltos": "Listo. Se devolvieron {{n}} turno(s) al horario.",
+      "diasYaCubiertos": "Ya tenían reemplazo y se quedan como están: {{dias}}. Revísalos en Cobertura.",
+      "diasCerrados": "Son de un periodo de nómina cerrado y no se tocan: {{dias}}.",
+      "diasCambiadosAMano": "Alguien los cambió a mano después y se respetan: {{dias}}.",
+      "cancelarPermiso": "Cancelar el permiso",
+      "cancelarPermisoMensaje": "Los turnos de esos días vuelven al horario y sus huecos en Cobertura se cierran. Los días que ya tienen reemplazo se quedan como están.",
+      "cancelarPermisoBoton": "Cancelar permiso",
+      "eliminarAprobada": "Se elimina la solicitud y se deshace lo que su aprobación cambió en el horario. Los días que ya tienen reemplazo se quedan como están.",
+      "cancelado": "Cancelado"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -15001,7 +15021,7 @@
       "aprobarN_other": "Aprobar ({{count}})",
       "calculando": "Calculando…",
       "calculoTardaDemasiado": "El cálculo está tardando más de lo normal. Vuelve a esta pantalla en unos minutos.",
-      "cerrarElPeriodoMensaje": "Los fichajes hasta el final del {{hasta}} quedarán en sólo lectura: nadie podrá corregirlos. Y las tarjetas de este periodo ya no se podrán volver a calcular. Hazlo cuando ya hayas revisado y aprobado el periodo.",
+      "cerrarElPeriodoMensaje": "Los fichajes, turnos y marcas del horario hasta el final del {{hasta}} quedarán cerrados: nadie podrá cambiarlos, y las tarjetas de este periodo ya no se podrán volver a calcular. Cerrar sólo avanza; para volver atrás hace falta «Reabrir periodo». Hazlo cuando ya hayas revisado y aprobado el periodo.",
       "cerrarElPeriodoTitulo": "¿Cerrar el periodo hasta el {{hasta}}?",
       "cerrarPeriodo": "Cerrar periodo",
       "conDiasSinResolver": "Con días sin resolver",
@@ -15081,7 +15101,20 @@
       "tarjetasAprobadasConExcepcion": "Tarjetas aprobadas (con excepción registrada)",
       "tarjetasDeNomina": "Tarjetas de nómina",
       "tarjetasReabiertas": "Tarjetas reabiertas",
-      "ultimoCierre": "Último cierre: {{fecha}}"
+      "ultimoCierre": "Último cierre: {{fecha}}",
+      "faltaElMotivo": "Escribe el motivo para reabrir el periodo.",
+      "irAUnaFecha": "Ir al periodo de una fecha",
+      "motivo": "Motivo",
+      "noSePudoReabrirElPeriodo": "No se pudo reabrir el periodo",
+      "periodoAnterior": "Periodo anterior",
+      "periodoCerradoInsignia": "Cerrado",
+      "periodoReabierto": "Periodo reabierto. Ahora está cerrado hasta el {{hasta}}.",
+      "periodoReabiertoSinCierre": "Periodo reabierto.",
+      "periodoSiguiente": "Periodo siguiente",
+      "rangoDelPeriodo": "{{desde}} – {{hasta}}",
+      "reabrirPeriodo": "Reabrir periodo",
+      "reabrirPeriodoMensaje": "Los fichajes, turnos y marcas desde ese día se podrán volver a cambiar. Las tarjetas ya aprobadas o exportadas no se tocan. Escribe el motivo: queda en la bitácora.",
+      "reabrirPeriodoTitulo": "¿Reabrir la nómina desde el {{desde}}?"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencias",
@@ -16665,7 +16698,11 @@
       "descartar": "Descartar borrador",
       "franjaUnCambio": "Borrador sin publicar · 1 cambio",
       "franjaCambios": "Borrador sin publicar · {{n}} cambios",
-      "franjaNadaEnElReal": "nada de esto está en el horario real todavía"
+      "franjaNadaEnElReal": "nada de esto está en el horario real todavía",
+      "cambioDirectoTitulo": "Este cambio va directo al horario real",
+      "cambioDirectoMensaje": "Tienes {{n}} cambio(s) sin publicar en el borrador. Al guardar este cambio el Planificador vuelve a leer el horario real y el borrador se pierde. Si quieres conservarlo, publícalo primero.",
+      "cambioDirectoSeguir": "Seguir y descartar el borrador",
+      "cambioDirectoVolver": "Volver"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta pantalla se va a retirar: el Planificador es la nueva",
@@ -16977,7 +17014,10 @@
         "programado": "Programado"
       },
       "sinDesgloseExportada": "Esta tarjeta ya se exportó y queda como está: se generó antes de mostrar el descanso por día, así que ese desglose no está disponible para ella. El total es el que se exportó.",
-      "sinDesgloseAprobada": "Esta tarjeta ya está aprobada y queda como está: se generó antes de mostrar el descanso por día, así que ese desglose no está disponible para ella. El total es el que se aprobó."
+      "sinDesgloseAprobada": "Esta tarjeta ya está aprobada y queda como está: se generó antes de mostrar el descanso por día, así que ese desglose no está disponible para ella. El total es el que se aprobó.",
+      "extraSemanal": "{{horas}} extra por pasar la jornada semanal",
+      "minutosRecortados": "{{min}} min sin pagar (reglas de gracia)",
+      "sinGoce": "Sin goce de sueldo: se descuenta"
     },
     "RolesDePago": {
       "perfiles": {
@@ -18295,6 +18335,68 @@
       "nMinutos": "{{count}} min",
       "hasta": "hasta {{hora}}",
       "notaAlmuerzo": "El almuerzo no se paga: en el reloj, la persona marca «Salir a almorzar» y «Volver»."
+    },
+    "ReglasDePago": {
+      "anclaAyuda": "Todos los periodos de 14 días se cuentan desde aquí. Vacío = el primer día de la semana elegida desde el 1 de enero de 2024.",
+      "aplicar": "Aplicar",
+      "aplicarMensaje": "Se reemplazan la jornada, las horas extra, los recargos y qué ausencias se pagan. Después puedes cambiar cualquier valor. Las tarjetas ya aprobadas o exportadas no se recalculan; los borradores cambian al volver a generar el periodo.",
+      "aplicarReglasDe": "Aplicar reglas de {{pais}}",
+      "aplicarTitulo": "¿Aplicar las reglas de {{pais}}?",
+      "ausenciasAyuda": "Una ausencia que no se paga sigue justificada (no es una falta), pero se descuenta. Un permiso «personal» se paga o no según lo que diga el propio permiso.",
+      "ausenciasQueSePagan": "Ausencias que se pagan",
+      "cadaCuantoSePaga": "Cada cuánto se paga",
+      "cat": {
+        "calamidad": "Calamidad doméstica",
+        "capacitacion": "Capacitación",
+        "enfermedad": "Enfermedad",
+        "otro": "Otro motivo",
+        "permisoConSueldo": "Permiso con sueldo",
+        "permisoSinSueldo": "Permiso sin sueldo",
+        "vacaciones": "Vacaciones"
+      },
+      "catorcenal": "Catorcenal (cada 14 días)",
+      "diaDeInicio": "Todo el turno, por el día en que empieza",
+      "diariaAyuda": "Lo que pase de aquí en un día es hora extra. 0 = sin límite diario (EE. UU.).",
+      "domingoYFeriadoCuentan": "Domingo y feriado cuentan",
+      "feriadoAyuda": "Es el único recargo de feriado: Festivos y el costo del horario usan este mismo.",
+      "fuentes": "Fuentes: {{fuentes}}",
+      "graciaAyuda": "Quedarse hasta estos minutos después del fin del turno (esperando el relevo) no se paga; más que eso se paga entero. 0 = se paga cada minuto.",
+      "graciaSalida": "Gracia al salir (minutos)",
+      "horasDelDia": "Sólo las horas que caen ese día",
+      "jornadaSemanal": "Jornada ordinaria semanal (h)",
+      "pagarEntradaTemprana": "Pagar el tiempo antes de la hora de entrada",
+      "paisDeLaEmpresa": "País de la empresa: {{pais}}",
+      "periodoAyuda": "Los periodos tienen límites fijos: un mismo día se paga en un solo periodo, lo calcule quien lo calcule y el día que sea.",
+      "periodoDePago": "Periodo de pago",
+      "porConfirmar": "Para confirmar con tu asesor:",
+      "primerDiaDeUnPeriodo": "Primer día de un periodo",
+      "quincenal": "Quincenal (1–15 y 16–fin de mes)",
+      "reglasDePago": "Reglas de pago",
+      "reglasVigentes": "Reglas que se aplican",
+      "resumen": {
+        "ausencias": "Ausencias pagadas: {{lista}}",
+        "desdeLaHora": "desde la {{n}}.ª",
+        "extraConRecargo": "Horas extra: {{tramos}}",
+        "extraSimple": "Horas extra: a tarifa simple",
+        "gracia": "Gracia al salir: {{min}} min · Entrada antes de hora: {{temprana}}",
+        "horasALaSemana": "{{h}} h a la semana (desde el {{dia}})",
+        "horasAlDia": "{{h}} h al día",
+        "jornada": "Jornada ordinaria: {{dia}} · {{semana}}",
+        "ninguna": "ninguna",
+        "noche": "Noche ({{desde}}:00–{{hasta}}:00): +{{pct}} %",
+        "porDiaDeInicio": "Domingo y feriado: todo el turno toma el día en que empieza",
+        "porHorasDelDia": "Domingo y feriado: sólo las horas que caen ese día",
+        "recargos": "Domingo +{{domingo}} % · Descanso trabajado +{{descanso}} % · Feriado +{{feriado}} % · {{modo}}",
+        "sinLimiteDiario": "sin límite diario",
+        "sinLimiteSemanal": "sin límite semanal",
+        "tempranaNo": "no se paga",
+        "tempranaSi": "se paga"
+      },
+      "semanaLaboralEmpieza": "La semana laboral empieza el",
+      "semanalAyuda": "Lo que pase de aquí en la semana es hora extra (EE. UU.: 40). 0 = sin regla semanal.",
+      "sinConfigurar": "Nadie ha configurado todavía estas reglas: la jornada sigue la del país y no se aplica ningún recargo. Revísalas y guarda.",
+      "sinPais": "Sin país",
+      "sinPreset": "No tenemos reglas guardadas para este país: declara aquí las de tu convenio."
     }
   },
   "map": {
@@ -20649,7 +20751,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Esto lo hace la principal",
-      "soloPrincipalDesc": "Como gerente de sucursal administras tu sucursal, pero los pagos, los módulos y la cuenta los gestiona un administrador de la principal."
+      "soloPrincipalDesc": "Como gerente de sucursal administras tu sucursal, pero los pagos, los módulos y la cuenta los gestiona un administrador de la principal.",
+      "reglaDeEmpresaTitulo": "Esta configuración es de toda la empresa",
+      "reglaDeEmpresaDesc": "Como gerente de sucursal puedes verla, pero vale para todas las sucursales: la cambia un administrador de la principal."
     },
     "cliente": {
       "campo": "Sucursal del cliente",
@@ -20684,6 +20788,10 @@
     "etiqueta": {
       "empresa": "Empresa",
       "columna": "Sucursal"
+    },
+    "sinAcceso": {
+      "titulo": "No tienes ninguna sucursal asignada",
+      "desc": "Tu acceso está limitado a sucursales y no tienes ninguna, por eso no ves datos. Pide a un administrador de la principal que te asigne la tuya."
     }
   },
   "soporte": {

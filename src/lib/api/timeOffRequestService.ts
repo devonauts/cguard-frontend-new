@@ -48,12 +48,28 @@ export interface TimeOffRecord {
   endTime: string | null;
   reason: string | null;
   comment: string | null;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "cancelled";
   isPaid: boolean;
   guardId: string | null;
   guard: { id: string; fullName?: string; email?: string } | null;
   guardName?: string | null; // denormalized snapshot — fallback when guard join is null
 }
+
+/** What a status change did to the schedule (see the backend's timeOffSchedule). */
+export interface ScheduleEffect {
+  action: "applied" | "reverted" | "none";
+  gapsOpened?: number;
+  marks?: number;
+  skippedPunched?: number;
+  restoredShifts?: number;
+  removedMarks?: number;
+  closedDays?: string[];
+  coveredDays?: string[];
+  editedDays?: string[];
+  legacy?: boolean;
+}
+
+export type TimeOffUpdated = TimeOffRecord & { scheduleEffect?: ScheduleEffect };
 
 export interface TimeOffCreateInput {
   requestDate?: string;
@@ -90,9 +106,9 @@ const timeOffRequestService = {
 
   async updateStatus(
     id: string,
-    status: "pending" | "approved" | "rejected",
+    status: "pending" | "approved" | "rejected" | "cancelled",
     comment?: string,
-  ): Promise<TimeOffRecord> {
+  ): Promise<TimeOffUpdated> {
     const tenantId = getTenantId();
     const resp = await api.patch(
       `/tenant/${tenantId}/time-off-request/${id}/status`,
@@ -102,10 +118,11 @@ const timeOffRequestService = {
     return resp.data ?? resp;
   },
 
-  async destroy(id: string): Promise<void> {
+  async destroy(id: string): Promise<{ scheduleEffect?: ScheduleEffect }> {
     const tenantId = getTenantId();
+    const resp = await api.delete(`/tenant/${tenantId}/time-off-request/${id}`);
 
-    await api.delete(`/tenant/${tenantId}/time-off-request/${id}`);
+    return (resp?.data ?? resp) || {};
   },
 };
 

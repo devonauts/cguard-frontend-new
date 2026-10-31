@@ -2218,6 +2218,14 @@ export default function SecurityGuardsPage() {
                   value={bajaFecha}
                   onChange={(e) => setBajaFecha(e.target.value)}
                 />
+                {bajaFecha > hoyEnLaEmpresa() && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t(
+                      "guards.list.dialog.archive.futureHint",
+                      "Trabaja hasta ese día. Sus turnos posteriores se quitan ahora y el acceso se corta al terminar ese día.",
+                    )}
+                  </p>
+                )}
               </div>
               <div>
                 <Label className="text-xs">
@@ -2328,6 +2336,20 @@ export default function SecurityGuardsPage() {
                     rehireEligible: bajaRecontratable,
                     equipmentReturn: bajaEquipo,
                   });
+                  /* A future last day is a SCHEDULED termination: the person
+                     keeps working (and stays active here) until that day ends. */
+                  if (bajaFecha > hoyEnLaEmpresa()) {
+                    toast.success(
+                      t(
+                        "guards.list.toasts.archiveScheduled",
+                        "Baja programada: el acceso se corta al terminar el {{date}}.",
+                        { date: bajaFecha },
+                      ),
+                    );
+                    setArchiveDialogOpen(false);
+
+                    return;
+                  }
                   // mark as archived in UI
                   setGuards((prev) =>
                     prev.map((g) =>

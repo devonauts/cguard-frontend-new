@@ -2001,7 +2001,8 @@
         "inviteNoContact": "Deze beveiliger heeft geen e-mailadres: voeg er een toe om hem te kunnen uitnodigen.",
         "deletedWithShifts_one": "Verwijderd. {{count}} dienst is geannuleerd en blijft als gat in het Rooster staan.",
         "deletedWithShifts_other": "Verwijderd. {{count}} diensten zijn geannuleerd en blijven als gaten in het Rooster staan.",
-        "bulkActionError": "De actie kon niet worden voltooid: {{msg}}"
+        "bulkActionError": "De actie kon niet worden voltooid: {{msg}}",
+        "archiveScheduled": "Uitdiensttreding gepland: de toegang stopt aan het einde van {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2012,7 +2013,8 @@
           "notePh": "Toelichting op de reden",
           "rehire": "Mag opnieuw worden aangenomen",
           "note": "Notitie (optioneel)",
-          "reason": "Reden"
+          "reason": "Reden",
+          "futureHint": "Werkt tot die dag. Latere diensten worden nu verwijderd en de toegang stopt aan het einde van die dag."
         },
         "bulk": {
           "archiveDescription": "Weet je zeker dat je {{count}} beveiliger(s) wilt archiveren? Je kunt dit terugdraaien via het filter Gearchiveerd.",
@@ -8379,7 +8381,9 @@
       "emptyDescription": "Voeg de feestdagen van uw land en de eigen dagen van uw bedrijf toe.",
       "kindNationalBadge": "Wettelijk",
       "kindCompanyBadge": "Van het bedrijf",
-      "deleteAriaLabel": "{{name}} verwijderen"
+      "deleteAriaLabel": "{{name}} verwijderen",
+      "recargoUnico": "Toeslag",
+      "recargoUnicoAyuda": "Die is voor alle feestdagen gelijk en stel je in bij de loonregels."
     },
     "userRoles": {
       "actionBtn": "Actie",
@@ -8806,7 +8810,8 @@
       "sacaTitle": "Invaller toevoegen",
       "title": "Toegewezen beveiligers",
       "editShift": "Dienst bewerken",
-      "eventoSub": "Beveiliger voor de data van het evenement"
+      "eventoSub": "Beveiliger voor de data van het evenement",
+      "stationFull": "Alle plaatsen van deze post hebben al een beveiliger. Vraagt de klant er nog een, voeg dan een plaats toe in het rooster van de post en wijs opnieuw toe."
     },
     "incidents": {
       "col": {
@@ -11706,7 +11711,8 @@
       },
       "creaCadaEstacionEvento": "Maak elk station van het evenement aan: naam, van hoe laat tot hoe laat het bezet is, hoeveel beveiligers tegelijk en geofence. Geen rotatie: het evenement heeft zijn eigen data. Als ze allemaal klaar zijn, klik op ‘Afronden’.",
       "eventoConEstaciones_one": "{{count}} station. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement.",
-      "eventoConEstaciones_other": "{{count}} stations. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement."
+      "eventoConEstaciones_other": "{{count}} stations. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement.",
+      "horarioNoGuardado": "De post is opgeslagen, maar het rooster niet. Controleer het op de pagina van de post."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Goed licht — vermijd schaduw en tegenlicht",
@@ -13251,7 +13257,21 @@
       "rechazar": "Afwijzen",
       "todos": "Alle",
       "vacaciones": "Vakantie",
-      "eligeAlVigilante": "Kies voor wie dit verlof is."
+      "eligeAlVigilante": "Kies voor wie dit verlof is.",
+      "conGoceDeSueldo": "Betaald (zonder vinkje wordt ingehouden)",
+      "aprobadoConHuecos": "Verlof goedgekeurd. {{n}} dienst(en) staan nu open in Bezetting om door iemand te worden ingevuld.",
+      "aprobadoSinTurnos": "Verlof goedgekeurd. Er waren geen diensten op die dagen.",
+      "turnosYaMarcados": "{{n}} dienst(en) met al een inklokking blijven als gewerkt staan.",
+      "aprobadoAntesSinRegistro": "Dit verlof is goedgekeurd voordat het systeem vastlegde wat het in het rooster veranderde. Controleer de dagen in het Rooster en haal de markeringen met de hand weg.",
+      "turnosDevueltos": "Klaar. {{n}} dienst(en) staan weer in het rooster.",
+      "diasYaCubiertos": "Deze hadden al een vervanger en blijven zo: {{dias}}. Controleer ze in Bezetting.",
+      "diasCerrados": "Deze horen bij een afgesloten loonperiode en worden niet gewijzigd: {{dias}}.",
+      "diasCambiadosAMano": "Iemand heeft ze daarna met de hand gewijzigd, ze blijven staan: {{dias}}.",
+      "cancelarPermiso": "Verlof annuleren",
+      "cancelarPermisoMensaje": "De diensten van die dagen gaan terug in het rooster en hun gaten in Bezetting sluiten. Dagen met al een vervanger blijven zo.",
+      "cancelarPermisoBoton": "Verlof annuleren",
+      "eliminarAprobada": "De aanvraag wordt verwijderd en wat de goedkeuring in het rooster veranderde, wordt teruggedraaid. Dagen met al een vervanger blijven zo.",
+      "cancelado": "Geannuleerd"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -15616,7 +15636,20 @@
       "tarjetasAprobadasConExcepcion": "Tijdkaarten goedgekeurd (met geregistreerde uitzondering)",
       "tarjetasDeNomina": "Salaristijdkaarten",
       "tarjetasReabiertas": "Tijdkaarten heropend",
-      "ultimoCierre": "Laatste afsluiting: {{fecha}}"
+      "ultimoCierre": "Laatste afsluiting: {{fecha}}",
+      "faltaElMotivo": "Geef de reden op om de periode te heropenen.",
+      "irAUnaFecha": "Ga naar de periode van een datum",
+      "motivo": "Reden",
+      "noSePudoReabrirElPeriodo": "De periode kon niet worden heropend",
+      "periodoAnterior": "Vorige periode",
+      "periodoCerradoInsignia": "Afgesloten",
+      "periodoReabierto": "Periode heropend. Nu afgesloten t/m {{hasta}}.",
+      "periodoReabiertoSinCierre": "Periode heropend.",
+      "periodoSiguiente": "Volgende periode",
+      "rangoDelPeriodo": "{{desde}} – {{hasta}}",
+      "reabrirPeriodo": "Periode heropenen",
+      "reabrirPeriodoMensaje": "Prikkingen, diensten en markeringen vanaf die dag kunnen weer worden gewijzigd. Al goedgekeurde of geëxporteerde tijdkaarten blijven ongewijzigd. Geef de reden op: die komt in het logboek.",
+      "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",
@@ -17200,7 +17233,11 @@
       "descartar": "Concept verwijderen",
       "franjaUnCambio": "Niet-gepubliceerd concept · 1 wijziging",
       "franjaCambios": "Niet-gepubliceerd concept · {{n}} wijzigingen",
-      "franjaNadaEnElReal": "niets hiervan staat al in het echte rooster"
+      "franjaNadaEnElReal": "niets hiervan staat al in het echte rooster",
+      "cambioDirectoTitulo": "Deze wijziging gaat direct naar het echte rooster",
+      "cambioDirectoMensaje": "Je hebt {{n}} niet-gepubliceerde wijziging(en) in het concept. Bij opslaan leest de Planner het echte rooster opnieuw en gaat het concept verloren. Publiceer het eerst om het te bewaren.",
+      "cambioDirectoSeguir": "Doorgaan en concept weggooien",
+      "cambioDirectoVolver": "Terug"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",
@@ -17512,7 +17549,10 @@
         "programado": "Gepland"
       },
       "sinDesgloseExportada": "Deze urenkaart is al geëxporteerd en blijft zoals hij is: hij is gemaakt voordat de pauze per dag werd getoond, dus die uitsplitsing is er niet voor. Het totaal is wat is geëxporteerd.",
-      "sinDesgloseAprobada": "Deze urenkaart is al goedgekeurd en blijft zoals hij is: hij is gemaakt voordat de pauze per dag werd getoond, dus die uitsplitsing is er niet voor. Het totaal is wat is goedgekeurd."
+      "sinDesgloseAprobada": "Deze urenkaart is al goedgekeurd en blijft zoals hij is: hij is gemaakt voordat de pauze per dag werd getoond, dus die uitsplitsing is er niet voor. Het totaal is wat is goedgekeurd.",
+      "extraSemanal": "{{horas}} overuren boven de weekuren",
+      "minutosRecortados": "{{min}} min onbetaald (coulanceregels)",
+      "sinGoce": "Onbetaald: wordt ingehouden"
     },
     "RolesDePago": {
       "perfiles": {
@@ -18830,6 +18870,68 @@
       "nMinutos": "{{count}} min",
       "hasta": "tot {{hora}}",
       "notaAlmuerzo": "De lunch wordt niet betaald: op de prikklok tikt de persoon „Naar de lunch” en „Terug”."
+    },
+    "ReglasDePago": {
+      "anclaAyuda": "Alle periodes van 14 dagen worden vanaf hier geteld. Leeg = de eerste gekozen weekdag vanaf 1 januari 2024.",
+      "aplicar": "Toepassen",
+      "aplicarMensaje": "Werktijd, overuren, toeslagen en welke afwezigheden worden betaald, worden vervangen. Daarna kun je elke waarde wijzigen. Al goedgekeurde of geëxporteerde tijdkaarten worden niet herberekend; concepten veranderen bij opnieuw berekenen.",
+      "aplicarReglasDe": "Regels van {{pais}} toepassen",
+      "aplicarTitulo": "Regels van {{pais}} toepassen?",
+      "ausenciasAyuda": "Een onbetaalde afwezigheid blijft verantwoord (geen verzuim), maar wordt ingehouden. Persoonlijk verlof is betaald of niet volgens het verlof zelf.",
+      "ausenciasQueSePagan": "Betaalde afwezigheden",
+      "cadaCuantoSePaga": "Hoe vaak er wordt betaald",
+      "cat": {
+        "calamidad": "Familienoodgeval",
+        "capacitacion": "Training",
+        "enfermedad": "Ziekte",
+        "otro": "Andere reden",
+        "permisoConSueldo": "Betaald verlof",
+        "permisoSinSueldo": "Onbetaald verlof",
+        "vacaciones": "Vakantie"
+      },
+      "catorcenal": "Elke 2 weken (14 dagen)",
+      "diaDeInicio": "De hele dienst, naar de dag waarop hij begint",
+      "diariaAyuda": "Wat daarboven op een dag valt, zijn overuren. 0 = geen daglimiet (VS).",
+      "domingoYFeriadoCuentan": "Zondag en feestdag tellen",
+      "feriadoAyuda": "Dit is de enige feestdagtoeslag: Feestdagen en de roosterkosten gebruiken deze.",
+      "fuentes": "Bronnen: {{fuentes}}",
+      "graciaAyuda": "Tot zoveel minuten na het einde van de dienst blijven (wachten op de aflossing) wordt niet betaald; langer wordt volledig betaald. 0 = elke minuut wordt betaald.",
+      "graciaSalida": "Coulance bij uitklokken (minuten)",
+      "horasDelDia": "Alleen de uren die op die dag vallen",
+      "jornadaSemanal": "Normale weekuren (u)",
+      "pagarEntradaTemprana": "Tijd vóór de begintijd betalen",
+      "paisDeLaEmpresa": "Land van het bedrijf: {{pais}}",
+      "periodoAyuda": "Periodes hebben vaste grenzen: een dag wordt in één periode betaald, wie hem ook berekent en wanneer.",
+      "periodoDePago": "Loonperiode",
+      "porConfirmar": "Te bevestigen met je adviseur:",
+      "primerDiaDeUnPeriodo": "Eerste dag van een periode",
+      "quincenal": "Twee keer per maand (1–15, 16–einde)",
+      "reglasDePago": "Loonregels",
+      "reglasVigentes": "Geldende regels",
+      "resumen": {
+        "ausencias": "Betaalde afwezigheden: {{lista}}",
+        "desdeLaHora": "vanaf uur {{n}}",
+        "extraConRecargo": "Overuren: {{tramos}}",
+        "extraSimple": "Overuren: tegen het normale tarief",
+        "gracia": "Coulance bij uitklokken: {{min}} min · Vroeg inklokken: {{temprana}}",
+        "horasALaSemana": "{{h}} u per week (vanaf {{dia}})",
+        "horasAlDia": "{{h}} u per dag",
+        "jornada": "Normale werktijd: {{dia}} · {{semana}}",
+        "ninguna": "geen",
+        "noche": "Nacht ({{desde}}:00–{{hasta}}:00): +{{pct}}%",
+        "porDiaDeInicio": "Zondag en feestdag: de hele dienst telt naar de begindag",
+        "porHorasDelDia": "Zondag en feestdag: alleen de uren op die dag",
+        "recargos": "Zondag +{{domingo}}% · Gewerkte rustdag +{{descanso}}% · Feestdag +{{feriado}}% · {{modo}}",
+        "sinLimiteDiario": "geen daglimiet",
+        "sinLimiteSemanal": "geen weeklimiet",
+        "tempranaNo": "niet betaald",
+        "tempranaSi": "betaald"
+      },
+      "semanaLaboralEmpieza": "De werkweek begint op",
+      "semanalAyuda": "Wat daarboven in de week valt, zijn overuren (VS: 40). 0 = geen weekregel.",
+      "sinConfigurar": "Niemand heeft deze regels nog ingesteld: de werktijd volgt het land en er geldt geen toeslag. Controleer ze en sla op.",
+      "sinPais": "Geen land",
+      "sinPreset": "We hebben geen regels voor dit land: vul hier die van je cao in."
     }
   },
   "visitantes": {
@@ -20649,7 +20751,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Dit regelt het hoofdkantoor",
-      "soloPrincipalDesc": "Als vestigingsmanager beheer je je vestiging, maar betalingen, modules en het account regelt een beheerder van het hoofdkantoor."
+      "soloPrincipalDesc": "Als vestigingsmanager beheer je je vestiging, maar betalingen, modules en het account regelt een beheerder van het hoofdkantoor.",
+      "reglaDeEmpresaTitulo": "Deze instelling geldt voor het hele bedrijf",
+      "reglaDeEmpresaDesc": "Als vestigingsmanager kun je haar zien, maar ze geldt voor alle vestigingen: een beheerder van het hoofdkantoor wijzigt haar."
     },
     "cliente": {
       "campo": "Vestiging van de klant",
@@ -20684,6 +20788,10 @@
     "etiqueta": {
       "empresa": "Bedrijf",
       "columna": "Vestiging"
+    },
+    "sinAcceso": {
+      "titulo": "Je hebt geen vestiging toegewezen",
+      "desc": "Je toegang is beperkt tot vestigingen en je hebt er geen, daarom zie je geen gegevens. Vraag een beheerder van het hoofdkantoor om je de jouwe toe te wijzen."
     }
   },
   "soporte": {

@@ -13,10 +13,10 @@ import {
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
-import { Button } from "@/components/ui/button";
 import attendanceService from "@/lib/api/attendanceService";
 import { Section, FadeIn, SkeletonCards } from "@/components/kit";
 import { SaveBar } from "@/pages/admin/Configuration/components/SettingsForm";
+import ReglasDePago, { type PayrollDeAjustes, type Politica } from "./ReglasDePago";
 
 interface NominaSettings {
   general?: {
@@ -50,20 +50,11 @@ interface NominaSettings {
     lockAfterPayrollClose?: boolean;
   };
   payroll?: {
-    /** La política de pago, sin país. Ver `backend/lib/politicaDeNomina`. */
-    politica?: {
-      moneda?: string;
-      horasOrdinariasDia?: number;
-      horasOrdinariasSemana?: number;
-      tramosExtra?: Array<{ desdeHora: number; recargoPct: number }>;
-      nocturno?: { desdeHora?: number; hastaHora?: number; recargoPct?: number };
-      domingoRecargoPct?: number;
-      descansoRecargoPct?: number;
-      feriadoRecargoPct?: number;
-      acumulacionDeRecargos?: "suma" | "mayor";
-    };
+    /** La política de pago de la empresa. Ver `ReglasDePago` y `backend/lib/politicaDeNomina`. */
+    politica?: Politica;
     periodType?: string;
     startDayOfWeek?: number;
+    periodAnchor?: string | null;
     currency?: string;
     defaultHourlyRate?: number;
     overtimeMultiplier?: number;
@@ -78,111 +69,34 @@ interface NominaSettings {
   };
 }
 
-// The Num/Toggle inputs address nested settings by a dotted string path, so a
-// record view is used for the dynamic index (the typed interface can't be
-// indexed by an arbitrary string).
-type SettingsRecord = Record<string, Record<string, unknown> | undefined>;
-
-function set<T extends object>(obj: T, path: string, value: unknown): T {
-  const next = { ...obj } as Record<string, Record<string, unknown>>;
-  const [a, b] = path.split(".");
-
-  next[a] = { ...(next[a] || {}), [b]: value };
-
-  return next as unknown as T;
-}
 
 /**
- * LOS ESCALONES DE HORAS EXTRA, LOS QUE HAGAN FALTA.
- *
- * La versión anterior tenía DOS clavados —«las 2 primeras al 25 %, el resto al
- * 35 %»— porque estaban escritos para un país. Hay convenios de uno solo
- * (todo al +50 %) y de tres o más, así que la lista se edita.
- *
- * Vacía significa algo concreto y correcto: las horas extra se pagan a tarifa
- * simple. Es lo único que se puede suponer sin conocer el convenio.
+ * Writes `value` at a dotted path, copying every level on the way. It used to
+ * handle TWO levels only, so `payroll.politica.horasOrdinariasDia` replaced the
+ * whole pay policy with a number and no company could configure its rules.
  */
-function TramosExtra({
-  tramos,
-  onChange,
-}: {
-  tramos: Array<{ desdeHora: number; recargoPct: number }>;
-  onChange: (t: Array<{ desdeHora: number; recargoPct: number }>) => void;
-}) {
-  const { t } = useTranslation();
-  const set = (i: number, campo: "desdeHora" | "recargoPct", v: number) =>
-    onChange(tramos.map((tr, k) => (k === i ? { ...tr, [campo]: v } : tr)));
+function set<T extends object>(obj: T, path: string, value: unknown): T {
+  const partes = path.split(".");
+  const raiz = { ...(obj as Record<string, unknown>) };
+  let cursor: Record<string, unknown> = raiz;
 
-  return (
-    <div>
-      <span className="text-sm font-medium">
-        {t("ui.NominaSettings.escalonesDeHorasExtra", "Escalones de horas extra")}
-      </span>
-      <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
-        {t(
-          "ui.NominaSettings.aPartirDeCuantasHorasExtra",
-          "A partir de cuántas horas extra acumuladas en el día aplica cada recargo. Sin escalones, las extra se pagan a tarifa simple.",
-        )}
-      </p>
+  partes.forEach((k, i) => {
+    if (i === partes.length - 1) {
+      cursor[k] = value;
+    } else {
+      const sig = cursor[k];
 
-      <div className="mt-2 space-y-2">
-        {tramos.map((tramo, i) => (
-          <div key={i} className="flex items-end gap-2">
-            <label className="block">
-              <span className="cg-eyebrow">
-                {t("ui.NominaSettings.desdeLaHoraExtra", "Desde la hora extra")}
-              </span>
-              <input
-                className="cg-input cg-focus mt-1 w-32 px-3 py-2 text-sm tabular-nums"
-                type="number"
-                min={0}
-                value={tramo.desdeHora}
-                onChange={(e) => set(i, "desdeHora", Number(e.target.value))}
-              />
-            </label>
-            <label className="block">
-              <span className="cg-eyebrow">
-                {t("ui.NominaSettings.recargoPct", "Recargo (%)")}
-              </span>
-              <input
-                className="cg-input cg-focus mt-1 w-32 px-3 py-2 text-sm tabular-nums"
-                type="number"
-                min={0}
-                value={tramo.recargoPct}
-                onChange={(e) => set(i, "recargoPct", Number(e.target.value))}
-              />
-            </label>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onChange(tramos.filter((_, k) => k !== i))}
-            >
-              {t("ui.NominaSettings.quitar", "Quitar")}
-            </Button>
-          </div>
-        ))}
-      </div>
+      cursor[k] = sig && typeof sig === "object" && !Array.isArray(sig) ? { ...(sig as Record<string, unknown>) } : {};
+      cursor = cursor[k] as Record<string, unknown>;
+    }
+  });
 
-      <Button
-        className="mt-2"
-        size="sm"
-        variant="outline"
-        onClick={() =>
-          onChange([
-            ...tramos,
-            {
-              desdeHora: tramos.length
-                ? tramos[tramos.length - 1].desdeHora + 2
-                : 0,
-              recargoPct: 25,
-            },
-          ])
-        }
-      >
-        {t("ui.NominaSettings.anadirEscalon", "Añadir escalón")}
-      </Button>
-    </div>
-  );
+  return raiz as T;
+}
+
+/** Reads a dotted path. */
+function get(obj: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), obj);
 }
 
 export default function NominaSettings() {
@@ -218,19 +132,13 @@ export default function NominaSettings() {
   };
 
   const Num = ({ label, path }: { label: string; path: string }) => {
-    const [a, b] = path.split(".");
-
     return (
       <label className="block">
         <span className="cg-eyebrow">{label}</span>
         <input
           className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
           type="number"
-          value={
-            ((s as unknown as SettingsRecord | null)?.[a]?.[b] as
-              | number
-              | undefined) ?? 0
-          }
+          value={(get(s, path) as number | undefined) ?? 0}
           onChange={(e) =>
             setS((prev) =>
               set(prev as NominaSettings, path, Number(e.target.value)),
@@ -242,12 +150,10 @@ export default function NominaSettings() {
   };
 
   const Toggle = ({ label, path }: { label: string; path: string }) => {
-    const [a, b] = path.split(".");
-
     return (
       <label className="glass-flat glass-hover flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
         <input
-          checked={!!(s as unknown as SettingsRecord | null)?.[a]?.[b]}
+          checked={!!get(s, path)}
           className="cg-focus size-4"
           style={{ accentColor: "var(--brand)" }}
           type="checkbox"
@@ -428,194 +334,14 @@ export default function NominaSettings() {
               />
             </SettingsSection>
 
-            <SettingsSection
-              icon={<CalendarRange />}
-              title={t("ui.NominaSettings.periodoYHorasExtra", "Periodo y horas extra")}
-            >
-              <label className="block">
-                <span className="cg-eyebrow">
-                  {t("ui.NominaSettings.periodoDelTimesheet")}
-                </span>
-                <select
-                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
-                  value={s.payroll?.periodType || "biweekly"}
-                  onChange={(e) =>
-                    setS((p) =>
-                      set(
-                        p as NominaSettings,
-                        "payroll.periodType",
-                        e.target.value,
-                      ),
-                    )
-                  }
-                >
-                  <option value="weekly">{t("ui.NominaSettings.semanal", "Semanal")}</option>
-                  <option value="biweekly">{t("ui.NominaSettings.quincenal", "Quincenal")}</option>
-                  <option value="semimonthly">{t("ui.NominaSettings.bimensual", "Bimensual")}</option>
-                  <option value="monthly">{t("ui.NominaSettings.mensual", "Mensual")}</option>
-                </select>
-              </label>
-              {/* Sólo tiene sentido con periodo semanal: es donde empieza a
-                  contar la semana. Lo lee `periodoVigente` en el backend. */}
-              {(s.payroll?.periodType || "biweekly") === "weekly" && (
-                <label className="block">
-                  <span className="cg-eyebrow">
-                    {t("ui.NominaSettings.laSemanaEmpiezaEl")}
-                  </span>
-                  <select
-                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
-                    value={String(s.payroll?.startDayOfWeek ?? 1)}
-                    onChange={(e) =>
-                      setS((p) =>
-                        set(
-                          p as NominaSettings,
-                          "payroll.startDayOfWeek",
-                          Number(e.target.value),
-                        ),
-                      )
-                    }
-                  >
-                    <option value="0">{t("ui.NominaSettings.domingo")}</option>
-                    <option value="1">{t("ui.NominaSettings.lunes")}</option>
-                    <option value="2">{t("ui.NominaSettings.martes")}</option>
-                    <option value="3">
-                      {t("ui.NominaSettings.miercoles", "Miércoles")}
-                    </option>
-                    <option value="4">{t("ui.NominaSettings.jueves")}</option>
-                    <option value="5">{t("ui.NominaSettings.viernes")}</option>
-                    <option value="6">
-                      {t("ui.NominaSettings.sabado", "Sábado")}
-                    </option>
-                  </select>
-                </label>
-              )}
-              <Num
-                label={t("ui.NominaSettings.umbralDeHorasExtraH")}
-                path="payroll.overtimeThresholdHours"
-              />
-            </SettingsSection>
-
-            {/* ── POLÍTICA DE PAGO ──────────────────────────────────────────────
-                Las reglas de pago NO tienen país. Esto sustituye a lo que estaba
-                escrito para uno: horas extra «las 2 primeras al 25 %, el resto al
-                35 %», noche de 22:00 a 06:00 y recargo dominical siempre puesto.
-                El recargo dominical no existe en casi toda Europa y el umbral de
-                horas extra es semanal en Estados Unidos, así que por defecto NO
-                se recarga nada: cada empresa declara su convenio. */}
-            <SettingsSection
-              icon={<SlidersHorizontal />}
-              title={t("ui.NominaSettings.politicaDePago", "Política de pago")}
-            >
-              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                {t(
-                  "ui.NominaSettings.conEstoSeCalculanLasHorasExtra",
-                  "Con esto se calculan las horas extra y los recargos de las tarjetas de nómina. Por defecto no se recarga nada: declara aquí lo que diga tu convenio. Si el pago lo calcula otro sistema, puedes dejarlo como está — las horas y los días se exportan igual.",
-                )}
-              </p>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label className="block">
-                  <span className="cg-eyebrow">
-                    {t("ui.NominaSettings.monedaIso4217", "Moneda (ISO 4217)")}
-                  </span>
-                  <input
-                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm uppercase"
-                    maxLength={8}
-                    value={s.payroll?.politica?.moneda ?? "USD"}
-                    onChange={(e) =>
-                      setS((p) =>
-                        set(
-                          p as NominaSettings,
-                          "payroll.politica.moneda",
-                          e.target.value.toUpperCase(),
-                        ),
-                      )
-                    }
-                  />
-                </label>
-                <Num
-                  label={t("ui.NominaSettings.jornadaOrdinariaDiariaH", "Jornada ordinaria diaria (h)")}
-                  path="payroll.politica.horasOrdinariasDia"
-                />
-              </div>
-
-              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                {t(
-                  "ui.NominaSettings.loQuePaseDeLaJornadaOrdinaria",
-                  "Lo que pase de la jornada ordinaria es hora extra —aunque nadie se quede más allá de su relevo—. En una empresa de turnos de 12 h con jornada legal de 8, cada turno trae 4 horas extra.",
-                )}
-              </p>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                <Num
-                  label={t("ui.NominaSettings.nocturnoDesdeHora", "Nocturno: desde (hora)")}
-                  path="payroll.politica.nocturno.desdeHora"
-                />
-                <Num
-                  label={t("ui.NominaSettings.nocturnoHastaHora", "Nocturno: hasta (hora)")}
-                  path="payroll.politica.nocturno.hastaHora"
-                />
-                <Num
-                  label={t("ui.NominaSettings.recargoNocturnoPct", "Recargo nocturno (%)")}
-                  path="payroll.politica.nocturno.recargoPct"
-                />
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                <Num
-                  label={t("ui.NominaSettings.recargoDominicalPct", "Recargo dominical (%)")}
-                  path="payroll.politica.domingoRecargoPct"
-                />
-                <Num
-                  label={t("ui.NominaSettings.recargoEnDiaDeDescansoPct", "Recargo en día de descanso (%)")}
-                  path="payroll.politica.descansoRecargoPct"
-                />
-                <Num
-                  label={t("ui.NominaSettings.recargoEnFeriadoPct", "Recargo en feriado (%)")}
-                  path="payroll.politica.feriadoRecargoPct"
-                />
-              </div>
-
-              <label className="block">
-                <span className="text-sm font-medium">
-                  {t(
-                    "ui.NominaSettings.cuandoVariosRecargosCaen",
-                    "Cuando varios recargos caen sobre la misma hora",
-                  )}
-                </span>
-                <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
-                  {t(
-                    "ui.NominaSettings.unDomingoPorLaNoche",
-                    "Un domingo por la noche que además es feriado. Hay países donde los recargos se SUMAN y países donde gana sólo el mayor: dan importes muy distintos.",
-                  )}
-                </p>
-                <select
-                  className="cg-input cg-focus mt-1.5 w-72 px-3 py-2 text-sm"
-                  value={s.payroll?.politica?.acumulacionDeRecargos ?? "suma"}
-                  onChange={(e) =>
-                    setS((p) =>
-                      set(
-                        p as NominaSettings,
-                        "payroll.politica.acumulacionDeRecargos",
-                        e.target.value,
-                      ),
-                    )
-                  }
-                >
-                  <option value="suma">{t("ui.NominaSettings.seSuman", "Se suman")}</option>
-                  <option value="mayor">{t("ui.NominaSettings.ganaElMayor", "Gana el mayor")}</option>
-                </select>
-              </label>
-
-              <TramosExtra
-                tramos={s.payroll?.politica?.tramosExtra ?? []}
-                onChange={(t2) =>
-                  setS((p) =>
-                    set(p as NominaSettings, "payroll.politica.tramosExtra", t2),
-                  )
-                }
-              />
-            </SettingsSection>
+            {/* ── PERIODO Y REGLAS DE PAGO ─────────────────────────────────────
+                One component (`ReglasDePago`): fixed pay periods, the pay rules
+                of the company with its country as a starting point, and the
+                rules in force written in plain words. */}
+            <ReglasDePago
+              payroll={(s.payroll || {}) as PayrollDeAjustes}
+              onChange={(payroll) => setS((p) => ({ ...(p as NominaSettings), payroll: payroll as NominaSettings["payroll"] }))}
+            />
 
             {/* ── COSTOS DEL HORARIO ────────────────────────────────────────────
                 El motor de costos (scheduleCostService) lee estos siete valores
@@ -668,6 +394,10 @@ export default function NominaSettings() {
               <Num
                 label={t("ui.NominaSettings.tarifaPorHoraPorDefecto")}
                 path="payroll.defaultHourlyRate"
+              />
+              <Num
+                label={t("ui.NominaSettings.umbralDeHorasExtraH")}
+                path="payroll.overtimeThresholdHours"
               />
               <Num
                 label={t("ui.NominaSettings.multiplicadorDeHoraExtra")}

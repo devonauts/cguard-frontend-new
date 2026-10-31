@@ -2003,7 +2003,8 @@
         "deletedWithShifts_few": "Usunięto. Anulowano {{count}} zmiany: zostają w Grafiku jako luki.",
         "deletedWithShifts_many": "Usunięto. Anulowano {{count}} zmian: zostają w Grafiku jako luki.",
         "deletedWithShifts_other": "Usunięto. Anulowano {{count}} zmiany: zostają w Grafiku jako luki.",
-        "bulkActionError": "Nie udało się wykonać operacji: {{msg}}"
+        "bulkActionError": "Nie udało się wykonać operacji: {{msg}}",
+        "archiveScheduled": "Odejście zaplanowane: dostęp kończy się z końcem dnia {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2014,7 +2015,8 @@
           "notePh": "Szczegóły powodu",
           "rehire": "Możliwe ponowne zatrudnienie",
           "note": "Notatka (opcjonalnie)",
-          "reason": "Powód"
+          "reason": "Powód",
+          "futureHint": "Pracuje do tego dnia. Późniejsze zmiany są usuwane teraz, a dostęp kończy się z końcem tego dnia."
         },
         "bulk": {
           "archiveDescription": "Czy na pewno zarchiwizować {{count}} pracowników ochrony? Operację można cofnąć z poziomu filtra zarchiwizowanych.",
@@ -8389,7 +8391,9 @@
       "emptyDescription": "Prosimy dodać święta obowiązujące w kraju oraz dni własne firmy.",
       "kindNationalBadge": "Ustawowe",
       "kindCompanyBadge": "Firmowe",
-      "deleteAriaLabel": "Usuń {{name}}"
+      "deleteAriaLabel": "Usuń {{name}}",
+      "recargoUnico": "Dodatek",
+      "recargoUnicoAyuda": "Jest taki sam dla wszystkich świąt i ustawia się go w zasadach wynagrodzeń."
     },
     "userRoles": {
       "actionBtn": "Akcja",
@@ -8816,7 +8820,8 @@
       "sacaTitle": "Dodaj zmiennika",
       "title": "Przypisani pracownicy ochrony",
       "editShift": "Edytuj zmianę",
-      "eventoSub": "Pracownik ochrony na daty wydarzenia"
+      "eventoSub": "Pracownik ochrony na daty wydarzenia",
+      "stationFull": "Wszystkie miejsca na tym posterunku są już obsadzone. Jeśli klient potrzebuje kolejnej osoby, dodaj miejsce w grafiku posterunku i przydziel ponownie."
     },
     "incidents": {
       "col": {
@@ -11770,7 +11775,8 @@
       "eventoConEstaciones_one": "{{count}} stanowisko. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
       "eventoConEstaciones_few": "{{count}} stanowiska. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
       "eventoConEstaciones_many": "{{count}} stanowisk. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
-      "eventoConEstaciones_other": "{{count}} stanowiska. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia."
+      "eventoConEstaciones_other": "{{count}} stanowiska. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
+      "horarioNoGuardado": "Posterunek zapisano, ale jego grafiku nie. Sprawdź go na stronie posterunku."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Dobre oświetlenie — prosimy unikać cieni i światła pod słońce",
@@ -13359,7 +13365,21 @@
       "rechazar": "Odrzuć",
       "todos": "Wszystkie",
       "vacaciones": "Urlop",
-      "eligeAlVigilante": "Wybierz, kogo dotyczy ta nieobecność."
+      "eligeAlVigilante": "Wybierz, kogo dotyczy ta nieobecność.",
+      "conGoceDeSueldo": "Płatny (jeśli nie zaznaczono, jest potrącany)",
+      "aprobadoConHuecos": "Nieobecność zatwierdzona. {{n}} zmian(a) to teraz luki w Obsadzie do pokrycia.",
+      "aprobadoSinTurnos": "Nieobecność zatwierdzona. W te dni nie było zmian.",
+      "turnosYaMarcados": "{{n}} zmian(a) z odbitym wejściem pozostaje jako przepracowana.",
+      "aprobadoAntesSinRegistro": "Ta nieobecność została zatwierdzona, zanim system zapisywał zmiany w grafiku. Sprawdź jej dni w Grafiku i usuń oznaczenia ręcznie.",
+      "turnosDevueltos": "Gotowe. {{n}} zmian(a) wróciło do grafiku.",
+      "diasYaCubiertos": "Te dni miały już zastępstwo i zostają bez zmian: {{dias}}. Sprawdź je w Obsadzie.",
+      "diasCerrados": "Należą do zamkniętego okresu płacowego i nie są zmieniane: {{dias}}.",
+      "diasCambiadosAMano": "Ktoś zmienił je później ręcznie, więc zostają: {{dias}}.",
+      "cancelarPermiso": "Anuluj nieobecność",
+      "cancelarPermisoMensaje": "Zmiany z tych dni wracają do grafiku, a ich luki w Obsadzie się zamykają. Dni, które mają już zastępstwo, zostają bez zmian.",
+      "cancelarPermisoBoton": "Anuluj nieobecność",
+      "eliminarAprobada": "Wniosek zostanie usunięty, a zmiany, które jego zatwierdzenie wprowadziło w grafiku, zostaną cofnięte. Dni z zastępstwem zostają bez zmian.",
+      "cancelado": "Anulowana"
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
@@ -15802,7 +15822,20 @@
       "tarjetasAprobadasConExcepcion": "Karty zatwierdzone (z odnotowanym wyjątkiem)",
       "tarjetasDeNomina": "Karty płacowe",
       "tarjetasReabiertas": "Karty ponownie otwarte",
-      "ultimoCierre": "Ostatnie zamknięcie: {{fecha}}"
+      "ultimoCierre": "Ostatnie zamknięcie: {{fecha}}",
+      "faltaElMotivo": "Podaj powód ponownego otwarcia okresu.",
+      "irAUnaFecha": "Przejdź do okresu daty",
+      "motivo": "Powód",
+      "noSePudoReabrirElPeriodo": "Nie udało się ponownie otworzyć okresu",
+      "periodoAnterior": "Poprzedni okres",
+      "periodoCerradoInsignia": "Zamknięty",
+      "periodoReabierto": "Okres otwarty ponownie. Teraz zamknięty do {{hasta}}.",
+      "periodoReabiertoSinCierre": "Okres otwarty ponownie.",
+      "periodoSiguiente": "Następny okres",
+      "rangoDelPeriodo": "{{desde}} – {{hasta}}",
+      "reabrirPeriodo": "Otwórz okres ponownie",
+      "reabrirPeriodoMensaje": "Odbicia, zmiany i oznaczenia od tego dnia będzie można znowu zmieniać. Karty już zatwierdzone lub wyeksportowane pozostają bez zmian. Podaj powód: zostanie zapisany w dzienniku.",
+      "reabrirPeriodoTitulo": "Otworzyć ponownie płace od {{desde}}?"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencje",
@@ -17426,7 +17459,11 @@
       "descartar": "Odrzuć szkic",
       "franjaUnCambio": "Nieopublikowany szkic · 1 zmiana",
       "franjaCambios": "Nieopublikowany szkic · zmiany: {{n}}",
-      "franjaNadaEnElReal": "nic z tego nie ma jeszcze w rzeczywistym grafiku"
+      "franjaNadaEnElReal": "nic z tego nie ma jeszcze w rzeczywistym grafiku",
+      "cambioDirectoTitulo": "Ta zmiana trafia od razu do prawdziwego grafiku",
+      "cambioDirectoMensaje": "Masz {{n}} nieopublikowanych zmian w szkicu. Po zapisaniu tej zmiany Planer ponownie wczyta prawdziwy grafik i szkic przepadnie. Aby go zachować, najpierw go opublikuj.",
+      "cambioDirectoSeguir": "Kontynuuj i odrzuć szkic",
+      "cambioDirectoVolver": "Wróć"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Ten ekran zostanie wycofany: nowy jest Planer",
@@ -17792,7 +17829,10 @@
         "programado": "Zaplanowany"
       },
       "sinDesgloseExportada": "Ta karta czasu pracy została już wyeksportowana i pozostaje bez zmian: powstała, zanim pokazywano przerwę dla każdego dnia, więc ten podział nie jest dla niej dostępny. Suma to ta, która została wyeksportowana.",
-      "sinDesgloseAprobada": "Ta karta czasu pracy jest już zatwierdzona i pozostaje bez zmian: powstała, zanim pokazywano przerwę dla każdego dnia, więc ten podział nie jest dla niej dostępny. Suma to ta, która została zatwierdzona."
+      "sinDesgloseAprobada": "Ta karta czasu pracy jest już zatwierdzona i pozostaje bez zmian: powstała, zanim pokazywano przerwę dla każdego dnia, więc ten podział nie jest dla niej dostępny. Suma to ta, która została zatwierdzona.",
+      "extraSemanal": "{{horas}} nadgodzin ponad tygodniowy wymiar",
+      "minutosRecortados": "{{min}} min nieopłacone (zasady tolerancji)",
+      "sinGoce": "Bezpłatny: jest potrącany"
     },
     "RolesDePago": {
       "perfiles": {
@@ -19120,6 +19160,68 @@
       "nMinutos": "{{count}} min",
       "hasta": "do {{hora}}",
       "notaAlmuerzo": "Obiad nie jest płatny: na zegarze osoba naciska „Idę na obiad” i „Wracam”."
+    },
+    "ReglasDePago": {
+      "anclaAyuda": "Wszystkie okresy 14-dniowe liczone są od tego dnia. Puste = pierwszy wybrany dzień tygodnia od 1 stycznia 2024.",
+      "aplicar": "Zastosuj",
+      "aplicarMensaje": "Zastąpione zostaną wymiar czasu pracy, nadgodziny, dodatki i to, które nieobecności są płatne. Potem możesz zmienić każdą wartość. Karty już zatwierdzone lub wyeksportowane nie są przeliczane; wersje robocze zmienią się po ponownym wygenerowaniu okresu.",
+      "aplicarReglasDe": "Zastosuj zasady kraju {{pais}}",
+      "aplicarTitulo": "Zastosować zasady kraju {{pais}}?",
+      "ausenciasAyuda": "Nieopłacona nieobecność pozostaje usprawiedliwiona (to nie przewinienie), ale jest potrącana. Urlop «osobisty» jest płatny lub nie, zgodnie z samym wnioskiem.",
+      "ausenciasQueSePagan": "Płatne nieobecności",
+      "cadaCuantoSePaga": "Jak często wypłacane jest wynagrodzenie",
+      "cat": {
+        "calamidad": "Nagły wypadek rodzinny",
+        "capacitacion": "Szkolenie",
+        "enfermedad": "Choroba",
+        "otro": "Inny powód",
+        "permisoConSueldo": "Urlop płatny",
+        "permisoSinSueldo": "Urlop bezpłatny",
+        "vacaciones": "Urlop wypoczynkowy"
+      },
+      "catorcenal": "Co 2 tygodnie (14 dni)",
+      "diaDeInicio": "Cała zmiana, według dnia rozpoczęcia",
+      "diariaAyuda": "Powyżej tego w ciągu dnia to nadgodziny. 0 = brak limitu dziennego (USA).",
+      "domingoYFeriadoCuentan": "Niedziela i święto liczą się",
+      "feriadoAyuda": "To jedyny dodatek świąteczny: Święta i koszt grafiku używają tego samego.",
+      "fuentes": "Źródła: {{fuentes}}",
+      "graciaAyuda": "Pozostanie do tylu minut po końcu zmiany (czekając na zmiennika) nie jest płatne; dłużej płatne w całości. 0 = płatna każda minuta.",
+      "graciaSalida": "Tolerancja przy wyjściu (minuty)",
+      "horasDelDia": "Tylko godziny przypadające na ten dzień",
+      "jornadaSemanal": "Tygodniowy wymiar pracy (h)",
+      "pagarEntradaTemprana": "Płacić za czas przed godziną rozpoczęcia",
+      "paisDeLaEmpresa": "Kraj firmy: {{pais}}",
+      "periodoAyuda": "Okresy mają stałe granice: ten sam dzień jest opłacany tylko w jednym okresie, niezależnie kto i kiedy go liczy.",
+      "periodoDePago": "Okres rozliczeniowy",
+      "porConfirmar": "Do potwierdzenia z doradcą:",
+      "primerDiaDeUnPeriodo": "Pierwszy dzień okresu",
+      "quincenal": "Dwa razy w miesiącu (1–15, 16–koniec)",
+      "reglasDePago": "Zasady wynagrodzeń",
+      "reglasVigentes": "Obowiązujące zasady",
+      "resumen": {
+        "ausencias": "Płatne nieobecności: {{lista}}",
+        "desdeLaHora": "od {{n}}. godziny",
+        "extraConRecargo": "Nadgodziny: {{tramos}}",
+        "extraSimple": "Nadgodziny: według stawki zwykłej",
+        "gracia": "Tolerancja przy wyjściu: {{min}} min · Wcześniejsze wejście: {{temprana}}",
+        "horasALaSemana": "{{h}} h tygodniowo (od {{dia}})",
+        "horasAlDia": "{{h}} h dziennie",
+        "jornada": "Wymiar pracy: {{dia}} · {{semana}}",
+        "ninguna": "żadne",
+        "noche": "Noc ({{desde}}:00–{{hasta}}:00): +{{pct}}%",
+        "porDiaDeInicio": "Niedziela i święto: cała zmiana liczy się według dnia rozpoczęcia",
+        "porHorasDelDia": "Niedziela i święto: tylko godziny przypadające na ten dzień",
+        "recargos": "Niedziela +{{domingo}}% · Przepracowany dzień wolny +{{descanso}}% · Święto +{{feriado}}% · {{modo}}",
+        "sinLimiteDiario": "brak limitu dziennego",
+        "sinLimiteSemanal": "brak limitu tygodniowego",
+        "tempranaNo": "nieopłacane",
+        "tempranaSi": "opłacane"
+      },
+      "semanaLaboralEmpieza": "Tydzień pracy zaczyna się w",
+      "semanalAyuda": "Powyżej tego w tygodniu to nadgodziny (USA: 40). 0 = brak zasady tygodniowej.",
+      "sinConfigurar": "Nikt jeszcze nie skonfigurował tych zasad: wymiar pracy jest zgodny z krajem i nie stosuje się dodatków. Sprawdź je i zapisz.",
+      "sinPais": "Brak kraju",
+      "sinPreset": "Nie mamy zapisanych zasad dla tego kraju: wpisz tutaj zasady swojej umowy."
     }
   },
   "visitantes": {
@@ -20943,7 +21045,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Tym zajmuje się centrala",
-      "soloPrincipalDesc": "Jako kierownik oddziału zarządzasz swoim oddziałem, ale płatności, moduły i konto prowadzi administrator centrali."
+      "soloPrincipalDesc": "Jako kierownik oddziału zarządzasz swoim oddziałem, ale płatności, moduły i konto prowadzi administrator centrali.",
+      "reglaDeEmpresaTitulo": "To ustawienie dotyczy całej firmy",
+      "reglaDeEmpresaDesc": "Jako kierownik oddziału możesz je zobaczyć, ale obowiązuje we wszystkich oddziałach: zmienia je administrator centrali."
     },
     "cliente": {
       "campo": "Oddział klienta",
@@ -20978,6 +21082,10 @@
     "etiqueta": {
       "empresa": "Firma",
       "columna": "Oddział"
+    },
+    "sinAcceso": {
+      "titulo": "Nie masz przypisanego oddziału",
+      "desc": "Twój dostęp jest ograniczony do oddziałów, a nie masz żadnego, dlatego nie widzisz danych. Poproś administratora centrali o przypisanie Twojego."
     }
   },
   "soporte": {

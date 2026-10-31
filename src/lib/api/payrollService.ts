@@ -67,6 +67,12 @@ export interface DiaDeTarjetaDeNomina {
   horasEnElPuesto?: number;
   descansoMinutos?: number;
   motivo?: string | null;
+  /** A justified absence that is NOT paid (unpaid leave): deducted, never a fault. */
+  sinGoce?: boolean;
+  /** Ordinary hours turned into overtime by the weekly threshold (US: 40 h). */
+  extraSemanal?: number;
+  /** Minutes not paid by the company's grace rules. */
+  minutosRecortados?: number;
 }
 
 export type EstadoGeneracion = "en_cola" | "calculando" | "listo" | "fallo";

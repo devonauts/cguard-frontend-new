@@ -23,6 +23,8 @@ import PlatformAnnouncements from "@/components/PlatformAnnouncements";
 import AnuncioEmergente from "@/components/AnuncioEmergente";
 import CartelDeMantenimiento from "@/components/CartelDeMantenimiento";
 import Breadcrumb from "@/components/ui/breadcrumb";
+import AvisoReglaDeEmpresa from "@/components/sucursales/AvisoReglaDeEmpresa";
+import AvisoSinSucursal from "@/components/sucursales/AvisoSinSucursal";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
 import RadioPasePopup from "@/components/radio/RadioPasePopup";
 import VisitBeacon from "@/components/VisitBeacon";
@@ -497,6 +499,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
                 rutas caducadas y sus nombres propios, y 87 pantallas sin
                 ninguna. Se oculta sola cuando la ruta no da para dos migas. */}
             <Breadcrumb />
+            {/* Sucursales: nadie asignado, o una regla que es de toda la empresa. */}
+            <AvisoSinSucursal />
+            <AvisoReglaDeEmpresa />
             {children}
           </OnboardingProvider>
         </main>

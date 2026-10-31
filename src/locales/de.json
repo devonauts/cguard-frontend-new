@@ -2001,7 +2001,8 @@
         "inviteNoContact": "Diese Sicherheitskraft hat keine E-Mail-Adresse. Hinterlegen Sie eine, um sie einladen zu können.",
         "deletedWithShifts_one": "Gelöscht. {{count}} Schicht wurde storniert und bleibt im Dienstplan als Lücke.",
         "deletedWithShifts_other": "Gelöscht. {{count}} Schichten wurden storniert und bleiben im Dienstplan als Lücken.",
-        "bulkActionError": "Die Aktion konnte nicht abgeschlossen werden: {{msg}}"
+        "bulkActionError": "Die Aktion konnte nicht abgeschlossen werden: {{msg}}",
+        "archiveScheduled": "Austritt geplant: Der Zugang endet mit Ablauf des {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2012,7 +2013,8 @@
           "notePh": "Grund im Detail",
           "rehire": "Für Wiedereinstellung geeignet",
           "note": "Notiz (optional)",
-          "reason": "Grund"
+          "reason": "Grund",
+          "futureHint": "Arbeitet bis zu diesem Tag. Spätere Schichten werden jetzt entfernt, der Zugang endet mit Ablauf dieses Tages."
         },
         "bulk": {
           "archiveDescription": "Möchten Sie {{count}} Wachkraft/Wachkräfte wirklich archivieren? Das lässt sich über den Filter „Archivierte“ wieder rückgängig machen.",
@@ -8379,7 +8381,9 @@
       "emptyDescription": "Fügen Sie die Feiertage Ihres Landes und die eigenen Tage Ihrer Firma hinzu.",
       "kindNationalBadge": "Gesetzlich",
       "kindCompanyBadge": "Firma",
-      "deleteAriaLabel": "{{name}} löschen"
+      "deleteAriaLabel": "{{name}} löschen",
+      "recargoUnico": "Zuschlag",
+      "recargoUnicoAyuda": "Er gilt für alle Feiertage gleich und wird in den Vergütungsregeln festgelegt."
     },
     "userRoles": {
       "actionBtn": "Aktion",
@@ -8806,7 +8810,8 @@
       "sacaTitle": "Springer hinzufügen",
       "title": "Zugewiesene Sicherheitskräfte",
       "editShift": "Schicht bearbeiten",
-      "eventoSub": "Wachperson für die Veranstaltungstermine"
+      "eventoSub": "Wachperson für die Veranstaltungstermine",
+      "stationFull": "Alle Plätze dieses Postens sind bereits besetzt. Wenn der Kunde einen weiteren braucht, fügen Sie im Dienstplan des Postens einen Platz hinzu und weisen Sie erneut zu."
     },
     "incidents": {
       "col": {
@@ -11706,7 +11711,8 @@
       },
       "creaCadaEstacionEvento": "Legen Sie jede Station der Veranstaltung an: Name, von wann bis wann sie besetzt ist, wie viele Sicherheitskräfte gleichzeitig und Geofence. Ohne Rotation: Die Veranstaltung hat ihre eigenen Termine. Wenn alle fertig sind, klicken Sie auf „Fertig“.",
       "eventoConEstaciones_one": "{{count}} Station. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor.",
-      "eventoConEstaciones_other": "{{count}} Stationen. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor."
+      "eventoConEstaciones_other": "{{count}} Stationen. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor.",
+      "horarioNoGuardado": "Der Posten wurde gespeichert, sein Dienstplan nicht. Prüfen Sie ihn auf der Seite des Postens."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Gute Beleuchtung — vermeiden Sie Schatten und Gegenlicht",
@@ -13251,7 +13257,21 @@
       "rechazar": "Ablehnen",
       "todos": "Alle",
       "vacaciones": "Urlaub",
-      "eligeAlVigilante": "Wähle, für wen diese Abwesenheit gilt."
+      "eligeAlVigilante": "Wähle, für wen diese Abwesenheit gilt.",
+      "conGoceDeSueldo": "Bezahlt (ohne Haken wird abgezogen)",
+      "aprobadoConHuecos": "Abwesenheit genehmigt. {{n}} Schicht(en) sind jetzt Lücken in der Abdeckung, die jemand übernehmen muss.",
+      "aprobadoSinTurnos": "Abwesenheit genehmigt. An diesen Tagen gab es keine Schichten.",
+      "turnosYaMarcados": "{{n}} bereits gestempelte Schicht(en) bleiben als gearbeitet.",
+      "aprobadoAntesSinRegistro": "Diese Abwesenheit wurde genehmigt, bevor das System speicherte, was sie im Dienstplan änderte. Prüfe die Tage im Dienstplan und entferne die Markierungen von Hand.",
+      "turnosDevueltos": "Erledigt. {{n}} Schicht(en) sind zurück im Dienstplan.",
+      "diasYaCubiertos": "Diese hatten schon eine Vertretung und bleiben so: {{dias}}. Prüfe sie in der Abdeckung.",
+      "diasCerrados": "Diese gehören zu einer abgeschlossenen Lohnperiode und bleiben unverändert: {{dias}}.",
+      "diasCambiadosAMano": "Jemand hat sie danach von Hand geändert, sie bleiben: {{dias}}.",
+      "cancelarPermiso": "Abwesenheit stornieren",
+      "cancelarPermisoMensaje": "Die Schichten dieser Tage kommen zurück in den Dienstplan und ihre Lücken in der Abdeckung schließen sich. Tage mit Vertretung bleiben so.",
+      "cancelarPermisoBoton": "Abwesenheit stornieren",
+      "eliminarAprobada": "Der Antrag wird gelöscht und was seine Genehmigung im Dienstplan geändert hat, wird rückgängig gemacht. Tage mit Vertretung bleiben so.",
+      "cancelado": "Storniert"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -15616,7 +15636,20 @@
       "tarjetasAprobadasConExcepcion": "Zeitkarten genehmigt (mit protokollierter Ausnahme)",
       "tarjetasDeNomina": "Lohn-Zeitkarten",
       "tarjetasReabiertas": "Zeitkarten wieder geöffnet",
-      "ultimoCierre": "Letzter Abschluss: {{fecha}}"
+      "ultimoCierre": "Letzter Abschluss: {{fecha}}",
+      "faltaElMotivo": "Geben Sie den Grund für das erneute Öffnen an.",
+      "irAUnaFecha": "Zum Zeitraum eines Datums",
+      "motivo": "Grund",
+      "noSePudoReabrirElPeriodo": "Die Periode konnte nicht wieder geöffnet werden",
+      "periodoAnterior": "Vorheriger Zeitraum",
+      "periodoCerradoInsignia": "Abgeschlossen",
+      "periodoReabierto": "Periode wieder geöffnet. Jetzt abgeschlossen bis {{hasta}}.",
+      "periodoReabiertoSinCierre": "Periode wieder geöffnet.",
+      "periodoSiguiente": "Nächster Zeitraum",
+      "rangoDelPeriodo": "{{desde}} – {{hasta}}",
+      "reabrirPeriodo": "Periode wieder öffnen",
+      "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
+      "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?"
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",
@@ -17200,7 +17233,11 @@
       "descartar": "Entwurf verwerfen",
       "franjaUnCambio": "Unveröffentlichter Entwurf · 1 Änderung",
       "franjaCambios": "Unveröffentlichter Entwurf · {{n}} Änderungen",
-      "franjaNadaEnElReal": "nichts davon ist schon im echten Dienstplan"
+      "franjaNadaEnElReal": "nichts davon ist schon im echten Dienstplan",
+      "cambioDirectoTitulo": "Diese Änderung geht direkt in den echten Dienstplan",
+      "cambioDirectoMensaje": "Du hast {{n}} unveröffentlichte Änderung(en) im Entwurf. Beim Speichern liest der Planer den echten Dienstplan neu und der Entwurf geht verloren. Um ihn zu behalten, veröffentliche ihn zuerst.",
+      "cambioDirectoSeguir": "Weiter und Entwurf verwerfen",
+      "cambioDirectoVolver": "Zurück"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",
@@ -17512,7 +17549,10 @@
         "programado": "Geplant"
       },
       "sinDesgloseExportada": "Diese Zeitkarte wurde bereits exportiert und bleibt, wie sie ist: Sie wurde erstellt, bevor die Pause pro Tag angezeigt wurde, daher ist diese Aufschlüsselung für sie nicht verfügbar. Die Summe ist die exportierte.",
-      "sinDesgloseAprobada": "Diese Zeitkarte ist bereits genehmigt und bleibt, wie sie ist: Sie wurde erstellt, bevor die Pause pro Tag angezeigt wurde, daher ist diese Aufschlüsselung für sie nicht verfügbar. Die Summe ist die genehmigte."
+      "sinDesgloseAprobada": "Diese Zeitkarte ist bereits genehmigt und bleibt, wie sie ist: Sie wurde erstellt, bevor die Pause pro Tag angezeigt wurde, daher ist diese Aufschlüsselung für sie nicht verfügbar. Die Summe ist die genehmigte.",
+      "extraSemanal": "{{horas}} Überstunden wegen Überschreitung der Wochenarbeitszeit",
+      "minutosRecortados": "{{min}} Min. unbezahlt (Kulanzregeln)",
+      "sinGoce": "Unbezahlt: wird abgezogen"
     },
     "RolesDePago": {
       "perfiles": {
@@ -18830,6 +18870,68 @@
       "nMinutos": "{{count}} Min.",
       "hasta": "bis {{hora}}",
       "notaAlmuerzo": "Die Mittagspause wird nicht bezahlt: an der Stempeluhr tippt die Person „Zur Mittagspause“ und „Zurück“."
+    },
+    "ReglasDePago": {
+      "anclaAyuda": "Alle 14-Tage-Perioden werden ab hier gezählt. Leer = der erste gewählte Wochentag ab dem 1. Januar 2024.",
+      "aplicar": "Anwenden",
+      "aplicarMensaje": "Arbeitszeit, Überstunden, Zuschläge und bezahlte Abwesenheiten werden ersetzt. Danach können Sie jeden Wert ändern. Bereits genehmigte oder exportierte Zeitkarten werden nicht neu berechnet; Entwürfe ändern sich bei der nächsten Berechnung.",
+      "aplicarReglasDe": "Regeln für {{pais}} anwenden",
+      "aplicarTitulo": "Regeln für {{pais}} anwenden?",
+      "ausenciasAyuda": "Eine unbezahlte Abwesenheit bleibt entschuldigt (kein Fehlverhalten), wird aber abgezogen. Ein «persönlicher» Urlaub ist bezahlt oder nicht, je nach Antrag.",
+      "ausenciasQueSePagan": "Bezahlte Abwesenheiten",
+      "cadaCuantoSePaga": "Abrechnungsrhythmus",
+      "cat": {
+        "calamidad": "Familiärer Notfall",
+        "capacitacion": "Schulung",
+        "enfermedad": "Krankheit",
+        "otro": "Anderer Grund",
+        "permisoConSueldo": "Bezahlter Urlaub",
+        "permisoSinSueldo": "Unbezahlter Urlaub",
+        "vacaciones": "Urlaub"
+      },
+      "catorcenal": "Alle 2 Wochen (14 Tage)",
+      "diaDeInicio": "Die ganze Schicht, nach dem Starttag",
+      "diariaAyuda": "Was darüber hinaus an einem Tag geht, sind Überstunden. 0 = kein Tageslimit (USA).",
+      "domingoYFeriadoCuentan": "Sonntag und Feiertag zählen",
+      "feriadoAyuda": "Das ist der einzige Feiertagszuschlag: Feiertage und die Plankosten verwenden ihn.",
+      "fuentes": "Quellen: {{fuentes}}",
+      "graciaAyuda": "Bis zu diesen Minuten nach Schichtende (Warten auf die Ablösung) wird nicht bezahlt; länger wird voll bezahlt. 0 = jede Minute wird bezahlt.",
+      "graciaSalida": "Kulanz beim Ausstempeln (Minuten)",
+      "horasDelDia": "Nur die Stunden, die auf diesen Tag fallen",
+      "jornadaSemanal": "Reguläre Wochenarbeitszeit (h)",
+      "pagarEntradaTemprana": "Zeit vor Schichtbeginn bezahlen",
+      "paisDeLaEmpresa": "Land des Unternehmens: {{pais}}",
+      "periodoAyuda": "Perioden haben feste Grenzen: Ein Tag wird nur in einer Periode bezahlt, egal wer wann rechnet.",
+      "periodoDePago": "Abrechnungszeitraum",
+      "porConfirmar": "Mit Ihrem Berater zu klären:",
+      "primerDiaDeUnPeriodo": "Erster Tag einer Periode",
+      "quincenal": "Zweimal im Monat (1.–15., 16.–Ende)",
+      "reglasDePago": "Vergütungsregeln",
+      "reglasVigentes": "Geltende Regeln",
+      "resumen": {
+        "ausencias": "Bezahlte Abwesenheiten: {{lista}}",
+        "desdeLaHora": "ab der {{n}}.",
+        "extraConRecargo": "Überstunden: {{tramos}}",
+        "extraSimple": "Überstunden: zum normalen Satz",
+        "gracia": "Kulanz beim Ausstempeln: {{min}} Min. · Früher Beginn: {{temprana}}",
+        "horasALaSemana": "{{h}} Std. pro Woche (ab {{dia}})",
+        "horasAlDia": "{{h}} Std. pro Tag",
+        "jornada": "Reguläre Arbeitszeit: {{dia}} · {{semana}}",
+        "ninguna": "keine",
+        "noche": "Nacht ({{desde}}:00–{{hasta}}:00): +{{pct}} %",
+        "porDiaDeInicio": "Sonntag und Feiertag: Die ganze Schicht zählt nach dem Starttag",
+        "porHorasDelDia": "Sonntag und Feiertag: nur die Stunden an diesem Tag",
+        "recargos": "Sonntag +{{domingo}} % · Ruhetag gearbeitet +{{descanso}} % · Feiertag +{{feriado}} % · {{modo}}",
+        "sinLimiteDiario": "kein Tageslimit",
+        "sinLimiteSemanal": "kein Wochenlimit",
+        "tempranaNo": "nicht bezahlt",
+        "tempranaSi": "bezahlt"
+      },
+      "semanaLaboralEmpieza": "Die Arbeitswoche beginnt am",
+      "semanalAyuda": "Was darüber hinaus in der Woche geht, sind Überstunden (USA: 40). 0 = keine Wochenregel.",
+      "sinConfigurar": "Niemand hat diese Regeln bisher eingerichtet: Die Arbeitszeit folgt dem Land und es gilt kein Zuschlag. Prüfen und speichern.",
+      "sinPais": "Kein Land",
+      "sinPreset": "Für dieses Land sind keine Regeln hinterlegt: Tragen Sie hier die Ihres Tarifvertrags ein."
     }
   },
   "visitantes": {
@@ -20649,7 +20751,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Das macht der Hauptsitz",
-      "soloPrincipalDesc": "Als Niederlassungsleitung führen Sie Ihre Niederlassung; Zahlungen, Module und das Konto verwaltet eine Administration des Hauptsitzes."
+      "soloPrincipalDesc": "Als Niederlassungsleitung führen Sie Ihre Niederlassung; Zahlungen, Module und das Konto verwaltet eine Administration des Hauptsitzes.",
+      "reglaDeEmpresaTitulo": "Diese Einstellung gilt für das ganze Unternehmen",
+      "reglaDeEmpresaDesc": "Als Niederlassungsleitung können Sie sie sehen, aber sie gilt für alle Niederlassungen: Eine Administration des Hauptsitzes ändert sie."
     },
     "cliente": {
       "campo": "Niederlassung des Kunden",
@@ -20684,6 +20788,10 @@
     "etiqueta": {
       "empresa": "Unternehmen",
       "columna": "Niederlassung"
+    },
+    "sinAcceso": {
+      "titulo": "Ihnen ist keine Niederlassung zugewiesen",
+      "desc": "Ihr Zugriff ist auf Niederlassungen beschränkt und Sie haben keine, daher sehen Sie keine Daten. Bitten Sie eine Administration des Hauptsitzes, Ihnen Ihre zuzuweisen."
     }
   },
   "soporte": {

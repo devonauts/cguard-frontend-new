@@ -50,6 +50,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   Plus,
+  Undo2,
 } from "lucide-react";
 import {
   PageContainer,
@@ -65,6 +66,7 @@ import {
   SearchInput,
 } from "@/components/kit";
 import timeOffRequestService, {
+  ScheduleEffect,
   TimeOffRecord,
 } from "@/lib/api/timeOffRequestService";
 import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
@@ -224,40 +226,139 @@ export default function TimeOff() {
     }
   };
 
-  const handleApprove = async (id: string) => {
-    try {
-      const updated = await timeOffRequestService.updateStatus(id, "approved");
-      setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
-    } catch (err) {
-      console.error("Failed to approve", err);
+  /* What the decision did to the schedule, in words. Approving turns the
+     person's shifts into gaps in Cobertura; undoing gives them back, except
+     the days somebody already covered, the days of a closed pay period and
+     the marks a person changed afterwards — those stay, and we say which. */
+  const fechas = (dias?: string[]) =>
+    (dias || []).map((d) => formatDate(d)).join(", ");
+  const avisarEfecto = (e?: ScheduleEffect) => {
+    if (!e || e.action === "none") return;
+    if (e.action === "applied") {
+      if (e.gapsOpened)
+        toast.success(
+          t("ui.TimeOff.aprobadoConHuecos", {
+            n: e.gapsOpened,
+            defaultValue:
+              "Permiso aprobado. {{n}} turno(s) quedan como hueco en Cobertura para que alguien los cubra.",
+          }),
+        );
+      else
+        toast.success(
+          t(
+            "ui.TimeOff.aprobadoSinTurnos",
+            "Permiso aprobado. No tenía turnos esos días.",
+          ),
+        );
+      if (e.skippedPunched)
+        toast.message(
+          t("ui.TimeOff.turnosYaMarcados", {
+            n: e.skippedPunched,
+            defaultValue:
+              "{{n}} turno(s) con entrada marcada se dejaron como trabajados.",
+          }),
+        );
+
+      return;
     }
+    if (e.legacy) {
+      toast.message(
+        t(
+          "ui.TimeOff.aprobadoAntesSinRegistro",
+          "Este permiso se aprobó antes de que el sistema guardara lo que cambiaba en el horario. Revisa sus días en el Horario y quita las marcas a mano.",
+        ),
+      );
+
+      return;
+    }
+    toast.success(
+      t("ui.TimeOff.turnosDevueltos", {
+        n: e.restoredShifts || 0,
+        defaultValue: "Listo. Se devolvieron {{n}} turno(s) al horario.",
+      }),
+    );
+    if (e.coveredDays?.length)
+      toast.message(
+        t("ui.TimeOff.diasYaCubiertos", {
+          dias: fechas(e.coveredDays),
+          defaultValue:
+            "Ya tenían reemplazo y se quedan como están: {{dias}}. Revísalos en Cobertura.",
+        }),
+      );
+    if (e.closedDays?.length)
+      toast.message(
+        t("ui.TimeOff.diasCerrados", {
+          dias: fechas(e.closedDays),
+          defaultValue:
+            "Son de un periodo de nómina cerrado y no se tocan: {{dias}}.",
+        }),
+      );
+    if (e.editedDays?.length)
+      toast.message(
+        t("ui.TimeOff.diasCambiadosAMano", {
+          dias: fechas(e.editedDays),
+          defaultValue:
+            "Alguien los cambió a mano después y se respetan: {{dias}}.",
+        }),
+      );
   };
 
-  const handleReject = async (id: string) => {
+  // Errors already reach the person as a toast from the API layer (with the
+  // server's reason, e.g. a closed pay period).
+  const cambiarEstado = async (
+    id: string,
+    status: "approved" | "rejected" | "cancelled",
+  ) => {
     try {
-      const updated = await timeOffRequestService.updateStatus(id, "rejected");
+      const updated = await timeOffRequestService.updateStatus(id, status);
+
       setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      avisarEfecto(updated.scheduleEffect);
     } catch (err) {
-      console.error("Failed to reject", err);
+      console.error(`Failed to set ${status}`, err);
     }
+  };
+  const handleApprove = (id: string) => cambiarEstado(id, "approved");
+  const handleReject = (id: string) => cambiarEstado(id, "rejected");
+  const handleCancel = async (id: string) => {
+    if (
+      !(await confirmDialog({
+        title: t("ui.TimeOff.cancelarPermiso", "Cancelar el permiso"),
+        message: t(
+          "ui.TimeOff.cancelarPermisoMensaje",
+          "Los turnos de esos días vuelven al horario y sus huecos en Cobertura se cierran. Los días que ya tienen reemplazo se quedan como están.",
+        ),
+        confirmText: t("ui.TimeOff.cancelarPermisoBoton", "Cancelar permiso"),
+        cancelText: t("common.back", "Atrás"),
+        tone: "danger",
+      }))
+    )
+      return;
+    await cambiarEstado(id, "cancelled");
   };
 
   const handleDelete = async (id: string) => {
+    const aprobada = records.find((r) => r.id === id)?.status === "approved";
+
     if (
       !(await confirmDialog({
         title: t("ui.TimeOff.eliminarSolicitud", "Eliminar solicitud"),
-        message: t(
-          "ui.TimeOff.eliminarEstaSolicitud",
-          "¿Eliminar esta solicitud?",
-        ),
+        message: aprobada
+          ? t(
+              "ui.TimeOff.eliminarAprobada",
+              "Se elimina la solicitud y se deshace lo que su aprobación cambió en el horario. Los días que ya tienen reemplazo se quedan como están.",
+            )
+          : t("ui.TimeOff.eliminarEstaSolicitud", "¿Eliminar esta solicitud?"),
         confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
       return;
     try {
-      await timeOffRequestService.destroy(id);
-      setRecords((prev) => prev.filter((r) => r.id !== id));
+      const r = await timeOffRequestService.destroy(id);
+
+      setRecords((prev) => prev.filter((x) => x.id !== id));
+      avisarEfecto(r?.scheduleEffect);
     } catch (err) {
       console.error("Failed to delete", err);
     }
@@ -289,6 +390,12 @@ export default function TimeOff() {
         return <StatusBadge tone="ok">{t("comun.aprobado")}</StatusBadge>;
       case "rejected":
         return <StatusBadge tone="bad">{t("comun.rechazado")}</StatusBadge>;
+      case "cancelled":
+        return (
+          <StatusBadge tone="neutral">
+            {t("ui.TimeOff.cancelado", "Cancelado")}
+          </StatusBadge>
+        );
       default:
         return <StatusBadge tone="neutral">{status}</StatusBadge>;
     }
@@ -421,7 +528,10 @@ export default function TimeOff() {
                         <Label>{t("ui.TimeOff.tipo")}</Label>
                         <Select
                           value={form.type}
-                          onValueChange={(v) => setForm({ ...form, type: v })}
+                          /* Paid or not is the TYPE's for vacation, sickness and
+                             training (the company decides in its pay rules);
+                             only a personal permission asks. */
+                          onValueChange={(v) => setForm({ ...form, type: v, isPaid: v === "personal" ? form.isPaid : true })}
                         >
                           <SelectTrigger>
                             <SelectValue
@@ -521,21 +631,23 @@ export default function TimeOff() {
                       />
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="isPaid"
-                        checked={form.isPaid}
-                        onCheckedChange={(v) =>
-                          setForm({ ...form, isPaid: v as boolean })
-                        }
-                      />
-                      <Label
-                        htmlFor="isPaid"
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        {t("ui.TimeOff.pagado", "Pagado")}
-                      </Label>
-                    </div>
+                    {form.type === "personal" && (
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="isPaid"
+                          checked={form.isPaid}
+                          onCheckedChange={(v) =>
+                            setForm({ ...form, isPaid: v as boolean })
+                          }
+                        />
+                        <Label
+                          htmlFor="isPaid"
+                          className="text-sm font-normal cursor-pointer"
+                        >
+                          {t("ui.TimeOff.conGoceDeSueldo", "Con goce de sueldo (si no se marca, se descuenta)")}
+                        </Label>
+                      </div>
+                    )}
                   </div>
                   <SheetFooter>
                     <Button
@@ -638,6 +750,18 @@ export default function TimeOff() {
                       label: t("ui.TimeOff.rechazar", "Rechazar"),
                       icon: <XCircle style={{ color: "var(--bad-text)" }} />,
                       onClick: () => handleReject(row.id),
+                    },
+                  ]
+                : []),
+              ...(row.status === "approved"
+                ? [
+                    {
+                      label: t(
+                        "ui.TimeOff.cancelarPermisoBoton",
+                        "Cancelar permiso",
+                      ),
+                      icon: <Undo2 />,
+                      onClick: () => handleCancel(row.id),
                     },
                   ]
                 : []),
