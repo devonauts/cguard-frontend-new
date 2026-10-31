@@ -7876,7 +7876,9 @@
       "emptyDescription": "Add your country's holidays and your company's own days.",
       "kindNationalBadge": "Statutory",
       "kindCompanyBadge": "Company",
-      "deleteAriaLabel": "Delete {{name}}"
+      "deleteAriaLabel": "Delete {{name}}",
+      "recargoUnico": "Surcharge",
+      "recargoUnicoAyuda": "It is the same for every holiday and is set in the pay rules."
     },
     "userRoles": {
       "actionBtn": "Action",
@@ -12716,7 +12718,8 @@
       "rechazar": "Reject",
       "todos": "All",
       "vacaciones": "Vacation",
-      "eligeAlVigilante": "Choose who this time off is for."
+      "eligeAlVigilante": "Choose who this time off is for.",
+      "conGoceDeSueldo": "Paid (if unchecked, it is deducted)"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -15001,7 +15004,7 @@
       "aprobarN_other": "Approve ({{count}})",
       "calculando": "Calculating…",
       "calculoTardaDemasiado": "The calculation is taking longer than usual. Come back to this page in a few minutes.",
-      "cerrarElPeriodoMensaje": "Clock-ins and clock-outs up to the end of {{hasta}} will become read-only: nobody will be able to correct them. And this period's timecards can no longer be recalculated. Do it once you've reviewed and approved the period.",
+      "cerrarElPeriodoMensaje": "Punches, shifts and schedule marks up to the end of {{hasta}} will be closed: nobody can change them, and this period's timecards can no longer be recalculated. Closing only moves forward; going back needs «Reopen period». Do it once the period is reviewed and approved.",
       "cerrarElPeriodoTitulo": "Close the period through {{hasta}}?",
       "cerrarPeriodo": "Close period",
       "conDiasSinResolver": "With unresolved days",
@@ -15081,7 +15084,20 @@
       "tarjetasAprobadasConExcepcion": "Timecards approved (with a recorded exception)",
       "tarjetasDeNomina": "Payroll timecards",
       "tarjetasReabiertas": "Timecards reopened",
-      "ultimoCierre": "Last close: {{fecha}}"
+      "ultimoCierre": "Last close: {{fecha}}",
+      "faltaElMotivo": "Write the reason to reopen the period.",
+      "irAUnaFecha": "Go to the period of a date",
+      "motivo": "Reason",
+      "noSePudoReabrirElPeriodo": "Could not reopen the period",
+      "periodoAnterior": "Previous period",
+      "periodoCerradoInsignia": "Closed",
+      "periodoReabierto": "Period reopened. It is now closed through {{hasta}}.",
+      "periodoReabiertoSinCierre": "Period reopened.",
+      "periodoSiguiente": "Next period",
+      "rangoDelPeriodo": "{{desde}} – {{hasta}}",
+      "reabrirPeriodo": "Reopen period",
+      "reabrirPeriodoMensaje": "Punches, shifts and marks from that day on can be changed again. Timecards already approved or exported are not touched. Write the reason: it goes to the audit log.",
+      "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",
@@ -16977,7 +16993,10 @@
         "programado": "Scheduled"
       },
       "sinDesgloseExportada": "This timecard was already exported and stays as it is: it was generated before breaks were shown per day, so that breakdown isn’t available for it. The total is what was exported.",
-      "sinDesgloseAprobada": "This timecard is already approved and stays as it is: it was generated before breaks were shown per day, so that breakdown isn’t available for it. The total is what was approved."
+      "sinDesgloseAprobada": "This timecard is already approved and stays as it is: it was generated before breaks were shown per day, so that breakdown isn’t available for it. The total is what was approved.",
+      "extraSemanal": "{{horas}} overtime for going over the weekly hours",
+      "minutosRecortados": "{{min}} min unpaid (grace rules)",
+      "sinGoce": "Unpaid: deducted"
     },
     "RolesDePago": {
       "perfiles": {
@@ -18295,6 +18314,68 @@
       "nMinutos": "{{count}} min",
       "hasta": "until {{hora}}",
       "notaAlmuerzo": "Lunch is unpaid: on the time clock the person taps «Go to lunch» and «Back»."
+    },
+    "ReglasDePago": {
+      "anclaAyuda": "Every 14-day period is counted from here. Empty = the first chosen weekday on or after 1 January 2024.",
+      "aplicar": "Apply",
+      "aplicarMensaje": "The working hours, overtime, surcharges and which absences are paid are replaced. You can change any value afterwards. Timecards already approved or exported are not recalculated; drafts change when the period is generated again.",
+      "aplicarReglasDe": "Apply the rules of {{pais}}",
+      "aplicarTitulo": "Apply the rules of {{pais}}?",
+      "ausenciasAyuda": "An unpaid absence is still excused (it is not a fault), but it is deducted. A «personal» leave is paid or not as the leave itself says.",
+      "ausenciasQueSePagan": "Paid absences",
+      "cadaCuantoSePaga": "How often people are paid",
+      "cat": {
+        "calamidad": "Family emergency",
+        "capacitacion": "Training",
+        "enfermedad": "Sickness",
+        "otro": "Other reason",
+        "permisoConSueldo": "Paid leave",
+        "permisoSinSueldo": "Unpaid leave",
+        "vacaciones": "Vacation"
+      },
+      "catorcenal": "Every 2 weeks (14 days)",
+      "diaDeInicio": "The whole shift, by the day it starts",
+      "diariaAyuda": "Anything over this in a day is overtime. 0 = no daily limit (US).",
+      "domingoYFeriadoCuentan": "Sunday and holiday count",
+      "feriadoAyuda": "This is the only holiday surcharge: Holidays and the schedule cost use this one.",
+      "fuentes": "Sources: {{fuentes}}",
+      "graciaAyuda": "Staying up to these minutes after the shift ends (waiting for the relief) is not paid; longer is paid in full. 0 = every minute is paid.",
+      "graciaSalida": "Grace at clock-out (minutes)",
+      "horasDelDia": "Only the hours that fall on that day",
+      "jornadaSemanal": "Regular weekly hours (h)",
+      "pagarEntradaTemprana": "Pay the time before the start time",
+      "paisDeLaEmpresa": "Company country: {{pais}}",
+      "periodoAyuda": "Periods have fixed boundaries: a day is paid in one period only, whoever calculates it and whenever.",
+      "periodoDePago": "Pay period",
+      "porConfirmar": "To confirm with your advisor:",
+      "primerDiaDeUnPeriodo": "First day of a period",
+      "quincenal": "Twice a month (1–15, 16–end)",
+      "reglasDePago": "Pay rules",
+      "reglasVigentes": "Rules in force",
+      "resumen": {
+        "ausencias": "Paid absences: {{lista}}",
+        "desdeLaHora": "from hour {{n}}",
+        "extraConRecargo": "Overtime: {{tramos}}",
+        "extraSimple": "Overtime: at the regular rate",
+        "gracia": "Grace at clock-out: {{min}} min · Early clock-in: {{temprana}}",
+        "horasALaSemana": "{{h}} h a week (from {{dia}})",
+        "horasAlDia": "{{h}} h a day",
+        "jornada": "Regular hours: {{dia}} · {{semana}}",
+        "ninguna": "none",
+        "noche": "Night ({{desde}}:00–{{hasta}}:00): +{{pct}}%",
+        "porDiaDeInicio": "Sunday and holiday: the whole shift takes the day it starts",
+        "porHorasDelDia": "Sunday and holiday: only the hours that fall on that day",
+        "recargos": "Sunday +{{domingo}}% · Rest day worked +{{descanso}}% · Holiday +{{feriado}}% · {{modo}}",
+        "sinLimiteDiario": "no daily limit",
+        "sinLimiteSemanal": "no weekly limit",
+        "tempranaNo": "not paid",
+        "tempranaSi": "paid"
+      },
+      "semanaLaboralEmpieza": "The workweek starts on",
+      "semanalAyuda": "Anything over this in the week is overtime (US: 40). 0 = no weekly rule.",
+      "sinConfigurar": "Nobody has configured these rules yet: the working hours follow the country and no surcharge is applied. Review them and save.",
+      "sinPais": "No country",
+      "sinPreset": "We have no saved rules for this country: set your agreement’s rules here."
     }
   },
   "map": {

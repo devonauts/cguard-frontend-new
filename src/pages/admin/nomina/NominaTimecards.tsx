@@ -24,7 +24,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CalendarDays,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Download,
+  LockOpen,
   FileSpreadsheet,
   Loader2,
   Lock,
@@ -37,6 +40,7 @@ import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { promptDialog } from "@/components/ui/promptDialog";
 import payrollService, {
   type EstadoTarjeta,
   type TarjetaDeNomina,
@@ -46,7 +50,6 @@ import DiasDeLaTarjeta from "./DiasDeLaTarjeta";
 import { fmtDescanso } from "./shared";
 import {
   diaDeLaEmpresa,
-  instanteEnLaEmpresa,
   soloFechaCivil,
 } from "@/lib/horaDeLaEmpresa";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -152,21 +155,33 @@ export default function NominaTimecards() {
       .finally(() => setCargando(false));
   }, [desde, hasta]);
 
-  /* El periodo lo decide la EMPRESA (semanal / quincenal / mensual), no una
-     ventana fija de 14 días: dos empresas con periodos distintos verían lo
-     mismo. Si el servidor no contesta, se queda con los 14 días — una lista con
-     el rango equivocado es mejor que ninguna lista. */
-  useEffect(() => {
+  /* ── THE PERIOD IS THE COMPANY'S, WHOLE AND FIXED ──────────────────────
+     The server says which period contains a day (1–15/16–end, the month, or
+     14 days from a fixed anchor) and its neighbours. The page moves between
+     whole periods with the arrows: a free date range is how the same day
+     ended up in two cards and was paid twice. */
+  const [periodo, setPeriodo] = useState<{
+    label: string;
+    previous?: { desde: string; hasta: string };
+    next?: { desde: string; hasta: string };
+    closedThrough?: string | null;
+  } | null>(null);
+  const irAlPeriodo = useCallback((dia?: string) => {
     attendanceService
-      .currentPeriod?.()
-      .then((p: { from?: string; to?: string }) => {
+      .currentPeriod(dia)
+      .then((p) => {
         if (p?.from && p?.to) {
           setDesde(p.from.slice(0, 10));
           setHasta(p.to.slice(0, 10));
+          setPeriodo({ label: p.label, previous: p.previous, next: p.next, closedThrough: p.closedThrough ?? null });
         }
       })
       .catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    irAlPeriodo();
+  }, [irAlPeriodo]);
 
   useEffect(() => {
     cargar();
@@ -337,7 +352,7 @@ export default function NominaTimecards() {
       message: t("ui.NominaTimecards.cerrarElPeriodoMensaje", {
         hasta: soloFechaCivil(hasta),
         defaultValue:
-          "Los fichajes hasta el final del {{hasta}} quedarán en sólo lectura: nadie podrá corregirlos. Y las tarjetas de este periodo ya no se podrán volver a calcular. Hazlo cuando ya hayas revisado y aprobado el periodo.",
+          "Los fichajes, turnos y marcas del horario hasta el final del {{hasta}} quedarán cerrados: nadie podrá cambiarlos, y las tarjetas de este periodo ya no se podrán volver a calcular. Cerrar sólo avanza; para volver atrás hace falta «Reabrir periodo». Hazlo cuando ya hayas revisado y aprobado el periodo.",
       }),
       confirmText: t("ui.NominaTimecards.cerrarPeriodo", "Cerrar periodo"),
       tone: "danger",
@@ -346,8 +361,9 @@ export default function NominaTimecards() {
     if (!ok) return;
     setTrabajando(true);
     try {
-      const corte = instanteEnLaEmpresa(hasta, 23, 59, 59, 999).toISOString();
-      const out = (await attendanceService.closePeriod(corte)) as {
+      // The close is a DAY of the company (inclusive); the server turns it into
+      // instants with the company's timezone.
+      const out = (await attendanceService.closePeriod(hasta)) as {
         lockedCount?: number;
       };
 
@@ -360,6 +376,7 @@ export default function NominaTimecards() {
         }),
       );
       await queryClient.invalidateQueries({ queryKey: ["attendance"] });
+      irAlPeriodo(desde);
       cargar();
     } catch (e) {
       toast.error(
@@ -370,6 +387,56 @@ export default function NominaTimecards() {
       setTrabajando(false);
     }
   };
+
+  /* REOPEN THE PERIOD from its first day. Never a side effect: management
+     only (the server checks), with a reason that goes to the audit log.
+     Approved and exported cards stay as they are. */
+  const reabrirPeriodo = async () => {
+    const motivo = await promptDialog({
+      title: t("ui.NominaTimecards.reabrirPeriodoTitulo", {
+        desde: soloFechaCivil(desde),
+        defaultValue: "¿Reabrir la nómina desde el {{desde}}?",
+      }),
+      message: t(
+        "ui.NominaTimecards.reabrirPeriodoMensaje",
+        "Los fichajes, turnos y marcas desde ese día se podrán volver a cambiar. Las tarjetas ya aprobadas o exportadas no se tocan. Escribe el motivo: queda en la bitácora.",
+      ),
+      placeholder: t("ui.NominaTimecards.motivo", "Motivo"),
+      confirmText: t("ui.NominaTimecards.reabrirPeriodo", "Reabrir periodo"),
+    });
+
+    if (motivo == null) return;
+    if (!motivo.trim()) {
+      toast.error(t("ui.NominaTimecards.faltaElMotivo", "Escribe el motivo para reabrir el periodo."));
+
+      return;
+    }
+    setTrabajando(true);
+    try {
+      const out = (await attendanceService.reopenPeriod(desde, motivo.trim())) as { closedThrough?: string };
+
+      toast.success(
+        out?.closedThrough
+          ? t("ui.NominaTimecards.periodoReabierto", {
+              hasta: soloFechaCivil(out.closedThrough),
+              defaultValue: "Periodo reabierto. Ahora está cerrado hasta el {{hasta}}.",
+            })
+          : t("ui.NominaTimecards.periodoReabiertoSinCierre", "Periodo reabierto."),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["attendance"] });
+      irAlPeriodo(desde);
+      cargar();
+    } catch (e) {
+      toast.error(
+        (e as Error)?.message ||
+          t("ui.NominaTimecards.noSePudoReabrirElPeriodo", "No se pudo reabrir el periodo"),
+      );
+    } finally {
+      setTrabajando(false);
+    }
+  };
+
+  const periodoCerrado = !!(periodo?.closedThrough && periodo.closedThrough >= desde);
 
   const aprobar = async () => {
     if (!sel.length) return;
@@ -665,26 +732,54 @@ export default function NominaTimecards() {
         />
 
         <Toolbar>
-          <label className="flex items-center gap-2 text-sm">
-            <CalendarDays size={15} style={{ color: "var(--ink-faint)" }} />
-            <input
-              type="date"
-              value={desde}
-              onChange={(e) => setDesde(e.target.value)}
-              className="cg-input"
-            />
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <span style={{ color: "var(--ink-faint)" }}>
-              {t("ui.NominaTimecards.a", "a")}
+          {/* Whole periods only: the arrows move one period, the date jumps to
+              the period that contains it. */}
+          <div className="flex items-center gap-1.5 text-sm">
+            <Button
+              size="sm"
+              variant="outline"
+              aria-label={t("ui.NominaTimecards.periodoAnterior", "Periodo anterior")}
+              title={t("ui.NominaTimecards.periodoAnterior", "Periodo anterior")}
+              disabled={!periodo?.previous || calculando}
+              onClick={() => periodo?.previous && irAlPeriodo(periodo.previous.desde)}
+            >
+              <ChevronLeft size={15} />
+            </Button>
+            <span className="flex items-center gap-1.5 px-1 tabular-nums">
+              <CalendarDays size={15} style={{ color: "var(--ink-faint)" }} />
+              {t("ui.NominaTimecards.rangoDelPeriodo", {
+                desde: soloFechaCivil(desde),
+                hasta: soloFechaCivil(hasta),
+                defaultValue: "{{desde}} – {{hasta}}",
+              })}
+              {periodo?.label ? (
+                <span style={{ color: "var(--ink-faint)" }}>· {periodo.label}</span>
+              ) : null}
             </span>
+            <Button
+              size="sm"
+              variant="outline"
+              aria-label={t("ui.NominaTimecards.periodoSiguiente", "Periodo siguiente")}
+              title={t("ui.NominaTimecards.periodoSiguiente", "Periodo siguiente")}
+              disabled={!periodo?.next || calculando}
+              onClick={() => periodo?.next && irAlPeriodo(periodo.next.desde)}
+            >
+              <ChevronRight size={15} />
+            </Button>
             <input
               type="date"
-              value={hasta}
-              onChange={(e) => setHasta(e.target.value)}
-              className="cg-input"
+              aria-label={t("ui.NominaTimecards.irAUnaFecha", "Ir al periodo de una fecha")}
+              title={t("ui.NominaTimecards.irAUnaFecha", "Ir al periodo de una fecha")}
+              value={desde}
+              onChange={(e) => e.target.value && irAlPeriodo(e.target.value)}
+              className="cg-input w-[9.5rem]"
             />
-          </label>
+            {periodoCerrado && (
+              <StatusBadge dot={false} tone="neutral">
+                <Lock size={12} /> {t("ui.NominaTimecards.periodoCerradoInsignia", "Cerrado")}
+              </StatusBadge>
+            )}
+          </div>
 
           <Button onClick={generar} disabled={trabajando || calculando}>
             {calculando ? (
@@ -732,13 +827,22 @@ export default function NominaTimecards() {
           >
             <FileSpreadsheet size={15} /> {t("ui.NominaTimecards.detalleDiaADia", "Detalle día a día")}
           </Button>
-          {puedeCerrar && (
+          {puedeCerrar && !periodoCerrado && (
             <Button
               variant="outline"
               onClick={cerrarPeriodo}
               disabled={trabajando || calculando}
             >
               <Lock size={15} /> {t("ui.NominaTimecards.cerrarPeriodo", "Cerrar periodo")}
+            </Button>
+          )}
+          {puedeCerrar && periodoCerrado && (
+            <Button
+              variant="outline"
+              onClick={reabrirPeriodo}
+              disabled={trabajando || calculando}
+            >
+              <LockOpen size={15} /> {t("ui.NominaTimecards.reabrirPeriodo", "Reabrir periodo")}
             </Button>
           )}
         </Toolbar>

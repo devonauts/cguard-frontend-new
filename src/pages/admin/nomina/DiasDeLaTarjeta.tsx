@@ -195,6 +195,27 @@ export default function DiasDeLaTarjeta({
                         {d.motivo}
                       </span>
                     )}
+                    {d.sinGoce && (
+                      <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>
+                        {t("ui.DiasDeLaTarjeta.sinGoce", "Sin goce de sueldo: se descuenta")}
+                      </span>
+                    )}
+                    {!!d.extraSemanal && (
+                      <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>
+                        {t("ui.DiasDeLaTarjeta.extraSemanal", {
+                          horas: fmtHours(d.extraSemanal),
+                          defaultValue: "{{horas}} extra por pasar la jornada semanal",
+                        })}
+                      </span>
+                    )}
+                    {!!d.minutosRecortados && (
+                      <span className="block text-xs" style={{ color: "var(--ink-faint)" }}>
+                        {t("ui.DiasDeLaTarjeta.minutosRecortados", {
+                          min: Math.round(d.minutosRecortados),
+                          defaultValue: "{{min}} min sin pagar (reglas de gracia)",
+                        })}
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -84,7 +84,6 @@ export default function FestivosPage() {
     name: "",
     kind: "national",
     recurring: true,
-    payMultiplier: "",
   });
 
   const cargar = async () => {
@@ -120,18 +119,13 @@ export default function FestivosPage() {
     setGuardando(true);
     try {
       await api.post(`/tenant/${tenantId()}/holiday`, {
-        data: {
-          ...nuevo,
-          payMultiplier:
-            nuevo.payMultiplier === "" ? null : Number(nuevo.payMultiplier),
-        },
+        data: { ...nuevo },
       });
       setNuevo({
         date: "",
         name: "",
         kind: "national",
         recurring: true,
-        payMultiplier: "",
       });
       await cargar();
       toast.success(
@@ -262,28 +256,22 @@ export default function FestivosPage() {
                     </option>
                   </select>
                 </label>
-                <label className="block">
+                {/* ONE holiday rate for the company (fase 0, 2026-10-30): the
+                    pay rules. A rate per holiday here was read by the estimate
+                    and the Horario, and never by the payroll. */}
+                <div className="block text-xs" style={{ color: "var(--ink-soft)" }}>
                   <span className="cg-eyebrow">
-                    {t("settings.festivos.payMultiplierLabel", {
-                      defaultValue: "Recargo (opcional)",
-                    })}
+                    {t("settings.festivos.recargoUnico", { defaultValue: "Recargo" })}
                   </span>
-                  <input
-                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
-                    max={5}
-                    min={1}
-                    placeholder={t(
-                      "settings.festivos.payMultiplierPlaceholder",
-                      { defaultValue: "1.5 = tiempo y medio" },
-                    )}
-                    step="0.25"
-                    type="number"
-                    value={nuevo.payMultiplier}
-                    onChange={(e) =>
-                      setNuevo((n) => ({ ...n, payMultiplier: e.target.value }))
-                    }
-                  />
-                </label>
+                  <p className="mt-1.5">
+                    {t("settings.festivos.recargoUnicoAyuda", {
+                      defaultValue: "Es el mismo para todos los feriados y se define en las reglas de pago.",
+                    })}{" "}
+                    <a className="underline" href="/nomina/settings">
+                      {t("ui.ReglasDePago.reglasDePago", "Reglas de pago")} →
+                    </a>
+                  </p>
+                </div>
               </div>
 
               <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm">

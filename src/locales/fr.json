@@ -8379,7 +8379,9 @@
       "emptyDescription": "Ajoutez les jours fériés de votre pays et les jours propres à votre entreprise.",
       "kindNationalBadge": "Légal",
       "kindCompanyBadge": "Entreprise",
-      "deleteAriaLabel": "Supprimer {{name}}"
+      "deleteAriaLabel": "Supprimer {{name}}",
+      "recargoUnico": "Majoration",
+      "recargoUnicoAyuda": "Elle est la même pour tous les jours fériés et se règle dans les règles de paie."
     },
     "userRoles": {
       "actionBtn": "Action",
@@ -13251,7 +13253,8 @@
       "rechazar": "Refuser",
       "todos": "Tous",
       "vacaciones": "Congés",
-      "eligeAlVigilante": "Choisissez la personne concernée par cette absence."
+      "eligeAlVigilante": "Choisissez la personne concernée par cette absence.",
+      "conGoceDeSueldo": "Payé (si décoché, il est déduit)"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -15616,7 +15619,20 @@
       "tarjetasAprobadasConExcepcion": "Fiches approuvées (avec exception consignée)",
       "tarjetasDeNomina": "Fiches de paie",
       "tarjetasReabiertas": "Fiches rouvertes",
-      "ultimoCierre": "Dernière clôture : {{fecha}}"
+      "ultimoCierre": "Dernière clôture : {{fecha}}",
+      "faltaElMotivo": "Indiquez le motif pour rouvrir la période.",
+      "irAUnaFecha": "Aller à la période d’une date",
+      "motivo": "Motif",
+      "noSePudoReabrirElPeriodo": "Impossible de rouvrir la période",
+      "periodoAnterior": "Période précédente",
+      "periodoCerradoInsignia": "Clôturée",
+      "periodoReabierto": "Période rouverte. Elle est maintenant clôturée jusqu’au {{hasta}}.",
+      "periodoReabiertoSinCierre": "Période rouverte.",
+      "periodoSiguiente": "Période suivante",
+      "rangoDelPeriodo": "{{desde}} – {{hasta}}",
+      "reabrirPeriodo": "Rouvrir la période",
+      "reabrirPeriodoMensaje": "Les pointages, postes et marques à partir de ce jour pourront être modifiés à nouveau. Les feuilles déjà approuvées ou exportées ne sont pas touchées. Indiquez le motif : il est consigné au journal.",
+      "reabrirPeriodoTitulo": "Rouvrir la paie à partir du {{desde}} ?"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licences",
@@ -17512,7 +17528,10 @@
         "programado": "Planifié"
       },
       "sinDesgloseExportada": "Cette fiche a déjà été exportée et reste telle quelle : elle a été générée avant l’affichage de la pause par jour, ce détail n’est donc pas disponible pour elle. Le total est celui qui a été exporté.",
-      "sinDesgloseAprobada": "Cette fiche est déjà approuvée et reste telle quelle : elle a été générée avant l’affichage de la pause par jour, ce détail n’est donc pas disponible pour elle. Le total est celui qui a été approuvé."
+      "sinDesgloseAprobada": "Cette fiche est déjà approuvée et reste telle quelle : elle a été générée avant l’affichage de la pause par jour, ce détail n’est donc pas disponible pour elle. Le total est celui qui a été approuvé.",
+      "extraSemanal": "{{horas}} supplémentaires pour dépassement de la durée hebdomadaire",
+      "minutosRecortados": "{{min}} min non payées (règles de tolérance)",
+      "sinGoce": "Sans solde : déduit"
     },
     "RolesDePago": {
       "perfiles": {
@@ -18830,6 +18849,68 @@
       "nMinutos": "{{count}} min",
       "hasta": "jusqu’à {{hora}}",
       "notaAlmuerzo": "Le déjeuner n’est pas payé : sur la pointeuse, la personne appuie sur « Partir déjeuner » puis « Retour »."
+    },
+    "ReglasDePago": {
+      "anclaAyuda": "Toutes les périodes de 14 jours sont comptées à partir d’ici. Vide = le premier jour de semaine choisi à partir du 1er janvier 2024.",
+      "aplicar": "Appliquer",
+      "aplicarMensaje": "La durée du travail, les heures supplémentaires, les majorations et les absences payées sont remplacées. Vous pourrez modifier toute valeur ensuite. Les feuilles déjà approuvées ou exportées ne sont pas recalculées ; les brouillons changent quand la période est générée à nouveau.",
+      "aplicarReglasDe": "Appliquer les règles de {{pais}}",
+      "aplicarTitulo": "Appliquer les règles de {{pais}} ?",
+      "ausenciasAyuda": "Une absence non payée reste justifiée (ce n’est pas une faute), mais elle est déduite. Un congé « personnel » est payé ou non selon le congé lui-même.",
+      "ausenciasQueSePagan": "Absences payées",
+      "cadaCuantoSePaga": "Fréquence de paie",
+      "cat": {
+        "calamidad": "Urgence familiale",
+        "capacitacion": "Formation",
+        "enfermedad": "Maladie",
+        "otro": "Autre motif",
+        "permisoConSueldo": "Congé payé",
+        "permisoSinSueldo": "Congé sans solde",
+        "vacaciones": "Congés"
+      },
+      "catorcenal": "Toutes les 2 semaines (14 jours)",
+      "diaDeInicio": "Tout le poste, selon le jour où il commence",
+      "diariaAyuda": "Au-delà, dans la journée, ce sont des heures supplémentaires. 0 = pas de limite quotidienne (États-Unis).",
+      "domingoYFeriadoCuentan": "Dimanche et jour férié comptent",
+      "feriadoAyuda": "C’est la seule majoration de jour férié : Jours fériés et le coût du planning utilisent celle-ci.",
+      "fuentes": "Sources : {{fuentes}}",
+      "graciaAyuda": "Rester jusqu’à ces minutes après la fin du poste (en attendant la relève) n’est pas payé ; au-delà, tout est payé. 0 = chaque minute est payée.",
+      "graciaSalida": "Tolérance à la sortie (minutes)",
+      "horasDelDia": "Seulement les heures qui tombent ce jour-là",
+      "jornadaSemanal": "Durée hebdomadaire normale (h)",
+      "pagarEntradaTemprana": "Payer le temps avant l’heure de début",
+      "paisDeLaEmpresa": "Pays de l’entreprise : {{pais}}",
+      "periodoAyuda": "Les périodes ont des bornes fixes : un même jour n’est payé que dans une seule période, quel que soit le calcul et sa date.",
+      "periodoDePago": "Période de paie",
+      "porConfirmar": "À confirmer avec votre conseiller :",
+      "primerDiaDeUnPeriodo": "Premier jour d’une période",
+      "quincenal": "Deux fois par mois (1–15, 16–fin)",
+      "reglasDePago": "Règles de paie",
+      "reglasVigentes": "Règles appliquées",
+      "resumen": {
+        "ausencias": "Absences payées : {{lista}}",
+        "desdeLaHora": "à partir de la {{n}}e",
+        "extraConRecargo": "Heures supplémentaires : {{tramos}}",
+        "extraSimple": "Heures supplémentaires : au taux normal",
+        "gracia": "Tolérance à la sortie : {{min}} min · Arrivée anticipée : {{temprana}}",
+        "horasALaSemana": "{{h}} h par semaine (à partir du {{dia}})",
+        "horasAlDia": "{{h}} h par jour",
+        "jornada": "Durée normale : {{dia}} · {{semana}}",
+        "ninguna": "aucune",
+        "noche": "Nuit ({{desde}}:00–{{hasta}}:00) : +{{pct}} %",
+        "porDiaDeInicio": "Dimanche et jour férié : tout le poste prend le jour où il commence",
+        "porHorasDelDia": "Dimanche et jour férié : seulement les heures qui tombent ce jour-là",
+        "recargos": "Dimanche +{{domingo}} % · Repos travaillé +{{descanso}} % · Férié +{{feriado}} % · {{modo}}",
+        "sinLimiteDiario": "pas de limite quotidienne",
+        "sinLimiteSemanal": "pas de limite hebdomadaire",
+        "tempranaNo": "non payée",
+        "tempranaSi": "payée"
+      },
+      "semanaLaboralEmpieza": "La semaine de travail commence le",
+      "semanalAyuda": "Au-delà, dans la semaine, ce sont des heures supplémentaires (États-Unis : 40). 0 = pas de règle hebdomadaire.",
+      "sinConfigurar": "Personne n’a encore configuré ces règles : la durée suit celle du pays et aucune majoration n’est appliquée. Vérifiez-les et enregistrez.",
+      "sinPais": "Aucun pays",
+      "sinPreset": "Nous n’avons pas de règles pour ce pays : déclarez ici celles de votre convention."
     }
   },
   "visitantes": {

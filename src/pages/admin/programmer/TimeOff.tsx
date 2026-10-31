@@ -421,7 +421,10 @@ export default function TimeOff() {
                         <Label>{t("ui.TimeOff.tipo")}</Label>
                         <Select
                           value={form.type}
-                          onValueChange={(v) => setForm({ ...form, type: v })}
+                          /* Paid or not is the TYPE's for vacation, sickness and
+                             training (the company decides in its pay rules);
+                             only a personal permission asks. */
+                          onValueChange={(v) => setForm({ ...form, type: v, isPaid: v === "personal" ? form.isPaid : true })}
                         >
                           <SelectTrigger>
                             <SelectValue
@@ -521,21 +524,23 @@ export default function TimeOff() {
                       />
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="isPaid"
-                        checked={form.isPaid}
-                        onCheckedChange={(v) =>
-                          setForm({ ...form, isPaid: v as boolean })
-                        }
-                      />
-                      <Label
-                        htmlFor="isPaid"
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        {t("ui.TimeOff.pagado", "Pagado")}
-                      </Label>
-                    </div>
+                    {form.type === "personal" && (
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="isPaid"
+                          checked={form.isPaid}
+                          onCheckedChange={(v) =>
+                            setForm({ ...form, isPaid: v as boolean })
+                          }
+                        />
+                        <Label
+                          htmlFor="isPaid"
+                          className="text-sm font-normal cursor-pointer"
+                        >
+                          {t("ui.TimeOff.conGoceDeSueldo", "Con goce de sueldo (si no se marca, se descuenta)")}
+                        </Label>
+                      </div>
+                    )}
                   </div>
                   <SheetFooter>
                     <Button
