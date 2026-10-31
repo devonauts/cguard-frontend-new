@@ -21,12 +21,17 @@ export interface DiaDeJornada {
   activo: boolean;
   start: string;
   end: string;
+  /** Planned lunch on/off for that day (unpaid, inside the day). */
+  almuerzo: boolean;
+  /** «13:00». Kept while `almuerzo` is off so ticking it back is one click. */
+  breakStart: string;
+  breakMinutes: number;
 }
 
 /** Seven rows, Monday first. */
 export type Jornada = DiaDeJornada[];
 
-export type ErrorDeDia = "horaInvalida" | "mismaHora" | null;
+export type ErrorDeDia = "horaInvalida" | "mismaHora" | "almuerzoFuera" | null;
 
 export interface Validacion {
   ok: boolean;
@@ -40,6 +45,10 @@ export interface Validacion {
 export const HORA_ENTRADA = "08:00";
 export const HORA_SALIDA = "17:00";
 export const HORA_SALIDA_MEDIO_DIA = "12:00";
+export const HORA_ALMUERZO = "13:00";
+export const MINUTOS_ALMUERZO = 60;
+/** The lengths offered in the editor; the server accepts 1–240. */
+export const OPCIONES_DE_ALMUERZO = [15, 30, 45, 60, 90, 120] as const;
 
 const HHMM = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -61,7 +70,66 @@ const fila = (dia: DiaIso, activo: boolean, start = HORA_ENTRADA, end = HORA_SAL
   activo,
   start,
   end,
+  almuerzo: false,
+  breakStart: HORA_ALMUERZO,
+  breakMinutes: MINUTOS_ALMUERZO,
 });
+
+const minutos = (hhmm: string) => {
+  const [h, m] = hhmm.split(":").map(Number);
+
+  return h * 60 + m;
+};
+
+/**
+ * Does the lunch fit INSIDE the day? Same rule as the server
+ * (`horarioUnico.almuerzoValido`): it starts after the entry and ends before
+ * the exit; a day that crosses midnight is measured from its start.
+ */
+export function almuerzoCabe(d: Pick<DiaDeJornada, "start" | "end" | "breakStart" | "breakMinutes">): boolean {
+  const a = horaLimpia(d.start);
+  const b = horaLimpia(d.end);
+  const bs = horaLimpia(d.breakStart);
+  const bm = Number(d.breakMinutes);
+
+  if (!a || !b || !bs || !Number.isInteger(bm) || bm <= 0 || bm > 240) return false;
+  let largo = minutos(b) - minutos(a);
+
+  if (largo <= 0) largo += 1440;
+  let desde = minutos(bs) - minutos(a);
+
+  if (desde < 0) desde += 1440;
+
+  return desde > 0 && desde + bm < largo;
+}
+
+/** «13:00» + 60 → «14:00». */
+export function finDeAlmuerzo(breakStart: string, breakMinutes: number): string {
+  const t = (minutos(breakStart) + breakMinutes) % 1440;
+
+  return `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
+}
+
+/** Paid minutes of a working day: the span minus the planned lunch. 0 when invalid. */
+export function minutosNetos(d: DiaDeJornada): number {
+  const a = horaLimpia(d.start);
+  const b = horaLimpia(d.end);
+
+  if (!d.activo || !a || !b || a === b) return 0;
+  let largo = minutos(b) - minutos(a);
+
+  if (largo <= 0) largo += 1440;
+
+  return d.almuerzo && almuerzoCabe(d) ? largo - d.breakMinutes : largo;
+}
+
+/** «8 h» / «7 h 30». */
+export function textoDeHoras(min: number): string {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+
+  return m ? `${h} h ${String(m).padStart(2, "0")}` : `${h} h`;
+}
 
 /** Every day off (hours pre-filled, so ticking a day is one click). */
 export function jornadaVacia(): Jornada {
@@ -90,7 +158,18 @@ export function copiarLunesATodos(j: Jornada): Jornada {
 
   if (!lunes) return j;
 
-  return j.map((d) => (d.activo ? { ...d, start: lunes.start, end: lunes.end } : d));
+  return j.map((d) =>
+    d.activo
+      ? {
+          ...d,
+          start: lunes.start,
+          end: lunes.end,
+          almuerzo: lunes.almuerzo,
+          breakStart: lunes.breakStart,
+          breakMinutes: lunes.breakMinutes,
+        }
+      : d,
+  );
 }
 
 export function validarJornada(j: Jornada, desde?: string | null): Validacion {
@@ -107,6 +186,7 @@ export function validarJornada(j: Jornada, desde?: string | null): Validacion {
       if (!a || !b) e = "horaInvalida";
       // Overnight is allowed (a night receptionist 22:00–06:00); a zero-length day is not.
       else if (a === b) e = "mismaHora";
+      else if (d.almuerzo && !almuerzoCabe(d)) e = "almuerzoFuera";
     }
     porDia[d.dia] = e;
     if (e) ok = false;
@@ -123,16 +203,30 @@ export function validarJornada(j: Jornada, desde?: string | null): Validacion {
   };
 }
 
+/** One day as the server stores it. */
+export interface DiaDelServidor {
+  start: string;
+  end: string;
+  breakStart?: string;
+  breakMinutes?: number;
+}
+
 /** The PUT body. Throws nothing: call `validarJornada` first. */
 export function cuerpoDeJornada(
   j: Jornada,
   desde?: string | null,
-): { schedule: Partial<Record<DiaIso, { start: string; end: string }>>; effectiveFrom?: string } {
-  const schedule: Partial<Record<DiaIso, { start: string; end: string }>> = {};
+): { schedule: Partial<Record<DiaIso, DiaDelServidor>>; effectiveFrom?: string } {
+  const schedule: Partial<Record<DiaIso, DiaDelServidor>> = {};
 
   for (const d of j)
     if (d.activo)
-      schedule[d.dia] = { start: horaLimpia(d.start), end: horaLimpia(d.end) };
+      schedule[d.dia] = {
+        start: horaLimpia(d.start),
+        end: horaLimpia(d.end),
+        ...(d.almuerzo
+          ? { breakStart: horaLimpia(d.breakStart), breakMinutes: Number(d.breakMinutes) }
+          : {}),
+      };
   const out: { schedule: typeof schedule; effectiveFrom?: string } = { schedule };
 
   if (desde && desde.trim()) out.effectiveFrom = desde.trim();
@@ -149,7 +243,16 @@ export const cuerpoSinJornada = () => ({ schedule: null });
  * Null when nothing in the range is a worked day.
  */
 export function jornadaDesdeDias(
-  dias: { date: string; status: string; start?: string | null; end?: string | null }[] | null | undefined,
+  dias:
+    | {
+        date: string;
+        status: string;
+        start?: string | null;
+        end?: string | null;
+        lunch?: { start: string; end: string } | null;
+      }[]
+    | null
+    | undefined,
 ): Jornada | null {
   const j = jornadaVacia();
   let alguno = false;
@@ -165,17 +268,33 @@ export function jornadaDesdeDias(
     const b = horaLimpia(d.end);
 
     if (j[i].activo || !a || !b) continue;
-    j[i] = { ...j[i], activo: true, start: a, end: b };
+    j[i] = { ...j[i], activo: true, start: a, end: b, ...almuerzoDeDia(d.lunch) };
     alguno = true;
   }
 
   return alguno ? j : null;
 }
 
+/** A sheet day's `lunch` ({start,end}) as editor fields. */
+function almuerzoDeDia(l: { start: string; end: string } | null | undefined): Partial<DiaDeJornada> {
+  const s = horaLimpia(l?.start);
+  const e = horaLimpia(l?.end);
+
+  if (!s || !e) return {};
+  let m = minutos(e) - minutos(s);
+
+  if (m <= 0) m += 1440;
+
+  return { almuerzo: true, breakStart: s, breakMinutes: m };
+}
+
 /** A schedule as it comes from the server (`{ mon: {start,end} … }`) → editor rows. */
 export function jornadaDesdeServidor(s: unknown): Jornada | null {
   if (!s || typeof s !== "object") return null;
-  const o = s as Record<string, { start?: string; end?: string } | null>;
+  const o = s as Record<
+    string,
+    { start?: string; end?: string; breakStart?: string; breakMinutes?: number } | null
+  >;
   let alguno = false;
   const j = DIAS_ISO.map((d) => {
     const x = o[d];
@@ -184,8 +303,12 @@ export function jornadaDesdeServidor(s: unknown): Jornada | null {
 
     if (!a || !b) return fila(d, false);
     alguno = true;
+    const bs = horaLimpia(x?.breakStart);
+    const bm = Number(x?.breakMinutes);
 
-    return fila(d, true, a, b);
+    return bs && bm > 0
+      ? { ...fila(d, true, a, b), almuerzo: true, breakStart: bs, breakMinutes: bm }
+      : fila(d, true, a, b);
   });
 
   return alguno ? j : null;

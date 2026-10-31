@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Briefcase, Copy, Loader2, Trash2 } from "lucide-react";
+import { Briefcase, Copy, Loader2, Trash2, Utensils } from "lucide-react";
 import { toast } from "sonner";
 
 import { Modal } from "@/components/kit";
@@ -8,6 +8,10 @@ import { ApiService } from "@/services/api/apiService";
 import {
   copiarLunesATodos,
   cuerpoDeJornada,
+  finDeAlmuerzo,
+  minutosNetos,
+  OPCIONES_DE_ALMUERZO,
+  textoDeHoras,
   cuerpoSinJornada,
   presetConSabadoMedio,
   presetLunesAViernes,
@@ -83,7 +87,9 @@ export default function OfficeHoursEditor({
       ? t("ui.OfficeHours.horaInvalida", "Escribe la hora como 08:00")
       : e === "mismaHora"
         ? t("ui.OfficeHours.mismaHora", "La salida no puede ser a la misma hora que la entrada")
-        : null;
+        : e === "almuerzoFuera"
+          ? t("ui.OfficeHours.almuerzoFuera", "El almuerzo tiene que quedar dentro de la jornada")
+          : null;
 
   const preset =
     "cg-focus rounded-full border px-3 py-1 text-[11px] font-semibold transition-colors hover:border-[var(--brand-line)]";
@@ -226,7 +232,76 @@ export default function OfficeHoursEditor({
                       {t("ui.AllStaff.libre", "Libre")}
                     </span>
                   )}
+                  {d.activo && (
+                    <span
+                      className="ml-auto text-[11px] font-semibold tabular-nums"
+                      style={{ color: "var(--ink-soft)" }}
+                      title={t("ui.OfficeHours.horasNetas", "Horas de trabajo, sin el almuerzo")}
+                    >
+                      {minutosNetos(d) ? textoDeHoras(minutosNetos(d)) : ""}
+                    </span>
+                  )}
                 </div>
+                {d.activo && (
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2 pl-6">
+                    <button
+                      aria-pressed={d.almuerzo}
+                      className="cg-focus inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors"
+                      style={
+                        d.almuerzo
+                          ? {
+                              borderColor: "var(--brand)",
+                              background: "color-mix(in oklab, var(--brand) 10%, transparent)",
+                              color: "var(--brand-text)",
+                            }
+                          : { borderColor: "var(--hairline)", color: "var(--ink-soft)" }
+                      }
+                      type="button"
+                      onClick={() => cambiar(i, { almuerzo: !d.almuerzo })}
+                    >
+                      <Utensils size={11} />
+                      {d.almuerzo
+                        ? t("ui.OfficeHours.almuerzo", "Almuerzo")
+                        : t("ui.OfficeHours.agregarAlmuerzo", "Agregar almuerzo")}
+                    </button>
+                    {d.almuerzo && (
+                      <span className="flex items-center gap-1.5">
+                        <input
+                          aria-label={t("ui.OfficeHours.almuerzoDesde", "Hora del almuerzo")}
+                          className="cg-input cg-focus h-7 w-[6.5rem] px-2 text-center font-mono text-xs tabular-nums"
+                          style={error === "almuerzoFuera" ? { borderColor: "var(--bad)" } : undefined}
+                          type="time"
+                          value={d.breakStart}
+                          onChange={(e) => cambiar(i, { breakStart: e.target.value })}
+                        />
+                        <select
+                          aria-label={t("ui.OfficeHours.duracionAlmuerzo", "Duración del almuerzo")}
+                          className="cg-input cg-focus h-7 px-2 text-xs"
+                          value={d.breakMinutes}
+                          onChange={(e) => cambiar(i, { breakMinutes: Number(e.target.value) })}
+                        >
+                          {[...new Set([...OPCIONES_DE_ALMUERZO, d.breakMinutes])]
+                            .sort((a, b) => a - b)
+                            .map((m) => (
+                              <option key={m} value={m}>
+                                {m >= 60 && m % 60 === 0
+                                  ? t("ui.OfficeHours.nHoras", { defaultValue: "{{count}} h", count: m / 60 })
+                                  : t("ui.OfficeHours.nMinutos", { defaultValue: "{{count}} min", count: m })}
+                              </option>
+                            ))}
+                        </select>
+                        {error !== "almuerzoFuera" && d.breakStart && (
+                          <span className="text-[11px] tabular-nums" style={{ color: "var(--ink-faint)" }}>
+                            {t("ui.OfficeHours.hasta", {
+                              defaultValue: "hasta {{hora}}",
+                              hora: finDeAlmuerzo(d.breakStart, d.breakMinutes),
+                            })}
+                          </span>
+                        )}
+                      </span>
+                    )}
+                  </div>
+                )}
                 {error && (
                   <p className="mt-1 pl-6 text-[11px]" style={{ color: "var(--bad-text)" }}>
                     {error}
@@ -269,6 +344,10 @@ export default function OfficeHoursEditor({
           {t(
             "ui.StaffSchedule.notaNovedades",
             "Las vacaciones y permisos se registran como novedad, igual que a un vigilante, y mandan sobre la jornada.",
+          )}{" "}
+          {t(
+            "ui.OfficeHours.notaAlmuerzo",
+            "El almuerzo no se paga: en el reloj, la persona marca «Salir a almorzar» y «Volver».",
           )}
         </p>
       </div>

@@ -64,7 +64,8 @@ export default function RadioVoiceWidget() {
 
   const refreshPase = async () => {
     try {
-      const c: any = await radioCheckService.getConsole();
+      // Silent: a 403 here only means «this role cannot run roll calls» (handled below).
+      const c: any = await radioCheckService.getConsole({ silent: true });
 
       if (!mountedRef.current) return;
       setPasePermitted(true);

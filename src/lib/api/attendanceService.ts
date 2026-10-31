@@ -596,11 +596,29 @@ const attendanceService = {
 
     return unwrap(await api.post(`/tenant/${t}/staff/me/clock-out`, { data }));
   },
-
-  async getSettings() {
+  /** Office staff: going to lunch / back (the time is not paid). */
+  async staffBreakStart() {
     const t = getTenantId();
 
-    return unwrap(await api.get(`/tenant/${t}/attendance/settings`));
+    return unwrap(await api.post(`/tenant/${t}/staff/me/break/start`, {}));
+  },
+  async staffBreakEnd() {
+    const t = getTenantId();
+
+    return unwrap(await api.post(`/tenant/${t}/staff/me/break/end`, {}));
+  },
+
+  /** `silent`: a caller that copes with a refusal (e.g. a role without
+   *  payroll settings) asks the client not to toast it. */
+  async getSettings(opts: { silent?: boolean } = {}) {
+    const t = getTenantId();
+
+    return unwrap(
+      await api.get(
+        `/tenant/${t}/attendance/settings`,
+        opts.silent ? { toast: { silentError: true } } : undefined,
+      ),
+    );
   },
 
   async saveSettings(data: Record<string, unknown>) {

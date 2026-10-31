@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  almuerzoCabe,
   copiarLunesATodos,
+  finDeAlmuerzo,
+  minutosNetos,
+  textoDeHoras,
   cuerpoDeJornada,
   cuerpoSinJornada,
   horaLimpia,
@@ -120,5 +124,62 @@ describe("office hours · pre-fill", () => {
     expect(j[0].activo).toBe(true);
     expect(j[5].activo).toBe(false);
     expect(jornadaDesdeServidor(null)).toBeNull();
+  });
+});
+
+describe("office hours · planned lunch", () => {
+  const nueveASeis = () =>
+    presetLunesAViernes().map((d) => ({ ...d, start: "09:00", end: "18:00" }));
+
+  it("Monday to Friday 09:00–18:00 with lunch at 13:00 for an hour = 8 h a day", () => {
+    const j = nueveASeis();
+
+    j[0] = { ...j[0], almuerzo: true, breakStart: "13:00", breakMinutes: 60 };
+    const todos = copiarLunesATodos(j);
+
+    expect(validarJornada(todos).ok).toBe(true);
+    for (const d of todos.slice(0, 5)) expect(minutosNetos(d)).toBe(480);
+    expect(textoDeHoras(480)).toBe("8 h");
+    expect(textoDeHoras(450)).toBe("7 h 30");
+    expect(cuerpoDeJornada(todos).schedule.fri).toEqual({
+      start: "09:00",
+      end: "18:00",
+      breakStart: "13:00",
+      breakMinutes: 60,
+    });
+    expect(todos[5].activo).toBe(false);
+  });
+
+  it("a lunch outside the day is an error on that day", () => {
+    const j = nueveASeis();
+
+    j[2] = { ...j[2], almuerzo: true, breakStart: "17:30", breakMinutes: 60 };
+    const v = validarJornada(j);
+
+    expect(v.ok).toBe(false);
+    expect(v.porDia.wed).toBe("almuerzoFuera");
+    expect(almuerzoCabe({ start: "22:00", end: "06:00", breakStart: "02:00", breakMinutes: 30 })).toBe(true);
+  });
+
+  it("lunch off sends nothing, and its hours are kept for one-click on", () => {
+    const j = nueveASeis();
+
+    expect(cuerpoDeJornada(j).schedule.mon).toEqual({ start: "09:00", end: "18:00" });
+    expect(j[0].breakStart).toBe("13:00");
+    expect(minutosNetos(j[0])).toBe(540);
+  });
+
+  it("reads it back from the server and from the sheet", () => {
+    const s = jornadaDesdeServidor({
+      mon: { start: "09:00", end: "18:00", breakStart: "13:00", breakMinutes: 60 },
+    })!;
+
+    expect(s[0]).toMatchObject({ almuerzo: true, breakStart: "13:00", breakMinutes: 60 });
+    const d = jornadaDesdeDias([
+      { date: "2026-10-26", status: "work", start: "09:00", end: "18:00", lunch: { start: "13:00", end: "14:00" } },
+    ])!;
+
+    expect(d[0]).toMatchObject({ almuerzo: true, breakStart: "13:00", breakMinutes: 60 });
+    expect(finDeAlmuerzo("13:00", 60)).toBe("14:00");
   });
 });

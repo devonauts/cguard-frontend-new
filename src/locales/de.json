@@ -5876,7 +5876,8 @@
       "administrativeSupervisor": "Verwaltungsleitung",
       "dispatcher": "Leitstelle",
       "secretary": "Sekretariat / Empfang",
-      "securitySupervisor": "Einsatzleiter Sicherheit"
+      "securitySupervisor": "Einsatzleiter Sicherheit",
+      "branchManager": "Filialleiter"
     },
     "rowActions": {
       "delete": "Löschen",
@@ -11249,7 +11250,14 @@
       "tuCuentaNoTieneOficina": "Ihr Konto hat kein Büro konfiguriert, daher wird ohne Geofence erfasst.",
       "aTiempo": "Pünktlich",
       "tardeNMin": "{{n}} Min. zu spät",
-      "sinHorario": "Ohne Dienstplan"
+      "sinHorario": "Ohne Dienstplan",
+      "buenProvecho": "Guten Appetit. Tippe „Zurück“, wenn du wiederkommst.",
+      "deVuelta": "Willkommen zurück. Die Mittagspause zählt nicht als Arbeitszeit.",
+      "enAlmuerzo": "In der Mittagspause",
+      "tuHorarioHoy": "Deine Zeiten heute: {{start}}–{{end}}",
+      "almuerzoDeA": "Mittagspause {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Zurück aus der Mittagspause",
+      "salirAAlmorzar": "Zur Mittagspause"
     },
     "Notification": {
       "configuracionDeAvisos": "Einstellungen für Benachrichtigungen"
@@ -18797,7 +18805,8 @@
       "todos": "Alle",
       "trabaja": "Arbeitet",
       "verSinHorario": "Zeigen, wer keinen Dienstplan hat",
-      "vigilantes": "Wachleute"
+      "vigilantes": "Wachleute",
+      "almuerzo": "Mittagspause {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Montag auf alle kopieren",
@@ -18810,7 +18819,17 @@
       "presetLunesAViernes": "Montag bis Freitag 08:00–17:00",
       "presetSabadoMedio": "Montag bis Freitag + Samstag halbtags (08:00–12:00)",
       "quitado": "Dienstplan entfernt",
-      "quitarHorario": "Dienstplan entfernen"
+      "quitarHorario": "Dienstplan entfernen",
+      "almuerzoFuera": "Die Mittagspause muss im Arbeitstag liegen",
+      "horasNetas": "Arbeitsstunden ohne Mittagspause",
+      "almuerzo": "Mittagspause",
+      "agregarAlmuerzo": "Mittagspause hinzufügen",
+      "almuerzoDesde": "Beginn der Mittagspause",
+      "duracionAlmuerzo": "Dauer der Mittagspause",
+      "nHoras": "{{count}} Std.",
+      "nMinutos": "{{count}} Min.",
+      "hasta": "bis {{hora}}",
+      "notaAlmuerzo": "Die Mittagspause wird nicht bezahlt: an der Stempeluhr tippt die Person „Zur Mittagspause“ und „Zurück“."
     }
   },
   "visitantes": {

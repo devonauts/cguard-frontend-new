@@ -64,9 +64,12 @@ export interface RadioPresence {
 
 export const radioCheckService = {
   /** Live console: stations + on-duty guard + latest entry status. */
-  async getConsole() {
+  async getConsole(opts: { silent?: boolean } = {}) {
     return unwrap(
-      await api.get(`/tenant/${getTenantId()}/radio-check/console`),
+      await api.get(
+        `/tenant/${getTenantId()}/radio-check/console`,
+        opts.silent ? { toast: { silentError: true } } : undefined,
+      ),
     );
   },
   /** Start a manual roll call (all stations or one). */

@@ -77,7 +77,7 @@ export default function RadioPasePopup() {
   useEffect(() => {
     if (yaSeComprobo()) return;
     radioCheckService
-      .getConsole()
+      .getConsole({ silent: true })
       .then((c: any) => {
         if (c?.runningSessionId)
           abrirPase(c.runningSessionId, { oculto: true });

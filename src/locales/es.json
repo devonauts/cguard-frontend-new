@@ -119,7 +119,8 @@
       "administrativeSupervisor": "Supervisor Administrativo",
       "dispatcher": "Despachador",
       "secretary": "Secretaria / Recepcionista",
-      "securitySupervisor": "Supervisor de Seguridad"
+      "securitySupervisor": "Supervisor de Seguridad",
+      "branchManager": "Gerente de sucursal"
     },
     "rowActions": {
       "delete": "Eliminar",
@@ -10714,7 +10715,14 @@
       "tuCuentaNoTieneOficina": "Tu cuenta no tiene una oficina configurada, así que se registra sin geocerca.",
       "aTiempo": "A tiempo",
       "tardeNMin": "Tarde {{n}} min",
-      "sinHorario": "Sin horario"
+      "sinHorario": "Sin horario",
+      "buenProvecho": "Buen provecho. Marca «Volver» al regresar.",
+      "deVuelta": "De vuelta. El almuerzo no se cuenta como trabajo.",
+      "enAlmuerzo": "En almuerzo",
+      "tuHorarioHoy": "Tu horario hoy: {{start}}–{{end}}",
+      "almuerzoDeA": "almuerzo {{start}}–{{end}}",
+      "volverDelAlmuerzo": "Volver del almuerzo",
+      "salirAAlmorzar": "Salir a almorzar"
     },
     "Notification": {
       "configuracionDeAvisos": "Configuración de avisos"
@@ -18262,7 +18270,8 @@
       "todos": "Todos",
       "trabaja": "Trabaja",
       "verSinHorario": "Ver quién no tiene horario",
-      "vigilantes": "Vigilantes"
+      "vigilantes": "Vigilantes",
+      "almuerzo": "almuerzo {{start}}–{{end}}"
     },
     "OfficeHours": {
       "copiarLunes": "Copiar el lunes a todos",
@@ -18275,7 +18284,17 @@
       "presetLunesAViernes": "Lunes a viernes 08:00–17:00",
       "presetSabadoMedio": "Lunes a viernes + sábado medio día (08:00–12:00)",
       "quitado": "Horario quitado",
-      "quitarHorario": "Quitar horario"
+      "quitarHorario": "Quitar horario",
+      "almuerzoFuera": "El almuerzo tiene que quedar dentro de la jornada",
+      "horasNetas": "Horas de trabajo, sin el almuerzo",
+      "almuerzo": "Almuerzo",
+      "agregarAlmuerzo": "Agregar almuerzo",
+      "almuerzoDesde": "Hora del almuerzo",
+      "duracionAlmuerzo": "Duración del almuerzo",
+      "nHoras": "{{count}} h",
+      "nMinutos": "{{count}} min",
+      "hasta": "hasta {{hora}}",
+      "notaAlmuerzo": "El almuerzo no se paga: en el reloj, la persona marca «Salir a almorzar» y «Volver»."
     }
   },
   "map": {

@@ -83,6 +83,21 @@ import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 /* Debounce helper */
+/** Lower-case role slug (as the list normalizes them) → its key in `adminOfficeUsers.roleNames`. */
+const ROLES_CONOCIDOS: Record<string, string> = {
+  admin: "admin",
+  administrativeassistant: "administrativeAssistant",
+  administrativesupervisor: "administrativeSupervisor",
+  branchmanager: "branchManager",
+  clientaccountmanager: "clientAccountManager",
+  dispatcher: "dispatcher",
+  hrmanager: "hrManager",
+  operationsmanager: "operationsManager",
+  secretary: "secretary",
+  securitysupervisor: "securitySupervisor",
+  supervisor: "supervisor",
+};
+
 function useDebounced<T>(value: T, delay = 400) {
   const [deb, setDeb] = useState(value);
 
@@ -97,6 +112,14 @@ function useDebounced<T>(value: T, delay = 400) {
 
 export default function AdminOfficeUsersPage() {
   const { t } = useTranslation();
+  /** A role slug in the reader's language («dispatcher» → «Despachador»); custom roles keep their name. */
+  const nombreDeRol = (slug: string) => {
+    const clave = ROLES_CONOCIDOS[slug.toLowerCase()];
+
+    return clave
+      ? t(`adminOfficeUsers.roleNames.${clave}`, { defaultValue: slug })
+      : slug;
+  };
   const [openFilter, setOpenFilter] = useState(false);
   // Vista Tarjetas ⇄ Lista (persistida). Tarjetas por defecto, como en Clientes/Vigilantes.
   const [viewMode, setViewMode] = useVistaGuardada<"cards" | "list">(
@@ -218,7 +241,9 @@ export default function AdminOfficeUsersPage() {
           ...u,
           _rolesDisplay: (
             normalizeRoles(u.roles || u.role || u.rolesList) || []
-          ).join(", "),
+          )
+            .map(nombreDeRol)
+            .join(", "),
         }))
         .filter((u) => {
           const roles = normalizeRoles(
