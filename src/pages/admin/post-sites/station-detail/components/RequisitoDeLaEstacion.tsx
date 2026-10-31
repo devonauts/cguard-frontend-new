@@ -311,7 +311,7 @@ export default function RequisitoDeLaEstacion({
               <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("comun.horaInicio", "Inicio")}
                 <input
-                  className="cg-input cg-focus w-28 px-2 py-1.5 font-mono text-sm"
+                  className="cg-input cg-focus w-36 px-2 py-1.5 font-mono text-sm"
                   type="time"
                   value={f.start}
                   onChange={(e) => cambiar(f.id, { start: e.target.value })}
@@ -320,7 +320,7 @@ export default function RequisitoDeLaEstacion({
               <label className="grid gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("comun.horaFin", "Fin")}
                 <input
-                  className="cg-input cg-focus w-28 px-2 py-1.5 font-mono text-sm"
+                  className="cg-input cg-focus w-36 px-2 py-1.5 font-mono text-sm"
                   type="time"
                   value={f.end}
                   onChange={(e) => cambiar(f.id, { end: e.target.value })}

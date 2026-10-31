@@ -150,7 +150,6 @@ export default function PatronesDeRotacionPage() {
         <div className="min-w-0 flex-1">
           {editando === p.id ? (
             <input
-              autoFocus
               className="cg-input cg-focus w-full max-w-xs px-2 py-1 text-sm"
               maxLength={100}
               value={nombre}

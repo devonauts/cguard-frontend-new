@@ -3716,7 +3716,7 @@ export default function Schedule() {
 
     navigate(
       sede
-        ? `/post-sites/${sede}/stations/${station.id}#requisito`
+        ? `/post-sites/${sede}/stations/${station.id}/overview#requisito`
         : `/stations`,
     );
   };

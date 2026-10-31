@@ -152,6 +152,11 @@ export default function StationOverview({
     [evento, estAny?.positions],
   );
   const [editing, setEditing] = useState(false);
+  /* Arriving from Horario › «Reconfigurar» (`…/overview#requisito`): the
+     requirement lives in the edit view, so open it. */
+  useEffect(() => {
+    if (window.location.hash === "#requisito") setEditing(true);
+  }, []);
   const [saving, setSaving] = useState(false);
   // Evento: el editor de relevos, plegado hasta que se pide.
   const [editandoRelevos, setEditandoRelevos] = useState(false);
