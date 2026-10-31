@@ -42,8 +42,14 @@ export default function GuardAvailability({ guard }: Props) {
   const ORDER = [1, 2, 3, 4, 5, 6, 0];
   const allDay = (): Av[] =>
     ORDER.map((wd) => ({ day: DAYS[wd], available: true, start: "00:00", end: "23:59" }));
+  // The person's ACCOUNT id: the sheet's record carries it as `guardId` and
+  // `guard` (the user); `effGuard` may already be that user.
   const userId: string | undefined =
-    (effGuard as any)?.guardId || (effGuard as any)?.guard?.id || undefined;
+    (registro as any)?.guardId ||
+    (registro as any)?.guard?.id ||
+    (effGuard as any)?.guardId ||
+    (guard ? (guard as any)?.guard?.id : undefined) ||
+    undefined;
   const [availability, setAvailability] = useState<Av[]>(allDay);
   const [configured, setConfigured] = useState(false);
   const [original, setOriginal] = useState<Map<number, WeeklyAvailability>>(new Map());

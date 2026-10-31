@@ -47,10 +47,13 @@ export default function AusenciasCalendario({
   const title = useMemo(() => {
     const [y, m] = month.split("-").map(Number);
 
-    return new Date(y, m - 1, 1).toLocaleDateString(localeActual(), {
+    const s = new Date(y, m - 1, 1).toLocaleDateString(localeActual(), {
       month: "long",
       year: "numeric",
     });
+
+    // Only the first letter: «noviembre de 2026» → «Noviembre de 2026».
+    return s.charAt(0).toUpperCase() + s.slice(1);
   }, [month]);
   const today = new Date();
   const todayYmd = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
@@ -83,7 +86,7 @@ export default function AusenciasCalendario({
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div className="font-display text-base font-semibold capitalize">{title}</div>
+        <div className="font-display text-base font-semibold">{title}</div>
         <Button
           aria-label={t("ui.TimeOff.mesSiguiente", "Mes siguiente")}
           size="icon"
