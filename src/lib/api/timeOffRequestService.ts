@@ -53,6 +53,14 @@ export interface TimeOffRecord {
   guardId: string | null;
   guard: { id: string; fullName?: string; email?: string } | null;
   guardName?: string | null; // denormalized snapshot — fallback when guard join is null
+  /** Where it was registered: page · app · horario · planificador · editor · replacement · vigia · migrated. */
+  source?: string | null;
+  /** The person's active posts (for the calendar by post and the filter). */
+  stations?: Array<{ id: string; name: string | null }>;
+  /** Gaps its approval opened in Cobertura. */
+  gapsOpened?: number;
+  /** Set when a replacement covers the whole leave. */
+  coverageEventId?: string | null;
 }
 
 /** What a status change did to the schedule (see the backend's timeOffSchedule). */
@@ -82,6 +90,20 @@ export interface TimeOffCreateInput {
   isPaid?: boolean;
   guard?: string; // userId
   comment?: string;
+}
+
+/** Post options for the filter (the same search the task picker uses). */
+export async function buscarPuestos(query = ""): Promise<Array<{ id: string; label: string }>> {
+  const tenantId = getTenantId();
+  const resp = await api.get(
+    `/tenant/${tenantId}/station/autocomplete${buildQuery({ query, limit: 50 })}`,
+  );
+  const raw: any = resp?.data ?? resp;
+  const rows: any[] = Array.isArray(raw) ? raw : Array.isArray(raw?.rows) ? raw.rows : [];
+
+  return rows
+    .map((r) => ({ id: String(r.id), label: String(r.label ?? r.stationName ?? r.name ?? r.id) }))
+    .filter((r) => r.id);
 }
 
 const timeOffRequestService = {

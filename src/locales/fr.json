@@ -1742,7 +1742,10 @@
         "saveError": "Identifiant d'agent manquant"
       },
       "empty": "Aucune disponibilité",
-      "notAvailable": "Non disponible"
+      "notAvailable": "Non disponible",
+      "usedBy": "La même disponibilité que la personne voit dans son app. Le planning avertit si on l'affecte en dehors, Couverture la met en dernier et Dobletes ne lui propose pas ces postes.",
+      "notSaid": "Disponibilité pas encore indiquée : elle compte comme toujours disponible.",
+      "datedDays": "A aussi marqué {{n}} jour(s) isolé(s) dans l'app."
     },
     "files": {
       "loadError": "Impossible de charger l'agent",
@@ -10565,7 +10568,8 @@
       "vuelveADespuesDel": "Retourne à {{puesto}} après le {{fecha}}",
       "yNoPuedeFicharElTurnoSeRegistra": "et ne peut pas pointer. Le poste est enregistré",
       "yaTieneUnTurnoAbierto": "Il a déjà un poste ouvert — un second n'est pas ouvert.",
-      "vaEnCamino": "En route · envoyé il y a {{min}} min"
+      "vaEnCamino": "En route · envoyé il y a {{min}} min",
+      "fueraDeDisponibilidad": "Hors disponibilité"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Éléments par page",
@@ -13292,7 +13296,34 @@
       "cancelarPermisoMensaje": "Les postes de ces jours reviennent au planning et leurs trous dans Couverture se ferment. Les jours qui ont déjà un remplaçant restent tels quels.",
       "cancelarPermisoBoton": "Annuler l’absence",
       "eliminarAprobada": "La demande est supprimée et ce que son approbation avait changé au planning est annulé. Les jours qui ont déjà un remplaçant restent tels quels.",
-      "cancelado": "Annulée"
+      "cancelado": "Annulée",
+      "mesAnterior": "Mois précédent",
+      "mesSiguiente": "Mois suivant",
+      "nadieFueraEsteMes": "Personne n'est absent ce mois-ci avec ces filtres.",
+      "puesto": "Poste",
+      "origen": {
+        "app": "App de l'agent",
+        "horario": "Planning",
+        "planificador": "Planificateur",
+        "editor": "Éditeur de planning",
+        "replacement": "Remplacement de congés",
+        "vigia": "Assistant",
+        "migrated": "Ancien enregistrement",
+        "page": "Absences et congés"
+      },
+      "origenColumna": "Enregistré dans",
+      "vistaLista": "Liste",
+      "vistaCalendario": "Calendrier",
+      "porPersona": "Par personne",
+      "porPuesto": "Par poste",
+      "filtroTipo": "Type",
+      "todosLosTipos": "Tous les types",
+      "filtroPuesto": "Poste",
+      "todosLosPuestos": "Tous les postes",
+      "filtroSucursal": "Agence",
+      "todasLasSucursales": "Toutes les agences",
+      "quitarFiltroPersona": "Retirer le filtre de personne",
+      "calendario": "Calendrier"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -19039,6 +19070,9 @@
       "rrhh": "Ressources humaines : en plus les données du personnel et la paie",
       "supervision": "Supervision : en plus approuve les heures",
       "gerencia": "Direction : en plus rapports et actions de direction"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Affecté, mais {{n}} poste(s) tombent hors de la disponibilité indiquée ({{dias}}). Vérifiez avec la personne."
     }
   },
   "visitantes": {

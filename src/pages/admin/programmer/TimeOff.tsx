@@ -1,5 +1,5 @@
 import { usePuede } from "@/hooks/usePuede";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -67,10 +67,14 @@ import {
   SearchInput,
 } from "@/components/kit";
 import timeOffRequestService, {
+  buscarPuestos,
   ScheduleEffect,
   TimeOffRecord,
 } from "@/lib/api/timeOffRequestService";
+import { useEspacio } from "@/hooks/useEspacio";
 import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
+import AusenciasCalendario from "./AusenciasCalendario";
+import { rangoDelMes } from "./ausenciasCalendario";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -106,8 +110,34 @@ export default function TimeOff() {
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
-    "all" | "pending" | "approved" | "rejected"
+    "all" | "pending" | "approved" | "rejected" | "cancelled"
   >("all");
+  /* Ausencias y permisos is the ONE place for every vacation and permit
+     (the V/PM marks of Horario and Planificador land here too): a list and a
+     month calendar, by person or by post, with the same filters. */
+  const [view, setView] = useState<"list" | "calendar">("list");
+  const [calBy, setCalBy] = useState<"person" | "station">("person");
+  const [month, setMonth] = useState(() => {
+    const d = new Date();
+
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  });
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [stationFilter, setStationFilter] = useState("all");
+  const [branchFilter, setBranchFilter] = useState("all");
+  const [personFilter, setPersonFilter] = useState<GuardPick | null>(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [puestos, setPuestos] = useState<Array<{ id: string; label: string }>>([]);
+  const [picked, setPicked] = useState<TimeOffRecord | null>(null);
+  const espacio = useEspacio();
+  const sucursales = espacio.opciones.filter((o) => !o.global);
+
+  useEffect(() => {
+    buscarPuestos()
+      .then(setPuestos)
+      .catch(() => setPuestos([]));
+  }, []);
   const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -135,8 +165,18 @@ export default function TimeOff() {
   const fetchRecords = useCallback(async () => {
     setLoading(true);
     try {
-      const params: Record<string, string | number> = { limit: 500 };
+      const params: Record<string, string | number> = {
+        limit: view === "calendar" ? 1000 : 500,
+      };
       if (statusFilter !== "all") params["filter[status]"] = statusFilter;
+      if (typeFilter !== "all") params["filter[type]"] = typeFilter;
+      if (stationFilter !== "all") params["filter[stationId]"] = stationFilter;
+      if (branchFilter !== "all") params["filter[branchId]"] = branchFilter;
+      if (personFilter) params["filter[guardId]"] = personFilter.guardId;
+      const rango =
+        view === "calendar" ? rangoDelMes(month) : { from: dateFrom, to: dateTo };
+      if (rango.from) params["filter[dateFrom]"] = rango.from;
+      if (rango.to) params["filter[dateTo]"] = rango.to;
       const { rows } = await timeOffRequestService.list(params);
       setRecords(rows);
     } catch (err) {
@@ -144,7 +184,7 @@ export default function TimeOff() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter]);
+  }, [statusFilter, typeFilter, stationFilter, branchFilter, personFilter, dateFrom, dateTo, view, month]);
 
   useEffect(() => {
     fetchRecords();
@@ -317,7 +357,10 @@ export default function TimeOff() {
     try {
       const updated = await timeOffRequestService.updateStatus(id, status);
 
-      setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      setRecords((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, ...updated, stations: r.stations } : r)),
+      );
+      setPicked(null);
       avisarEfecto(updated.scheduleEffect);
     } catch (err) {
       console.error(`Failed to set ${status}`, err);
@@ -363,6 +406,7 @@ export default function TimeOff() {
       const r = await timeOffRequestService.destroy(id);
 
       setRecords((prev) => prev.filter((x) => x.id !== id));
+      setPicked(null);
       avisarEfecto(r?.scheduleEffect);
     } catch (err) {
       console.error("Failed to delete", err);
@@ -386,6 +430,67 @@ export default function TimeOff() {
         return tipo ?? "—";
     }
   };
+
+  /* Where it was registered. Every screen lands here, so the list says which. */
+  const origenLabel = (source: string | null | undefined): string => {
+    switch (source) {
+      case "app":
+        return t("ui.TimeOff.origen.app", "App del vigilante");
+      case "horario":
+        return t("ui.TimeOff.origen.horario", "Horario");
+      case "planificador":
+        return t("ui.TimeOff.origen.planificador", "Planificador");
+      case "editor":
+        return t("ui.TimeOff.origen.editor", "Editor de horario");
+      case "replacement":
+        return t("ui.TimeOff.origen.replacement", "Reemplazo por vacaciones");
+      case "vigia":
+        return t("ui.TimeOff.origen.vigia", "Asistente");
+      case "migrated":
+        return t("ui.TimeOff.origen.migrated", "Registro anterior");
+      default:
+        return t("ui.TimeOff.origen.page", "Ausencias y permisos");
+    }
+  };
+
+  /* The actions a row offers, by status and by what this person may do. */
+  const accionesDe = (
+    row: TimeOffRecord,
+  ): Array<{ label: string; icon: ReactNode; onClick: () => void; destructive?: boolean }> => [
+    ...(row.status === "pending" && decidir.puede
+      ? [
+          {
+            label: t("ui.TimeOff.aprobar", "Aprobar"),
+            icon: <CheckCircle style={{ color: "var(--ok-text)" }} />,
+            onClick: () => handleApprove(row.id),
+          },
+          {
+            label: t("ui.TimeOff.rechazar", "Rechazar"),
+            icon: <XCircle style={{ color: "var(--bad-text)" }} />,
+            onClick: () => handleReject(row.id),
+          },
+        ]
+      : []),
+    ...(row.status === "approved" && decidir.puede
+      ? [
+          {
+            label: t("ui.TimeOff.cancelarPermisoBoton", "Cancelar permiso"),
+            icon: <Undo2 />,
+            onClick: () => handleCancel(row.id),
+          },
+        ]
+      : []),
+    ...(borrar.puede
+      ? [
+          {
+            label: t("common.delete", "Eliminar"),
+            icon: <Trash2 />,
+            destructive: true,
+            onClick: () => handleDelete(row.id),
+          },
+        ]
+      : []),
+  ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -462,7 +567,7 @@ export default function TimeOff() {
         <Toolbar className="justify-between gap-4">
           {/* Elegir UNO de cuatro estados: el conmutador del sistema, no un
               desplegable. Muestra las cuatro opciones sin abrir nada. */}
-          <Segmented<"all" | "pending" | "approved" | "rejected">
+          <Segmented<"all" | "pending" | "approved" | "rejected" | "cancelled">
             className="max-w-full"
             value={statusFilter}
             onChange={(v) => {
@@ -474,6 +579,7 @@ export default function TimeOff() {
               { value: "pending", label: t("comun.pendiente", "Pendiente") },
               { value: "approved", label: t("comun.aprobado", "Aprobado") },
               { value: "rejected", label: t("comun.rechazado", "Rechazado") },
+              { value: "cancelled", label: t("ui.TimeOff.cancelado", "Cancelado") },
             ]}
           />
 
@@ -675,6 +781,163 @@ export default function TimeOff() {
           </div>
         </Toolbar>
 
+        {/* Vista y filtros */}
+        <Toolbar className="flex-wrap items-center gap-3">
+          <Segmented<"list" | "calendar">
+            value={view}
+            onChange={(v) => {
+              setView(v);
+              setPage(1);
+            }}
+            options={[
+              { value: "list", label: t("ui.TimeOff.vistaLista", "Lista") },
+              { value: "calendar", label: t("ui.TimeOff.vistaCalendario", "Calendario") },
+            ]}
+          />
+          {view === "calendar" && (
+            <Segmented<"person" | "station">
+              value={calBy}
+              onChange={setCalBy}
+              options={[
+                { value: "person", label: t("ui.TimeOff.porPersona", "Por persona") },
+                { value: "station", label: t("ui.TimeOff.porPuesto", "Por puesto") },
+              ]}
+            />
+          )}
+          <Select
+            value={typeFilter}
+            onValueChange={(v) => {
+              setTypeFilter(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger
+              aria-label={t("ui.TimeOff.filtroTipo", "Tipo")}
+              className="w-full sm:w-44"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("ui.TimeOff.todosLosTipos", "Todos los tipos")}</SelectItem>
+              {(["vacation", "personal", "sick", "training", "other"] as const).map((k) => (
+                <SelectItem key={k} value={k}>
+                  {tipoLabel(k)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={stationFilter}
+            onValueChange={(v) => {
+              setStationFilter(v);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger
+              aria-label={t("ui.TimeOff.filtroPuesto", "Puesto")}
+              className="w-full sm:w-52"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("ui.TimeOff.todosLosPuestos", "Todos los puestos")}</SelectItem>
+              {puestos.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {sucursales.length > 1 && (
+            <Select
+              value={branchFilter}
+              onValueChange={(v) => {
+                setBranchFilter(v);
+                setPage(1);
+              }}
+            >
+              <SelectTrigger
+                aria-label={t("ui.TimeOff.filtroSucursal", "Sucursal")}
+                className="w-full sm:w-48"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {t("ui.TimeOff.todasLasSucursales", "Todas las sucursales")}
+                </SelectItem>
+                {sucursales.map((b) => (
+                  <SelectItem key={b.id} value={b.id}>
+                    {b.nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <div className="flex w-full items-center gap-2 sm:w-64">
+            <div className="min-w-0 flex-1">
+              <GuardTypeahead
+                value={personFilter}
+                onSelect={(g) => {
+                  setPersonFilter(g);
+                  setPage(1);
+                }}
+              />
+            </div>
+            {personFilter && (
+              <Button
+                aria-label={t("ui.TimeOff.quitarFiltroPersona", "Quitar el filtro de persona")}
+                size="icon"
+                variant="ghost"
+                onClick={() => setPersonFilter(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          {view === "list" && (
+            <div className="flex w-full items-center gap-2 sm:w-auto">
+              <Input
+                aria-label={t("ui.TimeOff.desde", "Desde")}
+                className="w-full sm:w-40"
+                type="date"
+                value={dateFrom}
+                onChange={(e) => {
+                  setDateFrom(e.target.value);
+                  setPage(1);
+                }}
+              />
+              <span style={{ color: "var(--ink-soft)" }}>–</span>
+              <Input
+                aria-label={t("ui.TimeOff.hasta", "Hasta")}
+                className="w-full sm:w-40"
+                type="date"
+                value={dateTo}
+                onChange={(e) => {
+                  setDateTo(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+          )}
+        </Toolbar>
+
+        {view === "calendar" ? (
+          <Section
+            title={t("ui.TimeOff.calendario", "Calendario")}
+            icon={<CalendarOff />}
+          >
+            <AusenciasCalendario
+              by={calBy}
+              month={month}
+              records={records}
+              typeLabel={tipoLabel}
+              onMonth={setMonth}
+              onPick={setPicked}
+            />
+          </Section>
+        ) : (
+        <>
         {/* Tabla */}
         <Section
           title={t(
@@ -727,6 +990,19 @@ export default function TimeOff() {
                     : "—",
               },
               {
+                key: "station",
+                header: t("ui.TimeOff.puesto", "Puesto"),
+                render: (_v: any, row: any) =>
+                  (row.stations || []).map((x: any) => x.name).filter(Boolean).join(", ") || "—",
+              },
+              {
+                key: "source",
+                header: t("ui.TimeOff.origenColumna", "Registrado en"),
+                render: (_v: any, row: any) => (
+                  <span style={{ color: "var(--ink-soft)" }}>{origenLabel(row.source)}</span>
+                ),
+              },
+              {
                 key: "status",
                 header: t("comun.estado"),
                 render: (_v: any, row: any) => getStatusBadge(row.status),
@@ -743,46 +1019,7 @@ export default function TimeOff() {
               />
             }
             loading={loading}
-            rowActions={(row: any) => [
-              ...(row.status === "pending" && decidir.puede
-                ? [
-                    {
-                      label: t("ui.TimeOff.aprobar", "Aprobar"),
-                      icon: (
-                        <CheckCircle style={{ color: "var(--ok-text)" }} />
-                      ),
-                      onClick: () => handleApprove(row.id),
-                    },
-                    {
-                      label: t("ui.TimeOff.rechazar", "Rechazar"),
-                      icon: <XCircle style={{ color: "var(--bad-text)" }} />,
-                      onClick: () => handleReject(row.id),
-                    },
-                  ]
-                : []),
-              ...(row.status === "approved" && decidir.puede
-                ? [
-                    {
-                      label: t(
-                        "ui.TimeOff.cancelarPermisoBoton",
-                        "Cancelar permiso",
-                      ),
-                      icon: <Undo2 />,
-                      onClick: () => handleCancel(row.id),
-                    },
-                  ]
-                : []),
-              ...(borrar.puede
-                ? [
-                    {
-                      label: t("common.delete", "Eliminar"),
-                      icon: <Trash2 />,
-                      destructive: true,
-                      onClick: () => handleDelete(row.id),
-                    },
-                  ]
-                : []),
-            ]}
+            rowActions={(row: any) => accionesDe(row)}
           />
         </Section>
 
@@ -869,6 +1106,50 @@ export default function TimeOff() {
             </Button>
           </div>
         </div>
+        </>
+        )}
+
+        {/* A leave picked on the calendar: what it is and what can be done. */}
+        <Sheet open={!!picked} onOpenChange={(v) => !v && setPicked(null)}>
+          <SheetContent className="w-full overflow-y-auto sm:w-[440px]">
+            <SheetHeader>
+              <SheetTitle>
+                {picked?.guard?.fullName ?? picked?.guardName ?? "—"}
+              </SheetTitle>
+            </SheetHeader>
+            {picked && (
+              <div className="grid gap-3 py-4 text-sm" data-testid="ausencia-detalle">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium">{tipoLabel(picked.type)}</span>
+                  {getStatusBadge(picked.status)}
+                </div>
+                <div>
+                  {formatDate(picked.startDate)} → {formatDate(picked.endDate ?? picked.startDate)}
+                </div>
+                {!!picked.stations?.length && (
+                  <div style={{ color: "var(--ink-soft)" }}>
+                    {picked.stations.map((x) => x.name).filter(Boolean).join(", ")}
+                  </div>
+                )}
+                {picked.reason && <div>{picked.reason}</div>}
+                <div style={{ color: "var(--ink-soft)" }}>
+                  {t("ui.TimeOff.origenColumna", "Registrado en")}: {origenLabel(picked.source)}
+                </div>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {accionesDe(picked).map((a) => (
+                    <Button
+                      key={a.label}
+                      variant={a.destructive ? "destructive" : "outline"}
+                      onClick={a.onClick}
+                    >
+                      {a.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </SheetContent>
+        </Sheet>
       </PageContainer>
     </AppLayout>
   );

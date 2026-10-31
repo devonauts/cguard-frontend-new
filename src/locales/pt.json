@@ -3924,7 +3924,10 @@
         "saveError": "Sem id do vigilante"
       },
       "empty": "Sem disponibilidade",
-      "notAvailable": "Não disponível"
+      "notAvailable": "Não disponível",
+      "usedBy": "A mesma disponibilidade que a pessoa vê no app. A escala avisa ao atribuir fora dela, a Cobertura a coloca por último e o Dobletes não oferece esses turnos.",
+      "notSaid": "Ainda não informou a disponibilidade: conta como sempre disponível.",
+      "datedDays": "Também marcou {{n}} dia(s) avulsos no app."
     },
     "new": {
       "title": "Novo Segurança",
@@ -10030,7 +10033,8 @@
       "vuelveADespuesDel": "Volta para {{puesto}} depois de {{fecha}}",
       "yNoPuedeFicharElTurnoSeRegistra": "e não consegue registrar ponto. O turno é registrado",
       "yaTieneUnTurnoAbierto": "Já tem um turno aberto — não se abre um segundo.",
-      "vaEnCamino": "A caminho · enviado há {{min}} min"
+      "vaEnCamino": "A caminho · enviado há {{min}} min",
+      "fueraDeDisponibilidad": "Fora da disponibilidade"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Itens por página",
@@ -12757,7 +12761,34 @@
       "cancelarPermisoMensaje": "Os turnos desses dias voltam para a escala e suas lacunas em Cobertura são fechadas. Os dias que já têm substituto ficam como estão.",
       "cancelarPermisoBoton": "Cancelar ausência",
       "eliminarAprobada": "A solicitação é excluída e o que sua aprovação mudou na escala é desfeito. Os dias que já têm substituto ficam como estão.",
-      "cancelado": "Cancelada"
+      "cancelado": "Cancelada",
+      "mesAnterior": "Mês anterior",
+      "mesSiguiente": "Próximo mês",
+      "nadieFueraEsteMes": "Ninguém está ausente neste mês com esses filtros.",
+      "puesto": "Posto",
+      "origen": {
+        "app": "App do vigilante",
+        "horario": "Escala",
+        "planificador": "Planejador",
+        "editor": "Editor de escala",
+        "replacement": "Substituição de férias",
+        "vigia": "Assistente",
+        "migrated": "Registro anterior",
+        "page": "Ausências e licenças"
+      },
+      "origenColumna": "Registrado em",
+      "vistaLista": "Lista",
+      "vistaCalendario": "Calendário",
+      "porPersona": "Por pessoa",
+      "porPuesto": "Por posto",
+      "filtroTipo": "Tipo",
+      "todosLosTipos": "Todos os tipos",
+      "filtroPuesto": "Posto",
+      "todosLosPuestos": "Todos os postos",
+      "filtroSucursal": "Filial",
+      "todasLasSucursales": "Todas as filiais",
+      "quitarFiltroPersona": "Remover o filtro de pessoa",
+      "calendario": "Calendário"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -18504,6 +18535,9 @@
       "rrhh": "Recursos humanos: também dados do pessoal e pagamento",
       "supervision": "Supervisão: também aprova horas",
       "gerencia": "Gerência: também relatórios e ações de direção"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Atribuído, mas {{n}} turno(s) ficam fora da disponibilidade informada ({{dias}}). Confirme com a pessoa."
     }
   },
   "map": {

@@ -205,6 +205,9 @@ export const coverageService = {
             fullName: string | null;
             reason: string;
             score: number;
+            /** They said they cannot work this window (one availability per person). */
+            outsideAvailability?: boolean;
+            warning?: string | null;
           }>,
       ),
 

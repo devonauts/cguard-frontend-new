@@ -7,7 +7,9 @@ import GuardsLayout from "@/layouts/GuardsLayout";
 import AppLayout from "@/layouts/app-layout";
 import TimeInput from "@/components/TimeInput";
 import MobileCardList from "@/components/responsive/MobileCardList";
-import securityGuardService from "@/lib/api/securityGuardService";
+import availabilityService, {
+  type WeeklyAvailability,
+} from "@/lib/api/availabilityService";
 import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import type { GuardDetail } from "../../guardDetailTypes";
 
@@ -32,57 +34,63 @@ export default function GuardAvailability({ guard }: Props) {
     ? ((registro.guard ?? registro) as GuardDetail)
     : null;
   const effGuard = guard ?? fetchedGuard ?? undefined;
-  const [availability, setAvailability] = useState<Av[]>(() => {
-    const base = [
-      { day: "Monday", available: true, start: "00:00", end: "23:59" },
-      { day: "Tuesday", available: true, start: "00:00", end: "23:59" },
-      { day: "Wednesday", available: true, start: "00:00", end: "23:59" },
-      { day: "Thursday", available: true, start: "00:00", end: "23:59" },
-      { day: "Friday", available: true, start: "00:00", end: "23:59" },
-      { day: "Saturday", available: true, start: "00:00", end: "23:59" },
-      { day: "Sunday", available: true, start: "00:00", end: "23:59" },
-    ];
-    if (!guard) return base;
-    return base.map((b) => {
-      const gDay = (guard.availability || []).find((x) => x.day === b.day);
-      if (!gDay) return b;
-      return {
-        day: b.day,
-        available: !!gDay.available,
-        start: gDay.start ?? b.start,
-        end: gDay.end ?? b.end,
-      };
-    });
-  });
+  /* The ONE availability per person (services/availability on the server):
+     the same rows the guard app and Dobletes edit. A person who never said
+     anything is available any time — the table shows every day all day and a
+     note, and saving it like that keeps it «not said». */
+  const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const ORDER = [1, 2, 3, 4, 5, 6, 0];
+  const allDay = (): Av[] =>
+    ORDER.map((wd) => ({ day: DAYS[wd], available: true, start: "00:00", end: "23:59" }));
+  // The person's ACCOUNT id: the sheet's record carries it as `guardId` and
+  // `guard` (the user); `effGuard` may already be that user.
+  const userId: string | undefined =
+    (registro as any)?.guardId ||
+    (registro as any)?.guard?.id ||
+    (effGuard as any)?.guardId ||
+    (guard ? (guard as any)?.guard?.id : undefined) ||
+    undefined;
+  const [availability, setAvailability] = useState<Av[]>(allDay);
+  const [configured, setConfigured] = useState(false);
+  const [original, setOriginal] = useState<Map<number, WeeklyAvailability>>(new Map());
+  const [fechasSueltas, setFechasSueltas] = useState(0);
 
   useEffect(() => {
-    // Recompute availability whenever the guard prop changes
-    const base = [
-      { day: "Monday", available: true, start: "00:00", end: "23:59" },
-      { day: "Tuesday", available: true, start: "00:00", end: "23:59" },
-      { day: "Wednesday", available: true, start: "00:00", end: "23:59" },
-      { day: "Thursday", available: true, start: "00:00", end: "23:59" },
-      { day: "Friday", available: true, start: "00:00", end: "23:59" },
-      { day: "Saturday", available: true, start: "00:00", end: "23:59" },
-      { day: "Sunday", available: true, start: "00:00", end: "23:59" },
-    ];
-    if (!effGuard) {
-      setAvailability(base);
-      return;
-    }
-    setAvailability(
-      base.map((b) => {
-        const gDay = (effGuard.availability || []).find((x) => x.day === b.day);
-        if (!gDay) return b;
-        return {
-          day: b.day,
-          available: !!gDay.available,
-          start: gDay.start ?? b.start,
-          end: gDay.end ?? b.end,
-        };
-      }),
-    );
-  }, [effGuard]);
+    if (!userId) return;
+    let vivo = true;
+
+    availabilityService
+      .get(userId)
+      .then((r) => {
+        if (!vivo) return;
+        const byDay = new Map<number, WeeklyAvailability>();
+
+        for (const w of r.weekly || []) byDay.set(Number(w.weekday), w);
+        setOriginal(byDay);
+        setConfigured(!!(r.weekly || []).length);
+        setFechasSueltas((r.dates || []).length);
+        setAvailability(
+          (r.weekly || []).length
+            ? ORDER.map((wd) => {
+                const w = byDay.get(wd);
+
+                return {
+                  day: DAYS[wd],
+                  available: !!w,
+                  start: w?.startTime || "00:00",
+                  end: w?.endTime || "23:59",
+                };
+              })
+            : allDay(),
+        );
+      })
+      .catch(() => vivo && setAvailability(allDay()));
+
+    return () => {
+      vivo = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const updateAvailability = (index: number, v: Av) => {
     setAvailability((prev) => {
@@ -95,12 +103,41 @@ export default function GuardAvailability({ guard }: Props) {
   const handleSaveAvailability = () => {
     (async () => {
       try {
-        const saveId = effGuard?.id || routeId;
-        if (!saveId) {
+        if (!userId) {
           toast.error(t("guards.availability.toasts.saveError", "No guard id"));
+
           return;
         }
-        await securityGuardService.update(saveId, { availability });
+        const everyDayAllDay = availability.every(
+          (a) => a.available && a.start === "00:00" && a.end === "23:59",
+        );
+        // Every day all day and nothing said before: stays «not said».
+        const weekly =
+          everyDayAllDay && !configured
+            ? []
+            : availability
+                .filter((a) => a.available)
+                .map((a) => {
+                  const wd = DAYS.indexOf(a.day);
+                  const prev = original.get(wd);
+                  const window = a.start === "00:00" && a.end === "23:59"
+                    ? { startTime: null, endTime: null }
+                    : { startTime: a.start, endTime: a.end };
+                  const unchanged =
+                    prev &&
+                    (prev.startTime || null) === window.startTime &&
+                    (prev.endTime || null) === window.endTime;
+
+                  // An unchanged day keeps its bands (set in the app or in Dobletes).
+                  return { weekday: wd, ...window, ...(unchanged ? { slots: prev!.slots } : {}) };
+                });
+        const r = await availabilityService.setWeekly(userId, weekly);
+
+        setConfigured(!!(r.weekly || []).length);
+        const byDay = new Map<number, WeeklyAvailability>();
+
+        for (const w of r.weekly || []) byDay.set(Number(w.weekday), w);
+        setOriginal(byDay);
         toast.success(t("guards.availability.toasts.saved"));
       } catch (e) {
         console.error("Failed saving availability", e);
@@ -124,6 +161,22 @@ export default function GuardAvailability({ guard }: Props) {
                 defaultValue: "Disponibilidad",
               })}
             </h3>
+            <p className="mb-4 text-sm" style={{ color: "var(--ink-soft)" }}>
+              {configured
+                ? t(
+                    "guards.availability.usedBy",
+                    "La misma disponibilidad que la persona ve en su app. El horario avisa al asignarle fuera de ella, Cobertura la pone al final y Dobletes no le ofrece esos turnos.",
+                  )
+                : t(
+                    "guards.availability.notSaid",
+                    "Todavía no ha indicado su disponibilidad: se considera disponible siempre.",
+                  )}
+              {fechasSueltas > 0 &&
+                ` ${t("guards.availability.datedDays", {
+                  n: fechasSueltas,
+                  defaultValue: "Además marcó {{n}} día(s) sueltos desde la app.",
+                })}`}
+            </p>
             <div>
               <div className="md:block hidden overflow-x-auto">
                 <table className="w-full text-sm">

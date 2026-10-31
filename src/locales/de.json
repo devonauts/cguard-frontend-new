@@ -1742,7 +1742,10 @@
         "saveError": "Keine Kennung der Sicherheitskraft"
       },
       "empty": "Keine Verfügbarkeit hinterlegt",
-      "notAvailable": "Nicht verfügbar"
+      "notAvailable": "Nicht verfügbar",
+      "usedBy": "Dieselbe Verfügbarkeit, die die Person in ihrer App sieht. Der Dienstplan warnt bei Zuweisungen außerhalb, die Abdeckung listet sie zuletzt und Dobletes bietet ihr diese Schichten nicht an.",
+      "notSaid": "Noch keine Verfügbarkeit angegeben: gilt als immer verfügbar.",
+      "datedDays": "Zusätzlich {{n}} einzelne(n) Tag(e) in der App markiert."
     },
     "files": {
       "loadError": "Die Wachkraft konnte nicht geladen werden",
@@ -10565,7 +10568,8 @@
       "vuelveADespuesDel": "Kehrt nach dem {{fecha}} zu {{puesto}} zurück",
       "yNoPuedeFicharElTurnoSeRegistra": "und nicht einstempeln kann. Die Schicht wird",
       "yaTieneUnTurnoAbierto": "Es gibt bereits eine offene Schicht — eine zweite wird nicht geöffnet.",
-      "vaEnCamino": "Unterwegs · vor {{min}} Min. geschickt"
+      "vaEnCamino": "Unterwegs · vor {{min}} Min. geschickt",
+      "fueraDeDisponibilidad": "Außerhalb der Verfügbarkeit"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Einträge pro Seite",
@@ -13292,7 +13296,34 @@
       "cancelarPermisoMensaje": "Die Schichten dieser Tage kommen zurück in den Dienstplan und ihre Lücken in der Abdeckung schließen sich. Tage mit Vertretung bleiben so.",
       "cancelarPermisoBoton": "Abwesenheit stornieren",
       "eliminarAprobada": "Der Antrag wird gelöscht und was seine Genehmigung im Dienstplan geändert hat, wird rückgängig gemacht. Tage mit Vertretung bleiben so.",
-      "cancelado": "Storniert"
+      "cancelado": "Storniert",
+      "mesAnterior": "Vorheriger Monat",
+      "mesSiguiente": "Nächster Monat",
+      "nadieFueraEsteMes": "Mit diesen Filtern ist diesen Monat niemand abwesend.",
+      "puesto": "Posten",
+      "origen": {
+        "app": "Wachmann-App",
+        "horario": "Dienstplan",
+        "planificador": "Planer",
+        "editor": "Dienstplan-Editor",
+        "replacement": "Urlaubsvertretung",
+        "vigia": "Assistent",
+        "migrated": "Früherer Eintrag",
+        "page": "Abwesenheiten und Urlaub"
+      },
+      "origenColumna": "Erfasst in",
+      "vistaLista": "Liste",
+      "vistaCalendario": "Kalender",
+      "porPersona": "Nach Person",
+      "porPuesto": "Nach Posten",
+      "filtroTipo": "Art",
+      "todosLosTipos": "Alle Arten",
+      "filtroPuesto": "Posten",
+      "todosLosPuestos": "Alle Posten",
+      "filtroSucursal": "Niederlassung",
+      "todasLasSucursales": "Alle Niederlassungen",
+      "quitarFiltroPersona": "Personenfilter entfernen",
+      "calendario": "Kalender"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -19039,6 +19070,9 @@
       "rrhh": "Personalwesen: zusätzlich Personaldaten und Lohn",
       "supervision": "Aufsicht: genehmigt zusätzlich Stunden",
       "gerencia": "Geschäftsleitung: zusätzlich Berichte und Leitungsaktionen"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Zugewiesen, aber {{n}} Schicht(en) liegen außerhalb der angegebenen Verfügbarkeit ({{dias}}). Bitte mit der Person klären."
     }
   },
   "visitantes": {

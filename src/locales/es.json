@@ -1958,7 +1958,10 @@
         "saveError": "No guard id"
       },
       "empty": "No availability",
-      "notAvailable": "Not available"
+      "notAvailable": "Not available",
+      "usedBy": "La misma disponibilidad que la persona ve en su app. El horario avisa al asignarle fuera de ella, Cobertura la pone al final y Dobletes no le ofrece esos turnos.",
+      "notSaid": "Todavía no ha indicado su disponibilidad: se considera disponible siempre.",
+      "datedDays": "Además marcó {{n}} día(s) sueltos desde la app."
     },
     "files": {
       "loadError": "No se pudo cargar el vigilante",
@@ -10030,7 +10033,8 @@
       "vuelveADespuesDel": "Vuelve a {{puesto}} después del {{fecha}}",
       "yNoPuedeFicharElTurnoSeRegistra": "y no puede fichar. El turno se registra",
       "yaTieneUnTurnoAbierto": "Ya tiene un turno abierto — no se abre un segundo.",
-      "vaEnCamino": "Va en camino · enviado hace {{min}} min"
+      "vaEnCamino": "Va en camino · enviado hace {{min}} min",
+      "fueraDeDisponibilidad": "Fuera de su disponibilidad"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Elementos por página",
@@ -12757,7 +12761,34 @@
       "cancelarPermisoMensaje": "Los turnos de esos días vuelven al horario y sus huecos en Cobertura se cierran. Los días que ya tienen reemplazo se quedan como están.",
       "cancelarPermisoBoton": "Cancelar permiso",
       "eliminarAprobada": "Se elimina la solicitud y se deshace lo que su aprobación cambió en el horario. Los días que ya tienen reemplazo se quedan como están.",
-      "cancelado": "Cancelado"
+      "cancelado": "Cancelado",
+      "mesAnterior": "Mes anterior",
+      "mesSiguiente": "Mes siguiente",
+      "nadieFueraEsteMes": "Nadie tiene ausencias este mes con estos filtros.",
+      "puesto": "Puesto",
+      "origen": {
+        "app": "App del vigilante",
+        "horario": "Horario",
+        "planificador": "Planificador",
+        "editor": "Editor de horario",
+        "replacement": "Reemplazo por vacaciones",
+        "vigia": "Asistente",
+        "migrated": "Registro anterior",
+        "page": "Ausencias y permisos"
+      },
+      "origenColumna": "Registrado en",
+      "vistaLista": "Lista",
+      "vistaCalendario": "Calendario",
+      "porPersona": "Por persona",
+      "porPuesto": "Por puesto",
+      "filtroTipo": "Tipo",
+      "todosLosTipos": "Todos los tipos",
+      "filtroPuesto": "Puesto",
+      "todosLosPuestos": "Todos los puestos",
+      "filtroSucursal": "Sucursal",
+      "todasLasSucursales": "Todas las sucursales",
+      "quitarFiltroPersona": "Quitar el filtro de persona",
+      "calendario": "Calendario"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -18504,6 +18535,9 @@
       "rrhh": "Recursos humanos: además datos del personal y pago",
       "supervision": "Supervisión: además aprueba horas",
       "gerencia": "Gerencia: además reportes y acciones de dirección"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Asignado, pero {{n}} turno(s) caen fuera de la disponibilidad que indicó ({{dias}}). Revísalo con la persona."
     }
   },
   "map": {

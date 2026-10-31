@@ -1742,7 +1742,10 @@
         "saveError": "Brak identyfikatora pracownika ochrony"
       },
       "empty": "Brak dostępności",
-      "notAvailable": "Niedostępny"
+      "notAvailable": "Niedostępny",
+      "usedBy": "Ta sama dostępność, którą osoba widzi w aplikacji. Grafik ostrzega przy przypisaniu poza nią, Obsada umieszcza ją na końcu, a Dobletes nie oferuje jej tych zmian.",
+      "notSaid": "Nie podano jeszcze dostępności: uznaje się, że jest zawsze dostępna.",
+      "datedDays": "Zaznaczyła też {{n}} pojedynczy(ch) dzień(dni) w aplikacji."
     },
     "files": {
       "loadError": "Nie udało się wczytać pracownika ochrony",
@@ -10601,7 +10604,8 @@
       "vuelveADespuesDel": "Wraca na {{puesto}} po {{fecha}}",
       "yNoPuedeFicharElTurnoSeRegistra": "i nie może się zarejestrować. Zmiana zostaje zapisana",
       "yaTieneUnTurnoAbierto": "Ma już otwartą zmianę — druga nie zostanie otwarta.",
-      "vaEnCamino": "W drodze · wysłany {{min}} min temu"
+      "vaEnCamino": "W drodze · wysłany {{min}} min temu",
+      "fueraDeDisponibilidad": "Poza dostępnością"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Pozycji na stronę",
@@ -13400,7 +13404,34 @@
       "cancelarPermisoMensaje": "Zmiany z tych dni wracają do grafiku, a ich luki w Obsadzie się zamykają. Dni, które mają już zastępstwo, zostają bez zmian.",
       "cancelarPermisoBoton": "Anuluj nieobecność",
       "eliminarAprobada": "Wniosek zostanie usunięty, a zmiany, które jego zatwierdzenie wprowadziło w grafiku, zostaną cofnięte. Dni z zastępstwem zostają bez zmian.",
-      "cancelado": "Anulowana"
+      "cancelado": "Anulowana",
+      "mesAnterior": "Poprzedni miesiąc",
+      "mesSiguiente": "Następny miesiąc",
+      "nadieFueraEsteMes": "Z tymi filtrami nikt nie jest nieobecny w tym miesiącu.",
+      "puesto": "Posterunek",
+      "origen": {
+        "app": "Aplikacja pracownika",
+        "horario": "Grafik",
+        "planificador": "Planer",
+        "editor": "Edytor grafiku",
+        "replacement": "Zastępstwo urlopowe",
+        "vigia": "Asystent",
+        "migrated": "Wcześniejszy wpis",
+        "page": "Nieobecności i urlopy"
+      },
+      "origenColumna": "Zarejestrowano w",
+      "vistaLista": "Lista",
+      "vistaCalendario": "Kalendarz",
+      "porPersona": "Według osoby",
+      "porPuesto": "Według posterunku",
+      "filtroTipo": "Rodzaj",
+      "todosLosTipos": "Wszystkie rodzaje",
+      "filtroPuesto": "Posterunek",
+      "todosLosPuestos": "Wszystkie posterunki",
+      "filtroSucursal": "Oddział",
+      "todasLasSucursales": "Wszystkie oddziały",
+      "quitarFiltroPersona": "Usuń filtr osoby",
+      "calendario": "Kalendarz"
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
@@ -19329,6 +19360,9 @@
       "rrhh": "Kadry: dodatkowo dane personelu i płace",
       "supervision": "Nadzór: dodatkowo zatwierdza godziny",
       "gerencia": "Zarząd: dodatkowo raporty i działania kierownicze"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Przypisano, ale {{n}} zmian(a) wypada poza podaną dostępnością ({{dias}}). Ustal to z osobą."
     }
   },
   "visitantes": {
