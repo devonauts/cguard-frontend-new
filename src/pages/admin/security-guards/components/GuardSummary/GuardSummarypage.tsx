@@ -8,6 +8,8 @@ import type {
 } from "../../guardDetailTypes";
 
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { format as dateFnsFormat } from "date-fns";
 import { localeActual } from "@/lib/localeActual";
 import { useTranslation } from "react-i18next";
@@ -139,6 +141,8 @@ const windowLabel = (a: GuardAssignmentRow): string | null => {
 
 export default function GuardSummary({ guard }: Props) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { id: rutaId = "" } = useParams();
 
   const [activities, setActivities] = useState<SummaryActivity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(false);
@@ -311,6 +315,17 @@ export default function GuardSummary({ guard }: Props) {
           </div>
         ) : stations.length === 0 ? (
           <EmptyState
+            action={
+              <Button
+                variant="brand"
+                onClick={() =>
+                  navigate(`/guards/${rutaId}/asignar-sitios?asignar=1`)
+                }
+              >
+                <MapPin className="h-4 w-4" />
+                {t("guards.assignSites.assignButton", "Asignar estación")}
+              </Button>
+            }
             description={t("ui.GuardSummarypage.esteVigilanteTodaviaNoTiene")}
             icon={<MapPin className="h-5 w-5" />}
             title={t("ui.GuardSummary.sinAsignacion", "Sin asignación")}

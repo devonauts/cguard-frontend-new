@@ -1660,7 +1660,7 @@
       "assignButton": "Assegna postazione",
       "loadError": "Impossibile caricare la guardia",
       "loading": "Caricamento...",
-      "noPostSites": "Nessun posto di servizio trovato",
+      "noPostSites": "Questo cliente non ha sedi",
       "noStations": "Nessuna postazione trovata",
       "postSiteLoadError": "Impossibile caricare il posto di servizio",
       "postSiteLoading": "Caricamento delle informazioni del posto di servizio...",
@@ -1680,13 +1680,14 @@
       },
       "form": {
         "client": "Committente",
-        "postSite": "Posto di servizio",
+        "postSite": "Sede",
         "selectClient": "Seleziona committente",
-        "selectPostSite": "Seleziona posto di servizio",
+        "selectPostSite": "Seleziona la sede",
         "selectStation": "Seleziona postazione",
         "station": "Postazione",
-        "end": "Fine",
-        "start": "Inizio"
+        "end": "Fino al (facoltativo)",
+        "start": "Dal",
+        "datesHint": "Orari e giorni liberi li decide la postazione. Lascia «Fino al» vuoto se non c’è una data di fine."
       },
       "modal": {
         "assign": "Assegna",
@@ -1699,8 +1700,8 @@
         "station": "Postazione"
       },
       "assigned": "Guardia assegnata",
-      "empty": "Ancora nessun posto di servizio assegnato",
-      "emptyHint": "Assegna un posto di servizio per iniziare.",
+      "empty": "Non lavora ancora in nessuna postazione",
+      "emptyHint": "Assegna una postazione: da lì vengono orari e giorni liberi.",
       "errors": {
         "assignFailed": "Impossibile assegnare il posto di servizio",
         "noTenant": "Impossibile determinare l'organizzazione",
@@ -1708,7 +1709,9 @@
         "selectClientSite": "Seleziona un committente e un posto di servizio",
         "selectTimes": "Seleziona l'ora di inizio e di fine",
         "timeOrder": "L'ora di inizio deve precedere l'ora di fine",
-        "siteHasNoStations": "Questa sede non ha ancora postazioni. Crea una postazione nella sede e poi assegna la guardia."
+        "siteHasNoStations": "Questa sede non ha ancora postazioni. Crea una postazione nella sede e poi assegna la guardia.",
+        "selectStartDate": "Scegli da che giorno lavora qui",
+        "endBeforeStart": "«Fino al» non può essere prima di «Dal»"
       },
       "loadingPostSite": "Caricamento delle informazioni del posto di servizio…",
       "noResults": "Nessun risultato",
@@ -14087,7 +14090,7 @@
       "sinHorario": "Nessun orario",
       "quincenaAnterior": "Quindicina precedente",
       "quincenaSiguiente": "Quindicina successiva",
-      "esteVigilanteNoTienePuestos": "Questa guardia non ha posti con una rotazione configurata.",
+      "esteVigilanteNoTienePuestos": "L’orario di una guardia viene dalla postazione in cui lavora. Assegnane una per vederlo qui.",
       "puestoCliente": "Posto · Committente",
       "cubreOtroVigilante": "Copre un'altra guardia"
     },
@@ -14305,7 +14308,7 @@
       "nDe5": "{{n}} su 5"
     },
     "GuardSummarypage": {
-      "esteVigilanteTodaviaNoTiene": "Questa guardia non ha ancora una postazione o un posto assegnato. Assegnalo dalla scheda “Posto e postazioni”.",
+      "esteVigilanteTodaviaNoTiene": "Non lavora ancora in nessuna postazione. Assegnane una e l’orario viene da lì.",
       "aunNoHayDatosSuficientes": "Non ci sono ancora dati sufficienti per calcolare le prestazioni di questa guardia.",
       "horarioEstaSemana": "Turni di questa settimana",
       "esteVigilanteNoTieneUna": "Questa guardia non ha una rotazione di turni configurata nella sua postazione.",

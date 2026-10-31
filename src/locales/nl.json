@@ -1660,7 +1660,7 @@
       "assignButton": "Post toewijzen",
       "loadError": "De beveiliger kon niet worden geladen",
       "loading": "Laden...",
-      "noPostSites": "Geen bewaakte locaties gevonden",
+      "noPostSites": "Deze klant heeft geen locaties",
       "noStations": "Geen posten gevonden",
       "postSiteLoadError": "De post kon niet worden geladen",
       "postSiteLoading": "Gegevens van de post laden...",
@@ -1680,13 +1680,14 @@
       },
       "form": {
         "client": "Opdrachtgever",
-        "postSite": "Bewaakte locatie",
+        "postSite": "Locatie",
         "selectClient": "Opdrachtgever selecteren",
-        "selectPostSite": "Bewaakte locatie selecteren",
+        "selectPostSite": "Kies de locatie",
         "selectStation": "Post selecteren",
         "station": "Post",
-        "end": "Eind",
-        "start": "Start"
+        "end": "Tot (optioneel)",
+        "start": "Vanaf",
+        "datesHint": "De post bepaalt de uren en vrije dagen. Laat «Tot» leeg als er geen einddatum is."
       },
       "modal": {
         "assign": "Toewijzen",
@@ -1699,8 +1700,8 @@
         "station": "Post"
       },
       "assigned": "Toegewezen beveiliger",
-      "empty": "Nog geen posten toegewezen",
-      "emptyHint": "Wijs een post toe om te beginnen.",
+      "empty": "Werkt nog op geen enkele post",
+      "emptyHint": "Wijs een post toe: daaruit volgen de uren en vrije dagen.",
       "errors": {
         "assignFailed": "De post kon niet worden toegewezen",
         "noTenant": "De organisatie kon niet worden bepaald",
@@ -1708,7 +1709,9 @@
         "selectClientSite": "Selecteer een opdrachtgever en een post",
         "selectTimes": "Selecteer een begin- en eindtijd",
         "timeOrder": "De begintijd moet vóór de eindtijd liggen",
-        "siteHasNoStations": "Deze locatie heeft nog geen posten. Maak een post aan op de locatie en wijs daarna de beveiliger toe."
+        "siteHasNoStations": "Deze locatie heeft nog geen posten. Maak een post aan op de locatie en wijs daarna de beveiliger toe.",
+        "selectStartDate": "Kies vanaf welke dag hij hier werkt",
+        "endBeforeStart": "«Tot» kan niet vóór «Vanaf» liggen"
       },
       "loadingPostSite": "Gegevens van de post laden…",
       "noResults": "Geen resultaten",
@@ -14087,7 +14090,7 @@
       "sinHorario": "Geen rooster",
       "quincenaAnterior": "Vorige halve maand",
       "quincenaSiguiente": "Volgende halve maand",
-      "esteVigilanteNoTienePuestos": "Deze beveiliger heeft geen posten met een ingestelde rotatie.",
+      "esteVigilanteNoTienePuestos": "Het rooster van een bewaker volgt uit de post waar hij werkt. Wijs er een toe om het hier te zien.",
       "puestoCliente": "Post · opdrachtgever",
       "cubreOtroVigilante": "Een andere beveiliger neemt het over"
     },
@@ -14305,7 +14308,7 @@
       "nDe5": "{{n}} van 5"
     },
     "GuardSummarypage": {
-      "esteVigilanteTodaviaNoTiene": "Deze beveiliger heeft nog geen post of locatie toegewezen gekregen. Wijs er een toe via het tabblad “Post en locaties”.",
+      "esteVigilanteTodaviaNoTiene": "Werkt nog op geen enkele post. Wijs er een toe en het rooster volgt daaruit.",
       "aunNoHayDatosSuficientes": "Er zijn nog niet genoeg gegevens om de prestaties van deze beveiliger te berekenen.",
       "horarioEstaSemana": "Rooster deze week",
       "esteVigilanteNoTieneUna": "Voor deze beveiliger is op zijn post geen dienstrotatie ingesteld.",

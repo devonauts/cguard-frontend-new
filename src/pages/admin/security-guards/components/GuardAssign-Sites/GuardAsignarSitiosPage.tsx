@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -32,7 +32,7 @@ import {
 import { clientDisplayName } from "@/lib/clientName";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
-import { paraInputFechaHora, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { esEvento } from "@/lib/eventos";
 import { AvisoFechasDelEvento } from "@/components/post-sites/EventoDeLaSede";
 // ── Safe label extraction ────────────────────────────────────────────────────
@@ -260,12 +260,28 @@ export default function GuardAsignarSitiosPage() {
   /* Mientras se cargan los puestos de la sede no se puede afirmar que no
      tenga ninguno — sin esto, pulsar rápido acusaría de vacía una sede llena. */
   const [cargandoPuestos, setCargandoPuestos] = useState(false);
+  /* The assignment is a period of days: from a date, and until a date only
+     when it really ends. The hours come from the station (its posts and
+     rotation). The drawer used to ask for two date-times, default «now» to
+     «tomorrow at this time», and sent their TIMES as the shift window, so a
+     guard assigned at 15:10 got a 15:10–21:10 day (audit 2026-10-31). */
   const [selectedStart, setSelectedStart] = useState<string>(() =>
-    paraInputFechaHora(new Date()),
+    hoyEnLaEmpresa(),
   );
-  const [selectedEnd, setSelectedEnd] = useState<string>(() =>
-    new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-  );
+  const [selectedEnd, setSelectedEnd] = useState<string>("");
+  // «Asignar estación» from an empty state elsewhere in the sheet lands here
+  // with ?asignar=1 and opens the drawer straight away.
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("asignar") === "1") {
+      setAssignModalOpen(true);
+      const next = new URLSearchParams(searchParams);
+
+      next.delete("asignar");
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedPostSite, setSelectedPostSite] = useState("");
   const [assigning, setAssigning] = useState(false);
@@ -362,27 +378,19 @@ export default function GuardAsignarSitiosPage() {
 
       return;
     }
-    if (!sedeEsEvento && (!selectedStart || !selectedEnd)) {
+    if (!sedeEsEvento && !/^\d{4}-\d{2}-\d{2}$/.test(selectedStart)) {
       toast.error(
-        t("guards.assignSites.errors.selectTimes", {
-          defaultValue: "Selecciona hora de inicio y fin",
+        t("guards.assignSites.errors.selectStartDate", {
+          defaultValue: "Elige desde qué día trabaja aquí",
         }),
       );
 
       return;
     }
-    const s = new Date(selectedStart);
-    const e = new Date(selectedEnd);
-
-    if (
-      !sedeEsEvento &&
-      (isNaN(s.getTime()) ||
-        isNaN(e.getTime()) ||
-        s.getTime() >= e.getTime())
-    ) {
+    if (!sedeEsEvento && selectedEnd && selectedEnd < selectedStart) {
       toast.error(
-        t("guards.assignSites.errors.timeOrder", {
-          defaultValue: "La hora de inicio debe ser anterior a la hora de fin",
+        t("guards.assignSites.errors.endBeforeStart", {
+          defaultValue: "La fecha «Hasta» no puede ser anterior a «Desde»",
         }),
       );
 
@@ -417,10 +425,6 @@ export default function GuardAsignarSitiosPage() {
         }
         const securityGuardIdentifier = guardUserId || id;
 
-        const pad = (n: number) => String(n).padStart(2, "0");
-        const startDate = `${s.getFullYear()}-${pad(s.getMonth() + 1)}-${pad(s.getDate())}`;
-        const startTime = `${pad(s.getHours())}:${pad(s.getMinutes())}`;
-        const endTime = `${pad(e.getHours())}:${pad(e.getMinutes())}`;
 
         const assignPayload = {
           securityGuardId: securityGuardIdentifier,
@@ -428,7 +432,13 @@ export default function GuardAsignarSitiosPage() {
             ? { stationId: selectedStationAssign }
             : {}),
           // En un evento el servidor pone fechas y horas con su vigencia.
-          ...(sedeEsEvento ? {} : { startDate, startTime, endTime }),
+          // Fuera de él, sólo días: las horas las pone la estación.
+          ...(sedeEsEvento
+            ? {}
+            : {
+                startDate: selectedStart,
+                ...(selectedEnd ? { endDate: selectedEnd } : {}),
+              }),
         } as any;
         const routeStationOrSite = selectedStationAssign || selectedPostSite;
 
@@ -1010,7 +1020,7 @@ export default function GuardAsignarSitiosPage() {
                   <div>
                     <label className="cg-eyebrow mb-1.5 block">
                       {t("guards.assignSites.form.postSite", {
-                        defaultValue: "Puesto",
+                        defaultValue: "Sede",
                       })}
                       <span
                         className="ml-0.5"
@@ -1027,7 +1037,7 @@ export default function GuardAsignarSitiosPage() {
                     >
                       <option value="">
                         {t("guards.assignSites.form.selectPostSite", {
-                          defaultValue: "Selecciona puesto",
+                          defaultValue: "Selecciona la sede",
                         })}
                       </option>
                       {postSites.length === 0 && selectedClient && (
@@ -1113,7 +1123,7 @@ export default function GuardAsignarSitiosPage() {
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
                         {t("guards.assignSites.form.start", {
-                          defaultValue: "Inicio",
+                          defaultValue: "Desde",
                         })}
                         <span
                           className="ml-0.5"
@@ -1124,7 +1134,7 @@ export default function GuardAsignarSitiosPage() {
                       </label>
                       <input
                         className="cg-input flex h-9 w-full px-2 text-sm"
-                        type="datetime-local"
+                        type="date"
                         value={selectedStart}
                         onChange={(e) => setSelectedStart(e.target.value)}
                       />
@@ -1132,22 +1142,26 @@ export default function GuardAsignarSitiosPage() {
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
                         {t("guards.assignSites.form.end", {
-                          defaultValue: "Fin",
+                          defaultValue: "Hasta (opcional)",
                         })}
-                        <span
-                          className="ml-0.5"
-                          style={{ color: "var(--bad-text)" }}
-                        >
-                          *
-                        </span>
                       </label>
                       <input
                         className="cg-input flex h-9 w-full px-2 text-sm"
-                        type="datetime-local"
+                        min={selectedStart || undefined}
+                        type="date"
                         value={selectedEnd}
                         onChange={(e) => setSelectedEnd(e.target.value)}
                       />
                     </div>
+                    <p
+                      className="text-xs sm:col-span-2"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {t("guards.assignSites.form.datesHint", {
+                        defaultValue:
+                          "Sus horas y días libres los pone la estación. Deja «Hasta» vacío si no tiene fecha de salida.",
+                      })}
+                    </p>
                   </div>
                 </div>
               </div>

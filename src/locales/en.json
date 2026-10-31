@@ -1876,7 +1876,7 @@
       "assignButton": "Assign Post Sites",
       "loadError": "Could not load guard",
       "loading": "Loading...",
-      "noPostSites": "No post sites found",
+      "noPostSites": "This client has no sites",
       "noStations": "No stations found",
       "postSiteLoadError": "Could not load the post",
       "postSiteLoading": "Loading post information...",
@@ -1896,13 +1896,14 @@
       },
       "form": {
         "client": "Client",
-        "postSite": "Post Site",
+        "postSite": "Site",
         "selectClient": "Select client",
-        "selectPostSite": "Select post site",
+        "selectPostSite": "Select site",
         "selectStation": "Select station",
         "station": "Station",
-        "end": "End",
-        "start": "Start"
+        "end": "Until (optional)",
+        "start": "From",
+        "datesHint": "The station sets their hours and days off. Leave «Until» empty if there is no end date."
       },
       "modal": {
         "assign": "Assign",
@@ -1915,8 +1916,8 @@
         "station": "Station"
       },
       "assigned": "Guard assigned",
-      "empty": "No posts assigned yet",
-      "emptyHint": "Assign a post to get started.",
+      "empty": "Not working at any station yet",
+      "emptyHint": "Assign a station: their hours and days off come from it.",
       "errors": {
         "assignFailed": "The post could not be assigned",
         "noTenant": "The organisation could not be determined",
@@ -1924,7 +1925,9 @@
         "selectClientSite": "Select a client and a post",
         "selectTimes": "Select a start and end time",
         "timeOrder": "The start time must be earlier than the end time",
-        "siteHasNoStations": "This site has no posts yet. Create a post at the site, then assign the guard."
+        "siteHasNoStations": "This site has no posts yet. Create a post at the site, then assign the guard.",
+        "selectStartDate": "Choose the day they start here",
+        "endBeforeStart": "«Until» can’t be before «From»"
       },
       "loadingPostSite": "Loading post details…",
       "noResults": "No results",
@@ -13552,7 +13555,7 @@
       "sinHorario": "No schedule",
       "quincenaAnterior": "Previous fortnight",
       "quincenaSiguiente": "Next fortnight",
-      "esteVigilanteNoTienePuestos": "This guard has no posts with a rotation set up.",
+      "esteVigilanteNoTienePuestos": "A guard’s schedule comes from the station they work at. Assign one and it shows up here.",
       "puestoCliente": "Post · Client",
       "cubreOtroVigilante": "Another guard is covering"
     },
@@ -13770,7 +13773,7 @@
       "nDe5": "{{n}} out of 5"
     },
     "GuardSummarypage": {
-      "esteVigilanteTodaviaNoTiene": "This guard has no station or post assigned yet. Assign one from the \"Post and stations\" tab.",
+      "esteVigilanteTodaviaNoTiene": "Not working at any station yet. Assign one and their schedule comes from it.",
       "aunNoHayDatosSuficientes": "There is not enough data yet to work out this guard's performance.",
       "horarioEstaSemana": "Schedule this week",
       "esteVigilanteNoTieneUna": "This guard has no shift rotation set up at their station.",

@@ -1660,7 +1660,7 @@
       "assignButton": "Przypisz posterunek",
       "loadError": "Nie udało się wczytać pracownika ochrony",
       "loading": "Ładowanie...",
-      "noPostSites": "Nie znaleziono chronionych obiektów",
+      "noPostSites": "Ten klient nie ma obiektów",
       "noStations": "Nie znaleziono posterunków",
       "postSiteLoadError": "Nie udało się wczytać obiektu",
       "postSiteLoading": "Wczytywanie informacji o obiekcie...",
@@ -1680,13 +1680,14 @@
       },
       "form": {
         "client": "Zleceniodawca",
-        "postSite": "Chroniony obiekt",
+        "postSite": "Obiekt",
         "selectClient": "Wybierz zleceniodawcę",
-        "selectPostSite": "Wybierz chroniony obiekt",
+        "selectPostSite": "Wybierz obiekt",
         "selectStation": "Wybierz posterunek",
         "station": "Posterunek",
-        "end": "Koniec",
-        "start": "Początek"
+        "end": "Do (opcjonalnie)",
+        "start": "Od",
+        "datesHint": "Godziny i dni wolne wynikają ze stanowiska. Zostaw «Do» puste, jeśli nie ma daty końca."
       },
       "modal": {
         "assign": "Przypisz",
@@ -1699,8 +1700,8 @@
         "station": "Posterunek"
       },
       "assigned": "Pracownik ochrony przypisany",
-      "empty": "Brak przypisanych posterunków",
-      "emptyHint": "Proszę przypisać posterunek, aby zacząć.",
+      "empty": "Nie pracuje jeszcze na żadnym stanowisku",
+      "emptyHint": "Przypisz stanowisko: z niego wynikają godziny i dni wolne.",
       "errors": {
         "assignFailed": "Nie udało się przypisać posterunku",
         "noTenant": "Nie udało się ustalić organizacji",
@@ -1708,7 +1709,9 @@
         "selectClientSite": "Proszę wybrać zleceniodawcę i posterunek",
         "selectTimes": "Proszę wybrać godzinę rozpoczęcia i zakończenia",
         "timeOrder": "Godzina rozpoczęcia musi być wcześniejsza niż godzina zakończenia",
-        "siteHasNoStations": "Ten obiekt nie ma jeszcze posterunków. Utwórz posterunek w obiekcie, a następnie przypisz ochroniarza."
+        "siteHasNoStations": "Ten obiekt nie ma jeszcze posterunków. Utwórz posterunek w obiekcie, a następnie przypisz ochroniarza.",
+        "selectStartDate": "Wybierz, od którego dnia tu pracuje",
+        "endBeforeStart": "«Do» nie może być wcześniej niż «Od»"
       },
       "loadingPostSite": "Wczytywanie danych obiektu…",
       "noResults": "Brak wyników",
@@ -14221,7 +14224,7 @@
       "sinHorario": "Brak grafiku",
       "quincenaAnterior": "Poprzednie dwa tygodnie",
       "quincenaSiguiente": "Następne dwa tygodnie",
-      "esteVigilanteNoTienePuestos": "Ten pracownik ochrony nie ma posterunków ze skonfigurowaną rotacją.",
+      "esteVigilanteNoTienePuestos": "Grafik ochroniarza wynika ze stanowiska, na którym pracuje. Przypisz je, aby pojawił się tutaj.",
       "puestoCliente": "Posterunek · zleceniodawca",
       "cubreOtroVigilante": "Zastępuje inny pracownik ochrony"
     },
@@ -14451,7 +14454,7 @@
       "nDe5": "{{n}} z 5"
     },
     "GuardSummarypage": {
-      "esteVigilanteTodaviaNoTiene": "Ten pracownik ochrony nie ma jeszcze przypisanego posterunku. Prosimy go przypisać w zakładce „Posterunek i obiekty”.",
+      "esteVigilanteTodaviaNoTiene": "Nie pracuje jeszcze na żadnym stanowisku. Przypisz je, a grafik wyniknie z niego.",
       "aunNoHayDatosSuficientes": "Brak wystarczających danych, aby obliczyć wyniki tego pracownika ochrony.",
       "horarioEstaSemana": "Grafik w tym tygodniu",
       "esteVigilanteNoTieneUna": "Ten pracownik ochrony nie ma skonfigurowanej rotacji zmian na swoim posterunku.",

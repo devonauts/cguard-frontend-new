@@ -4025,20 +4025,21 @@
       "form": {
         "client": "Cliente",
         "selectClient": "Selecionar cliente",
-        "postSite": "Site",
-        "selectPostSite": "Selecionar site",
+        "postSite": "Sede",
+        "selectPostSite": "Selecionar sede",
         "selectStation": "Selecionar estação",
         "station": "Estação",
-        "end": "Fim",
-        "start": "Início"
+        "end": "Até (opcional)",
+        "start": "Desde",
+        "datesHint": "Os horários e as folgas vêm da estação. Deixe «Até» vazio se não houver data de saída."
       },
-      "noPostSites": "Nenhum site encontrado",
+      "noPostSites": "Este cliente não tem sedes",
       "noStations": "Nenhuma estação encontrada",
       "postSiteLoadError": "Não foi possível carregar o posto",
       "postSiteLoading": "Carregando informações do posto...",
       "assigned": "Vigilante atribuído",
-      "empty": "Nenhum posto atribuído ainda",
-      "emptyHint": "Atribua um posto para começar.",
+      "empty": "Ainda não trabalha em nenhuma estação",
+      "emptyHint": "Atribua uma estação: dela saem os horários e as folgas.",
       "errors": {
         "assignFailed": "Não foi possível atribuir o posto",
         "noTenant": "Não foi possível determinar a organização",
@@ -4046,7 +4047,9 @@
         "selectClientSite": "Selecione um cliente e um posto",
         "selectTimes": "Selecione a hora de início e de fim",
         "timeOrder": "A hora de início deve ser anterior à hora de fim",
-        "siteHasNoStations": "Esta sede ainda não tem postos. Crie um posto na sede e depois atribua o vigilante."
+        "siteHasNoStations": "Esta sede ainda não tem postos. Crie um posto na sede e depois atribua o vigilante.",
+        "selectStartDate": "Escolha a partir de que dia trabalha aqui",
+        "endBeforeStart": "«Até» não pode ser antes de «Desde»"
       },
       "loadingPostSite": "Carregando informações do posto…",
       "noResults": "Sem resultados",
@@ -13552,7 +13555,7 @@
       "sinHorario": "Sem horário",
       "quincenaAnterior": "Quinzena anterior",
       "quincenaSiguiente": "Próxima quinzena",
-      "esteVigilanteNoTienePuestos": "Este vigilante não tem postos com rotação configurada.",
+      "esteVigilanteNoTienePuestos": "O horário de um vigilante sai da estação onde trabalha. Atribua uma para que apareça aqui.",
       "puestoCliente": "Posto · Cliente",
       "cubreOtroVigilante": "Outro vigilante cobre"
     },
@@ -13770,7 +13773,7 @@
       "nDe5": "{{n}} de 5"
     },
     "GuardSummarypage": {
-      "esteVigilanteTodaviaNoTiene": "Este vigilante ainda não tem estação ou posto atribuído. Atribua pela aba \"Posto e estações\".",
+      "esteVigilanteTodaviaNoTiene": "Ainda não trabalha em nenhuma estação. Atribua uma e o horário sai dela.",
       "aunNoHayDatosSuficientes": "Ainda não há dados suficientes para calcular o desempenho deste vigilante.",
       "horarioEstaSemana": "Horário desta semana",
       "esteVigilanteNoTieneUna": "Este vigilante não tem uma rotação de turnos configurada na sua estação.",

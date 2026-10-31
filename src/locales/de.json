@@ -1660,7 +1660,7 @@
       "assignButton": "Objekt zuweisen",
       "loadError": "Die Wachkraft konnte nicht geladen werden",
       "loading": "Wird geladen…",
-      "noPostSites": "Keine Einsatzobjekte gefunden",
+      "noPostSites": "Dieser Kunde hat keine Standorte",
       "noStations": "Keine Objekte gefunden",
       "postSiteLoadError": "Das Einsatzobjekt konnte nicht geladen werden",
       "postSiteLoading": "Angaben zum Einsatzobjekt werden geladen ...",
@@ -1680,13 +1680,14 @@
       },
       "form": {
         "client": "Auftraggeber",
-        "postSite": "Objekt",
+        "postSite": "Standort",
         "selectClient": "Auftraggeber auswählen",
-        "selectPostSite": "Objekt auswählen",
+        "selectPostSite": "Standort wählen",
         "selectStation": "Objekt auswählen",
         "station": "Objekt",
-        "end": "Ende",
-        "start": "Beginn"
+        "end": "Bis (optional)",
+        "start": "Ab",
+        "datesHint": "Arbeitszeiten und freie Tage kommen vom Standort. Lass «Bis» leer, wenn es kein Enddatum gibt."
       },
       "modal": {
         "assign": "Zuweisen",
@@ -1699,8 +1700,8 @@
         "station": "Objekt"
       },
       "assigned": "Zugewiesene Wachkraft",
-      "empty": "Noch keine Einsatzobjekte zugewiesen",
-      "emptyHint": "Weisen Sie ein Einsatzobjekt zu, um zu beginnen.",
+      "empty": "Noch keinem Standort zugeteilt",
+      "emptyHint": "Teile einen Standort zu: daraus ergeben sich Arbeitszeiten und freie Tage.",
       "errors": {
         "assignFailed": "Das Einsatzobjekt konnte nicht zugewiesen werden",
         "noTenant": "Die Firma konnte nicht ermittelt werden",
@@ -1708,7 +1709,9 @@
         "selectClientSite": "Wählen Sie einen Auftraggeber und ein Einsatzobjekt aus",
         "selectTimes": "Wählen Sie Beginn und Ende aus",
         "timeOrder": "Der Beginn muss vor dem Ende liegen",
-        "siteHasNoStations": "Dieses Einsatzobjekt hat noch keine Posten. Legen Sie einen Posten an und weisen Sie dann die Sicherheitskraft zu."
+        "siteHasNoStations": "Dieses Einsatzobjekt hat noch keine Posten. Legen Sie einen Posten an und weisen Sie dann die Sicherheitskraft zu.",
+        "selectStartDate": "Wähle den ersten Arbeitstag hier",
+        "endBeforeStart": "«Bis» darf nicht vor «Ab» liegen"
       },
       "loadingPostSite": "Angaben zum Einsatzobjekt werden geladen …",
       "noResults": "Keine Ergebnisse",
@@ -14087,7 +14090,7 @@
       "sinHorario": "Kein Dienstplan",
       "quincenaAnterior": "Vorheriger Halbmonat",
       "quincenaSiguiente": "Nächster Halbmonat",
-      "esteVigilanteNoTienePuestos": "Diese Wachkraft hat keine Objekte mit eingerichteter Rotation.",
+      "esteVigilanteNoTienePuestos": "Der Dienstplan einer Wache ergibt sich aus ihrem Standort. Teile einen zu, dann erscheint er hier.",
       "puestoCliente": "Objekt · Auftraggeber",
       "cubreOtroVigilante": "Vertretung durch andere Wachkraft"
     },
@@ -14305,7 +14308,7 @@
       "nDe5": "{{n}} von 5"
     },
     "GuardSummarypage": {
-      "esteVigilanteTodaviaNoTiene": "Dieser Wachkraft ist noch kein Objekt und kein Einsatzobjekt zugewiesen. Weisen Sie sie im Reiter „Einsatzobjekt und Objekte“ zu.",
+      "esteVigilanteTodaviaNoTiene": "Noch keinem Standort zugeteilt. Teile einen zu, daraus ergibt sich der Dienstplan.",
       "aunNoHayDatosSuficientes": "Es liegen noch nicht genügend Daten vor, um die Leistung dieser Wachkraft zu berechnen.",
       "horarioEstaSemana": "Dienstplan diese Woche",
       "esteVigilanteNoTieneUna": "Für diese Wachkraft ist an ihrem Objekt keine Schichtrotation eingerichtet.",

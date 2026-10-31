@@ -3,7 +3,7 @@ import type { ScheduleSnapshot } from "../../guardDetailTypes";
 
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   CalendarDays,
   ChevronLeft,
@@ -85,6 +85,7 @@ const ymd = (d: Date) =>
 export default function GuardHorarioPage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState<ScheduleSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [start, setStart] = useState<string | undefined>(undefined);
@@ -189,6 +190,16 @@ export default function GuardHorarioPage() {
               </div>
             ) : rows.length === 0 ? (
               <EmptyState
+                action={
+                  <Button
+                    variant="brand"
+                    onClick={() =>
+                      navigate(`/guards/${id}/asignar-sitios?asignar=1`)
+                    }
+                  >
+                    {t("guards.assignSites.assignButton", "Asignar estación")}
+                  </Button>
+                }
                 description={t(
                   "ui.GuardHorarioPage.esteVigilanteNoTienePuestos",
                 )}

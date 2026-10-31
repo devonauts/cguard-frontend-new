@@ -1660,7 +1660,7 @@
       "assignButton": "Attribuer un poste",
       "loadError": "Impossible de charger l'agent",
       "loading": "Chargement...",
-      "noPostSites": "Aucun site surveillé trouvé",
+      "noPostSites": "Ce client n’a aucun site",
       "noStations": "Aucun poste trouvé",
       "postSiteLoadError": "Impossible de charger le site",
       "postSiteLoading": "Chargement des informations du site...",
@@ -1680,13 +1680,14 @@
       },
       "form": {
         "client": "Client",
-        "postSite": "Site surveillé",
+        "postSite": "Site",
         "selectClient": "Sélectionner un client",
-        "selectPostSite": "Sélectionner un site surveillé",
+        "selectPostSite": "Choisir le site",
         "selectStation": "Sélectionner un poste",
         "station": "Site",
-        "end": "Fin",
-        "start": "Début"
+        "end": "Jusqu’au (facultatif)",
+        "start": "À partir du",
+        "datesHint": "Les horaires et les jours de repos viennent de la station. Laissez «Jusqu’au» vide s’il n’y a pas de date de fin."
       },
       "modal": {
         "assign": "Attribuer",
@@ -1699,8 +1700,8 @@
         "station": "Site"
       },
       "assigned": "Agent affecté",
-      "empty": "Aucun poste attribué pour l'instant",
-      "emptyHint": "Attribuez un poste pour commencer.",
+      "empty": "Pas encore affecté à une station",
+      "emptyHint": "Affectez une station : ses horaires et ses jours de repos en découlent.",
       "errors": {
         "assignFailed": "Impossible d'attribuer le poste",
         "noTenant": "Impossible d'identifier l'entreprise",
@@ -1708,7 +1709,9 @@
         "selectClientSite": "Sélectionnez un client et un poste",
         "selectTimes": "Sélectionnez une heure de début et de fin",
         "timeOrder": "L'heure de début doit précéder l'heure de fin",
-        "siteHasNoStations": "Ce site n'a pas encore de poste. Créez un poste sur le site, puis affectez l'agent."
+        "siteHasNoStations": "Ce site n'a pas encore de poste. Créez un poste sur le site, puis affectez l'agent.",
+        "selectStartDate": "Choisissez le premier jour ici",
+        "endBeforeStart": "«Jusqu’au» ne peut pas précéder «À partir du»"
       },
       "loadingPostSite": "Chargement des informations du site…",
       "noResults": "Aucun résultat",
@@ -14087,7 +14090,7 @@
       "sinHorario": "Aucun planning",
       "quincenaAnterior": "Quinzaine précédente",
       "quincenaSiguiente": "Quinzaine suivante",
-      "esteVigilanteNoTienePuestos": "Cet agent n'a aucun poste avec une rotation configurée.",
+      "esteVigilanteNoTienePuestos": "Le planning d’un agent vient de la station où il travaille. Affectez-en une pour le voir ici.",
       "puestoCliente": "Poste · Client",
       "cubreOtroVigilante": "Un autre agent couvre"
     },
@@ -14305,7 +14308,7 @@
       "nDe5": "{{n}} sur 5"
     },
     "GuardSummarypage": {
-      "esteVigilanteTodaviaNoTiene": "Cet agent n'a encore aucun site ni poste assigné. Assignez-le depuis l'onglet « Poste et sites ».",
+      "esteVigilanteTodaviaNoTiene": "Pas encore affecté à une station. Affectez-en une et son planning en découle.",
       "aunNoHayDatosSuficientes": "Les données ne suffisent pas encore pour calculer la performance de cet agent.",
       "horarioEstaSemana": "Planning de la semaine",
       "esteVigilanteNoTieneUna": "Cet agent n'a pas de rotation de vacations configurée sur son site.",
