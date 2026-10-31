@@ -4,7 +4,7 @@ export interface ResultadoPrynt {
   visitorId: string;
 }
 declare const Prynt: {
-  load(config: { apiKey: string; endpoint?: string; timeout?: number }): Promise<{
+  load(config: { apiKey: string; endpoint?: string; timeout?: number; extendedResult?: boolean }): Promise<{
     identify(opts?: { tag?: Record<string, unknown> }): Promise<ResultadoPrynt>;
   }>;
   version: string;
