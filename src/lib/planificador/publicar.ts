@@ -264,6 +264,8 @@ export function planificarPublicacion(
                 scheduleType: tipo,
                 startTime: tipo === "12h-night" ? "19:00" : "07:00",
                 endTime: tipo === "12h-night" ? "07:00" : "19:00",
+                // The draft already decided how many guards: one per shift.
+                keepHeadcount: false,
               },
             },
           },

@@ -2003,7 +2003,8 @@
         "deletedWithShifts_few": "Usunięto. Anulowano {{count}} zmiany: zostają w Grafiku jako luki.",
         "deletedWithShifts_many": "Usunięto. Anulowano {{count}} zmian: zostają w Grafiku jako luki.",
         "deletedWithShifts_other": "Usunięto. Anulowano {{count}} zmiany: zostają w Grafiku jako luki.",
-        "bulkActionError": "Nie udało się wykonać operacji: {{msg}}"
+        "bulkActionError": "Nie udało się wykonać operacji: {{msg}}",
+        "archiveScheduled": "Odejście zaplanowane: dostęp kończy się z końcem dnia {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2014,7 +2015,8 @@
           "notePh": "Szczegóły powodu",
           "rehire": "Możliwe ponowne zatrudnienie",
           "note": "Notatka (opcjonalnie)",
-          "reason": "Powód"
+          "reason": "Powód",
+          "futureHint": "Pracuje do tego dnia. Późniejsze zmiany są usuwane teraz, a dostęp kończy się z końcem tego dnia."
         },
         "bulk": {
           "archiveDescription": "Czy na pewno zarchiwizować {{count}} pracowników ochrony? Operację można cofnąć z poziomu filtra zarchiwizowanych.",
@@ -8818,7 +8820,8 @@
       "sacaTitle": "Dodaj zmiennika",
       "title": "Przypisani pracownicy ochrony",
       "editShift": "Edytuj zmianę",
-      "eventoSub": "Pracownik ochrony na daty wydarzenia"
+      "eventoSub": "Pracownik ochrony na daty wydarzenia",
+      "stationFull": "Wszystkie miejsca na tym posterunku są już obsadzone. Jeśli klient potrzebuje kolejnej osoby, dodaj miejsce w grafiku posterunku i przydziel ponownie."
     },
     "incidents": {
       "col": {
@@ -11772,7 +11775,8 @@
       "eventoConEstaciones_one": "{{count}} stanowisko. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
       "eventoConEstaciones_few": "{{count}} stanowiska. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
       "eventoConEstaciones_many": "{{count}} stanowisk. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
-      "eventoConEstaciones_other": "{{count}} stanowiska. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia."
+      "eventoConEstaciones_other": "{{count}} stanowiska. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
+      "horarioNoGuardado": "Posterunek zapisano, ale jego grafiku nie. Sprawdź go na stronie posterunku."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Dobre oświetlenie — prosimy unikać cieni i światła pod słońce",

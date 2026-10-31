@@ -117,7 +117,9 @@ const dateRange = (start: any, end: any): string | null => {
 };
 
 type Assignment = {
-  id: string; // REAL shift id — used for unassign (DELETE /shift?ids=<id>)
+  id: string; // REAL shift id — only for one-off shifts with no assignment behind them
+  /** The guardAssignment the shift belongs to (null = a one-off shift). */
+  assignmentId?: string | null;
   client: string | null;
   postSite: string | null;
   station: string | null;
@@ -135,7 +137,11 @@ type StationGroup = {
   station: string | null;
   earliest: any; // earliest shift startTime
   latest: any; // latest shift endTime
-  shiftIds: string[]; // every real shift id in the group (used for unassign)
+  shiftIds: string[]; // every real shift id in the group
+  /** The assignments behind the group: «Quitar» closes these. */
+  assignmentIds: string[];
+  /** One-off shifts with no assignment: the only rows still deleted one by one. */
+  looseShiftIds: string[];
 };
 
 export default function GuardAsignarSitiosPage() {
@@ -160,6 +166,7 @@ export default function GuardAsignarSitiosPage() {
         startTime: r.startTime ?? null,
         endTime: r.endTime ?? null,
         businessInfoId: r.businessInfoId ?? null,
+        assignmentId: r.guardAssignmentId ? String(r.guardAssignmentId) : null,
       }));
 
       // Enrichment: resolve any missing station/post/client names from the
@@ -228,6 +235,7 @@ export default function GuardAsignarSitiosPage() {
   // Delete context: the exact shift ids to remove + a human label + count.
   const [deleteCtx, setDeleteCtx] = useState<{
     ids: string[];
+    assignmentIds: string[];
     label: string;
     count: number;
   } | null>(null);
@@ -279,10 +287,16 @@ export default function GuardAsignarSitiosPage() {
           earliest: m.startTime,
           latest: m.endTime,
           shiftIds: [],
+          assignmentIds: [],
+          looseShiftIds: [],
         };
         map.set(key, g);
       }
       if (m.id) g.shiftIds.push(m.id);
+      if (m.assignmentId) {
+        if (!g.assignmentIds.includes(m.assignmentId))
+          g.assignmentIds.push(m.assignmentId);
+      } else if (m.id) g.looseShiftIds.push(m.id);
       // Backfill labels from any row in the group that has them.
       g.client = g.client ?? m.client;
       g.postSite = g.postSite ?? m.postSite;
@@ -467,8 +481,11 @@ export default function GuardAsignarSitiosPage() {
     const tenantId = localStorage.getItem("tenantId");
     // Only allow delete when REAL shift ids exist.
     const idsToDelete = (deleteCtx?.ids ?? []).filter((v) => v && v.trim());
+    const assignmentIds = (deleteCtx?.assignmentIds ?? []).filter(
+      (v) => v && v.trim(),
+    );
 
-    if (!tenantId || idsToDelete.length === 0) {
+    if (!tenantId || (idsToDelete.length === 0 && assignmentIds.length === 0)) {
       toast.error(
         t("guards.assignSites.errors.noneToDelete", {
           defaultValue: "No hay asignaciones válidas para eliminar",
@@ -479,11 +496,24 @@ export default function GuardAsignarSitiosPage() {
       return;
     }
     try {
-      const queryStr = idsToDelete
-        .map((v) => `ids=${encodeURIComponent(v)}`)
-        .join("&");
+      /* «Quitar» closes the ASSIGNMENT, the same as «Quitar» in Horario or the
+         station: its future shifts go, the past stays, and the guard is free
+         for another post. Deleting raw shift rows (what this did) left the
+         assignment active with no shifts — «Fuera de servicio» in the app and
+         blocked for any other assignment. Only one-off shifts with no
+         assignment behind them are still deleted directly. */
+      for (const aid of assignmentIds) {
+        await api.delete(
+          `/tenant/${tenantId}/guard-assignment/${encodeURIComponent(aid)}`,
+        );
+      }
+      if (idsToDelete.length) {
+        const queryStr = idsToDelete
+          .map((v) => `ids=${encodeURIComponent(v)}`)
+          .join("&");
 
-      await api.delete(`/tenant/${tenantId}/shift?${queryStr}`);
+        await api.delete(`/tenant/${tenantId}/shift?${queryStr}`);
+      }
       toast.success(
         t("guards.assignSites.actions.deleted", {
           defaultValue: "Asignación eliminada",
@@ -514,7 +544,9 @@ export default function GuardAsignarSitiosPage() {
   // Build a delete context for a set of station groups (used by both the
   // per-station trash button and the bulk "Quitar" action).
   const requestDelete = (grps: StationGroup[]) => {
-    const valid = grps.filter((g) => g.shiftIds.length > 0);
+    const valid = grps.filter(
+      (g) => g.assignmentIds.length > 0 || g.looseShiftIds.length > 0,
+    );
 
     if (valid.length === 0) {
       toast.error(
@@ -525,7 +557,11 @@ export default function GuardAsignarSitiosPage() {
 
       return;
     }
-    const ids = valid.flatMap((g) => g.shiftIds);
+    const ids = valid.flatMap((g) => g.looseShiftIds);
+    const assignmentIds = Array.from(
+      new Set(valid.flatMap((g) => g.assignmentIds)),
+    );
+    const count = valid.reduce((n, g) => n + g.shiftIds.length, 0);
     const label =
       valid.length === 1
         ? valid[0].station ||
@@ -536,7 +572,7 @@ export default function GuardAsignarSitiosPage() {
             count: valid.length,
           });
 
-    setDeleteCtx({ ids, label: String(label), count: ids.length });
+    setDeleteCtx({ ids, assignmentIds, label: String(label), count });
   };
 
   // Load clients when opening assign modal
