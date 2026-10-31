@@ -13378,7 +13378,7 @@
       "creaElPrimeroPEj": "Crea el primero (p. ej. «Aguila2»): defines su turno y su rotación, y los supervisores asignados la siguen.",
       "quitarSupervisor": "Quitar supervisor",
       "asignarSupervisor": "Asignar supervisor…",
-      "ningunoUsaEditarParaAsignar": "Ninguno. Usa «Editar» para asignar puestos.",
+      "ningunoUsaEditarParaAsignar": "Ninguna todavía. Usa «Editar» para elegir las estaciones que cubre.",
       "nuevoPuestoDeSupervisor": "Nuevo puesto de supervisor",
       "configuraElTurnoYLa": "Configura el turno y la rotación (día/noche). Los supervisores asignados siguen esta rotación.",
       "nombrePEjAguila2": "Nombre (p. ej. Aguila2) *",

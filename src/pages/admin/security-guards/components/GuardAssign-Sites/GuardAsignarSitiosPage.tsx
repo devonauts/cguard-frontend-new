@@ -450,6 +450,9 @@ export default function GuardAsignarSitiosPage() {
               success: t("guards.assignSites.assigned", {
                 defaultValue: "Vigilante asignado",
               }),
+              // The catch below shows the server message; without this the
+              // api client showed it a second time.
+              silentError: true,
             },
           } as any,
         );

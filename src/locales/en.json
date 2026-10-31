@@ -13378,7 +13378,7 @@
       "creaElPrimeroPEj": "Create the first one (e.g. \"Aguila2\"): you set its shift and rotation, and assigned supervisors follow it.",
       "quitarSupervisor": "Remove supervisor",
       "asignarSupervisor": "Assign a supervisor…",
-      "ningunoUsaEditarParaAsignar": "None. Use \"Edit\" to assign posts.",
+      "ningunoUsaEditarParaAsignar": "None yet. Use «Edit» to choose the stations it covers.",
       "nuevoPuestoDeSupervisor": "New supervisor post",
       "configuraElTurnoYLa": "Set the shift and the rotation (day/night). Assigned supervisors follow this rotation.",
       "nombrePEjAguila2": "Name (e.g. Aguila2) *",

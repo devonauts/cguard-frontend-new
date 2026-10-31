@@ -13913,7 +13913,7 @@
       "creaElPrimeroPEj": "Legen Sie das erste an (z. B. «Aguila2»): Sie bestimmen Schicht und Rotation, und die zugewiesenen Supervisoren folgen ihr.",
       "quitarSupervisor": "Supervisor entfernen",
       "asignarSupervisor": "Supervisor zuweisen…",
-      "ningunoUsaEditarParaAsignar": "Keine. Nutzen Sie «Bearbeiten», um Positionen zuzuweisen.",
+      "ningunoUsaEditarParaAsignar": "Noch keine. Wähle mit «Bearbeiten» die abgedeckten Standorte.",
       "nuevoPuestoDeSupervisor": "Neues Supervisor-Objekt",
       "configuraElTurnoYLa": "Legen Sie Schicht und Rotation fest (Tag/Nacht). Die zugewiesenen Supervisoren folgen dieser Rotation.",
       "nombrePEjAguila2": "Name (z. B. Aguila2) *",
