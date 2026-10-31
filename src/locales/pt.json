@@ -3110,7 +3110,9 @@
       "module_dobletes_label": "Dobras de turno e reserva",
       "previewNextShift": "Próximo turno",
       "previewOffDuty": "● Fora de serviço",
-      "previewTomorrowShift": "Amanhã · 08:00 – 20:00"
+      "previewTomorrowShift": "Amanhã · 08:00 – 20:00",
+      "module_shiftSwap_label": "Troca de turno",
+      "module_shiftSwap_desc": "O vigilante propõe a um colega trocar ou ceder um turno; o colega aceita e o escritório aprova."
     },
     "appearance": {
       "layoutTitle": "Aparência",

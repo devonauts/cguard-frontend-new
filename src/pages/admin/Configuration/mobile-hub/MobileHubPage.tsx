@@ -46,6 +46,7 @@ import {
   Menu,
   Navigation,
   CalendarPlus,
+  ArrowLeftRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -110,7 +111,8 @@ export type ModuleKey =
   | "map"
   | "radioNativa"
   | "payslips"
-  | "dobletes";
+  | "dobletes"
+  | "shiftSwap";
 
 const MODULE_META: {
   key: ModuleKey;
@@ -172,6 +174,12 @@ const MODULE_META: {
     desc: "Ofertas de turnos extra, unirse a la reserva, marcar disponibilidad y las campañas de la empresa. Apagado de fábrica.",
     icon: <CalendarPlus size={16} />,
   },
+  {
+    key: "shiftSwap",
+    label: "Intercambio de turno",
+    desc: "El vigilante propone a un compañero cambiar o ceder un turno; el compañero acepta y la oficina aprueba.",
+    icon: <ArrowLeftRight size={16} />,
+  },
 ];
 
 const DEFAULTS: MobileAppSettings = {
@@ -191,6 +199,7 @@ const DEFAULTS: MobileAppSettings = {
     radioNativa: false,
     payslips: false,
     dobletes: false,
+    shiftSwap: true,
   },
 };
 

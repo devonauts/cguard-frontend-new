@@ -7983,7 +7983,9 @@
       "module_dobletes_label": "Doppi turni e riserva",
       "previewNextShift": "Prossimo turno",
       "previewOffDuty": "● Fuori servizio",
-      "previewTomorrowShift": "Domani · 08:00 – 20:00"
+      "previewTomorrowShift": "Domani · 08:00 – 20:00",
+      "module_shiftSwap_label": "Cambio turno",
+      "module_shiftSwap_desc": "La guardia propone a un collega di scambiare o cedere un turno; il collega accetta e l'ufficio approva."
     },
     "appearance": {
       "layoutTitle": "Aspetto",

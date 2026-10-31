@@ -7481,7 +7481,9 @@
       "module_dobletes_label": "Double shifts & reserve",
       "previewNextShift": "Next shift",
       "previewOffDuty": "● Off duty",
-      "previewTomorrowShift": "Tomorrow · 08:00 – 20:00"
+      "previewTomorrowShift": "Tomorrow · 08:00 – 20:00",
+      "module_shiftSwap_label": "Shift swap",
+      "module_shiftSwap_desc": "The guard asks a colleague to trade or take a shift; the colleague accepts and the office approves."
     },
     "appearance": {
       "layoutTitle": "Appearance",

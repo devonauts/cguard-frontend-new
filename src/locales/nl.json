@@ -7983,7 +7983,9 @@
       "module_dobletes_label": "Dubbele diensten en reserve",
       "previewNextShift": "Volgende dienst",
       "previewOffDuty": "● Buiten dienst",
-      "previewTomorrowShift": "Morgen · 08:00 – 20:00"
+      "previewTomorrowShift": "Morgen · 08:00 – 20:00",
+      "module_shiftSwap_label": "Dienstruil",
+      "module_shiftSwap_desc": "De bewaker stelt een collega voor een dienst te ruilen of af te staan; de collega accepteert en het kantoor keurt goed."
     },
     "appearance": {
       "layoutTitle": "Weergave",

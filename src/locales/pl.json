@@ -7993,7 +7993,9 @@
       "module_dobletes_label": "Podwójne zmiany i rezerwa",
       "previewNextShift": "Następna zmiana",
       "previewOffDuty": "● Poza służbą",
-      "previewTomorrowShift": "Jutro · 08:00 – 20:00"
+      "previewTomorrowShift": "Jutro · 08:00 – 20:00",
+      "module_shiftSwap_label": "Zamiana zmiany",
+      "module_shiftSwap_desc": "Ochroniarz proponuje koledze zamianę lub oddanie zmiany; kolega akceptuje, a biuro zatwierdza."
     },
     "appearance": {
       "layoutTitle": "Wygląd",

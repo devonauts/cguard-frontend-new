@@ -7983,7 +7983,9 @@
       "module_dobletes_label": "Doubles quarts et réserve",
       "previewNextShift": "Prochain quart",
       "previewOffDuty": "● Hors service",
-      "previewTomorrowShift": "Demain · 08:00 – 20:00"
+      "previewTomorrowShift": "Demain · 08:00 – 20:00",
+      "module_shiftSwap_label": "Échange de service",
+      "module_shiftSwap_desc": "L'agent propose à un collègue d'échanger ou de céder un service ; le collègue accepte et le bureau approuve."
     },
     "appearance": {
       "layoutTitle": "Apparence",

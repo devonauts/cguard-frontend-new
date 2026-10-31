@@ -7983,7 +7983,9 @@
       "module_dobletes_label": "Doppelschichten und Reserve",
       "previewNextShift": "Nächste Schicht",
       "previewOffDuty": "● Außer Dienst",
-      "previewTomorrowShift": "Morgen · 08:00 – 20:00"
+      "previewTomorrowShift": "Morgen · 08:00 – 20:00",
+      "module_shiftSwap_label": "Schichttausch",
+      "module_shiftSwap_desc": "Die Wachperson schlägt einer Kollegin oder einem Kollegen vor, eine Schicht zu tauschen oder abzugeben; die andere Person nimmt an und das Büro genehmigt."
     },
     "appearance": {
       "layoutTitle": "Erscheinungsbild",

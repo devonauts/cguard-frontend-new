@@ -7481,7 +7481,9 @@
       "module_dobletes_label": "Dobletes y reserva",
       "previewNextShift": "Próximo turno",
       "previewOffDuty": "● Fuera de servicio",
-      "previewTomorrowShift": "Mañana · 08:00 – 20:00"
+      "previewTomorrowShift": "Mañana · 08:00 – 20:00",
+      "module_shiftSwap_label": "Intercambio de turno",
+      "module_shiftSwap_desc": "El vigilante propone a un compañero cambiar o ceder un turno; el compañero acepta y la oficina aprueba."
     },
     "appearance": {
       "layoutTitle": "Apariencia",
