@@ -96,6 +96,8 @@ import {
 } from "@/lib/guardName";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import AppLayout from "@/layouts/app-layout";
+import { Link } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
 import {
   StatusBadge,
@@ -6518,6 +6520,14 @@ export default function Schedule() {
         ) : stations.length === 0 ? (
           <div className="py-10">
             <EmptyState
+              action={
+                <Button asChild variant="brand">
+                  <Link to="/stations">
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t("ui.Schedule.irAEstaciones", "Ir a Estaciones")}
+                  </Link>
+                </Button>
+              }
               description={t("ui.Schedule.creaUnPuestoDesdeLa")}
               icon={<MapPin />}
               title={t(

@@ -70,7 +70,7 @@
   },
   "adminOfficeUsers": {
     "searchPlaceholder": "Search user",
-    "title": "Administrative Office Users",
+    "title": "Office users",
     "actions": {
       "exportExcel": "Export as Excel",
       "exportPdf": "Export as PDF",
@@ -2892,7 +2892,8 @@
       },
       "myTickets": "My tickets",
       "myTicketsSub": "Support replies"
-    }
+    },
+    "timeClock": "Clock in/out"
   },
   "incidents": {
     "actionsLabel": "Actions",
@@ -4404,13 +4405,6 @@
       "ticket_closed": "Ticket closed",
       "view_details": "View details"
     },
-    "equipo": {
-      "guardias": "Security Guards",
-      "supervisores": "Supervisors",
-      "label": "Security Team",
-      "usuarios": "Admin Office Users",
-      "caras-registradas": "Registered faces"
-    },
     "facturador": {
       "elementos": "Items",
       "estimaciones": "Estimates",
@@ -5162,16 +5156,15 @@
       }
     },
     "nomina": {
+      "label": "Payroll",
+      "roles": "Pay slips",
+      "planillas": "Payroll runs",
+      "ajustes": "Payroll adjustments",
+      "perfiles": "Pay profiles",
+      "gusto": "Gusto",
       "ejecutar": "Generate Payroll",
       "horas-extras": "Overtime Multiplier",
-      "label": "Payroll",
-      "pasadas": "Past Payroll",
-      "nomina-dashboard": "Dashboard",
-      "nomina-time-clock": "Time clock",
-      "nomina-records": "Attendance records",
-      "nomina-exceptions": "Exceptions",
-      "nomina-approvals": "Approvals",
-      "nomina-settings": "Attendance settings"
+      "pasadas": "Past Payroll"
     },
     "parking": {
       "areas": "Parking Area",
@@ -5744,19 +5737,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Attendance",
-      "estado": "Shift Status",
-      "horario": "Schedule",
-      "planificador": "Planner",
-      "intercambio": "Shift Exchange",
-      "label": "Scheduler",
-      "plantillas": "Shift Templates",
-      "tiempo-libre": "Time Off",
-      "turnos-abiertos": "Open Shifts",
-      "cobertura": "Live coverage",
-      "dobletes": "Double shifts"
-    },
     "rastreador": {
       "historial": "Tracking History",
       "label": "GPS Tracker",
@@ -5972,16 +5952,21 @@
       }
     },
     "mfa": "Two-factor authentication",
-    "estaciones": "Stations",
+    "estaciones": {
+      "label": "Stations",
+      "estaciones-tablero": "All stations",
+      "pases-de-turno": "Shift handovers",
+      "puestos-supervision": "Supervision posts"
+    },
     "group": {
       "resumen": "Overview",
       "operacion": "Operations",
-      "personal": "Staff",
       "clientes": "Clients",
       "analisis": "Analytics",
       "sistema": "System",
       "otros": "Other",
-      "facturacion": "Billing"
+      "facturacion": "Billing",
+      "servicio": "Stations & staff"
     },
     "commandCenter": "Command center",
     "searchPlaceholder": "Search the menu…",
@@ -6020,7 +6005,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Dispatch",
-      "radio-dispositivos": "IP radios"
+      "radio-dispositivos": "IP radios",
+      "radio-canales": "Channels"
     },
     "tareas": {
       "label": "Tasks",
@@ -6038,7 +6024,6 @@
     "goToDashboard": "Go to the dashboard",
     "unreadMessages": "{{count}} unread messages",
     "emergencias": "Emergency Center",
-    "pases-de-turno": "Shift handovers",
     "modulos-adicionales": "Add-on modules",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Faces awaiting approval: {{count}}",
@@ -6049,6 +6034,33 @@
       "facturacion-antiguedad": "Aging",
       "facturacion-ajustes": "Billing settings",
       "facturacion-cotizaciones": "Quotes"
+    },
+    "personal": {
+      "label": "Staff",
+      "guardias": "Guards",
+      "supervisores": "Supervisors",
+      "usuarios": "Office users",
+      "caras-registradas": "Registered faces",
+      "ausencias": "Absences & leave"
+    },
+    "turnos": {
+      "label": "Shifts",
+      "horario": "Schedule",
+      "planificador": "Planner",
+      "sin-cubrir": "Uncovered",
+      "dobletes": "Double shifts",
+      "intercambio": "Shift Exchange"
+    },
+    "asistencia": {
+      "label": "Attendance",
+      "en-vivo": "Live",
+      "resumen-hoy": "Today's summary",
+      "marcaciones": "Punches",
+      "novedades": "Attendance issues",
+      "aprobaciones": "Approvals",
+      "horas-periodo": "Period hours",
+      "configuracion": "Settings",
+      "coberturaEnVivo": "Live coverage"
     }
   },
   "siteTour": {
@@ -10464,12 +10476,12 @@
     "NominaExceptions": {
       "describeQueSeHizoO": "Describe what was done, or why this exception is being closed…",
       "notaDeResolucionQuedaEn": "Resolution note (kept in the history)",
-      "desviacionesDeAsistenciaRegistroE": "Attendance exceptions — operational log and history",
+      "desviacionesDeAsistenciaRegistroE": "Late arrivals, no-shows and missed clock-outs: to resolve and as history",
       "noHayDesviacionesDeAsistencia": "There are no attendance exceptions for the selected filters.",
       "por": "By",
       "cerrarElAtraso": "Close the late arrival",
-      "sinExcepciones": "No exceptions",
-      "sinExcepcionesAbiertas": "No open exceptions",
+      "sinExcepciones": "No attendance issues",
+      "sinExcepcionesAbiertas": "No open attendance issues",
       "abiertas": "Open",
       "alcanzaAExcepciones": "covers {{count}} exceptions",
       "alcanzaAExcepcionesDeTipo": "covers {{count}} exceptions of type {{tipo}}",
@@ -10828,7 +10840,7 @@
       "turnosSinVigilante": "Shifts with no guard",
       "estaSemana": "This week",
       "buscarPuestoOFecha": "Search by post or date",
-      "noHayTurnosAbiertos": "There are no open shifts",
+      "noHayTurnosAbiertos": "No uncovered shifts",
       "todosLosTurnosTienenVigilante": "Every shift has a guard assigned, or there are no shifts in the selected period.",
       "sinPuesto": "No post",
       "cargandoVigilantes": "Loading guards…",
@@ -11632,7 +11644,7 @@
       "reconfigurarElPuestoTipoDe": "Reconfigure the post (shift type and rotation)",
       "siguienteAvPag": "Next (Page Down)",
       "terminaAlDiaSiguiente": "· ends the next day",
-      "todaviaNoHayPuestosConfigurados": "No posts set up yet",
+      "todaviaNoHayPuestosConfigurados": "No stations yet",
       "todosLosVigilantesEstanAsignados": "Every guard is assigned.",
       "todosLosVigilantesYaEstan": "Every guard is already assigned",
       "tusPuestosAunNoTienen": "Your posts don't have hours yet.",
@@ -11645,7 +11657,7 @@
       "posicionEliminada": "Position deleted",
       "seleccionaCeldasDeUnPuesto": "Select cells from a post that has a guard assigned",
       "puestoSinVigilanteDobleClic": "Post with no guard — double-click to assign",
-      "creaUnPuestoDesdeLa": "Create a post from the Posts section and the schedule will show up here.",
+      "creaUnPuestoDesdeLa": "Create your first station in Stations (client → site → station) and its schedule will show up here.",
       "estePuestoNoTienePosiciones": "This post has no positions set up",
       "arrastraParaMoverClicPara": "Drag to move · Click to remove",
       "asignarVigilanteSacafranco": "Assign a relief guard",
@@ -11945,7 +11957,7 @@
       "noCuentaComoCobertura": "does not count as coverage",
       "noDivideLaCobertura": " (does not divide the coverage)",
       "noHayEstaciones": "No stations.",
-      "noHayPuestosTodavia": "No posts yet.",
+      "noHayPuestosTodavia": "No stations yet.",
       "noHaySacafrancos": "No relief guards. Use “Add” to create one and choose which station it goes to.",
       "noSePudoActualizarElTurno": "The shift could not be updated",
       "noSePudoCrearNingunTurno": "No shift could be created.",
@@ -12106,7 +12118,8 @@
       "yaTieneTurnoEseDiaSufijo": " · already has a shift that day",
       "yseRepite": "· and repeats",
       "eliminarTurnosYNovedades": "Delete the selected shifts and reports (Del)",
-      "menuCorrerCiclo": "Shift {{nombre}}'s cycle…"
+      "menuCorrerCiclo": "Shift {{nombre}}'s cycle…",
+      "irAEstaciones": "Go to Stations"
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",
@@ -12702,7 +12715,7 @@
       "hasta": "To*",
       "motivo": "Reason*",
       "describeElMotivo": "Describe the reason…",
-      "solicitudesDeTiempoLibre": "Time-off requests",
+      "solicitudesDeTiempoLibre": "Absence requests",
       "aprobadas": "Approved",
       "aprobar": "Approve",
       "ceroDeCero": "0 of 0",
@@ -14997,7 +15010,7 @@
     "NominaDashboard": {
       "aprobaciones": "Approvals",
       "errorAlCargarElPanel": "Error loading the dashboard",
-      "excepciones": "Exceptions",
+      "excepciones": "Attendance issues",
       "lasExcepcionesSeDetectan": "Exceptions (late, no-show, missed clock-out) are detected automatically every few minutes and appear in",
       "resumenDeAsistenciaDeHoy": "Today's attendance summary",
       "y": "and"

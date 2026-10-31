@@ -3931,13 +3931,6 @@
       "ticket_closed": "Zgłoszenie zamknięte",
       "view_details": "Zobacz szczegóły"
     },
-    "equipo": {
-      "guardias": "Pracownicy ochrony",
-      "supervisores": "Nadzorcy",
-      "label": "Zespół ochrony",
-      "usuarios": "Użytkownicy biura",
-      "caras-registradas": "Zarejestrowane twarze"
-    },
     "facturador": {
       "elementos": "Usługi",
       "estimaciones": "Wyceny",
@@ -4689,16 +4682,15 @@
       }
     },
     "nomina": {
+      "label": "Płace",
+      "roles": "Paski płacowe",
+      "planillas": "Listy płac",
+      "ajustes": "Korekty płac",
+      "perfiles": "Profile płacowe",
+      "gusto": "Gusto",
       "ejecutar": "Generuj listę płac",
       "horas-extras": "Mnożnik nadgodzin",
-      "label": "Płace",
-      "pasadas": "Archiwum płac",
-      "nomina-dashboard": "Panel",
-      "nomina-time-clock": "Rejestrator czasu pracy",
-      "nomina-records": "Wpisy obecności",
-      "nomina-exceptions": "Wyjątki",
-      "nomina-approvals": "Zatwierdzenia",
-      "nomina-settings": "Ustawienia obecności"
+      "pasadas": "Archiwum płac"
     },
     "parking": {
       "areas": "Strefa parkingowa",
@@ -5271,19 +5263,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Obecność",
-      "estado": "Status zmiany",
-      "horario": "Grafik",
-      "planificador": "Planer",
-      "intercambio": "Zamiana zmiany",
-      "label": "Planowanie",
-      "plantillas": "Szablony zmian",
-      "tiempo-libre": "Urlop",
-      "turnos-abiertos": "Wolne zmiany",
-      "cobertura": "Obsada na żywo",
-      "dobletes": "Podwójne zmiany"
-    },
     "rastreador": {
       "historial": "Historia śledzenia",
       "label": "Śledzenie GPS",
@@ -5498,16 +5477,21 @@
         "title": "Abonament"
       }
     },
-    "estaciones": "Posterunki",
+    "estaciones": {
+      "label": "Posterunki",
+      "estaciones-tablero": "Wszystkie posterunki",
+      "pases-de-turno": "Zdania służby",
+      "puestos-supervision": "Posterunki nadzoru"
+    },
     "group": {
       "resumen": "Przegląd",
       "operacion": "Operacje",
-      "personal": "Personel",
       "clientes": "Zleceniodawcy",
       "analisis": "Analiza",
       "sistema": "System",
       "otros": "Inne",
-      "facturacion": "Fakturowanie"
+      "facturacion": "Fakturowanie",
+      "servicio": "Posterunki i personel"
     },
     "commandCenter": "Centrala",
     "searchPlaceholder": "Szukaj w menu…",
@@ -5546,7 +5530,8 @@
     "radio": {
       "label": "Radio",
       "radio-despacho": "Dyspozytornia",
-      "radio-dispositivos": "Radia IP"
+      "radio-dispositivos": "Radia IP",
+      "radio-canales": "Kanały"
     },
     "tareas": {
       "label": "Zadania",
@@ -5564,7 +5549,6 @@
     "goToDashboard": "Przejdź do panelu",
     "unreadMessages": "{{count}} nieprzeczytanych",
     "emergencias": "Centrum alarmowe",
-    "pases-de-turno": "Zdania służby",
     "modulos-adicionales": "Moduły dodatkowe",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Twarze do zatwierdzenia: {{count}}",
@@ -5575,6 +5559,33 @@
       "facturacion-antiguedad": "Wiekowanie należności",
       "facturacion-ajustes": "Ustawienia fakturowania",
       "facturacion-cotizaciones": "Oferty"
+    },
+    "personal": {
+      "label": "Personel",
+      "guardias": "Ochroniarze",
+      "supervisores": "Nadzorcy",
+      "usuarios": "Użytkownicy biurowi",
+      "caras-registradas": "Zarejestrowane twarze",
+      "ausencias": "Nieobecności i urlopy"
+    },
+    "turnos": {
+      "label": "Zmiany",
+      "horario": "Grafik",
+      "planificador": "Planer",
+      "sin-cubrir": "Nieobsadzone",
+      "dobletes": "Podwójne zmiany",
+      "intercambio": "Zamiana zmiany"
+    },
+    "asistencia": {
+      "label": "Obecność",
+      "en-vivo": "Na żywo",
+      "resumen-hoy": "Podsumowanie dnia",
+      "marcaciones": "Odbicia",
+      "novedades": "Nieprawidłowości",
+      "aprobaciones": "Zatwierdzenia",
+      "horas-periodo": "Godziny okresu",
+      "configuracion": "Ustawienia",
+      "coberturaEnVivo": "Obsada na żywo"
     }
   },
   "siteTour": {
@@ -6786,7 +6797,8 @@
       },
       "myTickets": "Moje zgłoszenia",
       "myTicketsSub": "Odpowiedzi wsparcia"
-    }
+    },
+    "timeClock": "Odbij wejście/wyjście"
   },
   "kit": {
     "pagination": {
@@ -12735,7 +12747,8 @@
       "yaTieneTurnoEseDiaSufijo": " · ma już zmianę tego dnia",
       "yseRepite": "· i się powtarza",
       "eliminarTurnosYNovedades": "Usuń zaznaczone zmiany i zdarzenia (Del)",
-      "menuCorrerCiclo": "Przesuń cykl: {{nombre}}…"
+      "menuCorrerCiclo": "Przesuń cykl: {{nombre}}…",
+      "irAEstaciones": "Przejdź do posterunków"
     },
     "ScheduleTimeline": {
       "duracion": "Czas trwania:",

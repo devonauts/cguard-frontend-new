@@ -269,7 +269,7 @@ export default function OpenShifts() {
         <PageHeader
           icon={<CalendarClock />}
           subtitle={t("ui.OpenShifts.turnosSinVigilanteAsignadoAsignalos")}
-          title={t("sidebar.programador.turnos-abiertos", "Turnos abiertos")}
+          title={t("sidebar.turnos.sin-cubrir", "Sin cubrir")}
         />
 
         {/* KPIs */}
@@ -438,7 +438,7 @@ export default function OpenShifts() {
         <Section
           contentClassName="overflow-x-auto -mx-1"
           icon={<CalendarClock />}
-          title={t("sidebar.programador.turnos-abiertos", "Turnos abiertos")}
+          title={t("sidebar.turnos.sin-cubrir", "Sin cubrir")}
         >
           {/* `DataTable` y no el primitivo `<Table>`: se pliega sola en fichas
               en el teléfono. La casilla de la primera columna no tenía

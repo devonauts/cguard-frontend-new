@@ -422,7 +422,7 @@ export default function NominaApprovals() {
           }
           icon={<CheckCircle2 />}
           subtitle={t("ui.NominaApprovals.entradasTardiasSalidasAnticipadasY")}
-          title={t("sidebar.nomina.nomina-approvals", "Aprobaciones")}
+          title={t("sidebar.asistencia.aprobaciones", "Aprobaciones")}
         />
 
         {loading ? (

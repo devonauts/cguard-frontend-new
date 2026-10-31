@@ -364,7 +364,7 @@ export default function NominaExceptions() {
         <PageHeader
           icon={<AlertTriangle />}
           subtitle={t("ui.NominaExceptions.desviacionesDeAsistenciaRegistroE")}
-          title={t("ui.NominaDashboard.excepciones", "Excepciones")}
+          title={t("sidebar.asistencia.novedades", "Novedades")}
         />
 
         <Toolbar>
@@ -472,7 +472,7 @@ export default function NominaExceptions() {
 
               return opt
                 ? t(opt.labelKey, opt.label)
-                : t("ui.NominaDashboard.excepciones", "Excepciones");
+                : t("sidebar.asistencia.novedades", "Novedades");
             })()
           }
         >

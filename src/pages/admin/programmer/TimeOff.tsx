@@ -406,7 +406,7 @@ export default function TimeOff() {
       <PageContainer width="wide">
         <PageHeader
           icon={<CalendarOff />}
-          title={t("sidebar.programador.tiempo-libre", "Tiempo libre")}
+          title={t("sidebar.personal.ausencias", "Ausencias y permisos")}
           subtitle={t("ui.TimeOff.solicitudesDeVacacionesEnfermedadY")}
         />
 

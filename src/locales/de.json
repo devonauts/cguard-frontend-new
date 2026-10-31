@@ -3929,13 +3929,6 @@
       "ticket_closed": "Ticket geschlossen",
       "view_details": "Details ansehen"
     },
-    "equipo": {
-      "guardias": "Sicherheitskräfte",
-      "supervisores": "Einsatzleiter",
-      "label": "Sicherheitsteam",
-      "usuarios": "Büropersonal",
-      "caras-registradas": "Registrierte Gesichter"
-    },
     "facturador": {
       "elementos": "Leistungen",
       "estimaciones": "Angebote",
@@ -4687,16 +4680,15 @@
       }
     },
     "nomina": {
+      "label": "Lohnabrechnung",
+      "roles": "Lohnabrechnungen",
+      "planillas": "Lohnläufe",
+      "ajustes": "Lohnanpassungen",
+      "perfiles": "Lohnprofile",
+      "gusto": "Gusto",
       "ejecutar": "Lohnlauf starten",
       "horas-extras": "Überstundenfaktor",
-      "label": "Lohnabrechnung",
-      "pasadas": "Frühere Lohnläufe",
-      "nomina-dashboard": "Übersicht",
-      "nomina-time-clock": "Zeiterfassung",
-      "nomina-records": "Anwesenheitsdaten",
-      "nomina-exceptions": "Ausnahmen",
-      "nomina-approvals": "Freigaben",
-      "nomina-settings": "Zeiterfassung einrichten"
+      "pasadas": "Frühere Lohnläufe"
     },
     "parking": {
       "areas": "Parkbereich",
@@ -5269,19 +5261,6 @@
         }
       }
     },
-    "programador": {
-      "asistencia": "Anwesenheit",
-      "estado": "Schichtstatus",
-      "horario": "Dienstplan",
-      "planificador": "Planer",
-      "intercambio": "Schichttausch",
-      "label": "Dienstplanung",
-      "plantillas": "Schichtvorlagen",
-      "tiempo-libre": "Abwesenheit",
-      "turnos-abiertos": "Offene Schichten",
-      "cobertura": "Besetzung live",
-      "dobletes": "Doppelschichten"
-    },
     "rastreador": {
       "historial": "Ortungsverlauf",
       "label": "GPS-Ortung",
@@ -5496,16 +5475,21 @@
         "title": "Abonnement"
       }
     },
-    "estaciones": "Objekte",
+    "estaciones": {
+      "label": "Objekte",
+      "estaciones-tablero": "Alle Objekte",
+      "pases-de-turno": "Schichtübergaben",
+      "puestos-supervision": "Aufsichtsposten"
+    },
     "group": {
       "resumen": "Überblick",
       "operacion": "Einsatz",
-      "personal": "Personal",
       "clientes": "Auftraggeber",
       "analisis": "Analyse",
       "sistema": "System",
       "otros": "Sonstiges",
-      "facturacion": "Abrechnung"
+      "facturacion": "Abrechnung",
+      "servicio": "Objekte und Personal"
     },
     "commandCenter": "Kommandozentrale",
     "searchPlaceholder": "Im Menü suchen…",
@@ -5544,7 +5528,8 @@
     "radio": {
       "label": "Funk",
       "radio-despacho": "Leitstelle",
-      "radio-dispositivos": "IP-Funkgeräte"
+      "radio-dispositivos": "IP-Funkgeräte",
+      "radio-canales": "Kanäle"
     },
     "tareas": {
       "label": "Aufgaben",
@@ -5562,7 +5547,6 @@
     "goToDashboard": "Zur Übersicht",
     "unreadMessages": "{{count}} ungelesene Nachrichten",
     "emergencias": "Notfallzentrale",
-    "pases-de-turno": "Schichtübergaben",
     "modulos-adicionales": "Zusatzmodule",
     "vigia-pro": "{{agente}} Pro",
     "rostrosPorAprobar": "Gesichter zur Freigabe: {{count}}",
@@ -5573,6 +5557,33 @@
       "facturacion-antiguedad": "Fälligkeitsanalyse",
       "facturacion-ajustes": "Abrechnungseinstellungen",
       "facturacion-cotizaciones": "Angebote"
+    },
+    "personal": {
+      "label": "Personal",
+      "guardias": "Wachleute",
+      "supervisores": "Einsatzleiter",
+      "usuarios": "Büronutzer",
+      "caras-registradas": "Registrierte Gesichter",
+      "ausencias": "Abwesenheiten und Urlaub"
+    },
+    "turnos": {
+      "label": "Schichten",
+      "horario": "Dienstplan",
+      "planificador": "Planer",
+      "sin-cubrir": "Unbesetzt",
+      "dobletes": "Doppelschichten",
+      "intercambio": "Schichttausch"
+    },
+    "asistencia": {
+      "label": "Anwesenheit",
+      "en-vivo": "Live",
+      "resumen-hoy": "Heute im Überblick",
+      "marcaciones": "Stempelungen",
+      "novedades": "Abweichungen",
+      "aprobaciones": "Freigaben",
+      "horas-periodo": "Stunden des Zeitraums",
+      "configuracion": "Einstellungen",
+      "coberturaEnVivo": "Besetzung live"
     }
   },
   "siteTour": {
@@ -6782,7 +6793,8 @@
       },
       "myTickets": "Meine Tickets",
       "myTicketsSub": "Antworten des Supports"
-    }
+    },
+    "timeClock": "Ein-/Ausstempeln"
   },
   "kit": {
     "pagination": {
@@ -12641,7 +12653,8 @@
       "yaTieneTurnoEseDiaSufijo": " · hat an diesem Tag bereits eine Schicht",
       "yseRepite": "· und wiederholt sich",
       "eliminarTurnosYNovedades": "Ausgewählte Schichten und Vorkommnisse löschen (Entf)",
-      "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…"
+      "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…",
+      "irAEstaciones": "Zu den Objekten"
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
