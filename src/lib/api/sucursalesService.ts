@@ -200,6 +200,8 @@ export interface MisSucursales {
   }>;
   /** El espacio guardado en la cuenta: 'global', el id de una sucursal, o null. */
   espacio?: string | null;
+  /** Limitada a sucursales pero sin ninguna asignada: no ve nada. */
+  sinAcceso?: boolean;
 }
 
 export interface AccesoDePersona {

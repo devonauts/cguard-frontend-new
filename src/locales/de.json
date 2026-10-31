@@ -20425,7 +20425,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Das macht der Hauptsitz",
-      "soloPrincipalDesc": "Als Niederlassungsleitung führen Sie Ihre Niederlassung; Zahlungen, Module und das Konto verwaltet eine Administration des Hauptsitzes."
+      "soloPrincipalDesc": "Als Niederlassungsleitung führen Sie Ihre Niederlassung; Zahlungen, Module und das Konto verwaltet eine Administration des Hauptsitzes.",
+      "reglaDeEmpresaTitulo": "Diese Einstellung gilt für das ganze Unternehmen",
+      "reglaDeEmpresaDesc": "Als Niederlassungsleitung können Sie sie sehen, aber sie gilt für alle Niederlassungen: Eine Administration des Hauptsitzes ändert sie."
     },
     "cliente": {
       "campo": "Niederlassung des Kunden",
@@ -20460,6 +20462,10 @@
     "etiqueta": {
       "empresa": "Unternehmen",
       "columna": "Niederlassung"
+    },
+    "sinAcceso": {
+      "titulo": "Ihnen ist keine Niederlassung zugewiesen",
+      "desc": "Ihr Zugriff ist auf Niederlassungen beschränkt und Sie haben keine, daher sehen Sie keine Daten. Bitten Sie eine Administration des Hauptsitzes, Ihnen Ihre zuzuweisen."
     }
   },
   "soporte": {

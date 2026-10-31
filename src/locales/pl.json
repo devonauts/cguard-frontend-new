@@ -20719,7 +20719,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Tym zajmuje się centrala",
-      "soloPrincipalDesc": "Jako kierownik oddziału zarządzasz swoim oddziałem, ale płatności, moduły i konto prowadzi administrator centrali."
+      "soloPrincipalDesc": "Jako kierownik oddziału zarządzasz swoim oddziałem, ale płatności, moduły i konto prowadzi administrator centrali.",
+      "reglaDeEmpresaTitulo": "To ustawienie dotyczy całej firmy",
+      "reglaDeEmpresaDesc": "Jako kierownik oddziału możesz je zobaczyć, ale obowiązuje we wszystkich oddziałach: zmienia je administrator centrali."
     },
     "cliente": {
       "campo": "Oddział klienta",
@@ -20754,6 +20756,10 @@
     "etiqueta": {
       "empresa": "Firma",
       "columna": "Oddział"
+    },
+    "sinAcceso": {
+      "titulo": "Nie masz przypisanego oddziału",
+      "desc": "Twój dostęp jest ograniczony do oddziałów, a nie masz żadnego, dlatego nie widzisz danych. Poproś administratora centrali o przypisanie Twojego."
     }
   },
   "soporte": {

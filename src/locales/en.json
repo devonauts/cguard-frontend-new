@@ -20425,7 +20425,9 @@
     },
     "gerente": {
       "soloPrincipalTitulo": "Headquarters handles this",
-      "soloPrincipalDesc": "As a branch manager you run your branch, but payments, modules and the account are managed by a headquarters administrator."
+      "soloPrincipalDesc": "As a branch manager you run your branch, but payments, modules and the account are managed by a headquarters administrator.",
+      "reglaDeEmpresaTitulo": "This setting is company-wide",
+      "reglaDeEmpresaDesc": "As a branch manager you can see it, but it applies to every branch: an administrator of the headquarters changes it."
     },
     "cliente": {
       "campo": "Client’s branch",
@@ -20460,6 +20462,10 @@
     "etiqueta": {
       "empresa": "Company",
       "columna": "Branch"
+    },
+    "sinAcceso": {
+      "titulo": "You have no branch assigned",
+      "desc": "Your access is limited to branches and you have none, so you see no data. Ask an administrator of the headquarters to assign yours."
     }
   },
   "soporte": {
