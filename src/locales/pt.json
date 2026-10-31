@@ -3509,7 +3509,9 @@
       "emptyDescription": "Adicione os feriados do seu país e os dias próprios da sua empresa.",
       "kindNationalBadge": "Por lei",
       "kindCompanyBadge": "Da empresa",
-      "deleteAriaLabel": "Apagar {{name}}"
+      "deleteAriaLabel": "Apagar {{name}}",
+      "recargoUnico": "Adicional",
+      "recargoUnicoAyuda": "É o mesmo para todos os feriados e é definido nas regras de pagamento."
     },
     "userRoles": {
       "actionBtn": "Ação",
@@ -12716,7 +12718,8 @@
       "rechazar": "Recusar",
       "todos": "Todos",
       "vacaciones": "Férias",
-      "eligeAlVigilante": "Escolha a quem corresponde a ausência."
+      "eligeAlVigilante": "Escolha a quem corresponde a ausência.",
+      "conGoceDeSueldo": "Remunerada (se desmarcada, é descontada)"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -15081,7 +15084,20 @@
       "tarjetasAprobadasConExcepcion": "Cartões aprovados (com exceção registrada)",
       "tarjetasDeNomina": "Cartões de folha",
       "tarjetasReabiertas": "Cartões reabertos",
-      "ultimoCierre": "Último fechamento: {{fecha}}"
+      "ultimoCierre": "Último fechamento: {{fecha}}",
+      "faltaElMotivo": "Escreva o motivo para reabrir o período.",
+      "irAUnaFecha": "Ir ao período de uma data",
+      "motivo": "Motivo",
+      "noSePudoReabrirElPeriodo": "Não foi possível reabrir o período",
+      "periodoAnterior": "Período anterior",
+      "periodoCerradoInsignia": "Fechado",
+      "periodoReabierto": "Período reaberto. Agora está fechado até {{hasta}}.",
+      "periodoReabiertoSinCierre": "Período reaberto.",
+      "periodoSiguiente": "Próximo período",
+      "rangoDelPeriodo": "{{desde}} – {{hasta}}",
+      "reabrirPeriodo": "Reabrir período",
+      "reabrirPeriodoMensaje": "Batidas, turnos e marcações a partir desse dia poderão ser alterados de novo. Cartões já aprovados ou exportados não são alterados. Escreva o motivo: fica no registro.",
+      "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenças",
@@ -16977,7 +16993,10 @@
         "programado": "Programado"
       },
       "sinDesgloseExportada": "Este cartão já foi exportado e fica como está: foi gerado antes de mostrar o intervalo por dia, então esse detalhamento não está disponível para ele. O total é o que foi exportado.",
-      "sinDesgloseAprobada": "Este cartão já está aprovado e fica como está: foi gerado antes de mostrar o intervalo por dia, então esse detalhamento não está disponível para ele. O total é o que foi aprovado."
+      "sinDesgloseAprobada": "Este cartão já está aprovado e fica como está: foi gerado antes de mostrar o intervalo por dia, então esse detalhamento não está disponível para ele. O total é o que foi aprovado.",
+      "extraSemanal": "{{horas}} extras por passar da jornada semanal",
+      "minutosRecortados": "{{min}} min sem pagamento (regras de tolerância)",
+      "sinGoce": "Sem remuneração: é descontado"
     },
     "RolesDePago": {
       "perfiles": {
@@ -18295,6 +18314,68 @@
       "nMinutos": "{{count}} min",
       "hasta": "até {{hora}}",
       "notaAlmuerzo": "O almoço não é pago: no relógio, a pessoa toca «Sair para almoçar» e «Voltar»."
+    },
+    "ReglasDePago": {
+      "anclaAyuda": "Todos os períodos de 14 dias são contados a partir daqui. Vazio = o primeiro dia da semana escolhido a partir de 1 de janeiro de 2024.",
+      "aplicar": "Aplicar",
+      "aplicarMensaje": "Substituem-se a jornada, as horas extras, os adicionais e quais ausências são pagas. Depois você pode mudar qualquer valor. Cartões já aprovados ou exportados não são recalculados; os rascunhos mudam ao gerar o período de novo.",
+      "aplicarReglasDe": "Aplicar regras de {{pais}}",
+      "aplicarTitulo": "Aplicar as regras de {{pais}}?",
+      "ausenciasAyuda": "Uma ausência não paga continua justificada (não é falta), mas é descontada. Uma licença «pessoal» é paga ou não conforme a própria licença.",
+      "ausenciasQueSePagan": "Ausências pagas",
+      "cadaCuantoSePaga": "Frequência de pagamento",
+      "cat": {
+        "calamidad": "Emergência familiar",
+        "capacitacion": "Capacitação",
+        "enfermedad": "Doença",
+        "otro": "Outro motivo",
+        "permisoConSueldo": "Licença remunerada",
+        "permisoSinSueldo": "Licença não remunerada",
+        "vacaciones": "Férias"
+      },
+      "catorcenal": "Catorzenal (a cada 14 dias)",
+      "diaDeInicio": "O turno inteiro, pelo dia em que começa",
+      "diariaAyuda": "O que passar disto num dia é hora extra. 0 = sem limite diário (EUA).",
+      "domingoYFeriadoCuentan": "Domingo e feriado contam",
+      "feriadoAyuda": "É o único adicional de feriado: Feriados e o custo da escala usam este mesmo.",
+      "fuentes": "Fontes: {{fuentes}}",
+      "graciaAyuda": "Ficar até esses minutos após o fim do turno (esperando a rendição) não é pago; mais que isso é pago inteiro. 0 = cada minuto é pago.",
+      "graciaSalida": "Tolerância na saída (minutos)",
+      "horasDelDia": "Só as horas que caem nesse dia",
+      "jornadaSemanal": "Jornada semanal normal (h)",
+      "pagarEntradaTemprana": "Pagar o tempo antes da hora de entrada",
+      "paisDeLaEmpresa": "País da empresa: {{pais}}",
+      "periodoAyuda": "Os períodos têm limites fixos: um mesmo dia é pago em um só período, não importa quem calcule nem quando.",
+      "periodoDePago": "Período de pagamento",
+      "porConfirmar": "Para confirmar com seu assessor:",
+      "primerDiaDeUnPeriodo": "Primeiro dia de um período",
+      "quincenal": "Quinzenal (1–15 e 16–fim do mês)",
+      "reglasDePago": "Regras de pagamento",
+      "reglasVigentes": "Regras em vigor",
+      "resumen": {
+        "ausencias": "Ausências pagas: {{lista}}",
+        "desdeLaHora": "a partir da {{n}}.ª",
+        "extraConRecargo": "Horas extras: {{tramos}}",
+        "extraSimple": "Horas extras: pela tarifa normal",
+        "gracia": "Tolerância na saída: {{min}} min · Entrada antecipada: {{temprana}}",
+        "horasALaSemana": "{{h}} h por semana (a partir de {{dia}})",
+        "horasAlDia": "{{h}} h por dia",
+        "jornada": "Jornada normal: {{dia}} · {{semana}}",
+        "ninguna": "nenhuma",
+        "noche": "Noite ({{desde}}:00–{{hasta}}:00): +{{pct}} %",
+        "porDiaDeInicio": "Domingo e feriado: o turno inteiro conta pelo dia em que começa",
+        "porHorasDelDia": "Domingo e feriado: só as horas que caem nesse dia",
+        "recargos": "Domingo +{{domingo}} % · Folga trabalhada +{{descanso}} % · Feriado +{{feriado}} % · {{modo}}",
+        "sinLimiteDiario": "sem limite diário",
+        "sinLimiteSemanal": "sem limite semanal",
+        "tempranaNo": "não é paga",
+        "tempranaSi": "é paga"
+      },
+      "semanaLaboralEmpieza": "A semana de trabalho começa na",
+      "semanalAyuda": "O que passar disto na semana é hora extra (EUA: 40). 0 = sem regra semanal.",
+      "sinConfigurar": "Ninguém configurou estas regras ainda: a jornada segue a do país e nenhum adicional é aplicado. Revise e salve.",
+      "sinPais": "Sem país",
+      "sinPreset": "Não temos regras salvas para este país: declare aqui as do seu acordo."
     }
   },
   "map": {

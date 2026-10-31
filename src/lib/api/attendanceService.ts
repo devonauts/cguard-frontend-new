@@ -482,31 +482,63 @@ const attendanceService = {
   },
 
   /**
-   * El periodo de nómina vigente del tenant.
-   *
-   * La Hoja de horas mandaba 14 días fijos, así que el selector «semanal /
-   * quincenal / mensual» de Configuración no cambiaba una sola cifra: se
-   * guardaba y no lo leía nadie.
+   * The payroll period of the tenant that contains a day (today by default):
+   * the WHOLE period, both ends inclusive, with its neighbours. Periods are
+   * fixed by the calendar (1–15/16–end, the month, or 14 days from a fixed
+   * anchor), so a day is paid in exactly one of them.
    */
-  async currentPeriod(): Promise<{
+  async currentPeriod(date?: string): Promise<{
     periodType: string;
     label: string;
     from: string;
     to: string;
+    previous?: { desde: string; hasta: string };
+    next?: { desde: string; hasta: string };
+    closedThrough?: string | null;
+    timezone?: string;
   }> {
     const t = getTenantId();
+    const q = date ? `?date=${encodeURIComponent(date)}` : "";
 
-    return unwrap(await api.get(`/tenant/${t}/attendance/current-period`));
+    return unwrap(await api.get(`/tenant/${t}/attendance/current-period${q}`));
   },
 
-  async closePeriod(cutoff: string) {
+  /** Closes the payroll up to a local day (YYYY-MM-DD), inclusive. Only forward. */
+  async closePeriod(hasta: string) {
     const t = getTenantId();
 
     return unwrap(
       await api.post(`/tenant/${t}/attendance/close-period`, {
-        data: { cutoff },
+        data: { hasta },
       }),
     );
+  },
+
+  /** Reopens the payroll from a day on (management only, with a reason). */
+  async reopenPeriod(desde: string, motivo: string) {
+    const t = getTenantId();
+
+    return unwrap(
+      await api.post(`/tenant/${t}/attendance/reopen-period`, {
+        data: { desde, motivo },
+      }),
+    );
+  },
+
+  /** Pay-rule presets per country, and the company's country. */
+  async payRulePresets(): Promise<{
+    pais: string | null;
+    presets: Record<string, {
+      pais: string | null;
+      periodo: string;
+      politica: Record<string, unknown>;
+      fuentes: string[];
+      confirmar: string[];
+    }>;
+  }> {
+    const t = getTenantId();
+
+    return unwrap(await api.get(`/tenant/${t}/attendance/pay-rules/presets`));
   },
 
   /** Current guard's clock status + assigned stations (worker-app endpoint). */
