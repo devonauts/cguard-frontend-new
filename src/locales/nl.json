@@ -17748,7 +17748,11 @@
         "tramoFijo": "Vast bedrag",
         "anadirTramo": "Schijf toevoegen",
         "dobladaSiempreAparte": "Bij deze betaalwijze staat de dubbele dienst altijd op een eigen regel van de loonstrook („Premie dubbele dienst”).",
-        "dobladaComoSeCuenta": "Er is een dubbele dienst als iemand op een dag 1,5 keer of meer zijn gewone dienst (volgens het rooster) werkt. 24 u bij diensten van 12 is een dubbele; 36 u is een driedubbele en telt als twee extra diensten. Een ingeroosterde dienst van 24 u is geen dubbele."
+        "dobladaComoSeCuenta": "Er is een dubbele dienst als iemand op een dag 1,5 keer of meer zijn gewone dienst (volgens het rooster) werkt. 24 u bij diensten van 12 is een dubbele; 36 u is een driedubbele en telt als twee extra diensten. Een ingeroosterde dienst van 24 u is geen dubbele.",
+        "horasTarjetaTitulo": "Uren van de tijdkaart die de loonstrook betaalt",
+        "horasTarjetaAyuda": "De tijdkaart berekent ze altijd; de loonstrook betaalt ze alleen als u dit aanzet. Goedgekeurde loonstroken veranderen niet.",
+        "pagarDescanso": "Op de rustdag gewerkte uren betalen (post „Uren op rustdag”)",
+        "pagarExtraNocturna": "Nachtoveruren op een eigen regel betalen (vereist een post „Nachtoveruren”)"
       },
       "atras": "Terug",
       "continuar": "Doorgaan",
@@ -17820,7 +17824,8 @@
         "holiday": "Uren op feestdagen",
         "rest_day": "Uren op rustdag",
         "sunday": "Uren op zondag",
-        "double_shift": "Uren dubbele dienst"
+        "double_shift": "Uren dubbele dienst",
+        "night_overtime": "Nachtoveruren"
       },
       "frecuencia": {
         "weekly": "Wekelijks",
@@ -18949,7 +18954,11 @@
         "extraNocturna": "Nachtelijk overwerk ({{desde}}:00–{{hasta}}:00): +{{pct}} % (of de eigen schijf, als die hoger is)",
         "extraNocturnaComoExtra": "Nachtelijk overwerk: zoals elk overuur",
         "descanso": "Rustdag: de vrije dag in het rooster van elke beveiliger · supervisors en kantoor: {{dia}}",
-        "descansoSinSemanal": "Rustdag: de vrije dag in het rooster van elke beveiliger (supervisors en kantoor: geen)"
+        "descansoSinSemanal": "Rustdag: de vrije dag in het rooster van elke beveiliger (supervisors en kantoor: geen)",
+        "noSePaga": "niet betaald",
+        "recargosV2": "Zondag {{domingo}} · Gewerkte rustdag {{descanso}} · Feestdag {{feriado}}",
+        "combinaciones": "Als ze samenvallen — feestdag en rustdag: {{fd}} · feestdag en zondag: {{fo}} · zondag en rustdag: {{od}} · nacht op die dagen: {{noche}} · overuur op die dagen: {{extra}}",
+        "segunElDia": "afhankelijk van de dag"
       },
       "semanaLaboralEmpieza": "De werkweek begint op",
       "semanalAyuda": "Wat daarboven in de week valt, zijn overuren (VS: 40). 0 = geen weekregel.",
@@ -18964,7 +18973,46 @@
       "extraNocturnaAyuda": "Overuren in dit tijdvak worden met deze toeslag betaald als die hoger is dan hun schijf (Colombia: 19–6 tegen 75 %; Ecuador: 0–6 tegen 100 %).",
       "extraNocturnaDesde": "Nachtelijk overwerk: vanaf (uur)",
       "extraNocturnaHasta": "Nachtelijk overwerk: tot (uur)",
-      "extraNocturnaPct": "Toeslag nachtelijk overwerk (%)"
+      "extraNocturnaPct": "Toeslag nachtelijk overwerk (%)",
+      "comb": {
+        "comoLaGeneral": "Zoals de algemene regel ({{regla}})",
+        "titulo": "Als meerdere toeslagen op hetzelfde uur vallen",
+        "ayuda": "„Optellen”: beide worden betaald (feestdag 100% + rustdag 100% = 200%). „Hoogste wint”: alleen de hoogste (= 100%). Kies per geval.",
+        "general": "Algemene regel tussen zondag, rustdag en feestdag",
+        "feriadoDescanso": "Feestdag die op zijn rustdag valt",
+        "feriadoDomingo": "Feestdag die op zondag valt",
+        "domingoDescanso": "Zondag die zijn rustdag is",
+        "nocheDomingo": "Nacht en zondag",
+        "nocheFeriado": "Nacht en feestdag",
+        "nocheDescanso": "Nacht en rustdag",
+        "extraDia": "Overuur op zondag, feestdag of rustdag"
+      },
+      "ej": {
+        "feriadoDescanso": "Een uur overdag op een feestdag die ook zijn rustdag is",
+        "domingoFeriado": "Een uur overdag op een zondag die een feestdag is",
+        "domingoDescanso": "Een uur overdag op een zondag die zijn rustdag is",
+        "nocheDomingo": "Een nachtuur op zondag",
+        "nocheFeriadoDescanso": "Een nachtuur op een feestdag die zijn rustdag is",
+        "extraFeriado": "Een overuur (eerste trede) op een feestdag",
+        "titulo": "Zo betalen deze regels",
+        "fila": "{{que}}: +{{pct}}%",
+        "turno": "Dagdienst van 12 u op een feestdag die ook zijn rustdag is, tegen {{tarifa}} per uur: {{ord}} u tegen +{{po}}% en {{extra}} overuren tegen +{{pe}}% = {{total}}"
+      },
+      "queUsa": "Wat uw bedrijf gebruikt",
+      "usarSemanal": "Overuren per week tellen",
+      "usarGracia": "Korte wachttijd na de dienst niet betalen (marge)",
+      "tempranaAyuda": "Niet aangevinkt begint de betaling op het geplande tijdstip, ook als iemand eerder inklokt.",
+      "recargos": "Toeslagen",
+      "recargosAyuda": "Zet een toeslag uit om hem niet meer te betalen zonder het percentage te verliezen.",
+      "rec": {
+        "noche": "Nachttoeslag",
+        "domingo": "Zondagstoeslag",
+        "descanso": "Toeslag voor werken op de rustdag",
+        "feriado": "Feestdagtoeslag",
+        "extra": "Overurentoeslag",
+        "extraAyuda": "Uit: overuren worden tegen het normale tarief betaald."
+      },
+      "ausenciasAyudaV2": "Aangevinkt: betaald. Niet aangevinkt: blijft verantwoord (geen verzuim), maar wordt ingehouden. Een „persoonlijk” verlof wordt betaald of niet volgens het verlof zelf."
     },
     "puede": {
       "sinPermiso": "Je rol heeft hier geen toestemming voor. Vraag het een beheerder.",

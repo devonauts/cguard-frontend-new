@@ -17748,7 +17748,11 @@
         "tramoFijo": "Festbetrag",
         "anadirTramo": "Stufe hinzufügen",
         "dobladaSiempreAparte": "Bei dieser Vergütungsart steht die Doppelschicht immer in einer eigenen Zeile der Abrechnung („Doppelschicht-Prämie“).",
-        "dobladaComoSeCuenta": "Eine Doppelschicht liegt vor, wenn jemand an einem Tag das 1,5-Fache oder mehr seiner üblichen Schicht (laut Dienstplan) arbeitet. 24 Std. bei 12-Std.-Schichten sind eine Doppelschicht; 36 Std. sind eine Dreifachschicht und zählen als zwei zusätzliche Schichten. Eine geplante 24-Std.-Schicht ist keine Doppelschicht."
+        "dobladaComoSeCuenta": "Eine Doppelschicht liegt vor, wenn jemand an einem Tag das 1,5-Fache oder mehr seiner üblichen Schicht (laut Dienstplan) arbeitet. 24 Std. bei 12-Std.-Schichten sind eine Doppelschicht; 36 Std. sind eine Dreifachschicht und zählen als zwei zusätzliche Schichten. Eine geplante 24-Std.-Schicht ist keine Doppelschicht.",
+        "horasTarjetaTitulo": "Stunden der Zeitkarte, die die Abrechnung bezahlt",
+        "horasTarjetaAyuda": "Die Zeitkarte berechnet sie immer; die Abrechnung bezahlt sie nur, wenn Sie das einschalten. Genehmigte Abrechnungen ändern sich nicht.",
+        "pagarDescanso": "Am Ruhetag gearbeitete Stunden bezahlen (Posten „Stunden am Ruhetag“)",
+        "pagarExtraNocturna": "Nacht-Überstunden in eigener Zeile bezahlen (braucht einen Posten „Nacht-Überstunden“)"
       },
       "atras": "Zurück",
       "continuar": "Weiter",
@@ -17820,7 +17824,8 @@
         "holiday": "Feiertagsstunden",
         "rest_day": "Stunden am Ruhetag",
         "sunday": "Sonntagsstunden",
-        "double_shift": "Doppelschichtstunden"
+        "double_shift": "Doppelschichtstunden",
+        "night_overtime": "Nacht-Überstunden"
       },
       "frecuencia": {
         "weekly": "Wöchentlich",
@@ -18949,7 +18954,11 @@
         "extraNocturna": "Nacht-Überstunde ({{desde}}:00–{{hasta}}:00): +{{pct}} % (oder ihre Stufe, falls höher)",
         "extraNocturnaComoExtra": "Nacht-Überstunde: wie jede Überstunde",
         "descanso": "Ruhetag: der freie Tag im Dienstplan jeder Wachkraft · Supervisoren und Büro: {{dia}}",
-        "descansoSinSemanal": "Ruhetag: der freie Tag im Dienstplan jeder Wachkraft (Supervisoren und Büro: keiner)"
+        "descansoSinSemanal": "Ruhetag: der freie Tag im Dienstplan jeder Wachkraft (Supervisoren und Büro: keiner)",
+        "noSePaga": "wird nicht bezahlt",
+        "recargosV2": "Sonntag {{domingo}} · Gearbeiteter Ruhetag {{descanso}} · Feiertag {{feriado}}",
+        "combinaciones": "Wenn sie zusammenfallen — Feiertag und Ruhetag: {{fd}} · Feiertag und Sonntag: {{fo}} · Sonntag und Ruhetag: {{od}} · Nacht an diesen Tagen: {{noche}} · Überstunde an diesen Tagen: {{extra}}",
+        "segunElDia": "je nach Tag"
       },
       "semanaLaboralEmpieza": "Die Arbeitswoche beginnt am",
       "semanalAyuda": "Was darüber hinaus in der Woche geht, sind Überstunden (USA: 40). 0 = keine Wochenregel.",
@@ -18964,7 +18973,46 @@
       "extraNocturnaAyuda": "Überstunden in diesem Zeitfenster werden mit diesem Zuschlag bezahlt, wenn er höher ist als ihre Stufe (Kolumbien: 19–6 mit 75 %; Ecuador: 0–6 mit 100 %).",
       "extraNocturnaDesde": "Nacht-Überstunde: ab (Uhr)",
       "extraNocturnaHasta": "Nacht-Überstunde: bis (Uhr)",
-      "extraNocturnaPct": "Zuschlag für Nacht-Überstunden (%)"
+      "extraNocturnaPct": "Zuschlag für Nacht-Überstunden (%)",
+      "comb": {
+        "comoLaGeneral": "Wie die allgemeine Regel ({{regla}})",
+        "titulo": "Wenn mehrere Zuschläge auf dieselbe Stunde fallen",
+        "ayuda": "„Addieren“: beide werden bezahlt (Feiertag 100 % + Ruhetag 100 % = 200 %). „Der höhere gewinnt“: nur der höchste (= 100 %). Für jeden Fall wählen.",
+        "general": "Allgemeine Regel zwischen Sonntag, Ruhetag und Feiertag",
+        "feriadoDescanso": "Feiertag, der auf seinen Ruhetag fällt",
+        "feriadoDomingo": "Feiertag, der auf einen Sonntag fällt",
+        "domingoDescanso": "Sonntag, der sein Ruhetag ist",
+        "nocheDomingo": "Nacht und Sonntag",
+        "nocheFeriado": "Nacht und Feiertag",
+        "nocheDescanso": "Nacht und Ruhetag",
+        "extraDia": "Überstunde an Sonntag, Feiertag oder Ruhetag"
+      },
+      "ej": {
+        "feriadoDescanso": "Eine Tagesstunde an einem Feiertag, der auch sein Ruhetag ist",
+        "domingoFeriado": "Eine Tagesstunde an einem Sonntag, der Feiertag ist",
+        "domingoDescanso": "Eine Tagesstunde an einem Sonntag, der sein Ruhetag ist",
+        "nocheDomingo": "Eine Nachtstunde an einem Sonntag",
+        "nocheFeriadoDescanso": "Eine Nachtstunde an einem Feiertag, der sein Ruhetag ist",
+        "extraFeriado": "Eine Überstunde (erste Stufe) an einem Feiertag",
+        "titulo": "So wird mit diesen Regeln bezahlt",
+        "fila": "{{que}}: +{{pct}} %",
+        "turno": "12-Stunden-Tagesschicht an einem Feiertag, der auch sein Ruhetag ist, zu {{tarifa}} pro Stunde: {{ord}} h zu +{{po}} % und {{extra}} Überstunden zu +{{pe}} % = {{total}}"
+      },
+      "queUsa": "Was Ihr Unternehmen verwendet",
+      "usarSemanal": "Überstunden pro Woche zählen",
+      "usarGracia": "Kurze Wartezeit nach Schichtende nicht bezahlen (Kulanz)",
+      "tempranaAyuda": "Nicht angehakt beginnt die Bezahlung zur geplanten Zeit, auch wenn früher gestempelt wird.",
+      "recargos": "Zuschläge",
+      "recargosAyuda": "Schalten Sie einen Zuschlag aus, um ihn nicht mehr zu zahlen, ohne den Prozentsatz zu verlieren.",
+      "rec": {
+        "noche": "Nachtzuschlag",
+        "domingo": "Sonntagszuschlag",
+        "descanso": "Zuschlag für Arbeit am Ruhetag",
+        "feriado": "Feiertagszuschlag",
+        "extra": "Überstundenzuschlag",
+        "extraAyuda": "Aus: Überstunden werden zum normalen Satz bezahlt."
+      },
+      "ausenciasAyudaV2": "Angehakt: bezahlt. Nicht angehakt: bleibt entschuldigt (kein Fehlen), wird aber abgezogen. Ein „persönlicher“ Urlaub wird bezahlt oder nicht, wie der Antrag selbst sagt."
     },
     "puede": {
       "sinPermiso": "Deine Rolle hat dafür keine Berechtigung. Frag einen Administrator.",

@@ -17213,7 +17213,11 @@
         "tramoFijo": "Parcela fixa",
         "anadirTramo": "Adicionar faixa",
         "dobladaSiempreAparte": "Com esta forma de pagamento a dobra sempre sai em sua própria linha do holerite («Prêmio por dobra»).",
-        "dobladaComoSeCuenta": "Há dobra quando alguém trabalha num dia 1,5 vez ou mais o seu turno habitual (o que a escala define). 24 h sobre turnos de 12 é uma dobra; 36 h é uma tripla e conta como dois turnos extras. Um turno de 24 h programado não é dobra."
+        "dobladaComoSeCuenta": "Há dobra quando alguém trabalha num dia 1,5 vez ou mais o seu turno habitual (o que a escala define). 24 h sobre turnos de 12 é uma dobra; 36 h é uma tripla e conta como dois turnos extras. Um turno de 24 h programado não é dobra.",
+        "horasTarjetaTitulo": "Horas do cartão que o recibo paga",
+        "horasTarjetaAyuda": "O cartão calcula-as sempre; o recibo só as paga se ativar. Recibos já aprovados não mudam.",
+        "pagarDescanso": "Pagar as horas trabalhadas no dia de descanso (conceito «Horas em dia de descanso»)",
+        "pagarExtraNocturna": "Pagar a hora extra noturna na sua própria linha (precisa de um conceito «Horas extra noturnas»)"
       },
       "atras": "Voltar",
       "continuar": "Continuar",
@@ -17285,7 +17289,8 @@
         "holiday": "Horas em feriado",
         "rest_day": "Horas em dia de descanso",
         "sunday": "Horas em domingo",
-        "double_shift": "Horas de dobra de turno"
+        "double_shift": "Horas de dobra de turno",
+        "night_overtime": "Horas extra noturnas"
       },
       "frecuencia": {
         "weekly": "Semanal",
@@ -18414,7 +18419,11 @@
         "extraNocturna": "Hora extra noturna ({{desde}}:00–{{hasta}}:00): +{{pct}} % (ou a sua faixa, se for maior)",
         "extraNocturnaComoExtra": "Hora extra noturna: como qualquer hora extra",
         "descanso": "Dia de descanso: a folga da escala de cada vigilante · supervisores e escritório: {{dia}}",
-        "descansoSinSemanal": "Dia de descanso: a folga da escala de cada vigilante (supervisores e escritório: nenhum)"
+        "descansoSinSemanal": "Dia de descanso: a folga da escala de cada vigilante (supervisores e escritório: nenhum)",
+        "noSePaga": "não é pago",
+        "recargosV2": "Domingo {{domingo}} · Descanso trabalhado {{descanso}} · Feriado {{feriado}}",
+        "combinaciones": "Quando coincidem — feriado e descanso: {{fd}} · feriado e domingo: {{fo}} · domingo e descanso: {{od}} · noite nesses dias: {{noche}} · hora extra nesses dias: {{extra}}",
+        "segunElDia": "conforme o dia"
       },
       "semanaLaboralEmpieza": "A semana de trabalho começa na",
       "semanalAyuda": "O que passar disto na semana é hora extra (EUA: 40). 0 = sem regra semanal.",
@@ -18429,7 +18438,46 @@
       "extraNocturnaAyuda": "As horas extras nesta faixa são pagas com este adicional quando for maior que a sua faixa (Colômbia: 19–6 a 75 %; Equador: 0–6 a 100 %).",
       "extraNocturnaDesde": "Extra noturna: das (hora)",
       "extraNocturnaHasta": "Extra noturna: até (hora)",
-      "extraNocturnaPct": "Adicional da extra noturna (%)"
+      "extraNocturnaPct": "Adicional da extra noturna (%)",
+      "comb": {
+        "comoLaGeneral": "Como a regra geral ({{regla}})",
+        "titulo": "Quando vários adicionais caem na mesma hora",
+        "ayuda": "«Somam-se»: pagam-se os dois (feriado 100 % + descanso 100 % = 200 %). «Ganha o maior»: só o mais alto (= 100 %). Escolha para cada caso.",
+        "general": "Regra geral entre domingo, descanso e feriado",
+        "feriadoDescanso": "Feriado que cai no seu dia de descanso",
+        "feriadoDomingo": "Feriado que cai num domingo",
+        "domingoDescanso": "Domingo que é o seu dia de descanso",
+        "nocheDomingo": "Noite e domingo",
+        "nocheFeriado": "Noite e feriado",
+        "nocheDescanso": "Noite e dia de descanso",
+        "extraDia": "Hora extra em domingo, feriado ou descanso"
+      },
+      "ej": {
+        "feriadoDescanso": "Uma hora diurna num feriado que também é o seu dia de descanso",
+        "domingoFeriado": "Uma hora diurna num domingo que é feriado",
+        "domingoDescanso": "Uma hora diurna num domingo que é o seu dia de descanso",
+        "nocheDomingo": "Uma hora noturna num domingo",
+        "nocheFeriadoDescanso": "Uma hora noturna num feriado que é o seu dia de descanso",
+        "extraFeriado": "Uma hora extra (primeiro escalão) num feriado",
+        "titulo": "Assim se paga com estas regras",
+        "fila": "{{que}}: +{{pct}} %",
+        "turno": "Turno diurno de 12 h num feriado que também é o seu dia de descanso, a {{tarifa}} a hora: {{ord}} h a +{{po}} % e {{extra}} h extra a +{{pe}} % = {{total}}"
+      },
+      "queUsa": "O que a sua empresa usa",
+      "usarSemanal": "Contar horas extra por semana",
+      "usarGracia": "Não pagar a espera curta ao sair (tolerância)",
+      "tempranaAyuda": "Desmarcado, o pagamento começa à hora prevista mesmo que a pessoa marque antes.",
+      "recargos": "Adicionais",
+      "recargosAyuda": "Desligue um adicional para deixar de pagá-lo sem perder a percentagem escrita.",
+      "rec": {
+        "noche": "Adicional noturno",
+        "domingo": "Adicional de domingo",
+        "descanso": "Adicional por trabalhar no dia de descanso",
+        "feriado": "Adicional de feriado",
+        "extra": "Adicional de horas extra",
+        "extraAyuda": "Desligado, as horas extra são pagas a valor simples."
+      },
+      "ausenciasAyudaV2": "Marcada: é paga. Desmarcada: continua justificada (não é falta), mas é descontada. Uma licença «pessoal» é paga ou não conforme a própria licença."
     },
     "puede": {
       "sinPermiso": "Seu papel não tem permissão para isto. Peça a um administrador.",
