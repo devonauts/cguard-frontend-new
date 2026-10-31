@@ -441,13 +441,15 @@ export default function VigiaWidget() {
         check();
       }, 300);
     };
-    const lienzo = document.querySelector("main");
+    // The whole body, not <main>: a lazy route can swap the <main> node after
+    // this effect ran, and an observer on the old node never fires again (the
+    // bubble then stayed over «Enviar» of the guard form until a resize).
     const obs =
-      lienzo && typeof MutationObserver !== "undefined"
+      typeof MutationObserver !== "undefined"
         ? new MutationObserver(soon)
         : null;
 
-    obs?.observe(lienzo!, { childList: true, subtree: true });
+    obs?.observe(document.body, { childList: true, subtree: true });
     window.addEventListener("resize", soon);
     soon();
 
