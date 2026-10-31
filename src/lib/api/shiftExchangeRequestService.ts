@@ -38,46 +38,92 @@ const buildQuery = (params?: Record<string, unknown>): string => {
   return s ? `?${s}` : "";
 };
 
+/** One side of a swap: the shift and where it is. */
+export interface SwapShift {
+  id: string;
+  start?: string;
+  end?: string;
+  status?: string;
+  stationId?: string | null;
+  stationName?: string | null;
+  postSiteName?: string | null;
+}
+
+/** A rule result from the server (services/shiftExchange/reglas). */
+export interface SwapFinding {
+  code: string;
+  guardId?: string | null;
+  shiftId?: string | null;
+  params?: Record<string, any>;
+}
+
+export interface SwapChecks {
+  blocks: SwapFinding[];
+  warnings: SwapFinding[];
+  at?: string;
+}
+
+export type SwapStatus =
+  | "pending_peer"
+  | "pending_approval"
+  | "approved"
+  | "rejected"
+  | "declined"
+  | "cancelled"
+  | "expired";
+
 export interface ShiftExchangeRecord {
   id: string;
+  kind: "swap" | "giveaway";
+  status: SwapStatus;
+  notes: string | null;
   requestDate: string | null;
-  fromShiftId: string | null;
-  toShiftId: string | null;
+  expiresAt: string | null;
+  peerRespondedAt: string | null;
+  decidedAt: string | null;
+  decisionNote: string | null;
+  executedAt: string | null;
+  checks: SwapChecks | null;
+  fromGuard: { id: string; name: string | null } | null;
+  toGuard: { id: string; name: string | null } | null;
+  decidedBy: { id: string; name: string | null } | null;
+  createdBy: { id: string; name: string | null } | null;
+  fromShift: SwapShift | null;
+  toShift: SwapShift | null;
   fromGuardId: string | null;
   toGuardId: string | null;
-  status: "pending" | "approved" | "rejected";
-  notes: string | null;
-  fromGuard: { id: string; fullName?: string; email?: string } | null;
-  toGuard: { id: string; fullName?: string; email?: string } | null;
 }
 
 export interface ShiftExchangeCreateInput {
-  requestDate?: string;
-  fromShiftId?: string;
+  fromShiftId: string;
   toShiftId?: string;
-  fromGuardId?: string;
   toGuardId?: string;
   notes?: string;
+  /** Both guards already agreed (office records it). */
+  peerConfirmed?: boolean;
+  /** Approve in the same step (needs the decide permission). */
+  approveNow?: boolean;
 }
+
+const base = () => `/tenant/${getTenantId()}/shift-exchange-request`;
 
 const shiftExchangeRequestService = {
   async list(
     params?: Record<string, unknown>,
   ): Promise<{ rows: ShiftExchangeRecord[]; count: number }> {
-    const tenantId = getTenantId();
-    const qs = buildQuery(params);
-    const resp = await api.get(
-      `/tenant/${tenantId}/shift-exchange-request${qs}`,
-    );
+    const resp = await api.get(`${base()}${buildQuery(params)}`);
+
+    return resp.data ?? resp;
+  },
+
+  async checks(id: string): Promise<SwapChecks> {
+    const resp = await api.get(`${base()}/${id}/checks`);
 
     return resp.data ?? resp;
   },
 
   async create(data: ShiftExchangeCreateInput): Promise<ShiftExchangeRecord> {
-    const tenantId = getTenantId();
-    const resp = await api.post(`/tenant/${tenantId}/shift-exchange-request`, {
-      data,
-    });
+    const resp = await api.post(base(), { data }, { toast: { silentError: true } } as any);
 
     return resp.data ?? resp;
   },
@@ -85,20 +131,28 @@ const shiftExchangeRequestService = {
   async updateStatus(
     id: string,
     status: "approved" | "rejected",
+    note?: string,
   ): Promise<ShiftExchangeRecord> {
-    const tenantId = getTenantId();
     const resp = await api.patch(
-      `/tenant/${tenantId}/shift-exchange-request/${id}/status`,
-      { data: { status } },
+      `${base()}/${id}/status`,
+      { data: { status, note: note || undefined } },
+      { toast: { silentError: true } } as any,
     );
 
     return resp.data ?? resp;
   },
 
-  async destroy(id: string): Promise<void> {
-    const tenantId = getTenantId();
+  async act(
+    id: string,
+    action: "accept" | "decline" | "cancel",
+  ): Promise<ShiftExchangeRecord> {
+    const resp = await api.post(`${base()}/${id}/${action}`, { data: {} }, { toast: { silentError: true } } as any);
 
-    await api.delete(`/tenant/${tenantId}/shift-exchange-request/${id}`);
+    return resp.data ?? resp;
+  },
+
+  async destroy(id: string): Promise<void> {
+    await api.delete(`${base()}/${id}`);
   },
 };
 

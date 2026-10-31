@@ -36,7 +36,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CalendarClock, BedDouble, Ban, Loader2, Save } from "lucide-react";
+import { ArrowLeftRight, CalendarClock, BedDouble, Ban, Loader2, Save } from "lucide-react";
 
 import { ToggleRow } from "../components/SettingsForm";
 
@@ -59,6 +59,12 @@ type Jornada = {
   maxWeeklyHours: number;
   allowDoubleShift: boolean;
   allowRestDayAssignment: boolean;
+  /** Intercambio de turno (backend: SHIFT_EXCHANGE_DEFAULTS). */
+  shiftExchange: {
+    requireApproval: boolean;
+    allowGiveaway: boolean;
+    minNoticeHours: number;
+  };
 };
 
 /** Iguales a SCHEDULING_DEFAULTS del backend. Si divergen, la pantalla miente. */
@@ -68,6 +74,7 @@ const DEFAULTS: Jornada = {
   maxWeeklyHours: 0,
   allowDoubleShift: true,
   allowRestDayAssignment: true,
+  shiftExchange: { requireApproval: true, allowGiveaway: true, minNoticeHours: 0 },
 };
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -143,7 +150,13 @@ export default function JornadaPage() {
         const { data } = await api.get(`/tenant/${tenantId()}/settings`);
 
         setRow(data || {});
-        setJ({ ...DEFAULTS, ...((data && data.schedulingSettings) || {}) });
+        const guardado = (data && data.schedulingSettings) || {};
+
+        setJ({
+          ...DEFAULTS,
+          ...guardado,
+          shiftExchange: { ...DEFAULTS.shiftExchange, ...(guardado.shiftExchange || {}) },
+        });
       } catch {
         toast.error(
           t("settings.jornada.loadError", {
@@ -158,6 +171,10 @@ export default function JornadaPage() {
 
   const set = <K extends keyof Jornada>(k: K, v: Jornada[K]) =>
     setJ((p) => ({ ...p, [k]: v }));
+  const setSwap = <K extends keyof Jornada["shiftExchange"]>(
+    k: K,
+    v: Jornada["shiftExchange"][K],
+  ) => setJ((p) => ({ ...p, shiftExchange: { ...p.shiftExchange, [k]: v } }));
 
   const save = async () => {
     setSaving(true);
@@ -336,6 +353,60 @@ export default function JornadaPage() {
                       defaultValue: "Permitir asignar en día de descanso",
                     })}
                     onCheckedChange={(v) => set("allowRestDayAssignment", v)}
+                  />
+                </div>
+              </Section>
+
+              <Section
+                icon={<ArrowLeftRight />}
+                title={t("settings.jornada.sectionIntercambio", {
+                  defaultValue: "Intercambio de turno",
+                })}
+              >
+                <div
+                  className="divide-y"
+                  style={{ borderColor: "var(--hairline)" }}
+                >
+                  <ToggleRow
+                    checked={j.shiftExchange.requireApproval}
+                    disabled={!canEdit}
+                    hint={t("settings.jornada.swapRequireApprovalHint", {
+                      defaultValue:
+                        "Si lo apagas, un cambio que los dos vigilantes aceptaron se hace solo, siempre que cumpla todas las reglas de esta página.",
+                    })}
+                    label={t("settings.jornada.swapRequireApprovalLabel", {
+                      defaultValue: "La oficina aprueba cada intercambio",
+                    })}
+                    onCheckedChange={(v) => setSwap("requireApproval", v)}
+                  />
+                  <ToggleRow
+                    checked={j.shiftExchange.allowGiveaway}
+                    disabled={!canEdit}
+                    hint={t("settings.jornada.swapAllowGiveawayHint", {
+                      defaultValue:
+                        "Dar un turno sin recibir otro, a un compañero o como oferta abierta para quien trabaje en la misma sede.",
+                    })}
+                    label={t("settings.jornada.swapAllowGiveawayLabel", {
+                      defaultValue: "Permitir ceder un turno",
+                    })}
+                    onCheckedChange={(v) => setSwap("allowGiveaway", v)}
+                  />
+                  <NumRow
+                    disabled={!canEdit}
+                    hint={t("settings.jornada.swapMinNoticeHint", {
+                      defaultValue:
+                        "Horas antes del turno a partir de las cuales ya no se puede pedir, aceptar ni aprobar un intercambio.",
+                    })}
+                    label={t("settings.jornada.swapMinNoticeLabel", {
+                      defaultValue: "Aviso mínimo",
+                    })}
+                    max={168}
+                    min={0}
+                    suffix={t("settings.jornada.suffixHoras", {
+                      defaultValue: "horas",
+                    })}
+                    value={j.shiftExchange.minNoticeHours}
+                    onChange={(v) => setSwap("minNoticeHours", v)}
                   />
                 </div>
               </Section>
