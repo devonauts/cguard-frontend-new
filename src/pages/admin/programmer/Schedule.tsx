@@ -97,7 +97,7 @@ import {
 } from "@/lib/guardName";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import AppLayout from "@/layouts/app-layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -624,8 +624,14 @@ const KEY_CODES: Record<string, string> = {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
+/** Phase 2: the station requirement is edited only in the station sheet. The
+    old in-grid editors stay below this switch until the single schedule
+    editor replaces this page. */
+const REQUISITO_EN_LA_FICHA: boolean = true;
+
 export default function Schedule() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   /* Read-only for who cannot edit stations (lib/reglasDeAcciones): the menus,
      the assign form and drag-and-drop say why instead of failing on save. */
   const editarHorario = usePuede("turnos.editarHorario");
@@ -1218,7 +1224,7 @@ export default function Schedule() {
             ApiService.get(
               `/tenant/${tenantId}/scheduler/overview?startDate=${startDateStr}&endDate=${endDateStr}`,
             ),
-            ApiService.get(`/tenant/${tenantId}/rotation-styles`),
+            ApiService.get(`/tenant/${tenantId}/rotation-styles?includeArchived=1`),
             ApiService.get(
               `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
             ),
@@ -3700,7 +3706,27 @@ export default function Schedule() {
     }
   };
 
+  /* ── EL REQUISITO SE CAMBIA EN LA FICHA DE LA ESTACIÓN (fase 2) ──────────
+     Horas, cuántos a la vez y qué días son el requisito de la estación, y
+     tiene UNA puerta: Estación › Requisito. «Reconfigurar» y editar una plaza
+     fija llevan allí en vez de abrir aquí un segundo editor que pensaba
+     distinto. El sacafranco sigue con su asistente: no es requisito. */
+  const irAlRequisito = (station: Station) => {
+    const sede = (station as any).postSiteId;
+
+    navigate(
+      sede
+        ? `/post-sites/${sede}/stations/${station.id}/overview#requisito`
+        : `/stations`,
+    );
+  };
+
   const configureStation = (station: Station) => {
+    if (REQUISITO_EN_LA_FICHA) {
+      irAlRequisito(station);
+
+      return;
+    }
     setConfigStation(station);
     setConfigPaso(1);
     setConfigType(station.scheduleType || "24h");
@@ -4107,6 +4133,11 @@ export default function Schedule() {
        puerta desde la que se abra. */
     if ((pos.type || "fijo") === "sacafranco") {
       editSacafranco(station, pos);
+
+      return;
+    }
+    if (REQUISITO_EN_LA_FICHA) {
+      irAlRequisito(station);
 
       return;
     }

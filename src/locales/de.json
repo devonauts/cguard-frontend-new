@@ -7471,7 +7471,9 @@
       "idioma": "Sprache",
       "idioma.desc": "In welcher Sprache Sie das CRM sehen. Automatisch oder die von Ihnen gewählte.",
       "dobletes": "Doppelschichten",
-      "dobletes.desc": "Wellen, Boni, Punkte, Stufen und Rangliste der Reserve."
+      "dobletes.desc": "Wellen, Boni, Punkte, Stufen und Rangliste der Reserve.",
+      "patrones-rotacion": "Rotationsmuster",
+      "patrones-rotacion.desc": "Arbeits- und Ruhezyklen: umbenennen, archivieren und sehen, wo jedes verwendet wird."
     },
     "section": {
       "mi_cuenta": "Mein Konto",
@@ -8369,7 +8371,9 @@
       "scheduleChangesLabel": "Dienstplanänderungen (an die Wachkraft)",
       "scheduleChangesHint": "Eine Mitteilung pro Änderung: neue, entfernte oder verschobene Schichten, ein neuer oder ein abgegebener Posten. Ausschalten, wenn Sie selbst Bescheid geben",
       "dobletesOfficeLabel": "Doppelschichten: besetzt oder niemand angenommen",
-      "dobletesOffersLabel": "Doppelschicht-Angebote (an Sicherheitskräfte)"
+      "dobletesOffersLabel": "Doppelschicht-Angebote (an Sicherheitskräfte)",
+      "coverageAssignmentsLabel": "Vertretungen (an die Wache)",
+      "coverageAssignmentsHint": "Muss einen Posten übernehmen, wurde versetzt oder die Vertretung wurde abgesagt. Kommt aufs Handy"
     },
     "festivos": {
       "loadError": "Die Feiertage konnten nicht geladen werden.",
@@ -9454,7 +9458,12 @@
       "coberturaEnBloques": "{{horas}}h Abdeckung in {{count}} aufeinanderfolgenden Blöcken zu {{bloque}}h — {{count}} Stammkräfte + Springer.",
       "coberturaEnBloques_one": "{{horas}}h Abdeckung in {{count}} Block zu {{bloque}}h — {{count}} Stammkraft + Springer.",
       "coberturaEnBloques_other": "{{horas}}h Abdeckung in {{count}} aufeinanderfolgenden Blöcken zu {{bloque}}h — {{count}} Stammkräfte + Springer.",
-      "vigilantesAsignados": "Zugewiesene Wachleute"
+      "vigilantesAsignados": "Zugewiesene Wachleute",
+      "elCicloNoCambio": "Der Zyklus hat sich nicht geändert",
+      "cicloDeRotacion": "Rotationszyklus",
+      "cicloExplicacion": "Wie sich die Wachen dieses Postens abwechseln und ruhen. Wie viele und wann steht oben im Bedarf.",
+      "cambiarElCicloRehace": "Den Zyklus zu ändern baut künftige Schichten neu; niemand verliert seinen Platz.",
+      "guardarCiclo": "Zyklus speichern"
     },
     "StationShifts": {
       "dia": "Tag",
@@ -17346,7 +17355,8 @@
       "seReabrieron_one": "{{count}} Einteilung wurde wieder geöffnet",
       "seReabrieron_other": "{{count}} Einteilungen wurden wieder geöffnet",
       "volvieronVigilantes_one": "{{count}} Wachperson ist zurück",
-      "volvieronVigilantes_other": "{{count}} Wachpersonen sind zurück"
+      "volvieronVigilantes_other": "{{count}} Wachpersonen sind zurück",
+      "nRelevos": "{{count}} Ablösungen"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "{{nombre}} aus der Veranstaltung entfernen?",
@@ -19073,6 +19083,112 @@
     },
     "disponibilidad": {
       "asignadoFuera": "Zugewiesen, aber {{n}} Schicht(en) liegen außerhalb der angegebenen Verfügbarkeit ({{dias}}). Bitte mit der Person klären."
+    },
+    "Patrones": {
+      "archivado": "Archiviert",
+      "enUso": "{{estaciones}} Posten · {{plazas}} Plätze · {{personas}} Personen",
+      "sinUso": "Nicht verwendet",
+      "renombrado": "Muster umbenannt",
+      "renombrar": "Umbenennen",
+      "restaurar": "Wieder anbieten",
+      "archivar": "Archivieren",
+      "restaurado": "Das Muster wird wieder angeboten",
+      "archivadoOk": "Archiviert: wird nicht mehr angeboten, wer es nutzt, behält es",
+      "borrar": "Löschen",
+      "borrado": "Muster gelöscht",
+      "titulo": "Rotationsmuster",
+      "subtitulo": "Die Arbeits- und Ruhezyklen. Archivieren bietet ein Muster nicht mehr an; wer es nutzt, behält es. Nur ein ungenutztes kann gelöscht werden.",
+      "deLaEmpresa": "Des Unternehmens",
+      "vacio": "Sie entstehen beim Festlegen des Zyklus eines Postens oder einer Wache.",
+      "vacioTitulo": "Noch keine eigenen Muster",
+      "delSistema": "System (gemeinsam)",
+      "estaciones": "Posten",
+      "plazas": "Plätze mit diesem Zyklus",
+      "personas": "Personen",
+      "historial": "Und {{count}} beendete Zuweisungen, die es in ihrem Verlauf behalten."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Arbeitszeit",
+      "cambiar": "Arbeitszeit ändern",
+      "definir": "Arbeitszeit festlegen",
+      "titulo": "Bürozeiten",
+      "sinHorario": "Ohne Arbeitszeit: die Stempelung wird mit keiner Anfangszeit verglichen.",
+      "sinHorarioTitulo": "Noch keine Arbeitszeit",
+      "libre": "Frei",
+      "proximosDias": "Nächste Tage"
+    },
+    "Requisito": {
+      "guardado": "Bedarf gespeichert",
+      "noGuardado": "Der Bedarf konnte nicht gespeichert werden",
+      "todosLosDias": "Jeden Tag",
+      "titulo": "Bedarf",
+      "cambiar": "Bedarf ändern",
+      "explicacion": "Wie viele Wachen der Posten braucht, wann und an welchen Tagen. Nur das legt seine Plätze fest: Dienstplan, Nicht besetzt und die Berichte lesen es hier.",
+      "aLaVez": "{{count}} gleichzeitig",
+      "sacafrancosAparte": "Dazu {{count}} Springer-Platz/Plätze: decken freie Tage und zählen nicht zum Bedarf.",
+      "sinRequisito": "Dieser Posten sagt noch nicht, wie viele Wachen er braucht. Ohne Bedarf lassen sich seine Lücken nicht berechnen.",
+      "personas": "Gleichzeitig",
+      "dias": "Tage",
+      "quitarFranja": "Diese Zeit entfernen",
+      "anadirFranja": "Zeit hinzufügen",
+      "alGuardar": "Beim Speichern",
+      "sale": "{{nombre}} verlässt den Posten (der Platz {{ventana}} entfällt).",
+      "cambiaDeHora": "{{nombre}} wechselt von {{de}} auf {{a}}.",
+      "plazasNuevas": "{{count}} neue(r) Platz/Plätze ohne Wache: erscheinen unter Nicht besetzt.",
+      "personasInvalidas": "Zwischen 1 und 20 Wachen gleichzeitig.",
+      "horaInvalida": "Uhrzeiten wie 07:00 schreiben.",
+      "guardar": "Bedarf speichern",
+      "dia": {
+        "lun": "M",
+        "mar": "D",
+        "mie": "M",
+        "jue": "D",
+        "vie": "F",
+        "sab": "S",
+        "dom": "S"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Nicht erschienen",
+        "leave": "Abwesenheit ohne Ersatz",
+        "open_shift": "Schicht ohne Wache",
+        "archived_guard": "Archivierte Wache",
+        "empty_slot": "Leerer Platz"
+      },
+      "noCargo": "Konnte nicht geladen werden",
+      "todos": "Alle",
+      "estacion": "Posten",
+      "faltanDeN": "{{faltan}} von {{need}} fehlen",
+      "nadieAsignado": "Niemand im Dienstplan",
+      "sinVigilante": "Ohne Wache",
+      "subtitulo": "Fehlende, Abwesenheiten ohne Ersatz, leere Plätze und Schichten ohne Wache, gemessen am Bedarf jedes Postens.",
+      "todasLasEstaciones": "Alle Posten",
+      "incluirTerminados": "Vergangene einbeziehen",
+      "rangoAlReves": "Das Bis-Datum liegt vor dem Von-Datum.",
+      "rangoLargo": "Höchstens {{n}} Tage wählen.",
+      "nadaDeEsteTipo": "Keine Lücken dieser Art in diesem Zeitraum.",
+      "todoCubierto": "Alle Posten haben in diesem Zeitraum die Leute, die sie brauchen.",
+      "sinHuecos": "Nichts unbesetzt",
+      "yaPaso": "Vorbei",
+      "ofrecer": "Anbieten",
+      "cubrir": "Besetzen",
+      "huecos": "Lücken",
+      "faltaSinNovedad": "Das Fehlen konnte nicht erfasst werden",
+      "cubierto": "{{nombre}} übernimmt diese Lücke.",
+      "confirmarDescanso": "An dem Tag hat die Person frei. Trotzdem einteilen?",
+      "confirmarDoble": "Hat schon eine überlappende Schicht. Trotzdem einteilen (Doppelschicht)?",
+      "noSePudoCubrir": "Konnte nicht besetzt werden",
+      "siPonerlo": "Ja, einteilen",
+      "enLugarDe": "Anstelle von {{nombre}}",
+      "nadieLibre": "Zu dieser Zeit ist niemand frei.",
+      "disponible": "Hat zugesagt",
+      "noDisponible": "Hat abgesagt",
+      "horasSemana": "{{h}} h diese Woche",
+      "conoceElPuesto": "{{n}} Schichten hier",
+      "descansoCorto": "Nur {{h}} h Ruhe",
+      "ofertaEnviada": "Angebot an die verfügbaren Wachen gesendet.",
+      "noSePudoOfrecer": "Konnte nicht angeboten werden"
     }
   },
   "visitantes": {

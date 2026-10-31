@@ -6969,7 +6969,9 @@
       "idioma": "Idioma",
       "idioma.desc": "En qué idioma ves el CRM. Automático o el que tú elijas.",
       "dobletes": "Dobletes",
-      "dobletes.desc": "Oleadas, bonos, puntos, niveles y ranking de la reserva."
+      "dobletes.desc": "Oleadas, bonos, puntos, niveles y ranking de la reserva.",
+      "patrones-rotacion": "Patrones de rotación",
+      "patrones-rotacion.desc": "Los ciclos de trabajo y descanso: renombrar, archivar y ver dónde se usa cada uno."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -7867,7 +7869,9 @@
       "scheduleChangesLabel": "Cambios de horario (al vigilante)",
       "scheduleChangesHint": "Un solo aviso por cambio: turnos nuevos, quitados o movidos, un puesto nuevo o uno que deja. Apágalo si prefieres avisarle tú",
       "dobletesOfficeLabel": "Dobletes: cubierto o sin aceptar",
-      "dobletesOffersLabel": "Ofertas de dobletes (a los vigilantes)"
+      "dobletesOffersLabel": "Ofertas de dobletes (a los vigilantes)",
+      "coverageAssignmentsLabel": "Coberturas (al vigilante)",
+      "coverageAssignmentsHint": "Le toca cubrir un puesto, lo movieron o se canceló su cobertura. Llega a su teléfono"
     },
     "festivos": {
       "loadError": "No se pudieron cargar los festivos.",
@@ -8919,7 +8923,12 @@
       "coberturaEnBloques": "{{horas}}h de cobertura en {{count}} bloques consecutivos de {{bloque}}h — {{count}} fijos + sacafranco.",
       "coberturaEnBloques_one": "{{horas}}h de cobertura en {{count}} bloque de {{bloque}}h — {{count}} fijo + sacafranco.",
       "coberturaEnBloques_other": "{{horas}}h de cobertura en {{count}} bloques consecutivos de {{bloque}}h — {{count}} fijos + sacafranco.",
-      "vigilantesAsignados": "Vigilantes asignados"
+      "vigilantesAsignados": "Vigilantes asignados",
+      "elCicloNoCambio": "El ciclo no cambió",
+      "cicloDeRotacion": "Ciclo de rotación",
+      "cicloExplicacion": "Cómo se turnan y descansan los vigilantes de esta estación. Cuántos hacen falta y a qué hora se dice arriba, en el requisito.",
+      "cambiarElCicloRehace": "Cambiar el ciclo rehace los turnos futuros; nadie pierde su plaza.",
+      "guardarCiclo": "Guardar ciclo"
     },
     "StationShifts": {
       "dia": "Día",
@@ -16811,7 +16820,8 @@
       "seReabrieron_one": "se reabrió {{count}} asignación",
       "seReabrieron_other": "se reabrieron {{count}} asignaciones",
       "volvieronVigilantes_one": "volvió {{count}} vigilante",
-      "volvieronVigilantes_other": "volvieron {{count}} vigilantes"
+      "volvieronVigilantes_other": "volvieron {{count}} vigilantes",
+      "nRelevos": "{{count}} relevos"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "¿Quitar a {{nombre}} del evento?",
@@ -18538,6 +18548,112 @@
     },
     "disponibilidad": {
       "asignadoFuera": "Asignado, pero {{n}} turno(s) caen fuera de la disponibilidad que indicó ({{dias}}). Revísalo con la persona."
+    },
+    "Patrones": {
+      "archivado": "Archivado",
+      "enUso": "{{estaciones}} estaciones · {{plazas}} plazas · {{personas}} personas",
+      "sinUso": "Sin uso",
+      "renombrado": "Patrón renombrado",
+      "renombrar": "Renombrar",
+      "restaurar": "Volver a ofrecer",
+      "archivar": "Archivar",
+      "restaurado": "El patrón se vuelve a ofrecer",
+      "archivadoOk": "Archivado: ya no se ofrece, y quien lo usa lo conserva",
+      "borrar": "Borrar",
+      "borrado": "Patrón borrado",
+      "titulo": "Patrones de rotación",
+      "subtitulo": "Los ciclos de trabajo y descanso. Archivar uno deja de ofrecerlo; quien ya lo usa lo conserva. Solo se borra el que nadie usa.",
+      "deLaEmpresa": "De la empresa",
+      "vacio": "Se crean al configurar el ciclo de una estación o de un vigilante.",
+      "vacioTitulo": "Aún no hay patrones propios",
+      "delSistema": "Del sistema (compartidos)",
+      "estaciones": "Estaciones",
+      "plazas": "Plazas con este ciclo",
+      "personas": "Personas",
+      "historial": "Y {{count}} asignaciones terminadas que lo conservan en su historial."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Horario",
+      "cambiar": "Cambiar horario",
+      "definir": "Definir horario",
+      "titulo": "Horario de oficina",
+      "sinHorario": "Sin horario: su marcación no se compara con ninguna hora de entrada.",
+      "sinHorarioTitulo": "Aún no tiene horario",
+      "libre": "Libre",
+      "proximosDias": "Próximos días"
+    },
+    "Requisito": {
+      "guardado": "Requisito guardado",
+      "noGuardado": "No se pudo guardar el requisito",
+      "todosLosDias": "Todos los días",
+      "titulo": "Requisito",
+      "cambiar": "Cambiar requisito",
+      "explicacion": "Cuántos vigilantes pide la estación, a qué hora y qué días. Es lo único que define sus plazas: el Horario, Sin cubrir y los informes lo leen de aquí.",
+      "aLaVez": "{{count}} a la vez",
+      "sacafrancosAparte": "Además, {{count}} plaza(s) de sacafranco: cubren descansos y no cuentan en el requisito.",
+      "sinRequisito": "Esta estación aún no dice cuántos vigilantes pide. Sin requisito no se pueden calcular sus huecos.",
+      "personas": "A la vez",
+      "dias": "Días",
+      "quitarFranja": "Quitar este horario",
+      "anadirFranja": "Añadir horario",
+      "alGuardar": "Al guardar",
+      "sale": "{{nombre}} deja la estación (su plaza de {{ventana}} desaparece).",
+      "cambiaDeHora": "{{nombre}} pasa de {{de}} a {{a}}.",
+      "plazasNuevas": "{{count}} plaza(s) nueva(s) sin vigilante: saldrán en Sin cubrir.",
+      "personasInvalidas": "Entre 1 y 20 vigilantes a la vez.",
+      "horaInvalida": "Escribe las horas como 07:00.",
+      "guardar": "Guardar requisito",
+      "dia": {
+        "lun": "L",
+        "mar": "M",
+        "mie": "X",
+        "jue": "J",
+        "vie": "V",
+        "sab": "S",
+        "dom": "D"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Falta",
+        "leave": "Permiso sin reemplazo",
+        "open_shift": "Turno sin vigilante",
+        "archived_guard": "Vigilante archivado",
+        "empty_slot": "Plaza vacía"
+      },
+      "noCargo": "No se pudo cargar",
+      "todos": "Todos",
+      "estacion": "Estación",
+      "faltanDeN": "Faltan {{faltan}} de {{need}}",
+      "nadieAsignado": "Nadie en el horario",
+      "sinVigilante": "Sin vigilante",
+      "subtitulo": "Faltas, permisos sin reemplazo, plazas vacías y turnos sin vigilante, según el requisito de cada estación.",
+      "todasLasEstaciones": "Todas las estaciones",
+      "incluirTerminados": "Incluir los que ya pasaron",
+      "rangoAlReves": "La fecha «hasta» es anterior a «desde».",
+      "rangoLargo": "Elige como máximo {{n}} días.",
+      "nadaDeEsteTipo": "No hay huecos de este tipo en estas fechas.",
+      "todoCubierto": "Todas las estaciones tienen a la gente que piden en estas fechas.",
+      "sinHuecos": "Nada sin cubrir",
+      "yaPaso": "Ya pasó",
+      "ofrecer": "Ofrecer",
+      "cubrir": "Cubrir",
+      "huecos": "huecos",
+      "faltaSinNovedad": "No se pudo registrar la falta",
+      "cubierto": "{{nombre}} cubre este hueco.",
+      "confirmarDescanso": "Ese día le toca descansar. ¿Lo pones igual?",
+      "confirmarDoble": "Ya tiene un turno que se cruza. ¿Lo pones igual (doblar turno)?",
+      "noSePudoCubrir": "No se pudo cubrir",
+      "siPonerlo": "Sí, ponerlo",
+      "enLugarDe": "En lugar de {{nombre}}",
+      "nadieLibre": "No hay nadie libre en ese horario.",
+      "disponible": "Dijo que puede",
+      "noDisponible": "Dijo que no puede",
+      "horasSemana": "{{h}} h esta semana",
+      "conoceElPuesto": "{{n}} turnos aquí",
+      "descansoCorto": "Solo {{h}} h de descanso",
+      "ofertaEnviada": "Oferta enviada a los vigilantes disponibles.",
+      "noSePudoOfrecer": "No se pudo ofrecer"
     }
   },
   "map": {

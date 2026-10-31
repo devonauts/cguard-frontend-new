@@ -7471,7 +7471,9 @@
       "idioma": "Taal",
       "idioma.desc": "In welke taal u het CRM ziet. Automatisch of de taal die u kiest.",
       "dobletes": "Dubbele diensten",
-      "dobletes.desc": "Rondes, bonussen, punten, niveaus en ranglijst van de reserve."
+      "dobletes.desc": "Rondes, bonussen, punten, niveaus en ranglijst van de reserve.",
+      "patrones-rotacion": "Rotatiepatronen",
+      "patrones-rotacion.desc": "De werk- en rustcycli: hernoemen, archiveren en zien waar elk wordt gebruikt."
     },
     "section": {
       "mi_cuenta": "Mijn account",
@@ -8369,7 +8371,9 @@
       "scheduleChangesLabel": "Roosterwijzigingen (aan de beveiliger)",
       "scheduleChangesHint": "Eén melding per wijziging: diensten toegevoegd, verwijderd of verplaatst, een nieuwe post of een post die vervalt. Zet uit als je het liever zelf laat weten",
       "dobletesOfficeLabel": "Dubbele diensten: gedekt of niemand geaccepteerd",
-      "dobletesOffersLabel": "Aanbiedingen dubbele diensten (aan beveiligers)"
+      "dobletesOffersLabel": "Aanbiedingen dubbele diensten (aan beveiligers)",
+      "coverageAssignmentsLabel": "Vervangingen (aan de bewaker)",
+      "coverageAssignmentsHint": "Moet een post overnemen, is verplaatst of de vervanging is geannuleerd. Komt op de telefoon"
     },
     "festivos": {
       "loadError": "De feestdagen konden niet worden geladen.",
@@ -9454,7 +9458,12 @@
       "coberturaEnBloques": "{{horas}}u dekking in {{count}} opeenvolgende blokken van {{bloque}}u — {{count}} vaste bewakers + aflosser.",
       "coberturaEnBloques_one": "{{horas}}u dekking in {{count}} blok van {{bloque}}u — {{count}} vaste bewaker + aflosser.",
       "coberturaEnBloques_other": "{{horas}}u dekking in {{count}} opeenvolgende blokken van {{bloque}}u — {{count}} vaste bewakers + aflosser.",
-      "vigilantesAsignados": "Toegewezen bewakers"
+      "vigilantesAsignados": "Toegewezen bewakers",
+      "elCicloNoCambio": "De cyclus is niet gewijzigd",
+      "cicloDeRotacion": "Rotatiecyclus",
+      "cicloExplicacion": "Hoe de bewakers van deze post elkaar aflossen en rusten. Hoeveel en wanneer staat hierboven, in de bezetting.",
+      "cambiarElCicloRehace": "De cyclus wijzigen herbouwt toekomstige diensten; niemand verliest zijn plaats.",
+      "guardarCiclo": "Cyclus opslaan"
     },
     "StationShifts": {
       "dia": "Dag",
@@ -17346,7 +17355,8 @@
       "seReabrieron_one": "{{count}} indeling is heropend",
       "seReabrieron_other": "{{count}} indelingen zijn heropend",
       "volvieronVigilantes_one": "{{count}} beveiliger is terug",
-      "volvieronVigilantes_other": "{{count}} beveiligers zijn terug"
+      "volvieronVigilantes_other": "{{count}} beveiligers zijn terug",
+      "nRelevos": "{{count}} aflossingen"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "{{nombre}} uit het evenement halen?",
@@ -19073,6 +19083,112 @@
     },
     "disponibilidad": {
       "asignadoFuera": "Toegewezen, maar {{n}} dienst(en) vallen buiten de opgegeven beschikbaarheid ({{dias}}). Overleg met de persoon."
+    },
+    "Patrones": {
+      "archivado": "Gearchiveerd",
+      "enUso": "{{estaciones}} posten · {{plazas}} plaatsen · {{personas}} personen",
+      "sinUso": "Niet gebruikt",
+      "renombrado": "Patroon hernoemd",
+      "renombrar": "Hernoemen",
+      "restaurar": "Weer aanbieden",
+      "archivar": "Archiveren",
+      "restaurado": "Het patroon wordt weer aangeboden",
+      "archivadoOk": "Gearchiveerd: niet meer aangeboden, wie het gebruikt behoudt het",
+      "borrar": "Verwijderen",
+      "borrado": "Patroon verwijderd",
+      "titulo": "Rotatiepatronen",
+      "subtitulo": "De werk- en rustcycli. Archiveren biedt er een niet meer aan; wie het al gebruikt behoudt het. Alleen een ongebruikt patroon kan worden verwijderd.",
+      "deLaEmpresa": "Van het bedrijf",
+      "vacio": "Ze ontstaan bij het instellen van de cyclus van een post of bewaker.",
+      "vacioTitulo": "Nog geen eigen patronen",
+      "delSistema": "Systeem (gedeeld)",
+      "estaciones": "Posten",
+      "plazas": "Plaatsen met deze cyclus",
+      "personas": "Personen",
+      "historial": "En {{count}} beëindigde toewijzingen die het in hun geschiedenis houden."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Rooster",
+      "cambiar": "Rooster wijzigen",
+      "definir": "Rooster instellen",
+      "titulo": "Kantooruren",
+      "sinHorario": "Geen rooster: de klokregistratie wordt met geen begintijd vergeleken.",
+      "sinHorarioTitulo": "Nog geen rooster",
+      "libre": "Vrij",
+      "proximosDias": "Komende dagen"
+    },
+    "Requisito": {
+      "guardado": "Bezetting opgeslagen",
+      "noGuardado": "De bezetting kon niet worden opgeslagen",
+      "todosLosDias": "Elke dag",
+      "titulo": "Bezetting",
+      "cambiar": "Bezetting wijzigen",
+      "explicacion": "Hoeveel bewakers de post nodig heeft, hoe laat en op welke dagen. Alleen dit bepaalt de plaatsen: het Rooster, Onbezet en de rapporten lezen het hier.",
+      "aLaVez": "{{count}} tegelijk",
+      "sacafrancosAparte": "Daarnaast {{count}} invalplaats(en): dekken vrije dagen en tellen niet mee in de bezetting.",
+      "sinRequisito": "Deze post zegt nog niet hoeveel bewakers hij nodig heeft. Zonder bezetting kunnen de gaten niet worden berekend.",
+      "personas": "Tegelijk",
+      "dias": "Dagen",
+      "quitarFranja": "Deze uren verwijderen",
+      "anadirFranja": "Uren toevoegen",
+      "alGuardar": "Bij opslaan",
+      "sale": "{{nombre}} verlaat de post (de plaats van {{ventana}} verdwijnt).",
+      "cambiaDeHora": "{{nombre}} gaat van {{de}} naar {{a}}.",
+      "plazasNuevas": "{{count}} nieuwe plaats(en) zonder bewaker: verschijnen in Onbezet.",
+      "personasInvalidas": "Tussen 1 en 20 bewakers tegelijk.",
+      "horaInvalida": "Schrijf de tijden als 07:00.",
+      "guardar": "Bezetting opslaan",
+      "dia": {
+        "lun": "M",
+        "mar": "D",
+        "mie": "W",
+        "jue": "D",
+        "vie": "V",
+        "sab": "Z",
+        "dom": "Z"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Niet verschenen",
+        "leave": "Verlof zonder vervanger",
+        "open_shift": "Dienst zonder bewaker",
+        "archived_guard": "Gearchiveerde bewaker",
+        "empty_slot": "Lege plaats"
+      },
+      "noCargo": "Kon niet laden",
+      "todos": "Alle",
+      "estacion": "Post",
+      "faltanDeN": "{{faltan}} van {{need}} ontbreken",
+      "nadieAsignado": "Niemand op het rooster",
+      "sinVigilante": "Geen bewaker",
+      "subtitulo": "Afwezigen, verlof zonder vervanger, lege plaatsen en diensten zonder bewaker, volgens de bezetting van elke post.",
+      "todasLasEstaciones": "Alle posten",
+      "incluirTerminados": "Ook voorbije tonen",
+      "rangoAlReves": "De einddatum ligt vóór de begindatum.",
+      "rangoLargo": "Kies maximaal {{n}} dagen.",
+      "nadaDeEsteTipo": "Geen gaten van dit soort op deze data.",
+      "todoCubierto": "Alle posten hebben op deze data de mensen die ze nodig hebben.",
+      "sinHuecos": "Niets onbezet",
+      "yaPaso": "Voorbij",
+      "ofrecer": "Aanbieden",
+      "cubrir": "Bezetten",
+      "huecos": "gaten",
+      "faltaSinNovedad": "De afwezigheid kon niet worden vastgelegd",
+      "cubierto": "{{nombre}} vult dit gat.",
+      "confirmarDescanso": "Dat is een vrije dag. Toch inplannen?",
+      "confirmarDoble": "Heeft al een overlappende dienst. Toch inplannen (dubbele dienst)?",
+      "noSePudoCubrir": "Kon niet bezetten",
+      "siPonerlo": "Ja, inplannen",
+      "enLugarDe": "In plaats van {{nombre}}",
+      "nadieLibre": "Niemand is vrij op dat tijdstip.",
+      "disponible": "Zei dat het kan",
+      "noDisponible": "Zei dat het niet kan",
+      "horasSemana": "{{h}} u deze week",
+      "conoceElPuesto": "{{n}} diensten hier",
+      "descansoCorto": "Slechts {{h}} u rust",
+      "ofertaEnviada": "Aanbod verstuurd naar de beschikbare bewakers.",
+      "noSePudoOfrecer": "Kon niet aanbieden"
     }
   },
   "visitantes": {

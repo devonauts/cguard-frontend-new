@@ -1,4 +1,4 @@
-import { cicloDe, esSemanal } from "@/lib/secuenciaDeRotacion";
+import { esSemanal, personasQueSeTurnanCon } from "@/lib/secuenciaDeRotacion";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -88,11 +88,13 @@ export function aLaVezSegunLaRotacion(
   if (!rot) return plazas;
   // Weekly: every seat works the same weekdays, so they are all on at once.
   if (esSemanal(rot)) return plazas;
-  const { trabajo, largo } = cicloDe(rot);
+  // Only a cycle that tiles shares a seat (1-1, 4x4…): the server writes one
+  // plaza per person who takes turns on it. A 5-2 is one fijo per seat plus
+  // the sacafranco, so its plazas ARE the people at once. Mirror of the
+  // backend `postOperatingHours`.
+  const k = personasQueSeTurnanCon(rot);
 
-  if (!(largo > 0) || !(trabajo > 0)) return plazas;
-
-  return Math.max(1, Math.round((plazas * trabajo) / largo));
+  return k > 1 ? Math.max(1, Math.round(plazas / k)) : plazas;
 }
 
 export function jornadasDePlazas(
@@ -153,7 +155,8 @@ export function jornadasDePlazas(
 
   // Con rotación, las plazas que comparten ventana se reparten el ciclo.
   if (rotacion) {
-    for (const j of jornadas) j.guardsCount = aLaVezSegunLaRotacion(j.guardsCount, rotacion);
+    for (const j of jornadas)
+      j.guardsCount = aLaVezSegunLaRotacion(j.guardsCount, rotacion);
   }
 
   /* ── UN PUESTO DE 24 H SIEMPRE TIENE DOS MITADES ────────────────────────
@@ -221,7 +224,11 @@ export function ventanaDelPuesto(
 function tipoDeVentana(inicio: string, fin: string): string {
   const largo = minutosDeVentana(inicio, fin);
   const hora = Math.floor((minutosDeHora(inicio) ?? 0) / 60);
-  return largo >= 23 * 60 ? "24 horas" : hora >= 18 || hora < 6 ? "Nocturno" : "Diurno";
+  return largo >= 23 * 60
+    ? "24 horas"
+    : hora >= 18 || hora < 6
+      ? "Nocturno"
+      : "Diurno";
 }
 
 /**
@@ -258,10 +265,17 @@ export function jornadasPorTipo(
 
     // Un 24 h con ventana de medio día son sus dos mitades: la ventana y su
     // complemento (la rotación lleva a cada plaza a la suya).
-    if (scheduleType === "24h" && minutosDeVentana(propia.inicio, propia.fin) < 23 * 60) {
+    if (
+      scheduleType === "24h" &&
+      minutosDeVentana(propia.inicio, propia.fin) < 23 * 60
+    ) {
       return [
         j(tipo, propia.inicio, propia.fin),
-        j(tipo === "Nocturno" ? "Diurno" : "Nocturno", propia.fin, propia.inicio),
+        j(
+          tipo === "Nocturno" ? "Diurno" : "Nocturno",
+          propia.fin,
+          propia.inicio,
+        ),
       ].sort((a, b) => a.startTime.localeCompare(b.startTime));
     }
 
@@ -320,7 +334,8 @@ export function resumenDeHorario(
     return {
       clave: "24h",
       horas: 24,
-      ventana: largo >= 23 * 60 ? texto : `${texto} · ${propia.fin}–${propia.inicio}`,
+      ventana:
+        largo >= 23 * 60 ? texto : `${texto} · ${propia.fin}–${propia.inicio}`,
     };
   }
   const horas = Math.round((largo / 60) * 2) / 2;
@@ -329,7 +344,8 @@ export function resumenDeHorario(
   const tipo = tipoDeVentana(propia.inicio, propia.fin);
 
   return {
-    clave: tipo === "Nocturno" ? "nocturno" : tipo === "24 horas" ? "24h" : "diurno",
+    clave:
+      tipo === "Nocturno" ? "nocturno" : tipo === "24 horas" ? "24h" : "diurno",
     horas,
     ventana: texto,
   };
@@ -340,17 +356,27 @@ export function etiquetaDeHorario(
   t: (k: string, d: string, o?: any) => unknown,
   r: ResumenDeHorario,
 ): string {
-  const h = r.horas == null ? null : Number.isInteger(r.horas) ? String(r.horas) : String(r.horas);
+  const h =
+    r.horas == null
+      ? null
+      : Number.isInteger(r.horas)
+        ? String(r.horas)
+        : String(r.horas);
 
-  if (r.clave === "24h") return String(t("ui.StationOverview.turno.24h", "24 Horas"));
+  if (r.clave === "24h")
+    return String(t("ui.StationOverview.turno.24h", "24 Horas"));
   if (r.clave === "diurno") {
     return String(
-      h ? t("ui.horario.hDiurno", "{{h}}h Diurno", { h }) : t("ui.StationOverview.turno.diurno", "12h Diurno"),
+      h
+        ? t("ui.horario.hDiurno", "{{h}}h Diurno", { h })
+        : t("ui.StationOverview.turno.diurno", "12h Diurno"),
     );
   }
   if (r.clave === "nocturno") {
     return String(
-      h ? t("ui.horario.hNocturno", "{{h}}h Nocturno", { h }) : t("ui.StationOverview.turno.nocturno", "12h Nocturno"),
+      h
+        ? t("ui.horario.hNocturno", "{{h}}h Nocturno", { h })
+        : t("ui.StationOverview.turno.nocturno", "12h Nocturno"),
     );
   }
   if (r.clave === "custom") {

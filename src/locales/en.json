@@ -6969,7 +6969,9 @@
       "idioma": "Language",
       "idioma.desc": "What language you see the CRM in. Automatic, or the one you pick.",
       "dobletes": "Double shifts",
-      "dobletes.desc": "Waves, bonuses, points, levels and ranking of the reserve."
+      "dobletes.desc": "Waves, bonuses, points, levels and ranking of the reserve.",
+      "patrones-rotacion": "Rotation patterns",
+      "patrones-rotacion.desc": "Work and rest cycles: rename, archive and see where each one is used."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -7867,7 +7869,9 @@
       "scheduleChangesLabel": "Schedule changes (to the guard)",
       "scheduleChangesHint": "One notice per change: shifts added, removed or moved, a new post or one they leave. Turn it off if you prefer to tell them yourself",
       "dobletesOfficeLabel": "Double shifts: covered or nobody accepted",
-      "dobletesOffersLabel": "Double shift offers (to guards)"
+      "dobletesOffersLabel": "Double shift offers (to guards)",
+      "coverageAssignmentsLabel": "Covers (to the guard)",
+      "coverageAssignmentsHint": "They must cover a post, were moved, or their cover was called off. Reaches their phone"
     },
     "festivos": {
       "loadError": "The holidays couldn't be loaded.",
@@ -8919,7 +8923,12 @@
       "coberturaEnBloques": "{{horas}}h of coverage in {{count}} consecutive blocks of {{bloque}}h — {{count}} regular guards + relief guard.",
       "coberturaEnBloques_one": "{{horas}}h of coverage in {{count}} block of {{bloque}}h — {{count}} regular guard + relief guard.",
       "coberturaEnBloques_other": "{{horas}}h of coverage in {{count}} consecutive blocks of {{bloque}}h — {{count}} regular guards + relief guard.",
-      "vigilantesAsignados": "Assigned guards"
+      "vigilantesAsignados": "Assigned guards",
+      "elCicloNoCambio": "The cycle did not change",
+      "cicloDeRotacion": "Rotation cycle",
+      "cicloExplicacion": "How this station's guards take turns and rest. How many are needed and when is set above, in the requirement.",
+      "cambiarElCicloRehace": "Changing the cycle rebuilds future shifts; nobody loses their slot.",
+      "guardarCiclo": "Save cycle"
     },
     "StationShifts": {
       "dia": "Day",
@@ -16811,7 +16820,8 @@
       "seReabrieron_one": "{{count}} assignment was reopened",
       "seReabrieron_other": "{{count}} assignments were reopened",
       "volvieronVigilantes_one": "{{count}} guard is back",
-      "volvieronVigilantes_other": "{{count}} guards are back"
+      "volvieronVigilantes_other": "{{count}} guards are back",
+      "nRelevos": "{{count}} shifts"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "Remove {{nombre}} from the event?",
@@ -18538,6 +18548,112 @@
     },
     "disponibilidad": {
       "asignadoFuera": "Assigned, but {{n}} shift(s) fall outside the availability they gave ({{dias}}). Check with the person."
+    },
+    "Patrones": {
+      "archivado": "Archived",
+      "enUso": "{{estaciones}} stations · {{plazas}} slots · {{personas}} people",
+      "sinUso": "Not used",
+      "renombrado": "Pattern renamed",
+      "renombrar": "Rename",
+      "restaurar": "Offer again",
+      "archivar": "Archive",
+      "restaurado": "The pattern is offered again",
+      "archivadoOk": "Archived: no longer offered; whoever uses it keeps it",
+      "borrar": "Delete",
+      "borrado": "Pattern deleted",
+      "titulo": "Rotation patterns",
+      "subtitulo": "Work and rest cycles. Archiving one stops offering it; whoever already uses it keeps it. Only an unused one can be deleted.",
+      "deLaEmpresa": "The company's",
+      "vacio": "They are created when you set the cycle of a station or a guard.",
+      "vacioTitulo": "No patterns of your own yet",
+      "delSistema": "System (shared)",
+      "estaciones": "Stations",
+      "plazas": "Slots with this cycle",
+      "personas": "People",
+      "historial": "And {{count}} ended assignments that keep it in their history."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Schedule",
+      "cambiar": "Change schedule",
+      "definir": "Set schedule",
+      "titulo": "Office hours",
+      "sinHorario": "No schedule: their clock-in is not compared with any start time.",
+      "sinHorarioTitulo": "No schedule yet",
+      "libre": "Off",
+      "proximosDias": "Next days"
+    },
+    "Requisito": {
+      "guardado": "Requirement saved",
+      "noGuardado": "The requirement could not be saved",
+      "todosLosDias": "Every day",
+      "titulo": "Requirement",
+      "cambiar": "Change requirement",
+      "explicacion": "How many guards the station needs, at what time and which days. It is the only thing that defines its slots: the Schedule, Uncovered and the reports read it from here.",
+      "aLaVez": "{{count}} at once",
+      "sacafrancosAparte": "Also {{count}} relief slot(s): they cover days off and do not count in the requirement.",
+      "sinRequisito": "This station does not say yet how many guards it needs. Without a requirement its gaps cannot be worked out.",
+      "personas": "At once",
+      "dias": "Days",
+      "quitarFranja": "Remove these hours",
+      "anadirFranja": "Add hours",
+      "alGuardar": "On saving",
+      "sale": "{{nombre}} leaves the station (their {{ventana}} slot goes away).",
+      "cambiaDeHora": "{{nombre}} moves from {{de}} to {{a}}.",
+      "plazasNuevas": "{{count}} new slot(s) without a guard: they will show in Uncovered.",
+      "personasInvalidas": "Between 1 and 20 guards at once.",
+      "horaInvalida": "Write the times as 07:00.",
+      "guardar": "Save requirement",
+      "dia": {
+        "lun": "M",
+        "mar": "T",
+        "mie": "W",
+        "jue": "T",
+        "vie": "F",
+        "sab": "S",
+        "dom": "S"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "No-show",
+        "leave": "Leave without cover",
+        "open_shift": "Shift without a guard",
+        "archived_guard": "Archived guard",
+        "empty_slot": "Empty slot"
+      },
+      "noCargo": "Could not load",
+      "todos": "All",
+      "estacion": "Station",
+      "faltanDeN": "{{faltan}} of {{need}} missing",
+      "nadieAsignado": "Nobody on the schedule",
+      "sinVigilante": "No guard",
+      "subtitulo": "No-shows, leave without cover, empty slots and shifts without a guard, against each station's requirement.",
+      "todasLasEstaciones": "All stations",
+      "incluirTerminados": "Include past ones",
+      "rangoAlReves": "The «to» date is before «from».",
+      "rangoLargo": "Pick at most {{n}} days.",
+      "nadaDeEsteTipo": "No gaps of this kind on these dates.",
+      "todoCubierto": "Every station has the people it needs on these dates.",
+      "sinHuecos": "Nothing uncovered",
+      "yaPaso": "Over",
+      "ofrecer": "Offer",
+      "cubrir": "Cover",
+      "huecos": "gaps",
+      "faltaSinNovedad": "The no-show could not be recorded",
+      "cubierto": "{{nombre}} covers this gap.",
+      "confirmarDescanso": "That is their day off. Put them on anyway?",
+      "confirmarDoble": "They already have an overlapping shift. Put them on anyway (double shift)?",
+      "noSePudoCubrir": "Could not cover",
+      "siPonerlo": "Yes, put them on",
+      "enLugarDe": "Instead of {{nombre}}",
+      "nadieLibre": "Nobody is free at that time.",
+      "disponible": "Said they can",
+      "noDisponible": "Said they cannot",
+      "horasSemana": "{{h}} h this week",
+      "conoceElPuesto": "{{n}} shifts here",
+      "descansoCorto": "Only {{h}} h of rest",
+      "ofertaEnviada": "Offer sent to the available guards.",
+      "noSePudoOfrecer": "Could not offer"
     }
   },
   "map": {

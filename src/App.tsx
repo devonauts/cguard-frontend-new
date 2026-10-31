@@ -141,6 +141,9 @@ const RondasSettingsPage = lazy(
 const LanguagePage = lazy(
   () => import("./pages/admin/Configuration/language/LanguagePage"),
 );
+const PatronesDeRotacionPage = lazy(
+  () => import("./pages/admin/Configuration/scheduling/PatronesDeRotacionPage"),
+);
 const JornadaPage = lazy(
   () => import("./pages/admin/Configuration/scheduling/JornadaPage"),
 );
@@ -2717,6 +2720,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/setting/jornada"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <PatronesDeRotacionPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/setting/patrones-de-rotacion"
                               />
                               <Route
                                 element={

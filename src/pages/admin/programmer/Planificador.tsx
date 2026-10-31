@@ -370,7 +370,7 @@ export default function Planificador() {
         ApiService.get(
           `/tenant/${tenantId}/scheduler/overview?startDate=${sumaDias(base, -ANTES)}&endDate=${sumaDias(base, 59)}`,
         ),
-        ApiService.get(`/tenant/${tenantId}/rotation-styles`),
+        ApiService.get(`/tenant/${tenantId}/rotation-styles?includeArchived=1`),
       ]);
       const r = planDesdeHorarioReal(
         ov?.data || ov || {},

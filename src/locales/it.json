@@ -7471,7 +7471,9 @@
       "idioma": "Lingua",
       "idioma.desc": "In quale lingua vedi il CRM. Automatica o quella che scegli tu.",
       "dobletes": "Doppi turni",
-      "dobletes.desc": "Ondate, bonus, punti, livelli e classifica della riserva."
+      "dobletes.desc": "Ondate, bonus, punti, livelli e classifica della riserva.",
+      "patrones-rotacion": "Schemi di rotazione",
+      "patrones-rotacion.desc": "I cicli di lavoro e riposo: rinominare, archiviare e vedere dove si usa ciascuno."
     },
     "section": {
       "mi_cuenta": "Il mio account",
@@ -8369,7 +8371,9 @@
       "scheduleChangesLabel": "Cambi di turno (alla guardia)",
       "scheduleChangesHint": "Un solo avviso per cambio: turni nuovi, rimossi o spostati, un posto nuovo o uno che lascia. Disattivalo se preferisci avvisarla tu",
       "dobletesOfficeLabel": "Doppi turni: coperto o nessuno ha accettato",
-      "dobletesOffersLabel": "Offerte di doppi turni (alle guardie)"
+      "dobletesOffersLabel": "Offerte di doppi turni (alle guardie)",
+      "coverageAssignmentsLabel": "Coperture (alla guardia)",
+      "coverageAssignmentsHint": "Deve coprire un posto, è stato spostato o la copertura è stata annullata. Arriva al telefono"
     },
     "festivos": {
       "loadError": "Impossibile caricare le festività.",
@@ -9454,7 +9458,12 @@
       "coberturaEnBloques": "{{horas}}h di copertura in {{count}} blocchi consecutivi di {{bloque}}h — {{count}} fissi + guardia di rilievo.",
       "coberturaEnBloques_one": "{{horas}}h di copertura in {{count}} blocco di {{bloque}}h — {{count}} fisso + guardia di rilievo.",
       "coberturaEnBloques_other": "{{horas}}h di copertura in {{count}} blocchi consecutivi di {{bloque}}h — {{count}} fissi + guardia di rilievo.",
-      "vigilantesAsignados": "Guardie assegnate"
+      "vigilantesAsignados": "Guardie assegnate",
+      "elCicloNoCambio": "Il ciclo non è cambiato",
+      "cicloDeRotacion": "Ciclo di rotazione",
+      "cicloExplicacion": "Come si alternano e riposano le guardie di questa postazione. Quante e a che ora si dice sopra, nel requisito.",
+      "cambiarElCicloRehace": "Cambiare il ciclo rifà i turni futuri; nessuno perde il posto.",
+      "guardarCiclo": "Salva ciclo"
     },
     "StationShifts": {
       "dia": "Giorno",
@@ -17346,7 +17355,8 @@
       "seReabrieron_one": "è stata riaperta {{count}} assegnazione",
       "seReabrieron_other": "sono state riaperte {{count}} assegnazioni",
       "volvieronVigilantes_one": "è tornata {{count}} guardia",
-      "volvieronVigilantes_other": "sono tornate {{count}} guardie"
+      "volvieronVigilantes_other": "sono tornate {{count}} guardie",
+      "nRelevos": "{{count}} turni"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "Togliere {{nombre}} dall’evento?",
@@ -19073,6 +19083,112 @@
     },
     "disponibilidad": {
       "asignadoFuera": "Assegnato, ma {{n}} turno/i cadono fuori dalla disponibilità indicata ({{dias}}). Verifica con la persona."
+    },
+    "Patrones": {
+      "archivado": "Archiviato",
+      "enUso": "{{estaciones}} postazioni · {{plazas}} posti · {{personas}} persone",
+      "sinUso": "Non usato",
+      "renombrado": "Schema rinominato",
+      "renombrar": "Rinomina",
+      "restaurar": "Offri di nuovo",
+      "archivar": "Archivia",
+      "restaurado": "Lo schema torna disponibile",
+      "archivadoOk": "Archiviato: non viene più offerto, chi lo usa lo mantiene",
+      "borrar": "Elimina",
+      "borrado": "Schema eliminato",
+      "titulo": "Schemi di rotazione",
+      "subtitulo": "I cicli di lavoro e riposo. Archiviarne uno smette di offrirlo; chi lo usa già lo mantiene. Si elimina solo quello che nessuno usa.",
+      "deLaEmpresa": "Dell'azienda",
+      "vacio": "Si creano configurando il ciclo di una postazione o di una guardia.",
+      "vacioTitulo": "Ancora nessuno schema proprio",
+      "delSistema": "Di sistema (condivisi)",
+      "estaciones": "Postazioni",
+      "plazas": "Posti con questo ciclo",
+      "personas": "Persone",
+      "historial": "E {{count}} assegnazioni concluse che lo conservano nello storico."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Orario",
+      "cambiar": "Modifica orario",
+      "definir": "Imposta orario",
+      "titulo": "Orario d'ufficio",
+      "sinHorario": "Senza orario: la timbratura non si confronta con nessun orario d'ingresso.",
+      "sinHorarioTitulo": "Ancora nessun orario",
+      "libre": "Libero",
+      "proximosDias": "Prossimi giorni"
+    },
+    "Requisito": {
+      "guardado": "Requisito salvato",
+      "noGuardado": "Impossibile salvare il requisito",
+      "todosLosDias": "Tutti i giorni",
+      "titulo": "Requisito",
+      "cambiar": "Modifica requisito",
+      "explicacion": "Quante guardie chiede la postazione, a che ora e in quali giorni. È l'unica cosa che ne definisce i posti: Orario, Scoperti e i report lo leggono da qui.",
+      "aLaVez": "{{count}} alla volta",
+      "sacafrancosAparte": "Inoltre {{count}} posto/i di jolly: coprono i riposi e non contano nel requisito.",
+      "sinRequisito": "Questa postazione non dice ancora quante guardie chiede. Senza requisito non si calcolano i suoi scoperti.",
+      "personas": "Alla volta",
+      "dias": "Giorni",
+      "quitarFranja": "Rimuovi questa fascia",
+      "anadirFranja": "Aggiungi fascia",
+      "alGuardar": "Al salvataggio",
+      "sale": "{{nombre}} lascia la postazione (il posto {{ventana}} scompare).",
+      "cambiaDeHora": "{{nombre}} passa da {{de}} a {{a}}.",
+      "plazasNuevas": "{{count}} nuovo/i posto/i senza guardia: compariranno in Scoperti.",
+      "personasInvalidas": "Tra 1 e 20 guardie alla volta.",
+      "horaInvalida": "Scrivi gli orari come 07:00.",
+      "guardar": "Salva requisito",
+      "dia": {
+        "lun": "L",
+        "mar": "M",
+        "mie": "M",
+        "jue": "G",
+        "vie": "V",
+        "sab": "S",
+        "dom": "D"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Assenza",
+        "leave": "Permesso senza sostituto",
+        "open_shift": "Turno senza guardia",
+        "archived_guard": "Guardia archiviata",
+        "empty_slot": "Posto vuoto"
+      },
+      "noCargo": "Impossibile caricare",
+      "todos": "Tutti",
+      "estacion": "Postazione",
+      "faltanDeN": "Mancano {{faltan}} su {{need}}",
+      "nadieAsignado": "Nessuno in orario",
+      "sinVigilante": "Senza guardia",
+      "subtitulo": "Assenze, permessi senza sostituto, posti vuoti e turni senza guardia, secondo il requisito di ogni postazione.",
+      "todasLasEstaciones": "Tutte le postazioni",
+      "incluirTerminados": "Includi quelli passati",
+      "rangoAlReves": "La data «a» è precedente a «da».",
+      "rangoLargo": "Scegli al massimo {{n}} giorni.",
+      "nadaDeEsteTipo": "Nessuno scoperto di questo tipo in queste date.",
+      "todoCubierto": "Tutte le postazioni hanno le persone che chiedono in queste date.",
+      "sinHuecos": "Niente di scoperto",
+      "yaPaso": "Passato",
+      "ofrecer": "Offri",
+      "cubrir": "Copri",
+      "huecos": "scoperti",
+      "faltaSinNovedad": "Impossibile registrare l'assenza",
+      "cubierto": "{{nombre}} copre questo scoperto.",
+      "confirmarDescanso": "Quel giorno riposa. Lo metti lo stesso?",
+      "confirmarDoble": "Ha già un turno che si sovrappone. Lo metti lo stesso (doppio turno)?",
+      "noSePudoCubrir": "Impossibile coprire",
+      "siPonerlo": "Sì, mettilo",
+      "enLugarDe": "Al posto di {{nombre}}",
+      "nadieLibre": "Nessuno è libero in quell'orario.",
+      "disponible": "Ha detto che può",
+      "noDisponible": "Ha detto che non può",
+      "horasSemana": "{{h}} h questa settimana",
+      "conoceElPuesto": "{{n}} turni qui",
+      "descansoCorto": "Solo {{h}} h di riposo",
+      "ofertaEnviada": "Offerta inviata alle guardie disponibili.",
+      "noSePudoOfrecer": "Impossibile offrire"
     }
   },
   "visitantes": {

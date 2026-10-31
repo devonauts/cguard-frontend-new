@@ -281,7 +281,7 @@ export default function StationShifts({
     }
     let vivo = true;
 
-    ApiService.get(`/tenant/${tenantId}/rotation-styles`)
+    ApiService.get(`/tenant/${tenantId}/rotation-styles?includeArchived=1`)
       .then((res: any) => {
         const rows = Array.isArray(res) ? res : (res?.rows ?? []);
 

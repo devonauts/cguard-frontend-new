@@ -7471,7 +7471,9 @@
       "idioma": "Langue",
       "idioma.desc": "Dans quelle langue vous voyez le CRM. Automatique, ou celle que vous choisissez.",
       "dobletes": "Doubles quarts",
-      "dobletes.desc": "Vagues, primes, points, niveaux et classement de la réserve."
+      "dobletes.desc": "Vagues, primes, points, niveaux et classement de la réserve.",
+      "patrones-rotacion": "Modèles de rotation",
+      "patrones-rotacion.desc": "Les cycles de travail et de repos : renommer, archiver et voir où chacun est utilisé."
     },
     "section": {
       "mi_cuenta": "Mon compte",
@@ -8369,7 +8371,9 @@
       "scheduleChangesLabel": "Changements de planning (à l'agent)",
       "scheduleChangesHint": "Un seul avis par changement : postes ajoutés, retirés ou déplacés, un nouveau poste ou un poste quitté. Désactivez-le si vous préférez le prévenir vous-même",
       "dobletesOfficeLabel": "Doubles quarts : couvert ou personne n'a accepté",
-      "dobletesOffersLabel": "Offres de doubles quarts (aux agents)"
+      "dobletesOffersLabel": "Offres de doubles quarts (aux agents)",
+      "coverageAssignmentsLabel": "Remplacements (à l'agent)",
+      "coverageAssignmentsHint": "Il doit couvrir un poste, a été déplacé ou son remplacement est annulé. Arrive sur son téléphone"
     },
     "festivos": {
       "loadError": "Impossible de charger les jours fériés.",
@@ -9454,7 +9458,12 @@
       "coberturaEnBloques": "{{horas}}h de couverture en {{count}} blocs consécutifs de {{bloque}}h — {{count}} titulaires + agent de relève.",
       "coberturaEnBloques_one": "{{horas}}h de couverture en {{count}} bloc de {{bloque}}h — {{count}} titulaire + agent de relève.",
       "coberturaEnBloques_other": "{{horas}}h de couverture en {{count}} blocs consécutifs de {{bloque}}h — {{count}} titulaires + agent de relève.",
-      "vigilantesAsignados": "Agents affectés"
+      "vigilantesAsignados": "Agents affectés",
+      "elCicloNoCambio": "Le cycle n'a pas changé",
+      "cicloDeRotacion": "Cycle de rotation",
+      "cicloExplicacion": "Comment les agents de ce poste se relaient et se reposent. Combien et à quelle heure se dit plus haut, dans le besoin.",
+      "cambiarElCicloRehace": "Changer le cycle refait les créneaux futurs ; personne ne perd sa place.",
+      "guardarCiclo": "Enregistrer le cycle"
     },
     "StationShifts": {
       "dia": "Jour",
@@ -17346,7 +17355,8 @@
       "seReabrieron_one": "{{count}} affectation a été rouverte",
       "seReabrieron_other": "{{count}} affectations ont été rouvertes",
       "volvieronVigilantes_one": "{{count}} agent est de retour",
-      "volvieronVigilantes_other": "{{count}} agents sont de retour"
+      "volvieronVigilantes_other": "{{count}} agents sont de retour",
+      "nRelevos": "{{count}} relèves"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "Retirer {{nombre}} de l’événement ?",
@@ -19073,6 +19083,112 @@
     },
     "disponibilidad": {
       "asignadoFuera": "Affecté, mais {{n}} poste(s) tombent hors de la disponibilité indiquée ({{dias}}). Vérifiez avec la personne."
+    },
+    "Patrones": {
+      "archivado": "Archivé",
+      "enUso": "{{estaciones}} postes · {{plazas}} places · {{personas}} personnes",
+      "sinUso": "Non utilisé",
+      "renombrado": "Modèle renommé",
+      "renombrar": "Renommer",
+      "restaurar": "Proposer à nouveau",
+      "archivar": "Archiver",
+      "restaurado": "Le modèle est à nouveau proposé",
+      "archivadoOk": "Archivé : il n'est plus proposé, ceux qui l'utilisent le gardent",
+      "borrar": "Supprimer",
+      "borrado": "Modèle supprimé",
+      "titulo": "Modèles de rotation",
+      "subtitulo": "Les cycles de travail et de repos. En archiver un cesse de le proposer ; ceux qui l'utilisent le gardent. Seul un modèle inutilisé peut être supprimé.",
+      "deLaEmpresa": "De l'entreprise",
+      "vacio": "Ils sont créés en configurant le cycle d'un poste ou d'un agent.",
+      "vacioTitulo": "Pas encore de modèles propres",
+      "delSistema": "Du système (partagés)",
+      "estaciones": "Postes",
+      "plazas": "Places avec ce cycle",
+      "personas": "Personnes",
+      "historial": "Et {{count}} affectations terminées qui le gardent dans leur historique."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Horaires",
+      "cambiar": "Modifier les horaires",
+      "definir": "Définir les horaires",
+      "titulo": "Horaires de bureau",
+      "sinHorario": "Sans horaires : son pointage n'est comparé à aucune heure d'arrivée.",
+      "sinHorarioTitulo": "Pas encore d'horaires",
+      "libre": "Repos",
+      "proximosDias": "Prochains jours"
+    },
+    "Requisito": {
+      "guardado": "Besoin enregistré",
+      "noGuardado": "Impossible d'enregistrer le besoin",
+      "todosLosDias": "Tous les jours",
+      "titulo": "Besoin",
+      "cambiar": "Modifier le besoin",
+      "explicacion": "Combien d'agents le poste demande, à quelle heure et quels jours. C'est la seule chose qui définit ses places : le Planning, Non couvert et les rapports le lisent ici.",
+      "aLaVez": "{{count}} en même temps",
+      "sacafrancosAparte": "Plus {{count}} place(s) de relève : elles couvrent les repos et ne comptent pas dans le besoin.",
+      "sinRequisito": "Ce poste n'indique pas encore combien d'agents il demande. Sans besoin, ses trous ne peuvent pas être calculés.",
+      "personas": "En même temps",
+      "dias": "Jours",
+      "quitarFranja": "Retirer cette plage",
+      "anadirFranja": "Ajouter une plage",
+      "alGuardar": "À l'enregistrement",
+      "sale": "{{nombre}} quitte le poste (sa place de {{ventana}} disparaît).",
+      "cambiaDeHora": "{{nombre}} passe de {{de}} à {{a}}.",
+      "plazasNuevas": "{{count}} nouvelle(s) place(s) sans agent : elles apparaîtront dans Non couvert.",
+      "personasInvalidas": "Entre 1 et 20 agents en même temps.",
+      "horaInvalida": "Écrivez les heures comme 07:00.",
+      "guardar": "Enregistrer le besoin",
+      "dia": {
+        "lun": "L",
+        "mar": "M",
+        "mie": "M",
+        "jue": "J",
+        "vie": "V",
+        "sab": "S",
+        "dom": "D"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Absence",
+        "leave": "Congé sans remplaçant",
+        "open_shift": "Créneau sans agent",
+        "archived_guard": "Agent archivé",
+        "empty_slot": "Place vide"
+      },
+      "noCargo": "Chargement impossible",
+      "todos": "Tous",
+      "estacion": "Poste",
+      "faltanDeN": "{{faltan}} sur {{need}} manquent",
+      "nadieAsignado": "Personne au planning",
+      "sinVigilante": "Sans agent",
+      "subtitulo": "Absences, congés sans remplaçant, places vides et créneaux sans agent, selon le besoin de chaque poste.",
+      "todasLasEstaciones": "Tous les postes",
+      "incluirTerminados": "Inclure ceux déjà passés",
+      "rangoAlReves": "La date « au » est antérieure à « du ».",
+      "rangoLargo": "Choisissez au maximum {{n}} jours.",
+      "nadaDeEsteTipo": "Aucun trou de ce type à ces dates.",
+      "todoCubierto": "Tous les postes ont le personnel demandé à ces dates.",
+      "sinHuecos": "Rien de non couvert",
+      "yaPaso": "Passé",
+      "ofrecer": "Proposer",
+      "cubrir": "Couvrir",
+      "huecos": "trous",
+      "faltaSinNovedad": "Impossible d'enregistrer l'absence",
+      "cubierto": "{{nombre}} couvre ce trou.",
+      "confirmarDescanso": "C'est son jour de repos. L'affecter quand même ?",
+      "confirmarDoble": "Il a déjà un créneau qui chevauche. L'affecter quand même (double poste) ?",
+      "noSePudoCubrir": "Impossible de couvrir",
+      "siPonerlo": "Oui, l'affecter",
+      "enLugarDe": "À la place de {{nombre}}",
+      "nadieLibre": "Personne n'est libre à cet horaire.",
+      "disponible": "A dit pouvoir",
+      "noDisponible": "A dit ne pas pouvoir",
+      "horasSemana": "{{h}} h cette semaine",
+      "conoceElPuesto": "{{n}} créneaux ici",
+      "descansoCorto": "Seulement {{h}} h de repos",
+      "ofertaEnviada": "Offre envoyée aux agents disponibles.",
+      "noSePudoOfrecer": "Impossible de proposer"
     }
   },
   "visitantes": {
