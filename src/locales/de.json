@@ -20298,6 +20298,211 @@
           "sinNovedad": "Derzeit keine Angebote",
           "tuyo": "Die Schicht gehört dir!"
         }
+      },
+      "monitoreo": {
+        "escenas": {
+          "senal": "Das Signal",
+          "despacho": "Der Einsatz",
+          "supervision": "Zentralen"
+        },
+        "sitio": "Bodegas Río Claro",
+        "teclado": {
+          "armado": "Scharf geschaltet",
+          "alarma": "Alarm Z01"
+        },
+        "zonas": {
+          "z1": "Z01 Haupteingang",
+          "z2": "Z02 Lager",
+          "z3": "Z03 Büros"
+        },
+        "senal": "Einbruch · Z01",
+        "cola": {
+          "titulo": "Alarmwarteschlange",
+          "n": "{{n}} wartend"
+        },
+        "caso": {
+          "prioridad": "P1",
+          "titulo": "Einbruch · Haupteingang",
+          "numero": "Fall A-2291 · Bodegas Río Claro"
+        },
+        "otra": {
+          "prioridad": "P4",
+          "texto": "Öffnung · Farmacia San Telmo"
+        },
+        "estado": {
+          "cola": "Wartend",
+          "reconocida": "Angenommen",
+          "verificada": "Echter Alarm",
+          "despachada": "Entsandt",
+          "enSitio": "Vor Ort",
+          "cerrada": "Abgeschlossen"
+        },
+        "plan": {
+          "titulo": "Maßnahmenplan des Objekts",
+          "llamar": "Anrufen",
+          "verificar": "Prüfen",
+          "despachar": "Entsenden",
+          "avisar": "Melden"
+        },
+        "llamadas": {
+          "titulo": "Anrufliste"
+        },
+        "contactos": {
+          "andrea": "Andrea Salas · Leiterin",
+          "jorge": "Jorge Paz · Schlüsselträger"
+        },
+        "llamada": {
+          "llamando": "Ruft an…",
+          "noContesta": "Keine Antwort",
+          "contesto": "Erreicht"
+        },
+        "unidad": {
+          "nombre": "Diego Rivas · Supervisor M-04",
+          "eta": "In {{n}} Min. da",
+          "enSitio": "Vor Ort",
+          "cerrado": "Bericht gesendet"
+        },
+        "rastro": {
+          "titulo": "Fallverlauf",
+          "senal": "Einbruchsignal auf Z01",
+          "reconoce": "Laura nimmt den Alarm an",
+          "llamada": "Jorge Paz: niemand im Gebäude",
+          "despacho": "Diego Rivas entsandt",
+          "enSitio": "Vor Ort: Tür aufgebrochen, keine Täter",
+          "cierre": "Abgeschlossen · Bericht an den Kunden"
+        },
+        "sup": {
+          "titulo": "Zentralenüberwachung",
+          "enLinea": "{{n}} von 12 online",
+          "alertas": "Überwachungsmeldungen",
+          "sinSenal": "Farmacia San Telmo · kein Signal",
+          "hace": "vor 25 Min.",
+          "llamada": "Rosa Medina: Stromausfall im Viertel",
+          "restaurado": "Zentrale wieder da: meldet sich erneut"
+        },
+        "kpi": {
+          "paneles": "Zentralen",
+          "senales": "Signale heute",
+          "sinSenal": "Kein Signal"
+        },
+        "etiqueta": {
+          "sinSenal": "Kein Signal",
+          "restaurado": "Online"
+        },
+        "pasos": {
+          "disparo": "Bodegas Río Claro: Einbruch in Zone 1, Haupteingang",
+          "cola": "Das Signal kommt als P1 ganz oben an, mit dem Plan des Objekts",
+          "reconoce": "Laura nimmt ihn an und startet die Anrufliste",
+          "contacto": "Andrea geht nicht ran; Jorge Paz bestätigt: niemand da",
+          "verificada": "Echter Alarm: jemand muss hin",
+          "despacho": "Sie entsenden Diego Rivas: die Route kommt in seiner App an",
+          "enSitio": "Diego ist da: Tür aufgebrochen, niemand drinnen",
+          "cierre": "Fall abgeschlossen: der Kunde erhält den Bericht",
+          "prueba": "Alle 12 Zentralen senden ihren Routinetest",
+          "sinSenal": "Farmacia San Telmo meldet sich nicht mehr: die Meldung öffnet sich selbst",
+          "llama": "Sie rufen Rosa Medina an: Stromausfall im Viertel",
+          "restaurado": "Der Strom ist zurück, die Zentrale meldet sich wieder"
+        },
+        "resultado": {
+          "senal": "Jeder Alarm kommt mit seinem Plan: niemand improvisiert um 2 Uhr nachts",
+          "despacho": "Vom Auslösen bis zum Bericht in 17 Minuten, jeder Schritt mit Zeit und Namen",
+          "supervision": "Verstummt eine Zentrale, wissen Sie es in Minuten"
+        }
+      },
+      "video": {
+        "escenas": {
+          "conectar": "Verbinden",
+          "evento": "Ein Ereignis",
+          "despacho": "Einsatz"
+        },
+        "muro": "Videowand",
+        "enVivo": "{{n}} live",
+        "vivo": "Live",
+        "sinSenal": "Kein Signal",
+        "camaras": {
+          "entrada": "Eingang",
+          "estacionamiento": "Parkplatz",
+          "patio": "Laderampe",
+          "porton": "Tor · Bodega Norte"
+        },
+        "persona": "Person 94 %",
+        "equipos": {
+          "titulo": "Videogeräte",
+          "nvr": "NVR · Plaza Los Álamos",
+          "relay": "Relay · Bodega Norte",
+          "sinPuertos": "Ohne Portfreigabe, ohne feste IP"
+        },
+        "estado": {
+          "conectando": "Verbinde…",
+          "enLinea": "Online",
+          "transmitiendo": "Überträgt"
+        },
+        "kpi": {
+          "camaras": "Kameras live",
+          "sitios": "Standorte",
+          "puertos": "Offene Ports"
+        },
+        "eventos": {
+          "titulo": "Videoereignisse",
+          "nuevos": "Neu: {{n}}",
+          "persona": "Person erkannt · Laderampe",
+          "movimiento": "Bewegung · Parkplatz",
+          "reconectada": "Kamera wieder verbunden · Eingang"
+        },
+        "clip": {
+          "titulo": "Clip",
+          "rango": "Laderampe · 23:41:05 → 23:41:35",
+          "recortar": "Clip schneiden",
+          "marcando": "Moment wird markiert…",
+          "guardado": "Clip gespeichert"
+        },
+        "linea": {
+          "marcando": "Markiere…",
+          "listo": "Clip 0:30"
+        },
+        "incidente": {
+          "titulo": "Vorfall I-0482 · Plaza Los Álamos",
+          "abierto": "Offen",
+          "enSitio": "Supervisorin vor Ort"
+        },
+        "sup": {
+          "nombre": "Carla Méndez · Supervisorin",
+          "enCamino": "Unterwegs",
+          "enSitio": "Vor Ort"
+        },
+        "evidencia": {
+          "titulo": "Beweise",
+          "clip": "Clip · Laderampe 23:41",
+          "vivo": "Carla sieht die Kamera live",
+          "compartir": "Mit dem Kunden teilen",
+          "compartido": "Link an den Kunden gesendet"
+        },
+        "tel": {
+          "nombre": "Carla Méndez",
+          "despacho": "Plaza Los Álamos",
+          "vivo": "Live · Laderampe",
+          "navegar": "Hinfahren",
+          "llegue": "Bin da"
+        },
+        "pasos": {
+          "agrega": "Sie fügen den NVR der Plaza Los Álamos hinzu: Adresse, Benutzer, fertig",
+          "vivas": "Seine 3 Kameras erscheinen live auf der Wand",
+          "relay": "Bodega Norte hat keine feste IP: Sie installieren das Relay",
+          "relayVivo": "Das Relay überträgt: 4 Kameras von 2 Standorten auf einer Wand",
+          "movimiento": "Bewegung an der Laderampe: die Kamera erkennt eine Person",
+          "abre": "Sie öffnen sie groß, live",
+          "clip": "Sie schneiden die 30 Sekunden, die zählen",
+          "clipListo": "Der Clip wird mit der genauen Uhrzeit gespeichert",
+          "despacha": "Sie entsenden Carla Méndez: der Vorfall hat den Clip schon dabei",
+          "telefono": "Carla sieht dieselbe Kamera live auf ihrem Handy",
+          "llega": "Carla ist da: die Person ist weg, sie prüft den Hof",
+          "comparte": "Sie teilen den Clip per Link mit dem Kunden"
+        },
+        "resultado": {
+          "conectar": "Alle Kameras aller Standorte auf einer Wand",
+          "evento": "Sehen, was passiert, und den Beweis mit zwei Klicks sichern",
+          "despacho": "Sehen, prüfen und handeln im selben CRM"
+        }
       }
     }
   },
