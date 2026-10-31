@@ -12684,7 +12684,9 @@
       "yseRepite": "· und wiederholt sich",
       "eliminarTurnosYNovedades": "Ausgewählte Schichten und Vorkommnisse löschen (Entf)",
       "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…",
-      "irAEstaciones": "Zu den Objekten"
+      "irAEstaciones": "Zu den Objekten",
+      "moverCoberturaDel": "Abdeckung vom {{dia}} verschieben",
+      "moverDePuesto": "Wachmann auf anderen Posten versetzen"
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
@@ -17399,7 +17401,36 @@
       "cambioDirectoTitulo": "Diese Änderung geht direkt in den echten Dienstplan",
       "cambioDirectoMensaje": "Du hast {{n}} unveröffentlichte Änderung(en) im Entwurf. Beim Speichern liest der Planer den echten Dienstplan neu und der Entwurf geht verloren. Um ihn zu behalten, veröffentliche ihn zuerst.",
       "cambioDirectoSeguir": "Weiter und Entwurf verwerfen",
-      "cambioDirectoVolver": "Zurück"
+      "cambioDirectoVolver": "Zurück",
+      "borradorViejo": "Ein unveröffentlichter Entwurf war älter als eine Woche und wurde verworfen.",
+      "borradorOtraSemana": "Der unveröffentlichte Entwurf stammte aus einer anderen Woche und passt nicht mehr in den Kalender; er wurde verworfen.",
+      "otroGuardo": "{{quien}} hat den Entwurf ebenfalls geändert; die Änderungen wurden mit Ihren zusammengeführt.",
+      "otraPersona": "Jemand anderes",
+      "borradorAbierto": "Der unveröffentlichte Entwurf wurde geöffnet (gespeichert von {{quien}}). Veröffentlichen oder verwerfen Sie ihn.",
+      "realCambio": "Der aktuelle Dienstplan hat sich unter dem Entwurf geändert; Ihre Änderungen bleiben über dem neuen erhalten.",
+      "choques": "Sie und jemand anderes haben dies gleichzeitig geändert; Ihre Version wurde behalten: {{lista}}",
+      "borradorYaNoEsta": "Jemand anderes hat den Entwurf veröffentlicht oder verworfen. Der aktuelle Dienstplan wurde mit Ihren Änderungen darüber neu geladen.",
+      "salirTituloServidor": "Es gibt ungespeicherte Änderungen",
+      "salirMensajeServidor": "Ihre letzten Änderungen am Entwurf sind noch nicht auf dem Server. Wenn Sie jetzt gehen, gehen sie verloren.",
+      "salirSinGuardar": "Trotzdem verlassen",
+      "descartarMensajeCompartido": "Die {{n}} unveröffentlichten Änderungen gehen verloren, auch für alle anderen Bearbeiter, und der aktuelle Dienstplan wird wieder angezeigt.",
+      "guardadoEnServidor": "Für das ganze Team gespeichert",
+      "noSeGuardo": "Speichern fehlgeschlagen; neuer Versuch bei der nächsten Änderung",
+      "guardando": "Wird gespeichert…",
+      "tambienEditando": "Bearbeitet ebenfalls: {{quien}}",
+      "tituloBorrador": "Dienstplan · Entwurf",
+      "filtroEstacion": "Posten",
+      "todasLasEstaciones": "Alle Posten",
+      "filtroTurno": "Schichtart",
+      "todosLosTurnos": "Alle Schichten",
+      "noSePublico": "Es wurde nichts veröffentlicht. Versuchen Sie es erneut.",
+      "cambioAsignacion": "hat die Zuweisung geändert von",
+      "cambioMarca": "hat eine Meldung geändert von",
+      "cambioTurno": "hat eine Schicht geändert von",
+      "cerrar": "Schließen",
+      "recargarConLoNuevo": "Mit dem Neuesten neu laden und prüfen",
+      "publicandoDeUnaVez": "Alles wird auf einmal veröffentlicht…",
+      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",
@@ -19022,7 +19053,11 @@
       "trabaja": "Arbeitet",
       "verSinHorario": "Zeigen, wer keinen Dienstplan hat",
       "vigilantes": "Wachleute",
-      "almuerzo": "Mittagspause {{start}}–{{end}}"
+      "almuerzo": "Mittagspause {{start}}–{{end}}",
+      "sinTurnos": "Keine Schichten",
+      "sinTurnosPuesto": "Ihr Posten hat an diesen Tagen keine Schichten",
+      "invitacionPendiente": "Einladung ausstehend",
+      "invitacionPendienteAyuda": "Die Einladung wurde gesendet, die Person hat sich noch nicht angemeldet. Ein Dienstplan kann schon zugewiesen werden."
     },
     "OfficeHours": {
       "copiarLunes": "Montag auf alle kopieren",
@@ -19289,6 +19324,15 @@
       "descansoCorto": "Nur {{h}} h Ruhe",
       "ofertaEnviada": "Angebot an die verfügbaren Wachen gesendet.",
       "noSePudoOfrecer": "Konnte nicht angeboten werden"
+    },
+    "HorarioModos": {
+      "modos": "Dienstplanmodus",
+      "enVivo": "Live",
+      "borrador": "Entwurf",
+      "hayBorradorEditando": "Es gibt einen unveröffentlichten Entwurf; {{quien}} bearbeitet ihn gerade.",
+      "hayBorrador": "Es gibt einen unveröffentlichten Entwurf (gespeichert von {{quien}}).",
+      "ayudaVivo": "Jede Änderung wird sofort im aktuellen Dienstplan gespeichert.",
+      "ayudaBorrador": "Nichts erreicht den aktuellen Dienstplan vor „Veröffentlichen“. Der Entwurf wird mit Ihrem Team geteilt."
     }
   },
   "visitantes": {

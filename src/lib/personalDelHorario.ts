@@ -47,6 +47,9 @@ export interface PersonaDelHorario {
   hasSchedule: boolean;
   assigned: boolean;
   days: DiaDePersona[];
+  /** Invited and not yet signed in («invitación pendiente»). Optional: the
+   *  server field arrives with the staff sign-up work; absent = false. */
+  pendingInvite?: boolean;
 }
 
 export interface Cuentas {
@@ -113,6 +116,34 @@ function diaLimpio(d: any): DiaDePersona | null {
   };
 }
 
+/** Reads the «invited, not signed in yet» mark whatever shape the server uses. */
+export function invitacionPendiente(p: any): boolean {
+  if (!p || typeof p !== "object") return false;
+  const flag =
+    p.pendingInvite ?? p.invitePending ?? p.invitationPending ?? p.pending;
+
+  if (typeof flag === "boolean") return flag;
+  const st = String(p.invitation?.status ?? p.inviteStatus ?? p.status ?? "")
+    .trim()
+    .toLowerCase();
+
+  return st === "pending" || st === "invited";
+}
+
+/**
+ * A supervisor on a post with NO shifts at all in the loaded days: the post
+ * generates nothing yet (e.g. «Sin rotación»). That is not «Libre» every day —
+ * it is «no shifts», and the sheet says so.
+ */
+export function sinTurnosEnElRango(p: PersonaDelHorario): boolean {
+  return (
+    p.kind === "supervisor" &&
+    p.assigned &&
+    p.days.length > 0 &&
+    !p.days.some((d) => d.status === "work" || d.status === "absence")
+  );
+}
+
 /**
  * The server answer → rows: unwrapped (`{data}` or bare), ONE row per userId
  * (a duplicate merges its days into the first), sorted supervisor → office →
@@ -144,6 +175,7 @@ export function normalizarPersonas(res: unknown): PersonaDelHorario[] {
       for (const d of dias) if (!fechas.has(d.date)) ya.days.push(d);
       ya.hasSchedule = ya.hasSchedule || !!p?.hasSchedule;
       ya.assigned = ya.assigned || !!p?.assigned;
+      ya.pendingInvite = ya.pendingInvite || invitacionPendiente(p);
       continue;
     }
     porId.set(userId, {
@@ -154,6 +186,7 @@ export function normalizarPersonas(res: unknown): PersonaDelHorario[] {
       hasSchedule: !!p?.hasSchedule,
       assigned: !!p?.assigned,
       days: dias,
+      pendingInvite: invitacionPendiente(p),
     });
   }
   const out = [...porId.values()];

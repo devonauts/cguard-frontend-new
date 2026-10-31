@@ -12149,7 +12149,9 @@
       "yseRepite": "· and repeats",
       "eliminarTurnosYNovedades": "Delete the selected shifts and reports (Del)",
       "menuCorrerCiclo": "Shift {{nombre}}'s cycle…",
-      "irAEstaciones": "Go to Stations"
+      "irAEstaciones": "Go to Stations",
+      "moverCoberturaDel": "Move the coverage of {{dia}}",
+      "moverDePuesto": "Move the guard to another post"
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",
@@ -16864,7 +16866,36 @@
       "cambioDirectoTitulo": "This change goes straight to the live schedule",
       "cambioDirectoMensaje": "You have {{n}} unpublished change(s) in the draft. Saving this change makes the Planner re-read the live schedule and the draft is lost. To keep it, publish it first.",
       "cambioDirectoSeguir": "Continue and discard the draft",
-      "cambioDirectoVolver": "Go back"
+      "cambioDirectoVolver": "Go back",
+      "borradorViejo": "There was an unpublished draft older than a week; it was discarded.",
+      "borradorOtraSemana": "The unpublished draft was made for another week and no longer fits the calendar; it was discarded.",
+      "otroGuardo": "{{quien}} also changed the draft; their changes were merged with yours.",
+      "otraPersona": "Someone else",
+      "borradorAbierto": "The unpublished draft was opened (saved by {{quien}}). Publish it or discard it.",
+      "realCambio": "The live schedule changed under the draft; your changes stay on top of the new one.",
+      "choques": "You and someone else changed this at the same time; your version was kept: {{lista}}",
+      "borradorYaNoEsta": "Someone else published or discarded the draft. The live schedule was read again with your changes on top.",
+      "salirTituloServidor": "There are unsaved changes",
+      "salirMensajeServidor": "Your latest draft changes have not reached the server yet. If you leave now, they are lost.",
+      "salirSinGuardar": "Leave anyway",
+      "descartarMensajeCompartido": "The {{n}} unpublished changes are lost, also for anyone else editing it, and the live schedule is shown again.",
+      "guardadoEnServidor": "Saved for the whole team",
+      "noSeGuardo": "Could not save; it retries on the next change",
+      "guardando": "Saving…",
+      "tambienEditando": "Also editing: {{quien}}",
+      "tituloBorrador": "Schedule · draft",
+      "filtroEstacion": "Station",
+      "todasLasEstaciones": "All stations",
+      "filtroTurno": "Shift type",
+      "todosLosTurnos": "All shifts",
+      "noSePublico": "Nothing was published. Try again.",
+      "cambioAsignacion": "changed the assignment of",
+      "cambioMarca": "changed a mark of",
+      "cambioTurno": "changed a shift of",
+      "cerrar": "Close",
+      "recargarConLoNuevo": "Reload with the latest and review",
+      "publicandoDeUnaVez": "Publishing everything at once…",
+      "publicarDetalleTodo": "This writes to the live schedule: the control room, the Schedule and the guards in their app will see it. It goes all at once: if one change fails, nothing is published."
     },
     "AvisoRetiradaHorario": {
       "titulo": "This screen is going away: the Planner is the new one",
@@ -18487,7 +18518,11 @@
       "trabaja": "Working",
       "verSinHorario": "See who has no schedule",
       "vigilantes": "Guards",
-      "almuerzo": "lunch {{start}}–{{end}}"
+      "almuerzo": "lunch {{start}}–{{end}}",
+      "sinTurnos": "No shifts",
+      "sinTurnosPuesto": "Their post has no shifts on these days",
+      "invitacionPendiente": "Invite pending",
+      "invitacionPendienteAyuda": "The invite was sent and they have not signed in yet. You can already give them a schedule."
     },
     "OfficeHours": {
       "copiarLunes": "Copy Monday to all",
@@ -18754,6 +18789,15 @@
       "descansoCorto": "Only {{h}} h of rest",
       "ofertaEnviada": "Offer sent to the available guards.",
       "noSePudoOfrecer": "Could not offer"
+    },
+    "HorarioModos": {
+      "modos": "Schedule mode",
+      "enVivo": "Live",
+      "borrador": "Draft",
+      "hayBorradorEditando": "There is an unpublished draft; {{quien}} is editing it now.",
+      "hayBorrador": "There is an unpublished draft (saved by {{quien}}).",
+      "ayudaVivo": "Every change is saved to the live schedule right away.",
+      "ayudaBorrador": "Nothing reaches the live schedule until «Publish». The draft is shared with your team."
     }
   },
   "map": {

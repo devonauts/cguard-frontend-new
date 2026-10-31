@@ -12149,7 +12149,9 @@
       "yseRepite": "· e se repete",
       "eliminarTurnosYNovedades": "Excluir os turnos e ocorrências da seleção (Del)",
       "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…",
-      "irAEstaciones": "Ir para Estações"
+      "irAEstaciones": "Ir para Estações",
+      "moverCoberturaDel": "Mover a cobertura de {{dia}}",
+      "moverDePuesto": "Mover o vigilante de posto"
     },
     "ScheduleTimeline": {
       "duracion": "Duração:",
@@ -16864,7 +16866,36 @@
       "cambioDirectoTitulo": "Esta mudança vai direto para a escala real",
       "cambioDirectoMensaje": "Você tem {{n}} mudança(s) não publicada(s) no rascunho. Ao salvar esta mudança o Planejador relê a escala real e o rascunho se perde. Para mantê-lo, publique-o primeiro.",
       "cambioDirectoSeguir": "Continuar e descartar o rascunho",
-      "cambioDirectoVolver": "Voltar"
+      "cambioDirectoVolver": "Voltar",
+      "borradorViejo": "Havia um rascunho não publicado com mais de uma semana; foi descartado.",
+      "borradorOtraSemana": "O rascunho não publicado era de outra semana e não se encaixa mais no calendário; foi descartado.",
+      "otroGuardo": "{{quien}} também alterou o rascunho; as alterações foram combinadas com as suas.",
+      "otraPersona": "Outra pessoa",
+      "borradorAbierto": "O rascunho não publicado foi aberto (salvo por {{quien}}). Publique ou descarte.",
+      "realCambio": "A escala real mudou por baixo do rascunho; suas alterações continuam por cima da nova.",
+      "choques": "Você e outra pessoa alteraram isto ao mesmo tempo; ficou a sua versão: {{lista}}",
+      "borradorYaNoEsta": "Outra pessoa publicou ou descartou o rascunho. A escala real foi lida de novo com suas alterações por cima.",
+      "salirTituloServidor": "Há alterações não salvas",
+      "salirMensajeServidor": "Suas últimas alterações do rascunho ainda não chegaram ao servidor. Se sair agora, elas se perdem.",
+      "salirSinGuardar": "Sair mesmo assim",
+      "descartarMensajeCompartido": "As {{n}} alterações não publicadas se perdem, também para quem mais estiver editando, e a escala real volta a aparecer.",
+      "guardadoEnServidor": "Salvo para toda a equipe",
+      "noSeGuardo": "Não foi possível salvar; tenta de novo na próxima alteração",
+      "guardando": "Salvando…",
+      "tambienEditando": "Também está editando: {{quien}}",
+      "tituloBorrador": "Escala · rascunho",
+      "filtroEstacion": "Posto",
+      "todasLasEstaciones": "Todos os postos",
+      "filtroTurno": "Tipo de turno",
+      "todosLosTurnos": "Todos os turnos",
+      "noSePublico": "Nada foi publicado. Tente novamente.",
+      "cambioAsignacion": "alterou a designação de",
+      "cambioMarca": "alterou uma ocorrência de",
+      "cambioTurno": "alterou um turno de",
+      "cerrar": "Fechar",
+      "recargarConLoNuevo": "Recarregar com o mais recente e revisar",
+      "publicandoDeUnaVez": "Publicando tudo de uma vez…",
+      "publicarDetalleTodo": "Isto grava na escala real: a central, a Escala e os vigilantes no app verão. Vai tudo de uma vez: se uma alteração falhar, nada é publicado."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta tela vai sair: o Planejador é a nova",
@@ -18487,7 +18518,11 @@
       "trabaja": "Trabalha",
       "verSinHorario": "Ver quem não tem horário",
       "vigilantes": "Vigilantes",
-      "almuerzo": "almoço {{start}}–{{end}}"
+      "almuerzo": "almoço {{start}}–{{end}}",
+      "sinTurnos": "Sem turnos",
+      "sinTurnosPuesto": "O posto não tem turnos nestes dias",
+      "invitacionPendiente": "Convite pendente",
+      "invitacionPendienteAyuda": "O convite foi enviado e a pessoa ainda não entrou. Já é possível atribuir uma escala."
     },
     "OfficeHours": {
       "copiarLunes": "Copiar segunda para todos",
@@ -18754,6 +18789,15 @@
       "descansoCorto": "Só {{h}} h de descanso",
       "ofertaEnviada": "Oferta enviada aos vigilantes disponíveis.",
       "noSePudoOfrecer": "Não foi possível oferecer"
+    },
+    "HorarioModos": {
+      "modos": "Modo da escala",
+      "enVivo": "Ao vivo",
+      "borrador": "Rascunho",
+      "hayBorradorEditando": "Há um rascunho não publicado; {{quien}} está editando agora.",
+      "hayBorrador": "Há um rascunho não publicado (salvo por {{quien}}).",
+      "ayudaVivo": "Cada alteração é salva na hora na escala real.",
+      "ayudaBorrador": "Nada chega à escala real até «Publicar». O rascunho é compartilhado com sua equipe."
     }
   },
   "map": {

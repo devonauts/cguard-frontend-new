@@ -12149,7 +12149,9 @@
       "yseRepite": "· y se repite",
       "eliminarTurnosYNovedades": "Eliminar los turnos y novedades de la selección (Supr)",
       "menuCorrerCiclo": "Correr ciclo de {{nombre}}…",
-      "irAEstaciones": "Ir a Estaciones"
+      "irAEstaciones": "Ir a Estaciones",
+      "moverCoberturaDel": "Mover la cobertura del {{dia}}",
+      "moverDePuesto": "Mover al vigilante de puesto"
     },
     "ScheduleTimeline": {
       "duracion": "Duración:",
@@ -16864,7 +16866,36 @@
       "cambioDirectoTitulo": "Este cambio va directo al horario real",
       "cambioDirectoMensaje": "Tienes {{n}} cambio(s) sin publicar en el borrador. Al guardar este cambio el Planificador vuelve a leer el horario real y el borrador se pierde. Si quieres conservarlo, publícalo primero.",
       "cambioDirectoSeguir": "Seguir y descartar el borrador",
-      "cambioDirectoVolver": "Volver"
+      "cambioDirectoVolver": "Volver",
+      "borradorViejo": "Había un borrador sin publicar de hace más de una semana; se descartó.",
+      "borradorOtraSemana": "El borrador sin publicar era de otra semana y ya no encaja en el calendario; se descartó.",
+      "otroGuardo": "{{quien}} también cambió el borrador; se juntaron sus cambios con los tuyos.",
+      "otraPersona": "Otra persona",
+      "borradorAbierto": "Se abrió el borrador sin publicar (guardado por {{quien}}). Publícalo o descártalo.",
+      "realCambio": "El horario real cambió debajo del borrador; tus cambios siguen encima de lo nuevo.",
+      "choques": "Esto lo cambiaron tú y otra persona a la vez; se quedó tu versión: {{lista}}",
+      "borradorYaNoEsta": "Otra persona publicó o descartó el borrador. Se volvió a leer el horario real con tus cambios encima.",
+      "salirTituloServidor": "Hay cambios sin guardar",
+      "salirMensajeServidor": "Tus últimos cambios del borrador todavía no llegaron al servidor. Si sales ahora, se pierden.",
+      "salirSinGuardar": "Salir igual",
+      "descartarMensajeCompartido": "Se pierden los {{n}} cambios sin publicar, también para quien más lo esté editando, y vuelve a verse el horario real.",
+      "guardadoEnServidor": "Guardado para todo el equipo",
+      "noSeGuardo": "No se pudo guardar; se reintenta al próximo cambio",
+      "guardando": "Guardando…",
+      "tambienEditando": "También lo está editando: {{quien}}",
+      "tituloBorrador": "Horario · borrador",
+      "filtroEstacion": "Estación",
+      "todasLasEstaciones": "Todas las estaciones",
+      "filtroTurno": "Tipo de turno",
+      "todosLosTurnos": "Todos los turnos",
+      "noSePublico": "No se publicó nada. Inténtalo de nuevo.",
+      "cambioAsignacion": "cambió la asignación de",
+      "cambioMarca": "cambió una novedad de",
+      "cambioTurno": "cambió un turno de",
+      "cerrar": "Cerrar",
+      "recargarConLoNuevo": "Recargar con lo nuevo y revisar",
+      "publicandoDeUnaVez": "Publicando todo de una vez…",
+      "publicarDetalleTodo": "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app. Va todo de una vez: si un cambio falla, no se publica nada."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta pantalla se va a retirar: el Planificador es la nueva",
@@ -18487,7 +18518,11 @@
       "trabaja": "Trabaja",
       "verSinHorario": "Ver quién no tiene horario",
       "vigilantes": "Vigilantes",
-      "almuerzo": "almuerzo {{start}}–{{end}}"
+      "almuerzo": "almuerzo {{start}}–{{end}}",
+      "sinTurnos": "Sin turnos",
+      "sinTurnosPuesto": "Su puesto no tiene turnos en estos días",
+      "invitacionPendiente": "Invitación pendiente",
+      "invitacionPendienteAyuda": "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario."
     },
     "OfficeHours": {
       "copiarLunes": "Copiar el lunes a todos",
@@ -18754,6 +18789,15 @@
       "descansoCorto": "Solo {{h}} h de descanso",
       "ofertaEnviada": "Oferta enviada a los vigilantes disponibles.",
       "noSePudoOfrecer": "No se pudo ofrecer"
+    },
+    "HorarioModos": {
+      "modos": "Modo del horario",
+      "enVivo": "En vivo",
+      "borrador": "Borrador",
+      "hayBorradorEditando": "Hay un borrador sin publicar; ahora lo está editando {{quien}}.",
+      "hayBorrador": "Hay un borrador sin publicar (lo guardó {{quien}}).",
+      "ayudaVivo": "Cada cambio se guarda al momento en el horario real.",
+      "ayudaBorrador": "Nada llega al horario real hasta «Publicar». El borrador se comparte con tu equipo."
     }
   },
   "map": {

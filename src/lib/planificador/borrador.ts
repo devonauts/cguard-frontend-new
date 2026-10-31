@@ -10,10 +10,11 @@
  *  - cuándo el borrador difiere del horario real (lo dice la lista de cambios
  *    de «Publicar», no el contador de toques) y cuándo hay que frenar a quien
  *    se va;
- *  - guardarlo por empresa en el navegador para que cerrar la pestaña no lo
- *    pierda en silencio, y sólo devolverlo si el horario real sigue siendo el
- *    mismo contra el que se hizo: un borrador viejo sobre un horario que cambió
- *    publicaría la vuelta atrás de lo que otro hizo entretanto.
+ *  - cuándo un borrador guardado es demasiado viejo para devolverlo.
+ *
+ * Desde la fase 2 (2026-10-31) el borrador vive en el SERVIDOR, compartido por
+ * quienes editan ese horario (`servidor.ts`), y cuando el horario real cambia
+ * debajo se combina en vez de tirarse (`rebase.ts`).
  */
 import type { Plan } from "./motor";
 
@@ -44,9 +45,22 @@ export function estadoDelBorrador(
   };
 }
 
-/** Huella corta de lo leído del servidor (djb2 sobre el JSON). */
+/**
+ * JSON with object keys sorted. The draft goes through a MySQL JSON column,
+ * which reorders keys: a plain `JSON.stringify` of the same plan read back
+ * gives a different string.
+ */
+export function jsonEstable(v: unknown): string {
+  return JSON.stringify(v, (_k, x) =>
+    x && typeof x === "object" && !Array.isArray(x)
+      ? Object.fromEntries(Object.keys(x).sort().map((k) => [k, x[k]]))
+      : x,
+  );
+}
+
+/** Huella corta de lo leído del servidor (djb2 sobre el JSON, claves ordenadas). */
 export function firmaDe(plan: Plan): string {
-  const s = JSON.stringify(plan);
+  const s = jsonEstable(plan);
   let h = 5381;
 
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
@@ -54,88 +68,37 @@ export function firmaDe(plan: Plan): string {
   return `${s.length}.${(h >>> 0).toString(36)}`;
 }
 
-export interface BorradorGuardado {
-  v: 1;
-  /** El lunes que es el día 0: otro lunes, otros índices. */
-  base: string;
-  /** `firmaDe` del horario real contra el que se hizo. */
-  firma: string;
-  toques: number;
-  guardado: number;
-  plan: Plan;
-}
-
-type Almacen = Pick<Storage, "getItem" | "setItem" | "removeItem">;
-
+/** Where older versions kept the draft in the browser: removed on sight. */
 export const claveDelBorrador = (tenantId: string) =>
   `planificador.borrador.${tenantId}`;
 
-export function guardarBorrador(
-  almacen: Almacen | null | undefined,
-  tenantId: string,
-  b: Omit<BorradorGuardado, "v" | "guardado">,
+/** Borradores sin tocar en más de una semana no se devuelven: nadie se acuerda de ellos. */
+export const VIDA_DEL_BORRADOR_MS = 7 * 86_400_000;
+
+export function borradorCaducado(
+  updatedAt: string | null | undefined,
   ahora = Date.now(),
 ): boolean {
-  if (!almacen || !tenantId) return false;
-  try {
-    const g: BorradorGuardado = { v: 1, guardado: ahora, ...b };
+  const t = Date.parse(String(updatedAt || ""));
 
-    almacen.setItem(claveDelBorrador(tenantId), JSON.stringify(g));
-
-    return true;
-  } catch {
-    // Lleno, bloqueado o en una ventana privada: el borrador sigue en memoria.
-    return false;
-  }
+  return Number.isFinite(t) && ahora - t > VIDA_DEL_BORRADOR_MS;
 }
 
-export function olvidarBorrador(
-  almacen: Almacen | null | undefined,
-  tenantId: string,
-) {
-  if (!almacen || !tenantId) return;
-  try {
-    almacen.removeItem(claveDelBorrador(tenantId));
-  } catch {
-    /* nada que hacer */
-  }
-}
+/**
+ * The draft's day 0 is the Monday it was made on. While it lives (a week at
+ * most) the editor opens on THAT Monday so the plan's day indexes still mean
+ * the same dates; an older or missing base falls back to this week.
+ */
+export function baseParaAbrir(
+  baseDelBorrador: string | null | undefined,
+  lunesDeHoy: string,
+): string {
+  if (!baseDelBorrador || !/^\d{4}-\d{2}-\d{2}$/.test(baseDelBorrador))
+    return lunesDeHoy;
+  const dias =
+    (Date.parse(`${lunesDeHoy}T00:00:00Z`) -
+      Date.parse(`${baseDelBorrador}T00:00:00Z`)) /
+    86_400_000;
 
-export type Recuperado =
-  | { tipo: "ninguno" }
-  /** El horario real cambió (o es otra semana): ese borrador ya no aplica. */
-  | { tipo: "caducado"; guardado: number }
-  | { tipo: "ok"; plan: Plan; toques: number; guardado: number };
-
-/** Borradores de más de una semana no se devuelven: nadie se acuerda de ellos. */
-const VIDA_MS = 7 * 86_400_000;
-
-export function leerBorrador(
-  almacen: Almacen | null | undefined,
-  tenantId: string,
-  base: string,
-  firma: string,
-  ahora = Date.now(),
-): Recuperado {
-  if (!almacen || !tenantId) return { tipo: "ninguno" };
-  let g: BorradorGuardado | null = null;
-
-  try {
-    const s = almacen.getItem(claveDelBorrador(tenantId));
-
-    g = s ? (JSON.parse(s) as BorradorGuardado) : null;
-  } catch {
-    g = null;
-  }
-  if (!g || g.v !== 1 || !g.plan || !Array.isArray(g.plan.personas))
-    return { tipo: "ninguno" };
-  if (g.base !== base || g.firma !== firma || ahora - g.guardado > VIDA_MS)
-    return { tipo: "caducado", guardado: g.guardado };
-
-  return {
-    tipo: "ok",
-    plan: g.plan,
-    toques: g.toques || 1,
-    guardado: g.guardado,
-  };
+  return dias >= 0 && dias <= 14 && dias % 7 === 0 ? baseDelBorrador : lunesDeHoy;
 }

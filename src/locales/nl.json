@@ -12684,7 +12684,9 @@
       "yseRepite": "· en herhaalt zich",
       "eliminarTurnosYNovedades": "Geselecteerde diensten en bijzonderheden verwijderen (Del)",
       "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…",
-      "irAEstaciones": "Naar posten"
+      "irAEstaciones": "Naar posten",
+      "moverCoberturaDel": "De dekking van {{dia}} verplaatsen",
+      "moverDePuesto": "De beveiliger naar een andere post verplaatsen"
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",
@@ -17399,7 +17401,36 @@
       "cambioDirectoTitulo": "Deze wijziging gaat direct naar het echte rooster",
       "cambioDirectoMensaje": "Je hebt {{n}} niet-gepubliceerde wijziging(en) in het concept. Bij opslaan leest de Planner het echte rooster opnieuw en gaat het concept verloren. Publiceer het eerst om het te bewaren.",
       "cambioDirectoSeguir": "Doorgaan en concept weggooien",
-      "cambioDirectoVolver": "Terug"
+      "cambioDirectoVolver": "Terug",
+      "borradorViejo": "Er was een ongepubliceerd concept van meer dan een week oud; het is verwijderd.",
+      "borradorOtraSemana": "Het ongepubliceerde concept was van een andere week en past niet meer in de kalender; het is verwijderd.",
+      "otroGuardo": "{{quien}} heeft het concept ook gewijzigd; de wijzigingen zijn samengevoegd met die van jou.",
+      "otraPersona": "Iemand anders",
+      "borradorAbierto": "Het ongepubliceerde concept is geopend (opgeslagen door {{quien}}). Publiceer of verwijder het.",
+      "realCambio": "Het echte rooster is onder het concept veranderd; je wijzigingen blijven bovenop het nieuwe staan.",
+      "choques": "Jij en iemand anders hebben dit tegelijk gewijzigd; jouw versie is behouden: {{lista}}",
+      "borradorYaNoEsta": "Iemand anders heeft het concept gepubliceerd of verwijderd. Het echte rooster is opnieuw gelezen met jouw wijzigingen erbovenop.",
+      "salirTituloServidor": "Er zijn niet-opgeslagen wijzigingen",
+      "salirMensajeServidor": "Je laatste wijzigingen in het concept zijn nog niet op de server. Als je nu weggaat, gaan ze verloren.",
+      "salirSinGuardar": "Toch weggaan",
+      "descartarMensajeCompartido": "De {{n}} ongepubliceerde wijzigingen gaan verloren, ook voor anderen die het bewerken, en het echte rooster wordt weer getoond.",
+      "guardadoEnServidor": "Opgeslagen voor het hele team",
+      "noSeGuardo": "Opslaan mislukt; opnieuw bij de volgende wijziging",
+      "guardando": "Opslaan…",
+      "tambienEditando": "Bewerkt ook: {{quien}}",
+      "tituloBorrador": "Rooster · concept",
+      "filtroEstacion": "Post",
+      "todasLasEstaciones": "Alle posten",
+      "filtroTurno": "Diensttype",
+      "todosLosTurnos": "Alle diensten",
+      "noSePublico": "Er is niets gepubliceerd. Probeer het opnieuw.",
+      "cambioAsignacion": "wijzigde de toewijzing van",
+      "cambioMarca": "wijzigde een melding van",
+      "cambioTurno": "wijzigde een dienst van",
+      "cerrar": "Sluiten",
+      "recargarConLoNuevo": "Opnieuw laden met het nieuwste en controleren",
+      "publicandoDeUnaVez": "Alles in één keer publiceren…",
+      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",
@@ -19022,7 +19053,11 @@
       "trabaja": "Werkt",
       "verSinHorario": "Bekijk wie geen rooster heeft",
       "vigilantes": "Beveiligers",
-      "almuerzo": "lunch {{start}}–{{end}}"
+      "almuerzo": "lunch {{start}}–{{end}}",
+      "sinTurnos": "Geen diensten",
+      "sinTurnosPuesto": "Hun post heeft op deze dagen geen diensten",
+      "invitacionPendiente": "Uitnodiging openstaand",
+      "invitacionPendienteAyuda": "De uitnodiging is verstuurd en de persoon heeft nog niet ingelogd. Je kunt al een rooster toewijzen."
     },
     "OfficeHours": {
       "copiarLunes": "Maandag naar alle kopiëren",
@@ -19289,6 +19324,15 @@
       "descansoCorto": "Slechts {{h}} u rust",
       "ofertaEnviada": "Aanbod verstuurd naar de beschikbare bewakers.",
       "noSePudoOfrecer": "Kon niet aanbieden"
+    },
+    "HorarioModos": {
+      "modos": "Roostermodus",
+      "enVivo": "Live",
+      "borrador": "Concept",
+      "hayBorradorEditando": "Er is een ongepubliceerd concept; {{quien}} bewerkt het nu.",
+      "hayBorrador": "Er is een ongepubliceerd concept (opgeslagen door {{quien}}).",
+      "ayudaVivo": "Elke wijziging wordt direct in het echte rooster opgeslagen.",
+      "ayudaBorrador": "Niets komt in het echte rooster tot «Publiceren». Het concept wordt gedeeld met je team."
     }
   },
   "visitantes": {

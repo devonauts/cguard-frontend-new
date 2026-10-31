@@ -12684,7 +12684,9 @@
       "yseRepite": "· et se répète",
       "eliminarTurnosYNovedades": "Supprimer les vacations et événements sélectionnés (Suppr)",
       "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…",
-      "irAEstaciones": "Aller aux postes"
+      "irAEstaciones": "Aller aux postes",
+      "moverCoberturaDel": "Déplacer la couverture du {{dia}}",
+      "moverDePuesto": "Changer l’agent de poste"
     },
     "ScheduleTimeline": {
       "duracion": "Durée :",
@@ -17399,7 +17401,36 @@
       "cambioDirectoTitulo": "Ce changement va directement au planning réel",
       "cambioDirectoMensaje": "Vous avez {{n}} changement(s) non publié(s) dans le brouillon. En enregistrant ce changement, le Planificateur relit le planning réel et le brouillon est perdu. Pour le garder, publiez-le d’abord.",
       "cambioDirectoSeguir": "Continuer et abandonner le brouillon",
-      "cambioDirectoVolver": "Revenir"
+      "cambioDirectoVolver": "Revenir",
+      "borradorViejo": "Un brouillon non publié de plus d’une semaine a été abandonné.",
+      "borradorOtraSemana": "Le brouillon non publié datait d’une autre semaine et ne correspond plus au calendrier ; il a été abandonné.",
+      "otroGuardo": "{{quien}} a aussi modifié le brouillon ; ses modifications ont été fusionnées avec les vôtres.",
+      "otraPersona": "Quelqu’un d’autre",
+      "borradorAbierto": "Le brouillon non publié a été ouvert (enregistré par {{quien}}). Publiez-le ou abandonnez-le.",
+      "realCambio": "Le planning réel a changé sous le brouillon ; vos modifications restent par-dessus le nouveau.",
+      "choques": "Vous et quelqu’un d’autre avez modifié ceci en même temps ; votre version a été conservée : {{lista}}",
+      "borradorYaNoEsta": "Quelqu’un d’autre a publié ou abandonné le brouillon. Le planning réel a été relu avec vos modifications par-dessus.",
+      "salirTituloServidor": "Des modifications ne sont pas enregistrées",
+      "salirMensajeServidor": "Vos dernières modifications du brouillon ne sont pas encore arrivées au serveur. Si vous partez maintenant, elles sont perdues.",
+      "salirSinGuardar": "Quitter quand même",
+      "descartarMensajeCompartido": "Les {{n}} modifications non publiées sont perdues, aussi pour les autres personnes qui l’éditent, et le planning réel réapparaît.",
+      "guardadoEnServidor": "Enregistré pour toute l’équipe",
+      "noSeGuardo": "Impossible d’enregistrer ; nouvel essai à la prochaine modification",
+      "guardando": "Enregistrement…",
+      "tambienEditando": "Édite aussi : {{quien}}",
+      "tituloBorrador": "Planning · brouillon",
+      "filtroEstacion": "Poste",
+      "todasLasEstaciones": "Tous les postes",
+      "filtroTurno": "Type de service",
+      "todosLosTurnos": "Tous les services",
+      "noSePublico": "Rien n’a été publié. Réessayez.",
+      "cambioAsignacion": "a modifié l’affectation de",
+      "cambioMarca": "a modifié une absence de",
+      "cambioTurno": "a modifié un service de",
+      "cerrar": "Fermer",
+      "recargarConLoNuevo": "Recharger avec le plus récent et vérifier",
+      "publicandoDeUnaVez": "Publication de tout en une fois…",
+      "publicarDetalleTodo": "Ceci écrit dans le planning réel : la centrale, le Planning et les agents dans leur application le verront. Tout part en une fois : si une modification échoue, rien n’est publié."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Cet écran va disparaître : le Planificateur est le nouveau",
@@ -19022,7 +19053,11 @@
       "trabaja": "Travaille",
       "verSinHorario": "Voir qui n’a pas d’horaire",
       "vigilantes": "Agents",
-      "almuerzo": "déjeuner {{start}}–{{end}}"
+      "almuerzo": "déjeuner {{start}}–{{end}}",
+      "sinTurnos": "Aucun service",
+      "sinTurnosPuesto": "Son poste n’a aucun service ces jours-ci",
+      "invitacionPendiente": "Invitation en attente",
+      "invitacionPendienteAyuda": "L’invitation a été envoyée et la personne ne s’est pas encore connectée. Vous pouvez déjà lui attribuer un planning."
     },
     "OfficeHours": {
       "copiarLunes": "Copier le lundi partout",
@@ -19289,6 +19324,15 @@
       "descansoCorto": "Seulement {{h}} h de repos",
       "ofertaEnviada": "Offre envoyée aux agents disponibles.",
       "noSePudoOfrecer": "Impossible de proposer"
+    },
+    "HorarioModos": {
+      "modos": "Mode du planning",
+      "enVivo": "En direct",
+      "borrador": "Brouillon",
+      "hayBorradorEditando": "Un brouillon non publié existe ; {{quien}} l’édite en ce moment.",
+      "hayBorrador": "Un brouillon non publié existe (enregistré par {{quien}}).",
+      "ayudaVivo": "Chaque modification est enregistrée aussitôt dans le planning réel.",
+      "ayudaBorrador": "Rien n’arrive au planning réel avant « Publier ». Le brouillon est partagé avec votre équipe."
     }
   },
   "visitantes": {
