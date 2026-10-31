@@ -372,7 +372,12 @@ export function useNotificationStream(
        aparecía de golpe en la siguiente carga de página, con horas viejas y
        sin avisar. Ahora cada reconexión vuelve a leer el historial y lo funde
        (sin sonar: son avisos que ya pasaron). */
-    let yaConecto = false;
+    /* The socket is SHARED: when this hook mounts on a socket that is already
+       connected, its `connect` will not fire until the NEXT connection — which
+       is a reconnection (events were missed), not the first one. */
+    let yaConecto = socket.connected;
+
+    if (socket.connected) setConnected(true);
 
     rafagaRef.current = crearRafaga<PlatformNotification>(
       VENTANA_DE_RAFAGA_MS,
