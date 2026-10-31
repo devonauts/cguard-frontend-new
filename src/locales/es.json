@@ -20279,6 +20279,211 @@
           "sinNovedad": "Sin ofertas por ahora",
           "tuyo": "¡El turno es tuyo!"
         }
+      },
+      "monitoreo": {
+        "escenas": {
+          "senal": "La señal",
+          "despacho": "El despacho",
+          "supervision": "Paneles"
+        },
+        "sitio": "Bodegas Río Claro",
+        "teclado": {
+          "armado": "Sistema armado",
+          "alarma": "Alarma Z01"
+        },
+        "zonas": {
+          "z1": "Z01 Puerta principal",
+          "z2": "Z02 Bodega",
+          "z3": "Z03 Oficinas"
+        },
+        "senal": "Intrusión · Z01",
+        "cola": {
+          "titulo": "Cola de alarmas",
+          "n": "{{n}} en cola"
+        },
+        "caso": {
+          "prioridad": "P1",
+          "titulo": "Intrusión · Puerta principal",
+          "numero": "Caso A-2291 · Bodegas Río Claro"
+        },
+        "otra": {
+          "prioridad": "P4",
+          "texto": "Apertura · Farmacia San Telmo"
+        },
+        "estado": {
+          "cola": "En cola",
+          "reconocida": "Reconocida",
+          "verificada": "Alarma real",
+          "despachada": "Despachada",
+          "enSitio": "En sitio",
+          "cerrada": "Cerrada"
+        },
+        "plan": {
+          "titulo": "Plan de acción del sitio",
+          "llamar": "Llamar",
+          "verificar": "Verificar",
+          "despachar": "Despachar",
+          "avisar": "Avisar"
+        },
+        "llamadas": {
+          "titulo": "Lista de llamadas"
+        },
+        "contactos": {
+          "andrea": "Andrea Salas · Gerente",
+          "jorge": "Jorge Paz · Encargado"
+        },
+        "llamada": {
+          "llamando": "Llamando…",
+          "noContesta": "No contesta",
+          "contesto": "Contestó"
+        },
+        "unidad": {
+          "nombre": "Diego Rivas · Supervisor M-04",
+          "eta": "Llega en {{n}} min",
+          "enSitio": "En el sitio",
+          "cerrado": "Informe enviado"
+        },
+        "rastro": {
+          "titulo": "Rastro del caso",
+          "senal": "Señal de intrusión en Z01",
+          "reconoce": "Laura reconoce la alarma",
+          "llamada": "Jorge Paz: no hay nadie dentro",
+          "despacho": "Diego Rivas despachado",
+          "enSitio": "En sitio: puerta forzada, sin intrusos",
+          "cierre": "Cerrado · informe al cliente"
+        },
+        "sup": {
+          "titulo": "Supervisión de paneles",
+          "enLinea": "{{n}} de 12 en línea",
+          "alertas": "Alertas de supervisión",
+          "sinSenal": "Farmacia San Telmo · sin señal",
+          "hace": "hace 25 min",
+          "llamada": "Rosa Medina: se fue la luz en la cuadra",
+          "restaurado": "Panel restaurado: vuelve a reportar"
+        },
+        "kpi": {
+          "paneles": "Paneles",
+          "senales": "Señales hoy",
+          "sinSenal": "Sin señal"
+        },
+        "etiqueta": {
+          "sinSenal": "Sin señal",
+          "restaurado": "En línea"
+        },
+        "pasos": {
+          "disparo": "Bodegas Río Claro: intrusión en la zona 1, Puerta principal",
+          "cola": "La señal entra como P1, arriba de la cola, con el plan del sitio",
+          "reconoce": "Laura la reconoce y empieza la lista de llamadas",
+          "contacto": "Andrea no contesta; Jorge Paz confirma que no hay nadie",
+          "verificada": "Alarma real: toca despachar",
+          "despacho": "Despachas a Diego Rivas: le llega a su app con la ruta",
+          "enSitio": "Diego llega: puerta forzada, nadie dentro",
+          "cierre": "Caso cerrado: el cliente recibe el informe",
+          "prueba": "Los 12 paneles reportan su prueba periódica",
+          "sinSenal": "Farmacia San Telmo deja de reportar: la alerta se abre sola",
+          "llama": "Llamas a Rosa Medina: se fue la luz en la cuadra",
+          "restaurado": "Vuelve la luz y el panel se restaura"
+        },
+        "resultado": {
+          "senal": "Cada alarma llega con su plan: nadie improvisa a las 2 de la mañana",
+          "despacho": "Del disparo al informe en 17 minutos, todo con hora y nombre",
+          "supervision": "Si un panel deja de reportar, te enteras en minutos"
+        }
+      },
+      "video": {
+        "escenas": {
+          "conectar": "Conectar",
+          "evento": "Un evento",
+          "despacho": "Despacho"
+        },
+        "muro": "Muro de video",
+        "enVivo": "{{n}} en vivo",
+        "vivo": "En vivo",
+        "sinSenal": "Sin señal",
+        "camaras": {
+          "entrada": "Entrada",
+          "estacionamiento": "Estacionamiento",
+          "patio": "Patio de carga",
+          "porton": "Portón · Bodega Norte"
+        },
+        "persona": "Persona 94 %",
+        "equipos": {
+          "titulo": "Equipos de video",
+          "nvr": "NVR · Plaza Los Álamos",
+          "relay": "Relay · Bodega Norte",
+          "sinPuertos": "Sin abrir puertos ni IP fija"
+        },
+        "estado": {
+          "conectando": "Conectando…",
+          "enLinea": "En línea",
+          "transmitiendo": "Transmitiendo"
+        },
+        "kpi": {
+          "camaras": "Cámaras en vivo",
+          "sitios": "Sitios",
+          "puertos": "Puertos abiertos"
+        },
+        "eventos": {
+          "titulo": "Eventos de video",
+          "nuevos": "Nuevos: {{n}}",
+          "persona": "Persona detectada · Patio de carga",
+          "movimiento": "Movimiento · Estacionamiento",
+          "reconectada": "Cámara reconectada · Entrada"
+        },
+        "clip": {
+          "titulo": "Clip",
+          "rango": "Patio de carga · 23:41:05 → 23:41:35",
+          "recortar": "Recortar clip",
+          "marcando": "Marcando el momento…",
+          "guardado": "Clip guardado"
+        },
+        "linea": {
+          "marcando": "Marcando…",
+          "listo": "Clip 0:30"
+        },
+        "incidente": {
+          "titulo": "Incidente I-0482 · Plaza Los Álamos",
+          "abierto": "Abierto",
+          "enSitio": "Supervisora en sitio"
+        },
+        "sup": {
+          "nombre": "Carla Méndez · Supervisora",
+          "enCamino": "En camino",
+          "enSitio": "En el sitio"
+        },
+        "evidencia": {
+          "titulo": "Evidencia",
+          "clip": "Clip · Patio de carga 23:41",
+          "vivo": "Carla ve la cámara en vivo",
+          "compartir": "Compartir con el cliente",
+          "compartido": "Enlace enviado al cliente"
+        },
+        "tel": {
+          "nombre": "Carla Méndez",
+          "despacho": "Plaza Los Álamos",
+          "vivo": "En vivo · Patio de carga",
+          "navegar": "Ir al sitio",
+          "llegue": "Llegué"
+        },
+        "pasos": {
+          "agrega": "Agregas el NVR de Plaza Los Álamos: dirección, usuario y listo",
+          "vivas": "Sus 3 cámaras aparecen en vivo en el muro",
+          "relay": "Bodega Norte no tiene IP fija: instalas el relay",
+          "relayVivo": "El relay transmite: 4 cámaras de 2 sitios en un solo muro",
+          "movimiento": "Movimiento en Patio de carga: la cámara marca a una persona",
+          "abre": "La abres en grande, en vivo",
+          "clip": "Recortas los 30 segundos que importan",
+          "clipListo": "El clip queda guardado con la hora exacta",
+          "despacha": "Despachas a Carla Méndez: el incidente ya lleva el clip",
+          "telefono": "Carla ve la misma cámara en vivo desde su teléfono",
+          "llega": "Carla llega: la persona ya salió y ella revisa el patio",
+          "comparte": "Compartes el clip con el cliente con un enlace"
+        },
+        "resultado": {
+          "conectar": "Todas tus cámaras, de todos tus sitios, en un mismo muro",
+          "evento": "Ves lo que pasa y guardas la prueba en dos clics",
+          "despacho": "Ves, verificas y actúas desde el mismo CRM"
+        }
       }
     }
   },

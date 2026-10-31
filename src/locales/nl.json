@@ -20279,6 +20279,211 @@
           "sinNovedad": "Op dit moment geen aanbiedingen",
           "tuyo": "De dienst is van jou!"
         }
+      },
+      "monitoreo": {
+        "escenas": {
+          "senal": "Het signaal",
+          "despacho": "De inzet",
+          "supervision": "Panelen"
+        },
+        "sitio": "Bodegas Río Claro",
+        "teclado": {
+          "armado": "Systeem ingeschakeld",
+          "alarma": "Alarm Z01"
+        },
+        "zonas": {
+          "z1": "Z01 Hoofdingang",
+          "z2": "Z02 Magazijn",
+          "z3": "Z03 Kantoren"
+        },
+        "senal": "Inbraak · Z01",
+        "cola": {
+          "titulo": "Alarmwachtrij",
+          "n": "{{n}} in de wachtrij"
+        },
+        "caso": {
+          "prioridad": "P1",
+          "titulo": "Inbraak · Hoofdingang",
+          "numero": "Melding A-2291 · Bodegas Río Claro"
+        },
+        "otra": {
+          "prioridad": "P4",
+          "texto": "Opening · Farmacia San Telmo"
+        },
+        "estado": {
+          "cola": "Wachtrij",
+          "reconocida": "Aangenomen",
+          "verificada": "Echt alarm",
+          "despachada": "Uitgestuurd",
+          "enSitio": "Ter plaatse",
+          "cerrada": "Gesloten"
+        },
+        "plan": {
+          "titulo": "Actieplan van het object",
+          "llamar": "Bellen",
+          "verificar": "Verifiëren",
+          "despachar": "Uitsturen",
+          "avisar": "Melden"
+        },
+        "llamadas": {
+          "titulo": "Bellijst"
+        },
+        "contactos": {
+          "andrea": "Andrea Salas · Manager",
+          "jorge": "Jorge Paz · Sleutelhouder"
+        },
+        "llamada": {
+          "llamando": "Belt…",
+          "noContesta": "Neemt niet op",
+          "contesto": "Opgenomen"
+        },
+        "unidad": {
+          "nombre": "Diego Rivas · Supervisor M-04",
+          "eta": "Over {{n}} min ter plaatse",
+          "enSitio": "Ter plaatse",
+          "cerrado": "Rapport verstuurd"
+        },
+        "rastro": {
+          "titulo": "Verloop van de melding",
+          "senal": "Inbraaksignaal op Z01",
+          "reconoce": "Laura neemt het alarm aan",
+          "llamada": "Jorge Paz: er is niemand binnen",
+          "despacho": "Diego Rivas uitgestuurd",
+          "enSitio": "Ter plaatse: deur geforceerd, geen indringers",
+          "cierre": "Gesloten · rapport naar de klant"
+        },
+        "sup": {
+          "titulo": "Paneelbewaking",
+          "enLinea": "{{n}} van 12 online",
+          "alertas": "Bewakingsmeldingen",
+          "sinSenal": "Farmacia San Telmo · geen signaal",
+          "hace": "25 min geleden",
+          "llamada": "Rosa Medina: stroomstoring in de straat",
+          "restaurado": "Paneel hersteld: meldt zich weer"
+        },
+        "kpi": {
+          "paneles": "Panelen",
+          "senales": "Signalen",
+          "sinSenal": "Geen signaal"
+        },
+        "etiqueta": {
+          "sinSenal": "Geen signaal",
+          "restaurado": "Online"
+        },
+        "pasos": {
+          "disparo": "Bodegas Río Claro: inbraak in zone 1, Hoofdingang",
+          "cola": "Het signaal komt binnen als P1, bovenaan, met het actieplan",
+          "reconoce": "Laura neemt het aan en start de bellijst",
+          "contacto": "Andrea neemt niet op; Jorge Paz bevestigt dat er niemand is",
+          "verificada": "Echt alarm: er moet iemand heen",
+          "despacho": "Je stuurt Diego Rivas: de route staat meteen in zijn app",
+          "enSitio": "Diego komt aan: deur geforceerd, niemand binnen",
+          "cierre": "Melding gesloten: de klant krijgt het rapport",
+          "prueba": "Alle 12 panelen sturen hun periodieke test",
+          "sinSenal": "Farmacia San Telmo meldt zich niet meer: de waarschuwing opent vanzelf",
+          "llama": "Je belt Rosa Medina: stroomstoring in de straat",
+          "restaurado": "De stroom is terug en het paneel herstelt zich"
+        },
+        "resultado": {
+          "senal": "Elk alarm komt binnen met zijn plan: niemand improviseert om 2 uur 's nachts",
+          "despacho": "Van alarm tot rapport in 17 minuten, elke stap met tijd en naam",
+          "supervision": "Valt een paneel stil, dan weet je het binnen minuten"
+        }
+      },
+      "video": {
+        "escenas": {
+          "conectar": "Koppelen",
+          "evento": "Een melding",
+          "despacho": "Inzet"
+        },
+        "muro": "Videowand",
+        "enVivo": "{{n}} live",
+        "vivo": "Live",
+        "sinSenal": "Geen signaal",
+        "camaras": {
+          "entrada": "Ingang",
+          "estacionamiento": "Parkeerplaats",
+          "patio": "Laadperron",
+          "porton": "Poort · Bodega Norte"
+        },
+        "persona": "Persoon 94%",
+        "equipos": {
+          "titulo": "Videoapparatuur",
+          "nvr": "NVR · Plaza Los Álamos",
+          "relay": "Relay · Bodega Norte",
+          "sinPuertos": "Geen open poorten, geen vast IP"
+        },
+        "estado": {
+          "conectando": "Verbinden…",
+          "enLinea": "Online",
+          "transmitiendo": "Zendt uit"
+        },
+        "kpi": {
+          "camaras": "Camera's live",
+          "sitios": "Locaties",
+          "puertos": "Open poorten"
+        },
+        "eventos": {
+          "titulo": "Videomeldingen",
+          "nuevos": "Nieuw: {{n}}",
+          "persona": "Persoon gedetecteerd · Laadperron",
+          "movimiento": "Beweging · Parkeerplaats",
+          "reconectada": "Camera weer verbonden · Ingang"
+        },
+        "clip": {
+          "titulo": "Clip",
+          "rango": "Laadperron · 23:41:05 → 23:41:35",
+          "recortar": "Clip knippen",
+          "marcando": "Moment markeren…",
+          "guardado": "Clip opgeslagen"
+        },
+        "linea": {
+          "marcando": "Markeren…",
+          "listo": "Clip 0:30"
+        },
+        "incidente": {
+          "titulo": "Incident I-0482 · Plaza Los Álamos",
+          "abierto": "Open",
+          "enSitio": "Supervisor ter plaatse"
+        },
+        "sup": {
+          "nombre": "Carla Méndez · Supervisor",
+          "enCamino": "Onderweg",
+          "enSitio": "Ter plaatse"
+        },
+        "evidencia": {
+          "titulo": "Bewijs",
+          "clip": "Clip · Laadperron 23:41",
+          "vivo": "Carla kijkt live mee",
+          "compartir": "Delen met de klant",
+          "compartido": "Link naar de klant gestuurd"
+        },
+        "tel": {
+          "nombre": "Carla Méndez",
+          "despacho": "Plaza Los Álamos",
+          "vivo": "Live · Laadperron",
+          "navegar": "Naar locatie",
+          "llegue": "Ik ben er"
+        },
+        "pasos": {
+          "agrega": "Je voegt de NVR van Plaza Los Álamos toe: adres, gebruiker, klaar",
+          "vivas": "De 3 camera's verschijnen live op de wand",
+          "relay": "Bodega Norte heeft geen vast IP: je installeert de relay",
+          "relayVivo": "De relay zendt uit: 4 camera's van 2 locaties op één wand",
+          "movimiento": "Beweging bij het laadperron: de camera markeert een persoon",
+          "abre": "Je opent hem groot, live",
+          "clip": "Je knipt de 30 seconden die ertoe doen",
+          "clipListo": "De clip wordt opgeslagen met de exacte tijd",
+          "despacha": "Je stuurt Carla Méndez: het incident heeft de clip al",
+          "telefono": "Carla ziet dezelfde camera live op haar telefoon",
+          "llega": "Carla komt aan: de persoon is weg en ze controleert het terrein",
+          "comparte": "Je deelt de clip met de klant via een link"
+        },
+        "resultado": {
+          "conectar": "Al je camera's, van al je locaties, op één wand",
+          "evento": "Zie wat er gebeurt en bewaar het bewijs in twee klikken",
+          "despacho": "Zien, verifiëren en handelen vanuit hetzelfde CRM"
+        }
       }
     }
   },

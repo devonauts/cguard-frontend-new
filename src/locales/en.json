@@ -20279,6 +20279,211 @@
           "sinNovedad": "No offers right now",
           "tuyo": "The shift is yours!"
         }
+      },
+      "monitoreo": {
+        "escenas": {
+          "senal": "The signal",
+          "despacho": "Dispatch",
+          "supervision": "Panels"
+        },
+        "sitio": "Bodegas Río Claro",
+        "teclado": {
+          "armado": "System armed",
+          "alarma": "Alarm Z01"
+        },
+        "zonas": {
+          "z1": "Z01 Main door",
+          "z2": "Z02 Warehouse",
+          "z3": "Z03 Offices"
+        },
+        "senal": "Burglary · Z01",
+        "cola": {
+          "titulo": "Alarm queue",
+          "n": "{{n}} in queue"
+        },
+        "caso": {
+          "prioridad": "P1",
+          "titulo": "Burglary · Main door",
+          "numero": "Case A-2291 · Bodegas Río Claro"
+        },
+        "otra": {
+          "prioridad": "P4",
+          "texto": "Opening · Farmacia San Telmo"
+        },
+        "estado": {
+          "cola": "Queued",
+          "reconocida": "Acknowledged",
+          "verificada": "Real alarm",
+          "despachada": "Dispatched",
+          "enSitio": "On site",
+          "cerrada": "Closed"
+        },
+        "plan": {
+          "titulo": "Site action plan",
+          "llamar": "Call",
+          "verificar": "Verify",
+          "despachar": "Dispatch",
+          "avisar": "Notify"
+        },
+        "llamadas": {
+          "titulo": "Call list"
+        },
+        "contactos": {
+          "andrea": "Andrea Salas · Manager",
+          "jorge": "Jorge Paz · Keyholder"
+        },
+        "llamada": {
+          "llamando": "Calling…",
+          "noContesta": "No answer",
+          "contesto": "Answered"
+        },
+        "unidad": {
+          "nombre": "Diego Rivas · Supervisor M-04",
+          "eta": "Arrives in {{n}} min",
+          "enSitio": "On site",
+          "cerrado": "Report sent"
+        },
+        "rastro": {
+          "titulo": "Case trail",
+          "senal": "Burglary signal on Z01",
+          "reconoce": "Laura acknowledges the alarm",
+          "llamada": "Jorge Paz: nobody is inside",
+          "despacho": "Diego Rivas dispatched",
+          "enSitio": "On site: door forced, no intruders",
+          "cierre": "Closed · report to the client"
+        },
+        "sup": {
+          "titulo": "Panel supervision",
+          "enLinea": "{{n}} of 12 online",
+          "alertas": "Supervision alerts",
+          "sinSenal": "Farmacia San Telmo · no signal",
+          "hace": "25 min ago",
+          "llamada": "Rosa Medina: power is out on the block",
+          "restaurado": "Panel restored: reporting again"
+        },
+        "kpi": {
+          "paneles": "Panels",
+          "senales": "Signals today",
+          "sinSenal": "No signal"
+        },
+        "etiqueta": {
+          "sinSenal": "No signal",
+          "restaurado": "Online"
+        },
+        "pasos": {
+          "disparo": "Bodegas Río Claro: burglary on zone 1, Main door",
+          "cola": "The signal comes in as P1, top of the queue, with the site's plan",
+          "reconoce": "Laura acknowledges it and starts the call list",
+          "contacto": "Andrea doesn't answer; Jorge Paz confirms nobody is there",
+          "verificada": "Real alarm: time to dispatch",
+          "despacho": "You dispatch Diego Rivas: it reaches his app with the route",
+          "enSitio": "Diego arrives: door forced, nobody inside",
+          "cierre": "Case closed: the client gets the report",
+          "prueba": "All 12 panels send their periodic test",
+          "sinSenal": "Farmacia San Telmo stops reporting: an alert opens on its own",
+          "llama": "You call Rosa Medina: power is out on the block",
+          "restaurado": "Power comes back and the panel restores"
+        },
+        "resultado": {
+          "senal": "Every alarm arrives with its plan: nobody improvises at 2 a.m.",
+          "despacho": "From trigger to report in 17 minutes, every step timed and signed",
+          "supervision": "If a panel goes quiet, you know within minutes"
+        }
+      },
+      "video": {
+        "escenas": {
+          "conectar": "Connect",
+          "evento": "An event",
+          "despacho": "Dispatch"
+        },
+        "muro": "Video wall",
+        "enVivo": "{{n}} live",
+        "vivo": "Live",
+        "sinSenal": "No signal",
+        "camaras": {
+          "entrada": "Entrance",
+          "estacionamiento": "Parking lot",
+          "patio": "Loading dock",
+          "porton": "Gate · Bodega Norte"
+        },
+        "persona": "Person 94%",
+        "equipos": {
+          "titulo": "Video devices",
+          "nvr": "NVR · Plaza Los Álamos",
+          "relay": "Relay · Bodega Norte",
+          "sinPuertos": "No open ports, no fixed IP"
+        },
+        "estado": {
+          "conectando": "Connecting…",
+          "enLinea": "Online",
+          "transmitiendo": "Streaming"
+        },
+        "kpi": {
+          "camaras": "Live cameras",
+          "sitios": "Sites",
+          "puertos": "Open ports"
+        },
+        "eventos": {
+          "titulo": "Video events",
+          "nuevos": "New: {{n}}",
+          "persona": "Person detected · Loading dock",
+          "movimiento": "Motion · Parking lot",
+          "reconectada": "Camera reconnected · Entrance"
+        },
+        "clip": {
+          "titulo": "Clip",
+          "rango": "Loading dock · 23:41:05 → 23:41:35",
+          "recortar": "Clip it",
+          "marcando": "Marking the moment…",
+          "guardado": "Clip saved"
+        },
+        "linea": {
+          "marcando": "Marking…",
+          "listo": "Clip 0:30"
+        },
+        "incidente": {
+          "titulo": "Incident I-0482 · Plaza Los Álamos",
+          "abierto": "Open",
+          "enSitio": "Supervisor on site"
+        },
+        "sup": {
+          "nombre": "Carla Méndez · Supervisor",
+          "enCamino": "En route",
+          "enSitio": "On site"
+        },
+        "evidencia": {
+          "titulo": "Evidence",
+          "clip": "Clip · Loading dock 23:41",
+          "vivo": "Carla is watching the live camera",
+          "compartir": "Share with the client",
+          "compartido": "Link sent to the client"
+        },
+        "tel": {
+          "nombre": "Carla Méndez",
+          "despacho": "Plaza Los Álamos",
+          "vivo": "Live · Loading dock",
+          "navegar": "Go to site",
+          "llegue": "I'm here"
+        },
+        "pasos": {
+          "agrega": "You add the NVR at Plaza Los Álamos: address, user, done",
+          "vivas": "Its 3 cameras show up live on the wall",
+          "relay": "Bodega Norte has no fixed IP: you install the relay",
+          "relayVivo": "The relay is streaming: 4 cameras from 2 sites on one wall",
+          "movimiento": "Motion at the loading dock: the camera flags a person",
+          "abre": "You open it full size, live",
+          "clip": "You clip the 30 seconds that matter",
+          "clipListo": "The clip is saved with the exact time",
+          "despacha": "You dispatch Carla Méndez: the incident already has the clip",
+          "telefono": "Carla watches the same camera live on her phone",
+          "llega": "Carla arrives: the person is gone and she checks the yard",
+          "comparte": "You share the clip with the client through a link"
+        },
+        "resultado": {
+          "conectar": "Every camera from every site on one wall",
+          "evento": "See what's happening and save the proof in two clicks",
+          "despacho": "See, verify and act from the same CRM"
+        }
       }
     }
   },
