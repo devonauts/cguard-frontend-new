@@ -19216,13 +19216,26 @@
         "sinLimiteDiario": "brak limitu dziennego",
         "sinLimiteSemanal": "brak limitu tygodniowego",
         "tempranaNo": "nieopłacane",
-        "tempranaSi": "opłacane"
+        "tempranaSi": "opłacane",
+        "extraNocturna": "Nocne nadgodziny ({{desde}}:00–{{hasta}}:00): +{{pct}}% (lub ich próg, jeśli wyższy)",
+        "extraNocturnaComoExtra": "Nocne nadgodziny: jak każda nadgodzina",
+        "descanso": "Dzień odpoczynku: dzień wolny z grafiku każdego ochroniarza · przełożeni i biuro: {{dia}}",
+        "descansoSinSemanal": "Dzień odpoczynku: dzień wolny z grafiku każdego ochroniarza (przełożeni i biuro: brak)"
       },
       "semanaLaboralEmpieza": "Tydzień pracy zaczyna się w",
       "semanalAyuda": "Powyżej tego w tygodniu to nadgodziny (USA: 40). 0 = brak zasady tygodniowej.",
       "sinConfigurar": "Nikt jeszcze nie skonfigurował tych zasad: wymiar pracy jest zgodny z krajem i nie stosuje się dodatków. Sprawdź je i zapisz.",
       "sinPais": "Brak kraju",
-      "sinPreset": "Nie mamy zapisanych zasad dla tego kraju: wpisz tutaj zasady swojej umowy."
+      "sinPreset": "Nie mamy zapisanych zasad dla tego kraju: wpisz tutaj zasady swojej umowy.",
+      "descansoAyuda": "Płatny od godzin przepracowanych w dniu wolnym danej osoby: dniu wolnym z jej grafiku lub dniu oznaczonym «L» w Grafiku.",
+      "descansoSemanal": "Tygodniowy dzień odpoczynku (przełożeni i biuro)",
+      "descansoSemanalAyuda": "Osoby bez grafiku rotacyjnego otrzymują dodatek za dzień odpoczynku, jeśli pracują w tym dniu.",
+      "ninguno": "Brak",
+      "extraNocturna": "Nocne nadgodziny z własnym dodatkiem",
+      "extraNocturnaAyuda": "Nadgodziny w tym przedziale są płatne z tym dodatkiem, jeśli jest wyższy niż ich próg (Kolumbia: 19–6 po 75%; Ekwador: 0–6 po 100%).",
+      "extraNocturnaDesde": "Nocne nadgodziny: od (godzina)",
+      "extraNocturnaHasta": "Nocne nadgodziny: do (godzina)",
+      "extraNocturnaPct": "Dodatek za nocne nadgodziny (%)"
     }
   },
   "visitantes": {

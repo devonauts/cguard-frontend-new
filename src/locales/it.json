@@ -18926,13 +18926,26 @@
         "sinLimiteDiario": "nessun limite giornaliero",
         "sinLimiteSemanal": "nessun limite settimanale",
         "tempranaNo": "non pagata",
-        "tempranaSi": "pagata"
+        "tempranaSi": "pagata",
+        "extraNocturna": "Straordinario notturno ({{desde}}:00–{{hasta}}:00): +{{pct}} % (o il suo scaglione, se più alto)",
+        "extraNocturnaComoExtra": "Straordinario notturno: come qualsiasi ora straordinaria",
+        "descanso": "Giorno di riposo: il riposo della rotazione di ogni guardia · supervisori e ufficio: {{dia}}",
+        "descansoSinSemanal": "Giorno di riposo: il riposo della rotazione di ogni guardia (supervisori e ufficio: nessuno)"
       },
       "semanaLaboralEmpieza": "La settimana lavorativa inizia il",
       "semanalAyuda": "Oltre questo, nella settimana, è straordinario (USA: 40). 0 = nessuna regola settimanale.",
       "sinConfigurar": "Nessuno ha ancora configurato queste regole: l’orario segue quello del paese e non si applica alcuna maggiorazione. Controllale e salva.",
       "sinPais": "Nessun paese",
-      "sinPreset": "Non abbiamo regole salvate per questo paese: indica qui quelle del tuo contratto."
+      "sinPreset": "Non abbiamo regole salvate per questo paese: indica qui quelle del tuo contratto.",
+      "descansoAyuda": "Si paga sulle ore lavorate nel giorno libero di ogni persona: il riposo della sua rotazione, o un giorno segnato «L» nell'Orario.",
+      "descansoSemanal": "Giorno di riposo settimanale (supervisori e ufficio)",
+      "descansoSemanalAyuda": "Chi non ha una rotazione riceve la maggiorazione di riposo se lavora in questo giorno.",
+      "ninguno": "Nessuno",
+      "extraNocturna": "Straordinario notturno con maggiorazione propria",
+      "extraNocturnaAyuda": "Le ore straordinarie in questa fascia si pagano con questa maggiorazione se è più alta del loro scaglione (Colombia: 19–6 al 75 %; Ecuador: 0–6 al 100 %).",
+      "extraNocturnaDesde": "Straordinario notturno: dalle (ora)",
+      "extraNocturnaHasta": "Straordinario notturno: alle (ora)",
+      "extraNocturnaPct": "Maggiorazione dello straordinario notturno (%)"
     }
   },
   "visitantes": {

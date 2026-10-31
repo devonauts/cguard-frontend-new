@@ -33,6 +33,10 @@ export interface Politica {
   nocturno?: { desdeHora?: number; hastaHora?: number; recargoPct?: number };
   domingoRecargoPct?: number;
   descansoRecargoPct?: number;
+  /** Weekly rest day of people without a rotation (supervisors, office); null = none. */
+  diaDescansoSemanal?: number | null;
+  /** Overtime hours inside this window take this rate when it beats their tier; null = off. */
+  extraNocturna?: { desdeHora?: number; hastaHora?: number; recargoPct?: number } | null;
   feriadoRecargoPct?: number;
   acumulacionDeRecargos?: "suma" | "mayor";
   graciaSalidaMinutos?: number;
@@ -182,6 +186,8 @@ export default function ReglasDePago({
     onChange({ ...payroll, politica: { ...pol, ...patch } });
   const setNoct = (patch: Partial<NonNullable<Politica["nocturno"]>>) =>
     setPol({ nocturno: { ...(pol.nocturno || {}), ...patch } });
+  const setExtraNoct = (patch: Partial<NonNullable<Politica["extraNocturna"]>>) =>
+    setPol({ extraNocturna: { ...(pol.extraNocturna || {}), ...patch } });
 
   const nombreDia = (d: number) =>
     [
@@ -275,6 +281,18 @@ export default function ReglasDePago({
         defaultValue: "Noche ({{desde}}:00–{{hasta}}:00): +{{pct}} %",
       }),
     );
+    const xn = pol.extraNocturna;
+
+    filas.push(
+      xn
+        ? t("ui.ReglasDePago.resumen.extraNocturna", {
+            desde: String(xn.desdeHora ?? 0).padStart(2, "0"),
+            hasta: String(xn.hastaHora ?? 6).padStart(2, "0"),
+            pct: xn.recargoPct ?? 0,
+            defaultValue: "Hora extra nocturna ({{desde}}:00–{{hasta}}:00): +{{pct}} % (o su escalón, si es mayor)",
+          })
+        : t("ui.ReglasDePago.resumen.extraNocturnaComoExtra", "Hora extra nocturna: como cualquier hora extra"),
+    );
     filas.push(
       t("ui.ReglasDePago.resumen.recargos", {
         domingo: pol.domingoRecargoPct ?? 0,
@@ -285,6 +303,14 @@ export default function ReglasDePago({
           : t("ui.NominaSettings.seSuman", "Se suman"),
         defaultValue: "Domingo +{{domingo}} % · Descanso trabajado +{{descanso}} % · Feriado +{{feriado}} % · {{modo}}",
       }),
+    );
+    filas.push(
+      pol.diaDescansoSemanal === null || pol.diaDescansoSemanal === undefined
+        ? t("ui.ReglasDePago.resumen.descansoSinSemanal", "Día de descanso: el libre de la rotación de cada vigilante (supervisores y oficina: ninguno)")
+        : t("ui.ReglasDePago.resumen.descanso", {
+            dia: nombreDia(Number(pol.diaDescansoSemanal)),
+            defaultValue: "Día de descanso: el libre de la rotación de cada vigilante · supervisores y oficina: {{dia}}",
+          }),
     );
     filas.push(
       pol.diaDelRecargo === "dia_de_inicio"
@@ -499,8 +525,28 @@ export default function ReglasDePago({
             <NumeroField
               label={t("ui.NominaSettings.recargoEnDiaDeDescansoPct", "Recargo en día de descanso (%)")}
               value={pol.descansoRecargoPct}
+              hint={t(
+                "ui.ReglasDePago.descansoAyuda",
+                "Se paga sobre las horas trabajadas en el día libre de cada persona: el libre de su rotación, o un día marcado «L» en el Horario.",
+              )}
               onChange={(v) => setPol({ descansoRecargoPct: v })}
             />
+            <label className="block">
+              <span className="cg-eyebrow">{t("ui.ReglasDePago.descansoSemanal", "Día de descanso semanal (supervisores y oficina)")}</span>
+              <select
+                className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                value={pol.diaDescansoSemanal === null || pol.diaDescansoSemanal === undefined ? "" : String(pol.diaDescansoSemanal)}
+                onChange={(e) => setPol({ diaDescansoSemanal: e.target.value === "" ? null : Number(e.target.value) })}
+              >
+                <option value="">{t("ui.ReglasDePago.ninguno", "Ninguno")}</option>
+                {DIAS.map((d) => (
+                  <option key={d} value={String(d)}>{nombreDia(d)}</option>
+                ))}
+              </select>
+              <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
+                {t("ui.ReglasDePago.descansoSemanalAyuda", "Quien no tiene rotación cobra el recargo de descanso si trabaja este día.")}
+              </span>
+            </label>
             <NumeroField
               label={t("ui.NominaSettings.recargoEnFeriadoPct", "Recargo en feriado (%)")}
               value={pol.feriadoRecargoPct}
@@ -534,6 +580,48 @@ export default function ReglasDePago({
             </label>
 
             <TramosExtra tramos={tramos} onChange={(t2) => setPol({ tramosExtra: t2 })} />
+
+            <div className="space-y-2 sm:col-span-2">
+              <label className="glass-flat glass-hover flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
+                <input
+                  type="checkbox"
+                  className="cg-focus size-4"
+                  style={{ accentColor: "var(--brand)" }}
+                  checked={!!pol.extraNocturna}
+                  onChange={(e) =>
+                    setPol({ extraNocturna: e.target.checked ? { desdeHora: pol.nocturno?.desdeHora ?? 22, hastaHora: pol.nocturno?.hastaHora ?? 6, recargoPct: 0 } : null })
+                  }
+                />
+                <span className="text-sm">{t("ui.ReglasDePago.extraNocturna", "Hora extra nocturna con su propio recargo")}</span>
+              </label>
+              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                {t(
+                  "ui.ReglasDePago.extraNocturnaAyuda",
+                  "Las horas extra que caen en esta franja se pagan con este recargo si es mayor que su escalón (Colombia: 19–6 al 75 %; Ecuador: 0–6 al 100 %).",
+                )}
+              </p>
+              {pol.extraNocturna && (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <NumeroField
+                    label={t("ui.ReglasDePago.extraNocturnaDesde", "Extra nocturna: desde (hora)")}
+                    value={pol.extraNocturna.desdeHora}
+                    max={23}
+                    onChange={(v) => setExtraNoct({ desdeHora: v })}
+                  />
+                  <NumeroField
+                    label={t("ui.ReglasDePago.extraNocturnaHasta", "Extra nocturna: hasta (hora)")}
+                    value={pol.extraNocturna.hastaHora}
+                    max={23}
+                    onChange={(v) => setExtraNoct({ hastaHora: v })}
+                  />
+                  <NumeroField
+                    label={t("ui.ReglasDePago.extraNocturnaPct", "Recargo de la extra nocturna (%)")}
+                    value={pol.extraNocturna.recargoPct}
+                    onChange={(v) => setExtraNoct({ recargoPct: v })}
+                  />
+                </div>
+              )}
+            </div>
 
             <NumeroField
               label={t("ui.ReglasDePago.graciaSalida", "Gracia al salir (minutos)")}

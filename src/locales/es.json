@@ -18391,13 +18391,26 @@
         "sinLimiteDiario": "sin límite diario",
         "sinLimiteSemanal": "sin límite semanal",
         "tempranaNo": "no se paga",
-        "tempranaSi": "se paga"
+        "tempranaSi": "se paga",
+        "extraNocturna": "Hora extra nocturna ({{desde}}:00–{{hasta}}:00): +{{pct}} % (o su escalón, si es mayor)",
+        "extraNocturnaComoExtra": "Hora extra nocturna: como cualquier hora extra",
+        "descanso": "Día de descanso: el libre de la rotación de cada vigilante · supervisores y oficina: {{dia}}",
+        "descansoSinSemanal": "Día de descanso: el libre de la rotación de cada vigilante (supervisores y oficina: ninguno)"
       },
       "semanaLaboralEmpieza": "La semana laboral empieza el",
       "semanalAyuda": "Lo que pase de aquí en la semana es hora extra (EE. UU.: 40). 0 = sin regla semanal.",
       "sinConfigurar": "Nadie ha configurado todavía estas reglas: la jornada sigue la del país y no se aplica ningún recargo. Revísalas y guarda.",
       "sinPais": "Sin país",
-      "sinPreset": "No tenemos reglas guardadas para este país: declara aquí las de tu convenio."
+      "sinPreset": "No tenemos reglas guardadas para este país: declara aquí las de tu convenio.",
+      "descansoAyuda": "Se paga sobre las horas trabajadas en el día libre de cada persona: el libre de su rotación, o un día marcado «L» en el Horario.",
+      "descansoSemanal": "Día de descanso semanal (supervisores y oficina)",
+      "descansoSemanalAyuda": "Quien no tiene rotación cobra el recargo de descanso si trabaja este día.",
+      "ninguno": "Ninguno",
+      "extraNocturna": "Hora extra nocturna con su propio recargo",
+      "extraNocturnaAyuda": "Las horas extra que caen en esta franja se pagan con este recargo si es mayor que su escalón (Colombia: 19–6 al 75 %; Ecuador: 0–6 al 100 %).",
+      "extraNocturnaDesde": "Extra nocturna: desde (hora)",
+      "extraNocturnaHasta": "Extra nocturna: hasta (hora)",
+      "extraNocturnaPct": "Recargo de la extra nocturna (%)"
     }
   },
   "map": {
