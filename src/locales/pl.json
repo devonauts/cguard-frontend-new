@@ -7478,7 +7478,9 @@
       "idioma": "Język",
       "idioma.desc": "W jakim języku wyświetla się CRM. Automatycznie lub wybrany ręcznie.",
       "dobletes": "Podwójne zmiany",
-      "dobletes.desc": "Tury, premie, punkty, poziomy i ranking rezerwy."
+      "dobletes.desc": "Tury, premie, punkty, poziomy i ranking rezerwy.",
+      "patrones-rotacion": "Wzorce rotacji",
+      "patrones-rotacion.desc": "Cykle pracy i odpoczynku: zmiana nazwy, archiwizacja i gdzie każdy jest używany."
     },
     "section": {
       "mi_cuenta": "Moje konto",
@@ -8374,7 +8376,9 @@
       "columnPush": "Telefon",
       "payslipPublishedLabel": "Opublikowano pasek wypłaty",
       "dobletesOfficeLabel": "Podwójne zmiany: obsadzone lub nikt nie przyjął",
-      "dobletesOffersLabel": "Oferty podwójnych zmian (dla ochroniarzy)"
+      "dobletesOffersLabel": "Oferty podwójnych zmian (dla ochroniarzy)",
+      "coverageAssignmentsLabel": "Zastępstwa (do pracownika)",
+      "coverageAssignmentsHint": "Ma przejąć posterunek, został przeniesiony lub zastępstwo odwołano. Trafia na telefon"
     },
     "festivos": {
       "loadError": "Nie udało się wczytać dni świątecznych.",
@@ -9467,7 +9471,12 @@
       "coberturaEnBloques_other": "{{horas}}h pokrycia w {{count}} kolejnych blokach po {{bloque}}h — {{count}} stałych + zmiennik.",
       "coberturaEnBloques_few": "{{horas}}h pokrycia w {{count}} kolejnych blokach po {{bloque}}h — {{count}} stałych + zmiennik.",
       "coberturaEnBloques_many": "{{horas}}h pokrycia w {{count}} kolejnych blokach po {{bloque}}h — {{count}} stałych + zmiennik.",
-      "vigilantesAsignados": "Przydzieleni ochroniarze"
+      "vigilantesAsignados": "Przydzieleni ochroniarze",
+      "elCicloNoCambio": "Cykl się nie zmienił",
+      "cicloDeRotacion": "Cykl rotacji",
+      "cicloExplicacion": "Jak pracownicy tego posterunku się zmieniają i odpoczywają. Ilu i o której — wyżej, w wymogu.",
+      "cambiarElCicloRehace": "Zmiana cyklu przebudowuje przyszłe zmiany; nikt nie traci miejsca.",
+      "guardarCiclo": "Zapisz cykl"
     },
     "StationShifts": {
       "dia": "Dzień",
@@ -17551,7 +17560,8 @@
       "volvieronVigilantes_one": "wrócił {{count}} pracownik ochrony",
       "volvieronVigilantes_few": "wrócili {{count}} pracownicy ochrony",
       "volvieronVigilantes_many": "wróciło {{count}} pracowników ochrony",
-      "volvieronVigilantes_other": "wróciło {{count}} pracowników ochrony"
+      "volvieronVigilantes_other": "wróciło {{count}} pracowników ochrony",
+      "nRelevos": "{{count}} zmian"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "Usunąć {{nombre}} z wydarzenia?",
@@ -19319,6 +19329,112 @@
       "rrhh": "Kadry: dodatkowo dane personelu i płace",
       "supervision": "Nadzór: dodatkowo zatwierdza godziny",
       "gerencia": "Zarząd: dodatkowo raporty i działania kierownicze"
+    },
+    "Patrones": {
+      "archivado": "Zarchiwizowany",
+      "enUso": "{{estaciones}} posterunki · {{plazas}} miejsca · {{personas}} osoby",
+      "sinUso": "Nieużywany",
+      "renombrado": "Wzorzec zmieniony",
+      "renombrar": "Zmień nazwę",
+      "restaurar": "Przywróć",
+      "archivar": "Archiwizuj",
+      "restaurado": "Wzorzec znów jest dostępny",
+      "archivadoOk": "Zarchiwizowany: nie jest już oferowany, kto go używa, zachowuje go",
+      "borrar": "Usuń",
+      "borrado": "Wzorzec usunięty",
+      "titulo": "Wzorce rotacji",
+      "subtitulo": "Cykle pracy i odpoczynku. Archiwizacja przestaje go oferować; kto go używa, zachowuje go. Usunąć można tylko nieużywany.",
+      "deLaEmpresa": "Firmy",
+      "vacio": "Tworzą się przy ustawianiu cyklu posterunku lub pracownika.",
+      "vacioTitulo": "Brak jeszcze własnych wzorców",
+      "delSistema": "Systemowe (wspólne)",
+      "estaciones": "Posterunki",
+      "plazas": "Miejsca z tym cyklem",
+      "personas": "Osoby",
+      "historial": "I {{count}} zakończone przydziały, które zachowują go w historii."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Grafik",
+      "cambiar": "Zmień grafik",
+      "definir": "Ustal grafik",
+      "titulo": "Godziny biurowe",
+      "sinHorario": "Bez grafiku: odbicie nie jest porównywane z żadną godziną wejścia.",
+      "sinHorarioTitulo": "Brak jeszcze grafiku",
+      "libre": "Wolne",
+      "proximosDias": "Najbliższe dni"
+    },
+    "Requisito": {
+      "guardado": "Wymóg zapisany",
+      "noGuardado": "Nie udało się zapisać wymogu",
+      "todosLosDias": "Codziennie",
+      "titulo": "Wymóg",
+      "cambiar": "Zmień wymóg",
+      "explicacion": "Ilu pracowników potrzebuje posterunek, o której i w które dni. Tylko to określa jego miejsca: Grafik, Nieobsadzone i raporty czytają to stąd.",
+      "aLaVez": "{{count}} jednocześnie",
+      "sacafrancosAparte": "Dodatkowo {{count}} miejsce(a) zmiennika: pokrywają dni wolne i nie liczą się do wymogu.",
+      "sinRequisito": "Ten posterunek nie mówi jeszcze, ilu pracowników potrzebuje. Bez wymogu nie da się wyliczyć luk.",
+      "personas": "Jednocześnie",
+      "dias": "Dni",
+      "quitarFranja": "Usuń te godziny",
+      "anadirFranja": "Dodaj godziny",
+      "alGuardar": "Po zapisaniu",
+      "sale": "{{nombre}} opuszcza posterunek (miejsce {{ventana}} znika).",
+      "cambiaDeHora": "{{nombre}} przechodzi z {{de}} na {{a}}.",
+      "plazasNuevas": "{{count}} nowe miejsce(a) bez pracownika: pojawią się w Nieobsadzone.",
+      "personasInvalidas": "Od 1 do 20 pracowników jednocześnie.",
+      "horaInvalida": "Wpisz godziny jak 07:00.",
+      "guardar": "Zapisz wymóg",
+      "dia": {
+        "lun": "P",
+        "mar": "W",
+        "mie": "Ś",
+        "jue": "C",
+        "vie": "P",
+        "sab": "S",
+        "dom": "N"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Nieobecność",
+        "leave": "Urlop bez zastępstwa",
+        "open_shift": "Zmiana bez pracownika",
+        "archived_guard": "Zarchiwizowany pracownik",
+        "empty_slot": "Puste miejsce"
+      },
+      "noCargo": "Nie udało się wczytać",
+      "todos": "Wszystkie",
+      "estacion": "Posterunek",
+      "faltanDeN": "Brakuje {{faltan}} z {{need}}",
+      "nadieAsignado": "Nikogo w grafiku",
+      "sinVigilante": "Bez pracownika",
+      "subtitulo": "Nieobecności, urlopy bez zastępstwa, puste miejsca i zmiany bez pracownika, według wymogu każdego posterunku.",
+      "todasLasEstaciones": "Wszystkie posterunki",
+      "incluirTerminados": "Pokaż minione",
+      "rangoAlReves": "Data „do” jest wcześniejsza niż „od”.",
+      "rangoLargo": "Wybierz najwyżej {{n}} dni.",
+      "nadaDeEsteTipo": "Brak luk tego typu w tych dniach.",
+      "todoCubierto": "Wszystkie posterunki mają w tych dniach potrzebnych ludzi.",
+      "sinHuecos": "Nic nieobsadzonego",
+      "yaPaso": "Minęło",
+      "ofrecer": "Zaproponuj",
+      "cubrir": "Obsadź",
+      "huecos": "luk",
+      "faltaSinNovedad": "Nie udało się zapisać nieobecności",
+      "cubierto": "{{nombre}} obsadza tę lukę.",
+      "confirmarDescanso": "Ten dzień ma wolny. Przypisać mimo to?",
+      "confirmarDoble": "Ma już nakładającą się zmianę. Przypisać mimo to (podwójna zmiana)?",
+      "noSePudoCubrir": "Nie udało się obsadzić",
+      "siPonerlo": "Tak, przypisz",
+      "enLugarDe": "Zamiast {{nombre}}",
+      "nadieLibre": "Nikt nie jest wolny w tych godzinach.",
+      "disponible": "Zgłosił dostępność",
+      "noDisponible": "Zgłosił niedostępność",
+      "horasSemana": "{{h}} h w tym tygodniu",
+      "conoceElPuesto": "{{n}} zmian tutaj",
+      "descansoCorto": "Tylko {{h}} h odpoczynku",
+      "ofertaEnviada": "Oferta wysłana do dostępnych pracowników.",
+      "noSePudoOfrecer": "Nie udało się zaproponować"
     }
   },
   "visitantes": {
