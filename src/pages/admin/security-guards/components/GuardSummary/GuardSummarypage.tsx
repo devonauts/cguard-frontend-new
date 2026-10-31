@@ -122,8 +122,10 @@ const ymd = (d: Date) =>
 // timestamp — show a clean "HH:MM - HH:MM" window when we can, otherwise skip it.
 const clock = (v: string | null | undefined): string | null => {
   if (!v) return null;
-  const s = String(v);
-  const m = s.match(/(\d{2}:\d{2})/);
+  const s = String(v).trim();
+  // A bare clock ("07:00" / "07:00:00") is already local. A full timestamp must be
+  // parsed first: reading "HH:MM" out of an ISO string shows the UTC hour.
+  const m = s.match(/^(\d{2}:\d{2})(:\d{2})?$/);
 
   if (m) return m[1];
   const d = new Date(s);
