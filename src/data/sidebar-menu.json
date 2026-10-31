@@ -246,14 +246,6 @@
         "permission": [
           "attendanceRead"
         ]
-      },
-      {
-        "id": "configuracion",
-        "name": "Configuración",
-        "path": "/nomina/settings",
-        "permission": [
-          "attendanceSettingsRead"
-        ]
       }
     ]
   },
