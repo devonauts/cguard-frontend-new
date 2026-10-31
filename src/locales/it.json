@@ -11225,7 +11225,13 @@
       "losDiasDeVacacionesSon": "I giorni di ferie sono",
       "diasNaturales": "Giorni di calendario",
       "diasLaborables": "Giorni lavorativi",
-      "selfieMovido": "Selfie e volto alla timbratura ora si impostano in Impostazioni › App del team o App del supervisore."
+      "selfieMovido": "Selfie e volto alla timbratura ora si impostano in Impostazioni › App del team o App del supervisore.",
+      "privacidad": "Privacy delle assenze",
+      "quienVeElMotivo": "Chi vede il motivo di un'assenza",
+      "motivoAprobadores": "Solo chi approva le assenze (e chi l'ha chiesta)",
+      "motivoRrhh": "Risorse umane e livelli superiori (e chi l'ha chiesta)",
+      "motivoOficina": "Tutto il personale d'ufficio",
+      "motivoAyuda": "Il motivo è spesso medico. Gli altri vedono la richiesta (chi, date, stato) senza il motivo."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Dove vai a lavorare?",
@@ -18946,6 +18952,22 @@
       "extraNocturnaDesde": "Straordinario notturno: dalle (ora)",
       "extraNocturnaHasta": "Straordinario notturno: alle (ora)",
       "extraNocturnaPct": "Maggiorazione dello straordinario notturno (%)"
+    },
+    "puede": {
+      "sinPermiso": "Il tuo ruolo non ha il permesso per questo. Chiedilo a un amministratore.",
+      "sinNivel": "Questo spetta a un livello superiore a quello del tuo ruolo.",
+      "sinModulo": "Serve il modulo Buste paga o Gusto collegato.",
+      "soloLectura": "Sola lettura",
+      "horarioSoloLectura": "Sola lettura: il tuo ruolo può vedere i turni, non modificarli."
+    },
+    "nivelDeRol": {
+      "titulo": "Livello",
+      "ayuda": "I permessi dicono quali schermate usa; il livello, quali dati sensibili raggiunge. Non arriva mai ad amministratore né a responsabile di filiale.",
+      "oficina": "Ufficio: vede e gestisce turni, copertura e presenze",
+      "central": "Centrale operativa: in più monitoraggio dal vivo (telecamere, allarmi, mappa)",
+      "rrhh": "Risorse umane: in più dati del personale e paga",
+      "supervision": "Supervisione: in più approva le ore",
+      "gerencia": "Direzione: in più report e azioni direttive"
     }
   },
   "visitantes": {

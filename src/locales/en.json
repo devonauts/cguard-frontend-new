@@ -10690,7 +10690,13 @@
       "losDiasDeVacacionesSon": "Vacation days are",
       "diasNaturales": "Calendar days",
       "diasLaborables": "Working days",
-      "selfieMovido": "Selfie and face at clock-in are now set in Settings › Team app or Supervisor app."
+      "selfieMovido": "Selfie and face at clock-in are now set in Settings › Team app or Supervisor app.",
+      "privacidad": "Leave privacy",
+      "quienVeElMotivo": "Who sees the reason for a leave request",
+      "motivoAprobadores": "Only people who approve leave (and the requester)",
+      "motivoRrhh": "Human resources and higher levels (and the requester)",
+      "motivoOficina": "All office staff",
+      "motivoAyuda": "The reason is often medical. Everyone else sees the request (who, dates, status) without the reason."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",
@@ -18411,6 +18417,22 @@
       "extraNocturnaDesde": "Night overtime: from (hour)",
       "extraNocturnaHasta": "Night overtime: until (hour)",
       "extraNocturnaPct": "Night overtime premium (%)"
+    },
+    "puede": {
+      "sinPermiso": "Your role doesn't have permission for this. Ask an administrator.",
+      "sinNivel": "This is done by a higher level than your role's.",
+      "sinModulo": "Needs the Payroll slips module or Gusto connected.",
+      "soloLectura": "Read only",
+      "horarioSoloLectura": "Read only: your role can see the schedule, not change it."
+    },
+    "nivelDeRol": {
+      "titulo": "Level",
+      "ayuda": "Permissions say which screens it uses; the level, which sensitive data it reaches. It never reaches administrator or branch manager.",
+      "oficina": "Office: sees and works shifts, coverage and attendance",
+      "central": "Operations center: plus live monitoring (cameras, alarms, map)",
+      "rrhh": "Human resources: plus personnel data and pay",
+      "supervision": "Supervision: plus approves hours",
+      "gerencia": "Management: plus reports and executive actions"
     }
   },
   "map": {

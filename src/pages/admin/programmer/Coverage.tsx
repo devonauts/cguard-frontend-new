@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -95,6 +96,9 @@ const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function Coverage() {
   const { t } = useTranslation();
+  // Buttons follow the server's coverage rules (lib/reglasDeAcciones).
+  const registrar = usePuede("cobertura.registrar");
+  const trasladar = usePuede("cobertura.trasladar");
   const [live, setLive] = useState<LiveCoverage | null>(null);
   const [events, setEvents] = useState<CoverageEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -403,12 +407,20 @@ export default function Coverage() {
   };
 
   const openReplacement = () => {
+    if (!registrar.puede) {
+      toast.info(registrar.porQueNo);
+      return;
+    }
     setRepFrom(tenantToday());
     setRepTo(tenantToday());
     setRepOpen(true);
   };
 
   const openCover = async (ev: any) => {
+    if (!registrar.puede) {
+      toast.info(registrar.porQueNo);
+      return;
+    }
     setCoverFor(ev);
     setCandidates(null);
     try {
@@ -579,6 +591,7 @@ export default function Coverage() {
                     llenar su línea en vez de quedarse pegados a la izquierda
                     con el ancho de su texto. */}
                 <div className="cg-acciones mt-2 flex flex-wrap items-center gap-2 sm:mt-0 sm:w-auto sm:shrink-0">
+                  {trasladar.puede && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -595,7 +608,8 @@ export default function Coverage() {
                     <ArrowRightLeft className="mr-1 size-3.5" />{" "}
                     {t("ui.TransferShiftModal.trasladar", "Trasladar")}
                   </Button>
-                  {!here && (
+                  )}
+                  {!here && registrar.puede && (
                     <>
                       <Button
                         size="sm"
@@ -702,7 +716,7 @@ export default function Coverage() {
         <PageHeader
           actions={
             <>
-              <Button onClick={openReplacement}>
+              <Button onClick={openReplacement} disabled={!registrar.puede} title={registrar.porQueNo}>
                 <UserPlus className="mr-1.5 size-4" />{" "}
                 {t("ui.Coverage.reemplazoPorVacaciones", "Reemplazo por vacaciones")}
               </Button>
@@ -964,6 +978,7 @@ export default function Coverage() {
                           "Anular la novedad y devolver el turno a la rotación",
                         )}
                         variant="ghost"
+                        hidden={!registrar.puede}
                         onClick={() =>
                           runWithConfirm(
                             () => coverageService.cancel(ev.id),

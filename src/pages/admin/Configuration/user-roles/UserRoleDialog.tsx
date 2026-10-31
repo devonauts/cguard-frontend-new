@@ -6,6 +6,9 @@ import { ShieldCheck } from "lucide-react";
 import { useEffect, useMemo } from "react";
 
 import { Modal } from "@/components/kit";
+import { useAuth } from "@/contexts/AuthContext";
+import { nivelEnLaEmpresa } from "@/hooks/usePuede";
+import { NIVEL } from "@/lib/reglasDeAcciones";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,6 +34,7 @@ const schema = z.object({
     .optional()
     .or(z.literal("")),
   permissions: z.array(z.string()).optional(),
+  authorityLevel: z.number().nullable().optional(),
 });
 
 export type UserRoleDialogValues = z.infer<typeof schema>;
@@ -41,6 +45,8 @@ type Props = {
   title: string;
   defaultValues: UserRoleDialogValues | null;
   onSubmit: (v: UserRoleDialogValues) => Promise<void> | void;
+  /** Custom roles carry a level; built-in ones use the platform's. */
+  mostrarNivel?: boolean;
 };
 
 export default function UserRoleDialog({
@@ -49,6 +55,7 @@ export default function UserRoleDialog({
   title,
   defaultValues,
   onSubmit,
+  mostrarNivel = true,
 }: Props) {
   const { t } = useTranslation();
   // Same shape as `schema`, but with the validation messages in the current language.
@@ -90,9 +97,21 @@ export default function UserRoleDialog({
           .optional()
           .or(z.literal("")),
         permissions: z.array(z.string()).optional(),
+        authorityLevel: z.number().nullable().optional(),
       }),
     [t],
   );
+  /* THE LEVEL OF A CUSTOM ROLE (backend security/staffTierGuard): what the
+     server's floors read. Only levels up to the person's own are offered. */
+  const { user } = useAuth() as any;
+  const miNivel = nivelEnLaEmpresa(user) ?? NIVEL.GERENCIA;
+  const niveles = [
+    { v: NIVEL.OFICINA, label: t("ui.nivelDeRol.oficina", "Oficina: ve y trabaja turnos, cobertura y asistencia") },
+    { v: NIVEL.CENTRAL, label: t("ui.nivelDeRol.central", "Centro de operaciones: además monitoreo en vivo (cámaras, alarmas, mapa)") },
+    { v: NIVEL.RRHH, label: t("ui.nivelDeRol.rrhh", "Recursos humanos: además datos del personal y pago") },
+    { v: NIVEL.SUPERVISION, label: t("ui.nivelDeRol.supervision", "Supervisión: además aprueba horas") },
+    { v: NIVEL.GERENCIA, label: t("ui.nivelDeRol.gerencia", "Gerencia: además reportes y acciones de dirección") },
+  ].filter((n) => n.v <= miNivel);
 
   useEffect(() => {
     console.debug("[UserRoleDialog] mount/open state", open);
@@ -103,8 +122,9 @@ export default function UserRoleDialog({
       name: "",
       description: "",
       permissions: [],
+      authorityLevel: null,
     },
-    values: defaultValues ?? { name: "", description: "", permissions: [] },
+    values: defaultValues ?? { name: "", description: "", permissions: [], authorityLevel: null },
     mode: "onBlur",
   });
 
@@ -166,6 +186,36 @@ export default function UserRoleDialog({
               </FormItem>
             )}
           />
+          {mostrarNivel && (
+            <FormField
+              control={form.control}
+              name="authorityLevel"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("ui.nivelDeRol.titulo", "Nivel")}</FormLabel>
+                  <FormControl>
+                    <select
+                      className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                      value={field.value ?? NIVEL.OFICINA}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    >
+                      {niveles.map((n) => (
+                        <option key={n.v} value={n.v}>
+                          {n.label}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {t(
+                      "ui.nivelDeRol.ayuda",
+                      "Los permisos dicen qué pantallas usa; el nivel, qué datos sensibles alcanza. Nunca llega a administrador ni a gerente de sucursal.",
+                    )}
+                  </p>
+                </FormItem>
+              )}
+            />
+          )}
           <div
             className="flex justify-end gap-2 border-t pt-4"
             style={{ borderColor: "var(--hairline)" }}

@@ -11225,7 +11225,13 @@
       "losDiasDeVacacionesSon": "Urlaubstage sind",
       "diasNaturales": "Kalendertage",
       "diasLaborables": "Arbeitstage",
-      "selfieMovido": "Selfie und Gesicht beim Stempeln werden jetzt unter Einstellungen › Team-App oder Supervisor-App eingestellt."
+      "selfieMovido": "Selfie und Gesicht beim Stempeln werden jetzt unter Einstellungen › Team-App oder Supervisor-App eingestellt.",
+      "privacidad": "Datenschutz bei Abwesenheiten",
+      "quienVeElMotivo": "Wer den Grund einer Abwesenheit sieht",
+      "motivoAprobadores": "Nur wer Abwesenheiten genehmigt (und der Antragsteller)",
+      "motivoRrhh": "Personalwesen und höhere Stufen (und der Antragsteller)",
+      "motivoOficina": "Das gesamte Büropersonal",
+      "motivoAyuda": "Der Grund ist oft medizinisch. Die anderen sehen den Antrag (wer, Daten, Status) ohne den Grund."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",
@@ -18946,6 +18952,22 @@
       "extraNocturnaDesde": "Nacht-Überstunde: ab (Uhr)",
       "extraNocturnaHasta": "Nacht-Überstunde: bis (Uhr)",
       "extraNocturnaPct": "Zuschlag für Nacht-Überstunden (%)"
+    },
+    "puede": {
+      "sinPermiso": "Deine Rolle hat dafür keine Berechtigung. Frag einen Administrator.",
+      "sinNivel": "Das macht eine höhere Stufe als die deiner Rolle.",
+      "sinModulo": "Benötigt das Modul Lohnabrechnungen oder ein verbundenes Gusto.",
+      "soloLectura": "Nur lesen",
+      "horarioSoloLectura": "Nur lesen: deine Rolle kann den Dienstplan sehen, nicht ändern."
+    },
+    "nivelDeRol": {
+      "titulo": "Stufe",
+      "ayuda": "Die Berechtigungen bestimmen die Bildschirme; die Stufe, welche sensiblen Daten erreicht werden. Sie erreicht nie Administrator oder Filialleitung.",
+      "oficina": "Büro: sieht und bearbeitet Schichten, Abdeckung und Anwesenheit",
+      "central": "Einsatzzentrale: zusätzlich Live-Überwachung (Kameras, Alarme, Karte)",
+      "rrhh": "Personalwesen: zusätzlich Personaldaten und Lohn",
+      "supervision": "Aufsicht: genehmigt zusätzlich Stunden",
+      "gerencia": "Geschäftsleitung: zusätzlich Berichte und Leitungsaktionen"
     }
   },
   "visitantes": {

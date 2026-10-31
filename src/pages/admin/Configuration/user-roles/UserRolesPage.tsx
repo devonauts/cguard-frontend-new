@@ -221,6 +221,7 @@ export default function UserRolesPage() {
         name: data.name ?? r.name,
         description: data.description ?? r.description ?? "",
         permissions: Array.isArray(data.permissions) ? data.permissions : [],
+        authorityLevel: data.authorityLevel ?? null,
       });
     } catch (err) {
       // fallback to basic values
@@ -673,6 +674,7 @@ export default function UserRolesPage() {
           </AlertDialog>
 
           <UserRoleDialog
+            mostrarNivel={!edit?.isSystem}
             defaultValues={dialogDefaults}
             open={open}
             title={

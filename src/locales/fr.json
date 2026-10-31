@@ -11225,7 +11225,13 @@
       "losDiasDeVacacionesSon": "Les jours de congés sont",
       "diasNaturales": "Jours calendaires",
       "diasLaborables": "Jours ouvrables",
-      "selfieMovido": "Le selfie et le visage au pointage se règlent désormais dans Paramètres › App de l'équipe ou App du superviseur."
+      "selfieMovido": "Le selfie et le visage au pointage se règlent désormais dans Paramètres › App de l'équipe ou App du superviseur.",
+      "privacidad": "Confidentialité des absences",
+      "quienVeElMotivo": "Qui voit le motif d'une absence",
+      "motivoAprobadores": "Seulement qui approuve les absences (et le demandeur)",
+      "motivoRrhh": "Ressources humaines et niveaux supérieurs (et le demandeur)",
+      "motivoOficina": "Tout le personnel de bureau",
+      "motivoAyuda": "Le motif est souvent médical. Les autres voient la demande (qui, dates, statut) sans le motif."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
@@ -18946,6 +18952,22 @@
       "extraNocturnaDesde": "Supplémentaire de nuit : de (heure)",
       "extraNocturnaHasta": "Supplémentaire de nuit : à (heure)",
       "extraNocturnaPct": "Majoration de l'heure supplémentaire de nuit (%)"
+    },
+    "puede": {
+      "sinPermiso": "Votre rôle n'a pas la permission pour cela. Demandez à un administrateur.",
+      "sinNivel": "Ceci relève d'un niveau supérieur à celui de votre rôle.",
+      "sinModulo": "Nécessite le module Fiches de paie ou Gusto connecté.",
+      "soloLectura": "Lecture seule",
+      "horarioSoloLectura": "Lecture seule : votre rôle peut voir le planning, pas le modifier."
+    },
+    "nivelDeRol": {
+      "titulo": "Niveau",
+      "ayuda": "Les permissions disent quels écrans il utilise ; le niveau, quelles données sensibles il atteint. Il n'atteint jamais administrateur ni responsable d'agence.",
+      "oficina": "Bureau : voit et gère les postes, la couverture et les présences",
+      "central": "Centre d'opérations : en plus la surveillance en direct (caméras, alarmes, carte)",
+      "rrhh": "Ressources humaines : en plus les données du personnel et la paie",
+      "supervision": "Supervision : en plus approuve les heures",
+      "gerencia": "Direction : en plus rapports et actions de direction"
     }
   },
   "visitantes": {

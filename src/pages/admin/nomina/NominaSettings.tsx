@@ -8,8 +8,7 @@ import {
   BellRing,
   CheckSquare,
   CalendarRange,
-  Palmtree,
-} from "lucide-react";
+  Palmtree, EyeOff } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
@@ -19,6 +18,10 @@ import { SaveBar } from "@/pages/admin/Configuration/components/SettingsForm";
 import ReglasDePago, { type PayrollDeAjustes, type Politica } from "./ReglasDePago";
 
 interface NominaSettings {
+  /** Who reads the reason of a leave request (backend timeOff/reasonVisibility). */
+  privacy?: {
+    leaveReasonVisibleTo?: "approvers" | "hr" | "office";
+  };
   general?: {
     timeClockEnabled?: boolean;
     requireSelfie?: boolean;
@@ -332,6 +335,40 @@ export default function NominaSettings() {
                 )}
                 path="approval.lockAfterPayrollClose"
               />
+            </SettingsSection>
+
+            {/* ── PRIVACY: who reads the reason of a leave request ── */}
+            <SettingsSection icon={<EyeOff />} title={t("ui.NominaSettings.privacidad", "Privacidad de los permisos")}>
+              <label className="block">
+                <span className="cg-eyebrow">
+                  {t("ui.NominaSettings.quienVeElMotivo", "Quién ve el motivo de un permiso")}
+                </span>
+                <select
+                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                  value={s?.privacy?.leaveReasonVisibleTo ?? "approvers"}
+                  onChange={(e) =>
+                    setS((prev) =>
+                      set(prev as NominaSettings, "privacy.leaveReasonVisibleTo", e.target.value),
+                    )
+                  }
+                >
+                  <option value="approvers">
+                    {t("ui.NominaSettings.motivoAprobadores", "Solo quien aprueba permisos (y quien lo pidió)")}
+                  </option>
+                  <option value="hr">
+                    {t("ui.NominaSettings.motivoRrhh", "Recursos humanos y niveles superiores (y quien lo pidió)")}
+                  </option>
+                  <option value="office">
+                    {t("ui.NominaSettings.motivoOficina", "Todo el personal de oficina")}
+                  </option>
+                </select>
+                <p className="mt-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+                  {t(
+                    "ui.NominaSettings.motivoAyuda",
+                    "El motivo suele ser médico. Los demás ven la solicitud (quién, fechas, estado) sin el motivo.",
+                  )}
+                </p>
+              </label>
             </SettingsSection>
 
             {/* ── PERIODO Y REGLAS DE PAGO ─────────────────────────────────────
