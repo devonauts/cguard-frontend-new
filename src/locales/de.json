@@ -22002,5 +22002,148 @@
     "vigia": {
       "masAjustes": "Weitere Einstellungen für Doppelschichten"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Person hinzufügen",
+    "subtitulo": "Sicherheitskräfte, Supervisoren und Büropersonal, mit ihrem Dienstplan. Nichts wird gespeichert, bevor du auf „Anlegen“ tippst.",
+    "pasos": {
+      "aria": "Schritte",
+      "queHace": "Was macht die Person?",
+      "quienEs": "Wer ist es?",
+      "dondeYCuando": "Wo und wann arbeitet die Person?",
+      "revisa": "Prüfen und anlegen"
+    },
+    "tipo": {
+      "vigilante": "Sicherheitskraft",
+      "supervisor": "Supervisor",
+      "oficina": "Büropersonal",
+      "vigilanteTexto": "Besetzt einen Posten an einem Standort. Der Dienstplan ergibt sich aus der Rotation des Postens.",
+      "supervisorTexto": "Fährt mehrere Standorte ab und kontrolliert sie. Der Dienstplan ergibt sich aus dem Supervisorposten.",
+      "oficinaTexto": "Verwaltung, Disposition, Personal. Hat einen Wochenplan und stempelt an der Web-Stempeluhr."
+    },
+    "paso2": {
+      "vasAAgregar": "Du fügst hinzu: {{tipo}}.",
+      "cambiarTipo": "Ändern"
+    },
+    "campos": {
+      "nombres": "Vornamen",
+      "nombresEj": "Z. B. Carlos Andrés",
+      "apellidos": "Nachnamen",
+      "apellidosEj": "Z. B. Ruiz Mora",
+      "documento": "Ausweisnummer",
+      "documentoAyuda": "Personalausweis, Reisepass… Optional: kann später ergänzt werden.",
+      "celular": "Handy",
+      "celularAyuda": "Ohne E-Mail geben wir dir mit der Handynummer den Link für WhatsApp.",
+      "correo": "E-Mail",
+      "correoAyuda": "Hierhin kommt die Einladung zum Erstellen des Passworts.",
+      "sinCorreo": "Keine E-Mail (meldet sich mit Benutzernamen an)",
+      "usuario": "Benutzername",
+      "usuarioAyuda": "Optional. Bleibt es leer, vergibt das System einen.",
+      "rol": "Was darf die Person? (Rolle)",
+      "rolElige": "Rolle wählen",
+      "queVe": "Was darf die Person sehen?",
+      "rolVeTodo": "Diese Rolle sieht per Definition den gesamten Betrieb: Das lässt sich nicht einschränken.",
+      "soloSedes": "Nur einige Objekte"
+    },
+    "paso3": {
+      "puestoSinRotacionVig": "Dieser Posten hat noch keine Rotation",
+      "puestoSinRotacionVigTexto": "Wähle, wie die Person arbeitet. Das wird die Rotation des Postens, die Nachfolgende übernehmen.",
+      "comoTrabaja": "Wie arbeitet die Person?",
+      "eligeRotacion": "Wähle, wie die Person an diesem Posten arbeitet",
+      "vigilanteIntro": "Wähle den Posten, den die Person besetzt. Der Dienstplan ist die Rotation dieses Postens: Nichts von Hand bauen.",
+      "supervisorIntro": "Wähle den Supervisorposten. Der Dienstplan sind die Zeiten und die Rotation dieses Postens.",
+      "recargar": "Neu laden",
+      "cargando": "Posten werden geladen…",
+      "sinPuestos": "Noch keine Posten",
+      "sinPuestosTexto": "Lege zuerst den Standort mit seinen Posten an und komm zurück, oder tippe auf „Später“.",
+      "crearEstacion": "Standort anlegen",
+      "crearPuesto": "Supervisorposten anlegen",
+      "sinPuestosSup": "Noch keine Supervisorposten",
+      "sinPuestosSupTexto": "Lege einen mit „Supervisorposten anlegen“ an, tippe auf „Neu laden“ oder lass den Dienstplan für später.",
+      "puestoSinRotacion": "Dieser Posten hat keine Rotation. Prüfe ihn unter Supervisorposten, damit der Dienstplan stimmt.",
+      "desde": "Beginnt am",
+      "desdeOficina": "Dieser Plan beginnt am",
+      "despuesTitulo": "Du legst den Dienstplan später fest",
+      "despuesTexto": "Am Ende sagen wir dir, wo das geht. Die Person erscheint schon unter Schichten › Dienstplan, auch vor Annahme der Einladung.",
+      "mejorAhora": "Doch jetzt festlegen",
+      "eligePlaza": "Wähle einen Posten oder tippe auf „Später“",
+      "eligePuesto": "Wähle einen Supervisorposten oder tippe auf „Später“",
+      "revisaJornada": "Prüfe die rot markierten Zeiten",
+      "ningunDia": "Markiere mindestens einen Tag oder tippe auf „Später“."
+    },
+    "oficina": {
+      "titulo": "Büro (optional)",
+      "texto": "Wenn festgelegt, prüft die Stempeluhr, dass vom Büro aus gestempelt wird.",
+      "direccion": "Adresse",
+      "direccionEj": "Hauptstraße 120, Zentrum",
+      "usarMiUbicacion": "Aktuellen Standort verwenden",
+      "radio": "Radius (Meter)",
+      "ubicada": "Standort: {{lat}}, {{lng}}",
+      "quitar": "Entfernen",
+      "sinGps": "Dieser Browser liefert keinen Standort",
+      "gpsNegado": "Standort konnte nicht gelesen werden. Prüfe die Browser-Berechtigung."
+    },
+    "resumen": {
+      "quien": "Wer",
+      "horario": "Dienstplan",
+      "acceso": "Zugang",
+      "desde": "Ab {{fecha}}",
+      "horarioDespues": "Legst du später fest",
+      "accesoCorreo": "Eine E-Mail an {{correo}} zum Erstellen des Passworts",
+      "accesoCelular": "Du bekommst den Benutzernamen und einen Link zum Senden per WhatsApp",
+      "accesoUsuario": "Du bekommst den Benutzernamen und einen Link zum persönlichen Weitergeben"
+    },
+    "botones": {
+      "cancelar": "Abbrechen",
+      "atras": "Zurück",
+      "siguiente": "Weiter",
+      "despues": "Später",
+      "crear": "Anlegen und Zugang geben"
+    },
+    "perfilCompleto": "Vollständiges Profil oder Lebenslauf importieren?",
+    "perfilCompletoLink": "Vollständiges Profil anlegen",
+    "listo": {
+      "toast": "{{nombre}} ist jetzt im System",
+      "titulo": "Fertig: {{nombre}} ist jetzt im System",
+      "horarioDespues": "Noch kein Dienstplan",
+      "horarioFallo": "Konnte nicht gespeichert werden",
+      "usuario": "Benutzername:",
+      "enlacePrivado": "Der Link ist nur für diese Person: Damit legt sie ihr Passwort fest. Nicht in Gruppen posten.",
+      "correoEnviado": "Wir haben eine E-Mail an {{correo}} geschickt, um das Passwort zu erstellen.",
+      "accesoEnFicha": "Der Zugang steht im Profil („Einladung erneut senden“).",
+      "faltaHorario": "Dienstplan fehlt",
+      "faltaHorarioFallo": "Die Person wurde angelegt, aber der Dienstplan nicht gespeichert",
+      "ponerHorario": "Dienstplan festlegen",
+      "faltaOficina": "Das Büro wurde nicht gespeichert",
+      "faltaOficinaTexto": "Im Profil › Bürostandort hinzufügen.",
+      "verFicha": "Profil ansehen",
+      "otra": "Weitere Person hinzufügen"
+    },
+    "errores": {
+      "requerido": "Pflichtfeld",
+      "correoInvalido": "E-Mail prüfen: sie sollte wie name@firma.de aussehen",
+      "celularInvalido": "Handynummer prüfen: mindestens 7 Ziffern",
+      "sedesVacias": "Wähle mindestens ein Objekt oder „Gesamter Betrieb“",
+      "fecha": "Datum prüfen",
+      "cargarRoles": "Rollen konnten nicht geladen werden",
+      "cargarPuestos": "Posten konnten nicht geladen werden",
+      "crear": "Person konnte nicht angelegt werden",
+      "sinId": "Die gerade angelegte Person wurde nicht gefunden",
+      "horario": "Dienstplan konnte nicht gespeichert werden",
+      "ubicacion": "Büro konnte nicht gespeichert werden"
+    },
+    "rotacion": {
+      "sinRotacion": "Keine Rotation festgelegt",
+      "secuencia": "Folge {{nombre}}",
+      "dias_one": "{{count}} Tag",
+      "dias_other": "{{count}} Tage",
+      "noches_one": "{{count}} Nacht",
+      "noches_other": "{{count}} Nächte",
+      "libres_one": "{{count}} frei",
+      "libres_other": "{{count}} frei"
+    },
+    "semana": {
+      "almuerzo": "Mittagspause {{desde}}–{{hasta}}"
+    }
   }
 }

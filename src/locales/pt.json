@@ -22002,5 +22002,148 @@
     "vigia": {
       "masAjustes": "Mais configurações de dobras"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Adicionar pessoa",
+    "subtitulo": "Vigilantes, supervisores e pessoal de escritório, com o seu horário. Nada é salvo até você tocar em «Criar».",
+    "pasos": {
+      "aria": "Etapas",
+      "queHace": "O que faz?",
+      "quienEs": "Quem é?",
+      "dondeYCuando": "Onde e quando trabalha?",
+      "revisa": "Revise e crie"
+    },
+    "tipo": {
+      "vigilante": "Vigilante",
+      "supervisor": "Supervisor",
+      "oficina": "Pessoal de escritório",
+      "vigilanteTexto": "Cobre um posto numa estação. O horário vem da rotação do posto.",
+      "supervisorTexto": "Percorre e supervisiona várias estações. O horário vem do seu posto de supervisão.",
+      "oficinaTexto": "Administração, despacho, recursos humanos. Tem um horário semanal e marca o ponto no relógio web."
+    },
+    "paso2": {
+      "vasAAgregar": "Você vai adicionar: {{tipo}}.",
+      "cambiarTipo": "Alterar"
+    },
+    "campos": {
+      "nombres": "Nomes",
+      "nombresEj": "Ex. Carlos André",
+      "apellidos": "Sobrenomes",
+      "apellidosEj": "Ex. Ruiz Mora",
+      "documento": "Número de identificação",
+      "documentoAyuda": "RG, CPF, passaporte… Opcional: pode colocar depois.",
+      "celular": "Celular",
+      "celularAyuda": "Se não tiver e-mail, com o celular damos o link para o WhatsApp.",
+      "correo": "E-mail",
+      "correoAyuda": "Aqui chega o convite para criar a senha.",
+      "sinCorreo": "Não tem e-mail (entra com um usuário)",
+      "usuario": "Usuário para entrar",
+      "usuarioAyuda": "Opcional. Se deixar vazio, o sistema escolhe um.",
+      "rol": "O que pode fazer? (função)",
+      "rolElige": "Escolha a função",
+      "queVe": "O que pode ver?",
+      "rolVeTodo": "Esta função vê toda a operação por definição: não pode ser limitada.",
+      "soloSedes": "Só algumas sedes"
+    },
+    "paso3": {
+      "puestoSinRotacionVig": "Este posto ainda não tem rotação",
+      "puestoSinRotacionVigTexto": "Escolha como trabalha. Será a rotação do posto e os próximos vão herdá-la.",
+      "comoTrabaja": "Como trabalha?",
+      "eligeRotacion": "Escolha como trabalha nesse posto",
+      "vigilanteIntro": "Escolha o posto que vai cobrir. O horário é a rotação desse posto: não precisa montar à mão.",
+      "supervisorIntro": "Escolha o posto de supervisão. O horário são as horas e a rotação desse posto.",
+      "recargar": "Recarregar",
+      "cargando": "Carregando postos…",
+      "sinPuestos": "Ainda não há postos",
+      "sinPuestosTexto": "Crie primeiro a estação com os seus postos e volte, ou toque em «Faço depois».",
+      "crearEstacion": "Criar uma estação",
+      "crearPuesto": "Criar um posto de supervisão",
+      "sinPuestosSup": "Ainda não há postos de supervisão",
+      "sinPuestosSupTexto": "Crie um em «Criar um posto de supervisão», toque em «Recarregar», ou deixe o horário para depois.",
+      "puestoSinRotacion": "Este posto não tem rotação definida. Revise-o em Postos de supervisão para o horário sair certo.",
+      "desde": "Começa em",
+      "desdeOficina": "Este horário começa em",
+      "despuesTitulo": "Você vai definir o horário depois",
+      "despuesTexto": "Ao terminar dizemos onde fazer. Já aparece em Turnos › Horário mesmo antes de aceitar o convite.",
+      "mejorAhora": "Melhor definir agora",
+      "eligePlaza": "Escolha um posto ou toque em «Faço depois»",
+      "eligePuesto": "Escolha um posto de supervisão ou toque em «Faço depois»",
+      "revisaJornada": "Revise as horas marcadas em vermelho",
+      "ningunDia": "Marque pelo menos um dia, ou toque em «Faço depois»."
+    },
+    "oficina": {
+      "titulo": "O seu escritório (opcional)",
+      "texto": "Se definir, o relógio de ponto confere que marque do escritório.",
+      "direccion": "Endereço",
+      "direccionEj": "Av. Principal 120, Centro",
+      "usarMiUbicacion": "Usar minha localização atual",
+      "radio": "Raio (metros)",
+      "ubicada": "Localização: {{lat}}, {{lng}}",
+      "quitar": "Remover",
+      "sinGps": "Este navegador não informa a localização",
+      "gpsNegado": "Não foi possível ler a localização. Verifique a permissão do navegador."
+    },
+    "resumen": {
+      "quien": "Quem",
+      "horario": "Horário",
+      "acceso": "Acesso",
+      "desde": "A partir de {{fecha}}",
+      "horarioDespues": "Você vai definir depois",
+      "accesoCorreo": "Chega um e-mail em {{correo}} para criar a senha",
+      "accesoCelular": "Damos o usuário e um link para enviar por WhatsApp",
+      "accesoUsuario": "Damos o usuário e um link para entregar em mãos"
+    },
+    "botones": {
+      "cancelar": "Cancelar",
+      "atras": "Voltar",
+      "siguiente": "Seguinte",
+      "despues": "Faço depois",
+      "crear": "Criar e dar acesso"
+    },
+    "perfilCompleto": "Precisa da ficha completa ou importar o currículo?",
+    "perfilCompletoLink": "Criar perfil completo",
+    "listo": {
+      "toast": "{{nombre}} já está no sistema",
+      "titulo": "Pronto: {{nombre}} já está no sistema",
+      "horarioDespues": "Ainda sem horário",
+      "horarioFallo": "Não foi possível salvar",
+      "usuario": "Usuário:",
+      "enlacePrivado": "O link é só para esta pessoa: com ele define a senha da conta. Não publique em grupos.",
+      "correoEnviado": "Enviamos um e-mail para {{correo}} para criar a senha.",
+      "accesoEnFicha": "O acesso está na ficha («Reenviar convite»).",
+      "faltaHorario": "Falta o horário",
+      "faltaHorarioFallo": "A pessoa foi criada, mas o horário não foi salvo",
+      "ponerHorario": "Definir horário",
+      "faltaOficina": "O escritório não foi salvo",
+      "faltaOficinaTexto": "Adicione na ficha › Localização do escritório.",
+      "verFicha": "Ver ficha",
+      "otra": "Adicionar outra pessoa"
+    },
+    "errores": {
+      "requerido": "Falta este dado",
+      "correoInvalido": "Revise o e-mail: deve ser como nome@empresa.com",
+      "celularInvalido": "Revise o celular: precisa ter pelo menos 7 números",
+      "sedesVacias": "Escolha pelo menos uma sede, ou «Toda a operação»",
+      "fecha": "Revise a data",
+      "cargarRoles": "Não foi possível carregar as funções",
+      "cargarPuestos": "Não foi possível carregar os postos",
+      "crear": "Não foi possível criar a pessoa",
+      "sinId": "Não encontramos a pessoa recém-criada",
+      "horario": "Não foi possível salvar o horário",
+      "ubicacion": "Não foi possível salvar o escritório"
+    },
+    "rotacion": {
+      "sinRotacion": "Sem rotação definida",
+      "secuencia": "Sequência {{nombre}}",
+      "dias_one": "{{count}} dia",
+      "dias_other": "{{count}} dias",
+      "noches_one": "{{count}} noite",
+      "noches_other": "{{count}} noites",
+      "libres_one": "{{count}} folga",
+      "libres_other": "{{count}} folgas"
+    },
+    "semana": {
+      "almuerzo": "almoço {{desde}}–{{hasta}}"
+    }
   }
 }

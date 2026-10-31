@@ -22002,5 +22002,148 @@
     "vigia": {
       "masAjustes": "Más ajustes de dobletes"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Agregar persona",
+    "subtitulo": "Vigilantes, supervisores y personal de oficina, con su horario. Nada se guarda hasta que toques «Crear».",
+    "pasos": {
+      "aria": "Pasos",
+      "queHace": "¿Qué hace?",
+      "quienEs": "¿Quién es?",
+      "dondeYCuando": "¿Dónde y cuándo trabaja?",
+      "revisa": "Revisa y crea"
+    },
+    "tipo": {
+      "vigilante": "Vigilante",
+      "supervisor": "Supervisor",
+      "oficina": "Personal de oficina",
+      "vigilanteTexto": "Cuida un puesto en una estación. Su horario sale de la rotación del puesto.",
+      "supervisorTexto": "Recorre y supervisa varias estaciones. Su horario sale de su puesto de supervisión.",
+      "oficinaTexto": "Administración, despacho, recursos humanos. Tiene un horario semanal y marca en el reloj web."
+    },
+    "paso2": {
+      "vasAAgregar": "Vas a agregar: {{tipo}}.",
+      "cambiarTipo": "Cambiar"
+    },
+    "campos": {
+      "nombres": "Nombres",
+      "nombresEj": "Ej. Carlos Andrés",
+      "apellidos": "Apellidos",
+      "apellidosEj": "Ej. Ruiz Mora",
+      "documento": "Número de identificación",
+      "documentoAyuda": "Cédula, DUI, pasaporte… Opcional: lo puedes poner después.",
+      "celular": "Celular",
+      "celularAyuda": "Si no tiene correo, con su celular te damos el enlace para WhatsApp.",
+      "correo": "Correo electrónico",
+      "correoAyuda": "Aquí le llega la invitación para crear su contraseña.",
+      "sinCorreo": "No tiene correo (entra con un usuario)",
+      "usuario": "Usuario para entrar",
+      "usuarioAyuda": "Opcional. Si lo dejas vacío, el sistema le pone uno.",
+      "rol": "¿Qué puede hacer? (rol)",
+      "rolElige": "Elige su rol",
+      "queVe": "¿Qué puede ver?",
+      "rolVeTodo": "Este rol ve toda la operación por definición: no se puede acotar.",
+      "soloSedes": "Solo algunas sedes"
+    },
+    "paso3": {
+      "puestoSinRotacionVig": "Este puesto todavía no tiene rotación",
+      "puestoSinRotacionVigTexto": "Elige cómo trabaja. Será la rotación del puesto y la heredarán los que vengan después.",
+      "comoTrabaja": "¿Cómo trabaja?",
+      "eligeRotacion": "Elige cómo trabaja en ese puesto",
+      "vigilanteIntro": "Elige el puesto que va a cubrir. Su horario es la rotación de ese puesto: no hay que armarlo a mano.",
+      "supervisorIntro": "Elige su puesto de supervisión. Su horario son las horas y la rotación de ese puesto.",
+      "recargar": "Recargar",
+      "cargando": "Cargando puestos…",
+      "sinPuestos": "Todavía no hay puestos",
+      "sinPuestosTexto": "Crea primero la estación con sus puestos y vuelve aquí, o toca «Lo hago después».",
+      "crearEstacion": "Crear una estación",
+      "crearPuesto": "Crear un puesto de supervisión",
+      "sinPuestosSup": "Todavía no hay puestos de supervisión",
+      "sinPuestosSupTexto": "Crea uno con «Crear un puesto de supervisión», toca «Recargar», o deja el horario para después.",
+      "puestoSinRotacion": "Este puesto no tiene rotación definida. Revísalo en Puestos de supervisión para que el horario salga bien.",
+      "desde": "Empieza el",
+      "desdeOficina": "Este horario empieza el",
+      "despuesTitulo": "Le pondrás el horario después",
+      "despuesTexto": "Al terminar te decimos dónde hacerlo. Ya aparece en Turnos › Horario aunque todavía no acepte su invitación.",
+      "mejorAhora": "Mejor ponerlo ahora",
+      "eligePlaza": "Elige un puesto o toca «Lo hago después»",
+      "eligePuesto": "Elige un puesto de supervisión o toca «Lo hago después»",
+      "revisaJornada": "Revisa las horas marcadas en rojo",
+      "ningunDia": "Marca al menos un día, o toca «Lo hago después»."
+    },
+    "oficina": {
+      "titulo": "Su oficina (opcional)",
+      "texto": "Si la defines, el reloj de asistencia comprueba que marque desde su oficina.",
+      "direccion": "Dirección",
+      "direccionEj": "Av. Principal 120, Centro",
+      "usarMiUbicacion": "Usar mi ubicación actual",
+      "radio": "Radio (metros)",
+      "ubicada": "Ubicación: {{lat}}, {{lng}}",
+      "quitar": "Quitar",
+      "sinGps": "Este navegador no da la ubicación",
+      "gpsNegado": "No se pudo leer la ubicación. Revisa el permiso del navegador."
+    },
+    "resumen": {
+      "quien": "Quién",
+      "horario": "Horario",
+      "acceso": "Su acceso",
+      "desde": "Desde el {{fecha}}",
+      "horarioDespues": "Lo pondrás después",
+      "accesoCorreo": "Le llega un correo a {{correo}} para crear su contraseña",
+      "accesoCelular": "Te damos su usuario y un enlace para mandárselo por WhatsApp",
+      "accesoUsuario": "Te damos su usuario y un enlace para compartírselo en mano"
+    },
+    "botones": {
+      "cancelar": "Cancelar",
+      "atras": "Atrás",
+      "siguiente": "Siguiente",
+      "despues": "Lo hago después",
+      "crear": "Crear y dar acceso"
+    },
+    "perfilCompleto": "¿Necesitas su ficha completa o importar su hoja de vida?",
+    "perfilCompletoLink": "Crear perfil completo",
+    "listo": {
+      "toast": "{{nombre}} ya está en el sistema",
+      "titulo": "Listo: {{nombre}} ya está en el sistema",
+      "horarioDespues": "Todavía sin horario",
+      "horarioFallo": "No se pudo guardar",
+      "usuario": "Usuario:",
+      "enlacePrivado": "El enlace es solo para esta persona: con él pone la contraseña de su cuenta. No lo publiques en grupos.",
+      "correoEnviado": "Le enviamos un correo a {{correo}} para que cree su contraseña.",
+      "accesoEnFicha": "Su acceso está en su ficha («Reenviar invitación»).",
+      "faltaHorario": "Falta su horario",
+      "faltaHorarioFallo": "La persona se creó, pero su horario no se guardó",
+      "ponerHorario": "Ponerle horario",
+      "faltaOficina": "Su oficina no se guardó",
+      "faltaOficinaTexto": "Agrégala desde su ficha › Ubicación de oficina.",
+      "verFicha": "Ver ficha",
+      "otra": "Agregar otra persona"
+    },
+    "errores": {
+      "requerido": "Falta este dato",
+      "correoInvalido": "Revisa el correo: debe ser como nombre@empresa.com",
+      "celularInvalido": "Revisa el celular: tiene que tener al menos 7 números",
+      "sedesVacias": "Elige al menos una sede, o «Toda la operación»",
+      "fecha": "Revisa la fecha",
+      "cargarRoles": "No se pudieron cargar los roles",
+      "cargarPuestos": "No se pudieron cargar los puestos",
+      "crear": "No se pudo crear a la persona",
+      "sinId": "No encontramos a la persona recién creada",
+      "horario": "No se pudo guardar el horario",
+      "ubicacion": "No se pudo guardar la oficina"
+    },
+    "rotacion": {
+      "sinRotacion": "Sin rotación definida",
+      "secuencia": "Secuencia {{nombre}}",
+      "dias_one": "{{count}} día",
+      "dias_other": "{{count}} días",
+      "noches_one": "{{count}} noche",
+      "noches_other": "{{count}} noches",
+      "libres_one": "{{count}} libre",
+      "libres_other": "{{count}} libres"
+    },
+    "semana": {
+      "almuerzo": "almuerzo {{desde}}–{{hasta}}"
+    }
   }
 }

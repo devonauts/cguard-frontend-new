@@ -397,7 +397,7 @@ export default function SupervisorsPage() {
                 <MapPin className="mr-2 h-4 w-4" />{" "}
                 {t("ui.SupervisorPositionsPage.puestos", "Puestos")}
               </Button>
-              <Button variant="brand" onClick={() => navigate("/supervisors/new")}>
+              <Button variant="brand" onClick={() => navigate("/personal/nueva?tipo=supervisor")}>
                 <Plus className="mr-2 h-4 w-4" />{" "}
                 {t("ui.SupervisorsPage.nuevoSupervisor")}{" "}
               </Button>
@@ -526,7 +526,7 @@ export default function SupervisorsPage() {
                     <Button
                       size="sm"
                       variant="brand"
-                      onClick={() => navigate("/supervisors/new")}
+                      onClick={() => navigate("/personal/nueva?tipo=supervisor")}
                     >
                       <Plus className="mr-2 h-4 w-4" />{" "}
                       {t("ui.SupervisorsPage.nuevoSupervisor")}

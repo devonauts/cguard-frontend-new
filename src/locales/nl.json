@@ -22002,5 +22002,148 @@
     "vigia": {
       "masAjustes": "Meer instellingen voor dubbele diensten"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Persoon toevoegen",
+    "subtitulo": "Beveiligers, supervisors en kantoorpersoneel, met hun rooster. Er wordt niets opgeslagen tot je op „Aanmaken” tikt.",
+    "pasos": {
+      "aria": "Stappen",
+      "queHace": "Wat doet deze persoon?",
+      "quienEs": "Wie is het?",
+      "dondeYCuando": "Waar en wanneer werkt deze persoon?",
+      "revisa": "Controleren en aanmaken"
+    },
+    "tipo": {
+      "vigilante": "Beveiliger",
+      "supervisor": "Supervisor",
+      "oficina": "Kantoorpersoneel",
+      "vigilanteTexto": "Bemant een post op een locatie. Het rooster volgt uit de rotatie van de post.",
+      "supervisorTexto": "Rijdt langs en controleert meerdere locaties. Het rooster volgt uit de supervisiepost.",
+      "oficinaTexto": "Administratie, meldkamer, HR. Heeft een weekrooster en klokt in via de webprikklok."
+    },
+    "paso2": {
+      "vasAAgregar": "Je voegt toe: {{tipo}}.",
+      "cambiarTipo": "Wijzigen"
+    },
+    "campos": {
+      "nombres": "Voornamen",
+      "nombresEj": "Bijv. Carlos Andrés",
+      "apellidos": "Achternamen",
+      "apellidosEj": "Bijv. Ruiz Mora",
+      "documento": "Identiteitsnummer",
+      "documentoAyuda": "Identiteitskaart, paspoort… Optioneel: kan later.",
+      "celular": "Mobiel",
+      "celularAyuda": "Zonder e-mail geven we je met het mobiele nummer de link voor WhatsApp.",
+      "correo": "E-mail",
+      "correoAyuda": "Hier komt de uitnodiging om een wachtwoord te maken.",
+      "sinCorreo": "Geen e-mail (logt in met een gebruikersnaam)",
+      "usuario": "Gebruikersnaam",
+      "usuarioAyuda": "Optioneel. Laat je het leeg, dan kiest het systeem er een.",
+      "rol": "Wat mag deze persoon? (rol)",
+      "rolElige": "Kies een rol",
+      "queVe": "Wat mag deze persoon zien?",
+      "rolVeTodo": "Deze rol ziet per definitie de hele operatie: dat kan niet worden beperkt.",
+      "soloSedes": "Alleen sommige locaties"
+    },
+    "paso3": {
+      "puestoSinRotacionVig": "Deze post heeft nog geen rotatie",
+      "puestoSinRotacionVigTexto": "Kies hoe deze persoon werkt. Dat wordt de rotatie van de post, die volgende mensen overnemen.",
+      "comoTrabaja": "Hoe werkt deze persoon?",
+      "eligeRotacion": "Kies hoe deze persoon op die post werkt",
+      "vigilanteIntro": "Kies de post die deze persoon bemant. Het rooster is de rotatie van die post: niets met de hand maken.",
+      "supervisorIntro": "Kies de supervisiepost. Het rooster zijn de uren en de rotatie van die post.",
+      "recargar": "Opnieuw laden",
+      "cargando": "Posten laden…",
+      "sinPuestos": "Nog geen posten",
+      "sinPuestosTexto": "Maak eerst de locatie met haar posten en kom terug, of tik op „Later”.",
+      "crearEstacion": "Locatie aanmaken",
+      "crearPuesto": "Supervisiepost aanmaken",
+      "sinPuestosSup": "Nog geen supervisieposten",
+      "sinPuestosSupTexto": "Maak er een met „Supervisiepost aanmaken”, tik op „Opnieuw laden”, of laat het rooster voor later.",
+      "puestoSinRotacion": "Deze post heeft geen rotatie. Controleer hem bij Supervisieposten zodat het rooster klopt.",
+      "desde": "Begint op",
+      "desdeOficina": "Dit rooster begint op",
+      "despuesTitulo": "Je stelt het rooster later in",
+      "despuesTexto": "Aan het eind zeggen we waar dat kan. De persoon staat al in Diensten › Rooster, ook vóór het accepteren van de uitnodiging.",
+      "mejorAhora": "Toch nu instellen",
+      "eligePlaza": "Kies een post of tik op „Later”",
+      "eligePuesto": "Kies een supervisiepost of tik op „Later”",
+      "revisaJornada": "Controleer de rood gemarkeerde uren",
+      "ningunDia": "Vink minstens één dag aan, of tik op „Later”."
+    },
+    "oficina": {
+      "titulo": "Het kantoor (optioneel)",
+      "texto": "Als je het instelt, controleert de prikklok dat er vanaf het kantoor wordt ingeklokt.",
+      "direccion": "Adres",
+      "direccionEj": "Hoofdstraat 120, Centrum",
+      "usarMiUbicacion": "Mijn huidige locatie gebruiken",
+      "radio": "Straal (meter)",
+      "ubicada": "Locatie: {{lat}}, {{lng}}",
+      "quitar": "Verwijderen",
+      "sinGps": "Deze browser geeft geen locatie",
+      "gpsNegado": "De locatie kon niet worden gelezen. Controleer de browsertoestemming."
+    },
+    "resumen": {
+      "quien": "Wie",
+      "horario": "Rooster",
+      "acceso": "Toegang",
+      "desde": "Vanaf {{fecha}}",
+      "horarioDespues": "Stel je later in",
+      "accesoCorreo": "Er gaat een e-mail naar {{correo}} om een wachtwoord te maken",
+      "accesoCelular": "Je krijgt de gebruikersnaam en een link om via WhatsApp te sturen",
+      "accesoUsuario": "Je krijgt de gebruikersnaam en een link om persoonlijk te geven"
+    },
+    "botones": {
+      "cancelar": "Annuleren",
+      "atras": "Terug",
+      "siguiente": "Volgende",
+      "despues": "Later",
+      "crear": "Aanmaken en toegang geven"
+    },
+    "perfilCompleto": "Volledig profiel nodig of een cv importeren?",
+    "perfilCompletoLink": "Volledig profiel aanmaken",
+    "listo": {
+      "toast": "{{nombre}} staat nu in het systeem",
+      "titulo": "Klaar: {{nombre}} staat nu in het systeem",
+      "horarioDespues": "Nog geen rooster",
+      "horarioFallo": "Kon niet worden opgeslagen",
+      "usuario": "Gebruikersnaam:",
+      "enlacePrivado": "De link is alleen voor deze persoon: daarmee stelt die het wachtwoord in. Deel hem niet in groepen.",
+      "correoEnviado": "We hebben een e-mail gestuurd naar {{correo}} om een wachtwoord te maken.",
+      "accesoEnFicha": "De toegang staat op het profiel („Uitnodiging opnieuw sturen”).",
+      "faltaHorario": "Rooster ontbreekt",
+      "faltaHorarioFallo": "De persoon is aangemaakt, maar het rooster is niet opgeslagen",
+      "ponerHorario": "Rooster instellen",
+      "faltaOficina": "Het kantoor is niet opgeslagen",
+      "faltaOficinaTexto": "Voeg het toe via het profiel › Kantoorlocatie.",
+      "verFicha": "Profiel bekijken",
+      "otra": "Nog iemand toevoegen"
+    },
+    "errores": {
+      "requerido": "Verplicht veld",
+      "correoInvalido": "Controleer het e-mailadres: zoals naam@bedrijf.nl",
+      "celularInvalido": "Controleer het mobiele nummer: minstens 7 cijfers",
+      "sedesVacias": "Kies minstens één locatie, of „Hele operatie”",
+      "fecha": "Controleer de datum",
+      "cargarRoles": "Rollen konden niet worden geladen",
+      "cargarPuestos": "Posten konden niet worden geladen",
+      "crear": "De persoon kon niet worden aangemaakt",
+      "sinId": "De zojuist aangemaakte persoon is niet gevonden",
+      "horario": "Het rooster kon niet worden opgeslagen",
+      "ubicacion": "Het kantoor kon niet worden opgeslagen"
+    },
+    "rotacion": {
+      "sinRotacion": "Geen rotatie ingesteld",
+      "secuencia": "Reeks {{nombre}}",
+      "dias_one": "{{count}} dag",
+      "dias_other": "{{count}} dagen",
+      "noches_one": "{{count}} nacht",
+      "noches_other": "{{count}} nachten",
+      "libres_one": "{{count}} vrij",
+      "libres_other": "{{count}} vrij"
+    },
+    "semana": {
+      "almuerzo": "lunch {{desde}}–{{hasta}}"
+    }
   }
 }

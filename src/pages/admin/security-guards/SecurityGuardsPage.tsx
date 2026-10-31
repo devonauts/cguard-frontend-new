@@ -1161,7 +1161,7 @@ export default function SecurityGuardsPage() {
           actions={
             hasPermission("securityGuardCreate") ? (
               <Button asChild variant="brand">
-                <Link to="/security-guards/new">
+                <Link to="/personal/nueva?tipo=vigilante">
                   <UserPlus className="mr-2 h-4 w-4" />
                   {t("guards.list.newGuard", "Nuevo Vigilante")}
                 </Link>
@@ -2054,7 +2054,7 @@ export default function SecurityGuardsPage() {
                                     filterStatus === "todos" &&
                                     !searchQuery ? (
                                       <Button asChild variant="brand">
-                                        <Link to="/security-guards/new">
+                                        <Link to="/personal/nueva?tipo=vigilante">
                                           <UserPlus className="mr-2 h-4 w-4" />
                                           {t(
                                             "guards.list.newGuard",
