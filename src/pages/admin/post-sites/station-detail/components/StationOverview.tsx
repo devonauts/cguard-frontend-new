@@ -27,6 +27,7 @@ import StationGeofencePolygon, {
   type PolyPoint,
 } from "@/components/GoogleMap/StationGeofencePolygon";
 import RotacionDeLaEstacion from "@/components/schedule/RotacionDeLaEstacion";
+import RequisitoDeLaEstacion from "./RequisitoDeLaEstacion";
 import {
   etiquetaPrimerTramo,
   etiquetaSegundoTramo,
@@ -243,7 +244,7 @@ export default function StationOverview({
     }
     let vivo = true;
 
-    ApiService.get(`/tenant/${tid}/rotation-styles`)
+    ApiService.get(`/tenant/${tid}/rotation-styles?includeArchived=1`)
       .then((res: any) => {
         if (!vivo) return;
         const filas = Array.isArray(res) ? res : (res?.rows ?? []);
@@ -459,6 +460,46 @@ export default function StationOverview({
   // shifts, so it only runs when the horario actually changed and after a
   // confirm (it clears existing assignments at this station).
   const updateHorario = async () => {
+    /* ── ONE CYCLE FOR THE WHOLE STATION: THE NON-DESTRUCTIVE DOOR ─────────
+       Hours and headcount live in the Requisito now; here only the cycle
+       changes. `PUT /station/:id/rotation` changes it, keeps every plaza and
+       every guard on it, and rebuilds the future shifts. `auto-positions`
+       stays only for «cada plaza con su ciclo», the one thing it alone writes. */
+    if (!estilosPorPlaza) {
+      if (!rotationStyleId || rotationStyleId === (station.rotationStyleId || "")) {
+        toast.info(t("ui.StationOverview.elCicloNoCambio", "El ciclo no cambió"));
+
+        return;
+      }
+      setSavingHorario(true);
+      try {
+        const tid = localStorage.getItem("tenantId") || "";
+
+        await ApiService.put(`/tenant/${tid}/station/${stationId}/rotation`, {
+          data: { rotationStyleId },
+        });
+        toast.success(
+          t(
+            "ui.Schedule.cicloActualizado",
+            "Ciclo actualizado — los turnos futuros se rehicieron y nadie perdió su puesto",
+          ),
+        );
+        invalidateEntity("stations");
+        try {
+          window.dispatchEvent(
+            new CustomEvent("station-horario-changed", { detail: { stationId } }),
+          );
+        } catch {
+          /* noop */
+        }
+      } catch (e: any) {
+        toast.error(e?.data?.message || e?.message || t("ui.Schedule.error", "Error"));
+      } finally {
+        setSavingHorario(false);
+      }
+
+      return;
+    }
     if (!turno) {
       toast.error(t("ui.StationOverview.seleccionaUnTurno"));
 
@@ -1073,7 +1114,15 @@ export default function StationOverview({
           </div>
         )}
 
-        {/* Horario del turno — drives scheduleType + positions (engine source of truth).
+        {/* EL REQUISITO: la única puerta que define plazas (fase 2). */}
+        {!evento && (
+          <RequisitoDeLaEstacion
+            rotationStyleId={station.rotationStyleId}
+            stationId={stationId}
+          />
+        )}
+
+        {/* Ciclo de rotación — the hours and headcount moved to the Requisito above.
             En un EVENTO no: sus horas y relevos los puso el asistente del evento, y
             «12h / 24h / rotación» los rehacía como un puesto fijo. */}
         {!evento && (
@@ -1084,175 +1133,15 @@ export default function StationOverview({
           <div className="flex items-center gap-2">
             <Clock size={16} style={{ color: "var(--brand-text)" }} />
             <h3 className="text-sm font-semibold text-foreground">
-              {t("ui.StationOverview.horarioDelTurno")}
+              {t("ui.StationOverview.cicloDeRotacion", "Ciclo de rotación")}
             </h3>
           </div>
           <p className="text-xs text-muted-foreground">
             {t(
-              "ui.StationOverview.defineElTurnoDelPuesto",
-              "Define el turno del puesto. Los vigilantes asignados a esta estación seguirán este horario. También editable en Programador › Horario.",
+              "ui.StationOverview.cicloExplicacion",
+              "Cómo se turnan y descansan los vigilantes de esta estación. Cuántos hacen falta y a qué hora se dice arriba, en el requisito.",
             )}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {TURNO_LABELS.map((o) => (
-              <button
-                key={o.key}
-                className="cg-focus rounded-xl border px-3 py-2 text-left transition-all"
-                style={
-                  turno === o.key
-                    ? {
-                        background: "var(--brand-wash)",
-                        borderColor: "var(--brand-line)",
-                      }
-                    : {
-                        background: "var(--glass-sunken)",
-                        borderColor: "var(--hairline)",
-                      }
-                }
-                type="button"
-                onClick={() => setTurno(o.key)}
-              >
-                {/* El tipo que YA tiene el puesto enseña su horario real
-                    («8h Diurno · 09:00–17:00»); los demás, el molde. */}
-                {(() => {
-                  const propio =
-                    o.key === scheduleTypeToTurno(station.scheduleType)
-                      ? resumenDeHorario(station.scheduleType, station)
-                      : null;
-
-                  return (
-                    <>
-                      <div className="text-xs font-semibold text-foreground">
-                        {propio?.ventana
-                          ? etiquetaDeHorario(t, propio)
-                          : t(o.labelKey, o.label)}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground">
-                        {propio?.ventana
-                          ? propio.ventana
-                          : o.subKey
-                            ? t(o.subKey, o.sub)
-                            : o.sub}
-                      </div>
-                    </>
-                  );
-                })()}
-              </button>
-            ))}
-          </div>
-          {turno === "custom" && (
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  {t("comun.horaInicio")}
-                </label>
-                <input
-                  className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm"
-                  type="time"
-                  value={customStart}
-                  onChange={(e) => setCustomStart(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  {t("comun.horaFin")}
-                </label>
-                <input
-                  className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm"
-                  type="time"
-                  value={customEnd}
-                  onChange={(e) => setCustomEnd(e.target.value)}
-                />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  {t("comun.turnoPorVigilante")}
-                </label>
-                <select
-                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
-                  value={blockHours}
-                  onChange={(e) => setBlockHours(e.target.value)}
-                >
-                  <option value="">
-                    {t("ui.StationOverview.todaLaJornada1Fijo")}
-                  </option>
-                  {[4, 6, 8, 12].map((h) => {
-                    const fits = winMin > 0 && winMin % (h * 60) === 0;
-                    const k = fits ? winMin / (h * 60) : 0;
-
-                    return (
-                      <option key={h} disabled={!fits} value={String(h)}>
-                        {fits
-                          ? t("ui.StationOverview.horasNFijos", {
-                              defaultValue: "{{h}}h → {{count}} fijos",
-                              h,
-                              count: k,
-                            })
-                          : t("ui.StationOverview.horasNoDivide", {
-                              defaultValue: "{{h}}h (no divide la cobertura)",
-                              h,
-                            })}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-              <div className="col-span-2">
-                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  {t(
-                    "postSites.stations.form.restCoverage",
-                    "Cobertura de descansos",
-                  )}
-                </label>
-                <select
-                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
-                  value={restCoverage}
-                  onChange={(e) => setRestCoverage(e.target.value as any)}
-                >
-                  <option value="sacafranco">
-                    {t("comun.sacafrancoCubreLosDescansos")}
-                  </option>
-                  <option value="alternate">
-                    {t("comun.alternanciaEntreFijosSinSacafranco")}
-                  </option>
-                </select>
-                {restCoverage === "alternate" && rotStyle && (
-                  <p
-                    className={`mt-1.5 text-[11px] ${alternateOk ? "text-muted-foreground" : "text-destructive"}`}
-                  >
-                    {alternateOk
-                      ? t("ui.StationOverview.patronAlternando", {
-                          defaultValue:
-                            "Patrón {{trabajo}}-{{descanso}}: {{porBloque}} fijos alternando por bloque, sin sacafranco. Total {{total}} fijos.",
-                          trabajo: rotWork,
-                          descanso: rotCycle - rotWork,
-                          porBloque: guardsPerBlock,
-                          total: blockCount * guardsPerBlock,
-                        })
-                      : t("ui.StationOverview.cicloDebeSerMultiplo", {
-                          defaultValue:
-                            "El ciclo ({{ciclo}}) debe ser múltiplo de los días de trabajo ({{trabajo}}). Usa 1-1, 2-2, 3-3…",
-                          ciclo: rotCycle,
-                          trabajo: rotWork,
-                        })}
-                  </p>
-                )}
-                {restCoverage === "sacafranco" &&
-                  blocksOk &&
-                  blockCount > 1 && (
-                    <p className="mt-1.5 text-[11px] text-muted-foreground">
-                      {t("ui.StationOverview.coberturaEnBloques", {
-                        defaultValue:
-                          "{{horas}}h de cobertura en {{count}} bloques consecutivos de {{bloque}}h — {{count}} fijos + sacafranco.",
-                        horas: winMin / 60,
-                        count: blockCount,
-                        bloque: Number(blockHours),
-                      })}
-                    </p>
-                  )}
-              </div>
-            </div>
-          )}
           {/* ── UNA PREGUNTA ARRIBA, EL RESTO PLEGADO ────────────────────────
               Antes se hacían CUATRO preguntas anidadas —horario, «¿mismo
               ciclo?», «¿rotativo o fijos?» y elegir entre nueve patrones—
@@ -1351,8 +1240,8 @@ export default function StationOverview({
           <div className="flex items-center justify-between gap-3">
             <p className="text-[11px]" style={{ color: "var(--warn-text)" }}>
               {t(
-                "ui.StationOverview.cambiarElHorarioReconfiguraLos",
-                "Cambiar el horario reconfigura los puestos; los vigilantes asignados deberán reasignarse.",
+                "ui.StationOverview.cambiarElCicloRehace",
+                "Cambiar el ciclo rehace los turnos futuros; nadie pierde su plaza.",
               )}
             </p>
             <button
@@ -1365,7 +1254,7 @@ export default function StationOverview({
               ) : (
                 <Check size={13} />
               )}
-              {t("ui.StationOverview.actualizarHorario", "Actualizar horario")}
+              {t("ui.StationOverview.guardarCiclo", "Guardar ciclo")}
             </button>
           </div>
         </div>

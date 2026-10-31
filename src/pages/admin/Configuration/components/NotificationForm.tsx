@@ -136,6 +136,17 @@ export default function NotificationMatrix() {
         default: { dashboard: true, email: true },
       },
       {
+        id: "coverage-assignments",
+        label: t("settings.notificationForm.coverageAssignmentsLabel", {
+          defaultValue: "Coberturas (al vigilante)",
+        }),
+        hint: t("settings.notificationForm.coverageAssignmentsHint", {
+          defaultValue:
+            "Le toca cubrir un puesto, lo movieron o se canceló su cobertura. Llega a su teléfono",
+        }),
+        default: { dashboard: true, push: true },
+      },
+      {
         id: "dispatch-updates",
         label: t("settings.notificationForm.dispatchUpdatesLabel", {
           defaultValue: "Actualizaciones de tickets de Incidente",

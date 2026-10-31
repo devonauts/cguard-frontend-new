@@ -37,6 +37,7 @@ import {
   Headphones,
   Languages,
   CalendarPlus,
+  Repeat,
   type LucideIcon,
 } from "lucide-react";
 
@@ -80,6 +81,7 @@ export const SETTINGS_ICONS: Record<string, LucideIcon> = {
   Headphones,
   Languages,
   CalendarPlus,
+  Repeat,
 };
 
 export function settingsIcon(name?: string): LucideIcon {

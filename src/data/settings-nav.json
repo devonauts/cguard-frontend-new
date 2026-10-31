@@ -142,6 +142,14 @@
             "keywords": "jornada descanso consecutivos horas semanales doblar turno dia libre convenio laboral ley rotacion noche vacaciones permiso libranza dias seguidos tope semanal"
           },
           {
+            "id": "patrones-rotacion",
+            "label": "Patrones de rotación",
+            "path": "/setting/patrones-de-rotacion",
+            "icon": "Repeat",
+            "desc": "Los ciclos de trabajo y descanso: renombrar, archivar y ver dónde se usa cada uno.",
+            "keywords": "patron patrones rotacion ciclo 4x4 2x2 dia noche libre descanso secuencia semanal lunes a viernes turno archivar renombrar"
+          },
+          {
             "id": "festivos",
             "label": "Festivos",
             "path": "/setting/festivos",

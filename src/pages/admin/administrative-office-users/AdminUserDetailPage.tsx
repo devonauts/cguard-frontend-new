@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ChevronRight,
+  Clock,
   Pencil,
   Mail,
   Phone,
@@ -39,6 +40,7 @@ import {
   SmartImage,
 } from "@/components/kit";
 import RegistroDeIntentos from "@/components/RegistroDeIntentos";
+import HorarioDeOficina from "./HorarioDeOficina";
 import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import { usePermissions } from "@/hooks/usePermissions";
 import { localeActual } from "@/lib/localeActual";
@@ -101,7 +103,7 @@ export default function AdminUserDetailPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"perfil" | "permisos" | "logs">("perfil");
+  const [tab, setTab] = useState<"perfil" | "horario" | "permisos" | "logs">("perfil");
 
   useEffect(() => {
     if (!id) return;
@@ -183,7 +185,7 @@ export default function AdminUserDetailPage() {
     .includes("supervisor");
 
   const TABS: Array<{
-    id: "perfil" | "permisos" | "logs";
+    id: "perfil" | "horario" | "permisos" | "logs";
     label: string;
     icon: LucideIcon;
   }> = [
@@ -191,6 +193,13 @@ export default function AdminUserDetailPage() {
       id: "perfil",
       label: t("ui.AdminUserDetailPage.perfil", "Perfil"),
       icon: IdCard,
+    },
+    /* Su horario de oficina vive en SU ficha (fase 2): antes sólo se veía y
+       se cambiaba desde Programador › Horario › «Todo el personal». */
+    {
+      id: "horario",
+      label: t("ui.HorarioDeOficina.pestana", "Horario"),
+      icon: Clock,
     },
     {
       id: "permisos",
@@ -364,6 +373,8 @@ export default function AdminUserDetailPage() {
             icon={<UserCog />}
             title={t("ui.AdminUserDetailPage.usuarioNoEncontrado")}
           />
+        ) : tab === "horario" ? (
+          <HorarioDeOficina name={name} userId={String(user.id)} />
         ) : tab === "logs" ? (
           <RegistroDeIntentos userId={user?.id ? String(user.id) : null} />
         ) : tab === "perfil" ? (

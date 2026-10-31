@@ -1,21 +1,28 @@
-import { useState, useEffect, useCallback } from "react";
-import { DataTable } from "@/components/table/DataTable";
-import { useTranslation } from "react-i18next";
 import {
-  Filter,
-  X,
-  Loader2,
-  UserCheck,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import {
   CalendarClock,
-  CalendarDays,
-  CalendarRange,
+  CircleSlash,
+  Megaphone,
+  UserCheck,
+  UserX,
+  Plane,
+  Archive,
+  LayoutGrid,
 } from "lucide-react";
 
-import { getTenantTimezone } from "@/utils/tenantLocation";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectTrigger,
@@ -24,689 +31,497 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
-import {
   PageContainer,
   PageHeader,
   Section,
-  MetricTile,
-  StatsStrip,
-  Stagger,
   EmptyState,
-  Modal,
   Toolbar,
-  SearchInput,
+  Segmented,
+  StatusBadge,
+  Pagination,
+  SkeletonCards,
+  InfoNote,
 } from "@/components/kit";
-import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
-import { securityGuardService } from "@/lib/api/securityGuardService";
-import { localeActual } from "@/lib/localeActual";
-import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
-// ── helpers ──────────────────────────────────────────────────────────────────
+import gapService, {
+  type Gap,
+  type GapKind,
+  type GapPage,
+} from "@/lib/api/gapService";
+import { stationService } from "@/lib/api/stationService";
+import {
+  hoyEnLaEmpresa,
+  soloHora,
+  soloFechaCivil,
+  sumaDias,
+} from "@/lib/horaDeLaEmpresa";
+import { agruparPorDiaYEstacion, admiteDobletes } from "@/lib/cubrirHueco";
+import { useEntitlement } from "@/hooks/useEntitlement";
+import { usePermissions } from "@/hooks/usePermissions";
+import CubrirHuecoModal from "./sinCubrir/CubrirHuecoModal";
+import { useOfertaDobletes } from "./sinCubrir/useOfertaDobletes";
 
-function formatDate(iso: string | null) {
-  if (!iso) return "—";
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * TURNOS › SIN CUBRIR (URL /open-shifts, unchanged)
+ *
+ * It listed shift rows without a guard — the rarest way a post ends up empty.
+ * Now it lists every real gap, from one backend service (`coverage/gaps`):
+ * faltas, leave nobody replaces, shifts without a guard or held by someone
+ * archived, and plazas the station requires that the schedule leaves empty.
+ * Grouped by day and station, paged on the server (no silent cap), each with
+ * «Cubrir» (ranked people, through the existing write paths) and, with the
+ * Dobletes module, «Ofrecer».
+ * ════════════════════════════════════════════════════════════════════════════
+ */
 
-  return new Date(iso).toLocaleDateString(localeActual(), {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    // Same tz as formatTime — mixed zones made a row's Fecha disagree with
-    // its own hours for viewers outside the company timezone.
-    timeZone: getTenantTimezone(),
-  });
+type Pestana = "all" | GapKind;
+
+const TONO: Record<GapKind, string> = {
+  no_show: "bad",
+  leave: "warn",
+  open_shift: "info",
+  archived_guard: "neutral",
+  empty_slot: "warn",
+};
+
+const ICONO: Record<GapKind, ReactNode> = {
+  no_show: <UserX className="h-4 w-4" />,
+  leave: <Plane className="h-4 w-4" />,
+  open_shift: <CircleSlash className="h-4 w-4" />,
+  archived_guard: <Archive className="h-4 w-4" />,
+  empty_slot: <LayoutGrid className="h-4 w-4" />,
+};
+
+export function useEtiquetasDeHueco() {
+  const { t } = useTranslation();
+
+  return useMemo(
+    () =>
+      ({
+        no_show: t("ui.SinCubrir.tipo.no_show", "Falta"),
+        leave: t("ui.SinCubrir.tipo.leave", "Permiso sin reemplazo"),
+        open_shift: t("ui.SinCubrir.tipo.open_shift", "Turno sin vigilante"),
+        archived_guard: t(
+          "ui.SinCubrir.tipo.archived_guard",
+          "Vigilante archivado",
+        ),
+        empty_slot: t("ui.SinCubrir.tipo.empty_slot", "Plaza vacía"),
+      }) as Record<GapKind, string>,
+    [t],
+  );
 }
 
-function formatTime(iso: string | null) {
-  if (!iso) return "—";
-
-  return new Date(iso).toLocaleTimeString(localeActual(), {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: getTenantTimezone(),
-  });
-}
-
-function durationHours(start: string, end: string) {
-  const diff =
-    (new Date(end).getTime() - new Date(start).getTime()) / 3_600_000;
-
-  if (diff <= 0) return "—";
-
-  return `${diff.toFixed(1)} h`;
-}
-
-interface GuardOption {
-  userId: string;
-  fullName: string;
-}
-
-// Raw guard row as returned by securityGuardService.list.
-interface GuardListItem {
-  guard?: {
-    id?: string;
-    firstName?: string;
-    lastName?: string;
-    fullName?: string;
-  };
-  guardId?: string;
-  fullName?: string;
-}
-
-// ── component ────────────────────────────────────────────────────────────────
+const MAX_DIAS = 62;
 
 export default function OpenShifts() {
   const { t } = useTranslation();
-  const [rawShifts, setRawShifts] = useState<ShiftRecord[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const etiqueta = useEtiquetasDeHueco();
+  const { hasPermission } = usePermissions();
+  const conDobletes = useEntitlement("dobletes");
+  const puedeCubrir =
+    hasPermission("coverageCreate") || hasPermission("shiftEdit");
+  const hoy = hoyEnLaEmpresa();
+
+  const [desde, setDesde] = useState(hoy);
+  const [hasta, setHasta] = useState(() => sumaDias(hoy, 13));
+  const [stationId, setStationId] = useState("");
+  const [pestana, setPestana] = useState<Pestana>("all");
+  const [terminados, setTerminados] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(50);
+  const [datos, setDatos] = useState<GapPage | null>(null);
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [estaciones, setEstaciones] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
+  const [cubrir, setCubrir] = useState<Gap | null>(null);
+  const oferta = useOfertaDobletes();
 
-  // Assign modal
-  const [assignTarget, setAssignTarget] = useState<ShiftRecord | null>(null);
-  const [allGuards, setAllGuards] = useState<GuardOption[]>([]);
-  const [guardSearch, setGuardSearch] = useState("");
-  const [selectedGuard, setSelectedGuard] = useState<GuardOption | null>(null);
-  const [assigning, setAssigning] = useState(false);
+  const rangoMal = hasta < desde;
+  const rangoLargo =
+    !rangoMal &&
+    (new Date(`${hasta}T12:00:00Z`).getTime() -
+      new Date(`${desde}T12:00:00Z`).getTime()) /
+      86_400_000 +
+      1 >
+      MAX_DIAS;
 
-  // Filter State
-  const [filters, setFilters] = useState({
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
-  });
-  const [appliedFilters, setAppliedFilters] = useState(filters);
-
-  // ── fetch open shifts ─────────────────────────────────────────────────────
-  const fetchShifts = useCallback(async () => {
-    setLoading(true);
+  const cargar = useCallback(async () => {
+    if (rangoMal || rangoLargo) return;
+    setCargando(true);
+    setError(null);
     try {
-      const params: Record<string, string | number | string[]> = {
-        "filter[openOnly]": "true",
-        limit: 500,
-      };
+      const r = await gapService.list({
+        from: desde,
+        to: hasta,
+        stationId: stationId || undefined,
+        kinds: pestana === "all" ? undefined : [pestana],
+        includeEnded: terminados,
+        page,
+        pageSize,
+      });
 
-      if (appliedFilters.startDate) {
-        // La hora que escribe el usuario es la DEL PUESTO. `new Date("…T07:00")`
-        // la leía en la zona del dispositivo, así que el mismo filtro devolvía
-        // turnos distintos según desde dónde se mirara.
-        params["filter[startTimeRange]"] = [
-          appliedFilters.startTime
-            ? desdeInputFechaHora(
-                `${appliedFilters.startDate}T${appliedFilters.startTime}`,
-              )
-            : limitesDelDia(appliedFilters.startDate).start,
-        ];
-      }
-      if (appliedFilters.endDate) {
-        const to = appliedFilters.endTime
-          ? desdeInputFechaHora(
-              `${appliedFilters.endDate}T${appliedFilters.endTime}`,
-            )
-          : limitesDelDia(appliedFilters.endDate).end;
-        const existing =
-          (params["filter[startTimeRange]"] as string[] | undefined) ?? [];
-
-        params["filter[startTimeRange]"] = [...existing, to];
-      }
-
-      const { rows } = await shiftService.list(params);
-
-      setRawShifts(rows);
-    } catch (err) {
-      console.error("Failed to fetch open shifts", err);
+      setDatos(r);
+    } catch (e: any) {
+      setError(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.SinCubrir.noCargo", "No se pudo cargar"),
+      );
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
-  }, [appliedFilters]);
+  }, [
+    desde,
+    hasta,
+    stationId,
+    pestana,
+    terminados,
+    page,
+    pageSize,
+    rangoMal,
+    rangoLargo,
+    t,
+  ]);
 
   useEffect(() => {
-    fetchShifts();
-  }, [fetchShifts]);
+    void cargar();
+  }, [cargar]);
 
-  // ── load guards once when assign modal opens ──────────────────────────────
   useEffect(() => {
-    if (!assignTarget) return;
-    if (allGuards.length > 0) return; // already loaded
-    (async () => {
-      try {
-        const resp = await securityGuardService.list({ limit: 200, offset: 0 });
-        const items: GuardListItem[] = Array.isArray(resp)
-          ? resp
-          : (resp.rows ?? []);
-        const opts: GuardOption[] = items
-          .map((item: GuardListItem) => {
-            const userId = item.guard?.id ?? item.guardId ?? null;
-            const fullName =
-              item.fullName ??
-              (item.guard?.firstName && item.guard?.lastName
-                ? `${item.guard.firstName} ${item.guard.lastName}`
-                : (item.guard?.fullName ?? ""));
+    stationService
+      .list({}, { limit: 1000, offset: 0 })
+      .then((r: any) =>
+        setEstaciones(
+          (r?.rows || [])
+            .map((s: any) => ({
+              id: String(s.id),
+              name: String(s.name || s.stationName || ""),
+            }))
+            .sort((a: any, b: any) => a.name.localeCompare(b.name)),
+        ),
+      )
+      .catch(() => setEstaciones([]));
+  }, []);
 
-            return userId ? { userId, fullName } : null;
-          })
-          .filter(Boolean) as GuardOption[];
-
-        setAllGuards(opts);
-      } catch (e) {
-        console.error("Failed to load guards", e);
-      }
-    })();
-  }, [assignTarget, allGuards.length]);
-
-  // ── derived data ──────────────────────────────────────────────────────────
-  const todayStr = new Date().toDateString();
-  const weekStart = new Date();
-
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-  weekStart.setHours(0, 0, 0, 0);
-
-  const stats = {
-    total: rawShifts.length,
-    today: rawShifts.filter(
-      (s) => new Date(s.startTime).toDateString() === todayStr,
-    ).length,
-    thisWeek: rawShifts.filter((s) => new Date(s.startTime) >= weekStart)
-      .length,
-  };
-
-  const q = searchQuery.toLowerCase().trim();
-  const filtered = rawShifts.filter((s) => {
-    if (!q) return true;
-
-    return (
-      formatDate(s.startTime).toLowerCase().includes(q) ||
-      (s.station?.stationName ?? "").toLowerCase().includes(q)
-    );
-  });
-
-  const totalPages = Math.ceil(filtered.length / pageSize);
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
-
-  const filteredGuards = allGuards.filter(
-    (g) =>
-      !guardSearch ||
-      g.fullName.toLowerCase().includes(guardSearch.toLowerCase()),
+  const byKind = datos?.byKind;
+  const totalTodos = byKind
+    ? Object.values(byKind).reduce((a, b) => a + b, 0)
+    : 0;
+  const grupos = useMemo(
+    () => agruparPorDiaYEstacion(datos?.rows || []),
+    [datos],
   );
 
-  // ── assign handler ────────────────────────────────────────────────────────
-  const handleAssign = async () => {
-    if (!assignTarget || !selectedGuard) return;
-    setAssigning(true);
-    try {
-      await shiftService.assign(assignTarget.id, selectedGuard.userId);
-      setRawShifts((prev) => prev.filter((s) => s.id !== assignTarget.id));
-      setAssignTarget(null);
-      setSelectedGuard(null);
-      setGuardSearch("");
-    } catch (err) {
-      console.error("Failed to assign guard", err);
-    } finally {
-      setAssigning(false);
-    }
+  const opciones: Array<{ value: Pestana; label: ReactNode }> = [
+    {
+      value: "all",
+      label: `${t("ui.SinCubrir.todos", "Todos")} · ${totalTodos}`,
+    },
+    ...(
+      [
+        "no_show",
+        "leave",
+        "empty_slot",
+        "open_shift",
+        "archived_guard",
+      ] as GapKind[]
+    )
+      .filter(
+        (k) => k !== "archived_guard" || (byKind?.archived_guard || 0) > 0,
+      )
+      .map((k) => ({
+        value: k as Pestana,
+        label: `${etiqueta[k]} · ${byKind?.[k] ?? 0}`,
+      })),
+  ];
+
+  const nombreEstacion = (g: Gap) =>
+    g.stationNickname && g.stationName && g.stationNickname !== g.stationName
+      ? `${g.stationNickname} · ${g.stationName}`
+      : g.stationNickname ||
+        g.stationName ||
+        t("ui.SinCubrir.estacion", "Estación");
+
+  const quien = (g: Gap) => {
+    if (g.kind === "empty_slot")
+      return g.need && g.need > 1
+        ? t("ui.SinCubrir.faltanDeN", {
+            defaultValue: "Faltan {{faltan}} de {{need}}",
+            faltan: g.missing,
+            need: g.need,
+          })
+        : t("ui.SinCubrir.nadieAsignado", "Nadie en el horario");
+    if (g.kind === "open_shift")
+      return t("ui.SinCubrir.sinVigilante", "Sin vigilante");
+
+    return g.guardName || "—";
   };
 
   return (
     <AppLayout>
-      <PageContainer width="wide">
+      <PageContainer>
         <PageHeader
           icon={<CalendarClock />}
-          subtitle={t("ui.OpenShifts.turnosSinVigilanteAsignadoAsignalos")}
+          subtitle={t(
+            "ui.SinCubrir.subtitulo",
+            "Faltas, permisos sin reemplazo, plazas vacías y turnos sin vigilante, según el requisito de cada estación.",
+          )}
           title={t("sidebar.turnos.sin-cubrir", "Sin cubrir")}
         />
 
-        {/* KPIs */}
-        <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <MetricTile
-            hint={t("ui.OpenShifts.turnosSinVigilante")}
-            icon={<CalendarClock />}
-            label={t("ui.OpenShifts.totalAbiertos")}
-            value={stats.total}
-          />
-          <MetricTile
-            delta={
-              stats.total > 0
-                ? {
-                    value: `${Math.round((stats.today / stats.total) * 100)} %`,
-                    direction: stats.today > 0 ? "down" : "flat",
-                  }
-                : undefined
-            }
-            hint={t("ui.OpenShifts.delTotalAbierto")}
-            icon={<CalendarDays />}
-            label={t("kit.dateRange.today", "Hoy")}
-            value={stats.today}
-          />
-          <MetricTile
-            delta={
-              stats.total > 0
-                ? {
-                    value: `${Math.round((stats.thisWeek / stats.total) * 100)} %`,
-                    direction: stats.thisWeek > 0 ? "down" : "flat",
-                  }
-                : undefined
-            }
-            hint={t("ui.OpenShifts.delTotalAbierto")}
-            icon={<CalendarRange />}
-            label={t("ui.OpenShifts.estaSemana")}
-            value={stats.thisWeek}
-          />
-        </StatsStrip>
-
-        {/* Barra de filtros */}
-        <Toolbar className="justify-end gap-4">
-          <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
-            <SearchInput
-              className="w-full md:w-80"
-              placeholder={t("ui.OpenShifts.buscarPuestoOFecha")}
-              value={searchQuery}
-              onChange={(v) => {
-                setSearchQuery(v);
+        <Toolbar className="flex-wrap gap-3">
+          <div className="grid gap-1">
+            <Label htmlFor="sc-desde">{t("comun.desdeLaFecha", "Desde")}</Label>
+            <Input
+              className="w-40"
+              id="sc-desde"
+              type="date"
+              value={desde}
+              onChange={(e) => {
+                setDesde(e.target.value);
                 setPage(1);
               }}
             />
-
-            <div className="flex items-center gap-2">
-              <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline">
-                    <Filter className="mr-2 h-4 w-4" />{" "}
-                    {t("guards.list.filters", "Filtros")}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
-                  <SheetHeader className="relative">
-                    <SheetTitle>{t("guards.list.filters", "Filtros")}</SheetTitle>
-                    <Button
-                      className="absolute right-0 top-0"
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => setIsFiltersOpen(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </SheetHeader>
-                  <div className="space-y-6 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label>{t("comun.desdeLaFecha")}</Label>
-                        <Input
-                          type="date"
-                          value={filters.startDate}
-                          onChange={(e) =>
-                            setFilters({
-                              ...filters,
-                              startDate: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>{t("comun.hora")}</Label>
-                        <Input
-                          type="time"
-                          value={filters.startTime}
-                          onChange={(e) =>
-                            setFilters({
-                              ...filters,
-                              startTime: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label>{t("comun.hastaLaFecha")}</Label>
-                        <Input
-                          type="date"
-                          value={filters.endDate}
-                          onChange={(e) =>
-                            setFilters({ ...filters, endDate: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>{t("comun.hora")}</Label>
-                        <Input
-                          type="time"
-                          value={filters.endTime}
-                          onChange={(e) =>
-                            setFilters({ ...filters, endTime: e.target.value })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 pt-4">
-                      <Button
-                        className="w-full"
-                        variant="brand"
-                        onClick={() => {
-                          setAppliedFilters({ ...filters });
-                          setIsFiltersOpen(false);
-                          setPage(1);
-                        }}
-                      >
-                        {t("guards.list.applyFilters", "Aplicar filtros")}
-                      </Button>
-                      <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={() => {
-                          const empty = {
-                            startDate: "",
-                            startTime: "",
-                            endDate: "",
-                            endTime: "",
-                          };
-
-                          setFilters(empty);
-                          setAppliedFilters(empty);
-                          setPage(1);
-                        }}
-                      >
-                        {t("guards.list.clearFilters", "Limpiar filtros")}
-                      </Button>
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
           </div>
-        </Toolbar>
-
-        {/* Tabla */}
-        <Section
-          contentClassName="overflow-x-auto -mx-1"
-          icon={<CalendarClock />}
-          title={t("sidebar.turnos.sin-cubrir", "Sin cubrir")}
-        >
-          {/* `DataTable` y no el primitivo `<Table>`: se pliega sola en fichas
-              en el teléfono. La casilla de la primera columna no tenía
-              manejador —era adorno— y no viaja. */}
-          <DataTable
-            columns={[
-              {
-                key: "startTime",
-                header: t("comun.fecha"),
-                render: (_v: any, row: any) => formatDate(row.startTime),
-              },
-              {
-                key: "station",
-                header: t("comun.puesto"),
-                titulo: true,
-                render: (_v: any, row: any) => row.station?.stationName ?? "—",
-              },
-              {
-                // La columna de fecha ya usa `startTime`; React avisaba de dos
-                // hijos con la misma clave. El valor lo saca `render` de la fila,
-                // así que la clave sólo hace de identidad.
-                key: "horaDeInicio",
-                header: t("comun.horaDeInicio"),
-                render: (_v: any, row: any) => formatTime(row.startTime),
-              },
-              {
-                key: "endTime",
-                header: t("comun.horaDeFin"),
-                render: (_v: any, row: any) => formatTime(row.endTime),
-              },
-              {
-                key: "duracion",
-                header: t("ui.OpenShifts.duracion", "Duración"),
-                render: (_v: any, row: any) =>
-                  durationHours(row.startTime, row.endTime),
-              },
-              {
-                key: "accion",
-                header: t("ui.OpenShifts.accion", "Acción"),
-                render: (_v: any, row: any) => (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setAssignTarget(row);
-                      setSelectedGuard(null);
-                      setGuardSearch("");
-                    }}
-                  >
-                    <UserCheck className="mr-1 h-4 w-4" />{" "}
-                    {t("comun.asignarVigilante")}
-                  </Button>
-                ),
-              },
-            ]}
-            containerless
-            data={paginated as any}
-            emptyState={
-              <EmptyState
-                className="border-0 py-2"
-                description={t("ui.OpenShifts.todosLosTurnosTienenVigilante")}
-                icon={<CalendarClock />}
-                title={t("ui.OpenShifts.noHayTurnosAbiertos")}
-              />
-            }
-            loading={loading}
-          />
-        </Section>
-
-        {/* Pagination */}
-        <div className="flex flex-wrap items-center justify-end gap-2 py-4">
-          <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
-            {t("ui.OpenShifts.elementosPorPagina", "Elementos por página")}
+          <div className="grid gap-1">
+            <Label htmlFor="sc-hasta">{t("comun.hastaLaFecha", "Hasta")}</Label>
+            <Input
+              className="w-40"
+              id="sc-hasta"
+              type="date"
+              value={hasta}
+              onChange={(e) => {
+                setHasta(e.target.value);
+                setPage(1);
+              }}
+            />
           </div>
-          <Select
-            value={String(pageSize)}
-            onValueChange={(v) => {
-              setPageSize(Number(v));
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-[70px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-              <SelectItem value="100">100</SelectItem>
-            </SelectContent>
-          </Select>
-          <div
-            className="text-sm tabular-nums sm:mx-4"
-            style={{ color: "var(--ink-soft)" }}
-          >
-            {filtered.length === 0
-              ? t("ui.OpenShifts.ceroDeCero", "0 de 0")
-              : t("ui.OpenShifts.rangoDePagina", {
-                  defaultValue: "{{desde}}–{{hasta}} de {{total}}",
-                  desde: (page - 1) * pageSize + 1,
-                  hasta: Math.min(page * pageSize, filtered.length),
-                  total: filtered.length,
-                })}
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              disabled={page <= 1}
-              size="icon"
-              variant="outline"
-              onClick={() => setPage((p) => p - 1)}
-            >
-              <span className="sr-only">
-                {t("ui.OpenShifts.paginaAnterior", "Página anterior")}
-              </span>
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M15 19l-7-7 7-7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              </svg>
-            </Button>
-            <Button
-              disabled={page >= totalPages}
-              size="icon"
-              variant="outline"
-              onClick={() => setPage((p) => p + 1)}
-            >
-              <span className="sr-only">
-                {t("ui.OpenShifts.paginaSiguiente", "Página siguiente")}
-              </span>
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M9 5l7 7-7 7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              </svg>
-            </Button>
-          </div>
-        </div>
-      </PageContainer>
-
-      {/* Assign Guard Modal */}
-      <Modal
-        footer={
-          <>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setAssignTarget(null);
-                setSelectedGuard(null);
-                setGuardSearch("");
+          <div className="grid min-w-[200px] gap-1">
+            <Label>{t("comun.puesto", "Estación")}</Label>
+            <Select
+              value={stationId || "__todas"}
+              onValueChange={(v) => {
+                setStationId(v === "__todas" ? "" : v);
+                setPage(1);
               }}
             >
-              {t("common.cancel", "Cancelar")}
-            </Button>
-            <Button
-              disabled={!selectedGuard || assigning}
-              variant="brand"
-              onClick={handleAssign}
-            >
-              {assigning ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : null}
-              {t("ui.OpenShifts.confirmarAsignacion", "Confirmar asignación")}
-            </Button>
-          </>
-        }
-        icon={<UserCheck />}
-        open={!!assignTarget}
-        title={t("comun.asignarVigilante")}
-        onOpenChange={(open) => {
-          if (!open) {
-            setAssignTarget(null);
-            setSelectedGuard(null);
-            setGuardSearch("");
-          }
-        }}
-      >
-        {assignTarget && (
-          <div className="space-y-4">
-            <div className="glass-sunken p-3 text-sm">
-              <div className="font-semibold">
-                {assignTarget.station?.stationName ??
-                  t("ui.OpenShifts.sinPuesto", "Sin puesto")}
-              </div>
-              <div
-                className="tabular-nums"
-                style={{ color: "var(--ink-soft)" }}
-              >
-                {formatDate(assignTarget.startTime)} ·{" "}
-                {formatTime(assignTarget.startTime)} –{" "}
-                {formatTime(assignTarget.endTime)} (
-                {durationHours(assignTarget.startTime, assignTarget.endTime)})
-              </div>
-            </div>
-
-            <SearchInput
-              placeholder={t("comun.buscarVigilante")}
-              value={guardSearch}
-              onChange={(v) => setGuardSearch(v)}
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__todas">
+                  {t("ui.SinCubrir.todasLasEstaciones", "Todas las estaciones")}
+                </SelectItem>
+                {estaciones.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <label className="flex items-center gap-2 self-end pb-2 text-sm">
+            <Checkbox
+              checked={terminados}
+              onCheckedChange={(v) => {
+                setTerminados(!!v);
+                setPage(1);
+              }}
             />
+            {t("ui.SinCubrir.incluirTerminados", "Incluir los que ya pasaron")}
+          </label>
+        </Toolbar>
 
-            <div className="glass-sunken max-h-56 overflow-y-auto p-1">
-              {filteredGuards.length === 0 ? (
-                <div
-                  className="p-4 text-center text-sm"
-                  style={{ color: "var(--ink-soft)" }}
-                >
-                  {allGuards.length === 0
-                    ? t("ui.OpenShifts.cargandoVigilantes", "Cargando vigilantes…")
-                    : t(
-                        "guards.list.empty.noneFoundTitle",
-                        "No se encontraron vigilantes",
-                      )}
-                </div>
-              ) : (
-                filteredGuards.map((g) => {
-                  const elegido = selectedGuard?.userId === g.userId;
+        {(rangoMal || rangoLargo) && (
+          <InfoNote tone="warn">
+            {rangoMal
+              ? t(
+                  "ui.SinCubrir.rangoAlReves",
+                  "La fecha «hasta» es anterior a «desde».",
+                )
+              : t("ui.SinCubrir.rangoLargo", {
+                  defaultValue: "Elige como máximo {{n}} días.",
+                  n: MAX_DIAS,
+                })}
+          </InfoNote>
+        )}
 
-                  return (
-                    <button
-                      key={g.userId}
-                      aria-pressed={elegido}
-                      className="cg-focus flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-left transition-colors hover:bg-[var(--glass-raised)]"
-                      style={
-                        elegido
-                          ? {
-                              background: "var(--brand-wash)",
-                              boxShadow: "inset 0 0 0 1px var(--brand-line)",
-                            }
-                          : undefined
-                      }
-                      type="button"
-                      onClick={() => setSelectedGuard(g)}
-                    >
-                      <span
-                        className="h-4 w-4 flex-shrink-0 rounded-full border-2"
-                        style={
-                          elegido
-                            ? {
-                                borderColor: "var(--brand)",
-                                background: "var(--brand)",
+        <Segmented
+          options={opciones}
+          value={pestana}
+          onChange={(v) => {
+            setPestana(v);
+            setPage(1);
+          }}
+        />
+
+        {error ? (
+          <InfoNote
+            tone="bad"
+            title={t("ui.SinCubrir.noCargo", "No se pudo cargar")}
+          >
+            {error}
+          </InfoNote>
+        ) : cargando && !datos ? (
+          <SkeletonCards count={3} />
+        ) : !grupos.length ? (
+          <EmptyState
+            description={
+              totalTodos > 0
+                ? t(
+                    "ui.SinCubrir.nadaDeEsteTipo",
+                    "No hay huecos de este tipo en estas fechas.",
+                  )
+                : t(
+                    "ui.SinCubrir.todoCubierto",
+                    "Todas las estaciones tienen a la gente que piden en estas fechas.",
+                  )
+            }
+            icon={<UserCheck />}
+            title={t("ui.SinCubrir.sinHuecos", "Nada sin cubrir")}
+          />
+        ) : (
+          <div className="space-y-4" style={{ opacity: cargando ? 0.6 : 1 }}>
+            {grupos.map((dia) => (
+              <Section
+                key={dia.date}
+                icon={<CalendarClock />}
+                title={soloFechaCivil(dia.date, {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                })}
+              >
+                <div className="space-y-3">
+                  {dia.estaciones.map((est) => {
+                    const g0 = est.filas[0];
+
+                    return (
+                      <div
+                        key={est.stationId}
+                        className="glass-sunken rounded-xl p-3"
+                      >
+                        <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+                          <div className="min-w-0">
+                            <Link
+                              className="font-semibold hover:underline"
+                              to={
+                                g0.postSiteId
+                                  ? `/post-sites/${g0.postSiteId}/stations/${g0.stationId}`
+                                  : `/stations`
                               }
-                            : { borderColor: "var(--hairline)" }
-                        }
-                      />
-                      <span className="text-sm">{g.fullName}</span>
-                    </button>
-                  );
-                })
-              )}
-            </div>
+                            >
+                              {nombreEstacion(g0)}
+                            </Link>
+                            {g0.postSiteName && (
+                              <span
+                                className="ml-2 text-xs"
+                                style={{ color: "var(--ink-soft)" }}
+                              >
+                                {g0.postSiteName}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <ul
+                          className="divide-y"
+                          style={{ borderColor: "var(--hairline)" }}
+                        >
+                          {est.filas.map((g) => (
+                            <li
+                              key={g.key}
+                              className="flex flex-wrap items-center gap-x-4 gap-y-2 py-2"
+                            >
+                              <span className="w-28 shrink-0 font-mono text-sm tabular-nums">
+                                {soloHora(g.startTime)}–{soloHora(g.endTime)}
+                              </span>
+                              <StatusBadge tone={TONO[g.kind]}>
+                                <span className="inline-flex items-center gap-1">
+                                  {ICONO[g.kind]} {etiqueta[g.kind]}
+                                </span>
+                              </StatusBadge>
+                              <span className="min-w-0 flex-1 truncate text-sm">
+                                {quien(g)}
+                              </span>
+                              {g.ended ? (
+                                <span
+                                  className="text-xs"
+                                  style={{ color: "var(--ink-faint)" }}
+                                >
+                                  {t("ui.SinCubrir.yaPaso", "Ya pasó")}
+                                </span>
+                              ) : (
+                                <div className="flex shrink-0 gap-2">
+                                  {conDobletes &&
+                                    admiteDobletes(g) &&
+                                    puedeCubrir && (
+                                      <Button
+                                        disabled={oferta.enviando === g.key}
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={async () => {
+                                          const ok = await oferta.ofrecer(g);
+
+                                          if (ok) void cargar();
+                                        }}
+                                      >
+                                        <Megaphone className="mr-1 h-4 w-4" />
+                                        {t("ui.SinCubrir.ofrecer", "Ofrecer")}
+                                      </Button>
+                                    )}
+                                  {puedeCubrir && (
+                                    <Button
+                                      size="sm"
+                                      variant="brand"
+                                      onClick={() => setCubrir(g)}
+                                    >
+                                      <UserCheck className="mr-1 h-4 w-4" />
+                                      {t("ui.SinCubrir.cubrir", "Cubrir")}
+                                    </Button>
+                                  )}
+                                </div>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Section>
+            ))}
           </div>
         )}
-      </Modal>
+
+        {datos && datos.total > 0 && (
+          <Pagination
+            noun={t("ui.SinCubrir.huecos", "huecos")}
+            page={page}
+            pageSize={pageSize}
+            pageSizes={[25, 50, 100, 200]}
+            total={datos.total}
+            onPageChange={setPage}
+            onPageSizeChange={(n) => {
+              setPageSize(n);
+              setPage(1);
+            }}
+          />
+        )}
+      </PageContainer>
+
+      {cubrir && (
+        <CubrirHuecoModal
+          gap={cubrir}
+          titulo={`${nombreEstacion(cubrir)} · ${etiqueta[cubrir.kind]}`}
+          onClose={() => setCubrir(null)}
+          onDone={() => {
+            setCubrir(null);
+            void cargar();
+          }}
+        />
+      )}
     </AppLayout>
   );
 }
