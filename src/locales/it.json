@@ -13251,7 +13251,20 @@
       "rechazar": "Rifiuta",
       "todos": "Tutti",
       "vacaciones": "Ferie",
-      "eligeAlVigilante": "Scegli a chi si riferisce il permesso."
+      "eligeAlVigilante": "Scegli a chi si riferisce il permesso.",
+      "aprobadoConHuecos": "Permesso approvato. {{n}} turno/i restano scoperti in Copertura, da coprire.",
+      "aprobadoSinTurnos": "Permesso approvato. Non c’erano turni in quei giorni.",
+      "turnosYaMarcados": "{{n}} turno/i con entrata già timbrata restano come lavorati.",
+      "aprobadoAntesSinRegistro": "Questo permesso è stato approvato prima che il sistema registrasse cosa cambiava nell’orario. Controlla i giorni nell’Orario e togli i segni a mano.",
+      "turnosDevueltos": "Fatto. {{n}} turno/i sono tornati nell’orario.",
+      "diasYaCubiertos": "Avevano già un sostituto e restano così: {{dias}}. Controllali in Copertura.",
+      "diasCerrados": "Appartengono a un periodo di paga chiuso e non si toccano: {{dias}}.",
+      "diasCambiadosAMano": "Qualcuno li ha cambiati a mano dopo e si rispettano: {{dias}}.",
+      "cancelarPermiso": "Annulla il permesso",
+      "cancelarPermisoMensaje": "I turni di quei giorni tornano nell’orario e i loro buchi in Copertura si chiudono. I giorni che hanno già un sostituto restano così.",
+      "cancelarPermisoBoton": "Annulla permesso",
+      "eliminarAprobada": "La richiesta viene eliminata e ciò che la sua approvazione aveva cambiato nell’orario viene annullato. I giorni con un sostituto restano così.",
+      "cancelado": "Annullato"
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",
@@ -17200,7 +17213,11 @@
       "descartar": "Scarta bozza",
       "franjaUnCambio": "Bozza non pubblicata · 1 modifica",
       "franjaCambios": "Bozza non pubblicata · {{n}} modifiche",
-      "franjaNadaEnElReal": "niente di questo è ancora nell'orario reale"
+      "franjaNadaEnElReal": "niente di questo è ancora nell'orario reale",
+      "cambioDirectoTitulo": "Questa modifica va direttamente all’orario reale",
+      "cambioDirectoMensaje": "Hai {{n}} modifica/he non pubblicata/e nella bozza. Salvando questa modifica il Pianificatore rilegge l’orario reale e la bozza si perde. Per tenerla, pubblicala prima.",
+      "cambioDirectoSeguir": "Continua e scarta la bozza",
+      "cambioDirectoVolver": "Indietro"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Questa schermata sarà rimossa: il Pianificatore è la nuova",

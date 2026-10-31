@@ -13359,7 +13359,20 @@
       "rechazar": "Odrzuć",
       "todos": "Wszystkie",
       "vacaciones": "Urlop",
-      "eligeAlVigilante": "Wybierz, kogo dotyczy ta nieobecność."
+      "eligeAlVigilante": "Wybierz, kogo dotyczy ta nieobecność.",
+      "aprobadoConHuecos": "Nieobecność zatwierdzona. {{n}} zmian(a) to teraz luki w Obsadzie do pokrycia.",
+      "aprobadoSinTurnos": "Nieobecność zatwierdzona. W te dni nie było zmian.",
+      "turnosYaMarcados": "{{n}} zmian(a) z odbitym wejściem pozostaje jako przepracowana.",
+      "aprobadoAntesSinRegistro": "Ta nieobecność została zatwierdzona, zanim system zapisywał zmiany w grafiku. Sprawdź jej dni w Grafiku i usuń oznaczenia ręcznie.",
+      "turnosDevueltos": "Gotowe. {{n}} zmian(a) wróciło do grafiku.",
+      "diasYaCubiertos": "Te dni miały już zastępstwo i zostają bez zmian: {{dias}}. Sprawdź je w Obsadzie.",
+      "diasCerrados": "Należą do zamkniętego okresu płacowego i nie są zmieniane: {{dias}}.",
+      "diasCambiadosAMano": "Ktoś zmienił je później ręcznie, więc zostają: {{dias}}.",
+      "cancelarPermiso": "Anuluj nieobecność",
+      "cancelarPermisoMensaje": "Zmiany z tych dni wracają do grafiku, a ich luki w Obsadzie się zamykają. Dni, które mają już zastępstwo, zostają bez zmian.",
+      "cancelarPermisoBoton": "Anuluj nieobecność",
+      "eliminarAprobada": "Wniosek zostanie usunięty, a zmiany, które jego zatwierdzenie wprowadziło w grafiku, zostaną cofnięte. Dni z zastępstwem zostają bez zmian.",
+      "cancelado": "Anulowana"
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
@@ -17426,7 +17439,11 @@
       "descartar": "Odrzuć szkic",
       "franjaUnCambio": "Nieopublikowany szkic · 1 zmiana",
       "franjaCambios": "Nieopublikowany szkic · zmiany: {{n}}",
-      "franjaNadaEnElReal": "nic z tego nie ma jeszcze w rzeczywistym grafiku"
+      "franjaNadaEnElReal": "nic z tego nie ma jeszcze w rzeczywistym grafiku",
+      "cambioDirectoTitulo": "Ta zmiana trafia od razu do prawdziwego grafiku",
+      "cambioDirectoMensaje": "Masz {{n}} nieopublikowanych zmian w szkicu. Po zapisaniu tej zmiany Planer ponownie wczyta prawdziwy grafik i szkic przepadnie. Aby go zachować, najpierw go opublikuj.",
+      "cambioDirectoSeguir": "Kontynuuj i odrzuć szkic",
+      "cambioDirectoVolver": "Wróć"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Ten ekran zostanie wycofany: nowy jest Planer",

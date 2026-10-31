@@ -635,6 +635,44 @@ export default function Planificador() {
   /* «Quitar» a alguien de su puesto cierra su asignación en el servidor. Se
      pide dos veces (sin diálogo del navegador) y se relee el horario. */
   const [confirmarQuitar, setConfirmarQuitar] = useState<string | null>(null);
+  /* ── LOS CAMBIOS DIRECTOS NO SE LLEVAN EL BORRADOR SIN PREGUNTAR ───────
+     Asignar, cambiar, editar, agregar sacafranco y quitar escriben en el
+     horario REAL, y al terminar el Planificador lo vuelve a leer: eso tiraba
+     el borrador sin publicar sin decir nada. Con cambios pendientes, se
+     pregunta antes de abrir la acción. */
+  const borradorRef = useRef(borrador);
+
+  borradorRef.current = borrador;
+  const antesDeUnCambioDirecto = useCallback(async (): Promise<boolean> => {
+    const b = borradorRef.current;
+
+    if (!b.sinPublicar) return true;
+
+    return confirmDialog({
+      title: t(
+        "ui.Planificador.cambioDirectoTitulo",
+        "Este cambio va directo al horario real",
+      ),
+      message: t("ui.Planificador.cambioDirectoMensaje", {
+        n: b.pendientes,
+        defaultValue:
+          "Tienes {{n}} cambio(s) sin publicar en el borrador. Al guardar este cambio el Planificador vuelve a leer el horario real y el borrador se pierde. Si quieres conservarlo, publícalo primero.",
+      }),
+      confirmText: t(
+        "ui.Planificador.cambioDirectoSeguir",
+        "Seguir y descartar el borrador",
+      ),
+      cancelText: t("ui.Planificador.cambioDirectoVolver", "Volver"),
+      tone: "danger",
+    });
+  }, [t]);
+  const directo =
+    <T,>(abrir: (v: T) => void) =>
+    (v: T) => {
+      void antesDeUnCambioDirecto().then((si) => {
+        if (si) abrir(v);
+      });
+    };
   const quitarVigilante = async (p: Persona) => {
     const a = leido?.enlace.personas[p.id]?.assignmentId;
 
@@ -657,6 +695,11 @@ export default function Planificador() {
           nombre: p.nombre,
         }),
       );
+
+      return;
+    }
+    if (!(await antesDeUnCambioDirecto())) {
+      setConfirmarQuitar(null);
 
       return;
     }
@@ -1194,11 +1237,11 @@ export default function Planificador() {
                                       pu={pu}
                                       cambiar={cambiar}
                                       setHoja={setHoja}
-                                      asignar={setAsignando}
+                                      asignar={directo(setAsignando)}
                                       confirmando={confirmarQuitar}
                                       quitar={quitarVigilante}
-                                      sustituir={setSustituyendo}
-                                      editar={setEditando}
+                                      sustituir={directo(setSustituyendo)}
+                                      editar={directo(setEditando)}
                                       desistir={() => setConfirmarQuitar(null)}
                                       onToggle={() => alternar(`p:${pu.id}`)}
                                     />
@@ -1281,7 +1324,9 @@ export default function Planificador() {
                           }}
                           type="button"
                           onClick={() =>
-                            setAgregandoSf(puestosVisibles.map((x) => x.id))
+                            directo(setAgregandoSf)(
+                              puestosVisibles.map((x) => x.id),
+                            )
                           }
                         >
                           <UserPlus size={12} />{" "}
@@ -1302,7 +1347,7 @@ export default function Planificador() {
                       s={s}
                       cambiar={cambiar}
                       confirmando={confirmarQuitar}
-                      editar={setEditando}
+                      editar={directo(setEditando)}
                       retirar={quitarVigilante}
                       desistir={() => setConfirmarQuitar(null)}
                       setHoja={setHoja}
@@ -1362,7 +1407,7 @@ export default function Planificador() {
                         s={s}
                         cambiar={cambiar}
                         confirmando={confirmarQuitar}
-                        editar={setEditando}
+                        editar={directo(setEditando)}
                         retirar={quitarVigilante}
                         desistir={() => setConfirmarQuitar(null)}
                         setHoja={setHoja}
