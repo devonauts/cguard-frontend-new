@@ -77,6 +77,41 @@ export interface Contexto {
   instanteDe(d: number, minuto: number): string;
 }
 
+/** `YYYY-MM-DD` + n days, calendar arithmetic (no zone involved). */
+function masDias(dia: string, n: number): string {
+  const [y, m, d] = dia.split("-").map(Number);
+
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
+/**
+ * The publishing context for a company: dates by calendar, and every hour as
+ * the WALL CLOCK of the company's zone (`instante`). A 19:00–07:00 shift on
+ * the night the US falls back (1 Nov 2026) ends at 07:00 local, 13 hours
+ * later; in Ecuador (no DST) it is always 12.
+ */
+export function contextoEnLaEmpresa(
+  tenantId: string,
+  base: string,
+  hoy: number,
+  dias: number,
+  instante: (dia: string, hora: number, minuto: number) => Date,
+): Contexto {
+  return {
+    tenantId,
+    base,
+    hoy,
+    dias,
+    fechaDe: (d) => masDias(base, d),
+    instanteDe: (d, min) =>
+      instante(
+        masDias(base, d + Math.floor(min / 1440)),
+        Math.floor((min % 1440) / 60),
+        min % 60,
+      ).toISOString(),
+  };
+}
+
 const CODIGO_NOVEDAD: Record<string, string> = {
   vacaciones: "V",
   permiso: "PM",

@@ -12660,7 +12660,9 @@
       "yseRepite": "· e si ripete",
       "eliminarTurnosYNovedades": "Elimina i turni e le segnalazioni selezionati (Canc)",
       "menuCorrerCiclo": "Sposta il ciclo di {{nombre}}…",
-      "irAEstaciones": "Vai alle postazioni"
+      "irAEstaciones": "Vai alle postazioni",
+      "moverCoberturaDel": "Spostare la copertura del {{dia}}",
+      "moverDePuesto": "Spostare la guardia di postazione"
     },
     "ScheduleTimeline": {
       "duracion": "Durata:",
@@ -17257,7 +17259,36 @@
       "cambioDirectoTitulo": "Questa modifica va direttamente all’orario reale",
       "cambioDirectoMensaje": "Hai {{n}} modifica/he non pubblicata/e nella bozza. Salvando questa modifica il Pianificatore rilegge l’orario reale e la bozza si perde. Per tenerla, pubblicala prima.",
       "cambioDirectoSeguir": "Continua e scarta la bozza",
-      "cambioDirectoVolver": "Indietro"
+      "cambioDirectoVolver": "Indietro",
+      "borradorViejo": "C’era una bozza non pubblicata di oltre una settimana; è stata scartata.",
+      "borradorOtraSemana": "La bozza non pubblicata era di un’altra settimana e non corrisponde più al calendario; è stata scartata.",
+      "otroGuardo": "Anche {{quien}} ha modificato la bozza; le modifiche sono state unite alle tue.",
+      "otraPersona": "Un’altra persona",
+      "borradorAbierto": "È stata aperta la bozza non pubblicata (salvata da {{quien}}). Pubblicala o scartala.",
+      "realCambio": "Il turnario reale è cambiato sotto la bozza; le tue modifiche restano sopra quello nuovo.",
+      "choques": "Tu e un’altra persona avete modificato questo nello stesso momento; è rimasta la tua versione: {{lista}}",
+      "borradorYaNoEsta": "Un’altra persona ha pubblicato o scartato la bozza. Il turnario reale è stato riletto con le tue modifiche sopra.",
+      "salirTituloServidor": "Ci sono modifiche non salvate",
+      "salirMensajeServidor": "Le tue ultime modifiche alla bozza non sono ancora arrivate al server. Se esci ora, vanno perse.",
+      "salirSinGuardar": "Esci comunque",
+      "descartarMensajeCompartido": "Le {{n}} modifiche non pubblicate vanno perse, anche per chi altro la sta modificando, e si torna a vedere il turnario reale.",
+      "guardadoEnServidor": "Salvato per tutto il team",
+      "noSeGuardo": "Impossibile salvare; si riprova alla prossima modifica",
+      "guardando": "Salvataggio…",
+      "tambienEditando": "Lo sta modificando anche: {{quien}}",
+      "tituloBorrador": "Turnario · bozza",
+      "filtroEstacion": "Postazione",
+      "todasLasEstaciones": "Tutte le postazioni",
+      "filtroTurno": "Tipo di turno",
+      "todosLosTurnos": "Tutti i turni",
+      "noSePublico": "Non è stato pubblicato nulla. Riprova.",
+      "cambioAsignacion": "ha cambiato l’assegnazione di",
+      "cambioMarca": "ha cambiato una segnalazione di",
+      "cambioTurno": "ha cambiato un turno di",
+      "cerrar": "Chiudi",
+      "recargarConLoNuevo": "Ricarica con le novità e rivedi",
+      "publicandoDeUnaVez": "Pubblicazione di tutto in una volta…",
+      "publicarDetalleTodo": "Questo scrive nel turnario reale: lo vedranno la centrale, il Turnario e le guardie nella loro app. Va tutto in una volta: se una modifica fallisce, non si pubblica nulla."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Questa schermata sarà rimossa: il Pianificatore è la nuova",
@@ -19029,6 +19060,15 @@
       "rrhh": "Risorse umane: in più dati del personale e paga",
       "supervision": "Supervisione: in più approva le ore",
       "gerencia": "Direzione: in più report e azioni direttive"
+    },
+    "HorarioModos": {
+      "modos": "Modalità del turnario",
+      "enVivo": "Dal vivo",
+      "borrador": "Bozza",
+      "hayBorradorEditando": "C’è una bozza non pubblicata; ora la sta modificando {{quien}}.",
+      "hayBorrador": "C’è una bozza non pubblicata (salvata da {{quien}}).",
+      "ayudaVivo": "Ogni modifica viene salvata subito nel turnario reale.",
+      "ayudaBorrador": "Nulla arriva al turnario reale fino a «Pubblica». La bozza è condivisa con il tuo team."
     }
   },
   "visitantes": {

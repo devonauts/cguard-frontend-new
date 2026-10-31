@@ -425,7 +425,13 @@ const Visitors = lazy(
 const PostSite = lazy(() => import("./pages/admin/analytics/PostSite"));
 const Guard = lazy(() => import("./pages/admin/analytics/Guard"));
 const TimeOff = lazy(() => import("./pages/admin/programmer/TimeOff"));
-const Schedule = lazy(() => import("./pages/admin/programmer/Schedule"));
+// Turnos › Horario: live schedule and shared draft in one page (phase 2).
+const HorarioPage = lazy(() => import("./pages/admin/programmer/HorarioPage"));
+const PlanificadorAlHorario = lazy(() =>
+  import("./pages/admin/programmer/HorarioPage").then((m) => ({
+    default: m.PlanificadorAlHorario,
+  })),
+);
 const ShiftExchange = lazy(
   () => import("./pages/admin/programmer/ShiftExchange"),
 );
@@ -434,9 +440,6 @@ const OpenShifts = lazy(() => import("./pages/admin/programmer/OpenShifts"));
 const Coverage = lazy(() => import("./pages/admin/programmer/Coverage"));
 // Dobletes (módulo `dobletes`): ofertas, reserva, campañas, ranking, ajustes.
 const DobletesPage = lazy(() => import("./pages/admin/dobletes/DobletesPage"));
-const Planificador = lazy(
-  () => import("./pages/admin/programmer/Planificador"),
-);
 const CheckInOut = lazy(() => import("./pages/admin/Reports/CheckInOut"));
 const CoverageAbsences = lazy(
   () => import("./pages/admin/Reports/CoverageAbsences"),
@@ -2231,7 +2234,7 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <Schedule />
+                                    <HorarioPage />
                                   </ProtectedRoute>
                                 }
                                 path="/schedule"
@@ -2279,7 +2282,7 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <Planificador />
+                                    <PlanificadorAlHorario />
                                   </ProtectedRoute>
                                 }
                                 path="/planificador"

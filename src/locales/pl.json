@@ -12754,7 +12754,9 @@
       "yseRepite": "· i się powtarza",
       "eliminarTurnosYNovedades": "Usuń zaznaczone zmiany i zdarzenia (Del)",
       "menuCorrerCiclo": "Przesuń cykl: {{nombre}}…",
-      "irAEstaciones": "Przejdź do posterunków"
+      "irAEstaciones": "Przejdź do posterunków",
+      "moverCoberturaDel": "Przenieś obsadę z {{dia}}",
+      "moverDePuesto": "Przenieś ochroniarza na inny posterunek"
     },
     "ScheduleTimeline": {
       "duracion": "Czas trwania:",
@@ -17483,7 +17485,36 @@
       "cambioDirectoTitulo": "Ta zmiana trafia od razu do prawdziwego grafiku",
       "cambioDirectoMensaje": "Masz {{n}} nieopublikowanych zmian w szkicu. Po zapisaniu tej zmiany Planer ponownie wczyta prawdziwy grafik i szkic przepadnie. Aby go zachować, najpierw go opublikuj.",
       "cambioDirectoSeguir": "Kontynuuj i odrzuć szkic",
-      "cambioDirectoVolver": "Wróć"
+      "cambioDirectoVolver": "Wróć",
+      "borradorViejo": "Był nieopublikowany szkic starszy niż tydzień; został odrzucony.",
+      "borradorOtraSemana": "Nieopublikowany szkic był z innego tygodnia i nie pasuje już do kalendarza; został odrzucony.",
+      "otroGuardo": "{{quien}} również zmienił(a) szkic; zmiany połączono z twoimi.",
+      "otraPersona": "Ktoś inny",
+      "borradorAbierto": "Otwarto nieopublikowany szkic (zapisał(a) {{quien}}). Opublikuj go lub odrzuć.",
+      "realCambio": "Rzeczywisty grafik zmienił się pod szkicem; twoje zmiany pozostają na nowym.",
+      "choques": "Ty i ktoś inny zmieniliście to jednocześnie; zachowano twoją wersję: {{lista}}",
+      "borradorYaNoEsta": "Ktoś inny opublikował lub odrzucił szkic. Rzeczywisty grafik wczytano ponownie z twoimi zmianami.",
+      "salirTituloServidor": "Są niezapisane zmiany",
+      "salirMensajeServidor": "Twoje ostatnie zmiany w szkicu nie dotarły jeszcze na serwer. Jeśli wyjdziesz teraz, przepadną.",
+      "salirSinGuardar": "Wyjdź mimo to",
+      "descartarMensajeCompartido": "{{n}} nieopublikowanych zmian przepada, także dla innych edytujących, i znów widać rzeczywisty grafik.",
+      "guardadoEnServidor": "Zapisano dla całego zespołu",
+      "noSeGuardo": "Nie udało się zapisać; ponowna próba przy następnej zmianie",
+      "guardando": "Zapisywanie…",
+      "tambienEditando": "Edytuje też: {{quien}}",
+      "tituloBorrador": "Grafik · szkic",
+      "filtroEstacion": "Posterunek",
+      "todasLasEstaciones": "Wszystkie posterunki",
+      "filtroTurno": "Rodzaj zmiany",
+      "todosLosTurnos": "Wszystkie zmiany",
+      "noSePublico": "Nic nie zostało opublikowane. Spróbuj ponownie.",
+      "cambioAsignacion": "zmienił(a) przydział",
+      "cambioMarca": "zmienił(a) adnotację",
+      "cambioTurno": "zmienił(a) zmianę",
+      "cerrar": "Zamknij",
+      "recargarConLoNuevo": "Wczytaj najnowsze i sprawdź",
+      "publicandoDeUnaVez": "Publikowanie wszystkiego naraz…",
+      "publicarDetalleTodo": "To zapisuje w rzeczywistym grafiku: zobaczą to centrala, Grafik i ochroniarze w aplikacji. Wszystko naraz: jeśli jedna zmiana się nie powiedzie, nic nie zostanie opublikowane."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Ten ekran zostanie wycofany: nowy jest Planer",
@@ -19319,6 +19350,15 @@
       "rrhh": "Kadry: dodatkowo dane personelu i płace",
       "supervision": "Nadzór: dodatkowo zatwierdza godziny",
       "gerencia": "Zarząd: dodatkowo raporty i działania kierownicze"
+    },
+    "HorarioModos": {
+      "modos": "Tryb grafiku",
+      "enVivo": "Na żywo",
+      "borrador": "Szkic",
+      "hayBorradorEditando": "Jest nieopublikowany szkic; teraz edytuje go {{quien}}.",
+      "hayBorrador": "Jest nieopublikowany szkic (zapisał(a) {{quien}}).",
+      "ayudaVivo": "Każda zmiana od razu trafia do rzeczywistego grafiku.",
+      "ayudaBorrador": "Nic nie trafia do rzeczywistego grafiku przed „Opublikuj”. Szkic jest wspólny dla zespołu."
     }
   },
   "visitantes": {
