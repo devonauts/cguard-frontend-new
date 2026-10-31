@@ -100,6 +100,14 @@ function rotationSummary(p: SupervisorPosition): string {
 /** Coverage in words: a 24 h position shows both halves with their real hours. */
 function coberturaDe(p: SupervisorPosition): string {
   if (p.scheduleType === "24h" && p.startTime && p.endTime) {
+    // A rotation with no nights (5-2) only ever produces the day half.
+    if (p.rotationStyle && !p.rotationStyle.nightShifts)
+      return i18n.t("supervisorPositions.soloDia", {
+        defaultValue: "Solo de día · {{s}}–{{e}}",
+        s: p.startTime,
+        e: p.endTime,
+      });
+
     return i18n.t("supervisorPositions.cobertura24h", {
       defaultValue: "Día {{s}}–{{e}} · noche {{e}}–{{s}}",
       s: p.startTime,

@@ -19732,7 +19732,8 @@
       "24h": "24h (dia/noite)",
       "custom": "Personalizado"
     },
-    "cobertura24h": "Dia {{s}}–{{e}} · noite {{e}}–{{s}}"
+    "cobertura24h": "Dia {{s}}–{{e}} · noite {{e}}–{{s}}",
+    "soloDia": "Só de dia · {{s}}–{{e}}"
   },
   "tasks": {
     "approvals": {
