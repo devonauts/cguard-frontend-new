@@ -43,4 +43,10 @@ describe("módulos adicionales · cuándo se ve la tienda", () => {
     const enPrueba = modulo({ key: "vigia_pro", billingType: "monthly_tiers", status: "trial", canStartTrial: false });
     expect(tiendaVisible({ canPurchase: false, reason: "implementacion_sin_pagar", modules: [enPrueba] })).toBe(true);
   });
+
+  it("un módulo suyo APAGADO sigue enseñando la tienda (para poder encenderlo)", () => {
+    const apagado = modulo({ owned: true, status: "comp", paused: true, canToggle: true });
+    expect(tiendaVisible({ canPurchase: false, reason: "suscripcion_no_activa", modules: [apagado] })).toBe(true);
+    expect(tiendaVisible({ canPurchase: false, reason: "la_factura_el_socio", modules: [apagado] })).toBe(true);
+  });
 });

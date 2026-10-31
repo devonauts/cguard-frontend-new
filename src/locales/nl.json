@@ -19983,7 +19983,14 @@
       "prueba_usada": "Dit bedrijf heeft de gratis proef al gebruikt.",
       "sin_prueba": "Deze module heeft geen gratis proef.",
       "sin_suscripcion": "Voor maandelijkse activering is een actief abonnement nodig. Zie Facturatie.",
-      "plan_gratis": "Uw bedrijf heeft het gratis abonnement. Interesse in een module? Neem contact op met support."
+      "plan_gratis": "Uw bedrijf heeft het gratis abonnement. Interesse in een module? Neem contact op met support.",
+      "paused": "Deze module is al van jou en staat uit: zet hem kosteloos weer aan.",
+      "not_purchasable": "Deze module kan hier nu niet worden gekocht. Neem contact op met support.",
+      "not_owned": "Je bedrijf heeft deze module niet.",
+      "monthly_module": "Dit is een maandelijkse module: zet hem uit door de verlenging te stoppen.",
+      "revoked": "Deze module is bij je bedrijf ingetrokken. Neem contact op met support om hem terug te krijgen.",
+      "pending_payment": "Voor deze module staat een betaling open: hij is nog niet actief.",
+      "expired": "Deze module is niet meer actief bij je bedrijf."
     },
     "mensual": {
       "porMes": "/maand",
@@ -20026,7 +20033,8 @@
       "pruebaHasta": "Gratis proef tot {{fecha}} · geen kaart",
       "anualCorto": "Jaarlijks",
       "mesesGratis": "Jaarlijks: {{n}} maanden gratis",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} blijft werken tot het einde van de betaalde periode ({{fecha}}) en wordt niet verlengd; daarna stopt het met het bewaken van afwezigheden en het praten met je beveiligers via WhatsApp of telefoon. Zet je hem vóór die datum weer aan, dan wordt er niets in rekening gebracht."
     },
     "interruptor": "{{nombre}} in- of uitschakelen",
     "paraSiempre": "Eenmalige betaling · voor altijd van jou",
@@ -20605,6 +20613,27 @@
           "evento": "Zie wat er gebeurt en bewaar het bewijs in twee klikken",
           "despacho": "Zien, verifiëren en handelen vanuit hetzelfde CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "{{nombre}} uitzetten?",
+      "mensaje": "Er wordt niets verwijderd: de menu’s verdwijnen en je kunt hem wanneer je wilt kosteloos weer aanzetten.",
+      "boton": "Uitzetten",
+      "encender": "Aanzetten",
+      "apagado": "Uit",
+      "apagadoAviso": "{{nombre}} staat uit. Je kunt hem wanneer je wilt weer aanzetten.",
+      "encendidoAviso": "{{nombre}} staat weer aan.",
+      "situacion": "Uitgezet door {{quien}} · zet hem kosteloos weer aan wanneer je wilt",
+      "situacionSinNombre": "Uit · zet hem kosteloos weer aan wanneer je wilt",
+      "pruebaDelSocio": "Proefperiode van je partner tot {{fecha}}",
+      "consecuencias": {
+        "sucursales": "Je kunt geen vestigingen meer aanmaken of bewerken en geen vestiging kiezen in de balk; elke manager en supervisor ziet nog steeds alleen de eigen vestigingen. Er wordt niets verwijderd en bij het aanzetten blijft alles zoals het was.",
+        "dobletes": "Lopende dienstaanbiedingen worden geannuleerd en je beveiligers zien Dobletes en Reserve niet meer in de app; al geaccepteerde diensten, hun bonussen en de punten blijven behouden.",
+        "client_billing": "Je kunt geen offertes maken, geen facturatierondes genereren en geen facturen uitgeven; je klanten kunnen al verzonden facturen nog steeds zien en betalen, er worden geen herinneringen of boetes verstuurd en bij het aanzetten worden geen achterstallige facturen gemaakt.",
+        "payroll_slips": "Loonstroken worden verborgen voor het maken van nieuwe; je personeel en je kantoor kunnen de al uitgegeven loonstroken blijven downloaden. Er wordt niets verwijderd.",
+        "reconocimiento_facial": "Je personeel klokt in met de gewone selfie, zonder gezichtscontrole; geregistreerde gezichten blijven bewaard en bij het aanzetten wordt weer gecontroleerd zoals voorheen.",
+        "monitoring_center": "Meldpanelen, zones, rapporten en lijnbewaking worden verborgen (we waarschuwen je niet als een paneel stopt met melden); alarmen en paniekknoppen blijven binnenkomen. Er wordt niets verwijderd.",
+        "video_surveillance": "Camera’s, recorders, gebeurtenissen en clips worden verborgen en niemand kan live video bekijken, ook niet bij alarmmeldingen; al gedeelde clips blijven te openen. Er wordt niets verwijderd."
       }
     }
   },

@@ -20277,7 +20277,14 @@
       "prueba_usada": "Ta firma wykorzystała już darmową próbę.",
       "sin_prueba": "Ten moduł nie ma darmowej próby.",
       "sin_suscripcion": "Do aktywacji miesięcznej potrzebna jest aktywna subskrypcja. Zobacz Rozliczenia.",
-      "plan_gratis": "Twoja firma korzysta z planu bezpłatnego. Jeśli interesuje Cię moduł, skontaktuj się z pomocą techniczną."
+      "plan_gratis": "Twoja firma korzysta z planu bezpłatnego. Jeśli interesuje Cię moduł, skontaktuj się z pomocą techniczną.",
+      "paused": "Ten moduł jest już Twój i jest wyłączony: włącz go ponownie bez opłat.",
+      "not_purchasable": "Tego modułu nie można teraz kupić tutaj. Skontaktuj się z pomocą techniczną.",
+      "not_owned": "Twoja firma nie ma tego modułu.",
+      "monthly_module": "To moduł miesięczny: aby go wyłączyć, zrezygnuj z odnowienia.",
+      "revoked": "Ten moduł został odebrany Twojej firmie. Skontaktuj się z pomocą techniczną, aby go odzyskać.",
+      "pending_payment": "Ten moduł ma oczekującą płatność: nie jest jeszcze aktywny.",
+      "expired": "Ten moduł nie jest już aktywny w Twojej firmie."
     },
     "mensual": {
       "porMes": "/mies.",
@@ -20320,7 +20327,8 @@
       "pruebaHasta": "Bezpłatny okres próbny do {{fecha}} · bez karty",
       "anualCorto": "Rocznie",
       "mesesGratis": "Rocznie: {{n}} miesiące gratis",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} działa do końca opłaconego okresu ({{fecha}}) i nie zostanie odnowiony; potem przestaje pilnować nieobecności i rozmawiać z Twoimi pracownikami ochrony przez WhatsApp lub telefon. Jeśli włączysz go ponownie przed tą datą, nic nie zostanie pobrane."
     },
     "interruptor": "Włącz lub wyłącz {{nombre}}",
     "paraSiempre": "Płatność jednorazowa · na zawsze Twoje",
@@ -20899,6 +20907,27 @@
           "evento": "Widzisz, co się dzieje, i zapisujesz dowód w dwóch kliknięciach",
           "despacho": "Widzisz, weryfikujesz i działasz w tym samym CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "Wyłączyć {{nombre}}?",
+      "mensaje": "Nic nie zostanie usunięte: menu znikną, a moduł możesz ponownie włączyć w dowolnym momencie bez opłat.",
+      "boton": "Wyłącz",
+      "encender": "Włącz",
+      "apagado": "Wyłączony",
+      "apagadoAviso": "{{nombre}} jest wyłączony. Możesz go włączyć w dowolnym momencie.",
+      "encendidoAviso": "{{nombre}} jest ponownie włączony.",
+      "situacion": "Wyłączony przez: {{quien}} · włącz go kiedy chcesz, bez opłat",
+      "situacionSinNombre": "Wyłączony · włącz go kiedy chcesz, bez opłat",
+      "pruebaDelSocio": "Okres próbny od Twojego partnera do {{fecha}}",
+      "consecuencias": {
+        "sucursales": "Nie będzie można tworzyć ani edytować oddziałów ani wybierać oddziału na pasku; każdy kierownik i przełożony nadal widzi tylko swoje. Nic nie zostanie usunięte, a po włączeniu wszystko będzie jak wcześniej.",
+        "dobletes": "Trwające oferty zmian zostaną anulowane, a Twoi pracownicy ochrony przestaną widzieć Dobletes i Rezerwę w aplikacji; już przyjęte zmiany, ich premie i punkty zostaną zachowane.",
+        "client_billing": "Nie będzie można tworzyć ofert, generować rozliczeń ani wystawiać faktur; Twoi klienci nadal mogą przeglądać i opłacać już wysłane faktury, nie będą wysyłane przypomnienia ani odsetki, a po włączeniu nie powstaną zaległe faktury.",
+        "payroll_slips": "Odcinki płacowe zostaną ukryte przy generowaniu nowych; Twój personel i biuro nadal mogą pobierać już wystawione. Nic nie zostanie usunięte.",
+        "reconocimiento_facial": "Twój personel będzie rejestrował czas pracy zwykłym selfie, bez weryfikacji twarzy; zarejestrowane twarze zostaną zachowane, a po włączeniu weryfikacja wróci jak wcześniej.",
+        "monitoring_center": "Centrale, strefy, raporty i nadzór łączności zostaną ukryte (nie powiadomimy Cię, jeśli centrala przestanie się komunikować); alarmy i przyciski napadowe nadal będą docierać. Nic nie zostanie usunięte.",
+        "video_surveillance": "Kamery, rejestratory, zdarzenia i klipy zostaną ukryte i nikt nie będzie mógł oglądać obrazu na żywo, także w zdarzeniach alarmowych; już udostępnione klipy nadal się otworzą. Nic nie zostanie usunięte."
       }
     }
   },

@@ -20,6 +20,7 @@ import BotonDemo from "@/components/modulos/demo/BotonDemo";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import {
   ADDON_REQUIRED_EVENT,
+  ADDONS_CHANGED_EVENT,
   type AddonRequiredDetail,
 } from "@/lib/addonRequired";
 
@@ -32,7 +33,8 @@ export type CenterModuleKey =
 /**
  * Whether the company has the module: the session's entitlement says so up
  * front, and a 402 `addon_required` for this key (a session older than a
- * revocation) turns it off for the rest of the screen's life.
+ * revocation) turns it off until the company's modules change again
+ * (`ADDONS_CHANGED_EVENT`: switched back on, gifted…).
  */
 export function useHasModule(key: CenterModuleKey): boolean {
   const entitled = useEntitlement(key);
@@ -44,9 +46,16 @@ export function useHasModule(key: CenterModuleKey): boolean {
         setRefused(true);
     };
 
-    window.addEventListener(ADDON_REQUIRED_EVENT, onRefusal);
+    // The modules changed (switched back on, gifted…): trust the fresh session again.
+    const onChange = () => setRefused(false);
 
-    return () => window.removeEventListener(ADDON_REQUIRED_EVENT, onRefusal);
+    window.addEventListener(ADDON_REQUIRED_EVENT, onRefusal);
+    window.addEventListener(ADDONS_CHANGED_EVENT, onChange);
+
+    return () => {
+      window.removeEventListener(ADDON_REQUIRED_EVENT, onRefusal);
+      window.removeEventListener(ADDONS_CHANGED_EVENT, onChange);
+    };
   }, [key]);
 
   return entitled && !refused;

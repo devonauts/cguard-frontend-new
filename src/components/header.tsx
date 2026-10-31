@@ -83,6 +83,7 @@ import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
 import TenantSwitcher from "@/components/TenantSwitcher";
 import SelectorDeSucursal from "@/components/SelectorDeSucursal";
 import { useAgente } from "@/lib/agenteDeMarca";
+import { useAddonChangesLive } from "@/hooks/useAddonChangesLive";
 
 type HeaderProps = {
   toggleSidebar: () => void;
@@ -224,6 +225,8 @@ export default function Header({
   notificationsCount = 1,
 }: HeaderProps) {
   const { user, signOut, hasAny } = useAuth();
+  // Another admin switched a module off/on: menus follow without a reload.
+  useAddonChangesLive();
   /* El nombre del anfitrión. En el de la plataforma es «C-Guard Pro»; en el de
      un socio, el suyo — y por eso estos textos no lo llevan escrito. */
   const { platformName: nombreDeMarca } = useWhiteLabel();

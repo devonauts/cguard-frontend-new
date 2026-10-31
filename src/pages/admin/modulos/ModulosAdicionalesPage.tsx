@@ -14,6 +14,7 @@ import {
   CalendarPlus,
   Siren,
   Cctv,
+  Power,
 } from "lucide-react";
 
 /** El icono de cada módulo en la tienda; uno nuevo sin entrada sale con la pieza de puzle. */
@@ -52,6 +53,8 @@ import {
 } from "@/lib/freeTier";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
+import { announceAddonsChanged } from "@/lib/addonRequired";
+import { soloFecha } from "@/lib/horaDeLaEmpresa";
 import {
   modulosAdicionalesService,
   type ModuloEnTienda,
@@ -70,8 +73,11 @@ import {
  * tamaño, en una rejilla de dos columnas con filas iguales (una en el teléfono). Cada
  * tarjeta lleva un INTERRUPTOR: encender es contratar (prueba, compra o
  * suscripción, con su confirmación cuando hay dinero) y apagar es dejar de
- * renovar. Un pago único no se apaga —es suyo para siempre— y su interruptor
- * queda encendido y bloqueado. Las tarjetas entran escalonadas y se elevan al
+ * renovar. Un pago único que ya es suyo se APAGA y se ENCIENDE (2026-10-30,
+ * `/pause` y `/resume`): apagar pide confirmación (no se borra nada, los menús
+ * desaparecen, se enciende cuando quiera sin costo, más una línea propia de
+ * cada módulo en `useConsecuenciaDeApagar`); encender nunca cobra. Comprar
+ * nunca se ofrece para algo que ya es suyo. Las tarjetas entran escalonadas y se elevan al
  * pasar el ratón. Cada módulo que aún no tiene lleva su píldora «Demo» con su
  * demostración animada (`components/modulos/demo`).
  *
@@ -90,6 +96,36 @@ function precio(cents: number, currency: string, lang: string) {
   }
 }
 
+/**
+ * The extra line of the switch-off confirmation: what stops for THIS module.
+ * Literal keys (the i18n test sees them). A module without a line just shows
+ * the generic text.
+ */
+function useConsecuenciaDeApagar(): (key: string) => string | null {
+  const { t } = useTranslation();
+
+  return (key: string) => {
+    switch (key) {
+      case "sucursales":
+        return t("modulosAdicionales.pausa.consecuencias.sucursales");
+      case "dobletes":
+        return t("modulosAdicionales.pausa.consecuencias.dobletes");
+      case "client_billing":
+        return t("modulosAdicionales.pausa.consecuencias.client_billing");
+      case "payroll_slips":
+        return t("modulosAdicionales.pausa.consecuencias.payroll_slips");
+      case "reconocimiento_facial":
+        return t("modulosAdicionales.pausa.consecuencias.reconocimiento_facial");
+      case "monitoring_center":
+        return t("modulosAdicionales.pausa.consecuencias.monitoring_center");
+      case "video_surveillance":
+        return t("modulosAdicionales.pausa.consecuencias.video_surveillance");
+      default:
+        return null;
+    }
+  };
+}
+
 export default function ModulosAdicionalesPage() {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
@@ -100,6 +136,7 @@ export default function ModulosAdicionalesPage() {
   const gratis = isFreeTierUser(user);
   const motivo = storeReasonForCompany(data?.reason, gratis);
   const [comprando, setComprando] = useState<string | null>(null);
+  const consecuencia = useConsecuenciaDeApagar();
 
   const textoDeMotivo = (reason?: string | null) =>
     t(`modulosAdicionales.motivos.${reason || "error"}`, {
@@ -148,6 +185,56 @@ export default function ModulosAdicionalesPage() {
       );
       await qc.invalidateQueries({ queryKey: ["modulos-adicionales"] });
     } finally {
+      setComprando(null);
+    }
+  };
+
+  /* The menus come from the session's features: refresh it, refresh the store
+     and tell the open gates (other sessions get the server's socket event). */
+  const trasCambiar = async () => {
+    await refreshProfile().catch(() => null);
+    await qc.invalidateQueries({ queryKey: ["modulos-adicionales"] });
+    announceAddonsChanged();
+  };
+
+  /** Switch an owned one-time module OFF: confirm first, nothing is deleted. */
+  const apagar = async (m: ModuloEnTienda) => {
+    const extra = consecuencia(m.key);
+    const ok = await confirmDialog({
+      title: t("modulosAdicionales.pausa.titulo", { nombre: m.name }),
+      message: [
+        t("modulosAdicionales.pausa.mensaje"),
+        extra,
+      ]
+        .filter(Boolean)
+        .join(" "),
+      confirmText: t("modulosAdicionales.pausa.boton"),
+      cancelText: t("common.cancel", { defaultValue: "Cancelar" }),
+    });
+
+    if (!ok) return;
+    setComprando(m.key);
+    try {
+      await modulosAdicionalesService.apagar(m.key);
+      toast.success(t("modulosAdicionales.pausa.apagadoAviso", { nombre: m.name }));
+    } catch (e: any) {
+      toast.error(textoDeMotivo(e?.data?.reason));
+    } finally {
+      await trasCambiar();
+      setComprando(null);
+    }
+  };
+
+  /** Switch it back ON: no confirmation, no charge. */
+  const encender = async (m: ModuloEnTienda) => {
+    setComprando(m.key);
+    try {
+      await modulosAdicionalesService.encender(m.key);
+      toast.success(t("modulosAdicionales.pausa.encendidoAviso", { nombre: m.name }));
+    } catch (e: any) {
+      toast.error(textoDeMotivo(e?.data?.reason));
+    } finally {
+      await trasCambiar();
       setComprando(null);
     }
   };
@@ -237,20 +324,35 @@ export default function ModulosAdicionalesPage() {
                 const tiene = m.owned;
                 const pendiente = m.status === "pending_payment";
                 const ocupado = comprando === m.key;
-                /* Encender = comprar. Un pago único no se apaga: es suyo para siempre. */
-                const puedeEncender =
-                  !tiene && !esDeSocio && (pendiente || data.canPurchase);
-                const situacionTexto = tiene
-                  ? t("modulosAdicionales.paraSiempre")
-                  : pendiente
-                    ? t("modulosAdicionales.pendienteAviso")
-                    : null;
+                /* Already theirs (paid, gifted or a partner's running trial):
+                   the switch turns it OFF and back ON, never buys it. A branch
+                   manager sees the store but switches nothing. */
+                const loTiene = !!m.canToggle;
+                const apagado = loTiene && !!m.paused;
+                const encendido = loTiene && !m.paused;
+                const enPruebaDelSocio = loTiene && m.status === "trial";
+                /* Not theirs yet: switching ON = buying. */
+                const puedeComprar =
+                  !tiene && !loTiene && !esDeSocio && (pendiente || data.canPurchase);
+                const situacionTexto = apagado
+                  ? m.pausedBy
+                    ? t("modulosAdicionales.pausa.situacion", { quien: m.pausedBy })
+                    : t("modulosAdicionales.pausa.situacionSinNombre")
+                  : enPruebaDelSocio
+                    ? t("modulosAdicionales.pausa.pruebaDelSocio", {
+                        fecha: soloFecha(m.trialEndsAt, { day: "numeric", month: "short" }, ""),
+                      })
+                    : tiene
+                      ? t("modulosAdicionales.paraSiempre")
+                      : pendiente
+                        ? t("modulosAdicionales.pendienteAviso")
+                        : null;
 
                 return (
                   <TarjetaModulo
                     key={m.key}
                     accion={
-                      tiene ? undefined : (
+                      tiene || loTiene ? undefined : (
                         <BotonDemo clave={m.key} nombre={m.name} />
                       )
                     }
@@ -258,10 +360,13 @@ export default function ModulosAdicionalesPage() {
                     description={m.description}
                     icon={ICONO_DEL_MODULO[m.key] ?? <Puzzle />}
                     interruptor={{
-                      checked: tiene,
-                      disabled: ocupado || tiene || !puedeEncender,
+                      checked: loTiene ? encendido : tiene,
+                      disabled: loTiene
+                        ? ocupado || gerente
+                        : ocupado || tiene || !puedeComprar,
                       onChange: (on) => {
-                        if (on) void comprar(m);
+                        if (loTiene) void (on ? encender(m) : apagar(m));
+                        else if (on) void comprar(m);
                       },
                       label: t("modulosAdicionales.interruptor", {
                         nombre: m.name,
@@ -272,7 +377,19 @@ export default function ModulosAdicionalesPage() {
                     pie={
                       <>
                         <span />
-                        {tiene ? (
+                        {apagado ? (
+                          gerente ? null : (
+                            <Button
+                              disabled={ocupado}
+                              type="button"
+                              variant="brand"
+                              onClick={() => encender(m)}
+                            >
+                              <Power className="mr-2 h-4 w-4" />
+                              {t("modulosAdicionales.pausa.encender")}
+                            </Button>
+                          )
+                        ) : enPruebaDelSocio ? null : tiene ? (
                           <span
                             className="inline-flex items-center gap-1.5 text-sm"
                             style={{ color: "var(--ink-soft)" }}
@@ -322,7 +439,13 @@ export default function ModulosAdicionalesPage() {
                           >
                             · {t("modulosAdicionales.pagoUnico")}
                           </span>
-                          {tiene ? (
+                          {apagado ? (
+                            <span className="ml-auto">
+                              <StatusBadge tone="neutral">
+                                {t("modulosAdicionales.pausa.apagado")}
+                              </StatusBadge>
+                            </span>
+                          ) : encendido ? (
                             <span className="ml-auto">
                               <StatusBadge tone="ok">
                                 {t("modulosAdicionales.activo")}

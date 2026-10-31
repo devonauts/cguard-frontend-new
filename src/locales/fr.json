@@ -19983,7 +19983,14 @@
       "prueba_usada": "Cette entreprise a déjà utilisé son essai gratuit.",
       "sin_prueba": "Ce module n’a pas d’essai gratuit.",
       "sin_suscripcion": "Une activation mensuelle nécessite votre abonnement actif. Voir Facturation.",
-      "plan_gratis": "Votre entreprise bénéficie de la formule gratuite. Si un module vous intéresse, contactez le support."
+      "plan_gratis": "Votre entreprise bénéficie de la formule gratuite. Si un module vous intéresse, contactez le support.",
+      "paused": "Ce module vous appartient déjà et il est désactivé : réactivez-le, sans frais.",
+      "not_purchasable": "Ce module ne peut pas être acheté ici pour le moment. Contactez le support.",
+      "not_owned": "Votre entreprise n’a pas ce module.",
+      "monthly_module": "C’est un module mensuel : pour le désactiver, arrêtez son renouvellement.",
+      "revoked": "Ce module a été retiré à votre entreprise. Contactez le support pour le récupérer.",
+      "pending_payment": "Ce module a un paiement en attente : il n’est pas encore actif.",
+      "expired": "Ce module n’est plus actif dans votre entreprise."
     },
     "mensual": {
       "porMes": "/mois",
@@ -20026,7 +20033,8 @@
       "pruebaHasta": "Essai gratuit jusqu’au {{fecha}} · sans carte",
       "anualCorto": "Annuel",
       "mesesGratis": "Annuel : {{n}} mois offerts",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} continue de fonctionner jusqu’à la fin de la période payée ({{fecha}}) et n’est pas renouvelé ; ensuite il cesse de surveiller les absences et de parler à vos agents par WhatsApp ou par appel. Si vous le réactivez avant cette date, rien n’est facturé."
     },
     "interruptor": "Activer ou désactiver {{nombre}}",
     "paraSiempre": "Paiement unique · à vous pour toujours",
@@ -20605,6 +20613,27 @@
           "evento": "Voyez ce qui se passe et gardez la preuve en deux clics",
           "despacho": "Voir, vérifier et agir depuis le même CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "Désactiver {{nombre}} ?",
+      "mensaje": "Rien n’est supprimé : ses menus disparaissent et vous pouvez le réactiver quand vous voulez, sans frais.",
+      "boton": "Désactiver",
+      "encender": "Activer",
+      "apagado": "Désactivé",
+      "apagadoAviso": "{{nombre}} est désactivé. Vous pouvez le réactiver quand vous voulez.",
+      "encendidoAviso": "{{nombre}} est de nouveau activé.",
+      "situacion": "Désactivé par {{quien}} · réactivez-le quand vous voulez, sans frais",
+      "situacionSinNombre": "Désactivé · réactivez-le quand vous voulez, sans frais",
+      "pruebaDelSocio": "Essai de votre distributeur jusqu’au {{fecha}}",
+      "consecuencias": {
+        "sucursales": "Vous ne pourrez plus créer ni modifier d’agences ni choisir une agence dans la barre ; chaque responsable et superviseur continue de ne voir que les siennes. Rien n’est supprimé et, en le réactivant, tout reste comme avant.",
+        "dobletes": "Les offres de service en cours sont annulées et vos agents ne voient plus Dobletes ni Renfort dans l’application ; les services déjà acceptés, leurs primes et les points sont conservés.",
+        "client_billing": "Vous ne pourrez plus faire de devis, générer de cycles ni émettre de factures ; vos clients peuvent toujours consulter et payer les factures déjà envoyées, aucune relance ni pénalité n’est envoyée et, en le réactivant, aucune facture en retard n’est générée.",
+        "payroll_slips": "Les bulletins de paie sont masqués pour en générer de nouveaux ; votre personnel et votre bureau peuvent toujours télécharger ceux déjà émis. Rien n’est supprimé.",
+        "reconocimiento_facial": "Votre personnel pointera avec le selfie habituel, sans vérification du visage ; les visages enregistrés sont conservés et, en le réactivant, la vérification reprend comme avant.",
+        "monitoring_center": "Les centrales, zones, rapports et la supervision de ligne sont masqués (nous ne vous avertirons pas si une centrale cesse de communiquer) ; les alarmes et boutons de panique continuent d’arriver. Rien n’est supprimé.",
+        "video_surveillance": "Les caméras, enregistreurs, événements et clips sont masqués, et personne ne pourra voir la vidéo en direct, y compris dans les cas d’alarme ; les clips déjà partagés s’ouvrent toujours. Rien n’est supprimé."
       }
     }
   },

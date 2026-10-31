@@ -22,6 +22,13 @@ export interface ModuloEnTienda {
   source: string | null;
   purchasedAt: string | null;
   owned: boolean;
+  /** One-time modules: the company switched it off (still theirs). */
+  paused?: boolean;
+  pausedAt?: string | null;
+  /** Who switched it off (name), when known. */
+  pausedBy?: string | null;
+  /** One-time modules: the company holds it now and may switch it off/on. */
+  canToggle?: boolean;
   /** Sólo los mensuales (VigIA Pro): precio fijo por tamaño. */
   billingType?: "one_time" | "monthly_tiers";
   tiers?: Array<{ maxGuards: number; priceCents: number }>;
@@ -55,6 +62,15 @@ export interface ResultadoDeCompra {
   motivoPendiente?: string | null;
 }
 
+/** Answer of /pause and /resume (backend `pausaDeModulo`). */
+export interface ResultadoDePausa {
+  key: string;
+  paused: boolean;
+  pausedAt: string | null;
+  changed: boolean;
+  hasAccess: boolean;
+}
+
 export const modulosAdicionalesService = {
   tienda(): Promise<Tienda> {
     return ApiService.get(`/tenant/${tenantId()}/addons`);
@@ -69,6 +85,14 @@ export const modulosAdicionalesService = {
   /** Módulo mensual: elegir pago (en prueba, se cobra al vencer). */
   suscribir(key: string, interval: "month" | "year"): Promise<{ estado: string; enlaceDePago?: string | null; seCobraEl?: string; aviso?: string }> {
     return ApiService.post(`/tenant/${tenantId()}/addons/${key}/subscribe`, { interval });
+  },
+  /** Pago único: apagarlo (no se borra nada; sus menús desaparecen). */
+  apagar(key: string): Promise<ResultadoDePausa> {
+    return ApiService.post(`/tenant/${tenantId()}/addons/${key}/pause`, {});
+  },
+  /** Pago único: volver a encenderlo. Nunca cobra. */
+  encender(key: string): Promise<ResultadoDePausa> {
+    return ApiService.post(`/tenant/${tenantId()}/addons/${key}/resume`, {});
   },
   /** Módulo mensual: deja de renovarse; sigue hasta el fin de lo pagado. */
   cancelar(key: string): Promise<{ estado: string; hasta?: string }> {

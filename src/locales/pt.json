@@ -19983,7 +19983,14 @@
       "prueba_usada": "Esta empresa já usou o teste grátis.",
       "sin_prueba": "Este módulo não tem teste grátis.",
       "sin_suscripcion": "Para ativar mensalmente é preciso ter a assinatura ativa. Veja Faturamento.",
-      "plan_gratis": "Sua empresa tem o plano gratuito. Se tiver interesse em um módulo, fale com o suporte."
+      "plan_gratis": "Sua empresa tem o plano gratuito. Se tiver interesse em um módulo, fale com o suporte.",
+      "paused": "Este módulo já é seu e está desligado: ligue-o de novo, sem custo.",
+      "not_purchasable": "Este módulo não pode ser comprado por aqui agora. Fale com o suporte.",
+      "not_owned": "Sua empresa não tem este módulo.",
+      "monthly_module": "Este é um módulo mensal: para desligá-lo, deixe de renová-lo.",
+      "revoked": "Este módulo foi retirado da sua empresa. Fale com o suporte para recuperá-lo.",
+      "pending_payment": "Este módulo tem um pagamento pendente: ainda não está ativo.",
+      "expired": "Este módulo não está mais ativo na sua empresa."
     },
     "mensual": {
       "porMes": "/mês",
@@ -20026,7 +20033,8 @@
       "pruebaHasta": "Teste grátis até {{fecha}} · sem cartão",
       "anualCorto": "Anual",
       "mesesGratis": "Anual: {{n}} meses grátis",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} continua funcionando até o fim do período pago ({{fecha}}) e não é renovado; depois deixa de vigiar faltas e de falar com seus vigilantes por WhatsApp ou ligação. Se você ligá-lo de novo antes dessa data, nada é cobrado."
     },
     "interruptor": "Ativar ou desativar {{nombre}}",
     "paraSiempre": "Pagamento único · é seu para sempre",
@@ -20605,6 +20613,27 @@
           "evento": "Veja o que acontece e guarde a prova em dois cliques",
           "despacho": "Veja, verifique e aja no mesmo CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "Desligar {{nombre}}?",
+      "mensaje": "Nada é apagado: os menus somem e você pode ligá-lo de novo quando quiser, sem custo.",
+      "boton": "Desligar",
+      "encender": "Ligar",
+      "apagado": "Desligado",
+      "apagadoAviso": "{{nombre}} está desligado. Você pode ligá-lo quando quiser.",
+      "encendidoAviso": "{{nombre}} está ligado de novo.",
+      "situacion": "Desligado por {{quien}} · ligue quando quiser, sem custo",
+      "situacionSinNombre": "Desligado · ligue quando quiser, sem custo",
+      "pruebaDelSocio": "Teste do seu distribuidor até {{fecha}}",
+      "consecuencias": {
+        "sucursales": "Você não poderá criar nem editar filiais nem escolher filial na barra; cada gerente e supervisor continua vendo só as suas. Nada é apagado e, ao ligar, tudo fica como estava.",
+        "dobletes": "As ofertas de turno em andamento são canceladas e seus vigilantes deixam de ver Dobletes e Reserva no app; os turnos já aceitos, seus bônus e os pontos são mantidos.",
+        "client_billing": "Você não poderá fazer orçamentos, gerar lotes nem emitir faturas; seus clientes continuam vendo e pagando as faturas já enviadas, não serão enviados lembretes nem multas e, ao ligar, não se geram faturas atrasadas.",
+        "payroll_slips": "Os holerites ficam ocultos para gerar novos; sua equipe e seu escritório podem continuar baixando os já emitidos. Nada é apagado.",
+        "reconocimiento_facial": "Sua equipe vai registrar o ponto com a selfie normal, sem verificar o rosto; os rostos cadastrados são mantidos e, ao ligar, a verificação volta como antes.",
+        "monitoring_center": "Painéis, zonas, relatórios e a supervisão de linha ficam ocultos (não avisaremos se um painel parar de comunicar); os alarmes e botões de pânico continuam chegando. Nada é apagado.",
+        "video_surveillance": "Câmeras, gravadores, eventos e clipes ficam ocultos, e ninguém poderá ver vídeo ao vivo nem nos casos de alarme; os clipes já compartilhados continuam abrindo. Nada é apagado."
       }
     }
   },

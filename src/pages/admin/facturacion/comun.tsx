@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Modal, FormField, FIELD_CLS, InfoNote, PageContainer, PageHeader, Section } from "@/components/kit";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { faltaElModulo } from "@/lib/rostro";
+import { ADDONS_CHANGED_EVENT } from "@/lib/addonRequired";
 import { clientService } from "@/lib/api/clientService";
 import { formatMoney } from "@/lib/formatMoney";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -68,6 +69,19 @@ export function useSinModuloDeFacturacion(): boolean {
       }),
     [qc],
   );
+
+  /* The company's modules changed (switched back on, gifted…): forget the 402
+     and ask again — the refused queries keep their error until refetched. */
+  useEffect(() => {
+    const onChange = () => {
+      setDio402(false);
+      void qc.resetQueries({ queryKey: [QK] });
+    };
+
+    window.addEventListener(ADDONS_CHANGED_EVENT, onChange);
+
+    return () => window.removeEventListener(ADDONS_CHANGED_EVENT, onChange);
+  }, [qc]);
 
   return !tiene || dio402;
 }

@@ -19983,7 +19983,14 @@
       "prueba_usada": "Esta empresa ya usó su prueba gratis.",
       "sin_prueba": "Este módulo no tiene prueba gratis.",
       "sin_suscripcion": "Para activarlo al mes hace falta tu suscripción activa. Revisa Facturación.",
-      "plan_gratis": "Tu empresa tiene el plan gratis. Si te interesa un módulo, escribe a soporte."
+      "plan_gratis": "Tu empresa tiene el plan gratis. Si te interesa un módulo, escribe a soporte.",
+      "paused": "Este módulo ya es tuyo y está apagado: enciéndelo, sin costo.",
+      "not_purchasable": "Este módulo no se puede comprar desde aquí ahora. Escribe a soporte.",
+      "not_owned": "Tu empresa no tiene este módulo.",
+      "monthly_module": "Este módulo es mensual: se apaga dejando de renovarlo.",
+      "revoked": "Este módulo fue retirado a tu empresa. Escribe a soporte para recuperarlo.",
+      "pending_payment": "Este módulo tiene un pago pendiente: todavía no está activo.",
+      "expired": "Este módulo ya no está activo en tu empresa."
     },
     "mensual": {
       "porMes": "/mes",
@@ -20026,7 +20033,8 @@
       "pruebaHasta": "Prueba gratis hasta el {{fecha}} · sin tarjeta",
       "anualCorto": "Anual",
       "mesesGratis": "Anual: {{n}} meses gratis",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} sigue funcionando hasta el fin del periodo pagado ({{fecha}}) y no se renueva; después deja de vigilar faltas y de hablar con tus vigilantes por WhatsApp o llamada. Si lo vuelves a encender antes de esa fecha, no se cobra nada."
     },
     "interruptor": "Activar o desactivar {{nombre}}",
     "paraSiempre": "Pago único · es tuyo para siempre",
@@ -20605,6 +20613,27 @@
           "evento": "Ves lo que pasa y guardas la prueba en dos clics",
           "despacho": "Ves, verificas y actúas desde el mismo CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "¿Apagar {{nombre}}?",
+      "mensaje": "No se borra nada: sus menús desaparecen y puedes volver a encenderlo cuando quieras, sin costo.",
+      "boton": "Apagar",
+      "encender": "Encender",
+      "apagado": "Apagado",
+      "apagadoAviso": "{{nombre}} está apagado. Puedes encenderlo cuando quieras.",
+      "encendidoAviso": "{{nombre}} está encendido de nuevo.",
+      "situacion": "Apagado por {{quien}} · enciéndelo cuando quieras, sin costo",
+      "situacionSinNombre": "Apagado · enciéndelo cuando quieras, sin costo",
+      "pruebaDelSocio": "Prueba de tu distribuidor hasta el {{fecha}}",
+      "consecuencias": {
+        "sucursales": "No podrás crear ni editar sucursales ni elegir sucursal en la barra; cada gerente y supervisor sigue viendo solo las suyas. No se borra nada y al encenderlo todo queda como estaba.",
+        "dobletes": "Se cancelan las ofertas de turno en curso y tus vigilantes dejan de ver Dobletes y Respaldo en la app; los turnos ya aceptados, sus bonos y los puntos se conservan.",
+        "client_billing": "No podrás cotizar, generar corridas ni emitir facturas; tus clientes seguirán viendo y pagando las facturas ya enviadas, no se enviarán recordatorios ni recargos, y al encenderlo no se generan facturas atrasadas.",
+        "payroll_slips": "Se ocultan los roles de pago para generar nuevos; tu personal y tu oficina pueden seguir descargando los ya emitidos. No se borra nada.",
+        "reconocimiento_facial": "Tu personal fichará con la selfie normal, sin verificar su cara; las caras registradas se guardan y al encenderlo se vuelve a verificar como antes.",
+        "monitoring_center": "Se ocultan paneles, zonas, reportes y la supervisión de línea (no te avisaremos si un panel deja de comunicar); las alarmas y botones de pánico siguen llegando. No se borra nada.",
+        "video_surveillance": "Se ocultan cámaras, grabadores, eventos y clips, y nadie podrá ver video en vivo ni en los casos de alarma; los clips ya compartidos siguen abriendo. No se borra nada."
       }
     }
   },

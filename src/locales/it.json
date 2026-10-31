@@ -19983,7 +19983,14 @@
       "prueba_usada": "Questa azienda ha già usato la prova gratuita.",
       "sin_prueba": "Questo modulo non ha prova gratuita.",
       "sin_suscripcion": "Per l’attivazione mensile serve l’abbonamento attivo. Vedi Fatturazione.",
-      "plan_gratis": "La tua azienda ha il piano gratuito. Se ti interessa un modulo, contatta l’assistenza."
+      "plan_gratis": "La tua azienda ha il piano gratuito. Se ti interessa un modulo, contatta l’assistenza.",
+      "paused": "Questo modulo è già tuo ed è disattivato: riattivalo senza costi.",
+      "not_purchasable": "Questo modulo non si può acquistare da qui in questo momento. Contatta l’assistenza.",
+      "not_owned": "La tua azienda non ha questo modulo.",
+      "monthly_module": "È un modulo mensile: per disattivarlo, interrompi il rinnovo.",
+      "revoked": "Questo modulo è stato ritirato alla tua azienda. Contatta l’assistenza per recuperarlo.",
+      "pending_payment": "Questo modulo ha un pagamento in sospeso: non è ancora attivo.",
+      "expired": "Questo modulo non è più attivo nella tua azienda."
     },
     "mensual": {
       "porMes": "/mese",
@@ -20026,7 +20033,8 @@
       "pruebaHasta": "Prova gratuita fino al {{fecha}} · senza carta",
       "anualCorto": "Annuale",
       "mesesGratis": "Annuale: {{n}} mesi gratis",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} continua a funzionare fino alla fine del periodo pagato ({{fecha}}) e non si rinnova; dopo smette di controllare le assenze e di parlare con i tuoi vigilanti via WhatsApp o chiamata. Se lo riattivi prima di quella data, non si paga nulla."
     },
     "interruptor": "Attiva o disattiva {{nombre}}",
     "paraSiempre": "Pagamento unico · è tuo per sempre",
@@ -20605,6 +20613,27 @@
           "evento": "Vedi cosa succede e salvi la prova in due clic",
           "despacho": "Vedi, verifichi e agisci dallo stesso CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "Disattivare {{nombre}}?",
+      "mensaje": "Non si cancella nulla: i suoi menu spariscono e puoi riattivarlo quando vuoi, senza costi.",
+      "boton": "Disattiva",
+      "encender": "Attiva",
+      "apagado": "Disattivato",
+      "apagadoAviso": "{{nombre}} è disattivato. Puoi riattivarlo quando vuoi.",
+      "encendidoAviso": "{{nombre}} è di nuovo attivo.",
+      "situacion": "Disattivato da {{quien}} · riattivalo quando vuoi, senza costi",
+      "situacionSinNombre": "Disattivato · riattivalo quando vuoi, senza costi",
+      "pruebaDelSocio": "Prova del tuo distributore fino al {{fecha}}",
+      "consecuencias": {
+        "sucursales": "Non potrai creare né modificare filiali né scegliere la filiale nella barra; ogni responsabile e supervisore continua a vedere solo le proprie. Non si cancella nulla e, riattivandolo, tutto resta com’era.",
+        "dobletes": "Le offerte di turno in corso vengono annullate e i tuoi vigilanti non vedono più Dobletes e Riserva nell’app; i turni già accettati, i loro bonus e i punti vengono conservati.",
+        "client_billing": "Non potrai fare preventivi, generare cicli né emettere fatture; i tuoi clienti continuano a vedere e pagare le fatture già inviate, non vengono inviati promemoria né penali e, riattivandolo, non si generano fatture arretrate.",
+        "payroll_slips": "Le buste paga vengono nascoste per generarne di nuove; il tuo personale e il tuo ufficio possono continuare a scaricare quelle già emesse. Non si cancella nulla.",
+        "reconocimiento_facial": "Il tuo personale timbrerà con il selfie normale, senza verifica del volto; i volti registrati vengono conservati e, riattivandolo, la verifica torna come prima.",
+        "monitoring_center": "Centrali, zone, report e la supervisione di linea vengono nascosti (non ti avviseremo se una centrale smette di comunicare); gli allarmi e i pulsanti antipanico continuano ad arrivare. Non si cancella nulla.",
+        "video_surveillance": "Telecamere, registratori, eventi e clip vengono nascosti e nessuno potrà vedere il video in diretta, nemmeno nei casi di allarme; le clip già condivise continuano ad aprirsi. Non si cancella nulla."
       }
     }
   },

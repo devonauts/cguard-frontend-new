@@ -49,3 +49,20 @@ export function announceAddonRequired(
     /* never break the request */
   }
 }
+
+/**
+ * The company's add-on modules changed (switched off/on in the store, or the
+ * server's `addons:changed` socket event: another admin, a gift, a revoke).
+ * Gates that remembered a 402 forget it and look again at the fresh session.
+ */
+export const ADDONS_CHANGED_EVENT = "app:addons-changed";
+
+/** Tell the open screens that the company's modules changed. Never throws. */
+export function announceAddonsChanged(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.dispatchEvent(new CustomEvent(ADDONS_CHANGED_EVENT));
+  } catch {
+    /* never break the caller */
+  }
+}

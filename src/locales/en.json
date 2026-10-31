@@ -19983,7 +19983,14 @@
       "prueba_usada": "This company already used its free trial.",
       "sin_prueba": "This module has no free trial.",
       "sin_suscripcion": "A monthly activation needs your active subscription. Check Billing.",
-      "plan_gratis": "Your company is on the free plan. If you're interested in a module, contact support."
+      "plan_gratis": "Your company is on the free plan. If you're interested in a module, contact support.",
+      "paused": "This module is already yours and turned off: turn it back on, at no cost.",
+      "not_purchasable": "This module can't be bought from here right now. Contact support.",
+      "not_owned": "Your company doesn't have this module.",
+      "monthly_module": "This is a monthly module: turn it off by not renewing it.",
+      "revoked": "This module was removed from your company. Contact support to get it back.",
+      "pending_payment": "This module has a pending payment: it isn't active yet.",
+      "expired": "This module is no longer active in your company."
     },
     "mensual": {
       "porMes": "/mo",
@@ -20026,7 +20033,8 @@
       "pruebaHasta": "Free trial until {{fecha}} · no card",
       "anualCorto": "Yearly",
       "mesesGratis": "Yearly: {{n}} months free",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} keeps working until the end of the paid period ({{fecha}}) and does not renew; after that it stops watching for absences and talking to your officers by WhatsApp or phone. If you turn it back on before that date, nothing is charged."
     },
     "interruptor": "Turn {{nombre}} on or off",
     "paraSiempre": "One-time payment · yours forever",
@@ -20605,6 +20613,27 @@
           "evento": "See what's happening and save the proof in two clicks",
           "despacho": "See, verify and act from the same CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "Turn off {{nombre}}?",
+      "mensaje": "Nothing is deleted: its menus disappear and you can turn it back on whenever you like, at no cost.",
+      "boton": "Turn off",
+      "encender": "Turn on",
+      "apagado": "Off",
+      "apagadoAviso": "{{nombre}} is off. You can turn it back on whenever you like.",
+      "encendidoAviso": "{{nombre}} is on again.",
+      "situacion": "Turned off by {{quien}} · turn it back on anytime, at no cost",
+      "situacionSinNombre": "Off · turn it back on anytime, at no cost",
+      "pruebaDelSocio": "Trial from your partner until {{fecha}}",
+      "consecuencias": {
+        "sucursales": "You won't be able to create or edit branches or pick a branch in the bar; each manager and supervisor still sees only their own. Nothing is deleted, and turning it back on leaves everything as it was.",
+        "dobletes": "Open shift offers are cancelled and your officers stop seeing Dobletes and Backup in the app; shifts already accepted, their bonuses and the points are kept.",
+        "client_billing": "You won't be able to quote, generate billing runs or issue invoices; your clients can still see and pay invoices already sent, no reminders or late fees are sent, and turning it back on does not create back invoices.",
+        "payroll_slips": "Pay slips are hidden for generating new ones; your staff and your office can still download the ones already issued. Nothing is deleted.",
+        "reconocimiento_facial": "Your staff will clock in with the regular selfie, without face verification; registered faces are kept, and turning it back on verifies as before.",
+        "monitoring_center": "Panels, zones, reports and line supervision are hidden (we won't alert you if a panel stops reporting); alarms and panic buttons keep coming in. Nothing is deleted.",
+        "video_surveillance": "Cameras, recorders, events and clips are hidden, and no one can watch live video, including in alarm cases; clips already shared still open. Nothing is deleted."
       }
     }
   },

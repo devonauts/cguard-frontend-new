@@ -82,6 +82,10 @@ function fecha(iso: string | null | undefined) {
 function fechaCorta(iso: string | null | undefined) {
   return soloFecha(iso, { day: "numeric", month: "short" }, "");
 }
+/** Day and month in digits («DD/MM» in Spanish), for the switch-off confirmation. */
+function fechaDiaMes(iso: string | null | undefined) {
+  return soloFecha(iso, { day: "2-digit", month: "2-digit" }, "");
+}
 
 export default function TarjetaModuloMensual({
   m,
@@ -208,12 +212,19 @@ export default function TarjetaModuloMensual({
               "No se cobrará nada. Seguirás con la prueba hasta el {{fecha}}.",
             fecha: fecha(m.trialEndsAt),
           })
-        : t("modulosAdicionales.mensual.cancelarActivo", {
-            defaultValue:
-              "No se cobra nada más. Seguirás con {{nombre}} hasta el {{fecha}}.",
-            nombre: m.name,
-            fecha: fecha(m.periodEndsAt),
-          }),
+        : m.key === "vigia_pro"
+          ? t("modulosAdicionales.mensual.cancelarVigia", {
+              defaultValue:
+                "{{nombre}} sigue funcionando hasta el fin del periodo pagado ({{fecha}}) y no se renueva; después deja de vigilar faltas y de hablar con tus vigilantes por WhatsApp o llamada. Si lo vuelves a encender antes de esa fecha, no se cobra nada.",
+              nombre: m.name,
+              fecha: fechaDiaMes(m.periodEndsAt),
+            })
+          : t("modulosAdicionales.mensual.cancelarActivo", {
+              defaultValue:
+                "No se cobra nada más. Seguirás con {{nombre}} hasta el {{fecha}}.",
+              nombre: m.name,
+              fecha: fecha(m.periodEndsAt),
+            }),
       confirmText: t("modulosAdicionales.mensual.noRenovar", "No renovar"),
       cancelText: t("common.cancel", { defaultValue: "Cancelar" }),
     });

@@ -19983,7 +19983,14 @@
       "prueba_usada": "Dieses Unternehmen hat den Gratistest bereits genutzt.",
       "sin_prueba": "Dieses Modul hat keinen Gratistest.",
       "sin_suscripcion": "Für die monatliche Aktivierung braucht es Ihr aktives Abo. Siehe Abrechnung.",
-      "plan_gratis": "Ihr Unternehmen nutzt den kostenlosen Tarif. Wenn Sie ein Modul interessiert, wenden Sie sich an den Support."
+      "plan_gratis": "Ihr Unternehmen nutzt den kostenlosen Tarif. Wenn Sie ein Modul interessiert, wenden Sie sich an den Support.",
+      "paused": "Dieses Modul gehört Ihnen bereits und ist ausgeschaltet: Schalten Sie es kostenlos wieder ein.",
+      "not_purchasable": "Dieses Modul kann hier gerade nicht gekauft werden. Wenden Sie sich an den Support.",
+      "not_owned": "Ihr Unternehmen hat dieses Modul nicht.",
+      "monthly_module": "Das ist ein Monatsmodul: Zum Ausschalten die Verlängerung beenden.",
+      "revoked": "Dieses Modul wurde Ihrem Unternehmen entzogen. Wenden Sie sich an den Support, um es zurückzubekommen.",
+      "pending_payment": "Für dieses Modul ist eine Zahlung offen: Es ist noch nicht aktiv.",
+      "expired": "Dieses Modul ist in Ihrem Unternehmen nicht mehr aktiv."
     },
     "mensual": {
       "porMes": "/Monat",
@@ -20026,7 +20033,8 @@
       "pruebaHasta": "Kostenlose Testphase bis {{fecha}} · ohne Karte",
       "anualCorto": "Jährlich",
       "mesesGratis": "Jährlich: {{n}} Monate gratis",
-      "demo": "Demo"
+      "demo": "Demo",
+      "cancelarVigia": "{{nombre}} läuft bis zum Ende des bezahlten Zeitraums ({{fecha}}) weiter und wird nicht verlängert; danach überwacht es keine Fehlzeiten mehr und spricht nicht mehr per WhatsApp oder Anruf mit Ihren Wachleuten. Wenn Sie es vor diesem Datum wieder einschalten, wird nichts berechnet."
     },
     "interruptor": "{{nombre}} ein- oder ausschalten",
     "paraSiempre": "Einmalzahlung · gehört Ihnen für immer",
@@ -20605,6 +20613,27 @@
           "evento": "Sehen, was passiert, und den Beweis mit zwei Klicks sichern",
           "despacho": "Sehen, prüfen und handeln im selben CRM"
         }
+      }
+    },
+    "pausa": {
+      "titulo": "{{nombre}} ausschalten?",
+      "mensaje": "Es wird nichts gelöscht: Die Menüs verschwinden, und Sie können es jederzeit kostenlos wieder einschalten.",
+      "boton": "Ausschalten",
+      "encender": "Einschalten",
+      "apagado": "Aus",
+      "apagadoAviso": "{{nombre}} ist ausgeschaltet. Sie können es jederzeit wieder einschalten.",
+      "encendidoAviso": "{{nombre}} ist wieder eingeschaltet.",
+      "situacion": "Ausgeschaltet von {{quien}} · jederzeit kostenlos wieder einschalten",
+      "situacionSinNombre": "Aus · jederzeit kostenlos wieder einschalten",
+      "pruebaDelSocio": "Test Ihres Partners bis {{fecha}}",
+      "consecuencias": {
+        "sucursales": "Sie können keine Niederlassungen mehr anlegen oder bearbeiten und keine Niederlassung in der Leiste wählen; jeder Leiter und Supervisor sieht weiterhin nur seine eigenen. Es wird nichts gelöscht, und beim Einschalten bleibt alles wie zuvor.",
+        "dobletes": "Laufende Schichtangebote werden storniert und Ihre Wachleute sehen Dobletes und Bereitschaft nicht mehr in der App; bereits angenommene Schichten, ihre Prämien und die Punkte bleiben erhalten.",
+        "client_billing": "Sie können keine Angebote erstellen, keine Abrechnungsläufe erzeugen und keine Rechnungen ausstellen; Ihre Kunden können bereits versandte Rechnungen weiterhin sehen und bezahlen, es werden keine Erinnerungen oder Säumniszuschläge versendet, und beim Einschalten entstehen keine nachträglichen Rechnungen.",
+        "payroll_slips": "Lohnabrechnungen werden für neue Abrechnungen ausgeblendet; Ihr Personal und Ihr Büro können die bereits ausgestellten weiter herunterladen. Es wird nichts gelöscht.",
+        "reconocimiento_facial": "Ihr Personal stempelt mit dem normalen Selfie, ohne Gesichtsprüfung; die registrierten Gesichter bleiben gespeichert, und beim Einschalten wird wieder wie zuvor geprüft.",
+        "monitoring_center": "Zentralen, Zonen, Berichte und die Leitungsüberwachung werden ausgeblendet (wir benachrichtigen Sie nicht, wenn eine Zentrale nicht mehr meldet); Alarme und Paniktasten kommen weiterhin an. Es wird nichts gelöscht.",
+        "video_surveillance": "Kameras, Rekorder, Ereignisse und Clips werden ausgeblendet, und niemand kann Live-Video sehen, auch nicht in Alarmfällen; bereits geteilte Clips lassen sich weiterhin öffnen. Es wird nichts gelöscht."
       }
     }
   },
