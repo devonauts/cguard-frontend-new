@@ -102,6 +102,8 @@ interface JornadaDraft {
   startTime: string;
   endTime: string;
   guardsCount: string;
+  /** Weekdays the window runs (empty/absent = every day), kept from the slots. */
+  days?: string[];
 }
 
 interface StationDraft {
@@ -110,7 +112,29 @@ interface StationDraft {
   jornadas: JornadaDraft[];
   existingId?: string;
   existingScheduleType?: string; // current engine scheduleType (to detect changes)
+  /** What the slots said when the wizard opened (windows · guards · days). */
+  existingCoverage?: string;
 }
+
+/**
+ * The station's coverage as `auto-positions` reads it: one franja per
+ * fixed jornada, with how many guards at once and on which days. Before, the
+ * wizard sent only the type and the FIRST jornada's hours, so a post with
+ * three guards came back with one, and weekday slots came back «every day».
+ */
+function franjasDeJornadas(jornadas: JornadaDraft[]) {
+  return jornadas
+    .filter((j) => j.tipo !== "sacafranco" && j.startTime && j.endTime)
+    .map((j) => ({
+      start: j.startTime,
+      end: j.endTime,
+      guards: Math.max(1, Math.floor(Number(j.guardsCount) || 1)),
+      days: j.days && j.days.length && j.days.length < 7 ? [...j.days] : [],
+    }));
+}
+
+const firmaDeCobertura = (jornadas: JornadaDraft[]) =>
+  JSON.stringify(franjasDeJornadas(jornadas));
 
 // Client detail fields consulted for the "same address as client" toggle.
 interface ClientDetail {
@@ -1235,6 +1259,7 @@ export default function PostSiteWizard({
                     startTime: j.startTime,
                     endTime: j.endTime,
                     guardsCount: String(j.guardsCount),
+                    days: j.days || [],
                   };
                 },
               );
@@ -1281,6 +1306,7 @@ export default function PostSiteWizard({
               jornadas,
               existingId: r.id,
               existingScheduleType: r.scheduleType || undefined,
+              existingCoverage: firmaDeCobertura(jornadas),
             };
           });
 
@@ -1453,9 +1479,11 @@ export default function PostSiteWizard({
       }
 
       const desired = deriveScheduleType(s.jornadas);
+      const franjas = franjasDeJornadas(s.jornadas);
       const changed =
         !s.existingId ||
-        (desired && desired !== (s.existingScheduleType || ""));
+        (desired && desired !== (s.existingScheduleType || "")) ||
+        firmaDeCobertura(s.jornadas) !== (s.existingCoverage ?? "");
 
       if (stationId && desired && changed) {
         const first = s.jornadas[0];
@@ -1468,11 +1496,21 @@ export default function PostSiteWizard({
                 scheduleType: desired,
                 startTime: first?.startTime || undefined,
                 endTime: first?.endTime || undefined,
+                // Guards at once and weekdays travel too (see franjasDeJornadas).
+                ...(franjas.length ? { franjas } : {}),
               },
             },
           );
-        } catch {
-          // Non-blocking: the station saved; the horario can still be set in Programador › Horario.
+        } catch (e: any) {
+          /* The station saved; its schedule did not. Saying nothing left the
+             post with the old slots while the wizard showed the new ones. */
+          toast.error(
+            e?.message ||
+              t(
+                "ui.PostSiteWizard.horarioNoGuardado",
+                "La estación se guardó, pero su horario no. Revísalo en la ficha de la estación.",
+              ),
+          );
         }
       }
     }

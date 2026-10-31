@@ -2217,7 +2217,8 @@
         "inviteNoContact": "This guard has no email: add one before inviting them.",
         "deletedWithShifts_one": "Deleted. {{count}} shift was cancelled and stays in the Schedule as a gap.",
         "deletedWithShifts_other": "Deleted. {{count}} shifts were cancelled and stay in the Schedule as gaps.",
-        "bulkActionError": "Couldn't complete the action: {{msg}}"
+        "bulkActionError": "Couldn't complete the action: {{msg}}",
+        "archiveScheduled": "Termination scheduled: access ends when {{date}} ends."
       },
       "dialog": {
         "archive": {
@@ -2228,7 +2229,8 @@
           "notePh": "Details of the reason",
           "rehire": "Eligible for rehire",
           "note": "Note (optional)",
-          "reason": "Reason"
+          "reason": "Reason",
+          "futureHint": "They work until that day. Later shifts are removed now and access ends when that day ends."
         },
         "bulk": {
           "archiveDescription": "Are you sure you want to archive {{count}} guard(s)? This can be reverted from archived filter.",
@@ -6657,7 +6659,8 @@
       "sacaTitle": "Add relief guard",
       "title": "Assigned guards",
       "editShift": "Edit shift",
-      "eventoSub": "Guard for the event dates"
+      "eventoSub": "Guard for the event dates",
+      "stationFull": "Every slot at this post already has a guard. If the client needs one more, add a slot in the post's schedule and assign again."
     },
     "incidents": {
       "col": {
@@ -11171,7 +11174,8 @@
       },
       "creaCadaEstacionEvento": "Create each station for the event: name, from what time to what time it is covered, how many guards at once and geofence. No rotation: the event has its own dates. When they're all done, press “Finish”.",
       "eventoConEstaciones_one": "{{count}} station. Next: assign the guards; the event sets the dates and hours.",
-      "eventoConEstaciones_other": "{{count}} stations. Next: assign the guards; the event sets the dates and hours."
+      "eventoConEstaciones_other": "{{count}} stations. Next: assign the guards; the event sets the dates and hours.",
+      "horarioNoGuardado": "The station was saved, but its schedule was not. Check it on the station's page."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Good lighting — avoid shadows and backlight",

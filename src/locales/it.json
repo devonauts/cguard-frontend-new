@@ -2001,7 +2001,8 @@
         "inviteNoContact": "Questa guardia non ha un'email: aggiungine una per poterla invitare.",
         "deletedWithShifts_one": "Eliminata. {{count}} turno è stato annullato e resta nel Calendario come buco.",
         "deletedWithShifts_other": "Eliminata. {{count}} turni sono stati annullati e restano nel Calendario come buchi.",
-        "bulkActionError": "Impossibile completare l'azione: {{msg}}"
+        "bulkActionError": "Impossibile completare l'azione: {{msg}}",
+        "archiveScheduled": "Cessazione programmata: l'accesso termina alla fine del {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2012,7 +2013,8 @@
           "notePh": "Dettaglio del motivo",
           "rehire": "Riassumibile in futuro",
           "note": "Nota (facoltativa)",
-          "reason": "Motivo"
+          "reason": "Motivo",
+          "futureHint": "Lavora fino a quel giorno. I turni successivi vengono tolti ora e l'accesso termina alla fine di quel giorno."
         },
         "bulk": {
           "archiveDescription": "Vuoi davvero archiviare {{count}} guardia/e? L'operazione può essere annullata dal filtro delle archiviate.",
@@ -8806,7 +8808,8 @@
       "sacaTitle": "Aggiungi sostituto",
       "title": "Guardie assegnate",
       "editShift": "Modifica turno",
-      "eventoSub": "Guardia per le date dell’evento"
+      "eventoSub": "Guardia per le date dell’evento",
+      "stationFull": "Tutti i posti di questa postazione hanno già una guardia. Se il cliente ne chiede un'altra, aggiungi un posto nell'orario della postazione e assegna di nuovo."
     },
     "incidents": {
       "col": {
@@ -11706,7 +11709,8 @@
       },
       "creaCadaEstacionEvento": "Crea ogni stazione dell'evento: nome, da che ora a che ora è coperta, quante guardie contemporaneamente e geofence. Senza rotazione: l'evento ha le sue date. Quando sono tutte pronte, premi «Termina».",
       "eventoConEstaciones_one": "{{count}} stazione. Prossimo passo: assegna le guardie; date e orari li stabilisce l’evento.",
-      "eventoConEstaciones_other": "{{count}} stazioni. Prossimo passo: assegna le guardie; date e orari li stabilisce l’evento."
+      "eventoConEstaciones_other": "{{count}} stazioni. Prossimo passo: assegna le guardie; date e orari li stabilisce l’evento.",
+      "horarioNoGuardado": "La postazione è stata salvata, ma il suo orario no. Controllalo nella scheda della postazione."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Buona illuminazione — evita ombre e controluce",

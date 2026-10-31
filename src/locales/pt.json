@@ -4397,7 +4397,8 @@
           "notePh": "Detalhe do motivo",
           "rehire": "Elegível para recontratação",
           "note": "Nota (opcional)",
-          "reason": "Motivo"
+          "reason": "Motivo",
+          "futureHint": "Trabalha até esse dia. Os turnos posteriores saem agora e o acesso termina ao fim desse dia."
         },
         "bulk": {
           "archiveDescription": "Tem certeza de que deseja arquivar {{count}} vigilante(s)? Esta ação pode ser revertida pelo filtro de arquivados.",
@@ -4526,7 +4527,8 @@
         "inviteNoContact": "Este vigilante não tem e-mail: adicione um para o poder convidar.",
         "deletedWithShifts_one": "Excluído. {{count}} turno foi cancelado e fica como vaga na Escala.",
         "deletedWithShifts_other": "Excluído. {{count}} turnos foram cancelados e ficam como vagas na Escala.",
-        "bulkActionError": "Não foi possível concluir a ação: {{msg}}"
+        "bulkActionError": "Não foi possível concluir a ação: {{msg}}",
+        "archiveScheduled": "Desligamento agendado: o acesso termina ao fim de {{date}}."
       },
       "noData": "Nenhum vigilante encontrado",
       "subtitle": "Gerencie a equipe de segurança da sua organização",
@@ -7488,7 +7490,8 @@
       "sacaTitle": "Adicionar folguista",
       "title": "Vigilantes atribuídos",
       "editShift": "Editar turno",
-      "eventoSub": "Vigilante para as datas do evento"
+      "eventoSub": "Vigilante para as datas do evento",
+      "stationFull": "Todas as vagas deste posto já têm vigilante. Se o cliente pedir mais um, adicione uma vaga no horário do posto e aloque de novo."
     },
     "incidents": {
       "col": {
@@ -11171,7 +11174,8 @@
       },
       "creaCadaEstacionEvento": "Crie cada estação do evento: nome, de que hora a que hora é coberta, quantos vigilantes ao mesmo tempo e cerca virtual. Sem rodízio: o evento tem suas datas. Quando estiverem todas, clique em «Terminar».",
       "eventoConEstaciones_one": "{{count}} estação. Próximo: designe os vigilantes; as datas e horas vêm do evento.",
-      "eventoConEstaciones_other": "{{count}} estações. Próximo: designe os vigilantes; as datas e horas vêm do evento."
+      "eventoConEstaciones_other": "{{count}} estações. Próximo: designe os vigilantes; as datas e horas vêm do evento.",
+      "horarioNoGuardado": "O posto foi salvo, mas o horário não. Confira na ficha do posto."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Boa iluminação — evite sombras e contraluz",

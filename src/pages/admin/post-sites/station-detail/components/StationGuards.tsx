@@ -362,6 +362,24 @@ export default function StationGuards({
     );
 
     if (free) return free.id;
+    /* ── UN PUESTO LLENO NO CRECE SOLO (auditoría 2026-10-30) ────────────────
+       Si todas las plazas fijas ya tienen vigilante, aquí se creaba otra en
+       silencio: lo que el puesto PIDE crecía hasta igualar a lo asignado y la
+       cobertura nunca podía enseñar que faltaba gente. Lo que pide un puesto se
+       cambia a propósito en su horario; asignar sólo llena lo que hay. La
+       primera plaza de sacafranco sí se abre: el relevo tapa descansos, no
+       cuenta en lo que pide el puesto. */
+    if (
+      type !== "sacafranco" &&
+      positions.some((p: PositionRow) => (p.type || "fijo") !== "sacafranco")
+    ) {
+      throw new Error(
+        t(
+          "station.guards.stationFull",
+          "Todas las plazas de este puesto ya tienen vigilante. Si el cliente pide uno más, agrega una plaza en el horario del puesto y vuelve a asignar.",
+        ),
+      );
+    }
     /* ── LA PLAZA NUEVA HEREDA LA VENTANA DE LAS QUE YA HAY ──────────────────
        Antes salía de `startingTimeInDay` y, a falta de él, de un 07:00–19:00
        escrito a mano. En un puesto NOCTURNO cuyas plazas van de 19:00 a 07:00

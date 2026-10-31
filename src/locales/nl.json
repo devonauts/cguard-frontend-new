@@ -2001,7 +2001,8 @@
         "inviteNoContact": "Deze beveiliger heeft geen e-mailadres: voeg er een toe om hem te kunnen uitnodigen.",
         "deletedWithShifts_one": "Verwijderd. {{count}} dienst is geannuleerd en blijft als gat in het Rooster staan.",
         "deletedWithShifts_other": "Verwijderd. {{count}} diensten zijn geannuleerd en blijven als gaten in het Rooster staan.",
-        "bulkActionError": "De actie kon niet worden voltooid: {{msg}}"
+        "bulkActionError": "De actie kon niet worden voltooid: {{msg}}",
+        "archiveScheduled": "Uitdiensttreding gepland: de toegang stopt aan het einde van {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2012,7 +2013,8 @@
           "notePh": "Toelichting op de reden",
           "rehire": "Mag opnieuw worden aangenomen",
           "note": "Notitie (optioneel)",
-          "reason": "Reden"
+          "reason": "Reden",
+          "futureHint": "Werkt tot die dag. Latere diensten worden nu verwijderd en de toegang stopt aan het einde van die dag."
         },
         "bulk": {
           "archiveDescription": "Weet je zeker dat je {{count}} beveiliger(s) wilt archiveren? Je kunt dit terugdraaien via het filter Gearchiveerd.",
@@ -8806,7 +8808,8 @@
       "sacaTitle": "Invaller toevoegen",
       "title": "Toegewezen beveiligers",
       "editShift": "Dienst bewerken",
-      "eventoSub": "Beveiliger voor de data van het evenement"
+      "eventoSub": "Beveiliger voor de data van het evenement",
+      "stationFull": "Alle plaatsen van deze post hebben al een beveiliger. Vraagt de klant er nog een, voeg dan een plaats toe in het rooster van de post en wijs opnieuw toe."
     },
     "incidents": {
       "col": {
@@ -11706,7 +11709,8 @@
       },
       "creaCadaEstacionEvento": "Maak elk station van het evenement aan: naam, van hoe laat tot hoe laat het bezet is, hoeveel beveiligers tegelijk en geofence. Geen rotatie: het evenement heeft zijn eigen data. Als ze allemaal klaar zijn, klik op ‘Afronden’.",
       "eventoConEstaciones_one": "{{count}} station. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement.",
-      "eventoConEstaciones_other": "{{count}} stations. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement."
+      "eventoConEstaciones_other": "{{count}} stations. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement.",
+      "horarioNoGuardado": "De post is opgeslagen, maar het rooster niet. Controleer het op de pagina van de post."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Goed licht — vermijd schaduw en tegenlicht",

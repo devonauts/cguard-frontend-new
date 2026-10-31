@@ -2001,7 +2001,8 @@
         "inviteNoContact": "Diese Sicherheitskraft hat keine E-Mail-Adresse. Hinterlegen Sie eine, um sie einladen zu können.",
         "deletedWithShifts_one": "Gelöscht. {{count}} Schicht wurde storniert und bleibt im Dienstplan als Lücke.",
         "deletedWithShifts_other": "Gelöscht. {{count}} Schichten wurden storniert und bleiben im Dienstplan als Lücken.",
-        "bulkActionError": "Die Aktion konnte nicht abgeschlossen werden: {{msg}}"
+        "bulkActionError": "Die Aktion konnte nicht abgeschlossen werden: {{msg}}",
+        "archiveScheduled": "Austritt geplant: Der Zugang endet mit Ablauf des {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2012,7 +2013,8 @@
           "notePh": "Grund im Detail",
           "rehire": "Für Wiedereinstellung geeignet",
           "note": "Notiz (optional)",
-          "reason": "Grund"
+          "reason": "Grund",
+          "futureHint": "Arbeitet bis zu diesem Tag. Spätere Schichten werden jetzt entfernt, der Zugang endet mit Ablauf dieses Tages."
         },
         "bulk": {
           "archiveDescription": "Möchten Sie {{count}} Wachkraft/Wachkräfte wirklich archivieren? Das lässt sich über den Filter „Archivierte“ wieder rückgängig machen.",
@@ -8806,7 +8808,8 @@
       "sacaTitle": "Springer hinzufügen",
       "title": "Zugewiesene Sicherheitskräfte",
       "editShift": "Schicht bearbeiten",
-      "eventoSub": "Wachperson für die Veranstaltungstermine"
+      "eventoSub": "Wachperson für die Veranstaltungstermine",
+      "stationFull": "Alle Plätze dieses Postens sind bereits besetzt. Wenn der Kunde einen weiteren braucht, fügen Sie im Dienstplan des Postens einen Platz hinzu und weisen Sie erneut zu."
     },
     "incidents": {
       "col": {
@@ -11706,7 +11709,8 @@
       },
       "creaCadaEstacionEvento": "Legen Sie jede Station der Veranstaltung an: Name, von wann bis wann sie besetzt ist, wie viele Sicherheitskräfte gleichzeitig und Geofence. Ohne Rotation: Die Veranstaltung hat ihre eigenen Termine. Wenn alle fertig sind, klicken Sie auf „Fertig“.",
       "eventoConEstaciones_one": "{{count}} Station. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor.",
-      "eventoConEstaciones_other": "{{count}} Stationen. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor."
+      "eventoConEstaciones_other": "{{count}} Stationen. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor.",
+      "horarioNoGuardado": "Der Posten wurde gespeichert, sein Dienstplan nicht. Prüfen Sie ihn auf der Seite des Postens."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Gute Beleuchtung — vermeiden Sie Schatten und Gegenlicht",

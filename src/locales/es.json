@@ -2217,7 +2217,8 @@
         "inviteNoContact": "Este vigilante no tiene correo: añádele uno para poder invitarlo.",
         "deletedWithShifts_one": "Eliminado. Se canceló {{count}} turno: queda como hueco en el Horario.",
         "deletedWithShifts_other": "Eliminado. Se cancelaron {{count}} turnos: quedan como huecos en el Horario.",
-        "bulkActionError": "No se pudo completar la acción: {{msg}}"
+        "bulkActionError": "No se pudo completar la acción: {{msg}}",
+        "archiveScheduled": "Baja programada: el acceso se corta al terminar el {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2228,7 +2229,8 @@
           "notePh": "Detalle del motivo",
           "rehire": "Elegible para recontratación",
           "note": "Nota (opcional)",
-          "reason": "Motivo"
+          "reason": "Motivo",
+          "futureHint": "Trabaja hasta ese día. Sus turnos posteriores se quitan ahora y el acceso se corta al terminar ese día."
         },
         "bulk": {
           "archiveDescription": "¿Estás seguro de que deseas archivar {{count}} vigilante(s)? Esta acción se puede revertir desde el filtro de archivados.",
@@ -6657,7 +6659,8 @@
       "sacaTitle": "Agregar sacafranco",
       "title": "Vigilantes Asignados",
       "editShift": "Editar turno",
-      "eventoSub": "Vigilante para las fechas del evento"
+      "eventoSub": "Vigilante para las fechas del evento",
+      "stationFull": "Todas las plazas de este puesto ya tienen vigilante. Si el cliente pide uno más, agrega una plaza en el horario del puesto y vuelve a asignar."
     },
     "incidents": {
       "col": {
@@ -11171,7 +11174,8 @@
       },
       "creaCadaEstacionEvento": "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
       "eventoConEstaciones_one": "{{count}} estación. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
-      "eventoConEstaciones_other": "{{count}} estaciones. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento."
+      "eventoConEstaciones_other": "{{count}} estaciones. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
+      "horarioNoGuardado": "La estación se guardó, pero su horario no. Revísalo en la ficha de la estación."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Buena iluminación — evite sombras y contraluz",

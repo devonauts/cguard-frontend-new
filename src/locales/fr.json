@@ -2001,7 +2001,8 @@
         "inviteNoContact": "Cet agent n'a pas d'adresse e-mail : ajoutez-en une pour pouvoir l'inviter.",
         "deletedWithShifts_one": "Supprimé. {{count}} service a été annulé et reste dans le Planning comme un trou.",
         "deletedWithShifts_other": "Supprimé. {{count}} services ont été annulés et restent dans le Planning comme des trous.",
-        "bulkActionError": "Impossible de terminer l'action : {{msg}}"
+        "bulkActionError": "Impossible de terminer l'action : {{msg}}",
+        "archiveScheduled": "Départ programmé : l'accès prend fin à la fin du {{date}}."
       },
       "dialog": {
         "archive": {
@@ -2012,7 +2013,8 @@
           "notePh": "Détail du motif",
           "rehire": "Éligible à une réembauche",
           "note": "Note (facultative)",
-          "reason": "Motif"
+          "reason": "Motif",
+          "futureHint": "Il travaille jusqu'à ce jour. Les services suivants sont retirés maintenant et l'accès prend fin à la fin de ce jour."
         },
         "bulk": {
           "archiveDescription": "Voulez-vous vraiment archiver {{count}} agent(s) ? Cette action peut être annulée depuis le filtre des archivés.",
@@ -8806,7 +8808,8 @@
       "sacaTitle": "Ajouter un agent volant",
       "title": "Agents affectés",
       "editShift": "Modifier la vacation",
-      "eventoSub": "Agent pour les dates de l’événement"
+      "eventoSub": "Agent pour les dates de l’événement",
+      "stationFull": "Toutes les places de ce poste ont déjà un agent. Si le client en demande un de plus, ajoutez une place dans l'horaire du poste puis affectez à nouveau."
     },
     "incidents": {
       "col": {
@@ -11706,7 +11709,8 @@
       },
       "creaCadaEstacionEvento": "Créez chaque station de l'événement : nom, de quelle heure à quelle heure il est couvert, combien d'agents à la fois et géorepérage. Sans rotation : l'événement a ses propres dates. Quand ils sont tous prêts, cliquez sur « Terminer ».",
       "eventoConEstaciones_one": "{{count}} station. Ensuite : affectez les agents ; les dates et heures viennent de l’événement.",
-      "eventoConEstaciones_other": "{{count}} stations. Ensuite : affectez les agents ; les dates et heures viennent de l’événement."
+      "eventoConEstaciones_other": "{{count}} stations. Ensuite : affectez les agents ; les dates et heures viennent de l’événement.",
+      "horarioNoGuardado": "Le poste a été enregistré, mais pas son horaire. Vérifiez-le sur la fiche du poste."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Bon éclairage — évitez les ombres et le contre-jour",
