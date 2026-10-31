@@ -276,34 +276,69 @@ function LogoVigia({
 const CONTROL_SELECTOR =
   'button, a[href], input, textarea, select, [role="button"], [role="combobox"], [role="tab"], [role="checkbox"], [role="switch"]';
 
-/**
- * True when an interactive control of the page sits under the bubble.
- *
- * Probes a few points inside the bubble's box and looks at the first element
- * below it (the bubble itself and other floating widgets are skipped). A
- * control there means a click aimed at «Save» / «Send» would open the chat.
- */
-function coversAControl(bubble: HTMLElement): boolean {
-  const r = bubble.getBoundingClientRect();
+/** Gap kept between the bubble and a control it steps away from. */
+const STEP_GAP = 12;
+/** Never lift the bubble higher than this share of the window. */
+const MAX_LIFT_SHARE = 0.45;
 
-  if (!r.width || !r.height) return false;
-  const points: Array<[number, number]> = [
-    [0.5, 0.5],
-    [0.3, 0.35],
-    [0.7, 0.35],
-    [0.3, 0.75],
-    [0.7, 0.75],
-  ];
+function overlaps(a: DOMRect | { left: number; right: number; top: number; bottom: number }, b: DOMRect): boolean {
+  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+}
 
-  for (const [fx, fy] of points) {
-    const below = document
-      .elementsFromPoint(r.left + r.width * fx, r.top + r.height * fy)
-      .find((el) => !bubble.contains(el) && !el.closest("[data-flotante]"));
+/** Visible interactive controls of the page whose box intersects `box`. */
+function controlsUnder(
+  bubble: HTMLElement,
+  box: { left: number; right: number; top: number; bottom: number },
+): DOMRect[] {
+  const hits: DOMRect[] = [];
 
-    if (below?.closest(CONTROL_SELECTOR)) return true;
+  for (const el of Array.from(document.querySelectorAll<HTMLElement>(CONTROL_SELECTOR))) {
+    if (bubble.contains(el) || el.closest("[data-flotante]")) continue;
+    const r = el.getBoundingClientRect();
+
+    if (!r.width || !r.height) continue;
+    if (!overlaps(box, r)) continue;
+    // Hidden or clipped controls (behind a closed drawer, scrolled out of a
+    // panel) are not under the bubble: the topmost element at their centre
+    // must be the control itself or something inside it.
+    const cx = Math.min(Math.max(r.left + r.width / 2, 0), window.innerWidth - 1);
+    const cy = Math.min(Math.max(r.top + r.height / 2, 0), window.innerHeight - 1);
+    const top = document
+      .elementsFromPoint(cx, cy)
+      .find((x) => !bubble.contains(x) && !x.closest("[data-flotante]"));
+
+    if (top && (el === top || el.contains(top) || top.contains(el))) hits.push(r);
   }
 
-  return false;
+  return hits;
+}
+
+/**
+ * Where the bubble should sit so it never covers a control (QA-95, audit
+ * 2026-10-31: the «Enviar» of «Nuevo Vigilante» was half under the bubble and
+ * the old point probes missed it). Returns how many px to lift it, or "hide"
+ * when no clear spot exists within reach.
+ */
+export function bubblePlacement(bubble: HTMLElement, currentLift: number): number | "hide" {
+  const now = bubble.getBoundingClientRect();
+
+  if (!now.width || !now.height) return 0;
+  // Where the bubble sits with no lift at all.
+  const base = { left: now.left, right: now.right, top: now.top + currentLift, bottom: now.bottom + currentLift };
+  let lift = 0;
+
+  for (let i = 0; i < 6; i++) {
+    const box = { ...base, top: base.top - lift - STEP_GAP / 2, bottom: base.bottom - lift + STEP_GAP / 2 };
+    const hits = controlsUnder(bubble, box);
+
+    if (!hits.length) return lift;
+    const highest = Math.min(...hits.map((r) => r.top));
+
+    lift = Math.ceil(base.bottom - highest + STEP_GAP);
+    if (lift > window.innerHeight * MAX_LIFT_SHARE || base.top - lift < 8) return "hide";
+  }
+
+  return "hide";
 }
 
 export default function VigiaWidget() {
@@ -375,6 +410,8 @@ export default function VigiaWidget() {
      changes, resizes or navigates. */
   const burbujaRef = useRef<HTMLButtonElement | null>(null);
   const [tapaControl, setTapaControl] = useState(false);
+  const [lift, setLift] = useState(0);
+  const liftRef = useRef(0);
 
   useEffect(() => {
     if (open || desplazando) return;
@@ -385,7 +422,13 @@ export default function VigiaWidget() {
       frame = requestAnimationFrame(() => {
         const b = burbujaRef.current;
 
-        setTapaControl(b ? coversAControl(b) : false);
+        if (!b) return;
+        const place = bubblePlacement(b, liftRef.current);
+        const next = place === "hide" ? 0 : place;
+
+        liftRef.current = next;
+        setLift(next);
+        setTapaControl(place === "hide");
       });
     };
     // Mutations come in bursts (a list rendering, a form opening) and some
@@ -865,6 +908,8 @@ export default function VigiaWidget() {
             right: "clamp(1rem, 4vw, 1.75rem)",
             bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))",
             zIndex: 45,
+            // Lifted above a control it would otherwise cover (see bubblePlacement).
+            translate: lift ? `0 ${-lift}px` : undefined,
             // drop-shadow y no box-shadow: la sombra sigue la silueta del escudo.
             background: "transparent",
             filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.30))",
@@ -872,7 +917,9 @@ export default function VigiaWidget() {
           onClick={() => setOpen(true)}
           className="vigia-burbuja cg-focus transition-transform hover:scale-105"
           ref={burbujaRef}
-          data-apartada={desplazando || tapaControl || undefined}
+          data-apartada={desplazando || undefined}
+          data-oculta={(!desplazando && tapaControl) || undefined}
+          data-elevada={lift > 0 || undefined}
           /* `data-flotante`: así `apartarDelWidget` puede MEDIR lo que ocupa en
              vez de suponerlo. La onda animada hace que su caja real sean 83 px
              de alto arrancando a 159 del borde, bastante más que los 56 de la
@@ -892,8 +939,9 @@ export default function VigiaWidget() {
                estados («Sin cubrir», «Activo»). Encogido tapa un tercio menos
                y sigue siendo un blanco de 58 px, por encima del mínimo. */
             @media (max-width: 767.98px) { .vigia-burbuja { transform: scale(0.78); transform-origin: 100% 100%; } }
-            .vigia-burbuja { transition: opacity .22s ease, transform .22s ease; }
+            .vigia-burbuja { transition: opacity .22s ease, transform .22s ease, translate .22s ease; }
             .vigia-burbuja[data-apartada] { opacity: .18; pointer-events: none; }
+            .vigia-burbuja[data-oculta] { opacity: 0; pointer-events: none; }
             @media (prefers-reduced-motion: reduce) { .vigia-burbuja { transition: none } }
           `}</style>
           <span className="relative block">
