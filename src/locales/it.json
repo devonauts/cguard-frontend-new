@@ -15649,7 +15649,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Riapri periodo",
       "reabrirPeriodoMensaje": "Timbrature, turni e segni da quel giorno potranno essere di nuovo modificati. Le schede già approvate o esportate non vengono toccate. Scrivi il motivo: resta nel registro.",
-      "reabrirPeriodoTitulo": "Riaprire le paghe dal {{desde}}?"
+      "reabrirPeriodoTitulo": "Riaprire le paghe dal {{desde}}?",
+      "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",

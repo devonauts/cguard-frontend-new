@@ -15114,7 +15114,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Reabrir periodo",
       "reabrirPeriodoMensaje": "Los fichajes, turnos y marcas desde ese día se podrán volver a cambiar. Las tarjetas ya aprobadas o exportadas no se tocan. Escribe el motivo: queda en la bitácora.",
-      "reabrirPeriodoTitulo": "¿Reabrir la nómina desde el {{desde}}?"
+      "reabrirPeriodoTitulo": "¿Reabrir la nómina desde el {{desde}}?",
+      "generarCerrado": "Este periodo está cerrado. Reábrelo para volver a calcularlo."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencias",

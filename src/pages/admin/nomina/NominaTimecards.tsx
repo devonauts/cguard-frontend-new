@@ -781,7 +781,15 @@ export default function NominaTimecards() {
             )}
           </div>
 
-          <Button onClick={generar} disabled={trabajando || calculando}>
+          <Button
+            onClick={generar}
+            disabled={trabajando || calculando || periodoCerrado}
+            title={
+              periodoCerrado
+                ? t("ui.NominaTimecards.generarCerrado", "Este periodo está cerrado. Reábrelo para volver a calcularlo.")
+                : undefined
+            }
+          >
             {calculando ? (
               <>
                 <Loader2 size={15} className="animate-spin" />{" "}

@@ -15835,7 +15835,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Otwórz okres ponownie",
       "reabrirPeriodoMensaje": "Odbicia, zmiany i oznaczenia od tego dnia będzie można znowu zmieniać. Karty już zatwierdzone lub wyeksportowane pozostają bez zmian. Podaj powód: zostanie zapisany w dzienniku.",
-      "reabrirPeriodoTitulo": "Otworzyć ponownie płace od {{desde}}?"
+      "reabrirPeriodoTitulo": "Otworzyć ponownie płace od {{desde}}?",
+      "generarCerrado": "Ten okres jest zamknięty. Otwórz go ponownie, aby przeliczyć."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencje",

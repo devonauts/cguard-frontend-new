@@ -15114,7 +15114,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Reopen period",
       "reabrirPeriodoMensaje": "Punches, shifts and marks from that day on can be changed again. Timecards already approved or exported are not touched. Write the reason: it goes to the audit log.",
-      "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?"
+      "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?",
+      "generarCerrado": "This period is closed. Reopen it to recalculate."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",

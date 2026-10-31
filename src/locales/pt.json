@@ -15114,7 +15114,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Reabrir período",
       "reabrirPeriodoMensaje": "Batidas, turnos e marcações a partir desse dia poderão ser alterados de novo. Cartões já aprovados ou exportados não são alterados. Escreva o motivo: fica no registro.",
-      "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?"
+      "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?",
+      "generarCerrado": "Este período está fechado. Reabra-o para recalcular."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenças",

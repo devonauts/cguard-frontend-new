@@ -15649,7 +15649,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Periode heropenen",
       "reabrirPeriodoMensaje": "Prikkingen, diensten en markeringen vanaf die dag kunnen weer worden gewijzigd. Al goedgekeurde of geëxporteerde tijdkaarten blijven ongewijzigd. Geef de reden op: die komt in het logboek.",
-      "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?"
+      "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?",
+      "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",

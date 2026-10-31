@@ -15649,7 +15649,8 @@
       "rangoDelPeriodo": "{{desde}} – {{hasta}}",
       "reabrirPeriodo": "Periode wieder öffnen",
       "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
-      "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?"
+      "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?",
+      "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen."
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",
