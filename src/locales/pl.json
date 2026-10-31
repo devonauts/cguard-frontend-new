@@ -18237,6 +18237,14 @@
         "cuotaEn": "Rata ({{moneda}})",
         "cuotaSugerida": "Puste = {{cuota}} na ratę",
         "desde": "Pierwsza rata na liście płac kończącej się od"
+      },
+      "soloLectura": {
+        "aviso": "Paski wypłaty są wyłączone: możesz przeglądać i pobierać już wystawione paski. Aby generować nowe, włącz moduł w Modułach dodatkowych.",
+        "enlace": "Przejdź do Modułów dodatkowych",
+        "verPlanillas": "Zobacz wystawione listy płac",
+        "vacio": "Brak wystawionych list płac",
+        "vacioDesc": "Dopóki Paski wypłaty są wyłączone, widać tylko opublikowane listy płac.",
+        "noEmitida": "Można przeglądać tylko już wystawione listy płac i paski wypłaty."
       }
     },
     "ClientBillingContract": {

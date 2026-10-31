@@ -17422,6 +17422,14 @@
         "cuotaEn": "Parcela ({{moneda}})",
         "cuotaSugerida": "Vazio = {{cuota}} por parcela",
         "desde": "Primeira parcela na folha de pagamento que termine a partir de"
+      },
+      "soloLectura": {
+        "aviso": "Holerites está desligado: você pode ver e baixar os holerites já emitidos. Para gerar novos, ligue-o em Módulos adicionais.",
+        "enlace": "Ir para Módulos adicionais",
+        "verPlanillas": "Ver as folhas de pagamento emitidas",
+        "vacio": "Não há folhas de pagamento emitidas",
+        "vacioDesc": "Enquanto Holerites estiver desligado, só aparecem as folhas de pagamento publicadas.",
+        "noEmitida": "Só é possível ver as folhas de pagamento e os holerites já emitidos."
       }
     },
     "ClientBillingContract": {

@@ -5,23 +5,95 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { FileSpreadsheet } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { FileSpreadsheet, PowerOff } from "lucide-react";
+
+import { payrollAccessMode, type PayrollAccess } from "./access";
 
 import { Button } from "@/components/ui/button";
-import { Section } from "@/components/kit";
+import { InfoNote, Section, SkeletonCards } from "@/components/kit";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { faltaElModulo } from "@/lib/rostro";
+import { modulosAdicionalesService } from "@/lib/api/modulosAdicionalesService";
+import { ADDONS_CHANGED_EVENT } from "@/lib/addonRequired";
 import type {
   ConceptKind, ConceptMethod, ConceptBase, HoursOf, PayFrequency, DoubleShiftMode, Population,
 } from "@/lib/api/payrollSlipsService";
 
 export const MODULO = "payroll_slips";
 
-/** ¿La empresa tiene el módulo? Y, si una llamada dio 402, también «no». */
-export function useModuloRoles(error?: unknown): { tiene: boolean; sinModulo: boolean } {
-  const tiene = useEntitlement(MODULO);
+export type { PayrollAccess };
 
-  return { tiene, sinModulo: !tiene || faltaElModulo(error) };
+/**
+ * What the office may do with Payslips right now (see `access.ts`): full,
+ * read-only (owned but switched off: only what was issued), none or loading.
+ *
+ * The paused/owned state comes from the store list, under the SAME query key
+ * as `useTiendaDeModulos` (the sidebar and header already keep it warm, and
+ * `useAddonChangesLive` invalidates it on `addons:changed`), so this adds no
+ * request of its own in practice. The session's entitlement updates on that
+ * same event (`refreshProfile`).
+ *
+ * Call it BEFORE the page's queries: `full` enables the full-access endpoints,
+ * `canRead` the read-only ones (sheets, slips, documents). Once the queries
+ * answered, `resolve(gatedError, readError)` gives the final mode (a 402 on a
+ * full endpoint → ask the store; a 402 on a read-only endpoint → none).
+ */
+export function usePayrollAccess() {
+  const entitled = useEntitlement(MODULO);
+  const tenant = typeof window !== "undefined" ? localStorage.getItem("tenantId") : null;
+  const store = useQuery({
+    queryKey: ["modulos-adicionales", "tienda", tenant],
+    queryFn: () => modulosAdicionalesService.tienda(),
+    enabled: Boolean(tenant),
+    staleTime: 60_000,
+    retry: false,
+  });
+  const base = {
+    entitled,
+    store: store.data?.modules?.find((m) => m.key === MODULO) ?? null,
+    storeLoading: Boolean(tenant) && store.isLoading,
+  };
+  const mode = payrollAccessMode(base);
+  const qc = useQueryClient();
+
+  // Switched off/on while the screen is open: a remembered 402 (or a list
+  // filtered to the issued sheets) must not outlive the change.
+  useEffect(() => {
+    const onChange = () => void qc.invalidateQueries({ queryKey: ["payroll-slips"] });
+
+    window.addEventListener(ADDONS_CHANGED_EVENT, onChange);
+
+    return () => window.removeEventListener(ADDONS_CHANGED_EVENT, onChange);
+  }, [qc]);
+
+  return {
+    mode,
+    full: mode === "full",
+    readOnly: mode === "readOnly",
+    canRead: mode === "full" || mode === "readOnly",
+    resolve: (gatedError?: unknown, readError?: unknown): PayrollAccess =>
+      payrollAccessMode({ ...base, gatedRefused: faltaElModulo(gatedError), readRefused: faltaElModulo(readError) }),
+  };
+}
+
+/** The module is switched off: what still works and where to switch it back on. */
+export function AvisoSoloLectura() {
+  const { t } = useTranslation();
+
+  return (
+    <InfoNote icon={<PowerOff size={16} />} tone="warn">
+      <span>
+        {t(
+          "ui.RolesDePago.soloLectura.aviso",
+          "Roles de pago está apagado: puedes ver y descargar los roles ya emitidos. Para generar nuevos, enciéndelo en Módulos adicionales.",
+        )}{" "}
+        <Link className="font-medium underline underline-offset-2" to="/modulos-adicionales">
+          {t("ui.RolesDePago.soloLectura.enlace", "Ir a Módulos adicionales")}
+        </Link>
+      </span>
+    </InfoNote>
+  );
 }
 
 /** Centavos → «$1.500,00 ARS»; monedas sin decimales (CLP, COP) sin centavos. */
@@ -185,8 +257,32 @@ export function useEtiquetas() {
   return { kind, method, base, hours, frequency, doubleShift, population };
 }
 
-/** Sin el módulo: qué hace, en tres pasos, y dónde se consigue. */
-export function PresentacionDelModulo() {
+/**
+ * Sin el módulo: qué hace, en tres pasos, y dónde se consigue. With `modo`
+ * read-only (owned but switched off) a full-access screen shows the notice and
+ * the way to the issued sheets instead; while loading, a skeleton.
+ */
+export function PresentacionDelModulo({ modo }: { modo?: PayrollAccess } = {}) {
+  const { t } = useTranslation();
+
+  if (modo === "loading") return <SkeletonCards count={3} />;
+  if (modo === "readOnly") {
+    return (
+      <div className="space-y-4">
+        <AvisoSoloLectura />
+        <div className="cg-acciones justify-end">
+          <Button asChild variant="brand">
+            <Link to="/nomina/roles/planillas">{t("ui.RolesDePago.soloLectura.verPlanillas", "Ver las planillas emitidas")}</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return <Presentacion />;
+}
+
+function Presentacion() {
   const { t } = useTranslation();
   const pasos = [
     t("ui.RolesDePago.modulo.paso1", "Dices en qué país estás, el sueldo base de la empresa y cómo trabaja cada persona (sueldo propio, empleado o contratista)."),

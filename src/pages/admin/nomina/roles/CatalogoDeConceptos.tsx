@@ -17,7 +17,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, {
   type PayrollConcept, type ConceptKind, type ConceptMethod, type ConceptBase, type HoursOf,
 } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, nombreDeConcepto, dinero, aCentavos, deCentavos, useEtiquetas } from "./comun";
+import { PresentacionDelModulo, usePayrollAccess, nombreDeConcepto, dinero, aCentavos, deCentavos, useEtiquetas } from "./comun";
 
 const KINDS: ConceptKind[] = ["earning", "deduction", "employer", "info"];
 const METHODS: ConceptMethod[] = ["fixed", "percent", "hours", "days", "table", "manual"];
@@ -30,9 +30,11 @@ export default function CatalogoDeConceptos() {
   const etiquetas = useEtiquetas();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("payrollSlipEdit");
-  const conceptos = useQuery({ queryKey: ["payroll-slips", "concepts"], queryFn: () => payrollSlipsService.concepts(true), retry: false });
-  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false });
-  const { sinModulo } = useModuloRoles(conceptos.error);
+  const acceso = usePayrollAccess();
+  const conceptos = useQuery({ queryKey: ["payroll-slips", "concepts"], queryFn: () => payrollSlipsService.concepts(true), retry: false, enabled: acceso.full });
+  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false, enabled: acceso.full });
+  const modo = acceso.resolve(conceptos.error);
+  const sinModulo = modo !== "full";
   const [editando, setEditando] = useState<Partial<PayrollConcept> | null>(null);
   const [ocupado, setOcupado] = useState(false);
 
@@ -101,7 +103,7 @@ export default function CatalogoDeConceptos() {
           }
         />
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
         ) : conceptos.isLoading ? (
           <SkeletonCards count={3} />
         ) : !grupos.length ? (

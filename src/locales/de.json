@@ -17957,6 +17957,14 @@
         "cuotaEn": "Rate ({{moneda}})",
         "cuotaSugerida": "Leer = {{cuota}} pro Rate",
         "desde": "Erste Rate in der Lohnliste, die frühestens endet am"
+      },
+      "soloLectura": {
+        "aviso": "Lohnabrechnungen ist ausgeschaltet: Sie können die bereits ausgestellten Lohnabrechnungen ansehen und herunterladen. Um neue zu erstellen, schalten Sie es unter Zusatzmodule ein.",
+        "enlace": "Zu den Zusatzmodulen",
+        "verPlanillas": "Ausgestellte Lohnlisten ansehen",
+        "vacio": "Keine ausgestellten Lohnlisten",
+        "vacioDesc": "Solange Lohnabrechnungen ausgeschaltet ist, werden nur veröffentlichte Lohnlisten angezeigt.",
+        "noEmitida": "Nur bereits ausgestellte Lohnlisten und Lohnabrechnungen können angesehen werden."
       }
     },
     "ClientBillingContract": {

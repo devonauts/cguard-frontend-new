@@ -96,6 +96,11 @@ type SubMenuItem = {
   gusto?: boolean;
   /** Sólo si la empresa tiene este módulo de pago (Reconocimiento facial…). Falla cerrado. */
   modulo?: string;
+  /**
+   * Also offered while the company OWNS `modulo` but switched it off: the page
+   * stays read-only (e.g. Payslips › issued sheets, backend `requireModuloOrOwned`).
+   */
+  readableWhenPaused?: boolean;
   /** Backend permission ids the page needs (any one). See lib/menuPermissions. */
   permission?: string[];
 };
@@ -711,7 +716,12 @@ export default function Sidebar({
 
   // «Módulos adicionales» sólo aparece si esta empresa tiene tienda: algo a la
   // venta y la implementación pagada, o algo ya suyo. Ver `tiendaVisible`.
-  const { visible: hayTienda } = useTiendaDeModulos();
+  const { visible: hayTienda, data: tienda } = useTiendaDeModulos();
+  // One-time modules the company owns but switched off (read-only pages stay offered).
+  const pausedOwned = useMemo(
+    () => new Set((tienda?.modules ?? []).filter((m) => m.owned && m.paused).map((m) => m.key)),
+    [tienda],
+  );
   const agente = useAgente();
   // Nómina › Gusto: sólo empresas de EE. UU. con la integración disponible.
   const { disponible: hayGusto } = useGusto();
@@ -752,7 +762,9 @@ export default function Sidebar({
               subItems: item.subItems.filter(
                 (s) =>
                   (!s.gusto || hayGusto) &&
-                  (!s.modulo || hasFeature(user, s.modulo)) &&
+                  (!s.modulo ||
+                    hasFeature(user, s.modulo) ||
+                    (s.readableWhenPaused && pausedOwned.has(s.modulo))) &&
                   allowed(s),
               ),
             }
@@ -760,7 +772,7 @@ export default function Sidebar({
       )
       // A group whose every page was filtered out is not offered empty.
       .filter((item) => !item.expandable || (item.subItems?.length ?? 0) > 0);
-  }, [menuItems, user, isGlobalAdmin, hayTienda, hayGusto, hasAny]);
+  }, [menuItems, user, isGlobalAdmin, hayTienda, hayGusto, hasAny, pausedOwned]);
 
   // Etiquetas i18n — mismo orden de resolución que la versión anterior.
   // `agente`: el nombre del asistente de ESTA empresa («VigIA» o el del socio);

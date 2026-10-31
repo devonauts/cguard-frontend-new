@@ -11,15 +11,17 @@ import AppLayout from "@/layouts/app-layout";
 import { PageContainer, PageHeader, SkeletonCards } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles } from "./comun";
+import { PresentacionDelModulo, usePayrollAccess } from "./comun";
 import { TablaDePerfiles } from "./TablaDePerfiles";
 
 export default function PerfilesDePago() {
   const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("payrollProfileEdit");
-  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false });
-  const { sinModulo } = useModuloRoles(vista.error);
+  const acceso = usePayrollAccess();
+  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false, enabled: acceso.full });
+  const modo = acceso.resolve(vista.error);
+  const sinModulo = modo !== "full";
 
   return (
     <AppLayout>
@@ -30,7 +32,7 @@ export default function PerfilesDePago() {
           subtitle={t("ui.RolesDePago.perfiles.subtitulo", "Sueldo, vínculo y datos legales de cada persona. Quien no tenga sueldo propio cobra el sueldo base de la empresa.")}
         />
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
         ) : vista.isLoading || !vista.data ? (
           <SkeletonCards count={3} />
         ) : (

@@ -17422,6 +17422,14 @@
         "cuotaEn": "Installment ({{moneda}})",
         "cuotaSugerida": "Empty = {{cuota}} per installment",
         "desde": "First installment in the payroll sheet ending on or after"
+      },
+      "soloLectura": {
+        "aviso": "Payslips is switched off: you can view and download the payslips already issued. To generate new ones, switch it on in Add-on modules.",
+        "enlace": "Go to Add-on modules",
+        "verPlanillas": "View issued payroll sheets",
+        "vacio": "No issued payroll sheets",
+        "vacioDesc": "While Payslips is switched off, only published payroll sheets are shown.",
+        "noEmitida": "Only payroll sheets and payslips already issued can be viewed."
       }
     },
     "ClientBillingContract": {

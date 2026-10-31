@@ -15,17 +15,26 @@ import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, InfoNote, Modal, FormField, FIELD_CLS, Field } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type SlipLine, type ConceptKind } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, dinero, MoneyInput } from "./comun";
+import { AvisoSoloLectura, PresentacionDelModulo, usePayrollAccess, dinero, MoneyInput } from "./comun";
 
 export default function RolIndividual() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
   const qc = useQueryClient();
   const { hasPermission } = usePermissions();
-  const canEdit = hasPermission("payrollSlipEdit");
   const [editando, setEditando] = useState<Partial<SlipLine> | null>(null);
-  const datos = useQuery({ queryKey: ["payroll-slips", "slip", id], queryFn: () => payrollSlipsService.slip(id), retry: false, enabled: Boolean(id) });
-  const { sinModulo } = useModuloRoles(datos.error);
+  // Switched off (read-only): the slip opens only if it was issued, with its PDF; no line edits.
+  const acceso = usePayrollAccess();
+  const datos = useQuery({
+    queryKey: acceso.readOnly ? ["payroll-slips", "slip", id, "issued"] : ["payroll-slips", "slip", id],
+    queryFn: () => payrollSlipsService.slip(id),
+    retry: false,
+    enabled: Boolean(id) && acceso.canRead,
+  });
+  const modo = acceso.resolve(undefined, datos.error);
+  const soloLectura = modo === "readOnly";
+  const sinModulo = modo !== "full" && !soloLectura;
+  const canEdit = modo === "full" && hasPermission("payrollSlipEdit");
   const slip = datos.data?.slip;
   const run = datos.data?.run;
   const cur = run?.currency || "USD";
@@ -103,8 +112,15 @@ export default function RolIndividual() {
             </div>
           ) : undefined}
         />
+        {soloLectura && (
+          <div className="mb-4">
+            <AvisoSoloLectura />
+          </div>
+        )}
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
+        ) : soloLectura && datos.isError ? (
+          <InfoNote tone="neutral">{t("ui.RolesDePago.soloLectura.noEmitida", "Solo se pueden ver las planillas y los roles ya emitidos.")}</InfoNote>
         ) : datos.isLoading || !slip ? (
           <SkeletonCards count={3} />
         ) : (
@@ -140,7 +156,7 @@ export default function RolIndividual() {
             {bloque("info").length > 0 && <Tabla titulo={t("ui.RolesDePago.rol.informativos", "Informativos")} filas={bloque("info")} total={bloque("info").reduce((s, l) => s + Number(l.amountCents), 0)} />}
           </div>
         )}
-        {editando && slip && (
+        {editando && canEdit && slip && (
           <LineaForm inicial={editando} moneda={cur} decimals={decimals} slipId={slip.id} onClose={() => setEditando(null)} onSaved={async () => { setEditando(null); await qc.invalidateQueries({ queryKey: ["payroll-slips"] }); }} />
         )}
       </PageContainer>

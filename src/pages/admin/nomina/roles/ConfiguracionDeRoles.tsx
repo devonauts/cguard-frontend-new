@@ -16,7 +16,7 @@ import { Section, FadeIn, SkeletonCards, InfoNote, FormField, FIELD_CLS } from "
 import { SaveBar } from "@/pages/admin/Configuration/components/SettingsForm";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type SlipSettings, type PayFrequency, type DoubleShiftMode, type TaxBracket } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, nombreDePais, dinero, useEtiquetas, MoneyInput } from "./comun";
+import { PresentacionDelModulo, usePayrollAccess, nombreDePais, dinero, useEtiquetas, MoneyInput } from "./comun";
 
 export default function ConfiguracionDeRoles() {
   const { t, i18n } = useTranslation();
@@ -24,8 +24,10 @@ export default function ConfiguracionDeRoles() {
   const etiquetas = useEtiquetas();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("payrollSlipEdit");
-  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false });
-  const { sinModulo } = useModuloRoles(vista.error);
+  const acceso = usePayrollAccess();
+  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false, enabled: acceso.full });
+  const modo = acceso.resolve(vista.error);
+  const sinModulo = modo !== "full";
   const [s, setS] = useState<SlipSettings | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -73,7 +75,7 @@ export default function ConfiguracionDeRoles() {
     <AppLayout>
       <SettingsLayout navKey="configuracion" title={t("ui.RolesDePago.config.titulo", "Roles de pago")}>
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
         ) : vista.isLoading || !s ? (
           <SkeletonCards count={4} />
         ) : (

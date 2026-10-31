@@ -17957,6 +17957,14 @@
         "cuotaEn": "Termijn ({{moneda}})",
         "cuotaSugerida": "Leeg = {{cuota}} per termijn",
         "desde": "Eerste termijn in de loonlijst die eindigt vanaf"
+      },
+      "soloLectura": {
+        "aviso": "Loonstroken staat uit: je kunt de al uitgegeven loonstroken bekijken en downloaden. Zet het aan in Extra modules om nieuwe te maken.",
+        "enlace": "Naar Extra modules",
+        "verPlanillas": "Uitgegeven loonlijsten bekijken",
+        "vacio": "Geen uitgegeven loonlijsten",
+        "vacioDesc": "Zolang Loonstroken uit staat, worden alleen gepubliceerde loonlijsten getoond.",
+        "noEmitida": "Alleen al uitgegeven loonlijsten en loonstroken kunnen worden bekeken."
       }
     },
     "ClientBillingContract": {

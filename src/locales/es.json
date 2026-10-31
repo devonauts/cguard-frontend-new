@@ -17422,6 +17422,14 @@
         "cuotaEn": "Cuota ({{moneda}})",
         "cuotaSugerida": "Vacío = {{cuota}} por cuota",
         "desde": "Primera cuota en la planilla que termine desde"
+      },
+      "soloLectura": {
+        "aviso": "Roles de pago está apagado: puedes ver y descargar los roles ya emitidos. Para generar nuevos, enciéndelo en Módulos adicionales.",
+        "enlace": "Ir a Módulos adicionales",
+        "verPlanillas": "Ver las planillas emitidas",
+        "vacio": "No hay planillas emitidas",
+        "vacioDesc": "Mientras Roles de pago esté apagado solo se muestran las planillas publicadas.",
+        "noEmitida": "Solo se pueden ver las planillas y los roles ya emitidos."
       }
     },
     "ClientBillingContract": {

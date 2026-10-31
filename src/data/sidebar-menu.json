@@ -502,6 +502,7 @@
         "name": "Planillas de pago",
         "path": "/nomina/roles/planillas",
         "modulo": "payroll_slips",
+        "readableWhenPaused": true,
         "permission": [
           "payrollSlipRead"
         ]

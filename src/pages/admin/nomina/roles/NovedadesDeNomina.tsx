@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section, SkeletonCards, EmptyState, Modal, FormField, FIELD_CLS, StatusBadge, TabNav } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type PayrollAdjustment, type PayrollLoan, type AdjustmentKind, type PersonWithProfile, type PayrollConcept } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, dinero, nombreDeConcepto, MoneyInput } from "./comun";
+import { PresentacionDelModulo, usePayrollAccess, dinero, nombreDeConcepto, MoneyInput } from "./comun";
 
 type Pestana = "novedades" | "prestamos";
 const KINDS: AdjustmentKind[] = ["bonus", "fine", "advance", "deduction", "refund", "custom"];
@@ -30,12 +30,14 @@ export default function NovedadesDeNomina() {
   const [nueva, setNueva] = useState(false);
   const [nuevoPrestamo, setNuevoPrestamo] = useState(false);
 
-  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false });
-  const novedades = useQuery({ queryKey: ["payroll-slips", "adjustments"], queryFn: () => payrollSlipsService.adjustments(), retry: false });
-  const prestamos = useQuery({ queryKey: ["payroll-slips", "loans"], queryFn: () => payrollSlipsService.loans(), retry: false });
-  const personas = useQuery({ queryKey: ["payroll-slips", "people"], queryFn: () => payrollSlipsService.people(), staleTime: 60_000 });
-  const conceptos = useQuery({ queryKey: ["payroll-slips", "concepts"], queryFn: () => payrollSlipsService.concepts(false), staleTime: 60_000 });
-  const { sinModulo } = useModuloRoles(vista.error);
+  const acceso = usePayrollAccess();
+  const vista = useQuery({ queryKey: ["payroll-slips", "settings"], queryFn: () => payrollSlipsService.settings(), retry: false, enabled: acceso.full });
+  const novedades = useQuery({ queryKey: ["payroll-slips", "adjustments"], queryFn: () => payrollSlipsService.adjustments(), retry: false, enabled: acceso.full });
+  const prestamos = useQuery({ queryKey: ["payroll-slips", "loans"], queryFn: () => payrollSlipsService.loans(), retry: false, enabled: acceso.full });
+  const personas = useQuery({ queryKey: ["payroll-slips", "people"], queryFn: () => payrollSlipsService.people(), staleTime: 60_000, enabled: acceso.full });
+  const conceptos = useQuery({ queryKey: ["payroll-slips", "concepts"], queryFn: () => payrollSlipsService.concepts(false), staleTime: 60_000, enabled: acceso.full });
+  const modo = acceso.resolve(vista.error);
+  const sinModulo = modo !== "full";
 
   const settings = vista.data?.settings;
   const moneda = settings?.currency || "USD";
@@ -94,7 +96,7 @@ export default function NovedadesDeNomina() {
           }
         />
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
         ) : (
           <div className="space-y-4">
             <TabNav

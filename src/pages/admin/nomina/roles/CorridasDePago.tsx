@@ -10,8 +10,9 @@ import { toast } from "sonner";
 import { FileSpreadsheet, Plus } from "lucide-react";
 
 import {
+  AvisoSoloLectura,
   PresentacionDelModulo,
-  useModuloRoles,
+  usePayrollAccess,
   dinero,
   useEtiquetas,
 } from "./comun";
@@ -72,30 +73,41 @@ export default function CorridasDePago() {
   const [nueva, setNueva] = useState(false);
   // Sucursales (vista global): de quién es cada planilla.
   const etiquetasSuc = useEtiquetasDeSucursal();
+  // Switched off (read-only): only the issued sheets, and no /settings call.
+  const acceso = usePayrollAccess();
   const vista = useQuery({
     queryKey: ["payroll-slips", "settings"],
     queryFn: () => payrollSlipsService.settings(),
     retry: false,
+    enabled: acceso.full,
   });
   const corridas = useQuery({
-    queryKey: ["payroll-slips", "runs"],
+    // Read-only answers only published sheets: never mix them with the full list.
+    queryKey: acceso.readOnly
+      ? ["payroll-slips", "runs", "issued"]
+      : ["payroll-slips", "runs"],
     queryFn: () => payrollSlipsService.runs(),
     retry: false,
+    enabled: acceso.canRead,
     refetchInterval: (q) =>
       (q.state.data?.rows ?? []).some((r) => r.status === "generating")
         ? 4000
         : false,
   });
-  const { sinModulo } = useModuloRoles(vista.error);
+  const modo = acceso.resolve(vista.error, corridas.error);
+  const sinModulo = modo !== "full" && modo !== "readOnly";
+  const soloLectura = modo === "readOnly";
+  const puedeCrear = modo === "full" && canEdit;
   const estado = useEstadoDeCorrida();
-  const decimals = vista.data?.settings.decimals ?? 2;
+  const decimalsOf = (r: PayrollRun) =>
+    vista.data?.settings.decimals ?? r.settingsSnapshot?.decimals ?? 2;
 
   return (
     <AppLayout>
       <PageContainer>
         <PageHeader
           actions={
-            !sinModulo && canEdit ? (
+            puedeCrear ? (
               <Button variant="brand" onClick={() => setNueva(true)}>
                 <Plus size={14} />{" "}
                 {t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}
@@ -109,28 +121,44 @@ export default function CorridasDePago() {
           )}
           title={t("ui.RolesDePago.corridas.titulo", "Planillas de pago")}
         />
+        {soloLectura && (
+          <div className="mb-4">
+            <AvisoSoloLectura />
+          </div>
+        )}
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
         ) : corridas.isLoading ? (
           <SkeletonCards count={3} />
         ) : !(corridas.data?.rows ?? []).length ? (
           <EmptyState
             action={
-              canEdit ? (
+              puedeCrear ? (
                 <Button variant="brand" onClick={() => setNueva(true)}>
                   {t("ui.RolesDePago.corridas.nueva", "Nueva planilla")}
                 </Button>
               ) : undefined
             }
-            description={t(
-              "ui.RolesDePago.corridas.vacioDesc",
-              "Crea la primera eligiendo el día en que empieza el periodo.",
-            )}
+            description={
+              soloLectura
+                ? t(
+                    "ui.RolesDePago.soloLectura.vacioDesc",
+                    "Mientras Roles de pago esté apagado solo se muestran las planillas publicadas.",
+                  )
+                : t(
+                    "ui.RolesDePago.corridas.vacioDesc",
+                    "Crea la primera eligiendo el día en que empieza el periodo.",
+                  )
+            }
             icon={<FileSpreadsheet />}
-            title={t(
-              "ui.RolesDePago.corridas.vacio",
-              "Todavía no hay planillas",
-            )}
+            title={
+              soloLectura
+                ? t(
+                    "ui.RolesDePago.soloLectura.vacio",
+                    "No hay planillas emitidas",
+                  )
+                : t("ui.RolesDePago.corridas.vacio", "Todavía no hay planillas")
+            }
           />
         ) : (
           <Section>
@@ -174,7 +202,7 @@ export default function CorridasDePago() {
                             neto: dinero(
                               r.totals.net || 0,
                               r.currency,
-                              decimals,
+                              decimalsOf(r),
                             ),
                           },
                         )
@@ -187,7 +215,7 @@ export default function CorridasDePago() {
             </div>
           </Section>
         )}
-        {nueva && vista.data && (
+        {nueva && puedeCrear && vista.data && (
           <NuevaCorrida
             frequency={vista.data.settings.frequency}
             onClose={() => setNueva(false)}

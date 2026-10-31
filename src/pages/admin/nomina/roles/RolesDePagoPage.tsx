@@ -9,7 +9,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Building2, CheckCircle2, FileSpreadsheet, Globe2, ListChecks, Settings2, Users } from "lucide-react";
 
@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section, SkeletonCards, InfoNote, StatCard, FormField, FIELD_CLS, ListRow, StatusBadge } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type SlipSettings, type PayFrequency, type DoubleShiftMode } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, nombreDePais, nombreDeConcepto, dinero, useEtiquetas, MoneyInput } from "./comun";
+import { PresentacionDelModulo, usePayrollAccess, nombreDePais, nombreDeConcepto, dinero, useEtiquetas, MoneyInput } from "./comun";
 import { TablaDePerfiles } from "./TablaDePerfiles";
 import { NuevaCorrida, useEstadoDeCorrida } from "./CorridasDePago";
 
@@ -29,12 +29,19 @@ export default function RolesDePagoPage() {
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("payrollSlipEdit");
 
+  const acceso = usePayrollAccess();
   const setup = useQuery({
     queryKey: ["payroll-slips", "setup"],
     queryFn: () => payrollSlipsService.setup(),
     retry: false,
+    // /setup is full-access only: switched off, the module is read-only.
+    enabled: acceso.full,
   });
-  const { sinModulo } = useModuloRoles(setup.error);
+  const modo = acceso.resolve(setup.error);
+  const sinModulo = modo !== "full";
+
+  // Owned but switched off: the issued sheets are all there is to see.
+  if (modo === "readOnly") return <Navigate replace to="/nomina/roles/planillas" />;
 
   return (
     <AppLayout>
@@ -45,7 +52,7 @@ export default function RolesDePagoPage() {
           subtitle={t("ui.RolesDePago.subtitulo", "La planilla de cada periodo y el rol de cada trabajador, con las reglas de tu país ajustadas a tu empresa.")}
         />
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
         ) : setup.isLoading || !setup.data ? (
           <SkeletonCards count={3} />
         ) : !setup.data.setupDone ? (

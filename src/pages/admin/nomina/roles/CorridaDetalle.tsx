@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section, SkeletonCards, StatusBadge, StatCard, InfoNote, Modal, FormField, FIELD_CLS } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type PayrollSlipRow } from "@/lib/api/payrollSlipsService";
-import { PresentacionDelModulo, useModuloRoles, dinero, useEtiquetas } from "./comun";
+import { AvisoSoloLectura, PresentacionDelModulo, usePayrollAccess, dinero, useEtiquetas } from "./comun";
 import { useEstadoDeCorrida } from "./CorridasDePago";
 
 export default function CorridaDetalle() {
@@ -31,14 +31,19 @@ export default function CorridaDetalle() {
   const [anular, setAnular] = useState(false);
   const [motivo, setMotivo] = useState("");
 
+  // Switched off (read-only): the sheet opens only if it was published; no edits.
+  const acceso = usePayrollAccess();
   const datos = useQuery({
-    queryKey: ["payroll-slips", "run", id],
+    queryKey: acceso.readOnly ? ["payroll-slips", "run", id, "issued"] : ["payroll-slips", "run", id],
     queryFn: () => payrollSlipsService.run(id),
     retry: false,
-    enabled: Boolean(id),
+    enabled: Boolean(id) && acceso.canRead,
     refetchInterval: (q) => (q.state.data?.run.status === "generating" ? 3000 : false),
   });
-  const { sinModulo } = useModuloRoles(datos.error);
+  const modo = acceso.resolve(undefined, datos.error);
+  const soloLectura = modo === "readOnly";
+  const sinModulo = modo !== "full" && !soloLectura;
+  const completo = modo === "full";
   const run = datos.data?.run;
   const slips = datos.data?.slips ?? [];
   const decimals = run?.settingsSnapshot?.decimals ?? 2;
@@ -85,17 +90,24 @@ export default function CorridaDetalle() {
           actions={
             run && !sinModulo ? (
               <div className="cg-acciones">
-                {run.status === "review" && canEdit && <Button disabled={!!ocupado} variant="outline" onClick={() => accion("recompute", () => payrollSlipsService.recompute(run.id), t("ui.RolesDePago.corridas.recalculada", "Planilla recalculada"))}><RefreshCw size={14} /> {t("ui.RolesDePago.corridas.recalcular", "Recalcular")}</Button>}
+                {completo && run.status === "review" && canEdit && <Button disabled={!!ocupado} variant="outline" onClick={() => accion("recompute", () => payrollSlipsService.recompute(run.id), t("ui.RolesDePago.corridas.recalculada", "Planilla recalculada"))}><RefreshCw size={14} /> {t("ui.RolesDePago.corridas.recalcular", "Recalcular")}</Button>}
                 {["review", "published"].includes(run.status) && <Button disabled={!!ocupado} variant="outline" onClick={() => accion("xlsx", () => payrollSlipsService.downloadSheet(run, "xlsx"), "")}><Download size={14} /> Excel</Button>}
                 {["review", "published"].includes(run.status) && <Button disabled={!!ocupado} variant="outline" onClick={() => accion("pdf", () => payrollSlipsService.downloadSheet(run, "pdf"), "")}><Download size={14} /> PDF</Button>}
-                {["review", "published", "error"].includes(run.status) && canPublish && <Button disabled={!!ocupado} variant="ghost" onClick={() => setAnular(true)}>{t("ui.RolesDePago.corridas.anular", "Anular")}</Button>}
-                {run.status === "review" && canPublish && <Button disabled={!!ocupado || !slips.length || enNegativo > 0} variant="brand" onClick={() => accion("publish", () => payrollSlipsService.publish(run.id), t("ui.RolesDePago.corridas.publicada", "Planilla publicada: los roles ya tienen número"))}>{t("ui.RolesDePago.corridas.publicar", "Publicar")}</Button>}
+                {completo && ["review", "published", "error"].includes(run.status) && canPublish && <Button disabled={!!ocupado} variant="ghost" onClick={() => setAnular(true)}>{t("ui.RolesDePago.corridas.anular", "Anular")}</Button>}
+                {completo && run.status === "review" && canPublish && <Button disabled={!!ocupado || !slips.length || enNegativo > 0} variant="brand" onClick={() => accion("publish", () => payrollSlipsService.publish(run.id), t("ui.RolesDePago.corridas.publicada", "Planilla publicada: los roles ya tienen número"))}>{t("ui.RolesDePago.corridas.publicar", "Publicar")}</Button>}
               </div>
             ) : undefined
           }
         />
+        {soloLectura && (
+          <div className="mb-4">
+            <AvisoSoloLectura />
+          </div>
+        )}
         {sinModulo ? (
-          <PresentacionDelModulo />
+          <PresentacionDelModulo modo={modo} />
+        ) : soloLectura && datos.isError ? (
+          <InfoNote tone="neutral">{t("ui.RolesDePago.soloLectura.noEmitida", "Solo se pueden ver las planillas y los roles ya emitidos.")}</InfoNote>
         ) : datos.isLoading || !run ? (
           <SkeletonCards count={3} />
         ) : (
@@ -185,7 +197,7 @@ export default function CorridaDetalle() {
             )}
           </div>
         )}
-        {anular && run && (
+        {anular && completo && run && (
           <Modal open size="sm" title={t("ui.RolesDePago.corridas.anularTitulo", "Anular la planilla {{n}}", { n: run.number })} description={run.status === "published" ? t("ui.RolesDePago.corridas.anularDesc", "Los roles quedan marcados como anulados, las novedades vuelven a estar pendientes y las cuotas de préstamo se devuelven. Hace falta un motivo.") : t("ui.RolesDePago.corridas.anularBorrador", "Se descarta el borrador.")} onOpenChange={(o) => { if (!o) setAnular(false); }}
             footer={<div className="cg-acciones justify-end"><Button variant="outline" onClick={() => setAnular(false)}>{t("ui.RolesDePago.cancelar", "Cancelar")}</Button><Button disabled={run.status === "published" && !motivo.trim()} variant="brand" onClick={() => { setAnular(false); accion("void", () => payrollSlipsService.void(run.id, motivo), t("ui.RolesDePago.corridas.anuladaOk", "Planilla anulada")); }}>{t("ui.RolesDePago.corridas.anular", "Anular")}</Button></div>}
           >

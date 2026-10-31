@@ -17957,6 +17957,14 @@
         "cuotaEn": "Échéance ({{moneda}})",
         "cuotaSugerida": "Vide = {{cuota}} par échéance",
         "desde": "Première échéance sur la feuille de paie se terminant à partir du"
+      },
+      "soloLectura": {
+        "aviso": "Bulletins de paie est désactivé : vous pouvez consulter et télécharger les bulletins déjà émis. Pour en générer de nouveaux, activez-le dans Modules complémentaires.",
+        "enlace": "Aller aux Modules complémentaires",
+        "verPlanillas": "Voir les feuilles de paie émises",
+        "vacio": "Aucune feuille de paie émise",
+        "vacioDesc": "Tant que Bulletins de paie est désactivé, seules les feuilles de paie publiées s’affichent.",
+        "noEmitida": "Seules les feuilles de paie et les bulletins déjà émis peuvent être consultés."
       }
     },
     "ClientBillingContract": {
