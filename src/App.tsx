@@ -236,6 +236,10 @@ const SupervisorsPage = lazy(
 const NewSupervisorPage = lazy(
   () => import("./pages/admin/supervisors/NewSupervisorPage"),
 );
+// «Agregar persona»: one flow for guards, supervisors and office staff, with their schedule.
+const AgregarPersonaPage = lazy(
+  () => import("./pages/admin/personal/AgregarPersonaPage"),
+);
 const SupervisorDetailPage = lazy(
   () => import("./pages/admin/supervisors/SupervisorDetailPage"),
 );
@@ -1977,6 +1981,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/supervisors/new"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <AgregarPersonaPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/personal/nueva"
                               />
                               <Route
                                 element={

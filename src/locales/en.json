@@ -21977,5 +21977,144 @@
     "vigia": {
       "masAjustes": "More double shift settings"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Add person",
+    "subtitulo": "Guards, supervisors and office staff, with their schedule. Nothing is saved until you tap «Create».",
+    "pasos": {
+      "aria": "Steps",
+      "queHace": "What do they do?",
+      "quienEs": "Who are they?",
+      "dondeYCuando": "Where and when do they work?",
+      "revisa": "Review and create"
+    },
+    "tipo": {
+      "vigilante": "Security guard",
+      "supervisor": "Supervisor",
+      "oficina": "Office staff",
+      "vigilanteTexto": "Covers a post at a station. Their schedule comes from the post’s rotation.",
+      "supervisorTexto": "Patrols and supervises several stations. Their schedule comes from their supervision post.",
+      "oficinaTexto": "Administration, dispatch, HR. Has a weekly schedule and clocks in on the web time clock."
+    },
+    "paso2": {
+      "vasAAgregar": "You are adding: {{tipo}}.",
+      "cambiarTipo": "Change"
+    },
+    "campos": {
+      "nombres": "First names",
+      "nombresEj": "E.g. Carlos Andrés",
+      "apellidos": "Last names",
+      "apellidosEj": "E.g. Ruiz Mora",
+      "documento": "ID number",
+      "documentoAyuda": "National ID, passport… Optional: you can add it later.",
+      "celular": "Mobile",
+      "celularAyuda": "If they have no e-mail, with their mobile we give you the link for WhatsApp.",
+      "correo": "E-mail",
+      "correoAyuda": "The invitation to create their password goes here.",
+      "sinCorreo": "No e-mail (signs in with a username)",
+      "usuario": "Username",
+      "usuarioAyuda": "Optional. If you leave it empty, the system picks one.",
+      "rol": "What can they do? (role)",
+      "rolElige": "Choose their role",
+      "queVe": "What can they see?",
+      "rolVeTodo": "This role sees the whole operation by definition: it cannot be narrowed.",
+      "soloSedes": "Only some sites"
+    },
+    "paso3": {
+      "vigilanteIntro": "Choose the post they will cover. Their schedule is that post’s rotation: no need to build it by hand.",
+      "supervisorIntro": "Choose their supervision post. Their schedule is that post’s hours and rotation.",
+      "recargar": "Reload",
+      "cargando": "Loading posts…",
+      "sinPuestos": "No posts yet",
+      "sinPuestosTexto": "Create the station with its posts first and come back, or tap «I’ll do it later».",
+      "crearEstacion": "Create a station",
+      "crearPuesto": "Create a supervision post",
+      "sinPuestosSup": "No supervision posts yet",
+      "sinPuestosSupTexto": "Create one with «Create a supervision post», tap «Reload», or leave the schedule for later.",
+      "puestoSinRotacion": "This post has no rotation. Check it in Supervision posts so the schedule comes out right.",
+      "desde": "Starts on",
+      "desdeOficina": "This schedule starts on",
+      "despuesTitulo": "You’ll set the schedule later",
+      "despuesTexto": "When you finish we tell you where to do it. They already show in Shifts › Schedule even before accepting the invitation.",
+      "mejorAhora": "Set it now instead",
+      "eligePlaza": "Choose a post or tap «I’ll do it later»",
+      "eligePuesto": "Choose a supervision post or tap «I’ll do it later»",
+      "revisaJornada": "Check the hours marked in red",
+      "ningunDia": "Tick at least one day, or tap «I’ll do it later»."
+    },
+    "oficina": {
+      "titulo": "Their office (optional)",
+      "texto": "If you set it, the time clock checks they clock in from their office.",
+      "direccion": "Address",
+      "direccionEj": "120 Main St, Downtown",
+      "usarMiUbicacion": "Use my current location",
+      "radio": "Radius (meters)",
+      "ubicada": "Location: {{lat}}, {{lng}}",
+      "quitar": "Remove",
+      "sinGps": "This browser does not give the location",
+      "gpsNegado": "The location could not be read. Check the browser permission."
+    },
+    "resumen": {
+      "quien": "Who",
+      "horario": "Schedule",
+      "acceso": "Their access",
+      "desde": "From {{fecha}}",
+      "horarioDespues": "You’ll set it later",
+      "accesoCorreo": "An e-mail goes to {{correo}} to create their password",
+      "accesoCelular": "We give you their username and a link to send by WhatsApp",
+      "accesoUsuario": "We give you their username and a link to share in person"
+    },
+    "botones": {
+      "cancelar": "Cancel",
+      "atras": "Back",
+      "siguiente": "Next",
+      "despues": "I’ll do it later",
+      "crear": "Create and give access"
+    },
+    "perfilCompleto": "Need the full profile or to import a CV?",
+    "perfilCompletoLink": "Create full profile",
+    "listo": {
+      "toast": "{{nombre}} is now in the system",
+      "titulo": "Done: {{nombre}} is now in the system",
+      "horarioDespues": "No schedule yet",
+      "horarioFallo": "Could not be saved",
+      "usuario": "Username:",
+      "enlacePrivado": "The link is only for this person: with it they set their account password. Don’t post it in groups.",
+      "correoEnviado": "We sent an e-mail to {{correo}} so they can create their password.",
+      "accesoEnFicha": "Their access is on their profile («Resend invitation»).",
+      "faltaHorario": "Their schedule is missing",
+      "faltaHorarioFallo": "The person was created, but their schedule was not saved",
+      "ponerHorario": "Set their schedule",
+      "faltaOficina": "Their office was not saved",
+      "faltaOficinaTexto": "Add it from their profile › Office location.",
+      "verFicha": "View profile",
+      "otra": "Add another person"
+    },
+    "errores": {
+      "requerido": "This is required",
+      "correoInvalido": "Check the e-mail: it should look like name@company.com",
+      "celularInvalido": "Check the mobile number: it needs at least 7 digits",
+      "sedesVacias": "Choose at least one site, or «Whole operation»",
+      "fecha": "Check the date",
+      "cargarRoles": "Roles could not be loaded",
+      "cargarPuestos": "Posts could not be loaded",
+      "crear": "The person could not be created",
+      "sinId": "We could not find the person just created",
+      "horario": "The schedule could not be saved",
+      "ubicacion": "The office could not be saved"
+    },
+    "rotacion": {
+      "sinRotacion": "No rotation set",
+      "secuencia": "Sequence {{nombre}}",
+      "dias_one": "{{count}} day",
+      "dias_other": "{{count}} days",
+      "noches_one": "{{count}} night",
+      "noches_other": "{{count}} nights",
+      "libres_one": "{{count}} off",
+      "libres_other": "{{count}} off"
+    },
+    "semana": {
+      "almuerzo": "lunch {{desde}}–{{hasta}}"
+    }
   }
 }

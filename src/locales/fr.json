@@ -21977,5 +21977,144 @@
     "vigia": {
       "masAjustes": "Plus de paramètres des doubles quarts"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Ajouter une personne",
+    "subtitulo": "Agents, superviseurs et personnel de bureau, avec leur horaire. Rien n’est enregistré tant que vous n’appuyez pas sur « Créer ».",
+    "pasos": {
+      "aria": "Étapes",
+      "queHace": "Que fait-elle ?",
+      "quienEs": "Qui est-ce ?",
+      "dondeYCuando": "Où et quand travaille-t-elle ?",
+      "revisa": "Vérifier et créer"
+    },
+    "tipo": {
+      "vigilante": "Agent de sécurité",
+      "supervisor": "Superviseur",
+      "oficina": "Personnel de bureau",
+      "vigilanteTexto": "Couvre un poste sur un site. Son horaire vient de la rotation du poste.",
+      "supervisorTexto": "Parcourt et supervise plusieurs sites. Son horaire vient de son poste de supervision.",
+      "oficinaTexto": "Administration, dispatch, RH. A un horaire hebdomadaire et pointe sur la pointeuse web."
+    },
+    "paso2": {
+      "vasAAgregar": "Vous ajoutez : {{tipo}}.",
+      "cambiarTipo": "Modifier"
+    },
+    "campos": {
+      "nombres": "Prénoms",
+      "nombresEj": "Ex. Carlos André",
+      "apellidos": "Noms",
+      "apellidosEj": "Ex. Ruiz Mora",
+      "documento": "Numéro d’identité",
+      "documentoAyuda": "Carte d’identité, passeport… Facultatif : vous pourrez l’ajouter plus tard.",
+      "celular": "Portable",
+      "celularAyuda": "S’il n’a pas d’e-mail, avec son portable nous vous donnons le lien pour WhatsApp.",
+      "correo": "E-mail",
+      "correoAyuda": "L’invitation pour créer son mot de passe arrive ici.",
+      "sinCorreo": "Pas d’e-mail (se connecte avec un identifiant)",
+      "usuario": "Identifiant",
+      "usuarioAyuda": "Facultatif. Si vous le laissez vide, le système en choisit un.",
+      "rol": "Que peut-elle faire ? (rôle)",
+      "rolElige": "Choisissez son rôle",
+      "queVe": "Que peut-elle voir ?",
+      "rolVeTodo": "Ce rôle voit toute l’activité par définition : impossible de la restreindre.",
+      "soloSedes": "Seulement certains sites"
+    },
+    "paso3": {
+      "vigilanteIntro": "Choisissez le poste qu’il couvrira. Son horaire est la rotation de ce poste : rien à construire à la main.",
+      "supervisorIntro": "Choisissez son poste de supervision. Son horaire, ce sont les heures et la rotation de ce poste.",
+      "recargar": "Recharger",
+      "cargando": "Chargement des postes…",
+      "sinPuestos": "Pas encore de postes",
+      "sinPuestosTexto": "Créez d’abord le site avec ses postes puis revenez, ou appuyez sur « Plus tard ».",
+      "crearEstacion": "Créer un site",
+      "crearPuesto": "Créer un poste de supervision",
+      "sinPuestosSup": "Pas encore de postes de supervision",
+      "sinPuestosSupTexto": "Créez-en un avec « Créer un poste de supervision », appuyez sur « Recharger », ou laissez l’horaire pour plus tard.",
+      "puestoSinRotacion": "Ce poste n’a pas de rotation. Vérifiez-le dans Postes de supervision pour que l’horaire soit juste.",
+      "desde": "Commence le",
+      "desdeOficina": "Cet horaire commence le",
+      "despuesTitulo": "Vous définirez l’horaire plus tard",
+      "despuesTexto": "À la fin, nous vous indiquons où le faire. La personne apparaît déjà dans Services › Planning, même avant d’accepter l’invitation.",
+      "mejorAhora": "Le faire maintenant",
+      "eligePlaza": "Choisissez un poste ou appuyez sur « Plus tard »",
+      "eligePuesto": "Choisissez un poste de supervision ou appuyez sur « Plus tard »",
+      "revisaJornada": "Vérifiez les heures en rouge",
+      "ningunDia": "Cochez au moins un jour, ou appuyez sur « Plus tard »."
+    },
+    "oficina": {
+      "titulo": "Son bureau (facultatif)",
+      "texto": "Si vous le définissez, la pointeuse vérifie que la personne pointe depuis son bureau.",
+      "direccion": "Adresse",
+      "direccionEj": "120 avenue Principale, Centre",
+      "usarMiUbicacion": "Utiliser ma position actuelle",
+      "radio": "Rayon (mètres)",
+      "ubicada": "Position : {{lat}}, {{lng}}",
+      "quitar": "Retirer",
+      "sinGps": "Ce navigateur ne fournit pas la position",
+      "gpsNegado": "Impossible de lire la position. Vérifiez l’autorisation du navigateur."
+    },
+    "resumen": {
+      "quien": "Qui",
+      "horario": "Horaire",
+      "acceso": "Son accès",
+      "desde": "À partir du {{fecha}}",
+      "horarioDespues": "Vous le définirez plus tard",
+      "accesoCorreo": "Un e-mail arrive à {{correo}} pour créer son mot de passe",
+      "accesoCelular": "Nous vous donnons son identifiant et un lien à envoyer par WhatsApp",
+      "accesoUsuario": "Nous vous donnons son identifiant et un lien à lui remettre"
+    },
+    "botones": {
+      "cancelar": "Annuler",
+      "atras": "Retour",
+      "siguiente": "Suivant",
+      "despues": "Plus tard",
+      "crear": "Créer et donner l’accès"
+    },
+    "perfilCompleto": "Besoin de la fiche complète ou d’importer un CV ?",
+    "perfilCompletoLink": "Créer le profil complet",
+    "listo": {
+      "toast": "{{nombre}} est maintenant dans le système",
+      "titulo": "C’est fait : {{nombre}} est dans le système",
+      "horarioDespues": "Pas encore d’horaire",
+      "horarioFallo": "Impossible d’enregistrer",
+      "usuario": "Identifiant :",
+      "enlacePrivado": "Le lien est réservé à cette personne : il permet de définir le mot de passe du compte. Ne le publiez pas dans des groupes.",
+      "correoEnviado": "Nous avons envoyé un e-mail à {{correo}} pour créer son mot de passe.",
+      "accesoEnFicha": "Son accès est sur sa fiche (« Renvoyer l’invitation »).",
+      "faltaHorario": "Il manque son horaire",
+      "faltaHorarioFallo": "La personne a été créée, mais son horaire n’a pas été enregistré",
+      "ponerHorario": "Définir son horaire",
+      "faltaOficina": "Son bureau n’a pas été enregistré",
+      "faltaOficinaTexto": "Ajoutez-le depuis sa fiche › Emplacement du bureau.",
+      "verFicha": "Voir la fiche",
+      "otra": "Ajouter une autre personne"
+    },
+    "errores": {
+      "requerido": "Ce champ est requis",
+      "correoInvalido": "Vérifiez l’e-mail : il doit ressembler à nom@entreprise.com",
+      "celularInvalido": "Vérifiez le portable : au moins 7 chiffres",
+      "sedesVacias": "Choisissez au moins un site, ou « Toute l’activité »",
+      "fecha": "Vérifiez la date",
+      "cargarRoles": "Impossible de charger les rôles",
+      "cargarPuestos": "Impossible de charger les postes",
+      "crear": "Impossible de créer la personne",
+      "sinId": "Impossible de trouver la personne qui vient d’être créée",
+      "horario": "Impossible d’enregistrer l’horaire",
+      "ubicacion": "Impossible d’enregistrer le bureau"
+    },
+    "rotacion": {
+      "sinRotacion": "Aucune rotation définie",
+      "secuencia": "Séquence {{nombre}}",
+      "dias_one": "{{count}} jour",
+      "dias_other": "{{count}} jours",
+      "noches_one": "{{count}} nuit",
+      "noches_other": "{{count}} nuits",
+      "libres_one": "{{count}} repos",
+      "libres_other": "{{count}} repos"
+    },
+    "semana": {
+      "almuerzo": "déjeuner {{desde}}–{{hasta}}"
+    }
   }
 }

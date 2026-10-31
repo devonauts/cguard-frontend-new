@@ -21977,5 +21977,144 @@
     "vigia": {
       "masAjustes": "Altre impostazioni dei doppi turni"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Aggiungi persona",
+    "subtitulo": "Guardie, supervisori e personale d’ufficio, con il loro orario. Nulla viene salvato finché non tocchi «Crea».",
+    "pasos": {
+      "aria": "Passaggi",
+      "queHace": "Che cosa fa?",
+      "quienEs": "Chi è?",
+      "dondeYCuando": "Dove e quando lavora?",
+      "revisa": "Controlla e crea"
+    },
+    "tipo": {
+      "vigilante": "Guardia",
+      "supervisor": "Supervisore",
+      "oficina": "Personale d’ufficio",
+      "vigilanteTexto": "Copre un posto in una postazione. Il suo orario viene dalla rotazione del posto.",
+      "supervisorTexto": "Percorre e supervisiona più postazioni. Il suo orario viene dal suo posto di supervisione.",
+      "oficinaTexto": "Amministrazione, centrale operativa, risorse umane. Ha un orario settimanale e timbra sull’orologio web."
+    },
+    "paso2": {
+      "vasAAgregar": "Stai aggiungendo: {{tipo}}.",
+      "cambiarTipo": "Cambia"
+    },
+    "campos": {
+      "nombres": "Nomi",
+      "nombresEj": "Es. Carlo Andrea",
+      "apellidos": "Cognomi",
+      "apellidosEj": "Es. Ruiz Mora",
+      "documento": "Numero di documento",
+      "documentoAyuda": "Carta d’identità, passaporto… Facoltativo: puoi aggiungerlo dopo.",
+      "celular": "Cellulare",
+      "celularAyuda": "Se non ha e-mail, con il cellulare ti diamo il link per WhatsApp.",
+      "correo": "E-mail",
+      "correoAyuda": "Qui arriva l’invito per creare la password.",
+      "sinCorreo": "Non ha e-mail (entra con un nome utente)",
+      "usuario": "Nome utente",
+      "usuarioAyuda": "Facoltativo. Se lo lasci vuoto, il sistema ne assegna uno.",
+      "rol": "Che cosa può fare? (ruolo)",
+      "rolElige": "Scegli il ruolo",
+      "queVe": "Che cosa può vedere?",
+      "rolVeTodo": "Questo ruolo vede tutta l’operatività per definizione: non si può limitare.",
+      "soloSedes": "Solo alcune sedi"
+    },
+    "paso3": {
+      "vigilanteIntro": "Scegli il posto che coprirà. Il suo orario è la rotazione di quel posto: non serve costruirlo a mano.",
+      "supervisorIntro": "Scegli il posto di supervisione. Il suo orario sono le ore e la rotazione di quel posto.",
+      "recargar": "Ricarica",
+      "cargando": "Caricamento dei posti…",
+      "sinPuestos": "Ancora nessun posto",
+      "sinPuestosTexto": "Crea prima la postazione con i suoi posti e torna qui, oppure tocca «Lo faccio dopo».",
+      "crearEstacion": "Crea una postazione",
+      "crearPuesto": "Crea un posto di supervisione",
+      "sinPuestosSup": "Ancora nessun posto di supervisione",
+      "sinPuestosSupTexto": "Creane uno con «Crea un posto di supervisione», tocca «Ricarica», o lascia l’orario per dopo.",
+      "puestoSinRotacion": "Questo posto non ha una rotazione. Controllalo in Posti di supervisione perché l’orario risulti corretto.",
+      "desde": "Inizia il",
+      "desdeOficina": "Questo orario inizia il",
+      "despuesTitulo": "Imposterai l’orario dopo",
+      "despuesTexto": "Alla fine ti diciamo dove farlo. Compare già in Turni › Orario anche prima di accettare l’invito.",
+      "mejorAhora": "Meglio impostarlo ora",
+      "eligePlaza": "Scegli un posto o tocca «Lo faccio dopo»",
+      "eligePuesto": "Scegli un posto di supervisione o tocca «Lo faccio dopo»",
+      "revisaJornada": "Controlla le ore segnate in rosso",
+      "ningunDia": "Seleziona almeno un giorno, o tocca «Lo faccio dopo»."
+    },
+    "oficina": {
+      "titulo": "Il suo ufficio (facoltativo)",
+      "texto": "Se lo imposti, l’orologio verifica che timbri dal suo ufficio.",
+      "direccion": "Indirizzo",
+      "direccionEj": "Via Principale 120, Centro",
+      "usarMiUbicacion": "Usa la mia posizione attuale",
+      "radio": "Raggio (metri)",
+      "ubicada": "Posizione: {{lat}}, {{lng}}",
+      "quitar": "Rimuovi",
+      "sinGps": "Questo browser non fornisce la posizione",
+      "gpsNegado": "Impossibile leggere la posizione. Controlla il permesso del browser."
+    },
+    "resumen": {
+      "quien": "Chi",
+      "horario": "Orario",
+      "acceso": "Accesso",
+      "desde": "Dal {{fecha}}",
+      "horarioDespues": "Lo imposterai dopo",
+      "accesoCorreo": "Arriva un’e-mail a {{correo}} per creare la password",
+      "accesoCelular": "Ti diamo il nome utente e un link da inviare via WhatsApp",
+      "accesoUsuario": "Ti diamo il nome utente e un link da consegnare di persona"
+    },
+    "botones": {
+      "cancelar": "Annulla",
+      "atras": "Indietro",
+      "siguiente": "Avanti",
+      "despues": "Lo faccio dopo",
+      "crear": "Crea e dai accesso"
+    },
+    "perfilCompleto": "Ti serve la scheda completa o importare il CV?",
+    "perfilCompletoLink": "Crea profilo completo",
+    "listo": {
+      "toast": "{{nombre}} è ora nel sistema",
+      "titulo": "Fatto: {{nombre}} è ora nel sistema",
+      "horarioDespues": "Ancora senza orario",
+      "horarioFallo": "Impossibile salvare",
+      "usuario": "Nome utente:",
+      "enlacePrivado": "Il link è solo per questa persona: serve a impostare la password del suo account. Non pubblicarlo nei gruppi.",
+      "correoEnviado": "Abbiamo inviato un’e-mail a {{correo}} per creare la password.",
+      "accesoEnFicha": "L’accesso è nella sua scheda («Reinvia invito»).",
+      "faltaHorario": "Manca il suo orario",
+      "faltaHorarioFallo": "La persona è stata creata, ma il suo orario non è stato salvato",
+      "ponerHorario": "Imposta l’orario",
+      "faltaOficina": "Il suo ufficio non è stato salvato",
+      "faltaOficinaTexto": "Aggiungilo dalla scheda › Posizione dell’ufficio.",
+      "verFicha": "Vedi scheda",
+      "otra": "Aggiungi un’altra persona"
+    },
+    "errores": {
+      "requerido": "Campo obbligatorio",
+      "correoInvalido": "Controlla l’e-mail: deve essere come nome@azienda.it",
+      "celularInvalido": "Controlla il cellulare: almeno 7 cifre",
+      "sedesVacias": "Scegli almeno una sede, o «Tutta l’operatività»",
+      "fecha": "Controlla la data",
+      "cargarRoles": "Impossibile caricare i ruoli",
+      "cargarPuestos": "Impossibile caricare i posti",
+      "crear": "Impossibile creare la persona",
+      "sinId": "Non troviamo la persona appena creata",
+      "horario": "Impossibile salvare l’orario",
+      "ubicacion": "Impossibile salvare l’ufficio"
+    },
+    "rotacion": {
+      "sinRotacion": "Nessuna rotazione impostata",
+      "secuencia": "Sequenza {{nombre}}",
+      "dias_one": "{{count}} giorno",
+      "dias_other": "{{count}} giorni",
+      "noches_one": "{{count}} notte",
+      "noches_other": "{{count}} notti",
+      "libres_one": "{{count}} libero",
+      "libres_other": "{{count}} liberi"
+    },
+    "semana": {
+      "almuerzo": "pranzo {{desde}}–{{hasta}}"
+    }
   }
 }

@@ -860,7 +860,7 @@ export default function AdminOfficeUsersPage() {
         <PageHeader
           actions={
             <PermissionedButton asChild permission="userCreate" variant="brand">
-              <Link to="/back-office/new">
+              <Link to="/personal/nueva?tipo=oficina">
                 {t("adminOfficeUsers.newUser.breadcrumb.new", {
                   defaultValue: "Nuevo Usuario",
                 })}

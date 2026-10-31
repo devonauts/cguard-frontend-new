@@ -22275,5 +22275,150 @@
     "vigia": {
       "masAjustes": "Więcej ustawień podwójnych zmian"
     }
+  },
+  "agregarPersona": {
+    "titulo": "Dodaj osobę",
+    "subtitulo": "Pracownicy ochrony, supervisorzy i personel biurowy, z grafikiem. Nic nie zostanie zapisane, dopóki nie klikniesz „Utwórz”.",
+    "pasos": {
+      "aria": "Kroki",
+      "queHace": "Czym się zajmuje?",
+      "quienEs": "Kim jest?",
+      "dondeYCuando": "Gdzie i kiedy pracuje?",
+      "revisa": "Sprawdź i utwórz"
+    },
+    "tipo": {
+      "vigilante": "Pracownik ochrony",
+      "supervisor": "Supervisor",
+      "oficina": "Personel biurowy",
+      "vigilanteTexto": "Obsadza posterunek na obiekcie. Grafik wynika z rotacji posterunku.",
+      "supervisorTexto": "Objeżdża i nadzoruje kilka obiektów. Grafik wynika z jego stanowiska nadzoru.",
+      "oficinaTexto": "Administracja, dyspozytornia, kadry. Ma tygodniowy grafik i odbija się w zegarze webowym."
+    },
+    "paso2": {
+      "vasAAgregar": "Dodajesz: {{tipo}}.",
+      "cambiarTipo": "Zmień"
+    },
+    "campos": {
+      "nombres": "Imiona",
+      "nombresEj": "Np. Karol Andrzej",
+      "apellidos": "Nazwiska",
+      "apellidosEj": "Np. Ruiz Mora",
+      "documento": "Numer dokumentu",
+      "documentoAyuda": "Dowód osobisty, paszport… Opcjonalnie: możesz dodać później.",
+      "celular": "Telefon komórkowy",
+      "celularAyuda": "Jeśli nie ma e-maila, z numerem telefonu dostaniesz link do WhatsApp.",
+      "correo": "E-mail",
+      "correoAyuda": "Tu przyjdzie zaproszenie do utworzenia hasła.",
+      "sinCorreo": "Bez e-maila (loguje się nazwą użytkownika)",
+      "usuario": "Nazwa użytkownika",
+      "usuarioAyuda": "Opcjonalnie. Jeśli zostawisz puste, system nada nazwę.",
+      "rol": "Co może robić? (rola)",
+      "rolElige": "Wybierz rolę",
+      "queVe": "Co może widzieć?",
+      "rolVeTodo": "Ta rola z definicji widzi całą działalność: nie da się tego zawęzić.",
+      "soloSedes": "Tylko niektóre obiekty"
+    },
+    "paso3": {
+      "vigilanteIntro": "Wybierz posterunek, który obsadzi. Grafik to rotacja tego posterunku: nie trzeba go układać ręcznie.",
+      "supervisorIntro": "Wybierz stanowisko nadzoru. Grafik to godziny i rotacja tego stanowiska.",
+      "recargar": "Odśwież",
+      "cargando": "Ładowanie posterunków…",
+      "sinPuestos": "Brak posterunków",
+      "sinPuestosTexto": "Najpierw utwórz obiekt z posterunkami i wróć tutaj albo kliknij „Zrobię to później”.",
+      "crearEstacion": "Utwórz obiekt",
+      "crearPuesto": "Utwórz stanowisko nadzoru",
+      "sinPuestosSup": "Brak stanowisk nadzoru",
+      "sinPuestosSupTexto": "Utwórz je przez „Utwórz stanowisko nadzoru”, kliknij „Odśwież” albo zostaw grafik na później.",
+      "puestoSinRotacion": "To stanowisko nie ma rotacji. Sprawdź je w Stanowiskach nadzoru, żeby grafik był poprawny.",
+      "desde": "Zaczyna",
+      "desdeOficina": "Ten grafik zaczyna się",
+      "despuesTitulo": "Grafik ustawisz później",
+      "despuesTexto": "Na końcu powiemy, gdzie to zrobić. Osoba jest już widoczna w Zmianach › Grafiku, nawet przed przyjęciem zaproszenia.",
+      "mejorAhora": "Ustaw teraz",
+      "eligePlaza": "Wybierz posterunek albo kliknij „Zrobię to później”",
+      "eligePuesto": "Wybierz stanowisko nadzoru albo kliknij „Zrobię to później”",
+      "revisaJornada": "Sprawdź godziny zaznaczone na czerwono",
+      "ningunDia": "Zaznacz co najmniej jeden dzień albo kliknij „Zrobię to później”."
+    },
+    "oficina": {
+      "titulo": "Biuro (opcjonalnie)",
+      "texto": "Jeśli je ustawisz, zegar sprawdzi, czy odbija się z biura.",
+      "direccion": "Adres",
+      "direccionEj": "ul. Główna 120, Centrum",
+      "usarMiUbicacion": "Użyj mojej bieżącej lokalizacji",
+      "radio": "Promień (metry)",
+      "ubicada": "Lokalizacja: {{lat}}, {{lng}}",
+      "quitar": "Usuń",
+      "sinGps": "Ta przeglądarka nie udostępnia lokalizacji",
+      "gpsNegado": "Nie udało się odczytać lokalizacji. Sprawdź uprawnienia przeglądarki."
+    },
+    "resumen": {
+      "quien": "Kto",
+      "horario": "Grafik",
+      "acceso": "Dostęp",
+      "desde": "Od {{fecha}}",
+      "horarioDespues": "Ustawisz później",
+      "accesoCorreo": "Na {{correo}} przyjdzie e-mail do utworzenia hasła",
+      "accesoCelular": "Dostaniesz nazwę użytkownika i link do wysłania przez WhatsApp",
+      "accesoUsuario": "Dostaniesz nazwę użytkownika i link do przekazania osobiście"
+    },
+    "botones": {
+      "cancelar": "Anuluj",
+      "atras": "Wstecz",
+      "siguiente": "Dalej",
+      "despues": "Zrobię to później",
+      "crear": "Utwórz i nadaj dostęp"
+    },
+    "perfilCompleto": "Potrzebujesz pełnego profilu lub importu CV?",
+    "perfilCompletoLink": "Utwórz pełny profil",
+    "listo": {
+      "toast": "{{nombre}} jest już w systemie",
+      "titulo": "Gotowe: {{nombre}} jest już w systemie",
+      "horarioDespues": "Jeszcze bez grafiku",
+      "horarioFallo": "Nie udało się zapisać",
+      "usuario": "Nazwa użytkownika:",
+      "enlacePrivado": "Link jest tylko dla tej osoby: służy do ustawienia hasła. Nie publikuj go w grupach.",
+      "correoEnviado": "Wysłaliśmy e-mail na {{correo}}, aby utworzyć hasło.",
+      "accesoEnFicha": "Dostęp jest w profilu („Wyślij ponownie zaproszenie”).",
+      "faltaHorario": "Brakuje grafiku",
+      "faltaHorarioFallo": "Osoba została utworzona, ale grafik nie został zapisany",
+      "ponerHorario": "Ustaw grafik",
+      "faltaOficina": "Biuro nie zostało zapisane",
+      "faltaOficinaTexto": "Dodaj je w profilu › Lokalizacja biura.",
+      "verFicha": "Zobacz profil",
+      "otra": "Dodaj kolejną osobę"
+    },
+    "errores": {
+      "requerido": "To pole jest wymagane",
+      "correoInvalido": "Sprawdź e-mail: powinien wyglądać jak imie@firma.pl",
+      "celularInvalido": "Sprawdź numer: co najmniej 7 cyfr",
+      "sedesVacias": "Wybierz co najmniej jeden obiekt albo „Cała działalność”",
+      "fecha": "Sprawdź datę",
+      "cargarRoles": "Nie udało się wczytać ról",
+      "cargarPuestos": "Nie udało się wczytać posterunków",
+      "crear": "Nie udało się utworzyć osoby",
+      "sinId": "Nie znaleziono właśnie utworzonej osoby",
+      "horario": "Nie udało się zapisać grafiku",
+      "ubicacion": "Nie udało się zapisać biura"
+    },
+    "rotacion": {
+      "sinRotacion": "Brak ustalonej rotacji",
+      "secuencia": "Sekwencja {{nombre}}",
+      "dias_one": "{{count}} dzień",
+      "dias_few": "{{count}} dni",
+      "dias_many": "{{count}} dni",
+      "dias_other": "{{count}} dni",
+      "noches_one": "{{count}} noc",
+      "noches_few": "{{count}} noce",
+      "noches_many": "{{count}} nocy",
+      "noches_other": "{{count}} nocy",
+      "libres_one": "{{count}} wolny",
+      "libres_few": "{{count}} wolne",
+      "libres_many": "{{count}} wolnych",
+      "libres_other": "{{count}} wolnych"
+    },
+    "semana": {
+      "almuerzo": "przerwa obiadowa {{desde}}–{{hasta}}"
+    }
   }
 }
