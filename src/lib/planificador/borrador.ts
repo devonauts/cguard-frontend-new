@@ -45,9 +45,22 @@ export function estadoDelBorrador(
   };
 }
 
-/** Huella corta de lo leído del servidor (djb2 sobre el JSON). */
+/**
+ * JSON with object keys sorted. The draft goes through a MySQL JSON column,
+ * which reorders keys: a plain `JSON.stringify` of the same plan read back
+ * gives a different string.
+ */
+export function jsonEstable(v: unknown): string {
+  return JSON.stringify(v, (_k, x) =>
+    x && typeof x === "object" && !Array.isArray(x)
+      ? Object.fromEntries(Object.keys(x).sort().map((k) => [k, x[k]]))
+      : x,
+  );
+}
+
+/** Huella corta de lo leído del servidor (djb2 sobre el JSON, claves ordenadas). */
 export function firmaDe(plan: Plan): string {
-  const s = JSON.stringify(plan);
+  const s = jsonEstable(plan);
   let h = 5381;
 
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;

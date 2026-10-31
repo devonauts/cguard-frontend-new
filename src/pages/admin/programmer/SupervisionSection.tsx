@@ -566,6 +566,12 @@ export default function SupervisionSection({
             {/* Una fila por supervisor asignado */}
             {p.supervisors.map((s) => {
               const dm = porFecha.get(s.assignmentId);
+              /* No shift at all in the loaded days (e.g. a «Sin rotación» post
+                 that generated nothing yet): that is «no shifts», not «L»
+                 every day. Once shifts exist the days paint normally. */
+              const sinTurnos =
+                s.days.length > 0 &&
+                !s.days.some((d) => d.code && d.code !== "L");
 
               return (
                 <div
@@ -581,6 +587,21 @@ export default function SupervisionSection({
                     style={{ background: "var(--card)" }}
                   >
                     <span className="truncate text-xs">{s.name}</span>
+                    {sinTurnos && (
+                      <span
+                        className="shrink-0 rounded px-1 py-px text-[9px] font-semibold"
+                        style={{
+                          background: "color-mix(in oklab, var(--warn) 16%, transparent)",
+                          color: "var(--warn-text)",
+                        }}
+                        title={t(
+                          "ui.AllStaff.sinTurnosPuesto",
+                          "Su puesto no tiene turnos en estos días",
+                        )}
+                      >
+                        {t("ui.AllStaff.sinTurnos", "Sin turnos")}
+                      </span>
+                    )}
                     {s.isRelief && (
                       <span
                         className="shrink-0 text-[10px]"
@@ -606,7 +627,7 @@ export default function SupervisionSection({
                   <div />
                   {visibleDays.map((d, k) => {
                     const i = colA + k;
-                    const code = dm?.get(ymd(d)) || "";
+                    const code = sinTurnos ? "" : dm?.get(ymd(d)) || "";
 
                     return (
                       <div

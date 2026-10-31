@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { FRANCO as F, REGLAS_POR_DEFECTO, copiar, type Plan } from "./motor";
 import { contextoEnLaEmpresa, planificarPublicacion } from "./publicar";
 import type { Enlace } from "./real";
-import { rebasePlan, touchedBy } from "./rebase";
+import { rebasePlan, touchedBy, touchedByCalls } from "./rebase";
 import { instanteEnLaEmpresa } from "../horaDeLaEmpresa";
 
 const rep = (c: string, n: number) => Array<string>(n).fill(c);
@@ -94,6 +94,21 @@ describe("rebase · the draft survives changes under it", () => {
     expect(r.dropped).toEqual(["Carla"]);
   });
 
+  it("key order does not count (the server's JSON column reorders keys)", () => {
+    const b = base();
+    const shuffled = JSON.parse(
+      JSON.stringify(b, (_k, x) =>
+        x && typeof x === "object" && !Array.isArray(x)
+          ? Object.fromEntries(Object.keys(x).reverse().map((k) => [k, x[k]]))
+          : x,
+      ),
+    );
+    const r = rebasePlan(shuffled, shuffled, b);
+
+    expect(r.kept).toBe(0);
+    expect(r.conflicts).toEqual([]);
+  });
+
   it("is pure: none of the three plans is modified", () => {
     const b = base();
     const mine = copiar(b);
@@ -122,6 +137,24 @@ describe("touchedBy · what the server checks for someone else's changes", () =>
 
     expect(touchedBy(b, p, people)).toEqual({ guardIds: ["gA", "gB"], stationIds: ["st1", "st2"] });
     expect(touchedBy(b, copiar(b), people)).toEqual({ guardIds: [], stationIds: [] });
+  });
+});
+
+describe("touchedByCalls · covers the plan diff does not see", () => {
+  it("takes guards and stations from the call bodies and maps assignment ids back", () => {
+    const people = { a: { guardId: "gA", stationId: "st1", assignmentId: "asA" } };
+
+    expect(
+      touchedByCalls(
+        [
+          { ruta: "/tenant/T/shift", cuerpo: { data: { guard: "gM", station: "st2" } } },
+          { ruta: "/tenant/T/guard-assignment/asA", cuerpo: { data: { rotationStyleId: "$ROTACION" } } },
+          { ruta: "/tenant/T/station/st3/auto-positions", cuerpo: { data: {} } },
+          { ruta: "/tenant/T/coverage/absence", cuerpo: { guardId: "gB", coveringGuardId: "gC", stationId: "st1" } },
+        ],
+        people,
+      ),
+    ).toEqual({ guardIds: ["gA", "gB", "gC", "gM"], stationIds: ["st1", "st2", "st3"] });
   });
 });
 

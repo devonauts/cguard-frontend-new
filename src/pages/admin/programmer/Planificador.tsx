@@ -113,7 +113,7 @@ import {
   estadoDelBorrador,
   firmaDe,
 } from "@/lib/planificador/borrador";
-import { rebasePlan, touchedBy } from "@/lib/planificador/rebase";
+import { rebasePlan, touchedBy, touchedByCalls } from "@/lib/planificador/rebase";
 import {
   DraftConflict,
   descartarBorradorDelServidor,
@@ -602,9 +602,12 @@ export default function Planificador() {
     [tenantId, t],
   );
 
+  // Once per company: `cargar` changes identity when the language loads, and
+  // reading twice showed every notice twice.
   useEffect(() => {
     void cargar({ conservarLocal: false });
-  }, [cargar]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tenantId]);
 
   /** Todo cambio pasa por aquí: copia, aplica, limpia y guarda para deshacer. */
   const cambiar = useCallback(
@@ -678,13 +681,17 @@ export default function Planificador() {
      One save at a time, in order. A 409 means someone else saved the shared
      draft (or published / discarded it): re-read and merge, never overwrite. */
   const enCursoRef = useRef<Promise<boolean>>(Promise.resolve(true));
-  const guardarAhora = useCallback((): Promise<boolean> => {
+  const guardarAhora = useCallback((forzar = false): Promise<boolean> => {
     const una = async (): Promise<boolean> => {
       const p = planRef.current;
       const l = leidoRef.current;
 
       if (!p || !l || !tenantId) return true;
       const s = srvRef.current;
+
+      // Untouched and nothing on the server: a late autosave (e.g. right
+      // after a publish) has nothing to do. Publishing forces the save.
+      if (!forzar && cambiosRef.current === 0 && s.version === 0) return true;
 
       try {
         if (firmaDe(p) === firmaRef.current) {
@@ -808,13 +815,15 @@ export default function Planificador() {
       }
     }
     srvRef.current = { version: 0, baseAt: null, guardado: null };
+    cambiosRef.current = 0;
+    setCambios(0);
     setGuardado(null);
     await cargar({ conservarLocal: false });
   };
 
   /** Publish: save first (the server applies exactly what was reviewed), then all or nothing. */
   const publicarAhora = async (): Promise<{ applied: number }> => {
-    await guardarAhora();
+    await guardarAhora(true);
     const l = leidoRef.current;
     const p = planRef.current;
 
@@ -824,7 +833,18 @@ export default function Planificador() {
     return publicarEnElServidor(tenantId, {
       version: srvRef.current.version,
       baseAt: srvRef.current.baseAt,
-      touched: touchedBy(l.plan, p, l.enlace.personas),
+      touched: (() => {
+        const a = touchedBy(l.plan, p, l.enlace.personas);
+        const b = touchedByCalls(
+          pub.cambios.flatMap((c) => c.llamadas),
+          l.enlace.personas,
+        );
+
+        return {
+          guardIds: [...new Set([...a.guardIds, ...b.guardIds])],
+          stationIds: [...new Set([...a.stationIds, ...b.stationIds])],
+        };
+      })(),
       changes: pub.cambios.map((c) => ({
         text: c.texto,
         calls: c.llamadas.map((x) => ({
@@ -1890,7 +1910,11 @@ export default function Planificador() {
             cerrar={() => setHoja(null)}
             publicado={() => {
               setHoja(null);
+              // Published: nothing local is pending any more (a queued
+              // autosave now finds nothing to do instead of re-creating it).
               srvRef.current = { version: 0, baseAt: null, guardado: null };
+              cambiosRef.current = 0;
+              setCambios(0);
               setGuardado(null);
               void cargar({ conservarLocal: false });
             }}

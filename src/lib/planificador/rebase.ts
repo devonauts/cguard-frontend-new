@@ -14,6 +14,7 @@
  * coverage cell (post|shift|day): two managers covering different days of the
  * same post never collide.
  */
+import { jsonEstable } from "./borrador";
 import type { Persona, Plan, Puesto } from "./motor";
 
 export interface RebaseResult {
@@ -26,7 +27,8 @@ export interface RebaseResult {
   dropped: string[];
 }
 
-const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+// Key order does not count: the server's JSON column reorders keys.
+const same = (a: unknown, b: unknown) => jsonEstable(a) === jsonEstable(b);
 
 function byId<T extends { id: string }>(list: T[] | undefined): Map<string, T> {
   return new Map((list || []).map((x) => [x.id, x]));
@@ -198,6 +200,50 @@ export function touchedBy(
     if (same(a, b)) continue;
     stations.add(k.split("|")[0]);
     for (const id of new Set([...a, ...b])) addPerson(id);
+  }
+
+  return { guardIds: [...guards].sort(), stationIds: [...stations].sort() };
+}
+
+/**
+ * The guards and stations the publish CALLS write to. A draft also publishes
+ * what it never «changed» against its own base (a fixed sacafranco's automatic
+ * covers have no real shift yet), so the plan diff alone misses people; the
+ * calls never do. Assignment ids map back to their guard and station.
+ */
+export function touchedByCalls(
+  calls: Array<{ ruta: string; cuerpo?: any }>,
+  people: Record<string, { guardId: string; stationId: string; assignmentId?: string }>,
+): { guardIds: string[]; stationIds: string[] } {
+  const guards = new Set<string>();
+  const stations = new Set<string>();
+  const byAssignment = new Map(
+    Object.values(people)
+      .filter((p) => p.assignmentId)
+      .map((p) => [p.assignmentId as string, p]),
+  );
+  const add = (set: Set<string>, v: unknown) => {
+    if (typeof v === "string" && v && !v.startsWith("$")) set.add(v);
+  };
+
+  for (const c of calls) {
+    const body = c.cuerpo?.data ?? c.cuerpo ?? {};
+
+    add(guards, body.guard);
+    add(guards, body.guardId);
+    add(guards, body.coveringGuardId);
+    add(stations, body.station);
+    add(stations, body.stationId);
+    const st = /\/station\/([^/]+)/.exec(c.ruta);
+
+    if (st) stations.add(st[1]);
+    const as = /\/guard-assignment\/([^/?]+)/.exec(c.ruta);
+    const link = as ? byAssignment.get(as[1]) : undefined;
+
+    if (link) {
+      add(guards, link.guardId);
+      add(stations, link.stationId);
+    }
   }
 
   return { guardIds: [...guards].sort(), stationIds: [...stations].sort() };
