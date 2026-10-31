@@ -18009,7 +18009,11 @@
         "tramoFijo": "Kwota stała",
         "anadirTramo": "Dodaj próg",
         "dobladaSiempreAparte": "Przy tym sposobie płatności podwójna zmiana zawsze ma własną pozycję na pasku („Premia za podwójną zmianę”).",
-        "dobladaComoSeCuenta": "Podwójna zmiana to dzień, w którym ktoś pracuje co najmniej 1,5 raza dłużej niż jego zwykła zmiana (z grafiku). 24 h przy zmianach 12-godzinnych to podwójna; 36 h to potrójna i liczy się jako dwie dodatkowe zmiany. Zaplanowana zmiana 24-godzinna nie jest podwójną."
+        "dobladaComoSeCuenta": "Podwójna zmiana to dzień, w którym ktoś pracuje co najmniej 1,5 raza dłużej niż jego zwykła zmiana (z grafiku). 24 h przy zmianach 12-godzinnych to podwójna; 36 h to potrójna i liczy się jako dwie dodatkowe zmiany. Zaplanowana zmiana 24-godzinna nie jest podwójną.",
+        "horasTarjetaTitulo": "Godziny z karty płacone na pasku",
+        "horasTarjetaAyuda": "Karta zawsze je liczy; pasek płaci je tylko po włączeniu. Zatwierdzone paski się nie zmieniają.",
+        "pagarDescanso": "Płacić za godziny przepracowane w dniu wolnym (składnik „Godziny w dniu wolnym”)",
+        "pagarExtraNocturna": "Płacić nadgodziny nocne w osobnej pozycji (wymaga składnika „Nadgodziny nocne”)"
       },
       "atras": "Wstecz",
       "continuar": "Dalej",
@@ -18081,7 +18085,8 @@
         "holiday": "Godziny w święta",
         "rest_day": "Godziny w dniu wolnym",
         "sunday": "Godziny w niedzielę",
-        "double_shift": "Godziny podwójnej zmiany"
+        "double_shift": "Godziny podwójnej zmiany",
+        "night_overtime": "Nadgodziny nocne"
       },
       "frecuencia": {
         "weekly": "Tygodniowo",
@@ -19220,7 +19225,11 @@
         "extraNocturna": "Nocne nadgodziny ({{desde}}:00–{{hasta}}:00): +{{pct}}% (lub ich próg, jeśli wyższy)",
         "extraNocturnaComoExtra": "Nocne nadgodziny: jak każda nadgodzina",
         "descanso": "Dzień odpoczynku: dzień wolny z grafiku każdego ochroniarza · przełożeni i biuro: {{dia}}",
-        "descansoSinSemanal": "Dzień odpoczynku: dzień wolny z grafiku każdego ochroniarza (przełożeni i biuro: brak)"
+        "descansoSinSemanal": "Dzień odpoczynku: dzień wolny z grafiku każdego ochroniarza (przełożeni i biuro: brak)",
+        "noSePaga": "nie jest płacony",
+        "recargosV2": "Niedziela {{domingo}} · Przepracowany dzień wolny {{descanso}} · Święto {{feriado}}",
+        "combinaciones": "Gdy się pokrywają — święto i dzień wolny: {{fd}} · święto i niedziela: {{fo}} · niedziela i dzień wolny: {{od}} · noc w te dni: {{noche}} · nadgodzina w te dni: {{extra}}",
+        "segunElDia": "zależnie od dnia"
       },
       "semanaLaboralEmpieza": "Tydzień pracy zaczyna się w",
       "semanalAyuda": "Powyżej tego w tygodniu to nadgodziny (USA: 40). 0 = brak zasady tygodniowej.",
@@ -19235,7 +19244,46 @@
       "extraNocturnaAyuda": "Nadgodziny w tym przedziale są płatne z tym dodatkiem, jeśli jest wyższy niż ich próg (Kolumbia: 19–6 po 75%; Ekwador: 0–6 po 100%).",
       "extraNocturnaDesde": "Nocne nadgodziny: od (godzina)",
       "extraNocturnaHasta": "Nocne nadgodziny: do (godzina)",
-      "extraNocturnaPct": "Dodatek za nocne nadgodziny (%)"
+      "extraNocturnaPct": "Dodatek za nocne nadgodziny (%)",
+      "comb": {
+        "comoLaGeneral": "Jak reguła ogólna ({{regla}})",
+        "titulo": "Gdy kilka dodatków przypada na tę samą godzinę",
+        "ayuda": "„Sumują się”: płatne oba (święto 100% + dzień wolny 100% = 200%). „Wygrywa wyższy”: tylko najwyższy (= 100%). Wybierz dla każdego przypadku.",
+        "general": "Reguła ogólna między niedzielą, dniem wolnym i świętem",
+        "feriadoDescanso": "Święto przypadające w jego dzień wolny",
+        "feriadoDomingo": "Święto przypadające w niedzielę",
+        "domingoDescanso": "Niedziela będąca jego dniem wolnym",
+        "nocheDomingo": "Noc i niedziela",
+        "nocheFeriado": "Noc i święto",
+        "nocheDescanso": "Noc i dzień wolny",
+        "extraDia": "Nadgodzina w niedzielę, święto lub dzień wolny"
+      },
+      "ej": {
+        "feriadoDescanso": "Godzina dzienna w święto, które jest też jego dniem wolnym",
+        "domingoFeriado": "Godzina dzienna w niedzielę będącą świętem",
+        "domingoDescanso": "Godzina dzienna w niedzielę będącą jego dniem wolnym",
+        "nocheDomingo": "Godzina nocna w niedzielę",
+        "nocheFeriadoDescanso": "Godzina nocna w święto będące jego dniem wolnym",
+        "extraFeriado": "Nadgodzina (pierwszy próg) w święto",
+        "titulo": "Tak płacą te reguły",
+        "fila": "{{que}}: +{{pct}}%",
+        "turno": "Dzienna zmiana 12 h w święto, które jest też jego dniem wolnym, po {{tarifa}} za godzinę: {{ord}} h po +{{po}}% i {{extra}} nadgodzin po +{{pe}}% = {{total}}"
+      },
+      "queUsa": "Czego używa Twoja firma",
+      "usarSemanal": "Liczyć nadgodziny tygodniowo",
+      "usarGracia": "Nie płacić za krótkie oczekiwanie po zmianie (tolerancja)",
+      "tempranaAyuda": "Bez zaznaczenia płatność zaczyna się o planowanej godzinie, nawet jeśli ktoś odbije się wcześniej.",
+      "recargos": "Dodatki",
+      "recargosAyuda": "Wyłącz dodatek, aby przestać go płacić bez utraty wpisanego procentu.",
+      "rec": {
+        "noche": "Dodatek nocny",
+        "domingo": "Dodatek niedzielny",
+        "descanso": "Dodatek za pracę w dniu wolnym",
+        "feriado": "Dodatek świąteczny",
+        "extra": "Dodatek za nadgodziny",
+        "extraAyuda": "Wyłączony: nadgodziny płatne według zwykłej stawki."
+      },
+      "ausenciasAyudaV2": "Zaznaczona: płatna. Niezaznaczona: nadal usprawiedliwiona (to nie nieobecność), ale potrącana. Urlop „osobisty” jest płatny lub nie zgodnie z samym wnioskiem."
     }
   },
   "visitantes": {

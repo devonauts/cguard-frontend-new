@@ -17194,7 +17194,11 @@
         "tramoFijo": "Fixed amount",
         "anadirTramo": "Add bracket",
         "dobladaSiempreAparte": "With this pay method the double shift always goes on its own payslip line («Double-shift bonus»).",
-        "dobladaComoSeCuenta": "A double shift is a day when someone works 1.5 times or more their usual shift (the one their schedule sets). 24 h on 12-hour shifts is a double; 36 h is a triple and counts as two extra shifts. A scheduled 24-hour shift is not a double."
+        "dobladaComoSeCuenta": "A double shift is a day when someone works 1.5 times or more their usual shift (the one their schedule sets). 24 h on 12-hour shifts is a double; 36 h is a triple and counts as two extra shifts. A scheduled 24-hour shift is not a double.",
+        "horasTarjetaTitulo": "Timecard hours the payslip pays",
+        "horasTarjetaAyuda": "The timecard always computes them; the payslip only pays them if you turn this on. Approved payslips don't change.",
+        "pagarDescanso": "Pay hours worked on the rest day (the “Rest day hours” concept)",
+        "pagarExtraNocturna": "Pay night overtime on its own line (needs a “Night overtime hours” concept)"
       },
       "atras": "Back",
       "continuar": "Continue",
@@ -17266,7 +17270,8 @@
         "holiday": "Holiday hours",
         "rest_day": "Rest day hours",
         "sunday": "Sunday hours",
-        "double_shift": "Double shift hours"
+        "double_shift": "Double shift hours",
+        "night_overtime": "Night overtime hours"
       },
       "frecuencia": {
         "weekly": "Weekly",
@@ -18395,7 +18400,11 @@
         "extraNocturna": "Night overtime ({{desde}}:00–{{hasta}}:00): +{{pct}}% (or its tier, if higher)",
         "extraNocturnaComoExtra": "Night overtime: like any overtime hour",
         "descanso": "Rest day: each guard's day off in the rotation · supervisors and office: {{dia}}",
-        "descansoSinSemanal": "Rest day: each guard's day off in the rotation (supervisors and office: none)"
+        "descansoSinSemanal": "Rest day: each guard's day off in the rotation (supervisors and office: none)",
+        "noSePaga": "not paid",
+        "recargosV2": "Sunday {{domingo}} · Rest day worked {{descanso}} · Holiday {{feriado}}",
+        "combinaciones": "When they fall together — holiday and rest day: {{fd}} · holiday and Sunday: {{fo}} · Sunday and rest day: {{od}} · night on those days: {{noche}} · overtime on those days: {{extra}}",
+        "segunElDia": "depends on the day"
       },
       "semanaLaboralEmpieza": "The workweek starts on",
       "semanalAyuda": "Anything over this in the week is overtime (US: 40). 0 = no weekly rule.",
@@ -18410,7 +18419,46 @@
       "extraNocturnaAyuda": "Overtime hours in this window are paid at this premium when it is higher than their tier (Colombia: 19–6 at 75%; Ecuador: 0–6 at 100%).",
       "extraNocturnaDesde": "Night overtime: from (hour)",
       "extraNocturnaHasta": "Night overtime: until (hour)",
-      "extraNocturnaPct": "Night overtime premium (%)"
+      "extraNocturnaPct": "Night overtime premium (%)",
+      "comb": {
+        "comoLaGeneral": "Same as the general rule ({{regla}})",
+        "titulo": "When several surcharges fall on the same hour",
+        "ayuda": "“Added”: both are paid (holiday 100% + rest day 100% = 200%). “Higher wins”: only the higher one (= 100%). Choose for each case.",
+        "general": "General rule between Sunday, rest day and holiday",
+        "feriadoDescanso": "Holiday that falls on their rest day",
+        "feriadoDomingo": "Holiday that falls on a Sunday",
+        "domingoDescanso": "Sunday that is their rest day",
+        "nocheDomingo": "Night and Sunday",
+        "nocheFeriado": "Night and holiday",
+        "nocheDescanso": "Night and rest day",
+        "extraDia": "Overtime on a Sunday, holiday or rest day"
+      },
+      "ej": {
+        "feriadoDescanso": "A daytime hour on a holiday that is also their rest day",
+        "domingoFeriado": "A daytime hour on a Sunday that is a holiday",
+        "domingoDescanso": "A daytime hour on a Sunday that is their rest day",
+        "nocheDomingo": "A night hour on a Sunday",
+        "nocheFeriadoDescanso": "A night hour on a holiday that is their rest day",
+        "extraFeriado": "An overtime hour (first tier) on a holiday",
+        "titulo": "What these rules pay",
+        "fila": "{{que}}: +{{pct}}%",
+        "turno": "A 12 h day shift on a holiday that is also their rest day, at {{tarifa}} an hour: {{ord}} h at +{{po}}% and {{extra}} h overtime at +{{pe}}% = {{total}}"
+      },
+      "queUsa": "What your company uses",
+      "usarSemanal": "Count overtime by the week",
+      "usarGracia": "Don't pay a short wait after the shift (grace)",
+      "tempranaAyuda": "Unticked, pay starts at the scheduled time even if the person clocks in earlier.",
+      "recargos": "Surcharges",
+      "recargosAyuda": "Switch a surcharge off to stop paying it without losing the percentage you typed.",
+      "rec": {
+        "noche": "Night surcharge",
+        "domingo": "Sunday surcharge",
+        "descanso": "Surcharge for working on the rest day",
+        "feriado": "Holiday surcharge",
+        "extra": "Overtime surcharge",
+        "extraAyuda": "Off, overtime is paid at straight time."
+      },
+      "ausenciasAyudaV2": "Ticked: paid. Unticked: still excused (not a fault), but deducted. A “personal” leave is paid or not as the leave itself says."
     }
   },
   "map": {

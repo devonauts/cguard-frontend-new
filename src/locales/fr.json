@@ -17729,7 +17729,11 @@
         "tramoFijo": "Part fixe",
         "anadirTramo": "Ajouter une tranche",
         "dobladaSiempreAparte": "Avec ce mode de paiement, le double poste figure toujours sur sa propre ligne du bulletin (« Prime de double poste »).",
-        "dobladaComoSeCuenta": "Il y a double poste quand quelqu’un travaille dans la journée 1,5 fois ou plus son poste habituel (celui de son planning). 24 h sur des postes de 12 h font un double ; 36 h font un triple, qui compte pour deux postes supplémentaires. Un poste de 24 h planifié n’est pas un double."
+        "dobladaComoSeCuenta": "Il y a double poste quand quelqu’un travaille dans la journée 1,5 fois ou plus son poste habituel (celui de son planning). 24 h sur des postes de 12 h font un double ; 36 h font un triple, qui compte pour deux postes supplémentaires. Un poste de 24 h planifié n’est pas un double.",
+        "horasTarjetaTitulo": "Heures de la carte que paie le bulletin",
+        "horasTarjetaAyuda": "La carte les calcule toujours ; le bulletin ne les paie que si vous l'activez. Les bulletins approuvés ne changent pas.",
+        "pagarDescanso": "Payer les heures travaillées le jour de repos (rubrique « Heures le jour de repos »)",
+        "pagarExtraNocturna": "Payer les heures sup. de nuit sur leur propre ligne (nécessite une rubrique « Heures sup. de nuit »)"
       },
       "atras": "Retour",
       "continuar": "Continuer",
@@ -17801,7 +17805,8 @@
         "holiday": "Heures de jour férié",
         "rest_day": "Heures de jour de repos",
         "sunday": "Heures du dimanche",
-        "double_shift": "Heures de double poste"
+        "double_shift": "Heures de double poste",
+        "night_overtime": "Heures sup. de nuit"
       },
       "frecuencia": {
         "weekly": "Hebdomadaire",
@@ -18930,7 +18935,11 @@
         "extraNocturna": "Heure supplémentaire de nuit ({{desde}}:00–{{hasta}}:00) : +{{pct}} % (ou son palier, s'il est plus élevé)",
         "extraNocturnaComoExtra": "Heure supplémentaire de nuit : comme toute heure supplémentaire",
         "descanso": "Jour de repos : le repos de la rotation de chaque agent · superviseurs et bureau : {{dia}}",
-        "descansoSinSemanal": "Jour de repos : le repos de la rotation de chaque agent (superviseurs et bureau : aucun)"
+        "descansoSinSemanal": "Jour de repos : le repos de la rotation de chaque agent (superviseurs et bureau : aucun)",
+        "noSePaga": "non payé",
+        "recargosV2": "Dimanche {{domingo}} · Repos travaillé {{descanso}} · Jour férié {{feriado}}",
+        "combinaciones": "Quand ils coïncident — férié et repos : {{fd}} · férié et dimanche : {{fo}} · dimanche et repos : {{od}} · nuit ces jours-là : {{noche}} · heure sup. ces jours-là : {{extra}}",
+        "segunElDia": "selon le jour"
       },
       "semanaLaboralEmpieza": "La semaine de travail commence le",
       "semanalAyuda": "Au-delà, dans la semaine, ce sont des heures supplémentaires (États-Unis : 40). 0 = pas de règle hebdomadaire.",
@@ -18945,7 +18954,46 @@
       "extraNocturnaAyuda": "Les heures supplémentaires dans cette plage sont payées à cette majoration si elle dépasse leur palier (Colombie : 19–6 à 75 % ; Équateur : 0–6 à 100 %).",
       "extraNocturnaDesde": "Supplémentaire de nuit : de (heure)",
       "extraNocturnaHasta": "Supplémentaire de nuit : à (heure)",
-      "extraNocturnaPct": "Majoration de l'heure supplémentaire de nuit (%)"
+      "extraNocturnaPct": "Majoration de l'heure supplémentaire de nuit (%)",
+      "comb": {
+        "comoLaGeneral": "Comme la règle générale ({{regla}})",
+        "titulo": "Quand plusieurs majorations tombent sur la même heure",
+        "ayuda": "« S'additionnent » : les deux sont payées (férié 100 % + repos 100 % = 200 %). « Le plus élevé » : seulement le plus haut (= 100 %). Choisissez pour chaque cas.",
+        "general": "Règle générale entre dimanche, repos et férié",
+        "feriadoDescanso": "Férié qui tombe sur son jour de repos",
+        "feriadoDomingo": "Férié qui tombe un dimanche",
+        "domingoDescanso": "Dimanche qui est son jour de repos",
+        "nocheDomingo": "Nuit et dimanche",
+        "nocheFeriado": "Nuit et férié",
+        "nocheDescanso": "Nuit et jour de repos",
+        "extraDia": "Heure sup. un dimanche, férié ou jour de repos"
+      },
+      "ej": {
+        "feriadoDescanso": "Une heure de jour un jour férié qui est aussi son jour de repos",
+        "domingoFeriado": "Une heure de jour un dimanche férié",
+        "domingoDescanso": "Une heure de jour un dimanche qui est son jour de repos",
+        "nocheDomingo": "Une heure de nuit un dimanche",
+        "nocheFeriadoDescanso": "Une heure de nuit un jour férié qui est son jour de repos",
+        "extraFeriado": "Une heure sup. (premier palier) un jour férié",
+        "titulo": "Ce que paient ces règles",
+        "fila": "{{que}} : +{{pct}} %",
+        "turno": "Poste de jour de 12 h un jour férié qui est aussi son jour de repos, à {{tarifa}} l'heure : {{ord}} h à +{{po}} % et {{extra}} h sup. à +{{pe}} % = {{total}}"
+      },
+      "queUsa": "Ce qu'utilise votre entreprise",
+      "usarSemanal": "Compter les heures sup. par semaine",
+      "usarGracia": "Ne pas payer la courte attente en sortant (tolérance)",
+      "tempranaAyuda": "Décoché, la paie commence à l'heure prévue même si la personne pointe avant.",
+      "recargos": "Majorations",
+      "recargosAyuda": "Désactivez une majoration pour ne plus la payer sans perdre le pourcentage saisi.",
+      "rec": {
+        "noche": "Majoration de nuit",
+        "domingo": "Majoration du dimanche",
+        "descanso": "Majoration pour travail le jour de repos",
+        "feriado": "Majoration jour férié",
+        "extra": "Majoration des heures sup.",
+        "extraAyuda": "Désactivée, les heures sup. sont payées au taux normal."
+      },
+      "ausenciasAyudaV2": "Cochée : payée. Décochée : reste justifiée (pas une faute), mais déduite. Un congé « personnel » est payé ou non selon ce qu'indique le congé."
     }
   },
   "visitantes": {

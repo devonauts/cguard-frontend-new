@@ -17729,7 +17729,11 @@
         "tramoFijo": "Quota fissa",
         "anadirTramo": "Aggiungi scaglione",
         "dobladaSiempreAparte": "Con questa modalità di pagamento il doppio turno compare sempre su una riga propria della busta paga («Premio doppio turno»).",
-        "dobladaComoSeCuenta": "C’è doppio turno quando qualcuno lavora in un giorno 1,5 volte o più il suo turno abituale (quello del calendario). 24 h su turni di 12 è un doppio; 36 h è un triplo e conta come due turni extra. Un turno di 24 h programmato non è un doppio."
+        "dobladaComoSeCuenta": "C’è doppio turno quando qualcuno lavora in un giorno 1,5 volte o più il suo turno abituale (quello del calendario). 24 h su turni di 12 è un doppio; 36 h è un triplo e conta come due turni extra. Un turno di 24 h programmato non è un doppio.",
+        "horasTarjetaTitulo": "Ore del cartellino pagate dalla busta paga",
+        "horasTarjetaAyuda": "Il cartellino le calcola sempre; la busta paga le paga solo se lo attivi. Le buste già approvate non cambiano.",
+        "pagarDescanso": "Pagare le ore lavorate nel giorno di riposo (voce «Ore nel giorno di riposo»)",
+        "pagarExtraNocturna": "Pagare lo straordinario notturno su una riga propria (serve una voce «Ore di straordinario notturno»)"
       },
       "atras": "Indietro",
       "continuar": "Continua",
@@ -17801,7 +17805,8 @@
         "holiday": "Ore festive",
         "rest_day": "Ore nel giorno di riposo",
         "sunday": "Ore domenicali",
-        "double_shift": "Ore di doppio turno"
+        "double_shift": "Ore di doppio turno",
+        "night_overtime": "Ore di straordinario notturno"
       },
       "frecuencia": {
         "weekly": "Settimanale",
@@ -18930,7 +18935,11 @@
         "extraNocturna": "Straordinario notturno ({{desde}}:00–{{hasta}}:00): +{{pct}} % (o il suo scaglione, se più alto)",
         "extraNocturnaComoExtra": "Straordinario notturno: come qualsiasi ora straordinaria",
         "descanso": "Giorno di riposo: il riposo della rotazione di ogni guardia · supervisori e ufficio: {{dia}}",
-        "descansoSinSemanal": "Giorno di riposo: il riposo della rotazione di ogni guardia (supervisori e ufficio: nessuno)"
+        "descansoSinSemanal": "Giorno di riposo: il riposo della rotazione di ogni guardia (supervisori e ufficio: nessuno)",
+        "noSePaga": "non pagato",
+        "recargosV2": "Domenica {{domingo}} · Riposo lavorato {{descanso}} · Festivo {{feriado}}",
+        "combinaciones": "Se coincidono — festivo e riposo: {{fd}} · festivo e domenica: {{fo}} · domenica e riposo: {{od}} · notte in quei giorni: {{noche}} · straordinario in quei giorni: {{extra}}",
+        "segunElDia": "secondo il giorno"
       },
       "semanaLaboralEmpieza": "La settimana lavorativa inizia il",
       "semanalAyuda": "Oltre questo, nella settimana, è straordinario (USA: 40). 0 = nessuna regola settimanale.",
@@ -18945,7 +18954,46 @@
       "extraNocturnaAyuda": "Le ore straordinarie in questa fascia si pagano con questa maggiorazione se è più alta del loro scaglione (Colombia: 19–6 al 75 %; Ecuador: 0–6 al 100 %).",
       "extraNocturnaDesde": "Straordinario notturno: dalle (ora)",
       "extraNocturnaHasta": "Straordinario notturno: alle (ora)",
-      "extraNocturnaPct": "Maggiorazione dello straordinario notturno (%)"
+      "extraNocturnaPct": "Maggiorazione dello straordinario notturno (%)",
+      "comb": {
+        "comoLaGeneral": "Come la regola generale ({{regla}})",
+        "titulo": "Quando più maggiorazioni cadono nella stessa ora",
+        "ayuda": "«Si sommano»: si pagano entrambe (festivo 100 % + riposo 100 % = 200 %). «Vince la maggiore»: solo la più alta (= 100 %). Scegli per ogni caso.",
+        "general": "Regola generale tra domenica, riposo e festivo",
+        "feriadoDescanso": "Festivo che cade nel suo giorno di riposo",
+        "feriadoDomingo": "Festivo che cade di domenica",
+        "domingoDescanso": "Domenica che è il suo giorno di riposo",
+        "nocheDomingo": "Notte e domenica",
+        "nocheFeriado": "Notte e festivo",
+        "nocheDescanso": "Notte e giorno di riposo",
+        "extraDia": "Straordinario di domenica, festivo o riposo"
+      },
+      "ej": {
+        "feriadoDescanso": "Un'ora diurna in un festivo che è anche il suo giorno di riposo",
+        "domingoFeriado": "Un'ora diurna in una domenica festiva",
+        "domingoDescanso": "Un'ora diurna in una domenica che è il suo giorno di riposo",
+        "nocheDomingo": "Un'ora notturna di domenica",
+        "nocheFeriadoDescanso": "Un'ora notturna in un festivo che è il suo giorno di riposo",
+        "extraFeriado": "Un'ora di straordinario (primo scaglione) in un festivo",
+        "titulo": "Così si paga con queste regole",
+        "fila": "{{que}}: +{{pct}} %",
+        "turno": "Turno diurno di 12 h in un festivo che è anche il suo giorno di riposo, a {{tarifa}} l'ora: {{ord}} h a +{{po}} % e {{extra}} h di straordinario a +{{pe}} % = {{total}}"
+      },
+      "queUsa": "Cosa usa la tua azienda",
+      "usarSemanal": "Contare gli straordinari per settimana",
+      "usarGracia": "Non pagare la breve attesa all'uscita (tolleranza)",
+      "tempranaAyuda": "Se non spuntato, il pagamento inizia all'ora prevista anche se la persona timbra prima.",
+      "recargos": "Maggiorazioni",
+      "recargosAyuda": "Disattiva una maggiorazione per non pagarla più senza perdere la percentuale scritta.",
+      "rec": {
+        "noche": "Maggiorazione notturna",
+        "domingo": "Maggiorazione domenicale",
+        "descanso": "Maggiorazione per lavoro nel giorno di riposo",
+        "feriado": "Maggiorazione festiva",
+        "extra": "Maggiorazione straordinari",
+        "extraAyuda": "Disattivata, gli straordinari si pagano a tariffa semplice."
+      },
+      "ausenciasAyudaV2": "Spuntata: pagata. Non spuntata: resta giustificata (non è un'assenza ingiustificata), ma si detrae. Un permesso «personale» si paga o no secondo quanto indica il permesso."
     }
   },
   "visitantes": {
