@@ -8363,6 +8363,8 @@
       "vehicleOverstayHint": "Un véhicule est à l'intérieur depuis plus longtemps que les minutes fixées dans Contrôle véhicules › Règles du poste. L'avis n'est envoyé qu'une fois par véhicule",
       "columnPush": "Téléphone",
       "payslipPublishedLabel": "Bulletin de paie publié",
+      "scheduleChangesLabel": "Changements de planning (à l'agent)",
+      "scheduleChangesHint": "Un seul avis par changement : postes ajoutés, retirés ou déplacés, un nouveau poste ou un poste quitté. Désactivez-le si vous préférez le prévenir vous-même",
       "dobletesOfficeLabel": "Doubles quarts : couvert ou personne n'a accepté",
       "dobletesOffersLabel": "Offres de doubles quarts (aux agents)"
     },

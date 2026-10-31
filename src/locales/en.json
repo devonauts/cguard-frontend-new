@@ -7861,6 +7861,8 @@
       "vehicleOverstayHint": "A vehicle has been inside longer than the minutes you set in Vehicle control › Post rules. Notified once per vehicle",
       "columnPush": "Phone",
       "payslipPublishedLabel": "Payslip published",
+      "scheduleChangesLabel": "Schedule changes (to the guard)",
+      "scheduleChangesHint": "One notice per change: shifts added, removed or moved, a new post or one they leave. Turn it off if you prefer to tell them yourself",
       "dobletesOfficeLabel": "Double shifts: covered or nobody accepted",
       "dobletesOffersLabel": "Double shift offers (to guards)"
     },
