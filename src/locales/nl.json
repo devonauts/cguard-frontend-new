@@ -1742,7 +1742,10 @@
         "saveError": "Geen beveiliger-ID"
       },
       "empty": "Geen beschikbaarheid",
-      "notAvailable": "Niet beschikbaar"
+      "notAvailable": "Niet beschikbaar",
+      "usedBy": "Dezelfde beschikbaarheid die de persoon in de app ziet. Het rooster waarschuwt bij toewijzen daarbuiten, Dekking zet hen onderaan en Dobletes biedt hen die diensten niet aan.",
+      "notSaid": "Nog geen beschikbaarheid opgegeven: telt als altijd beschikbaar.",
+      "datedDays": "Heeft ook {{n}} losse dag(en) in de app gemarkeerd."
     },
     "files": {
       "loadError": "De beveiliger kon niet worden geladen",
@@ -10563,7 +10566,8 @@
       "vuelveADespuesDel": "Keert na {{fecha}} terug naar {{puesto}}",
       "yNoPuedeFicharElTurnoSeRegistra": "en niet kan inklokken. De dienst wordt geregistreerd",
       "yaTieneUnTurnoAbierto": "Er is al een open dienst — een tweede wordt niet geopend.",
-      "vaEnCamino": "Onderweg · {{min}} min geleden gestuurd"
+      "vaEnCamino": "Onderweg · {{min}} min geleden gestuurd",
+      "fueraDeDisponibilidad": "Buiten beschikbaarheid"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Items per pagina",
@@ -13290,7 +13294,34 @@
       "cancelarPermisoMensaje": "De diensten van die dagen gaan terug in het rooster en hun gaten in Bezetting sluiten. Dagen met al een vervanger blijven zo.",
       "cancelarPermisoBoton": "Verlof annuleren",
       "eliminarAprobada": "De aanvraag wordt verwijderd en wat de goedkeuring in het rooster veranderde, wordt teruggedraaid. Dagen met al een vervanger blijven zo.",
-      "cancelado": "Geannuleerd"
+      "cancelado": "Geannuleerd",
+      "mesAnterior": "Vorige maand",
+      "mesSiguiente": "Volgende maand",
+      "nadieFueraEsteMes": "Niemand is deze maand afwezig met deze filters.",
+      "puesto": "Post",
+      "origen": {
+        "app": "Bewakers-app",
+        "horario": "Rooster",
+        "planificador": "Planner",
+        "editor": "Roostereditor",
+        "replacement": "Vakantievervanging",
+        "vigia": "Assistent",
+        "migrated": "Eerdere registratie",
+        "page": "Afwezigheid en verlof"
+      },
+      "origenColumna": "Geregistreerd in",
+      "vistaLista": "Lijst",
+      "vistaCalendario": "Kalender",
+      "porPersona": "Per persoon",
+      "porPuesto": "Per post",
+      "filtroTipo": "Soort",
+      "todosLosTipos": "Alle soorten",
+      "filtroPuesto": "Post",
+      "todosLosPuestos": "Alle posten",
+      "filtroSucursal": "Vestiging",
+      "todasLasSucursales": "Alle vestigingen",
+      "quitarFiltroPersona": "Persoonsfilter wissen",
+      "calendario": "Kalender"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -19029,6 +19060,9 @@
       "rrhh": "Personeelszaken: plus personeelsgegevens en loon",
       "supervision": "Toezicht: keurt ook uren goed",
       "gerencia": "Directie: plus rapporten en directieacties"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Toegewezen, maar {{n}} dienst(en) vallen buiten de opgegeven beschikbaarheid ({{dias}}). Overleg met de persoon."
     }
   },
   "visitantes": {

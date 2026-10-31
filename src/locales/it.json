@@ -1742,7 +1742,10 @@
         "saveError": "Identificativo della guardia mancante"
       },
       "empty": "Nessuna disponibilità",
-      "notAvailable": "Non disponibile"
+      "notAvailable": "Non disponibile",
+      "usedBy": "La stessa disponibilità che la persona vede nella sua app. I turni avvisano se la assegni fuori, la Copertura la mette in fondo e Dobletes non le offre quei turni.",
+      "notSaid": "Non ha ancora indicato la disponibilità: risulta sempre disponibile.",
+      "datedDays": "Ha anche segnato {{n}} giorno/i singolo/i nell'app."
     },
     "files": {
       "loadError": "Impossibile caricare la guardia",
@@ -10563,7 +10566,8 @@
       "vuelveADespuesDel": "Torna a {{puesto}} dopo il {{fecha}}",
       "yNoPuedeFicharElTurnoSeRegistra": "e non può timbrare. Il turno viene registrato",
       "yaTieneUnTurnoAbierto": "Ha già un turno aperto — non se ne apre un secondo.",
-      "vaEnCamino": "In arrivo · inviato {{min}} min fa"
+      "vaEnCamino": "In arrivo · inviato {{min}} min fa",
+      "fueraDeDisponibilidad": "Fuori disponibilità"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Elementi per pagina",
@@ -13290,7 +13294,34 @@
       "cancelarPermisoMensaje": "I turni di quei giorni tornano nell’orario e i loro buchi in Copertura si chiudono. I giorni che hanno già un sostituto restano così.",
       "cancelarPermisoBoton": "Annulla permesso",
       "eliminarAprobada": "La richiesta viene eliminata e ciò che la sua approvazione aveva cambiato nell’orario viene annullato. I giorni con un sostituto restano così.",
-      "cancelado": "Annullato"
+      "cancelado": "Annullato",
+      "mesAnterior": "Mese precedente",
+      "mesSiguiente": "Mese successivo",
+      "nadieFueraEsteMes": "Nessuno è assente questo mese con questi filtri.",
+      "puesto": "Postazione",
+      "origen": {
+        "app": "App della guardia",
+        "horario": "Turni",
+        "planificador": "Pianificatore",
+        "editor": "Editor dei turni",
+        "replacement": "Sostituzione per ferie",
+        "vigia": "Assistente",
+        "migrated": "Registrazione precedente",
+        "page": "Assenze e permessi"
+      },
+      "origenColumna": "Registrato in",
+      "vistaLista": "Elenco",
+      "vistaCalendario": "Calendario",
+      "porPersona": "Per persona",
+      "porPuesto": "Per postazione",
+      "filtroTipo": "Tipo",
+      "todosLosTipos": "Tutti i tipi",
+      "filtroPuesto": "Postazione",
+      "todosLosPuestos": "Tutte le postazioni",
+      "filtroSucursal": "Filiale",
+      "todasLasSucursales": "Tutte le filiali",
+      "quitarFiltroPersona": "Rimuovi il filtro persona",
+      "calendario": "Calendario"
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",
@@ -19029,6 +19060,9 @@
       "rrhh": "Risorse umane: in più dati del personale e paga",
       "supervision": "Supervisione: in più approva le ore",
       "gerencia": "Direzione: in più report e azioni direttive"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Assegnato, ma {{n}} turno/i cadono fuori dalla disponibilità indicata ({{dias}}). Verifica con la persona."
     }
   },
   "visitantes": {

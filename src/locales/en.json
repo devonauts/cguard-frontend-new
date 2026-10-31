@@ -1958,7 +1958,10 @@
         "saveError": "No guard id"
       },
       "empty": "No availability",
-      "notAvailable": "Not available"
+      "notAvailable": "Not available",
+      "usedBy": "The same availability the person sees in their app. The schedule warns when assigning outside it, Coverage lists them last and Dobletes does not offer them those shifts.",
+      "notSaid": "They have not given their availability yet: they count as always available.",
+      "datedDays": "They also marked {{n}} single day(s) in the app."
     },
     "files": {
       "loadError": "Could not load guard",
@@ -10028,7 +10031,8 @@
       "vuelveADespuesDel": "Returns to {{puesto}} after {{fecha}}",
       "yNoPuedeFicharElTurnoSeRegistra": "and cannot clock in. The shift is recorded",
       "yaTieneUnTurnoAbierto": "They already have an open shift — a second one is not opened.",
-      "vaEnCamino": "On the way · sent {{min}} min ago"
+      "vaEnCamino": "On the way · sent {{min}} min ago",
+      "fueraDeDisponibilidad": "Outside their availability"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Items per page",
@@ -12755,7 +12759,34 @@
       "cancelarPermisoMensaje": "The shifts on those days go back to the schedule and their gaps in Coverage close. Days that already have a replacement stay as they are.",
       "cancelarPermisoBoton": "Cancel time off",
       "eliminarAprobada": "The request is deleted and what its approval changed in the schedule is undone. Days that already have a replacement stay as they are.",
-      "cancelado": "Cancelled"
+      "cancelado": "Cancelled",
+      "mesAnterior": "Previous month",
+      "mesSiguiente": "Next month",
+      "nadieFueraEsteMes": "Nobody is off this month with these filters.",
+      "puesto": "Post",
+      "origen": {
+        "app": "Guard app",
+        "horario": "Schedule",
+        "planificador": "Planner",
+        "editor": "Schedule editor",
+        "replacement": "Vacation replacement",
+        "vigia": "Assistant",
+        "migrated": "Earlier record",
+        "page": "Leave and time off"
+      },
+      "origenColumna": "Registered in",
+      "vistaLista": "List",
+      "vistaCalendario": "Calendar",
+      "porPersona": "By person",
+      "porPuesto": "By post",
+      "filtroTipo": "Type",
+      "todosLosTipos": "All types",
+      "filtroPuesto": "Post",
+      "todosLosPuestos": "All posts",
+      "filtroSucursal": "Branch",
+      "todasLasSucursales": "All branches",
+      "quitarFiltroPersona": "Clear the person filter",
+      "calendario": "Calendar"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -18494,6 +18525,9 @@
       "rrhh": "Human resources: plus personnel data and pay",
       "supervision": "Supervision: plus approves hours",
       "gerencia": "Management: plus reports and executive actions"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Assigned, but {{n}} shift(s) fall outside the availability they gave ({{dias}}). Check with the person."
     }
   },
   "map": {
