@@ -97,7 +97,7 @@ import {
 } from "@/lib/guardName";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import AppLayout from "@/layouts/app-layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -108,7 +108,8 @@ import {
   NumberStepper,
 } from "@/components/kit";
 
-import AvisoRetiradaHorario from "./AvisoRetiradaHorario";
+import HorarioModos from "./HorarioModos";
+import { aplicarDeUnaVez, DraftConflict } from "@/lib/planificador/servidor";
 import { MeterBar } from "@/components/charts";
 import { ApiService } from "@/services/api/apiService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -151,24 +152,6 @@ interface RawGuardRow {
   email?: string;
 }
 
-// One row of the post-publish implementation plan (who was notified of what).
-interface PlanItem {
-  id?: string;
-  guardId?: string;
-  guardName?: string;
-  added?: number;
-  changed?: number;
-  removed?: number;
-  notifyStatus?: string;
-}
-
-// One proposed change in the AI scheduler draft.
-interface ProposalChange {
-  id?: string;
-  action?: string;
-  startTime?: string;
-  meta?: { shiftType?: string };
-}
 
 // Real coverage of the LIVE schedule (GET /scheduler/coverage).
 interface CoverageInfo {
@@ -201,52 +184,6 @@ interface AutoAssignResult {
   titularesAssigned?: number;
   sacafrancosAssigned?: number;
   unassignedRemaining?: number;
-}
-
-// Proposal summary + warnings (GET /scheduler/proposals/:id).
-interface ProposalCoverageWarning {
-  coveredPct?: number;
-  gapCount?: number;
-  overstaffCount?: number;
-}
-interface ProposalWarnings {
-  total?: number;
-  coverage?: ProposalCoverageWarning;
-  restViolations?: unknown[];
-  doubleBookings?: unknown[];
-  sfStyleInconsistencies?: unknown[];
-  // Estos dos los calcula scheduleValidation.ts y viajan en la respuesta desde
-  // que se publicó Configuración › Jornada. No estaban declarados aquí, así que
-  // ni siquiera se podían leer sin que TypeScript protestara — y por eso la
-  // lista de avisos de abajo nunca los pintó. El ajuste era real, el motor era
-  // real, y el aviso moría en el borde de la pantalla.
-  shortRests?: unknown[];
-  weeklyOverloads?: unknown[];
-  maxConsecutiveAllowed?: number;
-}
-interface ProposalCost {
-  currency?: string;
-  hasRate?: boolean;
-  projected?: number;
-  delta?: number;
-}
-interface ProposalSummary {
-  added?: number;
-  removed?: number;
-  changed?: number;
-  guardsAffected?: number;
-  cost?: ProposalCost;
-  warnings?: ProposalWarnings;
-}
-interface ProposalData {
-  proposal?: { id?: string; summary?: ProposalSummary };
-  changes?: ProposalChange[];
-}
-
-// Post-publish implementation plan (GET /scheduler/proposals/:id/plan).
-interface PlanData {
-  plan?: { notifiedGuards?: number; totalGuards?: number };
-  items?: PlanItem[];
 }
 
 // Station-detail fields read by the "configurar estación" modal.
@@ -624,8 +561,14 @@ const KEY_CODES: Record<string, string> = {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
+/** Phase 2: the station requirement is edited only in the station sheet. The
+    old in-grid editors stay below this switch until the single schedule
+    editor replaces this page. */
+const REQUISITO_EN_LA_FICHA: boolean = true;
+
 export default function Schedule() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   /* Read-only for who cannot edit stations (lib/reglasDeAcciones): the menus,
      the assign form and drag-and-drop say why instead of failing on save. */
   const editarHorario = usePuede("turnos.editarHorario");
@@ -1218,7 +1161,7 @@ export default function Schedule() {
             ApiService.get(
               `/tenant/${tenantId}/scheduler/overview?startDate=${startDateStr}&endDate=${endDateStr}`,
             ),
-            ApiService.get(`/tenant/${tenantId}/rotation-styles`),
+            ApiService.get(`/tenant/${tenantId}/rotation-styles?includeArchived=1`),
             ApiService.get(
               `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
             ),
@@ -3313,10 +3256,11 @@ export default function Schedule() {
     const st = stationsById.get(stationId);
 
     setMoveSaving(true);
-    let movidos = 0;
-    const fallados: string[] = [];
-
-    for (const s of objetivo) {
+    /* ALL OR NOTHING (phase 2): moving a block of coverage used to PUT each
+       day on its own, and a failure on day 4 left days 1–3 moved and the
+       rest where they were. Now the whole block moves in one server
+       transaction, or nothing moves and the message names the day. */
+    const cambios = objetivo.map((s) => {
       const ini = new Date(s.startTime);
       const fin = new Date(s.endTime);
       const w = dateToWall(ini, tzName);
@@ -3330,47 +3274,47 @@ export default function Schedule() {
         nuevoIni.getTime() + (fin.getTime() - ini.getTime()),
       );
 
-      try {
-        await ApiService.put(`/tenant/${tenantId}/shift/${s.id}`, {
-          data: {
-            // `station` y `postSite` van SIEMPRE: el servidor los reasigna sin
-            // comprobar si venían, así que omitirlos los pondría a null.
-            station: stationId,
-            postSite: st?.postSiteId,
-            guard: s.guardId,
-            startTime: nuevoIni.toISOString(),
-            endTime: nuevoFin.toISOString(),
-            // Se desliga de la plaza vieja: una cobertura vive del puesto y el
-            // día, y conservar una plaza de la estación de origen la haría
-            // desaparecer de la rejilla al cambiar de puesto.
-            positionId: null,
+      return {
+        text: t("ui.Schedule.moverCoberturaDel", {
+          defaultValue: "Mover la cobertura del {{dia}}",
+          dia: diaDelTurno(s),
+        }),
+        calls: [
+          {
+            method: "put",
+            path: `/tenant/${tenantId}/shift/${s.id}`,
+            body: {
+              data: {
+                // `station` y `postSite` van SIEMPRE: el servidor los reasigna sin
+                // comprobar si venían, así que omitirlos los pondría a null.
+                station: stationId,
+                postSite: st?.postSiteId,
+                guard: s.guardId,
+                startTime: nuevoIni.toISOString(),
+                endTime: nuevoFin.toISOString(),
+                // Se desliga de la plaza vieja: una cobertura vive del puesto y el
+                // día, y conservar una plaza de la estación de origen la haría
+                // desaparecer de la rejilla al cambiar de puesto.
+                positionId: null,
+              },
+            },
           },
-        });
-        movidos += 1;
-      } catch (err: any) {
-        // Un día que falla no aborta el resto, y se dice CUÁL.
-        fallados.push(diaDelTurno(s));
-      }
-    }
-    setMoveSaving(false);
-    if (!movidos) {
+        ],
+      };
+    });
+    let movidos = 0;
+
+    try {
+      movidos = await aplicarDeUnaVez(tenantId, cambios);
+    } catch (err: any) {
       toast.error(
-        fallados.length
-          ? t("ui.Schedule.noSePudoMoverConErrores", {
-              defaultValue: "No se pudo mover ({{n}} día(s) con error).",
-              n: fallados.length,
-            })
+        err instanceof DraftConflict
+          ? err.message
           : t("ui.Schedule.noSePudoMover", "No se pudo mover."),
       );
-    } else if (fallados.length) {
-      toast.warning(
-        t("ui.Schedule.diasMovidosFalloEn", {
-          defaultValue: "{{n}} día(s) movido(s). Falló en: {{dias}}.",
-          n: movidos,
-          dias: fallados.join(", "),
-        }),
-      );
-    } else {
+    }
+    setMoveSaving(false);
+    if (movidos) {
       toast.success(
         movidos === 1
           ? t("ui.Schedule.coberturaMovida", "Cobertura movida")
@@ -3627,13 +3571,10 @@ export default function Schedule() {
     setAssignSaving(true);
     try {
       // Drag-move: free the guard from their current puesto first (one active
-      // rotation per vigilante), then create the new assignment.
-      if (moveFrom) {
-        await ApiService.delete(
-          `/tenant/${tenantId}/guard-assignment/${moveFrom.id}`,
-        );
-      }
-      await ApiService.post(`/tenant/${tenantId}/guard-assignment`, {
+      // rotation per vigilante), then create the new assignment — in ONE
+      // server transaction (phase 2): if the new one is refused, the guard
+      // stays where they were instead of ending up with no station.
+      const nueva = {
         data: {
           guardId: assignGuard,
           stationId: assignTarget.stationId,
@@ -3654,7 +3595,27 @@ export default function Schedule() {
               }
             : {}),
         },
-      });
+      };
+
+      if (moveFrom)
+        await aplicarDeUnaVez(tenantId, [
+          {
+            text: t("ui.Schedule.moverDePuesto", "Mover al vigilante de puesto"),
+            calls: [
+              {
+                method: "delete",
+                path: `/tenant/${tenantId}/guard-assignment/${moveFrom.id}`,
+              },
+              {
+                method: "post",
+                path: `/tenant/${tenantId}/guard-assignment`,
+                body: nueva,
+              },
+            ],
+          },
+        ]);
+      else
+        await ApiService.post(`/tenant/${tenantId}/guard-assignment`, nueva);
       toast.success(
         moveFrom
           ? t("ui.Schedule.vigilanteMovidoDePuesto", "Vigilante movido de puesto")
@@ -3700,7 +3661,27 @@ export default function Schedule() {
     }
   };
 
+  /* ── EL REQUISITO SE CAMBIA EN LA FICHA DE LA ESTACIÓN (fase 2) ──────────
+     Horas, cuántos a la vez y qué días son el requisito de la estación, y
+     tiene UNA puerta: Estación › Requisito. «Reconfigurar» y editar una plaza
+     fija llevan allí en vez de abrir aquí un segundo editor que pensaba
+     distinto. El sacafranco sigue con su asistente: no es requisito. */
+  const irAlRequisito = (station: Station) => {
+    const sede = (station as any).postSiteId;
+
+    navigate(
+      sede
+        ? `/post-sites/${sede}/stations/${station.id}/overview#requisito`
+        : `/stations`,
+    );
+  };
+
   const configureStation = (station: Station) => {
+    if (REQUISITO_EN_LA_FICHA) {
+      irAlRequisito(station);
+
+      return;
+    }
     setConfigStation(station);
     setConfigPaso(1);
     setConfigType(station.scheduleType || "24h");
@@ -4107,6 +4088,11 @@ export default function Schedule() {
        puerta desde la que se abra. */
     if ((pos.type || "fijo") === "sacafranco") {
       editSacafranco(station, pos);
+
+      return;
+    }
+    if (REQUISITO_EN_LA_FICHA) {
+      irAlRequisito(station);
 
       return;
     }
@@ -4596,109 +4582,6 @@ export default function Schedule() {
   // AI Auto-assign
   const [autoAssigning, setAutoAssigning] = useState(false);
   const [autoResult, setAutoResult] = useState<AutoAssignResult | null>(null);
-
-  // Draft horario proposal (generate → review/diff → publish/discard).
-  const [proposalLoading, setProposalLoading] = useState(false);
-  const [proposalData, setProposalData] = useState<ProposalData | null>(null); // { proposal, changes }
-  const [publishing, setPublishing] = useState(false);
-  const [planData, setPlanData] = useState<PlanData | null>(null); // implementation plan after publish
-
-  const generateDraft = async () => {
-    setProposalLoading(true);
-    try {
-      const gen = await ApiService.post(
-        `/tenant/${tenantId}/scheduler/proposals`,
-        { data: { scope: "tenant" } },
-      );
-      const id = gen?.proposalId || gen?.data?.proposalId;
-
-      if (!id)
-        throw new Error(
-          t(
-            "ui.Schedule.noSePudoGenerarElBorrador",
-            "No se pudo generar el borrador",
-          ),
-        );
-      const detail = await ApiService.get(
-        `/tenant/${tenantId}/scheduler/proposals/${id}`,
-      );
-
-      setProposalData(detail?.data ?? detail);
-    } catch (e: any) {
-      toast.error(
-        e?.data?.message ||
-          e?.message ||
-          t(
-            "ui.Schedule.errorGenerandoElBorrador",
-            "Error generando el borrador",
-          ),
-      );
-    } finally {
-      setProposalLoading(false);
-    }
-  };
-
-  const publishProposal = async (allowGaps = false) => {
-    const id = proposalData?.proposal?.id;
-
-    if (!id) return;
-    setPublishing(true);
-    try {
-      const res = await ApiService.post(
-        `/tenant/${tenantId}/scheduler/proposals/${id}/publish`,
-        { data: { confirm: true, allowGaps } },
-      );
-      const notified =
-        res?.plan?.notifiedGuards ?? res?.data?.plan?.notifiedGuards ?? 0;
-
-      toast.success(
-        t("ui.Schedule.horarioPublicado", {
-          defaultValue: "Horario publicado · {{count}} vigilantes notificados",
-          count: notified,
-        }),
-      );
-      // Switch the modal to the implementation plan (who was notified).
-      try {
-        const plan = await ApiService.get(
-          `/tenant/${tenantId}/scheduler/proposals/${id}/plan`,
-        );
-
-        setPlanData(plan?.data ?? plan);
-      } catch {
-        setPlanData({ plan: { notifiedGuards: notified }, items: [] });
-      }
-      fetchAll();
-    } catch (e: any) {
-      toast.error(
-        e?.data?.message ||
-          e?.message ||
-          t("ui.Schedule.errorAlPublicar", "Error al publicar"),
-      );
-    } finally {
-      setPublishing(false);
-    }
-  };
-
-  const discardProposal = async () => {
-    const id = proposalData?.proposal?.id;
-
-    if (id) {
-      try {
-        await ApiService.post(
-          `/tenant/${tenantId}/scheduler/proposals/${id}/discard`,
-          { data: {} },
-        );
-      } catch {
-        /* best effort */
-      }
-    }
-    setProposalData(null);
-  };
-
-  const closeProposalModal = () => {
-    setProposalData(null);
-    setPlanData(null);
-  };
 
   // Geocode guards missing home coordinates (enables real proximity ranking).
   const [geocoding, setGeocoding] = useState(false);
@@ -5906,7 +5789,6 @@ export default function Schedule() {
     showAssignForm ||
     !!configStation ||
     !!overrideTarget ||
-    !!proposalData ||
     !!sfCover ||
     !!posEditor ||
     !!shadowFor ||
@@ -6328,8 +6210,8 @@ export default function Schedule() {
   return (
     <AppLayout>
       <div className="px-3 lg:px-4 pt-2 pb-2 flex flex-col">
-        {/* El Horario se va: el Planificador es la pantalla nueva. */}
-        <AvisoRetiradaHorario className="mb-2" />
+        {/* Un solo editor: «En vivo» (esto) y «Borrador» (el compartido). */}
+        <HorarioModos className="mb-2" modo="vivo" />
         {!editarHorario.puede && (
           <div
             className="mb-2 rounded-xl border px-3 py-2 text-sm"
@@ -12247,502 +12129,6 @@ export default function Schedule() {
           );
         })()}
 
-      {/* ─── Draft horario review/diff Modal ──────────────────────────────── */}
-      {proposalData && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: "oklch(0 0 0 / 0.5)" }}
-        >
-          <div className="glass-raised flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden">
-            <div
-              className="px-5 py-4"
-              style={{ borderBottom: "1px solid var(--hairline)" }}
-            >
-              <div className="flex items-center gap-2">
-                {planData ? (
-                  <CheckCircle2 size={18} style={{ color: "var(--ok-text)" }} />
-                ) : (
-                  <FileText size={18} style={{ color: "var(--brand-text)" }} />
-                )}
-                <h3 className="font-display text-base font-bold">
-                  {planData
-                    ? t(
-                        "ui.Schedule.planDeImplementacion",
-                        "Plan de implementación",
-                      )
-                    : t("ui.Schedule.borradorDeHorario", "Borrador de horario")}
-                </h3>
-              </div>
-              <p className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>
-                {planData
-                  ? t(
-                      "ui.Schedule.horarioPublicadoNotificados",
-                      "Horario publicado. Estos vigilantes fueron notificados de sus cambios.",
-                    )
-                  : t(
-                      "ui.Schedule.revisaLosCambiosPropuestos",
-                      "Revisa los cambios propuestos. Nada se aplica hasta que publiques.",
-                    )}
-              </p>
-            </div>
-
-            {planData ? (
-              /* Implementation plan (post-publish): who was notified */
-              <div className="flex-1 overflow-auto px-5 py-3">
-                <div
-                  className="mb-3 flex items-center gap-2 rounded-xl px-3 py-2"
-                  style={tonePill("ok", 12)}
-                >
-                  <Users size={16} />
-                  <span className="text-sm font-semibold">
-                    {t("ui.Schedule.nDeNVigilantesNotificados", {
-                      defaultValue: "{{n}} de {{total}} vigilantes notificados",
-                      n: planData?.plan?.notifiedGuards ?? 0,
-                      total:
-                        planData?.plan?.totalGuards ??
-                        planData?.items?.length ??
-                        0,
-                    })}
-                  </span>
-                </div>
-                {(planData?.items || []).length ? (
-                  <div
-                    className="divide-y"
-                    style={{ borderColor: "var(--hairline)" }}
-                  >
-                    {(planData.items || []).map((it: PlanItem) => {
-                      const ch: string[] = [];
-
-                      if (it.added) ch.push(`+${it.added}`);
-                      if (it.changed) ch.push(`~${it.changed}`);
-                      if (it.removed) ch.push(`-${it.removed}`);
-                      const ok = it.notifyStatus === "sent";
-
-                      return (
-                        <div
-                          key={it.id || it.guardId}
-                          className="flex items-center gap-3 py-2"
-                        >
-                          <span
-                            className="shrink-0"
-                            style={{
-                              color: ok ? "var(--ok-text)" : "var(--ink-faint)",
-                            }}
-                          >
-                            {ok ? (
-                              <CheckCircle2 size={15} />
-                            ) : (
-                              <Clock size={15} />
-                            )}
-                          </span>
-                          <span className="min-w-0 flex-1 truncate text-sm">
-                            {it.guardName || t("comun.vigilante", "Vigilante")}
-                          </span>
-                          <span
-                            className="shrink-0 font-mono text-xs tabular-nums"
-                            style={{ color: "var(--ink-soft)" }}
-                          >
-                            {ch.join(" ")}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p
-                    className="py-8 text-center text-sm"
-                    style={{ color: "var(--ink-soft)" }}
-                  >
-                    {t(
-                      "ui.Schedule.noHuboVigilantesAfectados",
-                      "No hubo vigilantes afectados.",
-                    )}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Summary counters */}
-                {(() => {
-                  const s = proposalData?.proposal?.summary || {};
-                  const cards = [
-                    {
-                      label: t("ui.Schedule.nuevos", "Nuevos"),
-                      value: s.added || 0,
-                      icon: <PlusIcon size={14} />,
-                      tone: "ok" as Tone,
-                    },
-                    {
-                      label: t("ui.Schedule.eliminados", "Eliminados"),
-                      value: s.removed || 0,
-                      icon: <MinusCircle size={14} />,
-                      tone: "bad" as Tone,
-                    },
-                    {
-                      label: t("ui.Schedule.modificados", "Modificados"),
-                      value: s.changed || 0,
-                      icon: <RefreshCw size={14} />,
-                      tone: "warn" as Tone,
-                    },
-                    {
-                      label: t("ui.Schedule.vigilantesAfectados", "Vigilantes afectados"),
-                      value: s.guardsAffected || 0,
-                      icon: <Users size={14} />,
-                      tone: "neutral" as Tone,
-                    },
-                  ];
-
-                  return (
-                    <div
-                      className="grid grid-cols-2 gap-2 px-5 py-3 sm:grid-cols-4"
-                      style={{ borderBottom: "1px solid var(--hairline)" }}
-                    >
-                      {cards.map((c) => (
-                        <div
-                          key={c.label}
-                          className="glass-flat p-2 text-center"
-                        >
-                          <div
-                            className="flex items-center justify-center gap-1"
-                            style={{ color: toneInk(c.tone) }}
-                          >
-                            {c.icon}
-                            <span className="text-lg font-bold tabular-nums">
-                              {c.value}
-                            </span>
-                          </div>
-                          <div className="cg-eyebrow mt-0.5">{c.label}</div>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })()}
-
-                {/* Costo proyectado RETIRADO (2026-08-06): salía de la tarifa por hora
-                de Nómina, que dejó de existir cuando se quitó el rol de pagos.
-                Vuelve cuando el pago se reconstruya para cualquier país. */}
-
-                {/* Coverage (Phase 7): is every puesto covered? */}
-                {(() => {
-                  const cov =
-                    proposalData?.proposal?.summary?.warnings?.coverage;
-
-                  if (!cov) return null;
-                  const ok = (cov.gapCount || 0) === 0;
-
-                  return (
-                    <div
-                      className="flex items-center justify-between px-5 py-2.5"
-                      style={{ borderBottom: "1px solid var(--hairline)" }}
-                    >
-                      <div className="flex items-center gap-2">
-                        {ok ? (
-                          <CheckCircle2
-                            size={15}
-                            style={{ color: "var(--ok-text)" }}
-                          />
-                        ) : (
-                          <AlertTriangle
-                            size={15}
-                            style={{ color: "var(--bad-text)" }}
-                          />
-                        )}
-                        <span
-                          className="text-[11px]"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {t(
-                            "dashboard.coverage.title",
-                            "Cobertura de puestos",
-                          )}{" "}
-                          <span style={{ color: "var(--ink-faint)" }}>
-                            {t("ui.Schedule.14Dias", "(14 días)")}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs">
-                        <span
-                          className="font-bold tabular-nums"
-                          style={{
-                            color: ok ? "var(--ok-text)" : "var(--bad-text)",
-                          }}
-                        >
-                          {cov.coveredPct}%
-                        </span>
-                        {(cov.gapCount || 0) > 0 && (
-                          <span
-                            className="font-semibold tabular-nums"
-                            style={{ color: "var(--bad-text)" }}
-                          >
-                            {t("ui.Schedule.nSinCubrirCorto", {
-                              defaultValue: "{{n}} sin cubrir",
-                              n: cov.gapCount,
-                            })}
-                          </span>
-                        )}
-                        {(cov.overstaffCount || 0) > 0 && (
-                          <span
-                            className="tabular-nums"
-                            style={{ color: "var(--warn-text)" }}
-                          >
-                            {t("ui.Schedule.nSobreCubierto", {
-                              defaultValue: "{{n}} sobre-cubierto",
-                              n: cov.overstaffCount,
-                            })}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* Rest-rule + sacafranco warnings (reqs 3 & 9) */}
-                {(() => {
-                  const w = proposalData?.proposal?.summary?.warnings;
-
-                  if (
-                    !w ||
-                    (!w.total &&
-                      !w.restViolations?.length &&
-                      !w.doubleBookings?.length &&
-                      !w.sfStyleInconsistencies?.length &&
-                      !w.shortRests?.length &&
-                      !w.weeklyOverloads?.length)
-                  )
-                    return null;
-                  const lines: string[] = [];
-
-                  if (w.doubleBookings?.length)
-                    lines.push(
-                      t("ui.Schedule.avisoDobleAsignacion", {
-                        defaultValue:
-                          "{{n}} vigilante(s) con doble asignación el mismo día",
-                        n: w.doubleBookings.length,
-                      }),
-                    );
-                  if (w.restViolations?.length)
-                    lines.push(
-                      t("ui.Schedule.avisoSinDescansoSemanal", {
-                        defaultValue:
-                          "{{n}} vigilante(s) sin descanso semanal (más de {{max}} días seguidos)",
-                        n: w.restViolations.length,
-                        max: w.maxConsecutiveAllowed || 7,
-                      }),
-                    );
-                  // Estos dos SE CALCULABAN y viajaban en la respuesta, y esta lista
-                  // no los leía: se podía fijar «descanso mínimo 12 h» y «tope 40 h
-                  // semanales» en Configuración › Jornada, publicar un horario que
-                  // violara las dos, y no recibir ni una señal. El ajuste existía,
-                  // el motor existía, y no llegaba a la pantalla.
-                  if (w.shortRests?.length)
-                    lines.push(
-                      t("ui.Schedule.avisoDescansoMinimo", {
-                        defaultValue:
-                          "{{n}} vigilante(s) con menos del descanso mínimo entre turnos",
-                        n: w.shortRests.length,
-                      }),
-                    );
-                  if (w.weeklyOverloads?.length)
-                    lines.push(
-                      t("ui.Schedule.avisoTopeHorasSemanales", {
-                        defaultValue:
-                          "{{n}} vigilante(s) por encima del tope de horas semanales",
-                        n: w.weeklyOverloads.length,
-                      }),
-                    );
-                  if (w.sfStyleInconsistencies?.length)
-                    lines.push(
-                      t("ui.Schedule.avisoEstilosSacafranco", {
-                        defaultValue:
-                          "{{n}} sitio(s) con sacafrancos en estilos de turno distintos",
-                        n: w.sfStyleInconsistencies.length,
-                      }),
-                    );
-                  if (!lines.length) return null;
-
-                  return (
-                    <div
-                      className="px-5 py-2.5"
-                      style={{ borderBottom: "1px solid var(--hairline)" }}
-                    >
-                      <div
-                        className="flex items-start gap-2 rounded-xl px-3 py-2"
-                        style={tonePill("warn", 12)}
-                      >
-                        <AlertTriangle className="mt-0.5 shrink-0" size={15} />
-                        <div className="text-[11px] leading-relaxed">
-                          <p className="font-semibold">
-                            {t(
-                              "ui.Schedule.revisaAntesDePublicar",
-                              "Revisa antes de publicar:",
-                            )}
-                          </p>
-                          <ul className="list-disc pl-4">
-                            {lines.map((l, i) => (
-                              <li key={i}>{l}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* Change list */}
-                <div className="flex-1 overflow-auto px-5 py-3">
-                  {(() => {
-                    const changes = (proposalData?.changes || []).filter(
-                      (c: ProposalChange) => c.action !== "keep",
-                    );
-
-                    if (!changes.length) {
-                      return (
-                        <div className="flex flex-col items-center justify-center py-10 text-center">
-                          <CheckCircle2
-                            className="mb-2"
-                            size={28}
-                            style={{ color: "var(--ok-text)" }}
-                          />
-                          <p className="text-sm font-semibold">
-                            {t(
-                              "ui.Schedule.elHorarioYaEstaAl",
-                              "El horario ya está al día",
-                            )}
-                          </p>
-                          <p
-                            className="text-xs"
-                            style={{ color: "var(--ink-soft)" }}
-                          >
-                            {t("ui.Schedule.noHayCambiosQueAplicar")}
-                          </p>
-                        </div>
-                      );
-                    }
-                    const fmt = (d: string) => {
-                      try {
-                        return new Date(d).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
-                          day: "2-digit",
-                          month: "short",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
-                      } catch {
-                        return d;
-                      }
-                    };
-                    const badge: Record<string, Tone> = {
-                      add: "ok",
-                      remove: "bad",
-                      change: "warn",
-                    };
-                    const label: Record<string, string> = {
-                      add: t("ui.Schedule.cambioNuevo", "Nuevo"),
-                      remove: t("common.delete", "Eliminar"),
-                      change: t("ui.Schedule.cambioCambio", "Cambio"),
-                    };
-
-                    return (
-                      <div
-                        className="divide-y"
-                        style={{ borderColor: "var(--hairline)" }}
-                      >
-                        {changes.slice(0, 300).map((c: ProposalChange) => (
-                          <div
-                            key={c.id}
-                            className="flex items-center gap-3 py-2"
-                          >
-                            <span
-                              className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
-                              style={tonePill(
-                                badge[c.action || ""] || "neutral",
-                                12,
-                              )}
-                            >
-                              {label[c.action || ""] || c.action}
-                            </span>
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm tabular-nums">
-                                {fmt(c.startTime || "")}{" "}
-                                {c.meta?.shiftType
-                                  ? `· ${c.meta.shiftType === "night" ? t("ui.codeTones.nocturno", "Nocturno") : c.meta.shiftType === "day" ? t("ui.codeTones.diurno", "Diurno") : c.meta.shiftType}`
-                                  : ""}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                        {changes.length > 300 && (
-                          <p
-                            className="py-2 text-center text-[11px]"
-                            style={{ color: "var(--ink-soft)" }}
-                          >
-                            {t("ui.Schedule.nCambiosMas", {
-                              defaultValue: "+{{n}} cambios más…",
-                              n: changes.length - 300,
-                            })}
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })()}
-                </div>
-              </>
-            )}
-
-            <div
-              className="flex items-center justify-between gap-3 px-5 py-3"
-              style={{
-                borderTop: "1px solid var(--hairline)",
-                background: "var(--glass-sunken)",
-              }}
-            >
-              {planData ? (
-                <button
-                  className="cg-btn-brand cg-focus ml-auto rounded-full px-6 py-2.5 text-sm font-semibold transition-all"
-                  onClick={closeProposalModal}
-                >
-                  {t("ui.Schedule.listo", "Listo")}
-                </button>
-              ) : (
-                <>
-                  <button
-                    className="cg-focus flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all disabled:opacity-50"
-                    disabled={publishing}
-                    style={{ color: "var(--bad-text)" }}
-                    onClick={discardProposal}
-                  >
-                    <Trash2 size={14} /> {t("ui.Schedule.descartar", "Descartar")}
-                  </button>
-                  {(() => {
-                    const gaps =
-                      proposalData?.proposal?.summary?.warnings?.coverage
-                        ?.gapCount || 0;
-                    const hasGaps = gaps > 0;
-
-                    return (
-                      <button
-                        className={`cg-focus flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all disabled:opacity-50 ${hasGaps ? "cg-btn-bad" : "cg-btn-brand"}`}
-                        disabled={publishing}
-                        onClick={() => publishProposal(hasGaps)}
-                      >
-                        {publishing ? (
-                          <Loader2 className="animate-spin" size={14} />
-                        ) : (
-                          <CheckCircle2 size={14} />
-                        )}
-                        {publishing
-                          ? t("ui.Schedule.publicando", "Publicando...")
-                          : hasGaps
-                            ? t("ui.Schedule.publicarConFaltantes", "Publicar con faltantes")
-                            : t("ui.Schedule.publicarYAplicar", "Publicar y aplicar")}
-                      </button>
-                    );
-                  })()}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </AppLayout>
   );
 }

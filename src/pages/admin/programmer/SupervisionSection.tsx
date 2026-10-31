@@ -256,9 +256,17 @@ export default function SupervisionSection({
           background: "var(--glass-sunken)",
         }}
       >
+        {/* The header spans the whole row (its own sticky box, as wide as the
+            screen allows): inside the name column it was cut to «SUPERVI…» /
+            «TODO EL…», worst on a phone. */}
+        <div style={{ gridRow: 1, gridColumn: "1 / -1", zIndex: 20 }}>
         <div
-          className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
-          style={{ background: "var(--glass-sunken)" }}
+          className="sticky left-0 flex flex-wrap items-center gap-2 px-4 py-2"
+          style={{
+            background: "var(--glass-sunken)",
+            width: "max-content",
+            maxWidth: "min(720px, calc(100vw - 32px))",
+          }}
         >
           <button
             aria-label={
@@ -278,7 +286,7 @@ export default function SupervisionSection({
             {abierta ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
           <ShieldCheck size={14} style={{ color: "var(--brand-text)" }} />
-          <span className="truncate text-xs font-semibold uppercase tracking-wide">
+          <span className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide">
             {t("ui.SupervisionSection.supervision", "Supervisión")}
           </span>
           {(faltan > 0 || sinPuesto.length > 0) && (
@@ -316,7 +324,8 @@ export default function SupervisionSection({
             <Settings2 size={14} />
           </Link>
         </div>
-        <div style={{ gridColumn: "2 / -1", ...columnRules(colWidth) }} />
+        </div>
+        <div style={{ gridRow: 1, gridColumn: "2 / -1", ...columnRules(colWidth) }} />
       </div>
 
       {/* Supervisores con rol y sin puesto: el caso real de 3 de las 4 empresas
@@ -557,6 +566,12 @@ export default function SupervisionSection({
             {/* Una fila por supervisor asignado */}
             {p.supervisors.map((s) => {
               const dm = porFecha.get(s.assignmentId);
+              /* No shift at all in the loaded days (e.g. a «Sin rotación» post
+                 that generated nothing yet): that is «no shifts», not «L»
+                 every day. Once shifts exist the days paint normally. */
+              const sinTurnos =
+                s.days.length > 0 &&
+                !s.days.some((d) => d.code && d.code !== "L");
 
               return (
                 <div
@@ -572,6 +587,21 @@ export default function SupervisionSection({
                     style={{ background: "var(--card)" }}
                   >
                     <span className="truncate text-xs">{s.name}</span>
+                    {sinTurnos && (
+                      <span
+                        className="shrink-0 rounded px-1 py-px text-[9px] font-semibold"
+                        style={{
+                          background: "color-mix(in oklab, var(--warn) 16%, transparent)",
+                          color: "var(--warn-text)",
+                        }}
+                        title={t(
+                          "ui.AllStaff.sinTurnosPuesto",
+                          "Su puesto no tiene turnos en estos días",
+                        )}
+                      >
+                        {t("ui.AllStaff.sinTurnos", "Sin turnos")}
+                      </span>
+                    )}
                     {s.isRelief && (
                       <span
                         className="shrink-0 text-[10px]"
@@ -597,7 +627,7 @@ export default function SupervisionSection({
                   <div />
                   {visibleDays.map((d, k) => {
                     const i = colA + k;
-                    const code = dm?.get(ymd(d)) || "";
+                    const code = sinTurnos ? "" : dm?.get(ymd(d)) || "";
 
                     return (
                       <div

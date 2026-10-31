@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { esArchivado, urlDePatrones, vigentesYElegidos } from "@/lib/patronesVigentes";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Plus } from "lucide-react";
@@ -173,7 +174,12 @@ export default function RotationStyleSelect({
   const lblPrimero = is24h
     ? diaLbl
     : (etiquetaPrimerBloque || diaLbl).trim() || diaLbl;
-  const [styles, setStyles] = useState<RotationStyle[]>([]);
+  const [todosLosEstilos, setStyles] = useState<RotationStyle[]>([]);
+  // Archived patterns stay only if already chosen (marked «archivado»).
+  const styles = useMemo(
+    () => vigentesYElegidos(todosLosEstilos, [value]),
+    [todosLosEstilos, value],
+  );
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [custom, setCustom] = useState(false);
@@ -194,7 +200,7 @@ export default function RotationStyleSelect({
       setLoading(true);
       try {
         const res: any = await ApiService.get(
-          `/tenant/${tenantId}/rotation-styles`,
+          urlDePatrones(tenantId),
         );
 
         if (alive)
@@ -721,6 +727,8 @@ export default function RotationStyleSelect({
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-semibold text-foreground">
                     {nombreDeEstilo(s, t as Traductor)}
+                    {esArchivado(s) &&
+                      ` (${t("ui.patrones.archivado", "archivado")})`}
                   </span>
                   {!encaja(s) && !fijos && (
                     <span

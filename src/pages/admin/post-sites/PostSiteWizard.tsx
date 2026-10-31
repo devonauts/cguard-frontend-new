@@ -2788,7 +2788,7 @@ export default function PostSiteWizard({
                     variant="outline"
                     onClick={() =>
                       navigate(
-                        `/planificador?busca=${encodeURIComponent(nombreParaPlan)}`,
+                        `/schedule?modo=borrador&busca=${encodeURIComponent(nombreParaPlan)}`,
                       )
                     }
                   >

@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   AlertTriangle,
   ChevronDown,
@@ -33,6 +34,7 @@ import {
   type FiltroDeTipo,
   type PersonaDelHorario,
   type TipoDePersona,
+  sinTurnosEnElRango,
 } from "@/lib/personalDelHorario";
 
 /**
@@ -227,8 +229,16 @@ function AllStaffSection({
       : t("ui.AllStaff.sinPuesto", "Sin puesto");
   };
 
+  /** Supervisors whose post generated nothing in these days (see sinTurnosEnElRango). */
+  const sinTurnos = useMemo(
+    () => new Set((personas || []).filter(sinTurnosEnElRango).map((p) => p.userId)),
+    [personas],
+  );
+
   const tituloDe = (p: PersonaDelHorario, d: DiaDePersona | undefined, ds: string) => {
     if (!d) return `${p.name} · ${ds}`;
+    if (d.status === "off" && sinTurnos.has(p.userId))
+      return [p.name, ds, t("ui.AllStaff.sinTurnosPuesto", "Su puesto no tiene turnos en estos días")].join(" · ");
     const donde = rotuloDeDonde(d.where);
     const que =
       d.status === "work"
@@ -250,7 +260,7 @@ function AllStaffSection({
     return [p.name, ds, que, donde].filter(Boolean).join(" · ");
   };
 
-  const celda = (d: DiaDePersona | undefined) => {
+  const celda = (d: DiaDePersona | undefined, vacio = false) => {
     if (!d)
       return (
         <span className="text-[10px]" style={{ color: "var(--ink-faint)" }}>
@@ -278,6 +288,20 @@ function AllStaffSection({
         <div className="flex flex-1 items-center justify-center rounded" style={codePill(d.absence)}>
           <span className="text-[10px] font-bold">{d.absence}</span>
         </div>
+      );
+    if (d.status === "off" && vacio)
+      // The post generates nothing (e.g. «Sin rotación»): the fix lives in
+      // Estaciones › Puestos de supervisión, so the chip goes there.
+      return (
+        <Link
+          className="text-[9px] underline-offset-2 hover:underline"
+          style={{ color: "var(--ink-faint)" }}
+          title={t("ui.AllStaff.sinTurnosIr", "Revisar la rotación del puesto en Puestos de supervisión")}
+          to="/supervisor-positions"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {t("ui.AllStaff.sinTurnos", "Sin turnos")}
+        </Link>
       );
     if (d.status === "off")
       return (
@@ -314,9 +338,17 @@ function AllStaffSection({
         className="grid"
         style={{ gridTemplateColumns: gridCols, background: "var(--glass-sunken)" }}
       >
+        {/* The header spans the whole row (its own sticky box, as wide as the
+            screen allows): inside the name column it was cut to «SUPERVI…» /
+            «TODO EL…», worst on a phone. */}
+        <div style={{ gridRow: 1, gridColumn: "1 / -1", zIndex: 20 }}>
         <div
-          className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
-          style={{ background: "var(--glass-sunken)" }}
+          className="sticky left-0 flex flex-wrap items-center gap-2 px-4 py-2"
+          style={{
+            background: "var(--glass-sunken)",
+            width: "max-content",
+            maxWidth: "min(720px, calc(100vw - 32px))",
+          }}
         >
           <button
             aria-expanded={abierta}
@@ -333,7 +365,7 @@ function AllStaffSection({
           </button>
           <Users size={14} style={{ color: "var(--brand-text)", flexShrink: 0 }} />
           <div className="min-w-0 flex-1">
-            <div className="truncate text-xs font-semibold uppercase tracking-wide">
+            <div className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide">
               {t("ui.AllStaff.titulo", "Todo el personal")}
             </div>
             <div className="truncate text-[10px]" style={{ color: "var(--ink-soft)" }} title={resumen}>
@@ -360,7 +392,8 @@ function AllStaffSection({
             </button>
           )}
         </div>
-        <div style={{ gridColumn: "2 / -1", ...columnRules(colWidth) }} />
+        </div>
+        <div style={{ gridRow: 1, gridColumn: "2 / -1", ...columnRules(colWidth) }} />
       </div>
 
       {abierta && (
@@ -440,6 +473,18 @@ function AllStaffSection({
                       <span className="truncate text-xs font-semibold" title={p.name}>
                         {p.name}
                       </span>
+                      {p.pendingInvite && (
+                        <span
+                          className="shrink-0 rounded px-1 py-px text-[8px] font-bold uppercase tracking-wide"
+                          style={tonePill("warn", 16)}
+                          title={t(
+                            "ui.AllStaff.invitacionPendienteAyuda",
+                            "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario.",
+                          )}
+                        >
+                          {t("ui.AllStaff.invitacionPendiente", "Invitación pendiente")}
+                        </span>
+                      )}
                     </div>
                     {accion ? (
                       <button
@@ -497,7 +542,7 @@ function AllStaffSection({
                       style={{ borderRight: "1px solid var(--hairline)", background: tintFor?.(day, i) }}
                       title={tituloDe(p, d, ds)}
                     >
-                      {celda(d)}
+                      {celda(d, sinTurnos.has(p.userId))}
                     </div>
                   );
                 })}

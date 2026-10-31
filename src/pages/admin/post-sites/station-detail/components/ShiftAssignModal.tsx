@@ -1,4 +1,5 @@
 import { cicloDe as leerCiclo } from "@/lib/secuenciaDeRotacion";
+import { urlDePatrones } from "@/lib/patronesVigentes";
 import { useTranslation } from "react-i18next";
 import {
   localToday,
@@ -584,7 +585,7 @@ export default function ShiftAssignModal({
       .catch(() => {});
     // Rotation styles → resolve the station's patrón (dayShifts/nightShifts/restDays)
     // so we can preview the guard's rest day.
-    ApiService.get(`/tenant/${tenantId}/rotation-styles`)
+    ApiService.get(urlDePatrones(tenantId))
       .then((r: any) =>
         setRotationStyles(
           Array.isArray(r) ? r : (r?.rows ?? r?.data?.rows ?? []),

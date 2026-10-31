@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { esArchivado, urlDePatrones } from "@/lib/patronesVigentes";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Plus, X } from "lucide-react";
@@ -91,7 +92,7 @@ export default function SecuenciaPropiaSelect({
       setLoading(true);
       try {
         const res: any = await ApiService.get(
-          `/tenant/${tenantId}/rotation-styles`,
+          urlDePatrones(tenantId),
         );
 
         if (vivo)
@@ -144,6 +145,7 @@ export default function SecuenciaPropiaSelect({
     const vistos = new Set<string>();
 
     return styles.filter((s) => {
+      if (esArchivado(s) && s.id !== value) return false;
       const k = `${s.dayShifts}|${s.nightShifts}|${s.restDays}|${s.sequence || ""}|${s.weekly ? "w" : ""}`;
 
       if (vistos.has(k) && s.id !== value) return false;
@@ -319,6 +321,8 @@ export default function SecuenciaPropiaSelect({
           {opciones.map((s) => (
             <option key={s.id} value={s.id}>
               {describir(s)}
+              {esArchivado(s) &&
+                ` (${t("ui.patrones.archivado", "archivado")})`}
             </option>
           ))}
           <option value="__nueva__">

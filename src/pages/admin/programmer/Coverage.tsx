@@ -1328,6 +1328,15 @@ export default function Coverage() {
                     <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                       {c.reason}
                     </p>
+                    {/* They said they cannot work these hours (their availability). */}
+                    {c.outsideAvailability && (
+                      <p className="text-xs" style={{ color: "var(--warn-text)" }}>
+                        {t(
+                          "ui.Coverage.fueraDeDisponibilidad",
+                          "Fuera de su disponibilidad",
+                        )}
+                      </p>
+                    )}
                   </div>
                   <IconTile size="sm">
                     <UserPlus />

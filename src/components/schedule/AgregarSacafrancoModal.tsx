@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { urlDePatrones } from "@/lib/patronesVigentes";
 import { useTranslation } from "react-i18next";
 import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
@@ -67,7 +68,7 @@ export default function AgregarSacafrancoModal({
     setDesde(localToday());
     setCiclo("");
     setK(0);
-    ApiService.get(`/tenant/${tenantId}/rotation-styles`)
+    ApiService.get(urlDePatrones(tenantId))
       .then((r: any) => setEstilos(r?.rows || r?.data?.rows || []))
       .catch(() => setEstilos([]));
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps

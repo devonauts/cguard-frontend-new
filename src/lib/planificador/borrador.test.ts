@@ -1,12 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  claveDelBorrador,
+  baseParaAbrir,
+  borradorCaducado,
   estadoDelBorrador,
-  firmaDe,
-  guardarBorrador,
-  leerBorrador,
-  olvidarBorrador,
 } from "./borrador";
 import { FRANCO as F, REGLAS_POR_DEFECTO, copiar, type Plan } from "./motor";
 import { planificarPublicacion } from "./publicar";
@@ -42,13 +39,6 @@ function sinohydro(): { plan: Plan; enlace: Enlace } {
   return { plan, enlace };
 }
 
-class Memoria {
-  m = new Map<string, string>();
-  getItem(k: string) { return this.m.has(k) ? this.m.get(k)! : null; }
-  setItem(k: string, v: string) { this.m.set(k, v); }
-  removeItem(k: string) { this.m.delete(k); }
-}
-
 describe("Borrador · ¿está publicado?", () => {
   it("recién cargado no hay nada pendiente ni nada que avisar", () => {
     const { plan, enlace } = sinohydro();
@@ -81,48 +71,23 @@ describe("Borrador · ¿está publicado?", () => {
   });
 });
 
-describe("Borrador · guardado en el navegador", () => {
-  it("se devuelve si el horario real es el mismo", () => {
-    const { plan } = sinohydro();
-    const mem = new Memoria();
-    const b = copiar(plan);
+describe("Borrador · cuándo se devuelve (ahora vive en el servidor)", () => {
+  it("un borrador sin tocar en más de una semana caduca", () => {
+    const ahora = Date.parse("2026-10-31T12:00:00Z");
 
-    b.personas[0].desfase = 1;
-    expect(guardarBorrador(mem, "T", { base: "2026-10-05", firma: firmaDe(plan), toques: 1, plan: b }, 1000)).toBe(true);
-    const r = leerBorrador(mem, "T", "2026-10-05", firmaDe(copiar(plan)), 2000);
-
-    expect(r.tipo).toBe("ok");
-    expect(r.tipo === "ok" && r.plan.personas[0].desfase).toBe(1);
+    expect(borradorCaducado("2026-10-30T12:00:00Z", ahora)).toBe(false);
+    expect(borradorCaducado("2026-10-23T11:00:00Z", ahora)).toBe(true);
+    expect(borradorCaducado(null, ahora)).toBe(false);
   });
 
-  it("no se devuelve sobre un horario real que cambió, ni en otra semana, ni a otra empresa", () => {
-    const { plan } = sinohydro();
-    const mem = new Memoria();
-    const otro = copiar(plan);
-
-    otro.personas[0].patron = ["N", F];
-    guardarBorrador(mem, "T", { base: "2026-10-05", firma: firmaDe(plan), toques: 1, plan }, 1000);
-    expect(leerBorrador(mem, "T", "2026-10-05", firmaDe(otro), 2000).tipo).toBe("caducado");
-    expect(leerBorrador(mem, "T", "2026-10-12", firmaDe(plan), 2000).tipo).toBe("caducado");
-    expect(leerBorrador(mem, "OTRA", "2026-10-05", firmaDe(plan), 2000).tipo).toBe("ninguno");
-    expect(leerBorrador(mem, "T", "2026-10-05", firmaDe(plan), 1000 + 8 * 86_400_000).tipo).toBe("caducado");
-  });
-
-  it("descartar lo borra; un almacén roto o ausente no rompe nada", () => {
-    const { plan } = sinohydro();
-    const mem = new Memoria();
-
-    guardarBorrador(mem, "T", { base: "b", firma: "f", toques: 1, plan });
-    olvidarBorrador(mem, "T");
-    expect(mem.getItem(claveDelBorrador("T"))).toBeNull();
-
-    const roto = { getItem: () => { throw new Error("bloqueado"); }, setItem: () => { throw new Error("lleno"); }, removeItem: () => { throw new Error("x"); } };
-
-    expect(guardarBorrador(roto, "T", { base: "b", firma: "f", toques: 1, plan })).toBe(false);
-    expect(leerBorrador(roto, "T", "b", "f").tipo).toBe("ninguno");
-    expect(() => olvidarBorrador(roto, "T")).not.toThrow();
-    expect(leerBorrador(null, "T", "b", "f").tipo).toBe("ninguno");
-    mem.setItem(claveDelBorrador("T"), "{no es json");
-    expect(leerBorrador(mem, "T", "b", "f").tipo).toBe("ninguno");
+  it("abre en el lunes del borrador mientras sus días sigan alineados; si no, en el de hoy", () => {
+    expect(baseParaAbrir("2026-10-26", "2026-10-26")).toBe("2026-10-26");
+    expect(baseParaAbrir("2026-10-19", "2026-10-26")).toBe("2026-10-19");
+    expect(baseParaAbrir("2026-10-12", "2026-10-26")).toBe("2026-10-12");
+    // Tres semanas atrás, un lunes «del futuro» o un día que no es lunes: el de hoy.
+    expect(baseParaAbrir("2026-10-05", "2026-10-26")).toBe("2026-10-26");
+    expect(baseParaAbrir("2026-11-02", "2026-10-26")).toBe("2026-10-26");
+    expect(baseParaAbrir("2026-10-21", "2026-10-26")).toBe("2026-10-26");
+    expect(baseParaAbrir(null, "2026-10-26")).toBe("2026-10-26");
   });
 });

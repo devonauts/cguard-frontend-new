@@ -1,3 +1,4 @@
+import { avisarSiFueraDeDisponibilidad } from "@/lib/avisoDeDisponibilidad";
 import { idiomaElegido } from "@/lib/idiomaElegido";
 import { irAVerificacion } from "@/lib/seguridad/puertaEnVivo";
 import { quizaDiagnosticoInterno } from "@/lib/seguridad/rutasInternas";
@@ -189,6 +190,7 @@ api.interceptors.response.use(
     const successMsg = response.config.toast?.success;
 
     if (successMsg) toast.success(successMsg);
+    avisarSiFueraDeDisponibilidad(response.config?.method, response.config?.url, response.data);
     // A successful mutation refreshes every cached list its URL touches so
     // schedule/station/client edits never serve a stale copy.
     try {

@@ -164,3 +164,34 @@ describe("loading a painted sheet wider than 62 days", () => {
     expect(u.hasSchedule).toBe(true);
   });
 });
+
+describe("Todo el personal · invitación pendiente y puestos sin turnos", () => {
+  it("reads the pending-invite mark defensively; absent = false", async () => {
+    const { invitacionPendiente, normalizarPersonas } = await import("./personalDelHorario");
+
+    expect(invitacionPendiente({})).toBe(false);
+    expect(invitacionPendiente({ pendingInvite: true })).toBe(true);
+    expect(invitacionPendiente({ invitation: { status: "pending" } })).toBe(true);
+    expect(invitacionPendiente({ status: "invited" })).toBe(true);
+    expect(invitacionPendiente({ status: "active" })).toBe(false);
+    const [p] = normalizarPersonas({ people: [{ userId: "u1", name: "Ana", kind: "guard", days: [], invitePending: true }] });
+
+    expect(p.pendingInvite).toBe(true);
+  });
+
+  it("a supervisor whose post has no shifts in the range is «sin turnos», not «libre»", async () => {
+    const { normalizarPersonas, sinTurnosEnElRango } = await import("./personalDelHorario");
+    const dias = (status: string) => ["2026-11-02", "2026-11-03"].map((date) => ({ date, status }));
+    const [vacio, conTurno, guardia] = normalizarPersonas({
+      people: [
+        { userId: "s1", name: "A Sup", kind: "supervisor", assigned: true, days: dias("off") },
+        { userId: "s2", name: "B Sup", kind: "supervisor", assigned: true, days: [...dias("off"), { date: "2026-11-04", status: "work" }] },
+        { userId: "g1", name: "C Guard", kind: "guard", assigned: true, days: dias("off") },
+      ],
+    });
+
+    expect(sinTurnosEnElRango(vacio)).toBe(true);
+    expect(sinTurnosEnElRango(conTurno)).toBe(false);
+    expect(sinTurnosEnElRango(guardia)).toBe(false);
+  });
+});

@@ -1745,7 +1745,10 @@
         "saveError": "Keine Kennung der Sicherheitskraft"
       },
       "empty": "Keine Verfügbarkeit hinterlegt",
-      "notAvailable": "Nicht verfügbar"
+      "notAvailable": "Nicht verfügbar",
+      "usedBy": "Dieselbe Verfügbarkeit, die die Person in ihrer App sieht. Der Dienstplan warnt bei Zuweisungen außerhalb, die Abdeckung listet sie zuletzt und Dobletes bietet ihr diese Schichten nicht an.",
+      "notSaid": "Noch keine Verfügbarkeit angegeben: gilt als immer verfügbar.",
+      "datedDays": "Zusätzlich {{n}} einzelne(n) Tag(e) in der App markiert."
     },
     "files": {
       "loadError": "Die Wachkraft konnte nicht geladen werden",
@@ -7476,7 +7479,9 @@
       "idioma": "Sprache",
       "idioma.desc": "In welcher Sprache Sie das CRM sehen. Automatisch oder die von Ihnen gewählte.",
       "dobletes": "Doppelschichten",
-      "dobletes.desc": "Wellen, Boni, Punkte, Stufen und Rangliste der Reserve."
+      "dobletes.desc": "Wellen, Boni, Punkte, Stufen und Rangliste der Reserve.",
+      "patrones-rotacion": "Rotationsmuster",
+      "patrones-rotacion.desc": "Arbeits- und Ruhezyklen: umbenennen, archivieren und sehen, wo jedes verwendet wird."
     },
     "section": {
       "mi_cuenta": "Mein Konto",
@@ -7527,7 +7532,14 @@
       "allowDoubleHint": "Jemanden einteilen, der zu dieser Zeit bereits eine andere, überschneidende Schicht hat. Wenn Sie es ausschalten, ist es auch nach einer Bestätigung nicht mehr möglich.",
       "allowRestLabel": "Einteilung an einem freien Tag erlauben",
       "allowRestHint": "Eine Lücke mit jemandem schließen, der an diesem Tag frei hat. Wenn Sie es ausschalten, ist es auch nach einer Bestätigung nicht mehr möglich.",
-      "saveBtn": "Richtlinie speichern"
+      "saveBtn": "Richtlinie speichern",
+      "sectionIntercambio": "Schichttausch",
+      "swapRequireApprovalLabel": "Das Büro genehmigt jeden Tausch",
+      "swapRequireApprovalHint": "Wenn aus, wird ein Tausch, dem beide zugestimmt haben, automatisch ausgeführt, sofern er alle Regeln dieser Seite erfüllt.",
+      "swapAllowGiveawayLabel": "Abgeben einer Schicht erlauben",
+      "swapAllowGiveawayHint": "Eine Schicht ohne Gegenschicht abgeben, an jemanden oder als offenes Angebot für alle am selben Standort.",
+      "swapMinNoticeLabel": "Mindestfrist",
+      "swapMinNoticeHint": "Stunden vor der Schicht, ab denen kein Tausch mehr angefragt, angenommen oder genehmigt werden kann."
     },
     "rondas": {
       "loadError": "Die Einstellungen konnten nicht geladen werden",
@@ -7984,7 +7996,9 @@
       "module_dobletes_label": "Doppelschichten und Reserve",
       "previewNextShift": "Nächste Schicht",
       "previewOffDuty": "● Außer Dienst",
-      "previewTomorrowShift": "Morgen · 08:00 – 20:00"
+      "previewTomorrowShift": "Morgen · 08:00 – 20:00",
+      "module_shiftSwap_label": "Schichttausch",
+      "module_shiftSwap_desc": "Die Wachperson schlägt einer Kollegin oder einem Kollegen vor, eine Schicht zu tauschen oder abzugeben; die andere Person nimmt an und das Büro genehmigt."
     },
     "appearance": {
       "layoutTitle": "Erscheinungsbild",
@@ -8371,8 +8385,12 @@
       "vehicleOverstayHint": "Ein Fahrzeug befindet sich länger auf dem Gelände als die unter Fahrzeugkontrolle › Objektregeln festgelegten Minuten. Es wird nur einmal pro Fahrzeug benachrichtigt",
       "columnPush": "Telefon",
       "payslipPublishedLabel": "Lohnabrechnung veröffentlicht",
+      "scheduleChangesLabel": "Dienstplanänderungen (an die Wachkraft)",
+      "scheduleChangesHint": "Eine Mitteilung pro Änderung: neue, entfernte oder verschobene Schichten, ein neuer oder ein abgegebener Posten. Ausschalten, wenn Sie selbst Bescheid geben",
       "dobletesOfficeLabel": "Doppelschichten: besetzt oder niemand angenommen",
-      "dobletesOffersLabel": "Doppelschicht-Angebote (an Sicherheitskräfte)"
+      "dobletesOffersLabel": "Doppelschicht-Angebote (an Sicherheitskräfte)",
+      "coverageAssignmentsLabel": "Vertretungen (an die Wache)",
+      "coverageAssignmentsHint": "Muss einen Posten übernehmen, wurde versetzt oder die Vertretung wurde abgesagt. Kommt aufs Handy"
     },
     "festivos": {
       "loadError": "Die Feiertage konnten nicht geladen werden.",
@@ -9457,7 +9475,12 @@
       "coberturaEnBloques": "{{horas}}h Abdeckung in {{count}} aufeinanderfolgenden Blöcken zu {{bloque}}h — {{count}} Stammkräfte + Springer.",
       "coberturaEnBloques_one": "{{horas}}h Abdeckung in {{count}} Block zu {{bloque}}h — {{count}} Stammkraft + Springer.",
       "coberturaEnBloques_other": "{{horas}}h Abdeckung in {{count}} aufeinanderfolgenden Blöcken zu {{bloque}}h — {{count}} Stammkräfte + Springer.",
-      "vigilantesAsignados": "Zugewiesene Wachleute"
+      "vigilantesAsignados": "Zugewiesene Wachleute",
+      "elCicloNoCambio": "Der Zyklus hat sich nicht geändert",
+      "cicloDeRotacion": "Rotationszyklus",
+      "cicloExplicacion": "Wie sich die Wachen dieses Postens abwechseln und ruhen. Wie viele und wann steht oben im Bedarf.",
+      "cambiarElCicloRehace": "Den Zyklus zu ändern baut künftige Schichten neu; niemand verliert seinen Platz.",
+      "guardarCiclo": "Zyklus speichern"
     },
     "StationShifts": {
       "dia": "Tag",
@@ -10571,7 +10594,8 @@
       "vuelveADespuesDel": "Kehrt nach dem {{fecha}} zu {{puesto}} zurück",
       "yNoPuedeFicharElTurnoSeRegistra": "und nicht einstempeln kann. Die Schicht wird",
       "yaTieneUnTurnoAbierto": "Es gibt bereits eine offene Schicht — eine zweite wird nicht geöffnet.",
-      "vaEnCamino": "Unterwegs · vor {{min}} Min. geschickt"
+      "vaEnCamino": "Unterwegs · vor {{min}} Min. geschickt",
+      "fueraDeDisponibilidad": "Außerhalb der Verfügbarkeit"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Einträge pro Seite",
@@ -12672,7 +12696,9 @@
       "yseRepite": "· und wiederholt sich",
       "eliminarTurnosYNovedades": "Ausgewählte Schichten und Vorkommnisse löschen (Entf)",
       "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…",
-      "irAEstaciones": "Zu den Objekten"
+      "irAEstaciones": "Zu den Objekten",
+      "moverCoberturaDel": "Abdeckung vom {{dia}} verschieben",
+      "moverDePuesto": "Wachmann auf anderen Posten versetzen"
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
@@ -12818,7 +12844,7 @@
       "paginaSiguiente": "Nächste Seite",
       "eligeElVigilanteQueSolicita": "Wählen Sie die Kraft, die den Tausch beantragt",
       "nuevaSolicitudDeIntercambio": "Neuer Tauschantrag",
-      "vigilanteSolicitante": "Antragstellende Kraft*",
+      "vigilanteSolicitante": "Anfragende Wachperson*",
       "vigilanteReceptorOpcional": "Empfangende Kraft (optional)",
       "cualquierVigilante": "Beliebige Kraft",
       "describeLosDetallesDelIntercambio": "Beschreiben Sie die Einzelheiten des Tauschs…",
@@ -12838,7 +12864,98 @@
       "rechazadas": "Abgelehnt",
       "rechazar": "Ablehnen",
       "solicitudesDeIntercambioEntreVigilantes": "Schichttauschanfragen zwischen Wachleuten.",
-      "todos": "Alle"
+      "todos": "Alle",
+      "subtitulo": "Eine Wachperson tauscht oder gibt eine Schicht an eine Kollegin oder einen Kollegen ab. Die andere Person nimmt an, das Büro genehmigt; beide Schichten ändern sich gleichzeitig.",
+      "aCambio": "Im Gegenzug",
+      "aprobarAhora": "Jetzt genehmigen (Schichten ändern sich beim Speichern)",
+      "aprobarYCambiar": "Genehmigen und tauschen",
+      "automatica": "automatisch",
+      "cerradasSinCambio": "Ohne Tausch geschlossen",
+      "companero": "Kollege/Kollegin*",
+      "cumple": "Erfüllt",
+      "cumpleTodo": "Erfüllt alle Regeln der Firma.",
+      "entrega": "Gibt ab",
+      "entregaEste": "Gibt diese Schicht ab",
+      "errorAlCargar": "Laden fehlgeschlagen",
+      "errorGenerico": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+      "faltaCompanero": "Die andere Person hat noch nicht angenommen.",
+      "hasta": "bis",
+      "hayBloqueos": "Regeln verhindern den Tausch.",
+      "kpiAprobacion": "Beide haben angenommen; das Büro fehlt",
+      "kpiCerradas": "Abgelehnt, storniert oder abgelaufen",
+      "kpiCompanero": "Angefragt, keine Antwort",
+      "kpiEnLaLista": "In der Liste unten",
+      "nAvisos": "{{n}} Hinweis",
+      "nBloqueos": "{{n}} blockiert",
+      "noCargo": "Die Liste konnte nicht geladen werden. Bitte erneut versuchen.",
+      "noSePuede": "Nicht möglich",
+      "notaDeDecision": "Notiz für die Wachleute (optional)",
+      "ofertaAbierta": "Offenes Angebot",
+      "okAceptada": "Erfasst: die andere Person hat angenommen.",
+      "okAprobada": "Genehmigt: beide Schichten sind getauscht.",
+      "okCreada": "Anfrage erfasst.",
+      "okRechazada": "Anfrage abgelehnt.",
+      "pide": "Fragt",
+      "recibe": "Mit",
+      "registrarAcepto": "Zustimmung erfassen",
+      "reglas": "Regeln",
+      "revisaAntes": "Vor dem Genehmigen prüfen",
+      "sinPermiso": "Nur wer Schichten plant, kann genehmigen.",
+      "sinTurnoACambio": "Keine Schicht im Gegenzug",
+      "sinTurnos": "Keine Schichten in den nächsten 45 Tagen.",
+      "soloRecibe": "Übernimmt nur die Schicht",
+      "tipoCambio": "Schichttausch",
+      "tipoCesion": "Schichtabgabe",
+      "todasLasEstaciones": "Alle Stationen",
+      "turnoDesde": "Schicht ab",
+      "turnoQueEntrega": "Abgegebene Schicht*",
+      "turnoQueRecibe": "Schicht der Kollegin/des Kollegen, die an die anfragende Person geht*",
+      "vacio": "Wachleute fragen Tausche in ihrer App an (Meine Schichten › Schicht tauschen). Du kannst auch einen mit «Neue Anfrage» erfassen.",
+      "vacioTitulo": "Keine Anfragen hier",
+      "yaAcordaron": "Beide sind schon einverstanden",
+      "yaAcordaronHint": "Ohne Haken bekommt die andere Person den Vorschlag in der App und muss annehmen.",
+      "estado": {
+        "pending_peer": "Wartet auf Kollegen",
+        "pending_approval": "Wartet auf Genehmigung",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt",
+        "declined": "Nicht angenommen",
+        "cancelled": "Storniert",
+        "expired": "Abgelaufen"
+      },
+      "filtro": {
+        "open": "Offen",
+        "pending_approval": "Zu genehmigen",
+        "pending_peer": "Warten auf Kollegen",
+        "approved": "Genehmigt",
+        "closed": "Geschlossen"
+      },
+      "linea": {
+        "pedida": "Angefragt",
+        "aceptada": "Von der anderen Person angenommen",
+        "rechazoCompanero": "Die andere Person hat abgelehnt",
+        "aprobada": "Genehmigt und erledigt",
+        "decidida": "Entschieden",
+        "vencio": "Abgelaufen: die Schicht hat begonnen"
+      },
+      "regla": {
+        "shift_missing": "Die Schicht existiert nicht mehr.",
+        "shift_not_swappable": "Vertretung, Verstärkung oder stornierte Schicht: kein Tausch möglich.",
+        "shift_owner_changed": "Die Schicht gehört nicht mehr der anbietenden Person.",
+        "shift_started": "Die Schicht hat schon begonnen.",
+        "shift_clocked": "Für die Schicht gibt es schon eine Stempelung.",
+        "too_late": "Weniger als die Mindestfrist der Firma ({{hours}} h).",
+        "day_closed": "Der Tag {{day}} ist in der Lohnabrechnung abgeschlossen.",
+        "same_person": "Es ist dieselbe Person.",
+        "guard_inactive": "{{name}} ist in der Firma nicht aktiv.",
+        "no_guard_profile": "{{name}} hat kein Wachpersonal-Profil.",
+        "overlap": "{{name}} arbeitet zu dieser Zeit schon.",
+        "on_leave": "{{name}} hat Urlaub vom {{from}} bis {{to}}.",
+        "rest_too_short": "{{name}} hätte {{hours}} h Ruhe; die Firma verlangt {{required}} h.",
+        "weekly_hours_over": "{{name}} käme diese Woche auf {{hours}} h (Grenze {{max}} h).",
+        "other_station": "Die Schichten sind an verschiedenen Stationen.",
+        "already_requested": "Für diese Schicht läuft schon ein anderer Tausch."
+      }
     },
     "ShiftStatus": {
       "elementosPorPagina": "Einträge pro Seite",
@@ -13302,7 +13419,34 @@
       "cancelarPermisoMensaje": "Die Schichten dieser Tage kommen zurück in den Dienstplan und ihre Lücken in der Abdeckung schließen sich. Tage mit Vertretung bleiben so.",
       "cancelarPermisoBoton": "Abwesenheit stornieren",
       "eliminarAprobada": "Der Antrag wird gelöscht und was seine Genehmigung im Dienstplan geändert hat, wird rückgängig gemacht. Tage mit Vertretung bleiben so.",
-      "cancelado": "Storniert"
+      "cancelado": "Storniert",
+      "mesAnterior": "Vorheriger Monat",
+      "mesSiguiente": "Nächster Monat",
+      "nadieFueraEsteMes": "Mit diesen Filtern ist diesen Monat niemand abwesend.",
+      "puesto": "Posten",
+      "origen": {
+        "app": "Wachmann-App",
+        "horario": "Dienstplan",
+        "planificador": "Planer",
+        "editor": "Dienstplan-Editor",
+        "replacement": "Urlaubsvertretung",
+        "vigia": "Assistent",
+        "migrated": "Früherer Eintrag",
+        "page": "Abwesenheiten und Urlaub"
+      },
+      "origenColumna": "Erfasst in",
+      "vistaLista": "Liste",
+      "vistaCalendario": "Kalender",
+      "porPersona": "Nach Person",
+      "porPuesto": "Nach Posten",
+      "filtroTipo": "Art",
+      "todosLosTipos": "Alle Arten",
+      "filtroPuesto": "Posten",
+      "todosLosPuestos": "Alle Posten",
+      "filtroSucursal": "Niederlassung",
+      "todasLasSucursales": "Alle Niederlassungen",
+      "quitarFiltroPersona": "Personenfilter entfernen",
+      "calendario": "Kalender"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -17281,7 +17425,36 @@
       "cambioDirectoTitulo": "Diese Änderung geht direkt in den echten Dienstplan",
       "cambioDirectoMensaje": "Du hast {{n}} unveröffentlichte Änderung(en) im Entwurf. Beim Speichern liest der Planer den echten Dienstplan neu und der Entwurf geht verloren. Um ihn zu behalten, veröffentliche ihn zuerst.",
       "cambioDirectoSeguir": "Weiter und Entwurf verwerfen",
-      "cambioDirectoVolver": "Zurück"
+      "cambioDirectoVolver": "Zurück",
+      "borradorViejo": "Ein unveröffentlichter Entwurf war älter als eine Woche und wurde verworfen.",
+      "borradorOtraSemana": "Der unveröffentlichte Entwurf stammte aus einer anderen Woche und passt nicht mehr in den Kalender; er wurde verworfen.",
+      "otroGuardo": "{{quien}} hat den Entwurf ebenfalls geändert; die Änderungen wurden mit Ihren zusammengeführt.",
+      "otraPersona": "Jemand anderes",
+      "borradorAbierto": "Der unveröffentlichte Entwurf wurde geöffnet (gespeichert von {{quien}}). Veröffentlichen oder verwerfen Sie ihn.",
+      "realCambio": "Der aktuelle Dienstplan hat sich unter dem Entwurf geändert; Ihre Änderungen bleiben über dem neuen erhalten.",
+      "choques": "Sie und jemand anderes haben dies gleichzeitig geändert; Ihre Version wurde behalten: {{lista}}",
+      "borradorYaNoEsta": "Jemand anderes hat den Entwurf veröffentlicht oder verworfen. Der aktuelle Dienstplan wurde mit Ihren Änderungen darüber neu geladen.",
+      "salirTituloServidor": "Es gibt ungespeicherte Änderungen",
+      "salirMensajeServidor": "Ihre letzten Änderungen am Entwurf sind noch nicht auf dem Server. Wenn Sie jetzt gehen, gehen sie verloren.",
+      "salirSinGuardar": "Trotzdem verlassen",
+      "descartarMensajeCompartido": "Die {{n}} unveröffentlichten Änderungen gehen verloren, auch für alle anderen Bearbeiter, und der aktuelle Dienstplan wird wieder angezeigt.",
+      "guardadoEnServidor": "Für das ganze Team gespeichert",
+      "noSeGuardo": "Speichern fehlgeschlagen; neuer Versuch bei der nächsten Änderung",
+      "guardando": "Wird gespeichert…",
+      "tambienEditando": "Bearbeitet ebenfalls: {{quien}}",
+      "tituloBorrador": "Dienstplan · Entwurf",
+      "filtroEstacion": "Posten",
+      "todasLasEstaciones": "Alle Posten",
+      "filtroTurno": "Schichtart",
+      "todosLosTurnos": "Alle Schichten",
+      "noSePublico": "Es wurde nichts veröffentlicht. Versuchen Sie es erneut.",
+      "cambioAsignacion": "hat die Zuweisung geändert von",
+      "cambioMarca": "hat eine Meldung geändert von",
+      "cambioTurno": "hat eine Schicht geändert von",
+      "cerrar": "Schließen",
+      "recargarConLoNuevo": "Mit dem Neuesten neu laden und prüfen",
+      "publicandoDeUnaVez": "Alles wird auf einmal veröffentlicht…",
+      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",
@@ -17337,7 +17510,8 @@
       "seReabrieron_one": "{{count}} Einteilung wurde wieder geöffnet",
       "seReabrieron_other": "{{count}} Einteilungen wurden wieder geöffnet",
       "volvieronVigilantes_one": "{{count}} Wachperson ist zurück",
-      "volvieronVigilantes_other": "{{count}} Wachpersonen sind zurück"
+      "volvieronVigilantes_other": "{{count}} Wachpersonen sind zurück",
+      "nRelevos": "{{count}} Ablösungen"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "{{nombre}} aus der Veranstaltung entfernen?",
@@ -18903,7 +19077,12 @@
       "trabaja": "Arbeitet",
       "verSinHorario": "Zeigen, wer keinen Dienstplan hat",
       "vigilantes": "Wachleute",
-      "almuerzo": "Mittagspause {{start}}–{{end}}"
+      "almuerzo": "Mittagspause {{start}}–{{end}}",
+      "sinTurnos": "Keine Schichten",
+      "sinTurnosPuesto": "Ihr Posten hat an diesen Tagen keine Schichten",
+      "invitacionPendiente": "Einladung ausstehend",
+      "invitacionPendienteAyuda": "Die Einladung wurde gesendet, die Person hat sich noch nicht angemeldet. Ein Dienstplan kann schon zugewiesen werden.",
+      "sinTurnosIr": "Rotation des Postens unter Aufsichtsposten prüfen"
     },
     "OfficeHours": {
       "copiarLunes": "Montag auf alle kopieren",
@@ -19061,6 +19240,127 @@
       "rrhh": "Personalwesen: zusätzlich Personaldaten und Lohn",
       "supervision": "Aufsicht: genehmigt zusätzlich Stunden",
       "gerencia": "Geschäftsleitung: zusätzlich Berichte und Leitungsaktionen"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Zugewiesen, aber {{n}} Schicht(en) liegen außerhalb der angegebenen Verfügbarkeit ({{dias}}). Bitte mit der Person klären."
+    },
+    "Patrones": {
+      "archivado": "Archiviert",
+      "enUso": "{{estaciones}} Posten · {{plazas}} Plätze · {{personas}} Personen",
+      "sinUso": "Nicht verwendet",
+      "renombrado": "Muster umbenannt",
+      "renombrar": "Umbenennen",
+      "restaurar": "Wieder anbieten",
+      "archivar": "Archivieren",
+      "restaurado": "Das Muster wird wieder angeboten",
+      "archivadoOk": "Archiviert: wird nicht mehr angeboten, wer es nutzt, behält es",
+      "borrar": "Löschen",
+      "borrado": "Muster gelöscht",
+      "titulo": "Rotationsmuster",
+      "subtitulo": "Die Arbeits- und Ruhezyklen. Archivieren bietet ein Muster nicht mehr an; wer es nutzt, behält es. Nur ein ungenutztes kann gelöscht werden.",
+      "deLaEmpresa": "Des Unternehmens",
+      "vacio": "Sie entstehen beim Festlegen des Zyklus eines Postens oder einer Wache.",
+      "vacioTitulo": "Noch keine eigenen Muster",
+      "delSistema": "System (gemeinsam)",
+      "estaciones": "Posten",
+      "plazas": "Plätze mit diesem Zyklus",
+      "personas": "Personen",
+      "historial": "Und {{count}} beendete Zuweisungen, die es in ihrem Verlauf behalten."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Arbeitszeit",
+      "cambiar": "Arbeitszeit ändern",
+      "definir": "Arbeitszeit festlegen",
+      "titulo": "Bürozeiten",
+      "sinHorario": "Ohne Arbeitszeit: die Stempelung wird mit keiner Anfangszeit verglichen.",
+      "sinHorarioTitulo": "Noch keine Arbeitszeit",
+      "libre": "Frei",
+      "proximosDias": "Nächste Tage"
+    },
+    "Requisito": {
+      "guardado": "Bedarf gespeichert",
+      "noGuardado": "Der Bedarf konnte nicht gespeichert werden",
+      "todosLosDias": "Jeden Tag",
+      "titulo": "Bedarf",
+      "cambiar": "Bedarf ändern",
+      "explicacion": "Wie viele Wachen der Posten braucht, wann und an welchen Tagen. Nur das legt seine Plätze fest: Dienstplan, Nicht besetzt und die Berichte lesen es hier.",
+      "aLaVez": "{{count}} gleichzeitig",
+      "sacafrancosAparte": "Dazu {{count}} Springer-Platz/Plätze: decken freie Tage und zählen nicht zum Bedarf.",
+      "sinRequisito": "Dieser Posten sagt noch nicht, wie viele Wachen er braucht. Ohne Bedarf lassen sich seine Lücken nicht berechnen.",
+      "personas": "Gleichzeitig",
+      "dias": "Tage",
+      "quitarFranja": "Diese Zeit entfernen",
+      "anadirFranja": "Zeit hinzufügen",
+      "alGuardar": "Beim Speichern",
+      "sale": "{{nombre}} verlässt den Posten (der Platz {{ventana}} entfällt).",
+      "cambiaDeHora": "{{nombre}} wechselt von {{de}} auf {{a}}.",
+      "plazasNuevas": "{{count}} neue(r) Platz/Plätze ohne Wache: erscheinen unter Nicht besetzt.",
+      "personasInvalidas": "Zwischen 1 und 20 Wachen gleichzeitig.",
+      "horaInvalida": "Uhrzeiten wie 07:00 schreiben.",
+      "guardar": "Bedarf speichern",
+      "dia": {
+        "lun": "M",
+        "mar": "D",
+        "mie": "M",
+        "jue": "D",
+        "vie": "F",
+        "sab": "S",
+        "dom": "S"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Nicht erschienen",
+        "leave": "Abwesenheit ohne Ersatz",
+        "open_shift": "Schicht ohne Wache",
+        "archived_guard": "Archivierte Wache",
+        "empty_slot": "Leerer Platz"
+      },
+      "noCargo": "Konnte nicht geladen werden",
+      "todos": "Alle",
+      "estacion": "Posten",
+      "faltanDeN": "{{faltan}} von {{need}} fehlen",
+      "nadieAsignado": "Niemand im Dienstplan",
+      "sinVigilante": "Ohne Wache",
+      "subtitulo": "Fehlende, Abwesenheiten ohne Ersatz, leere Plätze und Schichten ohne Wache, gemessen am Bedarf jedes Postens.",
+      "todasLasEstaciones": "Alle Posten",
+      "incluirTerminados": "Vergangene einbeziehen",
+      "rangoAlReves": "Das Bis-Datum liegt vor dem Von-Datum.",
+      "rangoLargo": "Höchstens {{n}} Tage wählen.",
+      "nadaDeEsteTipo": "Keine Lücken dieser Art in diesem Zeitraum.",
+      "todoCubierto": "Alle Posten haben in diesem Zeitraum die Leute, die sie brauchen.",
+      "sinHuecos": "Nichts unbesetzt",
+      "yaPaso": "Vorbei",
+      "ofrecer": "Anbieten",
+      "cubrir": "Besetzen",
+      "huecos": "Lücken",
+      "faltaSinNovedad": "Das Fehlen konnte nicht erfasst werden",
+      "cubierto": "{{nombre}} übernimmt diese Lücke.",
+      "confirmarDescanso": "An dem Tag hat die Person frei. Trotzdem einteilen?",
+      "confirmarDoble": "Hat schon eine überlappende Schicht. Trotzdem einteilen (Doppelschicht)?",
+      "noSePudoCubrir": "Konnte nicht besetzt werden",
+      "siPonerlo": "Ja, einteilen",
+      "enLugarDe": "Anstelle von {{nombre}}",
+      "nadieLibre": "Zu dieser Zeit ist niemand frei.",
+      "disponible": "Hat zugesagt",
+      "noDisponible": "Hat abgesagt",
+      "horasSemana": "{{h}} h diese Woche",
+      "conoceElPuesto": "{{n}} Schichten hier",
+      "descansoCorto": "Nur {{h}} h Ruhe",
+      "ofertaEnviada": "Angebot an die verfügbaren Wachen gesendet.",
+      "noSePudoOfrecer": "Konnte nicht angeboten werden"
+    },
+    "HorarioModos": {
+      "modos": "Dienstplanmodus",
+      "enVivo": "Live",
+      "borrador": "Entwurf",
+      "hayBorradorEditando": "Es gibt einen unveröffentlichten Entwurf; {{quien}} bearbeitet ihn gerade.",
+      "hayBorrador": "Es gibt einen unveröffentlichten Entwurf (gespeichert von {{quien}}).",
+      "ayudaVivo": "Jede Änderung wird sofort im aktuellen Dienstplan gespeichert.",
+      "ayudaBorrador": "Nichts erreicht den aktuellen Dienstplan vor „Veröffentlichen“. Der Entwurf wird mit Ihrem Team geteilt."
+    },
+    "patrones": {
+      "archivado": "archiviert"
     }
   },
   "visitantes": {

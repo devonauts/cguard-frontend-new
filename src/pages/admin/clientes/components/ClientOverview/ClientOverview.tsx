@@ -342,7 +342,7 @@ export default function ClientOverview({
     {
       clave: "horario",
       hecho: conGente,
-      href: `/planificador?busca=${encodeURIComponent(clientDisplayName(client, ""))}`,
+      href: `/schedule?modo=borrador&busca=${encodeURIComponent(clientDisplayName(client, ""))}`,
     },
   ];
 

@@ -102,40 +102,66 @@ import {
 } from "@/lib/planificador/motor";
 import { planDesdeHorarioReal, type PlanReal } from "@/lib/planificador/real";
 import {
+  contextoEnLaEmpresa,
   planificarPublicacion,
-  publicar,
   type Publicacion,
 } from "@/lib/planificador/publicar";
 import {
+  baseParaAbrir,
+  borradorCaducado,
+  claveDelBorrador,
   estadoDelBorrador,
   firmaDe,
-  guardarBorrador,
-  leerBorrador,
-  olvidarBorrador,
 } from "@/lib/planificador/borrador";
+import { rebasePlan, touchedBy, touchedByCalls } from "@/lib/planificador/rebase";
+import {
+  DraftConflict,
+  descartarBorradorDelServidor,
+  guardarBorradorEnElServidor,
+  leerBorradorDelServidor,
+  publicarEnElServidor,
+  seguirEditando,
+  type Conflict,
+  type Editor,
+} from "@/lib/planificador/servidor";
 import { useFrenoAlSalir } from "@/lib/useFrenoAlSalir";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import HorarioModos from "./HorarioModos";
 
 /**
- * PROGRAMADOR › PLANIFICADOR
+ * TURNOS › HORARIO › BORRADOR (antes «Planificador»)
  *
  * Una hoja para ARMAR el horario como borrador: qué pide cada puesto, qué
  * rotación lleva cada persona y quién cubre lo que falta. Abre con la operación
- * real (la lee de `scheduler/overview`) y todo lo que se cambie aquí se queda
- * aquí: no escribe nada en el servidor ni mueve un turno de nadie.
+ * real (la lee de `scheduler/overview`) y nada llega al horario real hasta
+ * «Publicar».
+ *
+ * Fase 2 (2026-10-31): el borrador se guarda en el SERVIDOR, compartido por
+ * quienes editan ese horario (se ve quién más lo tiene abierto); si el horario
+ * real o el borrador cambian debajo, se combinan (`rebase.ts`); y «Publicar»
+ * aplica todo de una vez en el servidor o nada (`servidor.ts`).
  *
  * Toda la lógica vive en `lib/planificador/motor` (con sus mil casos); este
  * archivo sólo pinta y traduce toques en llamadas al motor.
  */
 
-/** `localStorage`, o nada si el navegador lo bloquea. */
-const almacen = (): Storage | null => {
+/** Old browsers kept the draft in localStorage: forget it, the server has it now. */
+function olvidarBorradorDelNavegador(tenantId: string) {
   try {
-    return window.localStorage;
+    window.localStorage.removeItem(claveDelBorrador(tenantId));
   } catch {
-    return null;
+    /* blocked storage: nothing to forget */
   }
-};
+}
+
+/** Server-side draft bookkeeping (not React state: saves read it synchronously). */
+interface EnElServidor {
+  version: number;
+  /** Server time just before the live read the draft is diffed against. */
+  baseAt: string | null;
+  /** The plan last known to be on the server: the base when merging a 409. */
+  guardado: Plan | null;
+}
 
 type Hoja =
   | { tipo: "hueco"; k: string }
@@ -298,7 +324,12 @@ export default function Planificador() {
   // Publishing and live changes need station edit rights (lib/reglasDeAcciones).
   const editarPlan = usePuede("turnos.publicarPlanificador");
   const tenantId = localStorage.getItem("tenantId") || "";
-  const base = useMemo(() => lunesDe(hoyEnLaEmpresa()), []);
+  /* Day 0 of the plan. This week's Monday, or the Monday the shared draft was
+     made on (up to two weeks back) so its day indexes keep their dates. */
+  const [base, setBase] = useState(() => lunesDe(hoyEnLaEmpresa()));
+  const baseRef = useRef(base);
+
+  baseRef.current = base;
   const hoyIdx = useMemo(() => {
     const [y, m, d] = hoyEnLaEmpresa().split("-").map(Number);
     const [by, bm, bd] = base.split("-").map(Number);
@@ -337,12 +368,25 @@ export default function Planificador() {
   const [hoja, setHoja] = useState<Hoja>(null);
   const [pensando, setPensando] = useState(false);
   const pila = useRef<string[]>([]);
-  /* El borrador se guarda en el navegador para no perderlo al cerrar la
-     pestaña. Sólo la PRIMERA carga lo recupera; «Volver al horario real»,
-     «Descartar» y publicar lo tiran. La firma es la del horario real leído:
-     un borrador hecho contra otro horario no se devuelve. */
-  const recuperarRef = useRef(true);
+  /* EL BORRADOR VIVE EN EL SERVIDOR, compartido por quienes editan este
+     horario. `firmaRef` es la huella del horario real leído; `srvRef`, lo que
+     el servidor tiene (versión, desde cuándo vale la lectura, último plan
+     guardado). Se combina, nunca se pisa: ver `rebase.ts`. */
   const firmaRef = useRef("");
+  const srvRef = useRef<EnElServidor>({ version: 0, baseAt: null, guardado: null });
+  const leidoRef = useRef<PlanReal | null>(null);
+  const cambiosRef = useRef(0);
+
+  cambiosRef.current = cambios;
+  /** Who else has this draft open (heartbeat every 30 s). */
+  const [editores, setEditores] = useState<Editor[]>([]);
+  /** null = nothing to save · «pendiente» = edited, not on the server yet. */
+  const [guardado, setGuardado] = useState<
+    null | "pendiente" | "guardando" | "guardado" | "error"
+  >(null);
+  /** Filters: one station, one shift type. */
+  const [soloPuesto, setSoloPuesto] = useState("");
+  const [soloFranja, setSoloFranja] = useState("");
   const d0 = semana * 7;
   /* LA REJILLA ES UNA HOJA QUE SE DESPLAZA: se pintan tres semanas seguidas
      (la anterior, la de la vista y la siguiente) y se mueve a izquierda y
@@ -362,78 +406,208 @@ export default function Planificador() {
     el.scrollTo({ left: ANTES * ANCHO_DIA, behavior: "smooth" });
   }, [semana, cargando]);
 
-  const cargar = useCallback(async () => {
-    if (!tenantId) return;
-    setCargando(true);
-    try {
-      const [ov, rot]: any[] = await Promise.all([
-        ApiService.get(
-          `/tenant/${tenantId}/scheduler/overview?startDate=${sumaDias(base, -ANTES)}&endDate=${sumaDias(base, 59)}`,
-        ),
-        ApiService.get(`/tenant/${tenantId}/rotation-styles`),
-      ]);
-      const r = planDesdeHorarioReal(
-        ov?.data || ov || {},
-        rot?.rows || rot?.data?.rows || [],
-        base,
-        zonaDeLaEmpresa(),
-        60,
-      );
+  /**
+   * Read the live schedule and lay the draft on top of it.
+   *
+   * `conservarLocal` (the default): my edits not yet on the server travel
+   * with me — a direct change or a reload no longer throws the draft away.
+   * Whatever moved underneath (the live schedule, or someone else's save of
+   * the shared draft) is merged three-way; only what both sides changed is
+   * listed, and mine is kept.
+   */
+  const cargar = useCallback(
+    async (opciones?: { conservarLocal?: boolean }) => {
+      if (!tenantId) return;
+      const conservarLocal = opciones?.conservarLocal !== false;
 
-      limpiar(r.plan, -ANTES, DESPUES);
-      pila.current = [];
-      setLeido({ ...r, plan: copiar(r.plan) });
-      {
-        const lista: any[] = (ov?.data || ov || {}).assignments || [];
-        const m: Record<string, AsignacionCruda> = {};
+      setCargando(true);
+      try {
+        const local =
+          conservarLocal &&
+          planRef.current &&
+          leidoRef.current &&
+          cambiosRef.current > 0
+            ? { original: leidoRef.current.plan, plan: planRef.current }
+            : null;
+        // The server clock BEFORE the live read: a change after it that the
+        // read missed is caught by the publish check, never silently undone.
+        const srv = await leerBorradorDelServidor(tenantId);
+        let draft = srv.draft;
 
-        for (const a of lista) if (a?.id) m[String(a.id)] = a;
-        setCrudas(m);
-      }
-      const firma = firmaDe(r.plan);
-      let plan = r.plan;
-      let toques = 0;
-
-      firmaRef.current = firma;
-      if (recuperarRef.current) {
-        recuperarRef.current = false;
-        const g = leerBorrador(almacen(), tenantId, base, firma);
-
-        if (g.tipo === "ok") {
-          plan = g.plan;
-          toques = g.toques;
+        if (draft && borradorCaducado(draft.updatedAt) && !local) {
+          await descartarBorradorDelServidor(tenantId, draft.version).catch(
+            () => undefined,
+          );
           toast.message(
             t(
-              "ui.Planificador.borradorRecuperado",
-              "Se recuperó tu borrador sin publicar. Publícalo o descártalo.",
+              "ui.Planificador.borradorViejo",
+              "Había un borrador sin publicar de hace más de una semana; se descartó.",
             ),
           );
-        } else if (g.tipo === "caducado") {
-          olvidarBorrador(almacen(), tenantId);
+          draft = null;
+        }
+        const lunes = lunesDe(hoyEnLaEmpresa());
+        const b = local
+          ? baseRef.current
+          : baseParaAbrir(draft?.base || null, lunes);
+
+        if (draft && !local && draft.base && draft.base !== b) {
+          // Made on a Monday too far back to line its days up: start over.
+          await descartarBorradorDelServidor(tenantId, draft.version).catch(
+            () => undefined,
+          );
           toast.message(
             t(
-              "ui.Planificador.borradorCaducado",
-              "Tenías un borrador sin publicar, pero el horario real cambió desde entonces y se descartó.",
+              "ui.Planificador.borradorOtraSemana",
+              "El borrador sin publicar era de otra semana y ya no encaja en el calendario; se descartó.",
             ),
+          );
+          draft = null;
+        }
+        if (b !== baseRef.current) {
+          baseRef.current = b;
+          setBase(b);
+        }
+        const [ov, rot]: any[] = await Promise.all([
+          ApiService.get(
+            `/tenant/${tenantId}/scheduler/overview?startDate=${sumaDias(b, -ANTES)}&endDate=${sumaDias(b, 59)}`,
+          ),
+          ApiService.get(`/tenant/${tenantId}/rotation-styles?includeArchived=1`),
+        ]);
+        const r = planDesdeHorarioReal(
+          ov?.data || ov || {},
+          rot?.rows || rot?.data?.rows || [],
+          b,
+          zonaDeLaEmpresa(),
+          60,
+        );
+
+        limpiar(r.plan, -ANTES, DESPUES);
+        pila.current = [];
+        leidoRef.current = { ...r, plan: copiar(r.plan) };
+        setLeido(leidoRef.current);
+        {
+          const lista: any[] = (ov?.data || ov || {}).assignments || [];
+          const m: Record<string, AsignacionCruda> = {};
+
+          for (const a of lista) if (a?.id) m[String(a.id)] = a;
+          setCrudas(m);
+        }
+        const firma = firmaDe(r.plan);
+        const antes = srvRef.current;
+
+        firmaRef.current = firma;
+        olvidarBorradorDelNavegador(tenantId);
+
+        // What travels onto the fresh read: my edits (merged first with a
+        // newer shared draft, if someone saved meanwhile), or the shared draft.
+        let llevar: { original: Plan | null; plan: Plan } | null = null;
+        const choques: string[] = [];
+
+        if (local) {
+          if (draft && draft.version !== antes.version && draft.plan) {
+            const m = rebasePlan(
+              antes.guardado ?? local.original,
+              local.plan,
+              draft.plan,
+            );
+
+            choques.push(...m.conflicts);
+            llevar = { original: draft.original ?? local.original, plan: m.plan };
+            toast.message(
+              t("ui.Planificador.otroGuardo", {
+                defaultValue:
+                  "{{quien}} también cambió el borrador; se juntaron sus cambios con los tuyos.",
+                quien:
+                  draft.updatedBy ||
+                  t("ui.Planificador.otraPersona", "Otra persona"),
+              }),
+            );
+          } else llevar = local;
+        } else if (draft?.plan) {
+          llevar = { original: draft.original, plan: draft.plan };
+          toast.message(
+            t("ui.Planificador.borradorAbierto", {
+              defaultValue:
+                "Se abrió el borrador sin publicar (guardado por {{quien}}). Publícalo o descártalo.",
+              quien: draft.updatedBy || "—",
+            }),
           );
         }
-      } else olvidarBorrador(almacen(), tenantId);
-      setPlan(plan);
-      setParecido(r.comparados ? r.coincidencia : null);
-      setCambios(toques);
-      setSemana(0);
-    } catch {
-      toast.error(
-        t("ui.Planificador.noSePudoCargar", "No se pudo cargar el horario."),
-      );
-    } finally {
-      setCargando(false);
-    }
-  }, [tenantId, base, t]);
+        let plan = r.plan;
+        let toques = 0;
+        let reGuardar = false;
 
+        if (llevar) {
+          toques = Math.max(
+            1,
+            local ? cambiosRef.current : draft?.touches || 1,
+          );
+          if (llevar.original && firmaDe(llevar.original) === firma)
+            plan = llevar.plan;
+          else {
+            const m = rebasePlan(llevar.original ?? r.plan, llevar.plan, r.plan);
+
+            plan = m.plan;
+            limpiar(plan, -ANTES, DESPUES);
+            choques.push(...m.conflicts, ...m.dropped);
+            reGuardar = true;
+            if (!m.conflicts.length && !m.dropped.length)
+              toast.message(
+                t(
+                  "ui.Planificador.realCambio",
+                  "El horario real cambió debajo del borrador; tus cambios siguen encima de lo nuevo.",
+                ),
+              );
+          }
+        }
+        if (choques.length)
+          toast.warning(
+            t("ui.Planificador.choques", {
+              defaultValue:
+                "Esto lo cambiaron tú y otra persona a la vez; se quedó tu versión: {{lista}}",
+              lista: [...new Set(choques)].slice(0, 6).join(", "),
+            }),
+            { duration: 12000 },
+          );
+        srvRef.current = {
+          version: srv.draft && draft ? draft.version : 0,
+          baseAt: srv.now,
+          guardado: draft?.plan ?? null,
+        };
+        setEditores(srv.editors);
+        setPlan(plan);
+        setParecido(r.comparados ? r.coincidencia : null);
+        setCambios(toques);
+        cambiosRef.current = toques;
+        {
+          const [y, m, d] = hoyEnLaEmpresa().split("-").map(Number);
+          const [by, bm, bd] = b.split("-").map(Number);
+          const hoy = Math.round(
+            (Date.UTC(y, m - 1, d) - Date.UTC(by, bm - 1, bd)) / 86_400_000,
+          );
+
+          setSemana(Math.max(0, Math.floor(hoy / 7)));
+        }
+        setGuardado(llevar ? (reGuardar || local ? "pendiente" : "guardado") : null);
+      } catch {
+        toast.error(
+          t("ui.Planificador.noSePudoCargar", "No se pudo cargar el horario."),
+        );
+      } finally {
+        setCargando(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tenantId, t],
+  );
+
+  // Once per company: `cargar` changes identity when the language loads, and
+  // reading twice showed every notice twice.
   useEffect(() => {
-    void cargar();
-  }, [cargar]);
+    void cargar({ conservarLocal: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tenantId]);
 
   /** Todo cambio pasa por aquí: copia, aplica, limpia y guarda para deshacer. */
   const cambiar = useCallback(
@@ -482,71 +656,146 @@ export default function Planificador() {
   );
   // Qué habría que publicar AHORA. No es el contador de toques: lo que los
   // sacafrancos fijos cubren solos al cargar también es nuevo para el horario.
+  const contextoDePublicacion = useCallback(
+    () =>
+      contextoEnLaEmpresa(tenantId, base, hoyIdx, DESPUES, (dia, h, m) =>
+        instanteEnLaEmpresa(dia, h, m),
+      ),
+    [tenantId, base, hoyIdx],
+  );
   const publicacion = useMemo(
     () =>
       plan && leido
-        ? planificarPublicacion(leido.plan, plan, leido.enlace, {
-            tenantId,
-            base,
-            hoy: hoyIdx,
-            dias: DESPUES,
-            fechaDe: (d) => sumaDias(base, d),
-            instanteDe: (d, min) =>
-              instanteEnLaEmpresa(
-                sumaDias(base, d + Math.floor(min / 1440)),
-                Math.floor((min % 1440) / 60),
-                min % 60,
-              ).toISOString(),
-          })
+        ? planificarPublicacion(
+            leido.plan,
+            plan,
+            leido.enlace,
+            contextoDePublicacion(),
+          )
         : null,
-    [plan, leido, tenantId, base, hoyIdx],
+    [plan, leido, contextoDePublicacion],
   );
   const borrador = estadoDelBorrador(publicacion?.cambios.length, cambios);
 
-  // Guardar el borrador tocado (con un respiro: un arrastre son muchos toques).
-  useEffect(() => {
-    if (!plan || !leido || !firmaRef.current) return;
-    if (!borrador.avisarAlSalir) {
-      if (!cambios) return;
-      olvidarBorrador(almacen(), tenantId);
+  /* ── SAVE TO THE SERVER ───────────────────────────────────────────────────
+     One save at a time, in order. A 409 means someone else saved the shared
+     draft (or published / discarded it): re-read and merge, never overwrite. */
+  const enCursoRef = useRef<Promise<boolean>>(Promise.resolve(true));
+  const guardarAhora = useCallback((forzar = false): Promise<boolean> => {
+    const una = async (): Promise<boolean> => {
+      const p = planRef.current;
+      const l = leidoRef.current;
 
-      return;
-    }
-    const id = window.setTimeout(
-      () =>
-        guardarBorrador(almacen(), tenantId, {
-          base,
-          firma: firmaRef.current,
-          toques: cambios,
-          plan,
-        }),
-      600,
-    );
+      if (!p || !l || !tenantId) return true;
+      const s = srvRef.current;
+
+      // Untouched and nothing on the server: a late autosave (e.g. right
+      // after a publish) has nothing to do. Publishing forces the save.
+      if (!forzar && cambiosRef.current === 0 && s.version === 0) return true;
+
+      try {
+        if (firmaDe(p) === firmaRef.current) {
+          // Back to exactly the live schedule: nothing to keep.
+          if (s.version > 0) {
+            await descartarBorradorDelServidor(tenantId, s.version);
+            srvRef.current = { ...s, version: 0, guardado: null };
+          }
+          setGuardado(null);
+
+          return true;
+        }
+        setGuardado("guardando");
+        const d = await guardarBorradorEnElServidor(tenantId, {
+          version: s.version,
+          plan: p,
+          original: l.plan,
+          base: baseRef.current,
+          baseAt: s.baseAt,
+          signature: firmaRef.current,
+          touches: cambiosRef.current,
+        });
+
+        srvRef.current = { ...srvRef.current, version: d.version, guardado: p };
+        setEditores(d.editors || []);
+        // Edited again while this save travelled: another save follows.
+        setGuardado(planRef.current === p ? "guardado" : "pendiente");
+
+        return true;
+      } catch (e) {
+        if (
+          e instanceof DraftConflict &&
+          (e.reason === "draftChanged" || e.reason === "draftMissing")
+        ) {
+          if (e.reason === "draftMissing") {
+            srvRef.current = { ...srvRef.current, version: 0, guardado: null };
+            toast.message(
+              t(
+                "ui.Planificador.borradorYaNoEsta",
+                "Otra persona publicó o descartó el borrador. Se volvió a leer el horario real con tus cambios encima.",
+              ),
+            );
+          }
+          await cargar();
+
+          return false;
+        }
+        setGuardado("error");
+
+        return false;
+      }
+    };
+    const siguiente = enCursoRef.current.then(una, una);
+
+    enCursoRef.current = siguiente.catch(() => false);
+
+    return siguiente;
+  }, [tenantId, cargar, t]);
+
+  // Save the touched draft (with a breather: one drag is many touches).
+  useEffect(() => {
+    if (cargando || !plan || !leido || !firmaRef.current || !cambios) return;
+    setGuardado((g) => (g === "guardando" ? g : "pendiente"));
+    const id = window.setTimeout(() => void guardarAhora(), 1200);
 
     return () => window.clearTimeout(id);
-  }, [plan, leido, cambios, borrador.avisarAlSalir, tenantId, base]);
+  }, [plan, leido, cambios, cargando, guardarAhora]);
 
-  useFrenoAlSalir(borrador.avisarAlSalir, () =>
-    confirmDialog({
-      title: t("ui.Planificador.salirTitulo", "Hay cambios sin publicar"),
-      message: t("ui.Planificador.salirMensaje", {
-        defaultValue:
-          "{{n}} cambios del Planificador no están en el horario real. Si sales, se quedan como borrador en este navegador: no los verán la central, el Horario ni los vigilantes hasta que pulses «Publicar».",
-        n: borrador.pendientes,
+  // Who else has it open: a heartbeat while the editor is on screen.
+  useEffect(() => {
+    if (!tenantId) return;
+    const id = window.setInterval(() => {
+      if (document.visibilityState === "visible")
+        void seguirEditando(tenantId).then(setEditores);
+    }, 30_000);
+
+    return () => window.clearInterval(id);
+  }, [tenantId]);
+
+  // Leaving is safe once the server has the draft; only an unsaved edit asks.
+  useFrenoAlSalir(
+    guardado === "pendiente" || guardado === "guardando" || guardado === "error",
+    () =>
+      confirmDialog({
+        title: t("ui.Planificador.salirTituloServidor", "Hay cambios sin guardar"),
+        message: t(
+          "ui.Planificador.salirMensajeServidor",
+          "Tus últimos cambios del borrador todavía no llegaron al servidor. Si sales ahora, se pierden.",
+        ),
+        confirmText: t("ui.Planificador.salirSinGuardar", "Salir igual"),
+        cancelText: t("ui.Planificador.seguirAqui", "Seguir aquí"),
+        tone: "danger",
       }),
-      confirmText: t("ui.Planificador.salirSinPublicar", "Salir sin publicar"),
-      cancelText: t("ui.Planificador.seguirAqui", "Seguir aquí"),
-      tone: "danger",
-    }),
   );
 
+  /** «Volver al horario real» / «Descartar borrador»: for everyone who shares it. */
   const descartar = async () => {
     if (
+      (borrador.pendientes > 0 || srvRef.current.version > 0) &&
       !(await confirmDialog({
         title: t("ui.Planificador.descartarTitulo", "Descartar el borrador"),
-        message: t("ui.Planificador.descartarMensaje", {
+        message: t("ui.Planificador.descartarMensajeCompartido", {
           defaultValue:
-            "Se pierden los {{n}} cambios sin publicar y el Planificador vuelve a mostrar el horario real.",
+            "Se pierden los {{n}} cambios sin publicar, también para quien más lo esté editando, y vuelve a verse el horario real.",
           n: borrador.pendientes,
         }),
         confirmText: t("ui.Planificador.descartar", "Descartar borrador"),
@@ -554,8 +803,57 @@ export default function Planificador() {
       }))
     )
       return;
-    olvidarBorrador(almacen(), tenantId);
-    void cargar();
+    try {
+      if (srvRef.current.version > 0)
+        await descartarBorradorDelServidor(tenantId, srvRef.current.version);
+    } catch (e) {
+      if (e instanceof DraftConflict && e.reason === "draftChanged") {
+        toast.error(e.message);
+        await cargar();
+
+        return;
+      }
+    }
+    srvRef.current = { version: 0, baseAt: null, guardado: null };
+    cambiosRef.current = 0;
+    setCambios(0);
+    setGuardado(null);
+    await cargar({ conservarLocal: false });
+  };
+
+  /** Publish: save first (the server applies exactly what was reviewed), then all or nothing. */
+  const publicarAhora = async (): Promise<{ applied: number }> => {
+    await guardarAhora(true);
+    const l = leidoRef.current;
+    const p = planRef.current;
+
+    if (!l || !p) return { applied: 0 };
+    const pub = planificarPublicacion(l.plan, p, l.enlace, contextoDePublicacion());
+
+    return publicarEnElServidor(tenantId, {
+      version: srvRef.current.version,
+      baseAt: srvRef.current.baseAt,
+      touched: (() => {
+        const a = touchedBy(l.plan, p, l.enlace.personas);
+        const b = touchedByCalls(
+          pub.cambios.flatMap((c) => c.llamadas),
+          l.enlace.personas,
+        );
+
+        return {
+          guardIds: [...new Set([...a.guardIds, ...b.guardIds])],
+          stationIds: [...new Set([...a.stationIds, ...b.stationIds])],
+        };
+      })(),
+      changes: pub.cambios.map((c) => ({
+        text: c.texto,
+        calls: c.llamadas.map((x) => ({
+          method: x.metodo,
+          path: x.ruta,
+          body: x.cuerpo,
+        })),
+      })),
+    });
   };
   const fechas = useMemo(
     () =>
@@ -590,6 +888,8 @@ export default function Planificador() {
     const q = busca.trim().toLowerCase();
 
     return plan.puestos.filter((pu) => {
+      if (soloPuesto && pu.id !== soloPuesto) return false;
+      if (soloFranja && !pu.franjas.includes(soloFranja)) return false;
       if (soloHuecos) {
         let hay = false;
 
@@ -606,7 +906,7 @@ export default function Planificador() {
         (p) => p.puesto === pu.id && p.nombre.toLowerCase().includes(q),
       );
     });
-  }, [plan, busca, soloHuecos, d0]);
+  }, [plan, busca, soloHuecos, soloPuesto, soloFranja, d0]);
 
   /* ── ACORDEÓN CLIENTE → SEDE → ESTACIÓN ──────────────────────────────────
      Pedido del dueño: «sale el cliente, se da click y abre la sede, se da
@@ -638,41 +938,21 @@ export default function Planificador() {
   /* «Quitar» a alguien de su puesto cierra su asignación en el servidor. Se
      pide dos veces (sin diálogo del navegador) y se relee el horario. */
   const [confirmarQuitar, setConfirmarQuitar] = useState<string | null>(null);
-  /* ── LOS CAMBIOS DIRECTOS NO SE LLEVAN EL BORRADOR SIN PREGUNTAR ───────
+  /* ── LOS CAMBIOS DIRECTOS YA NO SE LLEVAN EL BORRADOR ──────────────────
      Asignar, cambiar, editar, agregar sacafranco y quitar escriben en el
-     horario REAL, y al terminar el Planificador lo vuelve a leer: eso tiraba
-     el borrador sin publicar sin decir nada. Con cambios pendientes, se
-     pregunta antes de abrir la acción. */
-  const borradorRef = useRef(borrador);
-
-  borradorRef.current = borrador;
+     horario REAL y luego se relee. Antes eso tiraba el borrador (y había que
+     preguntar); ahora el borrador se combina con lo nuevo al releer
+     (`cargar` conserva lo local). Sólo queda comprobar el permiso. */
   const antesDeUnCambioDirecto = useCallback(async (): Promise<boolean> => {
-    const b = borradorRef.current;
-
     if (!editarPlan.puede) {
       toast.info(editarPlan.porQueNo);
       return false;
     }
-    if (!b.sinPublicar) return true;
+    // Whatever is not on the server yet goes there first.
+    await guardarAhora();
 
-    return confirmDialog({
-      title: t(
-        "ui.Planificador.cambioDirectoTitulo",
-        "Este cambio va directo al horario real",
-      ),
-      message: t("ui.Planificador.cambioDirectoMensaje", {
-        n: b.pendientes,
-        defaultValue:
-          "Tienes {{n}} cambio(s) sin publicar en el borrador. Al guardar este cambio el Planificador vuelve a leer el horario real y el borrador se pierde. Si quieres conservarlo, publícalo primero.",
-      }),
-      confirmText: t(
-        "ui.Planificador.cambioDirectoSeguir",
-        "Seguir y descartar el borrador",
-      ),
-      cancelText: t("ui.Planificador.cambioDirectoVolver", "Volver"),
-      tone: "danger",
-    });
-  }, [t, editarPlan.puede, editarPlan.porQueNo]);
+    return true;
+  }, [editarPlan.puede, editarPlan.porQueNo, guardarAhora]);
   const directo =
     <T,>(abrir: (v: T) => void) =>
     (v: T) => {
@@ -725,7 +1005,11 @@ export default function Planificador() {
     }
   };
   const abrirTodo =
-    busca.trim() !== "" || soloHuecos || puestosVisibles.length <= 2;
+    busca.trim() !== "" ||
+    soloHuecos ||
+    !!soloPuesto ||
+    !!soloFranja ||
+    puestosVisibles.length <= 2;
   const estaAbierto = (k: string) => abiertos[k] ?? abrirTodo;
   const alternar = (k: string) =>
     setAbiertos((a) => ({ ...a, [k]: !(a[k] ?? abrirTodo) }));
@@ -831,7 +1115,11 @@ export default function Planificador() {
               >
                 <Undo2 size={15} /> {t("ui.Planificador.deshacer", "Deshacer")}
               </Button>
-              <Button disabled={cargando} variant="outline" onClick={cargar}>
+              <Button
+                disabled={cargando}
+                variant="outline"
+                onClick={() => void descartar()}
+              >
                 <RotateCcw size={15} />{" "}
                 {t("ui.Planificador.volverAlReal", "Volver al horario real")}
               </Button>
@@ -874,6 +1162,31 @@ export default function Planificador() {
                       })}
                 </StatusBadge>
               )}
+              {guardado && (
+                <StatusBadge
+                  tone={
+                    guardado === "error"
+                      ? "red"
+                      : guardado === "guardado"
+                        ? "green"
+                        : "slate"
+                  }
+                >
+                  {guardado === "guardado"
+                    ? t("ui.Planificador.guardadoEnServidor", "Guardado para todo el equipo")
+                    : guardado === "error"
+                      ? t("ui.Planificador.noSeGuardo", "No se pudo guardar; se reintenta al próximo cambio")
+                      : t("ui.Planificador.guardando", "Guardando…")}
+                </StatusBadge>
+              )}
+              {editores.length > 0 && (
+                <StatusBadge tone="blue">
+                  {t("ui.Planificador.tambienEditando", {
+                    defaultValue: "También lo está editando: {{quien}}",
+                    quien: editores.map((e) => e.name).join(", "),
+                  })}
+                </StatusBadge>
+              )}
             </>
           }
           icon={<CalendarRange />}
@@ -881,8 +1194,9 @@ export default function Planificador() {
             "ui.Planificador.subtitulo",
             "Di qué pide cada puesto, dale a cada quien su rotación y deja que los sacafrancos cubran lo que falta.",
           )}
-          title={t("ui.Planificador.titulo", "Planificador")}
+          title={t("ui.Planificador.tituloBorrador", "Horario · borrador")}
         />
+        <HorarioModos modo="borrador" />
 
         {/* LA FRANJA DEL BORRADOR. Una pastilla en la cabecera no bastó: se
             corrió el ciclo de un vigilante, no se publicó, y la pantalla lo
@@ -1057,6 +1371,38 @@ export default function Planificador() {
                   onChange={(e) => setBusca(e.target.value)}
                 />
               </label>
+              <select
+                aria-label={t("ui.Planificador.filtroEstacion", "Estación")}
+                className="cg-input h-9 min-w-0 max-w-full px-2 text-sm sm:max-w-[14rem]"
+                value={soloPuesto}
+                onChange={(e) => setSoloPuesto(e.target.value)}
+              >
+                <option value="">
+                  {t("ui.Planificador.todasLasEstaciones", "Todas las estaciones")}
+                </option>
+                {[...plan.puestos]
+                  .sort((a, b) => a.nombre.localeCompare(b.nombre))
+                  .map((pu) => (
+                    <option key={pu.id} value={pu.id}>
+                      {pu.sede ? `${pu.nombre} · ${pu.sede}` : pu.nombre}
+                    </option>
+                  ))}
+              </select>
+              <select
+                aria-label={t("ui.Planificador.filtroTurno", "Tipo de turno")}
+                className="cg-input h-9 min-w-0 max-w-full px-2 text-sm sm:max-w-[12rem]"
+                value={soloFranja}
+                onChange={(e) => setSoloFranja(e.target.value)}
+              >
+                <option value="">
+                  {t("ui.Planificador.todosLosTurnos", "Todos los turnos")}
+                </option>
+                {Object.values(plan.franjas).map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.nombre}
+                  </option>
+                ))}
+              </select>
               <label className="flex cursor-pointer items-center gap-2 text-sm">
                 <input
                   checked={soloHuecos}
@@ -1564,8 +1910,16 @@ export default function Planificador() {
             cerrar={() => setHoja(null)}
             publicado={() => {
               setHoja(null);
-              void cargar();
+              // Published: nothing local is pending any more (a queued
+              // autosave now finds nothing to do instead of re-creating it).
+              srvRef.current = { version: 0, baseAt: null, guardado: null };
+              cambiosRef.current = 0;
+              setCambios(0);
+              setGuardado(null);
+              void cargar({ conservarLocal: false });
             }}
+            publicarAhora={publicarAhora}
+            recargar={() => void cargar()}
           />
         )}
       </PageContainer>
@@ -3486,14 +3840,24 @@ function HojaPublicar({
   publicacion,
   cerrar,
   publicado,
+  publicarAhora,
+  recargar,
 }: {
   publicacion: Publicacion;
   cerrar: () => void;
   publicado: () => void;
+  /** Saves, then publishes on the server: everything or nothing. */
+  publicarAhora: () => Promise<{ applied: number }>;
+  /** Re-read the live schedule keeping the draft on top. */
+  recargar: () => void;
 }) {
   const { t } = useTranslation();
-  const [enCurso, setEnCurso] = useState<[number, number] | null>(null);
-  const [fallos, setFallos] = useState<string[] | null>(null);
+  const [enCurso, setEnCurso] = useState(false);
+  const [error, setError] = useState<{
+    texto: string;
+    conflictos: Conflict[];
+    recargar: boolean;
+  } | null>(null);
   const { cambios, noPublicables } = publicacion;
   /* La lista por persona (o puesto), no un muro de 87 renglones: «Guardia
      Demo: cubre Caseta 1 el 7, Caseta 3 el 10…». El texto de cada cambio
@@ -3516,65 +3880,97 @@ function HojaPublicar({
 
     return [...m.entries()];
   }, [cambios]);
-  const api = {
-    post: (r: string, c: any) => ApiService.post(r, c),
-    put: (r: string, c: any) => ApiService.put(r, c),
-    del: (r: string) => ApiService.delete(r),
-  };
   const ir = async () => {
-    setEnCurso([0, cambios.length]);
-    const f = await publicar(publicacion, api, (h, n) => setEnCurso([h, n]));
+    setEnCurso(true);
+    setError(null);
+    try {
+      const r = await publicarAhora();
 
-    setEnCurso(null);
-    if (f.length) {
-      setFallos(f);
-      toast.error(
-        t("ui.Planificador.publicadoConFallos", {
-          defaultValue:
-            "Publicado con {{n}} fallos. El resto ya está en el horario.",
-          n: f.length,
-        }),
-      );
-    } else {
       toast.success(
         t("ui.Planificador.publicadoOk", {
           defaultValue: "Publicado: {{n}} cambios ya están en el horario.",
-          n: cambios.length,
+          n: r.applied,
         }),
       );
       publicado();
+    } catch (e: any) {
+      if (e instanceof DraftConflict)
+        setError({
+          texto: e.message,
+          conflictos: e.conflicts,
+          recargar: [
+            "scheduleChanged",
+            "stationGone",
+            "draftChanged",
+            "draftMissing",
+          ].includes(e.reason),
+        });
+      else
+        setError({
+          texto:
+            e?.data?.message ||
+            e?.message ||
+            t("ui.Planificador.noSePublico", "No se publicó nada. Inténtalo de nuevo."),
+          conflictos: [],
+          recargar: false,
+        });
+    } finally {
+      setEnCurso(false);
     }
   };
+  const describir = (c: Conflict) =>
+    [
+      c.by ||
+        t("ui.Planificador.otraPersona", "Otra persona"),
+      c.kind === "assignment"
+        ? t("ui.Planificador.cambioAsignacion", "cambió la asignación de")
+        : c.kind === "mark"
+          ? t("ui.Planificador.cambioMarca", "cambió una novedad de")
+          : t("ui.Planificador.cambioTurno", "cambió un turno de"),
+      [c.guard, c.station, c.day].filter(Boolean).join(" · "),
+    ].join(" ");
 
   return (
     <Marco
       cerrar={cerrar}
       detalle={t(
-        "ui.Planificador.publicarDetalle",
-        "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app.",
+        "ui.Planificador.publicarDetalleTodo",
+        "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app. Va todo de una vez: si un cambio falla, no se publica nada.",
       )}
       titulo={t("ui.Planificador.publicarTitulo", "Publicar el borrador")}
     >
-      {fallos ? (
+      {error ? (
         <div className="flex flex-col gap-2">
           <p className="rounded-lg p-2.5 text-sm" style={ROJO}>
-            {t("ui.Planificador.noSePudieron", {
-              defaultValue: "{{n}} cambios no se pudieron publicar:",
-              n: fallos.length,
-            })}
+            {error.texto}
           </p>
-          <ul
-            className="max-h-[40dvh] overflow-y-auto pl-5 text-sm"
-            style={{ listStyle: "disc" }}
-          >
-            {fallos.map((f, i) => (
-              <li key={i}>{f}</li>
-            ))}
-          </ul>
-          <div className="flex justify-end">
-            <Button size="sm" variant="brand" onClick={publicado}>
-              {t("ui.Planificador.verHorario", "Ver cómo quedó")}
+          {error.conflictos.length > 0 && (
+            <ul
+              className="max-h-[40dvh] overflow-y-auto pl-5 text-sm"
+              style={{ listStyle: "disc" }}
+            >
+              {error.conflictos.map((c, i) => (
+                <li key={i}>{describir(c)}</li>
+              ))}
+            </ul>
+          )}
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button size="sm" variant="outline" onClick={cerrar}>
+              {t("ui.Planificador.cerrar", "Cerrar")}
             </Button>
+            {error.recargar && (
+              <Button
+                size="sm"
+                variant="brand"
+                onClick={() => {
+                  cerrar();
+                  recargar();
+                }}
+              >
+                <RotateCcw size={14} />{" "}
+                {t("ui.Planificador.recargarConLoNuevo", "Recargar con lo nuevo y revisar")}
+              </Button>
+            )}
           </div>
         </div>
       ) : (
@@ -3641,15 +4037,12 @@ function HojaPublicar({
           )}
           <div className="flex flex-wrap items-center justify-end gap-2">
             {enCurso && (
-              <span
-                className="text-sm tabular-nums"
-                style={{ color: "var(--ink-soft)" }}
-              >
-                {enCurso[0]} / {enCurso[1]}
+              <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                {t("ui.Planificador.publicandoDeUnaVez", "Publicando todo de una vez…")}
               </span>
             )}
             <Button
-              disabled={!!enCurso}
+              disabled={enCurso}
               size="sm"
               variant="outline"
               onClick={cerrar}
@@ -3657,7 +4050,7 @@ function HojaPublicar({
               {t("ui.Planificador.cancelar", "Cancelar")}
             </Button>
             <Button
-              disabled={!cambios.length || !!enCurso}
+              disabled={!cambios.length || enCurso}
               size="sm"
               variant="brand"
               onClick={ir}

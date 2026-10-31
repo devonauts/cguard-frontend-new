@@ -1745,7 +1745,10 @@
         "saveError": "Geen beveiliger-ID"
       },
       "empty": "Geen beschikbaarheid",
-      "notAvailable": "Niet beschikbaar"
+      "notAvailable": "Niet beschikbaar",
+      "usedBy": "Dezelfde beschikbaarheid die de persoon in de app ziet. Het rooster waarschuwt bij toewijzen daarbuiten, Dekking zet hen onderaan en Dobletes biedt hen die diensten niet aan.",
+      "notSaid": "Nog geen beschikbaarheid opgegeven: telt als altijd beschikbaar.",
+      "datedDays": "Heeft ook {{n}} losse dag(en) in de app gemarkeerd."
     },
     "files": {
       "loadError": "De beveiliger kon niet worden geladen",
@@ -7476,7 +7479,9 @@
       "idioma": "Taal",
       "idioma.desc": "In welke taal u het CRM ziet. Automatisch of de taal die u kiest.",
       "dobletes": "Dubbele diensten",
-      "dobletes.desc": "Rondes, bonussen, punten, niveaus en ranglijst van de reserve."
+      "dobletes.desc": "Rondes, bonussen, punten, niveaus en ranglijst van de reserve.",
+      "patrones-rotacion": "Rotatiepatronen",
+      "patrones-rotacion.desc": "De werk- en rustcycli: hernoemen, archiveren en zien waar elk wordt gebruikt."
     },
     "section": {
       "mi_cuenta": "Mijn account",
@@ -7527,7 +7532,14 @@
       "allowDoubleHint": "Iemand inplannen die op dat tijdstip al een overlappende dienst heeft. Zet u dit uit, dan kan het niet meer, ook niet na bevestiging.",
       "allowRestLabel": "Inplannen op een rustdag toestaan",
       "allowRestHint": "Een gat vullen met iemand die die dag vrij is. Zet u dit uit, dan kan het niet meer, ook niet na bevestiging.",
-      "saveBtn": "Beleid opslaan"
+      "saveBtn": "Beleid opslaan",
+      "sectionIntercambio": "Dienstruil",
+      "swapRequireApprovalLabel": "Het kantoor keurt elke ruil goed",
+      "swapRequireApprovalHint": "Uitgeschakeld: een ruil die beide bewakers accepteerden gebeurt vanzelf, als hij aan alle regels op deze pagina voldoet.",
+      "swapAllowGiveawayLabel": "Dienst afstaan toestaan",
+      "swapAllowGiveawayHint": "Een dienst geven zonder er een terug te nemen, aan een collega of als open aanbod voor wie op dezelfde locatie werkt.",
+      "swapMinNoticeLabel": "Minimale termijn",
+      "swapMinNoticeHint": "Uren voor de dienst waarna een ruil niet meer gevraagd, geaccepteerd of goedgekeurd kan worden."
     },
     "rondas": {
       "loadError": "De instellingen konden niet worden geladen",
@@ -7984,7 +7996,9 @@
       "module_dobletes_label": "Dubbele diensten en reserve",
       "previewNextShift": "Volgende dienst",
       "previewOffDuty": "● Buiten dienst",
-      "previewTomorrowShift": "Morgen · 08:00 – 20:00"
+      "previewTomorrowShift": "Morgen · 08:00 – 20:00",
+      "module_shiftSwap_label": "Dienstruil",
+      "module_shiftSwap_desc": "De bewaker stelt een collega voor een dienst te ruilen of af te staan; de collega accepteert en het kantoor keurt goed."
     },
     "appearance": {
       "layoutTitle": "Weergave",
@@ -8371,8 +8385,12 @@
       "vehicleOverstayHint": "Een voertuig staat langer binnen dan het aantal minuten dat u heeft ingesteld bij Voertuigcontrole › Regels van de post. Er volgt één melding per voertuig",
       "columnPush": "Telefoon",
       "payslipPublishedLabel": "Loonstrook gepubliceerd",
+      "scheduleChangesLabel": "Roosterwijzigingen (aan de beveiliger)",
+      "scheduleChangesHint": "Eén melding per wijziging: diensten toegevoegd, verwijderd of verplaatst, een nieuwe post of een post die vervalt. Zet uit als je het liever zelf laat weten",
       "dobletesOfficeLabel": "Dubbele diensten: gedekt of niemand geaccepteerd",
-      "dobletesOffersLabel": "Aanbiedingen dubbele diensten (aan beveiligers)"
+      "dobletesOffersLabel": "Aanbiedingen dubbele diensten (aan beveiligers)",
+      "coverageAssignmentsLabel": "Vervangingen (aan de bewaker)",
+      "coverageAssignmentsHint": "Moet een post overnemen, is verplaatst of de vervanging is geannuleerd. Komt op de telefoon"
     },
     "festivos": {
       "loadError": "De feestdagen konden niet worden geladen.",
@@ -9457,7 +9475,12 @@
       "coberturaEnBloques": "{{horas}}u dekking in {{count}} opeenvolgende blokken van {{bloque}}u — {{count}} vaste bewakers + aflosser.",
       "coberturaEnBloques_one": "{{horas}}u dekking in {{count}} blok van {{bloque}}u — {{count}} vaste bewaker + aflosser.",
       "coberturaEnBloques_other": "{{horas}}u dekking in {{count}} opeenvolgende blokken van {{bloque}}u — {{count}} vaste bewakers + aflosser.",
-      "vigilantesAsignados": "Toegewezen bewakers"
+      "vigilantesAsignados": "Toegewezen bewakers",
+      "elCicloNoCambio": "De cyclus is niet gewijzigd",
+      "cicloDeRotacion": "Rotatiecyclus",
+      "cicloExplicacion": "Hoe de bewakers van deze post elkaar aflossen en rusten. Hoeveel en wanneer staat hierboven, in de bezetting.",
+      "cambiarElCicloRehace": "De cyclus wijzigen herbouwt toekomstige diensten; niemand verliest zijn plaats.",
+      "guardarCiclo": "Cyclus opslaan"
     },
     "StationShifts": {
       "dia": "Dag",
@@ -10571,7 +10594,8 @@
       "vuelveADespuesDel": "Keert na {{fecha}} terug naar {{puesto}}",
       "yNoPuedeFicharElTurnoSeRegistra": "en niet kan inklokken. De dienst wordt geregistreerd",
       "yaTieneUnTurnoAbierto": "Er is al een open dienst — een tweede wordt niet geopend.",
-      "vaEnCamino": "Onderweg · {{min}} min geleden gestuurd"
+      "vaEnCamino": "Onderweg · {{min}} min geleden gestuurd",
+      "fueraDeDisponibilidad": "Buiten beschikbaarheid"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Items per pagina",
@@ -12672,7 +12696,9 @@
       "yseRepite": "· en herhaalt zich",
       "eliminarTurnosYNovedades": "Geselecteerde diensten en bijzonderheden verwijderen (Del)",
       "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…",
-      "irAEstaciones": "Naar posten"
+      "irAEstaciones": "Naar posten",
+      "moverCoberturaDel": "De dekking van {{dia}} verplaatsen",
+      "moverDePuesto": "De beveiliger naar een andere post verplaatsen"
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",
@@ -12818,7 +12844,7 @@
       "paginaSiguiente": "Volgende pagina",
       "eligeElVigilanteQueSolicita": "Kies de beveiliger die de ruil aanvraagt",
       "nuevaSolicitudDeIntercambio": "Nieuwe ruilaanvraag",
-      "vigilanteSolicitante": "Aanvragende beveiliger*",
+      "vigilanteSolicitante": "Bewaker die vraagt*",
       "vigilanteReceptorOpcional": "Ontvangende beveiliger (optioneel)",
       "cualquierVigilante": "Willekeurige beveiliger",
       "describeLosDetallesDelIntercambio": "Beschrijf de details van de ruil…",
@@ -12838,7 +12864,98 @@
       "rechazadas": "Afgewezen",
       "rechazar": "Afwijzen",
       "solicitudesDeIntercambioEntreVigilantes": "Aanvragen voor het ruilen van diensten tussen bewakers.",
-      "todos": "Alle"
+      "todos": "Alle",
+      "subtitulo": "Een bewaker ruilt of geeft een dienst aan een collega. De collega accepteert en het kantoor keurt goed; beide diensten wisselen tegelijk.",
+      "aCambio": "In ruil",
+      "aprobarAhora": "Nu goedkeuren (diensten wisselen bij opslaan)",
+      "aprobarYCambiar": "Goedkeuren en ruilen",
+      "automatica": "automatisch",
+      "cerradasSinCambio": "Gesloten zonder ruil",
+      "companero": "Collega*",
+      "cumple": "Voldoet",
+      "cumpleTodo": "Voldoet aan alle bedrijfsregels.",
+      "entrega": "Geeft",
+      "entregaEste": "Geeft deze dienst",
+      "errorAlCargar": "Laden mislukt",
+      "errorGenerico": "Er ging iets mis. Probeer opnieuw.",
+      "faltaCompanero": "De collega heeft nog niet geaccepteerd.",
+      "hasta": "tot",
+      "hayBloqueos": "Regels verhinderen de ruil.",
+      "kpiAprobacion": "Beiden accepteerden; kantoor moet beslissen",
+      "kpiCerradas": "Afgewezen, geannuleerd of verlopen",
+      "kpiCompanero": "Gevraagd, geen antwoord van de collega",
+      "kpiEnLaLista": "In de lijst hieronder",
+      "nAvisos": "{{n}} waarschuwing",
+      "nBloqueos": "{{n}} blokkeert",
+      "noCargo": "De lijst kon niet laden. Probeer opnieuw.",
+      "noSePuede": "Kan niet",
+      "notaDeDecision": "Notitie voor de bewakers (optioneel)",
+      "ofertaAbierta": "Open aanbod",
+      "okAceptada": "Vastgelegd: de collega accepteerde.",
+      "okAprobada": "Goedgekeurd: beide diensten zijn gewisseld.",
+      "okCreada": "Verzoek vastgelegd.",
+      "okRechazada": "Verzoek afgewezen.",
+      "pide": "Vraagt",
+      "recibe": "Met",
+      "registrarAcepto": "Vastleggen dat hij/zij accepteerde",
+      "reglas": "Regels",
+      "revisaAntes": "Controleer voor goedkeuring",
+      "sinPermiso": "Alleen wie diensten plant kan goedkeuren.",
+      "sinTurnoACambio": "Geen dienst in ruil",
+      "sinTurnos": "Geen diensten in de komende 45 dagen.",
+      "soloRecibe": "Krijgt alleen de dienst",
+      "tipoCambio": "Dienstruil",
+      "tipoCesion": "Dienst afstaan",
+      "todasLasEstaciones": "Alle stations",
+      "turnoDesde": "Dienst vanaf",
+      "turnoQueEntrega": "Dienst die hij/zij afstaat*",
+      "turnoQueRecibe": "Dienst van de collega die naar de aanvrager gaat*",
+      "vacio": "Bewakers vragen ruilen aan in hun app (Mijn diensten › Dienst ruilen). Je kunt er ook een vastleggen met «Nieuw verzoek».",
+      "vacioTitulo": "Hier zijn geen verzoeken",
+      "yaAcordaron": "Ze zijn het al eens",
+      "yaAcordaronHint": "Zonder vinkje krijgt de collega het voorstel in de app en moet hij/zij accepteren.",
+      "estado": {
+        "pending_peer": "Wacht op collega",
+        "pending_approval": "Wacht op goedkeuring",
+        "approved": "Goedgekeurd",
+        "rejected": "Afgewezen",
+        "declined": "Niet geaccepteerd",
+        "cancelled": "Geannuleerd",
+        "expired": "Verlopen"
+      },
+      "filtro": {
+        "open": "Open",
+        "pending_approval": "Goed te keuren",
+        "pending_peer": "Wachten op collega",
+        "approved": "Goedgekeurd",
+        "closed": "Gesloten"
+      },
+      "linea": {
+        "pedida": "Aangevraagd",
+        "aceptada": "Geaccepteerd door de collega",
+        "rechazoCompanero": "De collega weigerde",
+        "aprobada": "Goedgekeurd en uitgevoerd",
+        "decidida": "Beslist",
+        "vencio": "Verlopen: de dienst begon"
+      },
+      "regla": {
+        "shift_missing": "De dienst bestaat niet meer.",
+        "shift_not_swappable": "Het is een vervanging, versterking of geannuleerde dienst: niet te ruilen.",
+        "shift_owner_changed": "De dienst is niet meer van wie hem aanbiedt.",
+        "shift_started": "De dienst is al begonnen.",
+        "shift_clocked": "De dienst heeft al een kloktijd.",
+        "too_late": "Minder dan de minimale termijn van het bedrijf ({{hours}} u).",
+        "day_closed": "Dag {{day}} is afgesloten in de loonadministratie.",
+        "same_person": "Het is dezelfde persoon.",
+        "guard_inactive": "{{name}} is niet actief in het bedrijf.",
+        "no_guard_profile": "{{name}} heeft geen bewakersprofiel.",
+        "overlap": "{{name}} werkt dan al.",
+        "on_leave": "{{name}} heeft verlof van {{from}} tot {{to}}.",
+        "rest_too_short": "{{name}} zou {{hours}} u rust hebben; het bedrijf vraagt {{required}} u.",
+        "weekly_hours_over": "{{name}} zou die week op {{hours}} u komen (max {{max}} u).",
+        "other_station": "De diensten zijn op verschillende stations.",
+        "already_requested": "Voor die dienst loopt al een andere ruil."
+      }
     },
     "ShiftStatus": {
       "elementosPorPagina": "Items per pagina",
@@ -13302,7 +13419,34 @@
       "cancelarPermisoMensaje": "De diensten van die dagen gaan terug in het rooster en hun gaten in Bezetting sluiten. Dagen met al een vervanger blijven zo.",
       "cancelarPermisoBoton": "Verlof annuleren",
       "eliminarAprobada": "De aanvraag wordt verwijderd en wat de goedkeuring in het rooster veranderde, wordt teruggedraaid. Dagen met al een vervanger blijven zo.",
-      "cancelado": "Geannuleerd"
+      "cancelado": "Geannuleerd",
+      "mesAnterior": "Vorige maand",
+      "mesSiguiente": "Volgende maand",
+      "nadieFueraEsteMes": "Niemand is deze maand afwezig met deze filters.",
+      "puesto": "Post",
+      "origen": {
+        "app": "Bewakers-app",
+        "horario": "Rooster",
+        "planificador": "Planner",
+        "editor": "Roostereditor",
+        "replacement": "Vakantievervanging",
+        "vigia": "Assistent",
+        "migrated": "Eerdere registratie",
+        "page": "Afwezigheid en verlof"
+      },
+      "origenColumna": "Geregistreerd in",
+      "vistaLista": "Lijst",
+      "vistaCalendario": "Kalender",
+      "porPersona": "Per persoon",
+      "porPuesto": "Per post",
+      "filtroTipo": "Soort",
+      "todosLosTipos": "Alle soorten",
+      "filtroPuesto": "Post",
+      "todosLosPuestos": "Alle posten",
+      "filtroSucursal": "Vestiging",
+      "todasLasSucursales": "Alle vestigingen",
+      "quitarFiltroPersona": "Persoonsfilter wissen",
+      "calendario": "Kalender"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -17281,7 +17425,36 @@
       "cambioDirectoTitulo": "Deze wijziging gaat direct naar het echte rooster",
       "cambioDirectoMensaje": "Je hebt {{n}} niet-gepubliceerde wijziging(en) in het concept. Bij opslaan leest de Planner het echte rooster opnieuw en gaat het concept verloren. Publiceer het eerst om het te bewaren.",
       "cambioDirectoSeguir": "Doorgaan en concept weggooien",
-      "cambioDirectoVolver": "Terug"
+      "cambioDirectoVolver": "Terug",
+      "borradorViejo": "Er was een ongepubliceerd concept van meer dan een week oud; het is verwijderd.",
+      "borradorOtraSemana": "Het ongepubliceerde concept was van een andere week en past niet meer in de kalender; het is verwijderd.",
+      "otroGuardo": "{{quien}} heeft het concept ook gewijzigd; de wijzigingen zijn samengevoegd met die van jou.",
+      "otraPersona": "Iemand anders",
+      "borradorAbierto": "Het ongepubliceerde concept is geopend (opgeslagen door {{quien}}). Publiceer of verwijder het.",
+      "realCambio": "Het echte rooster is onder het concept veranderd; je wijzigingen blijven bovenop het nieuwe staan.",
+      "choques": "Jij en iemand anders hebben dit tegelijk gewijzigd; jouw versie is behouden: {{lista}}",
+      "borradorYaNoEsta": "Iemand anders heeft het concept gepubliceerd of verwijderd. Het echte rooster is opnieuw gelezen met jouw wijzigingen erbovenop.",
+      "salirTituloServidor": "Er zijn niet-opgeslagen wijzigingen",
+      "salirMensajeServidor": "Je laatste wijzigingen in het concept zijn nog niet op de server. Als je nu weggaat, gaan ze verloren.",
+      "salirSinGuardar": "Toch weggaan",
+      "descartarMensajeCompartido": "De {{n}} ongepubliceerde wijzigingen gaan verloren, ook voor anderen die het bewerken, en het echte rooster wordt weer getoond.",
+      "guardadoEnServidor": "Opgeslagen voor het hele team",
+      "noSeGuardo": "Opslaan mislukt; opnieuw bij de volgende wijziging",
+      "guardando": "Opslaan…",
+      "tambienEditando": "Bewerkt ook: {{quien}}",
+      "tituloBorrador": "Rooster · concept",
+      "filtroEstacion": "Post",
+      "todasLasEstaciones": "Alle posten",
+      "filtroTurno": "Diensttype",
+      "todosLosTurnos": "Alle diensten",
+      "noSePublico": "Er is niets gepubliceerd. Probeer het opnieuw.",
+      "cambioAsignacion": "wijzigde de toewijzing van",
+      "cambioMarca": "wijzigde een melding van",
+      "cambioTurno": "wijzigde een dienst van",
+      "cerrar": "Sluiten",
+      "recargarConLoNuevo": "Opnieuw laden met het nieuwste en controleren",
+      "publicandoDeUnaVez": "Alles in één keer publiceren…",
+      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd."
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",
@@ -17337,7 +17510,8 @@
       "seReabrieron_one": "{{count}} indeling is heropend",
       "seReabrieron_other": "{{count}} indelingen zijn heropend",
       "volvieronVigilantes_one": "{{count}} beveiliger is terug",
-      "volvieronVigilantes_other": "{{count}} beveiligers zijn terug"
+      "volvieronVigilantes_other": "{{count}} beveiligers zijn terug",
+      "nRelevos": "{{count}} aflossingen"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "{{nombre}} uit het evenement halen?",
@@ -18903,7 +19077,12 @@
       "trabaja": "Werkt",
       "verSinHorario": "Bekijk wie geen rooster heeft",
       "vigilantes": "Beveiligers",
-      "almuerzo": "lunch {{start}}–{{end}}"
+      "almuerzo": "lunch {{start}}–{{end}}",
+      "sinTurnos": "Geen diensten",
+      "sinTurnosPuesto": "Hun post heeft op deze dagen geen diensten",
+      "invitacionPendiente": "Uitnodiging openstaand",
+      "invitacionPendienteAyuda": "De uitnodiging is verstuurd en de persoon heeft nog niet ingelogd. Je kunt al een rooster toewijzen.",
+      "sinTurnosIr": "Controleer de rotatie van de post bij Toezichtposten"
     },
     "OfficeHours": {
       "copiarLunes": "Maandag naar alle kopiëren",
@@ -19061,6 +19240,127 @@
       "rrhh": "Personeelszaken: plus personeelsgegevens en loon",
       "supervision": "Toezicht: keurt ook uren goed",
       "gerencia": "Directie: plus rapporten en directieacties"
+    },
+    "disponibilidad": {
+      "asignadoFuera": "Toegewezen, maar {{n}} dienst(en) vallen buiten de opgegeven beschikbaarheid ({{dias}}). Overleg met de persoon."
+    },
+    "Patrones": {
+      "archivado": "Gearchiveerd",
+      "enUso": "{{estaciones}} posten · {{plazas}} plaatsen · {{personas}} personen",
+      "sinUso": "Niet gebruikt",
+      "renombrado": "Patroon hernoemd",
+      "renombrar": "Hernoemen",
+      "restaurar": "Weer aanbieden",
+      "archivar": "Archiveren",
+      "restaurado": "Het patroon wordt weer aangeboden",
+      "archivadoOk": "Gearchiveerd: niet meer aangeboden, wie het gebruikt behoudt het",
+      "borrar": "Verwijderen",
+      "borrado": "Patroon verwijderd",
+      "titulo": "Rotatiepatronen",
+      "subtitulo": "De werk- en rustcycli. Archiveren biedt er een niet meer aan; wie het al gebruikt behoudt het. Alleen een ongebruikt patroon kan worden verwijderd.",
+      "deLaEmpresa": "Van het bedrijf",
+      "vacio": "Ze ontstaan bij het instellen van de cyclus van een post of bewaker.",
+      "vacioTitulo": "Nog geen eigen patronen",
+      "delSistema": "Systeem (gedeeld)",
+      "estaciones": "Posten",
+      "plazas": "Plaatsen met deze cyclus",
+      "personas": "Personen",
+      "historial": "En {{count}} beëindigde toewijzingen die het in hun geschiedenis houden."
+    },
+    "HorarioDeOficina": {
+      "pestana": "Rooster",
+      "cambiar": "Rooster wijzigen",
+      "definir": "Rooster instellen",
+      "titulo": "Kantooruren",
+      "sinHorario": "Geen rooster: de klokregistratie wordt met geen begintijd vergeleken.",
+      "sinHorarioTitulo": "Nog geen rooster",
+      "libre": "Vrij",
+      "proximosDias": "Komende dagen"
+    },
+    "Requisito": {
+      "guardado": "Bezetting opgeslagen",
+      "noGuardado": "De bezetting kon niet worden opgeslagen",
+      "todosLosDias": "Elke dag",
+      "titulo": "Bezetting",
+      "cambiar": "Bezetting wijzigen",
+      "explicacion": "Hoeveel bewakers de post nodig heeft, hoe laat en op welke dagen. Alleen dit bepaalt de plaatsen: het Rooster, Onbezet en de rapporten lezen het hier.",
+      "aLaVez": "{{count}} tegelijk",
+      "sacafrancosAparte": "Daarnaast {{count}} invalplaats(en): dekken vrije dagen en tellen niet mee in de bezetting.",
+      "sinRequisito": "Deze post zegt nog niet hoeveel bewakers hij nodig heeft. Zonder bezetting kunnen de gaten niet worden berekend.",
+      "personas": "Tegelijk",
+      "dias": "Dagen",
+      "quitarFranja": "Deze uren verwijderen",
+      "anadirFranja": "Uren toevoegen",
+      "alGuardar": "Bij opslaan",
+      "sale": "{{nombre}} verlaat de post (de plaats van {{ventana}} verdwijnt).",
+      "cambiaDeHora": "{{nombre}} gaat van {{de}} naar {{a}}.",
+      "plazasNuevas": "{{count}} nieuwe plaats(en) zonder bewaker: verschijnen in Onbezet.",
+      "personasInvalidas": "Tussen 1 en 20 bewakers tegelijk.",
+      "horaInvalida": "Schrijf de tijden als 07:00.",
+      "guardar": "Bezetting opslaan",
+      "dia": {
+        "lun": "M",
+        "mar": "D",
+        "mie": "W",
+        "jue": "D",
+        "vie": "V",
+        "sab": "Z",
+        "dom": "Z"
+      }
+    },
+    "SinCubrir": {
+      "tipo": {
+        "no_show": "Niet verschenen",
+        "leave": "Verlof zonder vervanger",
+        "open_shift": "Dienst zonder bewaker",
+        "archived_guard": "Gearchiveerde bewaker",
+        "empty_slot": "Lege plaats"
+      },
+      "noCargo": "Kon niet laden",
+      "todos": "Alle",
+      "estacion": "Post",
+      "faltanDeN": "{{faltan}} van {{need}} ontbreken",
+      "nadieAsignado": "Niemand op het rooster",
+      "sinVigilante": "Geen bewaker",
+      "subtitulo": "Afwezigen, verlof zonder vervanger, lege plaatsen en diensten zonder bewaker, volgens de bezetting van elke post.",
+      "todasLasEstaciones": "Alle posten",
+      "incluirTerminados": "Ook voorbije tonen",
+      "rangoAlReves": "De einddatum ligt vóór de begindatum.",
+      "rangoLargo": "Kies maximaal {{n}} dagen.",
+      "nadaDeEsteTipo": "Geen gaten van dit soort op deze data.",
+      "todoCubierto": "Alle posten hebben op deze data de mensen die ze nodig hebben.",
+      "sinHuecos": "Niets onbezet",
+      "yaPaso": "Voorbij",
+      "ofrecer": "Aanbieden",
+      "cubrir": "Bezetten",
+      "huecos": "gaten",
+      "faltaSinNovedad": "De afwezigheid kon niet worden vastgelegd",
+      "cubierto": "{{nombre}} vult dit gat.",
+      "confirmarDescanso": "Dat is een vrije dag. Toch inplannen?",
+      "confirmarDoble": "Heeft al een overlappende dienst. Toch inplannen (dubbele dienst)?",
+      "noSePudoCubrir": "Kon niet bezetten",
+      "siPonerlo": "Ja, inplannen",
+      "enLugarDe": "In plaats van {{nombre}}",
+      "nadieLibre": "Niemand is vrij op dat tijdstip.",
+      "disponible": "Zei dat het kan",
+      "noDisponible": "Zei dat het niet kan",
+      "horasSemana": "{{h}} u deze week",
+      "conoceElPuesto": "{{n}} diensten hier",
+      "descansoCorto": "Slechts {{h}} u rust",
+      "ofertaEnviada": "Aanbod verstuurd naar de beschikbare bewakers.",
+      "noSePudoOfrecer": "Kon niet aanbieden"
+    },
+    "HorarioModos": {
+      "modos": "Roostermodus",
+      "enVivo": "Live",
+      "borrador": "Concept",
+      "hayBorradorEditando": "Er is een ongepubliceerd concept; {{quien}} bewerkt het nu.",
+      "hayBorrador": "Er is een ongepubliceerd concept (opgeslagen door {{quien}}).",
+      "ayudaVivo": "Elke wijziging wordt direct in het echte rooster opgeslagen.",
+      "ayudaBorrador": "Niets komt in het echte rooster tot «Publiceren». Het concept wordt gedeeld met je team."
+    },
+    "patrones": {
+      "archivado": "gearchiveerd"
     }
   },
   "visitantes": {

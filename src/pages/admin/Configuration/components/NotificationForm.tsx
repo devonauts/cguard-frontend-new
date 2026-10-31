@@ -136,6 +136,17 @@ export default function NotificationMatrix() {
         default: { dashboard: true, email: true },
       },
       {
+        id: "coverage-assignments",
+        label: t("settings.notificationForm.coverageAssignmentsLabel", {
+          defaultValue: "Coberturas (al vigilante)",
+        }),
+        hint: t("settings.notificationForm.coverageAssignmentsHint", {
+          defaultValue:
+            "Le toca cubrir un puesto, lo movieron o se canceló su cobertura. Llega a su teléfono",
+        }),
+        default: { dashboard: true, push: true },
+      },
+      {
         id: "dispatch-updates",
         label: t("settings.notificationForm.dispatchUpdatesLabel", {
           defaultValue: "Actualizaciones de tickets de Incidente",
@@ -256,6 +267,18 @@ export default function NotificationMatrix() {
           defaultValue: "Solicitud de tiempo libre",
         }),
         default: { dashboard: true },
+      },
+      {
+        // One coalesced notice to the guard per schedule change (phase 2).
+        id: "schedule-changes",
+        label: t("settings.notificationForm.scheduleChangesLabel", {
+          defaultValue: "Cambios de horario (al vigilante)",
+        }),
+        hint: t("settings.notificationForm.scheduleChangesHint", {
+          defaultValue:
+            "Un solo aviso por cambio: turnos nuevos, quitados o movidos, un puesto nuevo o uno que deja. Apágalo si prefieres avisarle tú",
+        }),
+        default: { dashboard: true, push: true },
       },
       {
         id: "payslip-published",
