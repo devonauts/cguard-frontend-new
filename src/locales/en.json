@@ -18522,7 +18522,8 @@
       "sinTurnos": "No shifts",
       "sinTurnosPuesto": "Their post has no shifts on these days",
       "invitacionPendiente": "Invite pending",
-      "invitacionPendienteAyuda": "The invite was sent and they have not signed in yet. You can already give them a schedule."
+      "invitacionPendienteAyuda": "The invite was sent and they have not signed in yet. You can already give them a schedule.",
+      "sinTurnosIr": "Check the post's rotation in Supervisor posts"
     },
     "OfficeHours": {
       "copiarLunes": "Copy Monday to all",
@@ -18798,6 +18799,9 @@
       "hayBorrador": "There is an unpublished draft (saved by {{quien}}).",
       "ayudaVivo": "Every change is saved to the live schedule right away.",
       "ayudaBorrador": "Nothing reaches the live schedule until «Publish». The draft is shared with your team."
+    },
+    "patrones": {
+      "archivado": "archived"
     }
   },
   "map": {

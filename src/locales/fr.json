@@ -19057,7 +19057,8 @@
       "sinTurnos": "Aucun service",
       "sinTurnosPuesto": "Son poste n’a aucun service ces jours-ci",
       "invitacionPendiente": "Invitation en attente",
-      "invitacionPendienteAyuda": "L’invitation a été envoyée et la personne ne s’est pas encore connectée. Vous pouvez déjà lui attribuer un planning."
+      "invitacionPendienteAyuda": "L’invitation a été envoyée et la personne ne s’est pas encore connectée. Vous pouvez déjà lui attribuer un planning.",
+      "sinTurnosIr": "Vérifier la rotation du poste dans Postes de supervision"
     },
     "OfficeHours": {
       "copiarLunes": "Copier le lundi partout",
@@ -19333,6 +19334,9 @@
       "hayBorrador": "Un brouillon non publié existe (enregistré par {{quien}}).",
       "ayudaVivo": "Chaque modification est enregistrée aussitôt dans le planning réel.",
       "ayudaBorrador": "Rien n’arrive au planning réel avant « Publier ». Le brouillon est partagé avec votre équipe."
+    },
+    "patrones": {
+      "archivado": "archivé"
     }
   },
   "visitantes": {

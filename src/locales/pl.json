@@ -19347,7 +19347,8 @@
       "sinTurnos": "Brak zmian",
       "sinTurnosPuesto": "Jego posterunek nie ma zmian w tych dniach",
       "invitacionPendiente": "Zaproszenie oczekuje",
-      "invitacionPendienteAyuda": "Zaproszenie wysłano, a osoba jeszcze się nie zalogowała. Można już przypisać grafik."
+      "invitacionPendienteAyuda": "Zaproszenie wysłano, a osoba jeszcze się nie zalogowała. Można już przypisać grafik.",
+      "sinTurnosIr": "Sprawdź rotację posterunku w Posterunkach nadzoru"
     },
     "OfficeHours": {
       "copiarLunes": "Kopiuj poniedziałek do wszystkich",
@@ -19623,6 +19624,9 @@
       "hayBorrador": "Jest nieopublikowany szkic (zapisał(a) {{quien}}).",
       "ayudaVivo": "Każda zmiana od razu trafia do rzeczywistego grafiku.",
       "ayudaBorrador": "Nic nie trafia do rzeczywistego grafiku przed „Opublikuj”. Szkic jest wspólny dla zespołu."
+    },
+    "patrones": {
+      "archivado": "zarchiwizowany"
     }
   },
   "visitantes": {

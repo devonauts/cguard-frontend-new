@@ -19057,7 +19057,8 @@
       "sinTurnos": "Geen diensten",
       "sinTurnosPuesto": "Hun post heeft op deze dagen geen diensten",
       "invitacionPendiente": "Uitnodiging openstaand",
-      "invitacionPendienteAyuda": "De uitnodiging is verstuurd en de persoon heeft nog niet ingelogd. Je kunt al een rooster toewijzen."
+      "invitacionPendienteAyuda": "De uitnodiging is verstuurd en de persoon heeft nog niet ingelogd. Je kunt al een rooster toewijzen.",
+      "sinTurnosIr": "Controleer de rotatie van de post bij Toezichtposten"
     },
     "OfficeHours": {
       "copiarLunes": "Maandag naar alle kopiëren",
@@ -19333,6 +19334,9 @@
       "hayBorrador": "Er is een ongepubliceerd concept (opgeslagen door {{quien}}).",
       "ayudaVivo": "Elke wijziging wordt direct in het echte rooster opgeslagen.",
       "ayudaBorrador": "Niets komt in het echte rooster tot «Publiceren». Het concept wordt gedeeld met je team."
+    },
+    "patrones": {
+      "archivado": "gearchiveerd"
     }
   },
   "visitantes": {

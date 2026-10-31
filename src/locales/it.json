@@ -19057,7 +19057,8 @@
       "sinTurnos": "Nessun turno",
       "sinTurnosPuesto": "La sua postazione non ha turni in questi giorni",
       "invitacionPendiente": "Invito in sospeso",
-      "invitacionPendienteAyuda": "L’invito è stato inviato e la persona non è ancora entrata. Puoi già assegnarle un turnario."
+      "invitacionPendienteAyuda": "L’invito è stato inviato e la persona non è ancora entrata. Puoi già assegnarle un turnario.",
+      "sinTurnosIr": "Controlla la rotazione del posto in Posti di supervisione"
     },
     "OfficeHours": {
       "copiarLunes": "Copia il lunedì su tutti",
@@ -19333,6 +19334,9 @@
       "hayBorrador": "C’è una bozza non pubblicata (salvata da {{quien}}).",
       "ayudaVivo": "Ogni modifica viene salvata subito nel turnario reale.",
       "ayudaBorrador": "Nulla arriva al turnario reale fino a «Pubblica». La bozza è condivisa con il tuo team."
+    },
+    "patrones": {
+      "archivado": "archiviato"
     }
   },
   "visitantes": {

@@ -18522,7 +18522,8 @@
       "sinTurnos": "Sem turnos",
       "sinTurnosPuesto": "O posto não tem turnos nestes dias",
       "invitacionPendiente": "Convite pendente",
-      "invitacionPendienteAyuda": "O convite foi enviado e a pessoa ainda não entrou. Já é possível atribuir uma escala."
+      "invitacionPendienteAyuda": "O convite foi enviado e a pessoa ainda não entrou. Já é possível atribuir uma escala.",
+      "sinTurnosIr": "Verifique a rotação do posto em Postos de supervisão"
     },
     "OfficeHours": {
       "copiarLunes": "Copiar segunda para todos",
@@ -18798,6 +18799,9 @@
       "hayBorrador": "Há um rascunho não publicado (salvo por {{quien}}).",
       "ayudaVivo": "Cada alteração é salva na hora na escala real.",
       "ayudaBorrador": "Nada chega à escala real até «Publicar». O rascunho é compartilhado com sua equipe."
+    },
+    "patrones": {
+      "archivado": "arquivado"
     }
   },
   "map": {

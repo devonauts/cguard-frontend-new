@@ -19057,7 +19057,8 @@
       "sinTurnos": "Keine Schichten",
       "sinTurnosPuesto": "Ihr Posten hat an diesen Tagen keine Schichten",
       "invitacionPendiente": "Einladung ausstehend",
-      "invitacionPendienteAyuda": "Die Einladung wurde gesendet, die Person hat sich noch nicht angemeldet. Ein Dienstplan kann schon zugewiesen werden."
+      "invitacionPendienteAyuda": "Die Einladung wurde gesendet, die Person hat sich noch nicht angemeldet. Ein Dienstplan kann schon zugewiesen werden.",
+      "sinTurnosIr": "Rotation des Postens unter Aufsichtsposten prüfen"
     },
     "OfficeHours": {
       "copiarLunes": "Montag auf alle kopieren",
@@ -19333,6 +19334,9 @@
       "hayBorrador": "Es gibt einen unveröffentlichten Entwurf (gespeichert von {{quien}}).",
       "ayudaVivo": "Jede Änderung wird sofort im aktuellen Dienstplan gespeichert.",
       "ayudaBorrador": "Nichts erreicht den aktuellen Dienstplan vor „Veröffentlichen“. Der Entwurf wird mit Ihrem Team geteilt."
+    },
+    "patrones": {
+      "archivado": "archiviert"
     }
   },
   "visitantes": {

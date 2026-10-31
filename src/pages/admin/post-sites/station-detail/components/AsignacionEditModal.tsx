@@ -1,4 +1,5 @@
 import { cicloDe as leerCiclo, esSemanal } from "@/lib/secuenciaDeRotacion";
+import { urlDePatrones } from "@/lib/patronesVigentes";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -105,7 +106,7 @@ export default function AsignacionEditModal({
           ApiService.get(
             `/tenant/${tenantId}/station/${encodeURIComponent(stationId)}/positions`,
           ),
-          ApiService.get(`/tenant/${tenantId}/rotation-styles`),
+          ApiService.get(urlDePatrones(tenantId)),
         ]);
 
         if (!vivo) return;

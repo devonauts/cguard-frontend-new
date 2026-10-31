@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   AlertTriangle,
   ChevronDown,
@@ -289,10 +290,18 @@ function AllStaffSection({
         </div>
       );
     if (d.status === "off" && vacio)
+      // The post generates nothing (e.g. «Sin rotación»): the fix lives in
+      // Estaciones › Puestos de supervisión, so the chip goes there.
       return (
-        <span className="text-[9px]" style={{ color: "var(--ink-faint)" }}>
+        <Link
+          className="text-[9px] underline-offset-2 hover:underline"
+          style={{ color: "var(--ink-faint)" }}
+          title={t("ui.AllStaff.sinTurnosIr", "Revisar la rotación del puesto en Puestos de supervisión")}
+          to="/supervisor-positions"
+          onClick={(e) => e.stopPropagation()}
+        >
           {t("ui.AllStaff.sinTurnos", "Sin turnos")}
-        </span>
+        </Link>
       );
     if (d.status === "off")
       return (

@@ -11,7 +11,14 @@ import i18n from "@/i18n";
 export function avisarSiFueraDeDisponibilidad(method: unknown, url: unknown, body: unknown): void {
   try {
     if (String(method || "").toUpperCase() !== "POST") return;
-    if (!/\/guard-assignment\/?(\?|$)/.test(String(url || ""))) return;
+    // A new assignment, and also a schedule publish or a drag-to-move: those
+    // run the same assignment calls on the server and answer one warning.
+    if (
+      !/\/(guard-assignment|schedule\/batch|schedule-draft\/publish)\/?(\?|$)/.test(
+        String(url || ""),
+      )
+    )
+      return;
     const b: any = body && typeof body === "object" ? body : null;
     const w = b?.availabilityWarning ?? b?.data?.availabilityWarning;
 

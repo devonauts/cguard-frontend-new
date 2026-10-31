@@ -18522,7 +18522,8 @@
       "sinTurnos": "Sin turnos",
       "sinTurnosPuesto": "Su puesto no tiene turnos en estos días",
       "invitacionPendiente": "Invitación pendiente",
-      "invitacionPendienteAyuda": "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario."
+      "invitacionPendienteAyuda": "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario.",
+      "sinTurnosIr": "Revisar la rotación del puesto en Puestos de supervisión"
     },
     "OfficeHours": {
       "copiarLunes": "Copiar el lunes a todos",
@@ -18798,6 +18799,9 @@
       "hayBorrador": "Hay un borrador sin publicar (lo guardó {{quien}}).",
       "ayudaVivo": "Cada cambio se guarda al momento en el horario real.",
       "ayudaBorrador": "Nada llega al horario real hasta «Publicar». El borrador se comparte con tu equipo."
+    },
+    "patrones": {
+      "archivado": "archivado"
     }
   },
   "map": {
