@@ -18902,7 +18902,11 @@
       "trabaja": "Werkt",
       "verSinHorario": "Bekijk wie geen rooster heeft",
       "vigilantes": "Beveiligers",
-      "almuerzo": "lunch {{start}}–{{end}}"
+      "almuerzo": "lunch {{start}}–{{end}}",
+      "sinTurnos": "Geen diensten",
+      "sinTurnosPuesto": "Hun post heeft op deze dagen geen diensten",
+      "invitacionPendiente": "Uitnodiging openstaand",
+      "invitacionPendienteAyuda": "De uitnodiging is verstuurd en de persoon heeft nog niet ingelogd. Je kunt al een rooster toewijzen."
     },
     "OfficeHours": {
       "copiarLunes": "Maandag naar alle kopiëren",

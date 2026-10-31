@@ -18367,7 +18367,11 @@
       "trabaja": "Trabaja",
       "verSinHorario": "Ver quién no tiene horario",
       "vigilantes": "Vigilantes",
-      "almuerzo": "almuerzo {{start}}–{{end}}"
+      "almuerzo": "almuerzo {{start}}–{{end}}",
+      "sinTurnos": "Sin turnos",
+      "sinTurnosPuesto": "Su puesto no tiene turnos en estos días",
+      "invitacionPendiente": "Invitación pendiente",
+      "invitacionPendienteAyuda": "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario."
     },
     "OfficeHours": {
       "copiarLunes": "Copiar el lunes a todos",

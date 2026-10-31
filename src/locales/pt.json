@@ -18367,7 +18367,11 @@
       "trabaja": "Trabalha",
       "verSinHorario": "Ver quem não tem horário",
       "vigilantes": "Vigilantes",
-      "almuerzo": "almoço {{start}}–{{end}}"
+      "almuerzo": "almoço {{start}}–{{end}}",
+      "sinTurnos": "Sem turnos",
+      "sinTurnosPuesto": "O posto não tem turnos nestes dias",
+      "invitacionPendiente": "Convite pendente",
+      "invitacionPendienteAyuda": "O convite foi enviado e a pessoa ainda não entrou. Já é possível atribuir uma escala."
     },
     "OfficeHours": {
       "copiarLunes": "Copiar segunda para todos",

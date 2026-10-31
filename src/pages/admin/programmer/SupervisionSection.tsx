@@ -256,9 +256,17 @@ export default function SupervisionSection({
           background: "var(--glass-sunken)",
         }}
       >
+        {/* The header spans the whole row (its own sticky box, as wide as the
+            screen allows): inside the name column it was cut to «SUPERVI…» /
+            «TODO EL…», worst on a phone. */}
+        <div style={{ gridRow: 1, gridColumn: "1 / -1", zIndex: 20 }}>
         <div
-          className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
-          style={{ background: "var(--glass-sunken)" }}
+          className="sticky left-0 flex flex-wrap items-center gap-2 px-4 py-2"
+          style={{
+            background: "var(--glass-sunken)",
+            width: "max-content",
+            maxWidth: "min(720px, calc(100vw - 32px))",
+          }}
         >
           <button
             aria-label={
@@ -278,7 +286,7 @@ export default function SupervisionSection({
             {abierta ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
           <ShieldCheck size={14} style={{ color: "var(--brand-text)" }} />
-          <span className="truncate text-xs font-semibold uppercase tracking-wide">
+          <span className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide">
             {t("ui.SupervisionSection.supervision", "Supervisión")}
           </span>
           {(faltan > 0 || sinPuesto.length > 0) && (
@@ -316,7 +324,8 @@ export default function SupervisionSection({
             <Settings2 size={14} />
           </Link>
         </div>
-        <div style={{ gridColumn: "2 / -1", ...columnRules(colWidth) }} />
+        </div>
+        <div style={{ gridRow: 1, gridColumn: "2 / -1", ...columnRules(colWidth) }} />
       </div>
 
       {/* Supervisores con rol y sin puesto: el caso real de 3 de las 4 empresas

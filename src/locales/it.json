@@ -18902,7 +18902,11 @@
       "trabaja": "Lavora",
       "verSinHorario": "Vedi chi non ha un orario",
       "vigilantes": "Guardie",
-      "almuerzo": "pranzo {{start}}–{{end}}"
+      "almuerzo": "pranzo {{start}}–{{end}}",
+      "sinTurnos": "Nessun turno",
+      "sinTurnosPuesto": "La sua postazione non ha turni in questi giorni",
+      "invitacionPendiente": "Invito in sospeso",
+      "invitacionPendienteAyuda": "L’invito è stato inviato e la persona non è ancora entrata. Puoi già assegnarle un turnario."
     },
     "OfficeHours": {
       "copiarLunes": "Copia il lunedì su tutti",

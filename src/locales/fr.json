@@ -18902,7 +18902,11 @@
       "trabaja": "Travaille",
       "verSinHorario": "Voir qui n’a pas d’horaire",
       "vigilantes": "Agents",
-      "almuerzo": "déjeuner {{start}}–{{end}}"
+      "almuerzo": "déjeuner {{start}}–{{end}}",
+      "sinTurnos": "Aucun service",
+      "sinTurnosPuesto": "Son poste n’a aucun service ces jours-ci",
+      "invitacionPendiente": "Invitation en attente",
+      "invitacionPendienteAyuda": "L’invitation a été envoyée et la personne ne s’est pas encore connectée. Vous pouvez déjà lui attribuer un planning."
     },
     "OfficeHours": {
       "copiarLunes": "Copier le lundi partout",

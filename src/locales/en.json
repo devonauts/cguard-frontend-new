@@ -18367,7 +18367,11 @@
       "trabaja": "Working",
       "verSinHorario": "See who has no schedule",
       "vigilantes": "Guards",
-      "almuerzo": "lunch {{start}}–{{end}}"
+      "almuerzo": "lunch {{start}}–{{end}}",
+      "sinTurnos": "No shifts",
+      "sinTurnosPuesto": "Their post has no shifts on these days",
+      "invitacionPendiente": "Invite pending",
+      "invitacionPendienteAyuda": "The invite was sent and they have not signed in yet. You can already give them a schedule."
     },
     "OfficeHours": {
       "copiarLunes": "Copy Monday to all",

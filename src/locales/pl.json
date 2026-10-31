@@ -19192,7 +19192,11 @@
       "trabaja": "Pracuje",
       "verSinHorario": "Pokaż, kto nie ma grafiku",
       "vigilantes": "Ochroniarze",
-      "almuerzo": "obiad {{start}}–{{end}}"
+      "almuerzo": "obiad {{start}}–{{end}}",
+      "sinTurnos": "Brak zmian",
+      "sinTurnosPuesto": "Jego posterunek nie ma zmian w tych dniach",
+      "invitacionPendiente": "Zaproszenie oczekuje",
+      "invitacionPendienteAyuda": "Zaproszenie wysłano, a osoba jeszcze się nie zalogowała. Można już przypisać grafik."
     },
     "OfficeHours": {
       "copiarLunes": "Kopiuj poniedziałek do wszystkich",
