@@ -13258,7 +13258,20 @@
       "todos": "Tous",
       "vacaciones": "Congés",
       "eligeAlVigilante": "Choisissez la personne concernée par cette absence.",
-      "conGoceDeSueldo": "Payé (si décoché, il est déduit)"
+      "conGoceDeSueldo": "Payé (si décoché, il est déduit)",
+      "aprobadoConHuecos": "Absence approuvée. {{n}} poste(s) deviennent des trous dans Couverture, à remplacer.",
+      "aprobadoSinTurnos": "Absence approuvée. Aucun poste ces jours-là.",
+      "turnosYaMarcados": "{{n}} poste(s) déjà pointé(s) sont conservés comme travaillés.",
+      "aprobadoAntesSinRegistro": "Cette absence a été approuvée avant que le système n’enregistre ce qu’elle changeait au planning. Vérifiez ses jours dans le Planning et retirez les marques à la main.",
+      "turnosDevueltos": "C’est fait. {{n}} poste(s) sont revenus au planning.",
+      "diasYaCubiertos": "Ils avaient déjà un remplaçant et restent tels quels : {{dias}}. Vérifiez-les dans Couverture.",
+      "diasCerrados": "Ils appartiennent à une période de paie clôturée et ne sont pas modifiés : {{dias}}.",
+      "diasCambiadosAMano": "Quelqu’un les a modifiés à la main ensuite, ils sont conservés : {{dias}}.",
+      "cancelarPermiso": "Annuler l’absence",
+      "cancelarPermisoMensaje": "Les postes de ces jours reviennent au planning et leurs trous dans Couverture se ferment. Les jours qui ont déjà un remplaçant restent tels quels.",
+      "cancelarPermisoBoton": "Annuler l’absence",
+      "eliminarAprobada": "La demande est supprimée et ce que son approbation avait changé au planning est annulé. Les jours qui ont déjà un remplaçant restent tels quels.",
+      "cancelado": "Annulée"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -17220,7 +17233,11 @@
       "descartar": "Supprimer le brouillon",
       "franjaUnCambio": "Brouillon non publié · 1 modification",
       "franjaCambios": "Brouillon non publié · {{n}} modifications",
-      "franjaNadaEnElReal": "rien de tout cela n'est encore dans le planning réel"
+      "franjaNadaEnElReal": "rien de tout cela n'est encore dans le planning réel",
+      "cambioDirectoTitulo": "Ce changement va directement au planning réel",
+      "cambioDirectoMensaje": "Vous avez {{n}} changement(s) non publié(s) dans le brouillon. En enregistrant ce changement, le Planificateur relit le planning réel et le brouillon est perdu. Pour le garder, publiez-le d’abord.",
+      "cambioDirectoSeguir": "Continuer et abandonner le brouillon",
+      "cambioDirectoVolver": "Revenir"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Cet écran va disparaître : le Planificateur est le nouveau",

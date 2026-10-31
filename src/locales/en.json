@@ -12723,7 +12723,20 @@
       "todos": "All",
       "vacaciones": "Vacation",
       "eligeAlVigilante": "Choose who this time off is for.",
-      "conGoceDeSueldo": "Paid (if unchecked, it is deducted)"
+      "conGoceDeSueldo": "Paid (if unchecked, it is deducted)",
+      "aprobadoConHuecos": "Time off approved. {{n}} shift(s) are now gaps in Coverage for someone to cover.",
+      "aprobadoSinTurnos": "Time off approved. There were no shifts on those days.",
+      "turnosYaMarcados": "{{n}} shift(s) already clocked in were kept as worked.",
+      "aprobadoAntesSinRegistro": "This time off was approved before the system recorded what it changed in the schedule. Check its days in the Schedule and remove the marks by hand.",
+      "turnosDevueltos": "Done. {{n}} shift(s) went back to the schedule.",
+      "diasYaCubiertos": "These already had a replacement and stay as they are: {{dias}}. Check them in Coverage.",
+      "diasCerrados": "These belong to a closed pay period and are not changed: {{dias}}.",
+      "diasCambiadosAMano": "Someone changed these by hand afterwards, so they are kept: {{dias}}.",
+      "cancelarPermiso": "Cancel the time off",
+      "cancelarPermisoMensaje": "The shifts on those days go back to the schedule and their gaps in Coverage close. Days that already have a replacement stay as they are.",
+      "cancelarPermisoBoton": "Cancel time off",
+      "eliminarAprobada": "The request is deleted and what its approval changed in the schedule is undone. Days that already have a replacement stay as they are.",
+      "cancelado": "Cancelled"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -16685,7 +16698,11 @@
       "descartar": "Discard draft",
       "franjaUnCambio": "Unpublished draft · 1 change",
       "franjaCambios": "Unpublished draft · {{n}} changes",
-      "franjaNadaEnElReal": "none of this is in the live schedule yet"
+      "franjaNadaEnElReal": "none of this is in the live schedule yet",
+      "cambioDirectoTitulo": "This change goes straight to the live schedule",
+      "cambioDirectoMensaje": "You have {{n}} unpublished change(s) in the draft. Saving this change makes the Planner re-read the live schedule and the draft is lost. To keep it, publish it first.",
+      "cambioDirectoSeguir": "Continue and discard the draft",
+      "cambioDirectoVolver": "Go back"
     },
     "AvisoRetiradaHorario": {
       "titulo": "This screen is going away: the Planner is the new one",

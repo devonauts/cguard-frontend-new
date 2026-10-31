@@ -12723,7 +12723,20 @@
       "todos": "Todos",
       "vacaciones": "Férias",
       "eligeAlVigilante": "Escolha a quem corresponde a ausência.",
-      "conGoceDeSueldo": "Remunerada (se desmarcada, é descontada)"
+      "conGoceDeSueldo": "Remunerada (se desmarcada, é descontada)",
+      "aprobadoConHuecos": "Ausência aprovada. {{n}} turno(s) ficam como lacuna em Cobertura para alguém cobrir.",
+      "aprobadoSinTurnos": "Ausência aprovada. Não havia turnos nesses dias.",
+      "turnosYaMarcados": "{{n}} turno(s) com entrada registrada foram mantidos como trabalhados.",
+      "aprobadoAntesSinRegistro": "Esta ausência foi aprovada antes de o sistema registrar o que mudava na escala. Revise os dias na Escala e retire as marcas manualmente.",
+      "turnosDevueltos": "Pronto. {{n}} turno(s) voltaram para a escala.",
+      "diasYaCubiertos": "Já tinham substituto e ficam como estão: {{dias}}. Revise em Cobertura.",
+      "diasCerrados": "Pertencem a um período de folha fechado e não são alterados: {{dias}}.",
+      "diasCambiadosAMano": "Alguém os alterou manualmente depois e são mantidos: {{dias}}.",
+      "cancelarPermiso": "Cancelar a ausência",
+      "cancelarPermisoMensaje": "Os turnos desses dias voltam para a escala e suas lacunas em Cobertura são fechadas. Os dias que já têm substituto ficam como estão.",
+      "cancelarPermisoBoton": "Cancelar ausência",
+      "eliminarAprobada": "A solicitação é excluída e o que sua aprovação mudou na escala é desfeito. Os dias que já têm substituto ficam como estão.",
+      "cancelado": "Cancelada"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -16685,7 +16698,11 @@
       "descartar": "Descartar rascunho",
       "franjaUnCambio": "Rascunho não publicado · 1 alteração",
       "franjaCambios": "Rascunho não publicado · {{n}} alterações",
-      "franjaNadaEnElReal": "nada disto está na escala real ainda"
+      "franjaNadaEnElReal": "nada disto está na escala real ainda",
+      "cambioDirectoTitulo": "Esta mudança vai direto para a escala real",
+      "cambioDirectoMensaje": "Você tem {{n}} mudança(s) não publicada(s) no rascunho. Ao salvar esta mudança o Planejador relê a escala real e o rascunho se perde. Para mantê-lo, publique-o primeiro.",
+      "cambioDirectoSeguir": "Continuar e descartar o rascunho",
+      "cambioDirectoVolver": "Voltar"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta tela vai sair: o Planejador é a nova",

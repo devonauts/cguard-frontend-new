@@ -13258,7 +13258,20 @@
       "todos": "Alle",
       "vacaciones": "Urlaub",
       "eligeAlVigilante": "Wähle, für wen diese Abwesenheit gilt.",
-      "conGoceDeSueldo": "Bezahlt (ohne Haken wird abgezogen)"
+      "conGoceDeSueldo": "Bezahlt (ohne Haken wird abgezogen)",
+      "aprobadoConHuecos": "Abwesenheit genehmigt. {{n}} Schicht(en) sind jetzt Lücken in der Abdeckung, die jemand übernehmen muss.",
+      "aprobadoSinTurnos": "Abwesenheit genehmigt. An diesen Tagen gab es keine Schichten.",
+      "turnosYaMarcados": "{{n}} bereits gestempelte Schicht(en) bleiben als gearbeitet.",
+      "aprobadoAntesSinRegistro": "Diese Abwesenheit wurde genehmigt, bevor das System speicherte, was sie im Dienstplan änderte. Prüfe die Tage im Dienstplan und entferne die Markierungen von Hand.",
+      "turnosDevueltos": "Erledigt. {{n}} Schicht(en) sind zurück im Dienstplan.",
+      "diasYaCubiertos": "Diese hatten schon eine Vertretung und bleiben so: {{dias}}. Prüfe sie in der Abdeckung.",
+      "diasCerrados": "Diese gehören zu einer abgeschlossenen Lohnperiode und bleiben unverändert: {{dias}}.",
+      "diasCambiadosAMano": "Jemand hat sie danach von Hand geändert, sie bleiben: {{dias}}.",
+      "cancelarPermiso": "Abwesenheit stornieren",
+      "cancelarPermisoMensaje": "Die Schichten dieser Tage kommen zurück in den Dienstplan und ihre Lücken in der Abdeckung schließen sich. Tage mit Vertretung bleiben so.",
+      "cancelarPermisoBoton": "Abwesenheit stornieren",
+      "eliminarAprobada": "Der Antrag wird gelöscht und was seine Genehmigung im Dienstplan geändert hat, wird rückgängig gemacht. Tage mit Vertretung bleiben so.",
+      "cancelado": "Storniert"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -17220,7 +17233,11 @@
       "descartar": "Entwurf verwerfen",
       "franjaUnCambio": "Unveröffentlichter Entwurf · 1 Änderung",
       "franjaCambios": "Unveröffentlichter Entwurf · {{n}} Änderungen",
-      "franjaNadaEnElReal": "nichts davon ist schon im echten Dienstplan"
+      "franjaNadaEnElReal": "nichts davon ist schon im echten Dienstplan",
+      "cambioDirectoTitulo": "Diese Änderung geht direkt in den echten Dienstplan",
+      "cambioDirectoMensaje": "Du hast {{n}} unveröffentlichte Änderung(en) im Entwurf. Beim Speichern liest der Planer den echten Dienstplan neu und der Entwurf geht verloren. Um ihn zu behalten, veröffentliche ihn zuerst.",
+      "cambioDirectoSeguir": "Weiter und Entwurf verwerfen",
+      "cambioDirectoVolver": "Zurück"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",

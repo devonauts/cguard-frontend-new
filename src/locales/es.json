@@ -12723,7 +12723,20 @@
       "todos": "Todos",
       "vacaciones": "Vacaciones",
       "eligeAlVigilante": "Elige a quién corresponde el permiso.",
-      "conGoceDeSueldo": "Con goce de sueldo (si no se marca, se descuenta)"
+      "conGoceDeSueldo": "Con goce de sueldo (si no se marca, se descuenta)",
+      "aprobadoConHuecos": "Permiso aprobado. {{n}} turno(s) quedan como hueco en Cobertura para que alguien los cubra.",
+      "aprobadoSinTurnos": "Permiso aprobado. No tenía turnos esos días.",
+      "turnosYaMarcados": "{{n}} turno(s) con entrada marcada se dejaron como trabajados.",
+      "aprobadoAntesSinRegistro": "Este permiso se aprobó antes de que el sistema guardara lo que cambiaba en el horario. Revisa sus días en el Horario y quita las marcas a mano.",
+      "turnosDevueltos": "Listo. Se devolvieron {{n}} turno(s) al horario.",
+      "diasYaCubiertos": "Ya tenían reemplazo y se quedan como están: {{dias}}. Revísalos en Cobertura.",
+      "diasCerrados": "Son de un periodo de nómina cerrado y no se tocan: {{dias}}.",
+      "diasCambiadosAMano": "Alguien los cambió a mano después y se respetan: {{dias}}.",
+      "cancelarPermiso": "Cancelar el permiso",
+      "cancelarPermisoMensaje": "Los turnos de esos días vuelven al horario y sus huecos en Cobertura se cierran. Los días que ya tienen reemplazo se quedan como están.",
+      "cancelarPermisoBoton": "Cancelar permiso",
+      "eliminarAprobada": "Se elimina la solicitud y se deshace lo que su aprobación cambió en el horario. Los días que ya tienen reemplazo se quedan como están.",
+      "cancelado": "Cancelado"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -16685,7 +16698,11 @@
       "descartar": "Descartar borrador",
       "franjaUnCambio": "Borrador sin publicar · 1 cambio",
       "franjaCambios": "Borrador sin publicar · {{n}} cambios",
-      "franjaNadaEnElReal": "nada de esto está en el horario real todavía"
+      "franjaNadaEnElReal": "nada de esto está en el horario real todavía",
+      "cambioDirectoTitulo": "Este cambio va directo al horario real",
+      "cambioDirectoMensaje": "Tienes {{n}} cambio(s) sin publicar en el borrador. Al guardar este cambio el Planificador vuelve a leer el horario real y el borrador se pierde. Si quieres conservarlo, publícalo primero.",
+      "cambioDirectoSeguir": "Seguir y descartar el borrador",
+      "cambioDirectoVolver": "Volver"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta pantalla se va a retirar: el Planificador es la nueva",

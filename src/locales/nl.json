@@ -13258,7 +13258,20 @@
       "todos": "Alle",
       "vacaciones": "Vakantie",
       "eligeAlVigilante": "Kies voor wie dit verlof is.",
-      "conGoceDeSueldo": "Betaald (zonder vinkje wordt ingehouden)"
+      "conGoceDeSueldo": "Betaald (zonder vinkje wordt ingehouden)",
+      "aprobadoConHuecos": "Verlof goedgekeurd. {{n}} dienst(en) staan nu open in Bezetting om door iemand te worden ingevuld.",
+      "aprobadoSinTurnos": "Verlof goedgekeurd. Er waren geen diensten op die dagen.",
+      "turnosYaMarcados": "{{n}} dienst(en) met al een inklokking blijven als gewerkt staan.",
+      "aprobadoAntesSinRegistro": "Dit verlof is goedgekeurd voordat het systeem vastlegde wat het in het rooster veranderde. Controleer de dagen in het Rooster en haal de markeringen met de hand weg.",
+      "turnosDevueltos": "Klaar. {{n}} dienst(en) staan weer in het rooster.",
+      "diasYaCubiertos": "Deze hadden al een vervanger en blijven zo: {{dias}}. Controleer ze in Bezetting.",
+      "diasCerrados": "Deze horen bij een afgesloten loonperiode en worden niet gewijzigd: {{dias}}.",
+      "diasCambiadosAMano": "Iemand heeft ze daarna met de hand gewijzigd, ze blijven staan: {{dias}}.",
+      "cancelarPermiso": "Verlof annuleren",
+      "cancelarPermisoMensaje": "De diensten van die dagen gaan terug in het rooster en hun gaten in Bezetting sluiten. Dagen met al een vervanger blijven zo.",
+      "cancelarPermisoBoton": "Verlof annuleren",
+      "eliminarAprobada": "De aanvraag wordt verwijderd en wat de goedkeuring in het rooster veranderde, wordt teruggedraaid. Dagen met al een vervanger blijven zo.",
+      "cancelado": "Geannuleerd"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -17220,7 +17233,11 @@
       "descartar": "Concept verwijderen",
       "franjaUnCambio": "Niet-gepubliceerd concept · 1 wijziging",
       "franjaCambios": "Niet-gepubliceerd concept · {{n}} wijzigingen",
-      "franjaNadaEnElReal": "niets hiervan staat al in het echte rooster"
+      "franjaNadaEnElReal": "niets hiervan staat al in het echte rooster",
+      "cambioDirectoTitulo": "Deze wijziging gaat direct naar het echte rooster",
+      "cambioDirectoMensaje": "Je hebt {{n}} niet-gepubliceerde wijziging(en) in het concept. Bij opslaan leest de Planner het echte rooster opnieuw en gaat het concept verloren. Publiceer het eerst om het te bewaren.",
+      "cambioDirectoSeguir": "Doorgaan en concept weggooien",
+      "cambioDirectoVolver": "Terug"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",
