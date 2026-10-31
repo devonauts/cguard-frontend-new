@@ -317,12 +317,12 @@ export default function NewSupervisorPage() {
       firstName: v.firstName.trim(),
       lastName: v.lastName.trim(),
       governmentId: opt(v.identificationNumber),
-      gender: v.gender,
-      bloodType: v.bloodType,
+      gender: opt(v.gender),
+      bloodType: opt(v.bloodType),
       birthDate: opt(v.birthDate),
       birthPlace: opt(v.birthPlace),
-      maritalStatus: v.maritalStatus,
-      academicInstruction: v.academicInstruction,
+      maritalStatus: opt(v.maritalStatus),
+      academicInstruction: opt(v.academicInstruction),
       address: opt(v.homeAddress),
       latitude: v.homeAddressLat,
       longitude: v.homeAddressLng,
@@ -604,7 +604,7 @@ export default function NewSupervisorPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuard.genero", "Género")} {required}
+                              {t("ui.NewSecurityGuard.genero", "Género")}
                             </FormLabel>
                             <Select
                               value={field.value ?? ""}
@@ -638,7 +638,7 @@ export default function NewSupervisorPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuardPage.tipoDeSangre")} {required}
+                              {t("ui.NewSecurityGuardPage.tipoDeSangre")}
                             </FormLabel>
                             <Select
                               value={field.value ?? ""}
@@ -671,7 +671,7 @@ export default function NewSupervisorPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuardPage.estadoCivil")} {required}
+                              {t("ui.NewSecurityGuardPage.estadoCivil")}
                             </FormLabel>
                             <Select
                               value={field.value ?? ""}
@@ -707,8 +707,7 @@ export default function NewSupervisorPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuardPage.fechaDeNacimiento")}{" "}
-                              {required}
+                              {t("ui.NewSecurityGuardPage.fechaDeNacimiento")}
                             </FormLabel>
                             <FormControl>
                               <Input type="date" {...field} />
@@ -747,8 +746,7 @@ export default function NewSupervisorPage() {
                               {t(
                                 "ui.NewSecurityGuard.instruccionAcademica",
                                 "Instrucción Académica",
-                              )}{" "}
-                              {required}
+                              )}
                             </FormLabel>
                             <Select
                               value={field.value ?? ""}

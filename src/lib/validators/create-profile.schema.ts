@@ -20,6 +20,10 @@ const maxChars = (n: number) => ({
 
 const e164 = /^\+[1-9]\d{7,14}$/;
 
+/** An optional select: a real option, an empty string (cleared) or nothing. */
+const optionalEnum = <T extends readonly [string, ...string[]]>(values: T) =>
+  z.union([z.enum(values), z.literal("")]).optional();
+
 // Nombre/Apellido: permitir letras Unicode, espacios, apóstrofe y guiones. No números.
 const nameRegex = /^[\p{L} '\-]+$/u;
 
@@ -96,22 +100,18 @@ export const createProfileSchema = z.object({
       ),
     }),
 
-  gender: z.enum(GENDER_OPTIONS, {
-    error: msg("validation.profile.genderRequired", "El género es requerido"),
-  }),
+  // Only names and the ID number are required to add a person (audit
+  // 2026-10-31): the rest of the profile can be completed later.
+  gender: optionalEnum(GENDER_OPTIONS),
 
   birthDate: z
     .string()
     .trim()
-    .min(1, {
-      error: msg(
-        "validation.profile.birthDateRequired",
-        "La fecha de nacimiento es requerida",
-      ),
-    })
     .regex(/^\d{4}-\d{2}-\d{2}$/, {
       error: msg("validation.common.dateFormat", "Formato YYYY-MM-DD"),
-    }),
+    })
+    .optional()
+    .or(z.literal("")),
 
   birthPlace: z
     .string()
@@ -120,19 +120,9 @@ export const createProfileSchema = z.object({
     .optional()
     .or(z.literal("")),
 
-  maritalStatus: z.enum(MARITAL_STATUS_OPTIONS, {
-    error: msg(
-      "validation.profile.maritalStatusRequired",
-      "El estado civil es requerido",
-    ),
-  }),
+  maritalStatus: optionalEnum(MARITAL_STATUS_OPTIONS),
 
-  academicInstruction: z.enum(ACADEMIC_INSTRUCTION_OPTIONS, {
-    error: msg(
-      "validation.profile.academicInstructionRequired",
-      "La instrucción académica es requerida",
-    ),
-  }),
+  academicInstruction: optionalEnum(ACADEMIC_INSTRUCTION_OPTIONS),
 
   hiringContractDate: z
     .string()
@@ -173,7 +163,9 @@ export const createProfileSchema = z.object({
         "validation.common.phoneE164",
         "Use formato e.g. +12015550123",
       ),
-    }),
+    })
+    .optional()
+    .or(z.literal("")),
 
   // ── Address ─────────────────────────────────────────────────────────────
   homeAddress: z.string().trim().optional().or(z.literal("")),
@@ -193,12 +185,7 @@ export const createProfileSchema = z.object({
     .max(30, maxChars(30)),
   // Sin `error` propio, Zod escupe su texto de fábrica —«Invalid option: expected
   // one of "A+"|"A-"…»— y eso es lo que veía el usuario en pantalla.
-  bloodType: z.enum(BLOOD_TYPES, {
-    error: msg(
-      "validation.profile.bloodTypeRequired",
-      "El tipo de sangre es requerido",
-    ),
-  }),
+  bloodType: optionalEnum(BLOOD_TYPES),
 
   // ── Assignments ────────────────────────────────────────────────────────
   clientId: z.array(z.string().trim()).optional(),
