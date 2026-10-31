@@ -10702,7 +10702,13 @@
       "losDiasDeVacacionesSon": "Os dias de férias são",
       "diasNaturales": "Dias corridos",
       "diasLaborables": "Dias úteis",
-      "selfieMovido": "A selfie e o rosto ao bater o ponto agora se configuram em Configurações › App da equipe ou App do supervisor."
+      "selfieMovido": "A selfie e o rosto ao bater o ponto agora se configuram em Configurações › App da equipe ou App do supervisor.",
+      "privacidad": "Privacidade das ausências",
+      "quienVeElMotivo": "Quem vê o motivo de uma ausência",
+      "motivoAprobadores": "Só quem aprova ausências (e quem pediu)",
+      "motivoRrhh": "Recursos humanos e níveis superiores (e quem pediu)",
+      "motivoOficina": "Todo o pessoal de escritório",
+      "motivoAyuda": "O motivo costuma ser médico. Os demais veem o pedido (quem, datas, estado) sem o motivo."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",
@@ -18424,6 +18430,22 @@
       "extraNocturnaDesde": "Extra noturna: das (hora)",
       "extraNocturnaHasta": "Extra noturna: até (hora)",
       "extraNocturnaPct": "Adicional da extra noturna (%)"
+    },
+    "puede": {
+      "sinPermiso": "Seu papel não tem permissão para isto. Peça a um administrador.",
+      "sinNivel": "Isto é feito por um nível acima do seu papel.",
+      "sinModulo": "Precisa do módulo Folhas de pagamento ou do Gusto conectado.",
+      "soloLectura": "Somente leitura",
+      "horarioSoloLectura": "Somente leitura: seu papel pode ver a escala, não alterá-la."
+    },
+    "nivelDeRol": {
+      "titulo": "Nível",
+      "ayuda": "As permissões dizem quais telas usa; o nível, quais dados sensíveis alcança. Nunca chega a administrador nem a gerente de filial.",
+      "oficina": "Escritório: vê e trabalha turnos, cobertura e presença",
+      "central": "Centro de operações: também monitoramento ao vivo (câmeras, alarmes, mapa)",
+      "rrhh": "Recursos humanos: também dados do pessoal e pagamento",
+      "supervision": "Supervisão: também aprova horas",
+      "gerencia": "Gerência: também relatórios e ações de direção"
     }
   },
   "map": {

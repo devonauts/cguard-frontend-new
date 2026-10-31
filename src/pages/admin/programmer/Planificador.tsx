@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import {
   Fragment,
   useCallback,
@@ -294,6 +295,8 @@ const DESPUES = 42;
 
 export default function Planificador() {
   const { t } = useTranslation();
+  // Publishing and live changes need station edit rights (lib/reglasDeAcciones).
+  const editarPlan = usePuede("turnos.publicarPlanificador");
   const tenantId = localStorage.getItem("tenantId") || "";
   const base = useMemo(() => lunesDe(hoyEnLaEmpresa()), []);
   const hoyIdx = useMemo(() => {
@@ -646,6 +649,10 @@ export default function Planificador() {
   const antesDeUnCambioDirecto = useCallback(async (): Promise<boolean> => {
     const b = borradorRef.current;
 
+    if (!editarPlan.puede) {
+      toast.info(editarPlan.porQueNo);
+      return false;
+    }
     if (!b.sinPublicar) return true;
 
     return confirmDialog({
@@ -665,7 +672,7 @@ export default function Planificador() {
       cancelText: t("ui.Planificador.cambioDirectoVolver", "Volver"),
       tone: "danger",
     });
-  }, [t]);
+  }, [t, editarPlan.puede, editarPlan.porQueNo]);
   const directo =
     <T,>(abrir: (v: T) => void) =>
     (v: T) => {
@@ -829,7 +836,8 @@ export default function Planificador() {
                 {t("ui.Planificador.volverAlReal", "Volver al horario real")}
               </Button>
               <Button
-                disabled={!publicacion?.cambios.length}
+                disabled={!publicacion?.cambios.length || !editarPlan.puede}
+                title={editarPlan.porQueNo}
                 variant="brand"
                 onClick={() => setHoja({ tipo: "publicar" })}
               >
@@ -918,6 +926,8 @@ export default function Planificador() {
             <Button
               size="sm"
               variant="brand"
+              disabled={!editarPlan.puede}
+              title={editarPlan.porQueNo}
               onClick={() => setHoja({ tipo: "publicar" })}
             >
               <Send size={14} /> {t("ui.Planificador.publicar", "Publicar")}

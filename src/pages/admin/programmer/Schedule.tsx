@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import type { LucideIcon } from "lucide-react";
 import type {
   RotationStyle,
@@ -625,6 +626,9 @@ const KEY_CODES: Record<string, string> = {
 
 export default function Schedule() {
   const { t } = useTranslation();
+  /* Read-only for who cannot edit stations (lib/reglasDeAcciones): the menus,
+     the assign form and drag-and-drop say why instead of failing on save. */
+  const editarHorario = usePuede("turnos.editarHorario");
   const tenantId = localStorage.getItem("tenantId") || "";
 
   // Saved view (month + scroll + panels) so edits/reloads bring you back to the
@@ -2281,6 +2285,10 @@ export default function Schedule() {
        cobertura. Pasó de verdad al probar «Cambiar» desde el móvil. */
     relevarA?: GuardAssignment | null,
   ) => {
+    if (!editarHorario.puede) {
+      toast.info(editarHorario.porQueNo);
+      return;
+    }
     // ── DE DÓNDE SALEN LAS HORAS, EN ORDEN ────────────────────────────────
     // 1) El turno que se está cubriendo, si quien abre el menú lo sabe.
     // 2) Cualquier turno REAL de esa plaza ese día — la ventana que se trabaja.
@@ -2389,6 +2397,11 @@ export default function Schedule() {
     guardId: string,
     fromAssignment?: GuardAssignment,
   ) => {
+    if (!editarHorario.puede) {
+      e.preventDefault();
+      toast.info(editarHorario.porQueNo);
+      return;
+    }
     mouseSelRef.current = false; // a native drag never fires the mouseup that ends cell-selection
     e.dataTransfer.setData("guardId", guardId);
     if (fromAssignment)
@@ -2629,6 +2642,13 @@ export default function Schedule() {
   // ─── Right-click menu on the year canvas ─────────────────────────────────
 
   const [ctxMenu, setCtxMenu] = useState<CtxMenuState | null>(null);
+  /** Opens a cell menu; read-only users get one line that says why. */
+  const abrirMenu = (m: CtxMenuState) =>
+    setCtxMenu(
+      editarHorario.puede
+        ? m
+        : { ...m, items: [{ label: editarHorario.porQueNo || "", disabled: true }] },
+    );
   // "Trasladar a otra estación" from a right-clicked cell.
   const [transferTarget, setTransferTarget] = useState<TransferTarget | null>(
     null,
@@ -3062,7 +3082,7 @@ export default function Schedule() {
         onClick: () => openAssignForm(station.id, pos.id, dateStr),
       });
     }
-    setCtxMenu({ x: e.clientX, y: e.clientY, items, tactil });
+    abrirMenu({ x: e.clientX, y: e.clientY, items, tactil });
   };
 
   /* ── DESDE LA AGENDA TAMBIÉN SE OPERA ───────────────────────────────────
@@ -3225,7 +3245,7 @@ export default function Schedule() {
         onClick: () => openAssignForm(pos.stationId, pos.id, dateStr),
       });
     }
-    setCtxMenu({ x: e.clientX, y: e.clientY, items, tactil });
+    abrirMenu({ x: e.clientX, y: e.clientY, items, tactil });
   };
 
   /* ─── MOVER UNA COBERTURA ARRASTRÁNDOLA ──────────────────────────────────
@@ -6310,6 +6330,14 @@ export default function Schedule() {
       <div className="px-3 lg:px-4 pt-2 pb-2 flex flex-col">
         {/* El Horario se va: el Planificador es la pantalla nueva. */}
         <AvisoRetiradaHorario className="mb-2" />
+        {!editarHorario.puede && (
+          <div
+            className="mb-2 rounded-xl border px-3 py-2 text-sm"
+            style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
+          >
+            {t("ui.puede.horarioSoloLectura", "Solo lectura: tu rol puede ver el horario, no cambiarlo.")}
+          </div>
+        )}
         {/* ─── Compact toolbar ─── */}
         <div className="flex items-center gap-2 flex-wrap pb-2">
           <div className="flex items-center gap-2 mr-1">

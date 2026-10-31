@@ -10702,7 +10702,13 @@
       "losDiasDeVacacionesSon": "Los días de vacaciones son",
       "diasNaturales": "Días naturales (de calendario)",
       "diasLaborables": "Días laborables",
-      "selfieMovido": "La selfie y el rostro al fichar ahora se configuran en Ajustes › App del equipo o App del supervisor."
+      "selfieMovido": "La selfie y el rostro al fichar ahora se configuran en Ajustes › App del equipo o App del supervisor.",
+      "privacidad": "Privacidad de los permisos",
+      "quienVeElMotivo": "Quién ve el motivo de un permiso",
+      "motivoAprobadores": "Solo quien aprueba permisos (y quien lo pidió)",
+      "motivoRrhh": "Recursos humanos y niveles superiores (y quien lo pidió)",
+      "motivoOficina": "Todo el personal de oficina",
+      "motivoAyuda": "El motivo suele ser médico. Los demás ven la solicitud (quién, fechas, estado) sin el motivo."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "¿Dónde vas a trabajar?",
@@ -18424,6 +18430,22 @@
       "extraNocturnaDesde": "Extra nocturna: desde (hora)",
       "extraNocturnaHasta": "Extra nocturna: hasta (hora)",
       "extraNocturnaPct": "Recargo de la extra nocturna (%)"
+    },
+    "puede": {
+      "sinPermiso": "Tu rol no tiene permiso para esto. Pídeselo a un administrador.",
+      "sinNivel": "Esto lo hace un nivel más alto que el de tu rol.",
+      "sinModulo": "Necesita el módulo Roles de pago o Gusto conectado.",
+      "soloLectura": "Solo lectura",
+      "horarioSoloLectura": "Solo lectura: tu rol puede ver el horario, no cambiarlo."
+    },
+    "nivelDeRol": {
+      "titulo": "Nivel",
+      "ayuda": "Los permisos dicen qué pantallas usa; el nivel, qué datos sensibles alcanza. Nunca llega a administrador ni a gerente de sucursal.",
+      "oficina": "Oficina: ve y trabaja turnos, cobertura y asistencia",
+      "central": "Centro de operaciones: además monitoreo en vivo (cámaras, alarmas, mapa)",
+      "rrhh": "Recursos humanos: además datos del personal y pago",
+      "supervision": "Supervisión: además aprueba horas",
+      "gerencia": "Gerencia: además reportes y acciones de dirección"
     }
   },
   "map": {

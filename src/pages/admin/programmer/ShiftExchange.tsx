@@ -1,3 +1,4 @@
+import { usePuede } from "@/hooks/usePuede";
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -108,6 +109,7 @@ const SHIFT_EXCHANGE_ANY = "__any__";
 
 export default function ShiftExchange() {
   const { t } = useTranslation();
+  const decidir = usePuede("intercambio.decidir");
   const [records, setRecords] = useState<ShiftExchangeRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -584,7 +586,7 @@ export default function ShiftExchange() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {rec.status === "pending" && (
+                          {rec.status === "pending" && decidir.puede && (
                             <>
                               <DropdownMenuItem
                                 onClick={() => handleApprove(rec.id)}

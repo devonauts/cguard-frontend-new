@@ -11279,7 +11279,13 @@
       "losDiasDeVacacionesSon": "Dni urlopu to",
       "diasNaturales": "Dni kalendarzowe",
       "diasLaborables": "Dni robocze",
-      "selfieMovido": "Selfie i twarz przy rejestracji czasu ustawia się teraz w Ustawieniach › Aplikacja zespołu lub Aplikacja przełożonego."
+      "selfieMovido": "Selfie i twarz przy rejestracji czasu ustawia się teraz w Ustawieniach › Aplikacja zespołu lub Aplikacja przełożonego.",
+      "privacidad": "Prywatność nieobecności",
+      "quienVeElMotivo": "Kto widzi powód nieobecności",
+      "motivoAprobadores": "Tylko ten, kto zatwierdza nieobecności (i wnioskujący)",
+      "motivoRrhh": "Kadry i wyższe poziomy (i wnioskujący)",
+      "motivoOficina": "Cały personel biurowy",
+      "motivoAyuda": "Powód często jest medyczny. Pozostali widzą wniosek (kto, daty, status) bez powodu."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Gdzie odbędzie się służba?",
@@ -19249,6 +19255,22 @@
       "extraNocturnaDesde": "Nocne nadgodziny: od (godzina)",
       "extraNocturnaHasta": "Nocne nadgodziny: do (godzina)",
       "extraNocturnaPct": "Dodatek za nocne nadgodziny (%)"
+    },
+    "puede": {
+      "sinPermiso": "Twoja rola nie ma do tego uprawnień. Poproś administratora.",
+      "sinNivel": "To robi wyższy poziom niż twoja rola.",
+      "sinModulo": "Wymaga modułu Listy płac lub połączonego Gusto.",
+      "soloLectura": "Tylko odczyt",
+      "horarioSoloLectura": "Tylko odczyt: twoja rola może widzieć grafik, nie zmieniać go."
+    },
+    "nivelDeRol": {
+      "titulo": "Poziom",
+      "ayuda": "Uprawnienia mówią, jakich ekranów używa; poziom — do jakich wrażliwych danych sięga. Nigdy nie dochodzi do administratora ani kierownika oddziału.",
+      "oficina": "Biuro: widzi i obsługuje zmiany, obsadę i obecność",
+      "central": "Centrum operacyjne: dodatkowo podgląd na żywo (kamery, alarmy, mapa)",
+      "rrhh": "Kadry: dodatkowo dane personelu i płace",
+      "supervision": "Nadzór: dodatkowo zatwierdza godziny",
+      "gerencia": "Zarząd: dodatkowo raporty i działania kierownicze"
     }
   },
   "visitantes": {

@@ -11237,7 +11237,13 @@
       "losDiasDeVacacionesSon": "Vakantiedagen zijn",
       "diasNaturales": "Kalenderdagen",
       "diasLaborables": "Werkdagen",
-      "selfieMovido": "Selfie en gezicht bij inklokken stel je nu in via Instellingen › Team-app of Supervisor-app."
+      "selfieMovido": "Selfie en gezicht bij inklokken stel je nu in via Instellingen › Team-app of Supervisor-app.",
+      "privacidad": "Privacy van verlof",
+      "quienVeElMotivo": "Wie de reden van een verlofaanvraag ziet",
+      "motivoAprobadores": "Alleen wie verlof goedkeurt (en de aanvrager)",
+      "motivoRrhh": "Personeelszaken en hogere niveaus (en de aanvrager)",
+      "motivoOficina": "Al het kantoorpersoneel",
+      "motivoAyuda": "De reden is vaak medisch. De anderen zien de aanvraag (wie, data, status) zonder de reden."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",
@@ -18959,6 +18965,22 @@
       "extraNocturnaDesde": "Nachtelijk overwerk: vanaf (uur)",
       "extraNocturnaHasta": "Nachtelijk overwerk: tot (uur)",
       "extraNocturnaPct": "Toeslag nachtelijk overwerk (%)"
+    },
+    "puede": {
+      "sinPermiso": "Je rol heeft hier geen toestemming voor. Vraag het een beheerder.",
+      "sinNivel": "Dit doet een hoger niveau dan dat van je rol.",
+      "sinModulo": "Vereist de module Loonstroken of een gekoppeld Gusto.",
+      "soloLectura": "Alleen lezen",
+      "horarioSoloLectura": "Alleen lezen: je rol kan het rooster zien, niet wijzigen."
+    },
+    "nivelDeRol": {
+      "titulo": "Niveau",
+      "ayuda": "De rechten bepalen welke schermen; het niveau, welke gevoelige gegevens bereikt worden. Het wordt nooit beheerder of filiaalmanager.",
+      "oficina": "Kantoor: ziet en beheert diensten, dekking en aanwezigheid",
+      "central": "Meldkamer: plus live monitoring (camera's, alarmen, kaart)",
+      "rrhh": "Personeelszaken: plus personeelsgegevens en loon",
+      "supervision": "Toezicht: keurt ook uren goed",
+      "gerencia": "Directie: plus rapporten en directieacties"
     }
   },
   "visitantes": {
