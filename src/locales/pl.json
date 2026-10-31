@@ -20936,6 +20936,11 @@
         "reconocimiento_facial": "Twój personel będzie rejestrował czas pracy zwykłym selfie, bez weryfikacji twarzy; zarejestrowane twarze zostaną zachowane, a po włączeniu weryfikacja wróci jak wcześniej.",
         "monitoring_center": "Centrale, strefy, raporty i nadzór łączności zostaną ukryte (nie powiadomimy Cię, jeśli centrala przestanie się komunikować); alarmy i przyciski napadowe nadal będą docierać. Nic nie zostanie usunięte.",
         "video_surveillance": "Kamery, rejestratory, zdarzenia i klipy zostaną ukryte i nikt nie będzie mógł oglądać obrazu na żywo, także w zdarzeniach alarmowych; już udostępnione klipy nadal się otworzą. Nic nie zostanie usunięte."
+      },
+      "pantalla": {
+        "titulo": "{{nombre}} jest wyłączony",
+        "desc": "Twoja firma ma już ten moduł. Włącz go w Modułach dodatkowych, kiedy chcesz; to nic nie kosztuje, a wszystko zostało tak, jak to zostawiłeś.",
+        "boton": "Włącz w Modułach dodatkowych"
       }
     }
   },

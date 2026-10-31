@@ -20642,6 +20642,11 @@
         "reconocimiento_facial": "Tu personal fichará con la selfie normal, sin verificar su cara; las caras registradas se guardan y al encenderlo se vuelve a verificar como antes.",
         "monitoring_center": "Se ocultan paneles, zonas, reportes y la supervisión de línea (no te avisaremos si un panel deja de comunicar); las alarmas y botones de pánico siguen llegando. No se borra nada.",
         "video_surveillance": "Se ocultan cámaras, grabadores, eventos y clips, y nadie podrá ver video en vivo ni en los casos de alarma; los clips ya compartidos siguen abriendo. No se borra nada."
+      },
+      "pantalla": {
+        "titulo": "{{nombre}} está apagado",
+        "desc": "Tu empresa ya tiene este módulo. Enciéndelo en Módulos adicionales cuando quieras; no tiene costo y todo sigue como lo dejaste.",
+        "boton": "Encender en Módulos adicionales"
       }
     }
   },

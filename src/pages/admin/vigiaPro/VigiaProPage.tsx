@@ -49,6 +49,7 @@ import { useAgente } from "@/lib/agenteDeMarca";
 import ComoFuncionaVigiaPro from "@/components/vigia/ComoFuncionaVigiaPro";
 import GuiaConectarWhatsApp from "@/components/vigia/GuiaConectarWhatsApp";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
+import { PausedAddonGate } from "@/components/modulos/PausedAddon";
 import ConDobletes from "@/pages/admin/dobletes/ConVigiaPro";
 import { fechaYHora, soloHora } from "@/lib/horaDeLaEmpresa";
 import {
@@ -232,21 +233,23 @@ export default function VigiaProPage() {
           <div className="space-y-4">
             {/* Sin el módulo: se ENSEÑA cómo trabaja, y el botón lleva a probarlo. */}
             {!info.data.tieneModulo && (
-              <Section icon={<Sparkles />} title={t("vigiaPro.sinModulo.titulo", a)}>
-                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  {t("vigiaPro.sinModulo.desc", a)}
-                </p>
-                <ComoFuncionaVigiaPro className="mt-4" />
-                <div className="cg-acciones mt-4 justify-end">
-                  <Button asChild variant="brand">
-                    <Link to="/modulos-adicionales">
-                      {moduloEnTienda?.canStartTrial
-                        ? t("vigiaPro.sinModulo.probar", { n: moduloEnTienda.trialDays || 30 })
-                        : t("vigiaPro.sinModulo.enlace")}
-                    </Link>
-                  </Button>
-                </div>
-              </Section>
+              <PausedAddonGate icon={<Sparkles />} moduleKey="vigia_pro" name={t("vigiaPro.titulo", a)}>
+                <Section icon={<Sparkles />} title={t("vigiaPro.sinModulo.titulo", a)}>
+                  <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {t("vigiaPro.sinModulo.desc", a)}
+                  </p>
+                  <ComoFuncionaVigiaPro className="mt-4" />
+                  <div className="cg-acciones mt-4 justify-end">
+                    <Button asChild variant="brand">
+                      <Link to="/modulos-adicionales">
+                        {moduloEnTienda?.canStartTrial
+                          ? t("vigiaPro.sinModulo.probar", { n: moduloEnTienda.trialDays || 30 })
+                          : t("vigiaPro.sinModulo.enlace")}
+                      </Link>
+                    </Button>
+                  </div>
+                </Section>
+              </PausedAddonGate>
             )}
 
             {info.data.tieneModulo && !info.data.ajustes.activo && (

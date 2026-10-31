@@ -14,6 +14,7 @@ import { Receipt } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Modal, FormField, FIELD_CLS, InfoNote, PageContainer, PageHeader, Section } from "@/components/kit";
+import { PausedAddonGate } from "@/components/modulos/PausedAddon";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { faltaElModulo } from "@/lib/rostro";
 import { ADDONS_CHANGED_EVENT } from "@/lib/addonRequired";
@@ -86,7 +87,10 @@ export function useSinModuloDeFacturacion(): boolean {
   return !tiene || dio402;
 }
 
-/** Without the module: what it does, in three steps, and where to get it. */
+/**
+ * Without the module: what it does, in three steps, and where to get it.
+ * Owned but switched off: how to switch it back on instead.
+ */
 export function PresentacionDeFacturacion() {
   const { t } = useTranslation();
   const pasos = [
@@ -96,32 +100,38 @@ export function PresentacionDeFacturacion() {
   ];
 
   return (
-    <Section icon={<Receipt />} title={t("ui.Facturacion.modulo.titulo", "El módulo Facturación a clientes no está activo")}>
-      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-        {t(
-          "ui.Facturacion.modulo.desc",
-          "Con «Facturación a clientes», lo que tus vigilantes ya trabajan se convierte en cotizaciones, contratos y facturas para tus clientes. Actívalo en Módulos adicionales.",
-        )}
-      </p>
-      <ol className="mt-4 space-y-2">
-        {pasos.map((p, i) => (
-          <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
-            <span
-              className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
-              style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
-            >
-              {i + 1}
-            </span>
-            <span>{p}</span>
-          </li>
-        ))}
-      </ol>
-      <div className="cg-acciones mt-4 justify-end">
-        <Button asChild variant="brand">
-          <Link to="/modulos-adicionales">{t("ui.Facturacion.modulo.enlace", "Activar en Módulos adicionales")}</Link>
-        </Button>
-      </div>
-    </Section>
+    <PausedAddonGate
+      icon={<Receipt />}
+      moduleKey={MODULO_FACTURACION}
+      name={t("ui.Facturacion.modulo.nombre", "Facturación a clientes")}
+    >
+      <Section icon={<Receipt />} title={t("ui.Facturacion.modulo.titulo", "El módulo Facturación a clientes no está activo")}>
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {t(
+            "ui.Facturacion.modulo.desc",
+            "Con «Facturación a clientes», lo que tus vigilantes ya trabajan se convierte en cotizaciones, contratos y facturas para tus clientes. Actívalo en Módulos adicionales.",
+          )}
+        </p>
+        <ol className="mt-4 space-y-2">
+          {pasos.map((p, i) => (
+            <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
+              <span
+                className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
+                style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
+              >
+                {i + 1}
+              </span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="cg-acciones mt-4 justify-end">
+          <Button asChild variant="brand">
+            <Link to="/modulos-adicionales">{t("ui.Facturacion.modulo.enlace", "Activar en Módulos adicionales")}</Link>
+          </Button>
+        </div>
+      </Section>
+    </PausedAddonGate>
   );
 }
 

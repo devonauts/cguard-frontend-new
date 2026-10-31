@@ -20642,6 +20642,11 @@
         "reconocimiento_facial": "Sua equipe vai registrar o ponto com a selfie normal, sem verificar o rosto; os rostos cadastrados são mantidos e, ao ligar, a verificação volta como antes.",
         "monitoring_center": "Painéis, zonas, relatórios e a supervisão de linha ficam ocultos (não avisaremos se um painel parar de comunicar); os alarmes e botões de pânico continuam chegando. Nada é apagado.",
         "video_surveillance": "Câmeras, gravadores, eventos e clipes ficam ocultos, e ninguém poderá ver vídeo ao vivo nem nos casos de alarme; os clipes já compartilhados continuam abrindo. Nada é apagado."
+      },
+      "pantalla": {
+        "titulo": "{{nombre}} está desligado",
+        "desc": "Sua empresa já tem este módulo. Ligue-o em Módulos adicionais quando quiser; não tem custo e tudo continua como você deixou.",
+        "boton": "Ligar em Módulos adicionais"
       }
     }
   },

@@ -17,6 +17,7 @@ import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section } from "@/components/kit";
 import BotonDemo from "@/components/modulos/demo/BotonDemo";
+import { PausedAddonGate } from "@/components/modulos/PausedAddon";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import {
   ADDON_REQUIRED_EVENT,
@@ -125,7 +126,10 @@ function useModuleCopy(key: CenterModuleKey) {
   };
 }
 
-/** Without the module: what it does, in three steps, and where to get it. */
+/**
+ * Without the module: what it does, in three steps, and where to get it.
+ * Owned but switched off: how to switch it back on instead (no demo, no steps).
+ */
 export function ModulePresentation({
   moduleKey,
 }: {
@@ -135,39 +139,41 @@ export function ModulePresentation({
   const copy = useModuleCopy(moduleKey);
 
   return (
-    <Section icon={copy.icon} title={copy.title}>
-      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-        {copy.description}
-      </p>
-      <ol className="mt-4 space-y-2">
-        {copy.steps.map((step, i) => (
-          <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
-            <span
-              className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
-              style={{
-                background: "var(--brand-wash)",
-                color: "var(--brand-text)",
-              }}
-            >
-              {i + 1}
-            </span>
-            <span>{step}</span>
-          </li>
-        ))}
-      </ol>
-      <div className="cg-acciones mt-4 items-center justify-end">
-        {/* Renders nothing until the store registers this module's demo. */}
-        <BotonDemo clave={moduleKey} nombre={copy.name} />
-        <Button asChild variant="brand">
-          <Link to="/modulos-adicionales">
-            {t(
-              "modulosAdicionales.centrales.activar",
-              "Activar en Módulos adicionales",
-            )}
-          </Link>
-        </Button>
-      </div>
-    </Section>
+    <PausedAddonGate icon={copy.icon} moduleKey={moduleKey} name={copy.name}>
+      <Section icon={copy.icon} title={copy.title}>
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {copy.description}
+        </p>
+        <ol className="mt-4 space-y-2">
+          {copy.steps.map((step, i) => (
+            <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
+              <span
+                className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
+                style={{
+                  background: "var(--brand-wash)",
+                  color: "var(--brand-text)",
+                }}
+              >
+                {i + 1}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="cg-acciones mt-4 items-center justify-end">
+          {/* Renders nothing until the store registers this module's demo. */}
+          <BotonDemo clave={moduleKey} nombre={copy.name} />
+          <Button asChild variant="brand">
+            <Link to="/modulos-adicionales">
+              {t(
+                "modulosAdicionales.centrales.activar",
+                "Activar en Módulos adicionales",
+              )}
+            </Link>
+          </Button>
+        </div>
+      </Section>
+    </PausedAddonGate>
   );
 }
 

@@ -20642,6 +20642,11 @@
         "reconocimiento_facial": "Your staff will clock in with the regular selfie, without face verification; registered faces are kept, and turning it back on verifies as before.",
         "monitoring_center": "Panels, zones, reports and line supervision are hidden (we won't alert you if a panel stops reporting); alarms and panic buttons keep coming in. Nothing is deleted.",
         "video_surveillance": "Cameras, recorders, events and clips are hidden, and no one can watch live video, including in alarm cases; clips already shared still open. Nothing is deleted."
+      },
+      "pantalla": {
+        "titulo": "{{nombre}} is off",
+        "desc": "Your company already has this module. Turn it back on in Add-on modules whenever you like; it costs nothing and everything is just as you left it.",
+        "boton": "Turn on in Add-on modules"
       }
     }
   },

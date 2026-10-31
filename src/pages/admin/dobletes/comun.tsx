@@ -18,6 +18,7 @@ import { Award, CalendarPlus, Medal, Trophy } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Section, StatusBadge } from "@/components/kit";
+import { PausedAddonGate } from "@/components/modulos/PausedAddon";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { localeActual } from "@/lib/localeActual";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -159,7 +160,10 @@ export function NivelBadge({
   );
 }
 
-/** Without the module: what it does, in four steps, and where to get it. */
+/**
+ * Without the module: what it does, in four steps, and where to get it.
+ * Owned but switched off: how to switch it back on instead.
+ */
 export function PresentacionDelModulo() {
   const { t } = useTranslation();
   const pasos = [
@@ -182,43 +186,45 @@ export function PresentacionDelModulo() {
   ];
 
   return (
-    <Section
-      icon={<CalendarPlus />}
-      title={t(
-        "dobletes.modulo.titulo",
-        "Cada hueco, cubierto por tu propia reserva",
-      )}
-    >
-      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-        {t(
-          "dobletes.modulo.desc",
-          "Con el módulo «Dobletes», las ausencias y renuncias dejan de ser una noche de llamadas: tu gente ve la oferta, la acepta y queda asignada.",
+    <PausedAddonGate icon={<CalendarPlus />} moduleKey={MODULO} name={t("dobletes.titulo", "Dobletes")}>
+      <Section
+        icon={<CalendarPlus />}
+        title={t(
+          "dobletes.modulo.titulo",
+          "Cada hueco, cubierto por tu propia reserva",
         )}
-      </p>
-      <ol className="mt-4 space-y-2">
-        {pasos.map((p, i) => (
-          <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
-            <span
-              className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
-              style={{
-                background: "var(--brand-wash)",
-                color: "var(--brand-text)",
-              }}
-            >
-              {i + 1}
-            </span>
-            <span>{p}</span>
-          </li>
-        ))}
-      </ol>
-      <div className="cg-acciones mt-4 justify-end">
-        <Button asChild variant="brand">
-          <Link to="/modulos-adicionales">
-            {t("dobletes.modulo.enlace", "Ver en Módulos adicionales")}
-          </Link>
-        </Button>
-      </div>
-    </Section>
+      >
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {t(
+            "dobletes.modulo.desc",
+            "Con el módulo «Dobletes», las ausencias y renuncias dejan de ser una noche de llamadas: tu gente ve la oferta, la acepta y queda asignada.",
+          )}
+        </p>
+        <ol className="mt-4 space-y-2">
+          {pasos.map((p, i) => (
+            <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
+              <span
+                className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
+                style={{
+                  background: "var(--brand-wash)",
+                  color: "var(--brand-text)",
+                }}
+              >
+                {i + 1}
+              </span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="cg-acciones mt-4 justify-end">
+          <Button asChild variant="brand">
+            <Link to="/modulos-adicionales">
+              {t("dobletes.modulo.enlace", "Ver en Módulos adicionales")}
+            </Link>
+          </Button>
+        </div>
+      </Section>
+    </PausedAddonGate>
   );
 }
 

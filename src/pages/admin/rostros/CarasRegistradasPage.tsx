@@ -19,6 +19,7 @@ import {
 import MobileCardList from "@/components/responsive/MobileCardList";
 import AccionesDeRostro from "@/components/rostro/AccionesDeRostro";
 import { DatosDelRegistro, FotoDeReferencia } from "@/components/rostro/PiezasDeRostro";
+import { PausedAddonGate } from "@/components/modulos/PausedAddon";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import attendanceService from "@/lib/api/attendanceService";
 import {
@@ -214,7 +215,10 @@ function Vacio({ estado }: { estado: EstadoListable }) {
   );
 }
 
-/** Sin el módulo: qué hace, en tres pasos, y dónde se consigue. */
+/**
+ * Sin el módulo: qué hace, en tres pasos, y dónde se consigue.
+ * Owned but switched off: how to switch it back on instead.
+ */
 function PresentacionDelModulo() {
   const { t } = useTranslation();
   const pasos = [
@@ -227,31 +231,37 @@ function PresentacionDelModulo() {
   ];
 
   return (
-    <Section icon={<ScanFace />} title={t("rostros.modulo.titulo", "Que ficha quien tiene que fichar")}>
-      <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-        {t(
-          "rostros.modulo.desc",
-          "Con el módulo «Reconocimiento facial», al iniciar turno se comprueba que la cara de la selfie sea la del vigilante. Se acaba el fichar por un compañero.",
-        )}
-      </p>
-      <ol className="mt-4 space-y-2">
-        {pasos.map((p, i) => (
-          <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
-            <span
-              className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
-              style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
-            >
-              {i + 1}
-            </span>
-            <span>{p}</span>
-          </li>
-        ))}
-      </ol>
-      <div className="cg-acciones mt-4 justify-end">
-        <Button asChild variant="brand">
-          <Link to="/modulos-adicionales">{t("rostros.modulo.enlace", "Ver en Módulos adicionales")}</Link>
-        </Button>
-      </div>
-    </Section>
+    <PausedAddonGate
+      icon={<ScanFace />}
+      moduleKey={MODULO_RECONOCIMIENTO_FACIAL}
+      name={t("rostros.ficha.titulo", "Reconocimiento facial")}
+    >
+      <Section icon={<ScanFace />} title={t("rostros.modulo.titulo", "Que ficha quien tiene que fichar")}>
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {t(
+            "rostros.modulo.desc",
+            "Con el módulo «Reconocimiento facial», al iniciar turno se comprueba que la cara de la selfie sea la del vigilante. Se acaba el fichar por un compañero.",
+          )}
+        </p>
+        <ol className="mt-4 space-y-2">
+          {pasos.map((p, i) => (
+            <li key={i} className="glass-flat flex items-start gap-3 p-3 text-sm">
+              <span
+                className="grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums"
+                style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
+              >
+                {i + 1}
+              </span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="cg-acciones mt-4 justify-end">
+          <Button asChild variant="brand">
+            <Link to="/modulos-adicionales">{t("rostros.modulo.enlace", "Ver en Módulos adicionales")}</Link>
+          </Button>
+        </div>
+      </Section>
+    </PausedAddonGate>
   );
 }

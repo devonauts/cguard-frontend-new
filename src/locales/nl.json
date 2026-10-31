@@ -20642,6 +20642,11 @@
         "reconocimiento_facial": "Je personeel klokt in met de gewone selfie, zonder gezichtscontrole; geregistreerde gezichten blijven bewaard en bij het aanzetten wordt weer gecontroleerd zoals voorheen.",
         "monitoring_center": "Meldpanelen, zones, rapporten en lijnbewaking worden verborgen (we waarschuwen je niet als een paneel stopt met melden); alarmen en paniekknoppen blijven binnenkomen. Er wordt niets verwijderd.",
         "video_surveillance": "Camera’s, recorders, gebeurtenissen en clips worden verborgen en niemand kan live video bekijken, ook niet bij alarmmeldingen; al gedeelde clips blijven te openen. Er wordt niets verwijderd."
+      },
+      "pantalla": {
+        "titulo": "{{nombre}} staat uit",
+        "desc": "Je bedrijf heeft deze module al. Zet hem in Extra modules weer aan wanneer je wilt; dat kost niets en alles staat nog zoals je het achterliet.",
+        "boton": "Aanzetten in Extra modules"
       }
     }
   },

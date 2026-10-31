@@ -20642,6 +20642,11 @@
         "reconocimiento_facial": "Votre personnel pointera avec le selfie habituel, sans vérification du visage ; les visages enregistrés sont conservés et, en le réactivant, la vérification reprend comme avant.",
         "monitoring_center": "Les centrales, zones, rapports et la supervision de ligne sont masqués (nous ne vous avertirons pas si une centrale cesse de communiquer) ; les alarmes et boutons de panique continuent d’arriver. Rien n’est supprimé.",
         "video_surveillance": "Les caméras, enregistreurs, événements et clips sont masqués, et personne ne pourra voir la vidéo en direct, y compris dans les cas d’alarme ; les clips déjà partagés s’ouvrent toujours. Rien n’est supprimé."
+      },
+      "pantalla": {
+        "titulo": "{{nombre}} est désactivé",
+        "desc": "Votre entreprise possède déjà ce module. Réactivez-le dans Modules complémentaires quand vous voulez ; c’est sans frais et tout est resté comme vous l’avez laissé.",
+        "boton": "Réactiver dans Modules complémentaires"
       }
     }
   },

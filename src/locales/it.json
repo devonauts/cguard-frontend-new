@@ -20642,6 +20642,11 @@
         "reconocimiento_facial": "Il tuo personale timbrerà con il selfie normale, senza verifica del volto; i volti registrati vengono conservati e, riattivandolo, la verifica torna come prima.",
         "monitoring_center": "Centrali, zone, report e la supervisione di linea vengono nascosti (non ti avviseremo se una centrale smette di comunicare); gli allarmi e i pulsanti antipanico continuano ad arrivare. Non si cancella nulla.",
         "video_surveillance": "Telecamere, registratori, eventi e clip vengono nascosti e nessuno potrà vedere il video in diretta, nemmeno nei casi di allarme; le clip già condivise continuano ad aprirsi. Non si cancella nulla."
+      },
+      "pantalla": {
+        "titulo": "{{nombre}} è disattivato",
+        "desc": "La tua azienda ha già questo modulo. Riattivalo in Moduli aggiuntivi quando vuoi; non ha costi e tutto resta come l’hai lasciato.",
+        "boton": "Riattiva in Moduli aggiuntivi"
       }
     }
   },
