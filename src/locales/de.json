@@ -12018,7 +12018,11 @@
       "fijoSinDescanso": "Fest ohne Ruhetag",
       "secuencia": "Sequenz {{s}}",
       "porDiasDeLaSemana": "nach Wochentagen",
-      "semanalExplica": "Arbeitet an diesen Wochentagen, egal wann er beginnt. Es gibt keinen Zyklus zu verschieben."
+      "semanalExplica": "Arbeitet an diesen Wochentagen, egal wann er beginnt. Es gibt keinen Zyklus zu verschieben.",
+      "comoTrabajanLosSupervisores": "Wie arbeiten die Einsatzleiter?",
+      "cadaSupervisorSigueElCiclo": "Jede Einsatzleitung folgt dem Zyklus des Postens. Bei der Zuteilung wählst du den Starttag, und damit liegt sie im Tag- oder Nachtdienst.",
+      "aquiEsDosDiasDeSupervisor": "bedeutet hier „2 Tage {{primero}}, 2 Tage {{segundo}}, 2 frei“.",
+      "sinDescansoElSupervisorTrabaja": "Ohne Ruhetag: Die Einsatzleitung arbeitet jeden Tag."
     },
     "RouteForm": {
       "asignacion": "Zuweisung",
@@ -13936,7 +13940,19 @@
       "zonaSector": "Zone / Sektor",
       "noSePudieronCargarLasEstaciones": "Die Stationen konnten nicht geladen werden. Laden Sie die Seite neu.",
       "aunNoHayEstaciones": "Es gibt noch keine Stationen. Legen Sie sie an jedem Standort an, um sie zuzuweisen.",
-      "sinSede": "Ohne Standort"
+      "sinSede": "Ohne Standort",
+      "sinRotacionNoGenera": "Keine Rotation: erzeugt keine Schichten",
+      "sinRotacionExplicacion": "Dieser Posten hat keine Rotation, daher haben seine Einsatzleiter keine Schichten. Wähle die Rotation und speichere; danach kannst du Einsatzleiter zuteilen.",
+      "guardarRotacion": "Rotation speichern",
+      "rotacionGuardada": "Rotation gespeichert",
+      "eligeLaRotacion": "Wähle die Rotation des Postens: ohne Rotation entstehen keine Schichten.",
+      "empiezaSuCicloEl": "Beginnt den Zyklus am",
+      "inicioDelCicloAyuda": "Dieser Tag ist der erste Arbeitstag im Zyklus. Für die Gegenschicht zu einer anderen Einsatzleitung beginne den Zyklus {{n}} Tage später.",
+      "cicloDesde": "Zyklus ab {{fecha}}",
+      "cicloDesdeMasN": "Zyklus ab {{fecha}} +{{n}} T",
+      "estacionesQueCubre_one": "Abgedeckte Standorte ({{count}})",
+      "estacionesQueCubre_other": "Abgedeckte Standorte ({{count}})",
+      "estacionesQueCubre": "Abgedeckte Standorte ({{count}})"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",
@@ -19715,7 +19731,8 @@
       "12hNight": "Nachtdienst (12 h)",
       "24h": "24 h (Tag/Nacht)",
       "custom": "Individuell"
-    }
+    },
+    "cobertura24h": "Tag {{s}}–{{e}} · Nacht {{e}}–{{s}}"
   },
   "tasks": {
     "approvals": {

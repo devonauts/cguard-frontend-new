@@ -41,6 +41,7 @@ import {
 } from "@/lib/api/supervisorService";
 import { stationService } from "@/lib/api/stationService";
 import { conEtiqueta } from "@/lib/i18nLabel";
+import { hoyEnLaEmpresa, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 
 /** `label` es una propiedad de acceso (`conEtiqueta`): la lista se construye al
  *  importar el módulo, así que el texto tiene que resolverse al pintarlo. */
@@ -96,6 +97,22 @@ function rotationSummary(p: SupervisorPosition): string {
   return `${r.name} · ${parts.join(" · ")}`;
 }
 
+/** Coverage in words: a 24 h position shows both halves with their real hours. */
+function coberturaDe(p: SupervisorPosition): string {
+  if (p.scheduleType === "24h" && p.startTime && p.endTime) {
+    return i18n.t("supervisorPositions.cobertura24h", {
+      defaultValue: "Día {{s}}–{{e}} · noche {{e}}–{{s}}",
+      s: p.startTime,
+      e: p.endTime,
+    });
+  }
+
+  return (
+    SCHEDULE_TYPES.find((x) => x.value === p.scheduleType)?.label ??
+    p.scheduleType
+  );
+}
+
 export default function SupervisorPositionsPage() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<SupervisorPosition[]>([]);
@@ -123,7 +140,11 @@ export default function SupervisorPositionsPage() {
   const creatingRef = useRef(false);
   const assigningRef = useRef<Set<string>>(new Set());
   const [assigning, setAssigning] = useState<Record<string, boolean>>({});
-  const [offsetSel, setOffsetSel] = useState<Record<string, string>>({});
+  // Day the supervisor starts the position's cycle (its day 0). Replaces the
+  // «Desfase» number: a date is what people know.
+  const [inicioSel, setInicioSel] = useState<Record<string, string>>({});
+  // Rotation chosen to fix a legacy position saved without one.
+  const [cicloSel, setCicloSel] = useState<Record<string, string>>({});
   const [stationEdit, setStationEdit] = useState<string | null>(null);
 
   const stationName = (id: string) =>
@@ -233,6 +254,16 @@ export default function SupervisorPositionsPage() {
 
       return;
     }
+    if (!form.rotationStyleId) {
+      toast.error(
+        t(
+          "ui.SupervisorPositionsPage.eligeLaRotacion",
+          "Elige cómo rota el puesto: sin rotación no genera turnos.",
+        ),
+      );
+
+      return;
+    }
     creatingRef.current = true;
     setSaving(true);
     try {
@@ -278,12 +309,13 @@ export default function SupervisorPositionsPage() {
     try {
       const updated = await supervisorPositionService.assign(posId, {
         supervisorUserId: uid,
-        platoonOffset: Number(offsetSel[posId] || 0),
+        platoonOffset: 0,
+        startDate: inicioSel[posId] || hoyEnLaEmpresa(),
       });
 
       setRows((prev) => prev.map((p) => (p.id === posId ? updated : p)));
       setAssignSel((s) => ({ ...s, [posId]: "" }));
-      setOffsetSel((s) => ({ ...s, [posId]: "" }));
+      setInicioSel((s) => ({ ...s, [posId]: "" }));
       toast.success(t("ui.SupervisorPositionsPage.supervisorAsignado"));
     } catch (e: any) {
       toast.error(
@@ -293,6 +325,28 @@ export default function SupervisorPositionsPage() {
     } finally {
       assigningRef.current.delete(posId);
       setAssigning((s) => ({ ...s, [posId]: false }));
+    }
+  };
+
+  const guardarCiclo = async (posId: string) => {
+    const rotationStyleId = cicloSel[posId];
+
+    if (!rotationStyleId) return;
+    try {
+      const updated = await supervisorPositionService.update(posId, {
+        rotationStyleId,
+      });
+
+      setRows((prev) => prev.map((p) => (p.id === posId ? updated : p)));
+      setCicloSel((s) => ({ ...s, [posId]: "" }));
+      toast.success(
+        t("ui.SupervisorPositionsPage.rotacionGuardada", "Rotación guardada"),
+      );
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t("supervisorPositions.updateError", "No se pudo actualizar"),
+      );
     }
   };
 
@@ -410,13 +464,17 @@ export default function SupervisorPositionsPage() {
                       <Clock className="mr-1 inline h-3 w-3" />
                       {p.startTime || "—"}–{p.endTime || "—"}
                     </StatusBadge>
-                    <StatusBadge dot={false} tone="ok">
+                    <StatusBadge dot={false} tone={p.rotationStyle ? "ok" : "bad"}>
                       <Radar className="mr-1 inline h-3 w-3" />
-                      {rotationSummary(p)}
+                      {p.rotationStyle
+                        ? rotationSummary(p)
+                        : t(
+                            "ui.SupervisorPositionsPage.sinRotacionNoGenera",
+                            "Sin rotación: no genera turnos",
+                          )}
                     </StatusBadge>
                     <span style={{ color: "var(--ink-soft)" }}>
-                      {SCHEDULE_TYPES.find((x) => x.value === p.scheduleType)
-                        ?.label ?? p.scheduleType}
+                      {coberturaDe(p)}
                     </span>
                   </div>
 
@@ -436,7 +494,7 @@ export default function SupervisorPositionsPage() {
                       <StatusBadge key={a.id} dot={false} tone="neutral">
                         <Users className="h-3 w-3" />
                         {a.supervisorName || a.supervisorUserId}
-                        {a.platoonOffset ? (
+                        {a.startDate ? (
                           <span
                             className="rounded-full px-1.5 text-[10px] font-semibold tabular-nums"
                             style={{
@@ -444,10 +502,16 @@ export default function SupervisorPositionsPage() {
                               color: "var(--brand-text)",
                             }}
                           >
-                            {t("ui.SupervisorPositionsPage.desfaseN", {
-                              n: a.platoonOffset,
-                              defaultValue: "desfase {{n}}",
-                            })}
+                            {a.platoonOffset
+                              ? t("ui.SupervisorPositionsPage.cicloDesdeMasN", {
+                                  fecha: soloFechaCivil(a.startDate),
+                                  n: a.platoonOffset,
+                                  defaultValue: "ciclo desde {{fecha}} +{{n}} d",
+                                })
+                              : t("ui.SupervisorPositionsPage.cicloDesde", {
+                                  fecha: soloFechaCivil(a.startDate),
+                                  defaultValue: "ciclo desde {{fecha}}",
+                                })}
                           </span>
                         ) : null}
                         <button
@@ -464,71 +528,100 @@ export default function SupervisorPositionsPage() {
                     ))}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    <select
-                      className="cg-input cg-focus h-9 flex-1 px-2 text-sm sm:max-w-xs"
-                      value={assignSel[p.id] || ""}
-                      onChange={(e) =>
-                        setAssignSel((s) => ({ ...s, [p.id]: e.target.value }))
-                      }
-                    >
-                      <option value="">
-                        {t("ui.SupervisorPositionsPage.asignarSupervisor")}
-                      </option>
-                      {sups
-                        .filter(
-                          (s) =>
-                            !p.assignments.some(
-                              (a) => a.supervisorUserId === s.id,
-                            ),
-                        )
-                        .map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.fullName}
-                          </option>
-                        ))}
-                    </select>
-                    <div className="flex items-center gap-1">
-                      <label className="cg-eyebrow">
-                        {t("ui.SupervisorPositionsPage.desfase", "Desfase")}
-                      </label>
-                      <input
-                        className="cg-input cg-focus h-9 w-16 px-2 text-sm"
-                        min={0}
-                        placeholder="0"
-                        type="number"
-                        value={offsetSel[p.id] ?? ""}
-                        onChange={(e) =>
-                          setOffsetSel((s) => ({
-                            ...s,
-                            [p.id]: e.target.value,
-                          }))
+                  {!p.rotationStyle ? (
+                    <div className="glass-sunken space-y-2 p-3">
+                      <p className="text-xs" style={{ color: "var(--bad-text)" }}>
+                        {t(
+                          "ui.SupervisorPositionsPage.sinRotacionExplicacion",
+                          "Este puesto no tiene rotación, así que sus supervisores no tienen turnos. Elige cómo rota y guarda; después podrás asignar supervisores.",
+                        )}
+                      </p>
+                      <RotationStyleSelect
+                        persona="supervisor"
+                        scheduleType={p.scheduleType}
+                        value={cicloSel[p.id] || ""}
+                        onChange={(id) =>
+                          setCicloSel((s) => ({ ...s, [p.id]: id }))
                         }
                       />
+                      <Button
+                        disabled={!cicloSel[p.id]}
+                        size="sm"
+                        variant="brand"
+                        onClick={() => guardarCiclo(p.id)}
+                      >
+                        {t(
+                          "ui.SupervisorPositionsPage.guardarRotacion",
+                          "Guardar rotación",
+                        )}
+                      </Button>
                     </div>
-                    <Button
-                      disabled={!assignSel[p.id] || !!assigning[p.id]}
-                      size="sm"
-                      variant="outline"
-                      onClick={() => assign(p.id)}
-                    >
-                      {t("ui.SupervisorPositionsPage.asignar", "Asignar")}
-                    </Button>
-                  </div>
-                  {p.rotationStyle && (
-                    <p
-                      className="mt-1.5 text-[11px]"
-                      style={{ color: "var(--ink-faint)" }}
-                    >
-                      {t(
-                        "ui.SupervisorPositionsPage.elDesfaseEscalonaLaRotacion",
-                        "El desfase escalona la rotación. Para el turno opuesto (noche mientras otro está en día), usa",
-                      )}{" "}
-                      <span className="font-semibold text-foreground">
-                        {p.rotationStyle.dayShifts}
-                      </span>
-                      .
-                    </p>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap items-end gap-2">
+                        <select
+                          aria-label={t("ui.SupervisorPositionsPage.asignarSupervisor")}
+                          className="cg-input cg-focus h-9 flex-1 px-2 text-sm sm:max-w-xs"
+                          value={assignSel[p.id] || ""}
+                          onChange={(e) =>
+                            setAssignSel((s) => ({ ...s, [p.id]: e.target.value }))
+                          }
+                        >
+                          <option value="">
+                            {t("ui.SupervisorPositionsPage.asignarSupervisor")}
+                          </option>
+                          {sups
+                            .filter(
+                              (s) =>
+                                !p.assignments.some(
+                                  (a) => a.supervisorUserId === s.id,
+                                ),
+                            )
+                            .map((s) => (
+                              <option key={s.id} value={s.id}>
+                                {s.fullName}
+                              </option>
+                            ))}
+                        </select>
+                        <label className="flex flex-col gap-1">
+                          <span className="cg-eyebrow">
+                            {t(
+                              "ui.SupervisorPositionsPage.empiezaSuCicloEl",
+                              "Empieza su ciclo el",
+                            )}
+                          </span>
+                          <input
+                            className="cg-input cg-focus h-9 px-2 text-sm"
+                            type="date"
+                            value={inicioSel[p.id] || hoyEnLaEmpresa()}
+                            onChange={(e) =>
+                              setInicioSel((s) => ({
+                                ...s,
+                                [p.id]: e.target.value,
+                              }))
+                            }
+                          />
+                        </label>
+                        <Button
+                          disabled={!assignSel[p.id] || !!assigning[p.id]}
+                          size="sm"
+                          variant="outline"
+                          onClick={() => assign(p.id)}
+                        >
+                          {t("ui.SupervisorPositionsPage.asignar", "Asignar")}
+                        </Button>
+                      </div>
+                      <p
+                        className="mt-1.5 text-[11px]"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {t("ui.SupervisorPositionsPage.inicioDelCicloAyuda", {
+                          n: p.rotationStyle.dayShifts,
+                          defaultValue:
+                            "Ese día es su primer día de trabajo del ciclo. Para que cubra el turno contrario al de otro supervisor, empieza su ciclo {{n}} días después que él.",
+                        })}
+                      </p>
+                    </>
                   )}
 
                   <div
@@ -537,9 +630,9 @@ export default function SupervisorPositionsPage() {
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <span className="cg-eyebrow tabular-nums">
-                        {t("ui.SupervisorPositionsPage.puestosBajoProteccion", {
+                        {t("ui.SupervisorPositionsPage.estacionesQueCubre", {
                           count: p.stationIds.length,
-                          defaultValue: "Puestos bajo protección ({{count}})",
+                          defaultValue: "Estaciones que cubre ({{count}})",
                         })}
                       </span>
                       <button
@@ -651,7 +744,11 @@ export default function SupervisorPositionsPage() {
             >
               {t("actions.cancel")}
             </Button>
-            <Button disabled={saving} variant="brand" onClick={create}>
+            <Button
+              disabled={saving || !form.rotationStyleId}
+              variant="brand"
+              onClick={create}
+            >
               {saving ? t("ui.SupervisorPositionsPage.creando", "Creando…") : t("ui.SupervisorPositionsPage.crearPuesto", "Crear puesto")}
             </Button>
           </>
@@ -697,10 +794,19 @@ export default function SupervisorPositionsPage() {
               {t("ui.SupervisorPositions.rotacion", "Rotación")}
             </label>
             <RotationStyleSelect
+              persona="supervisor"
               scheduleType={form.scheduleType}
               value={form.rotationStyleId}
               onChange={(id) => setForm((f) => ({ ...f, rotationStyleId: id }))}
             />
+            {!form.rotationStyleId && (
+              <p className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>
+                {t(
+                  "ui.SupervisorPositionsPage.eligeLaRotacion",
+                  "Elige cómo rota el puesto: sin rotación no genera turnos.",
+                )}
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <label className="cg-eyebrow">
@@ -743,9 +849,9 @@ export default function SupervisorPositionsPage() {
           </div>
           <div>
             <label className="cg-eyebrow mb-1 block">
-              {t("ui.SupervisorPositionsPage.puestosBajoProteccion", {
+              {t("ui.SupervisorPositionsPage.estacionesQueCubre", {
                 count: form.stationIds.length,
-                defaultValue: "Puestos bajo protección ({{count}})",
+                defaultValue: "Estaciones que cubre ({{count}})",
               })}
             </label>
             <div className="glass-sunken max-h-48 space-y-1 overflow-y-auto p-1">

@@ -11483,7 +11483,11 @@
       "fijoSinDescanso": "Fixo sem folga",
       "secuencia": "sequência {{s}}",
       "porDiasDeLaSemana": "por dias da semana",
-      "semanalExplica": "Trabalha esses dias da semana, comece quando começar. Não há ciclo para correr."
+      "semanalExplica": "Trabalha esses dias da semana, comece quando começar. Não há ciclo para correr.",
+      "comoTrabajanLosSupervisores": "Como trabalham os supervisores?",
+      "cadaSupervisorSigueElCiclo": "Cada supervisor segue o ciclo do posto. Ao atribuí-lo você escolhe o dia em que começa, e com isso fica de dia ou de noite.",
+      "aquiEsDosDiasDeSupervisor": "aqui é «2 dias de {{primero}}, 2 dias de {{segundo}}, 2 de folga».",
+      "sinDescansoElSupervisorTrabaja": "Sem folga: o supervisor trabalha todos os dias."
     },
     "RouteForm": {
       "asignacion": "Atribuição",
@@ -13401,7 +13405,19 @@
       "zonaSector": "Zona / setor",
       "noSePudieronCargarLasEstaciones": "Não foi possível carregar as estações. Recarregue a página.",
       "aunNoHayEstaciones": "Ainda não há estações. Crie-as em cada local para poder atribuí-las.",
-      "sinSede": "Sem local"
+      "sinSede": "Sem local",
+      "sinRotacionNoGenera": "Sem rotação: não gera turnos",
+      "sinRotacionExplicacion": "Este posto não tem rotação, então os supervisores não têm turnos. Escolha como roda e salve; depois você poderá atribuir supervisores.",
+      "guardarRotacion": "Salvar rotação",
+      "rotacionGuardada": "Rotação salva",
+      "eligeLaRotacion": "Escolha como o posto roda: sem rotação não gera turnos.",
+      "empiezaSuCicloEl": "Começa o ciclo em",
+      "inicioDelCicloAyuda": "Esse dia é o primeiro dia de trabalho do ciclo. Para cobrir o turno oposto ao de outro supervisor, comece o ciclo {{n}} dias depois.",
+      "cicloDesde": "ciclo desde {{fecha}}",
+      "cicloDesdeMasN": "ciclo desde {{fecha}} +{{n}} d",
+      "estacionesQueCubre_one": "Estações que cobre ({{count}})",
+      "estacionesQueCubre_other": "Estações que cobre ({{count}})",
+      "estacionesQueCubre": "Estações que cobre ({{count}})"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Novo supervisor",
@@ -19715,7 +19731,8 @@
       "12hNight": "Noturno (12h)",
       "24h": "24h (dia/noite)",
       "custom": "Personalizado"
-    }
+    },
+    "cobertura24h": "Dia {{s}}–{{e}} · noite {{e}}–{{s}}"
   },
   "tasks": {
     "approvals": {

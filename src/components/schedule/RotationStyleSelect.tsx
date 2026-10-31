@@ -134,6 +134,7 @@ export default function RotationStyleSelect({
   bloques = 1,
   etiquetaPrimerBloque,
   etiquetaSegundoBloque,
+  persona = "vigilante",
 }: {
   scheduleType: string; // '24h' | '12h-day' | '12h-night' | 'custom'
   value: string; // rotationStyleId
@@ -146,10 +147,14 @@ export default function RotationStyleSelect({
   etiquetaPrimerBloque?: string;
   /** Cómo se llama el segundo tramo aquí ('tarde', 'noche'…). Por defecto, 'noche'. */
   etiquetaSegundoBloque?: string;
+  /** Who follows this cycle. Supervisor positions reuse this picker, and its
+   *  texts used to ask «¿Cómo trabajan los dos vigilantes?» there. */
+  persona?: "vigilante" | "supervisor";
 }) {
   const { t } = useTranslation();
   const tenantId = localStorage.getItem("tenantId") || "";
   const is24h = scheduleType === "24h";
+  const esSupervisor = persona === "supervisor";
   /**
    * Hay dos tramos que repartir cuando el puesto es de 24 h (día y noche) o
    * cuando la estación parte su cobertura en dos bloques o más. Es la condición
@@ -539,7 +544,12 @@ export default function RotationStyleSelect({
             className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--ink-soft)" }}
           >
-            {tramos > 2
+            {esSupervisor
+              ? t(
+                  "ui.RotationStyleSelect.comoTrabajanLosSupervisores",
+                  "¿Cómo trabajan los supervisores?",
+                )
+              : tramos > 2
               ? t("ui.RotationStyleSelect.comoTrabajanLosN", {
                   defaultValue: "¿Cómo trabajan los {{n}} vigilantes?",
                   n: tramos,
@@ -596,7 +606,12 @@ export default function RotationStyleSelect({
               className="mt-2 text-[11px] leading-snug"
               style={{ color: "var(--ink-soft)" }}
             >
-              {is24h ? (
+              {esSupervisor ? (
+                t(
+                  "ui.RotationStyleSelect.cadaSupervisorSigueElCiclo",
+                  "Cada supervisor sigue el ciclo del puesto. Al asignarlo eliges el día en que empieza, y con eso queda de día o de noche.",
+                )
+              ) : is24h ? (
                 <>
                   {t(
                     "ui.RotationStyleSelect.seCreanDosPlazasEspejo",
@@ -641,12 +656,17 @@ export default function RotationStyleSelect({
                 "El ciclo alterna entre el tramo de la plaza y el siguiente. Un",
               )}{" "}
               <strong>2-2-2</strong>{" "}
-              {t("ui.RotationStyleSelect.aquiEsDosDiasDe", {
-                defaultValue:
-                  "aquí es «2 días de {{primero}}, 2 días de {{segundo}}, 2 libres». Si el vigilante necesita otro ciclo distinto al de sus compañeros, se le puede dar el suyo al asignarlo.",
-                primero: lblPrimero,
-                segundo: lblSegundo,
-              })}
+              {t(
+                esSupervisor
+                  ? "ui.RotationStyleSelect.aquiEsDosDiasDeSupervisor"
+                  : "ui.RotationStyleSelect.aquiEsDosDiasDe",
+                {
+                  defaultValue:
+                    "aquí es «2 días de {{primero}}, 2 días de {{segundo}}, 2 libres». Si el vigilante necesita otro ciclo distinto al de sus compañeros, se le puede dar el suyo al asignarlo.",
+                  primero: lblPrimero,
+                  segundo: lblSegundo,
+                },
+              )}
             </p>
           )}
         </div>
@@ -862,10 +882,15 @@ export default function RotationStyleSelect({
               className="basis-full text-[10px]"
               style={{ color: "var(--ink-soft)" }}
             >
-              {t(
-                "ui.RotationStyleSelect.sinDescansoElVigilanteTrabaja",
-                "Sin descanso: el vigilante trabaja todos los días, sin sacafranco que lo releve.",
-              )}
+              {esSupervisor
+                ? t(
+                    "ui.RotationStyleSelect.sinDescansoElSupervisorTrabaja",
+                    "Sin descanso: el supervisor trabaja todos los días.",
+                  )
+                : t(
+                    "ui.RotationStyleSelect.sinDescansoElVigilanteTrabaja",
+                    "Sin descanso: el vigilante trabaja todos los días, sin sacafranco que lo releve.",
+                  )}
             </div>
           )}
 

@@ -12018,7 +12018,11 @@
       "fijoSinDescanso": "Vast zonder rustdag",
       "secuencia": "reeks {{s}}",
       "porDiasDeLaSemana": "per weekdag",
-      "semanalExplica": "Werkt op die weekdagen, ongeacht de startdatum. Er is geen cyclus om te verschuiven."
+      "semanalExplica": "Werkt op die weekdagen, ongeacht de startdatum. Er is geen cyclus om te verschuiven.",
+      "comoTrabajanLosSupervisores": "Hoe werken de supervisors?",
+      "cadaSupervisorSigueElCiclo": "Elke supervisor volgt de cyclus van de post. Bij het toewijzen kies je de startdag, en daarmee staat hij op dag- of nachtdienst.",
+      "aquiEsDosDiasDeSupervisor": "betekent hier „2 dagen {{primero}}, 2 dagen {{segundo}}, 2 vrij”.",
+      "sinDescansoElSupervisorTrabaja": "Zonder rustdag: de supervisor werkt elke dag."
     },
     "RouteForm": {
       "asignacion": "Toewijzing",
@@ -13936,7 +13940,19 @@
       "zonaSector": "Zone / sector",
       "noSePudieronCargarLasEstaciones": "De posten konden niet worden geladen. Laad de pagina opnieuw.",
       "aunNoHayEstaciones": "Er zijn nog geen posten. Maak ze aan op elke locatie om ze toe te wijzen.",
-      "sinSede": "Zonder locatie"
+      "sinSede": "Zonder locatie",
+      "sinRotacionNoGenera": "Geen rotatie: maakt geen diensten",
+      "sinRotacionExplicacion": "Deze post heeft geen rotatie, dus de supervisors hebben geen diensten. Kies hoe hij roteert en sla op; daarna kun je supervisors toewijzen.",
+      "guardarRotacion": "Rotatie opslaan",
+      "rotacionGuardada": "Rotatie opgeslagen",
+      "eligeLaRotacion": "Kies hoe de post roteert: zonder rotatie ontstaan geen diensten.",
+      "empiezaSuCicloEl": "Begint de cyclus op",
+      "inicioDelCicloAyuda": "Die dag is zijn eerste werkdag van de cyclus. Om de tegenovergestelde dienst van een andere supervisor te dekken, start je zijn cyclus {{n}} dagen later.",
+      "cicloDesde": "cyclus vanaf {{fecha}}",
+      "cicloDesdeMasN": "cyclus vanaf {{fecha}} +{{n}} d",
+      "estacionesQueCubre_one": "Gedekte posten ({{count}})",
+      "estacionesQueCubre_other": "Gedekte posten ({{count}})",
+      "estacionesQueCubre": "Gedekte posten ({{count}})"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",
@@ -19715,7 +19731,8 @@
       "12hNight": "Nacht (12h)",
       "24h": "24h (dag/nacht)",
       "custom": "Aangepast"
-    }
+    },
+    "cobertura24h": "Dag {{s}}–{{e}} · nacht {{e}}–{{s}}"
   },
   "tasks": {
     "approvals": {

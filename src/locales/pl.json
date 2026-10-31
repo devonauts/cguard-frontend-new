@@ -12094,7 +12094,11 @@
       "fijoSinDescanso": "Stały bez dni wolnych",
       "secuencia": "sekwencja {{s}}",
       "porDiasDeLaSemana": "według dni tygodnia",
-      "semanalExplica": "Pracuje w te dni tygodnia, niezależnie od daty rozpoczęcia. Nie ma cyklu do przesunięcia."
+      "semanalExplica": "Pracuje w te dni tygodnia, niezależnie od daty rozpoczęcia. Nie ma cyklu do przesunięcia.",
+      "comoTrabajanLosSupervisores": "Jak pracują nadzorcy?",
+      "cadaSupervisorSigueElCiclo": "Każdy nadzorca podąża za cyklem stanowiska. Przy przypisaniu wybierasz dzień startu, i to ustawia go na dzień lub noc.",
+      "aquiEsDosDiasDeSupervisor": "oznacza tutaj „2 dni {{primero}}, 2 dni {{segundo}}, 2 wolne”.",
+      "sinDescansoElSupervisorTrabaja": "Bez dnia wolnego: nadzorca pracuje codziennie."
     },
     "RouteForm": {
       "asignacion": "Przypisanie",
@@ -14068,7 +14072,21 @@
       "zonaSector": "Strefa / sektor",
       "noSePudieronCargarLasEstaciones": "Nie udało się wczytać stanowisk. Odśwież stronę.",
       "aunNoHayEstaciones": "Nie ma jeszcze stanowisk. Utwórz je w każdym obiekcie, aby móc je przypisać.",
-      "sinSede": "Bez obiektu"
+      "sinSede": "Bez obiektu",
+      "sinRotacionNoGenera": "Brak rotacji: nie tworzy zmian",
+      "sinRotacionExplicacion": "To stanowisko nie ma rotacji, więc jego nadzorcy nie mają zmian. Wybierz rotację i zapisz; potem przypiszesz nadzorców.",
+      "guardarRotacion": "Zapisz rotację",
+      "rotacionGuardada": "Rotacja zapisana",
+      "eligeLaRotacion": "Wybierz rotację stanowiska: bez niej nie powstaną zmiany.",
+      "empiezaSuCicloEl": "Zaczyna cykl dnia",
+      "inicioDelCicloAyuda": "Ten dzień to jego pierwszy dzień pracy w cyklu. Aby pokrył zmianę przeciwną do innego nadzorcy, zacznij jego cykl {{n}} dni później.",
+      "cicloDesde": "cykl od {{fecha}}",
+      "cicloDesdeMasN": "cykl od {{fecha}} +{{n}} d",
+      "estacionesQueCubre_one": "Objęte stanowiska ({{count}})",
+      "estacionesQueCubre_other": "Objęte stanowiska ({{count}})",
+      "estacionesQueCubre": "Objęte stanowiska ({{count}})",
+      "estacionesQueCubre_few": "Objęte stanowiska ({{count}})",
+      "estacionesQueCubre_many": "Objęte stanowiska ({{count}})"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nowy nadzorca",
@@ -20013,7 +20031,8 @@
       "12hNight": "Nocna (12 h)",
       "24h": "24 h (dzień/noc)",
       "custom": "Własny"
-    }
+    },
+    "cobertura24h": "Dzień {{s}}–{{e}} · noc {{e}}–{{s}}"
   },
   "tasks": {
     "approvals": {
