@@ -22071,7 +22071,8 @@
       "eligePuesto": "Choose a supervision post or tap «I’ll do it later»",
       "revisaJornada": "Check the hours marked in red",
       "ningunDia": "Tick at least one day, or tap «I’ll do it later».",
-      "puestoSinRotacionCorto": "That post has no rotation yet"
+      "puestoSinRotacionCorto": "That post has no rotation yet",
+      "puestoSupLleno": "This post already has its supervisors per shift. You are adding one more to the post."
     },
     "oficina": {
       "titulo": "Their office (optional)",

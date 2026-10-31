@@ -180,12 +180,15 @@ function Fila({
   titulo,
   detalle,
   libre,
+  bloqueada = false,
   onClick,
 }: {
   activa: boolean;
   titulo: string;
   detalle: string;
   libre: boolean;
+  /** An occupied guard seat cannot take another guard: shown, not selectable. */
+  bloqueada?: boolean;
   onClick: () => void;
 }) {
   const { t } = useTranslation();
@@ -193,7 +196,8 @@ function Fila({
   return (
     <button
       aria-pressed={activa}
-      className="cg-focus flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-[var(--glass-sunken)]"
+      className="cg-focus flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-[var(--glass-sunken)] disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:bg-transparent"
+      disabled={bloqueada}
       style={
         activa
           ? { background: "color-mix(in oklab, var(--brand) 10%, transparent)" }
@@ -1268,6 +1272,7 @@ export default function AgregarPersonaPage() {
                                   key={p.positionId}
                                   activa={horario.positionId === p.positionId}
                                   detalle={p.detalle}
+                                  bloqueada={p.libres <= 0}
                                   libre={p.libres > 0}
                                   titulo={p.puesto}
                                   onClick={() =>
@@ -1411,6 +1416,22 @@ export default function AgregarPersonaPage() {
                               ))}
                             </div>
                           )}
+                          {(() => {
+                            const elegido = puestos.find(
+                              (p) => p.id === horario.positionId,
+                            );
+
+                            return elegido &&
+                              !elegido.sinRotacion &&
+                              !elegido.libre ? (
+                              <InfoNote tone="info">
+                                {t(
+                                  "agregarPersona.paso3.puestoSupLleno",
+                                  "Este puesto ya tiene sus supervisores por turno. Lo agregas como uno más del puesto.",
+                                )}
+                              </InfoNote>
+                            ) : null;
+                          })()}
                           {puestos.find((p) => p.id === horario.positionId)
                             ?.sinRotacion && (
                             <InfoNote tone="warn">

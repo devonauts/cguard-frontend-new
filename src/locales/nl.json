@@ -22071,7 +22071,8 @@
       "eligePuesto": "Kies een supervisiepost of tik op „Later”",
       "revisaJornada": "Controleer de rood gemarkeerde uren",
       "ningunDia": "Vink minstens één dag aan, of tik op „Later”.",
-      "puestoSinRotacionCorto": "Deze post heeft nog geen rotatie"
+      "puestoSinRotacionCorto": "Deze post heeft nog geen rotatie",
+      "puestoSupLleno": "Deze post heeft al zijn supervisors per dienst. Je voegt er één extra toe."
     },
     "oficina": {
       "titulo": "Het kantoor (optioneel)",

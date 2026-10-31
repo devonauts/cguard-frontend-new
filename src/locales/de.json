@@ -22071,7 +22071,8 @@
       "eligePuesto": "Wähle einen Supervisorposten oder tippe auf „Später“",
       "revisaJornada": "Prüfe die rot markierten Zeiten",
       "ningunDia": "Markiere mindestens einen Tag oder tippe auf „Später“.",
-      "puestoSinRotacionCorto": "Dieser Posten hat noch keine Rotation"
+      "puestoSinRotacionCorto": "Dieser Posten hat noch keine Rotation",
+      "puestoSupLleno": "Dieser Posten hat bereits seine Aufsichten pro Schicht. Sie fügen eine weitere hinzu."
     },
     "oficina": {
       "titulo": "Büro (optional)",

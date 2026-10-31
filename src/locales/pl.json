@@ -22375,7 +22375,8 @@
       "eligePuesto": "Wybierz stanowisko nadzoru albo kliknij „Zrobię to później”",
       "revisaJornada": "Sprawdź godziny zaznaczone na czerwono",
       "ningunDia": "Zaznacz co najmniej jeden dzień albo kliknij „Zrobię to później”.",
-      "puestoSinRotacionCorto": "To stanowisko nie ma jeszcze rotacji"
+      "puestoSinRotacionCorto": "To stanowisko nie ma jeszcze rotacji",
+      "puestoSupLleno": "To stanowisko ma już swoich nadzorców na zmianę. Dodajesz kolejnego."
     },
     "oficina": {
       "titulo": "Biuro (opcjonalnie)",

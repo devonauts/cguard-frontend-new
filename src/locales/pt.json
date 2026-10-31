@@ -22071,7 +22071,8 @@
       "eligePuesto": "Escolha um posto de supervisão ou toque em «Faço depois»",
       "revisaJornada": "Revise as horas marcadas em vermelho",
       "ningunDia": "Marque pelo menos um dia, ou toque em «Faço depois».",
-      "puestoSinRotacionCorto": "Esse posto ainda não tem rotação"
+      "puestoSinRotacionCorto": "Esse posto ainda não tem rotação",
+      "puestoSupLleno": "Este posto já tem seus supervisores por turno. Você o adiciona como mais um do posto."
     },
     "oficina": {
       "titulo": "O seu escritório (opcional)",
