@@ -2117,7 +2117,7 @@
         "birthPlace": "Miejsce urodzenia"
       },
       "invite": {
-        "description": "Proszę podać imię i nazwisko oraz adres e-mail lub numer telefonu pracownika ochrony. Wyślemy wiadomość z linkiem."
+        "description": "Wpisz imię i wybierz, jak otrzyma dostęp: e-mailem, SMS-em lub bez e-maila, przez link, który udostępnisz sam."
       },
       "join_code": {
         "copied": "Kod skopiowany",
@@ -2136,8 +2136,17 @@
         "invites_sent": "Zaproszenia wysłane",
         "profile_created": "Profil utworzony",
         "profile_created_sent": "Profil utworzony i wysłany",
-        "profileCreatedShare": "Profil utworzony. Udostępnij dostęp, aby osoba ustawiła hasło."
-      }
+        "profileCreatedShare": "Profil utworzony. Udostępnij dostęp, aby osoba ustawiła hasło.",
+        "invitesSentByEmail_one": "Zaproszenie wysłane e-mailem",
+        "invitesSentByEmail_other": "Wysłano {{count}} zaproszeń e-mailem",
+        "guardsCreated_one": "Ochroniarz utworzony",
+        "guardsCreated_other": "Utworzono {{count}} ochroniarzy",
+        "invitesSentByEmail_few": "Wysłano {{count}} zaproszenia e-mailem",
+        "invitesSentByEmail_many": "Wysłano {{count}} zaproszeń e-mailem",
+        "guardsCreated_few": "Utworzono {{count}} ochroniarzy",
+        "guardsCreated_many": "Utworzono {{count}} ochroniarzy"
+      },
+      "subtitle": "Dodaj ochroniarza do firmy: zaproś go do aplikacji albo utwórz jego pełny profil."
     },
     "notes": {
       "addButton": "Nowa notatka",

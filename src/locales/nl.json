@@ -2115,7 +2115,7 @@
         "birthPlace": "Geboorteplaats"
       },
       "invite": {
-        "description": "Voer de naam en het e-mailadres of mobiele nummer van de beveiliger in. Er wordt een bericht met een link verstuurd."
+        "description": "Vul de naam in en kies hoe de toegang aankomt: per e-mail, per sms of zonder e-mail, met een link die je zelf deelt."
       },
       "join_code": {
         "copied": "Code gekopieerd",
@@ -2134,8 +2134,13 @@
         "invites_sent": "Uitnodigingen verstuurd",
         "profile_created": "Profiel aangemaakt",
         "profile_created_sent": "Profiel aangemaakt en verstuurd",
-        "profileCreatedShare": "Profiel aangemaakt. Deel de toegang zodat de persoon een wachtwoord instelt."
-      }
+        "profileCreatedShare": "Profiel aangemaakt. Deel de toegang zodat de persoon een wachtwoord instelt.",
+        "invitesSentByEmail_one": "Uitnodiging per e-mail verstuurd",
+        "invitesSentByEmail_other": "{{count}} uitnodigingen per e-mail verstuurd",
+        "guardsCreated_one": "Bewaker aangemaakt",
+        "guardsCreated_other": "{{count}} bewakers aangemaakt"
+      },
+      "subtitle": "Voeg een bewaker toe aan je bedrijf: nodig hem uit voor de app of maak zijn volledige profiel aan."
     },
     "notes": {
       "addButton": "Nieuwe notitie",

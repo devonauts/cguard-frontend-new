@@ -2331,7 +2331,7 @@
         "birthPlace": "Lugar de Nacimiento"
       },
       "invite": {
-        "description": "Ingrese el nombre y correo electrónico/número de móvil del vigilante. Se enviará un mensaje con un enlace."
+        "description": "Escribe su nombre y elige cómo le llega el acceso: por correo, por SMS o sin correo, con un enlace que compartes tú."
       },
       "join_code": {
         "copied": "Código copiado",
@@ -2350,8 +2350,13 @@
         "invites_sent": "Invitaciones enviadas",
         "profile_created": "Perfil creado",
         "profile_created_sent": "Perfil creado y enviado",
-        "profileCreatedShare": "Perfil creado. Comparte su acceso para que ponga su contraseña."
-      }
+        "profileCreatedShare": "Perfil creado. Comparte su acceso para que ponga su contraseña.",
+        "invitesSentByEmail_one": "Invitación enviada por correo",
+        "invitesSentByEmail_other": "{{count}} invitaciones enviadas por correo",
+        "guardsCreated_one": "Vigilante creado",
+        "guardsCreated_other": "{{count}} vigilantes creados"
+      },
+      "subtitle": "Agrega un vigilante a tu empresa: invítalo para que entre a la app o crea su perfil completo."
     },
     "notes": {
       "addButton": "Nueva Nota",

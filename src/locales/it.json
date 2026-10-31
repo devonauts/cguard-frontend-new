@@ -2115,7 +2115,7 @@
         "birthPlace": "Luogo di nascita"
       },
       "invite": {
-        "description": "Inserisci il nome e l'email o il numero di cellulare della guardia. Le sarà inviato un messaggio con un link."
+        "description": "Scrivi il nome e scegli come riceve l’accesso: via e-mail, via SMS o senza e-mail, con un link che condividi tu."
       },
       "join_code": {
         "copied": "Codice copiato",
@@ -2134,8 +2134,13 @@
         "invites_sent": "Inviti inviati",
         "profile_created": "Profilo creato",
         "profile_created_sent": "Profilo creato e inviato",
-        "profileCreatedShare": "Profilo creato. Condividi l'accesso perché imposti la password."
-      }
+        "profileCreatedShare": "Profilo creato. Condividi l'accesso perché imposti la password.",
+        "invitesSentByEmail_one": "Invito inviato via e-mail",
+        "invitesSentByEmail_other": "{{count}} inviti inviati via e-mail",
+        "guardsCreated_one": "Guardia creata",
+        "guardsCreated_other": "{{count}} guardie create"
+      },
+      "subtitle": "Aggiungi una guardia alla tua azienda: invitala nell’app o crea il suo profilo completo."
     },
     "notes": {
       "addButton": "Nuova nota",

@@ -279,7 +279,15 @@ export default function NewSecurityGuardPage() {
         }
       }
       console.log("[NewSecurityGuardPage] invite response: sent");
-      toast.success(t("guards.new.toasts.invites_sent"));
+      // Say what really happened: only e-mail invitations leave the building.
+      // «Sin correo» and SMS create the guard and hand back a link to share.
+      const porCorreo = v.entries.filter((e) => e.inviteBy === "Correo Electrónico").length;
+
+      toast.success(
+        porCorreo === v.entries.length
+          ? t("guards.new.toasts.invitesSentByEmail", { count: porCorreo })
+          : t("guards.new.toasts.guardsCreated", { count: v.entries.length }),
+      );
       // After successful invite, navigate back to the security guards list
       // (después de compartir los accesos, si los hay).
       compartir.abrir(accesos, "invitacion", () => navigate("/security-guards"));
@@ -590,6 +598,11 @@ export default function NewSecurityGuardPage() {
         delete rest.sinCorreo;
       }
       if (!String(rest.username || "").trim()) delete rest.username;
+      // Optional profile fields left blank are not sent: the server keeps
+      // them empty until the profile is completed.
+      for (const k of ["gender", "bloodType", "maritalStatus", "academicInstruction", "birthDate", "phone"]) {
+        if (rest[k] === "" || rest[k] == null) delete rest[k];
+      }
       const payload = {
         ...rest,
         ...(stationIds.length ? { stationIds } : {}),
@@ -771,7 +784,7 @@ export default function NewSecurityGuardPage() {
         <PageHeader
           icon={<UserPlus />}
           title={t("guards.new.title")}
-          subtitle={t("guards.new.invite.description")}
+          subtitle={t("guards.new.subtitle")}
         />
 
         <GuardTabsHeader
@@ -1241,8 +1254,7 @@ export default function NewSecurityGuardPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuard.genero", "Género")}{" "}
-                              <span className="text-destructive">*</span>
+                              {t("ui.NewSecurityGuard.genero", "Género")}
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}
@@ -1276,8 +1288,7 @@ export default function NewSecurityGuardPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuardPage.tipoDeSangre")}{" "}
-                              <span className="text-destructive">*</span>
+                              {t("ui.NewSecurityGuardPage.tipoDeSangre")}
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}
@@ -1310,8 +1321,7 @@ export default function NewSecurityGuardPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuardPage.estadoCivil")}{" "}
-                              <span className="text-destructive">*</span>
+                              {t("ui.NewSecurityGuardPage.estadoCivil")}
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}
@@ -1347,8 +1357,7 @@ export default function NewSecurityGuardPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              {t("ui.NewSecurityGuardPage.fechaDeNacimiento")}{" "}
-                              <span className="text-destructive">*</span>
+                              {t("ui.NewSecurityGuardPage.fechaDeNacimiento")}
                             </FormLabel>
                             <FormControl>
                               <Input type="date" {...field} />
@@ -1387,8 +1396,7 @@ export default function NewSecurityGuardPage() {
                               {t(
                                 "ui.NewSecurityGuard.instruccionAcademica",
                                 "Instrucción Académica",
-                              )}{" "}
-                              <span className="text-destructive">*</span>
+                              )}
                             </FormLabel>
                             <Select
                               onValueChange={field.onChange}

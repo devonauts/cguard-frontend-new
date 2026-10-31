@@ -3930,7 +3930,7 @@
         "dashboard": "Painel"
       },
       "invite": {
-        "description": "Insira o nome e o e-mail/número de celular do segurança. Uma mensagem com um link será enviada."
+        "description": "Escreva o nome e escolha como o acesso chega: por e-mail, por SMS ou sem e-mail, com um link que você mesmo compartilha."
       },
       "join_code": {
         "description": "Compartilhe o código único da empresa junto com o link para baixar o aplicativo.",
@@ -3973,7 +3973,11 @@
         "invite_error": "Erro ao enviar convites",
         "profile_created": "Perfil criado",
         "profile_created_sent": "Perfil criado e enviado",
-        "profileCreatedShare": "Perfil criado. Compartilhe o acesso para que a pessoa defina sua senha."
+        "profileCreatedShare": "Perfil criado. Compartilhe o acesso para que a pessoa defina sua senha.",
+        "invitesSentByEmail_one": "Convite enviado por e-mail",
+        "invitesSentByEmail_other": "{{count}} convites enviados por e-mail",
+        "guardsCreated_one": "Vigilante criado",
+        "guardsCreated_other": "{{count}} vigilantes criados"
       },
       "errors": {
         "no_permission_create": "Você não tem permissão para criar seguranças",
@@ -3987,7 +3991,8 @@
         "hide_password": "Ocultar senha",
         "show_confirm_password": "Mostrar senha",
         "hide_confirm_password": "Ocultar senha"
-      }
+      },
+      "subtitle": "Adicione um vigilante à sua empresa: convide-o para o app ou crie o perfil completo."
     },
     "assignSites": {
       "loading": "Carregando...",

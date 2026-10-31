@@ -2115,7 +2115,7 @@
         "birthPlace": "Geburtsort"
       },
       "invite": {
-        "description": "Geben Sie Name und E-Mail-Adresse bzw. Mobilnummer der Wachkraft ein. Sie erhält eine Nachricht mit einem Link."
+        "description": "Gib den Namen ein und wähle, wie der Zugang ankommt: per E-Mail, per SMS oder ohne E-Mail über einen Link, den du selbst teilst."
       },
       "join_code": {
         "copied": "Code kopiert",
@@ -2134,8 +2134,13 @@
         "invites_sent": "Einladungen gesendet",
         "profile_created": "Profil angelegt",
         "profile_created_sent": "Profil angelegt und gesendet",
-        "profileCreatedShare": "Profil erstellt. Teilen Sie den Zugang, damit die Person ihr Passwort setzt."
-      }
+        "profileCreatedShare": "Profil erstellt. Teilen Sie den Zugang, damit die Person ihr Passwort setzt.",
+        "invitesSentByEmail_one": "Einladung per E-Mail gesendet",
+        "invitesSentByEmail_other": "{{count}} Einladungen per E-Mail gesendet",
+        "guardsCreated_one": "Wache angelegt",
+        "guardsCreated_other": "{{count}} Wachen angelegt"
+      },
+      "subtitle": "Füge deinem Unternehmen eine Wache hinzu: lade sie in die App ein oder lege ihr vollständiges Profil an."
     },
     "notes": {
       "addButton": "Neue Notiz",

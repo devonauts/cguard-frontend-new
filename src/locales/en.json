@@ -2331,7 +2331,7 @@
         "birthPlace": "Birth Place"
       },
       "invite": {
-        "description": "Enter the guard's name and email/mobile number. A message with a link will be sent."
+        "description": "Enter their name and choose how they get access: by email, by SMS or without email, with a link you share yourself."
       },
       "join_code": {
         "copied": "Code copied",
@@ -2350,8 +2350,13 @@
         "invites_sent": "Invitations sent",
         "profile_created": "Profile created",
         "profile_created_sent": "Profile created and sent",
-        "profileCreatedShare": "Profile created. Share their access so they can set their password."
-      }
+        "profileCreatedShare": "Profile created. Share their access so they can set their password.",
+        "invitesSentByEmail_one": "Invitation sent by email",
+        "invitesSentByEmail_other": "{{count}} invitations sent by email",
+        "guardsCreated_one": "Guard created",
+        "guardsCreated_other": "{{count}} guards created"
+      },
+      "subtitle": "Add a guard to your company: invite them to the app or create their full profile."
     },
     "notes": {
       "addButton": "New Note",

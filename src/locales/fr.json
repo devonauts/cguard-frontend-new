@@ -2115,7 +2115,7 @@
         "birthPlace": "Lieu de naissance"
       },
       "invite": {
-        "description": "Saisissez le nom et l'adresse e-mail ou le numéro de mobile de l'agent. Un message contenant un lien lui sera envoyé."
+        "description": "Saisissez son nom et choisissez comment il reçoit l’accès : par e-mail, par SMS ou sans e-mail, avec un lien que vous partagez vous-même."
       },
       "join_code": {
         "copied": "Code copié",
@@ -2134,8 +2134,13 @@
         "invites_sent": "Invitations envoyées",
         "profile_created": "Fiche créée",
         "profile_created_sent": "Fiche créée et envoyée",
-        "profileCreatedShare": "Profil créé. Partagez son accès pour qu'il définisse son mot de passe."
-      }
+        "profileCreatedShare": "Profil créé. Partagez son accès pour qu'il définisse son mot de passe.",
+        "invitesSentByEmail_one": "Invitation envoyée par e-mail",
+        "invitesSentByEmail_other": "{{count}} invitations envoyées par e-mail",
+        "guardsCreated_one": "Agent créé",
+        "guardsCreated_other": "{{count}} agents créés"
+      },
+      "subtitle": "Ajoutez un agent à votre entreprise : invitez-le dans l’application ou créez son profil complet."
     },
     "notes": {
       "addButton": "Nouvelle note",
