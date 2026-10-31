@@ -451,11 +451,19 @@ export default function VigiaWidget() {
 
     obs?.observe(document.body, { childList: true, subtree: true });
     window.addEventListener("resize", soon);
+    // Pages fade/slide in: a check made mid-animation sees the buttons where
+    // they are not going to stay, and the end of an animation mutates nothing.
+    document.addEventListener("animationend", soon, true);
+    document.addEventListener("transitionend", soon, true);
     soon();
+    const later = [800, 2000].map((ms) => setTimeout(check, ms));
 
     return () => {
       obs?.disconnect();
       window.removeEventListener("resize", soon);
+      document.removeEventListener("animationend", soon, true);
+      document.removeEventListener("transitionend", soon, true);
+      later.forEach(clearTimeout);
       if (timer) clearTimeout(timer);
       cancelAnimationFrame(frame);
     };
