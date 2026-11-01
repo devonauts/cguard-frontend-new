@@ -22735,7 +22735,7 @@
     "steps": {
       "title": "Come iniziare",
       "installTitle": "Scarica e installa",
-      "installText": "Apri il file scaricato. Su Mac, trascina l’app in Applicazioni; su Windows, segui il programma di installazione.",
+      "installText": "Apri il file scaricato. Su Mac, trascina l'app in Applicazioni. Su Windows, se compare «PC protetto da Windows», fai clic su «Ulteriori informazioni» e poi su «Esegui comunque»; poi segui il programma di installazione.",
       "signInTitle": "Accedi e annota il codice",
       "signInText": "Accedi con la tua solita email e password. L’app ti mostrerà un codice di 8 caratteri.",
       "approveTitle": "Il tuo amministratore approva il computer",
@@ -22773,8 +22773,8 @@
       "lostA": "Revocalo in «I miei computer» o chiedi a un amministratore di farlo. L’app smette di funzionare su quel computer entro un minuto e cancella ciò che aveva salvato.",
       "severalQ": "Posso usarla su più computer?",
       "severalA": "Sì. Ogni computer viene approvato separatamente e puoi revocarlo senza toccare gli altri.",
-      "windowsQ": "Quando arriva la versione per Windows?",
-      "windowsA": "Molto presto. Pubblichiamo solo programmi di installazione con firma digitale; appena quello per Windows sarà pronto, comparirà su questa pagina."
+      "windowsQ": "Perché Windows mostra «PC protetto da Windows»?",
+      "windowsA": "Perché il programma di installazione non ha un certificato Microsoft. Fai clic su «Ulteriori informazioni» e «Esegui comunque»; succede solo la prima volta. La sicurezza non dipende da quell'avviso: l'app funziona solo su un computer approvato dalla tua azienda e ogni aggiornamento è firmato da noi. Se qualcuno lo altera, l'app lo rifiuta."
     }
   }
 }

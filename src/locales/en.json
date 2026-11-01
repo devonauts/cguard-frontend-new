@@ -22735,7 +22735,7 @@
     "steps": {
       "title": "How to get started",
       "installTitle": "Download and install",
-      "installText": "Open the downloaded file. On a Mac, drag the app to Applications; on Windows, follow the installer.",
+      "installText": "Open the downloaded file. On a Mac, drag the app to Applications. On Windows, if «Windows protected your PC» appears, click «More info» and then «Run anyway»; then follow the installer.",
       "signInTitle": "Sign in and note the code",
       "signInText": "Use your usual email and password. The app shows you an 8-character code.",
       "approveTitle": "Your administrator approves the computer",
@@ -22773,8 +22773,8 @@
       "lostA": "Revoke it under “My computers” or ask an administrator to. The app stops working on that computer within a minute and erases what it stored.",
       "severalQ": "Can I use it on several computers?",
       "severalA": "Yes. Each computer is approved separately and can be revoked without affecting the others.",
-      "windowsQ": "When is the Windows version coming?",
-      "windowsA": "Very soon. We only publish digitally signed installers; as soon as the Windows one is ready, it will appear on this page."
+      "windowsQ": "Why does Windows show «Windows protected your PC»?",
+      "windowsA": "Because the installer does not carry a Microsoft certificate. Click «More info» and «Run anyway»; it only happens the first time. Security does not depend on that warning: the app only works on a computer your company approved, and every update comes signed by us. If anyone alters it, the app refuses it."
     }
   }
 }

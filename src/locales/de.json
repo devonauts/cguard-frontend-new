@@ -22735,7 +22735,7 @@
     "steps": {
       "title": "Erste Schritte",
       "installTitle": "Herunterladen und installieren",
-      "installText": "Öffnen Sie die heruntergeladene Datei. Auf dem Mac ziehen Sie die App in den Ordner „Programme“; unter Windows folgen Sie dem Installationsprogramm.",
+      "installText": "Öffnen Sie die heruntergeladene Datei. Ziehen Sie die App auf dem Mac in «Programme». Erscheint unter Windows «Der Computer wurde durch Windows geschützt», klicken Sie auf «Weitere Informationen» und dann auf «Trotzdem ausführen»; folgen Sie danach dem Installationsprogramm.",
       "signInTitle": "Anmelden und Code notieren",
       "signInText": "Melden Sie sich mit Ihrer gewohnten E-Mail-Adresse und Ihrem Passwort an. Die App zeigt Ihnen einen 8-stelligen Code.",
       "approveTitle": "Ihr Administrator gibt den Computer frei",
@@ -22773,8 +22773,8 @@
       "lostA": "Widerrufen Sie ihn unter „Meine Computer“ oder bitten Sie einen Administrator darum. Die App funktioniert auf diesem Computer innerhalb einer Minute nicht mehr und löscht, was sie gespeichert hat.",
       "severalQ": "Kann ich sie auf mehreren Computern nutzen?",
       "severalA": "Ja. Jeder Computer wird einzeln freigegeben und kann widerrufen werden, ohne die anderen zu beeinflussen.",
-      "windowsQ": "Wann kommt die Windows-Version?",
-      "windowsA": "Sehr bald. Wir veröffentlichen nur digital signierte Installationsprogramme; sobald das für Windows fertig ist, erscheint es auf dieser Seite."
+      "windowsQ": "Warum zeigt Windows «Der Computer wurde durch Windows geschützt»?",
+      "windowsA": "Weil das Installationsprogramm kein Microsoft-Zertifikat trägt. Klicken Sie auf «Weitere Informationen» und «Trotzdem ausführen»; das passiert nur beim ersten Mal. Die Sicherheit hängt nicht von diesem Hinweis ab: Die App funktioniert nur auf einem von Ihrem Unternehmen freigegebenen Computer, und jedes Update ist von uns signiert. Wird es verändert, lehnt die App es ab."
     }
   }
 }

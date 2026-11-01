@@ -23067,7 +23067,7 @@
     "steps": {
       "title": "Jak zacząć",
       "installTitle": "Pobierz i zainstaluj",
-      "installText": "Otwórz pobrany plik. Na Macu przeciągnij aplikację do folderu Aplikacje; w Windows postępuj zgodnie z instalatorem.",
+      "installText": "Otwórz pobrany plik. Na Macu przeciągnij aplikację do folderu Aplikacje. W Windows, jeśli pojawi się «System Windows ochronił ten komputer», kliknij «Więcej informacji», a potem «Uruchom mimo to»; następnie postępuj zgodnie z instalatorem.",
       "signInTitle": "Zaloguj się i zapisz kod",
       "signInText": "Zaloguj się swoim zwykłym adresem e-mail i hasłem. Aplikacja pokaże Ci 8-znakowy kod.",
       "approveTitle": "Administrator zatwierdza komputer",
@@ -23105,8 +23105,8 @@
       "lostA": "Unieważnij go w sekcji „Moje komputery” albo poproś o to administratora. Aplikacja przestanie działać na tym komputerze w ciągu minuty i usunie zapisane dane.",
       "severalQ": "Czy mogę jej używać na kilku komputerach?",
       "severalA": "Tak. Każdy komputer jest zatwierdzany osobno i możesz go unieważnić bez wpływu na pozostałe.",
-      "windowsQ": "Kiedy pojawi się wersja na Windows?",
-      "windowsA": "Już wkrótce. Publikujemy tylko instalatory z podpisem cyfrowym; gdy instalator dla Windows będzie gotowy, pojawi się na tej stronie."
+      "windowsQ": "Dlaczego Windows pokazuje «System Windows ochronił ten komputer»?",
+      "windowsA": "Ponieważ instalator nie ma certyfikatu Microsoft. Kliknij «Więcej informacji» i «Uruchom mimo to»; zdarza się to tylko za pierwszym razem. Bezpieczeństwo nie zależy od tego ostrzeżenia: aplikacja działa tylko na komputerze zatwierdzonym przez Twoją firmę, a każda aktualizacja jest przez nas podpisana. Jeśli ktoś ją zmieni, aplikacja ją odrzuci."
     }
   }
 }

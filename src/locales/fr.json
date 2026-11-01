@@ -22735,7 +22735,7 @@
     "steps": {
       "title": "Pour commencer",
       "installTitle": "Téléchargez et installez",
-      "installText": "Ouvrez le fichier téléchargé. Sur Mac, faites glisser l’application dans Applications ; sur Windows, suivez le programme d’installation.",
+      "installText": "Ouvrez le fichier téléchargé. Sur Mac, faites glisser l'app dans Applications. Sur Windows, si «Windows a protégé votre ordinateur» apparaît, cliquez sur «Informations complémentaires» puis «Exécuter quand même» ; suivez ensuite l'installateur.",
       "signInTitle": "Connectez-vous et notez le code",
       "signInText": "Connectez-vous avec votre e-mail et votre mot de passe habituels. L’application affiche un code de 8 caractères.",
       "approveTitle": "Votre administrateur approuve l’ordinateur",
@@ -22773,8 +22773,8 @@
       "lostA": "Révoquez-le dans « Mes ordinateurs » ou demandez à un administrateur de le faire. L’application cesse de fonctionner sur cet ordinateur en moins d’une minute et efface ce qu’elle avait enregistré.",
       "severalQ": "Puis-je l’utiliser sur plusieurs ordinateurs ?",
       "severalA": "Oui. Chaque ordinateur est approuvé séparément et peut être révoqué sans affecter les autres.",
-      "windowsQ": "Quand la version Windows arrive-t-elle ?",
-      "windowsA": "Très bientôt. Nous ne publions que des programmes d’installation signés numériquement ; dès que celui pour Windows sera prêt, il apparaîtra sur cette page."
+      "windowsQ": "Pourquoi Windows affiche «Windows a protégé votre ordinateur» ?",
+      "windowsA": "Parce que l'installateur ne porte pas de certificat Microsoft. Cliquez sur «Informations complémentaires» puis «Exécuter quand même» ; cela n'arrive que la première fois. La sécurité ne dépend pas de cet avertissement : l'app ne fonctionne que sur un ordinateur approuvé par votre entreprise, et chaque mise à jour est signée par nous. Si quelqu'un la modifie, l'app la refuse."
     }
   }
 }

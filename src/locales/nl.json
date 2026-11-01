@@ -22735,7 +22735,7 @@
     "steps": {
       "title": "Zo begin je",
       "installTitle": "Downloaden en installeren",
-      "installText": "Open het gedownloade bestand. Op een Mac sleep je de app naar Programma’s; op Windows volg je het installatieprogramma.",
+      "installText": "Open het gedownloade bestand. Sleep de app op een Mac naar Programma's. Verschijnt op Windows «Uw pc is beveiligd door Windows», klik dan op «Meer informatie» en daarna op «Toch uitvoeren»; volg vervolgens het installatieprogramma.",
       "signInTitle": "Log in en noteer de code",
       "signInText": "Log in met je gewone e-mailadres en wachtwoord. De app toont je een code van 8 tekens.",
       "approveTitle": "Je beheerder keurt de computer goed",
@@ -22773,8 +22773,8 @@
       "lostA": "Trek hem in via “Mijn computers” of vraag een beheerder dat te doen. De app werkt binnen een minuut niet meer op die computer en wist wat er was opgeslagen.",
       "severalQ": "Kan ik de app op meerdere computers gebruiken?",
       "severalA": "Ja. Elke computer wordt apart goedgekeurd en kan worden ingetrokken zonder dat de andere daar last van hebben.",
-      "windowsQ": "Wanneer komt de Windows-versie?",
-      "windowsA": "Heel binnenkort. We publiceren alleen digitaal ondertekende installatieprogramma’s; zodra die voor Windows klaar is, verschijnt hij op deze pagina."
+      "windowsQ": "Waarom toont Windows «Uw pc is beveiligd door Windows»?",
+      "windowsA": "Omdat het installatieprogramma geen Microsoft-certificaat heeft. Klik op «Meer informatie» en «Toch uitvoeren»; dit gebeurt alleen de eerste keer. De beveiliging hangt niet af van die melding: de app werkt alleen op een computer die je bedrijf heeft goedgekeurd, en elke update is door ons ondertekend. Als iemand die wijzigt, weigert de app hem."
     }
   }
 }
