@@ -123,16 +123,9 @@ export default function RadioVoiceWidget() {
   useEffect(() => {
     setRadioSelf(myId);
     restoreRadio();
-    // Open the panel once so the on/off switch is discoverable. After the user
-    // sees/closes it, they reopen via the header radio icon.
-    try {
-      if (localStorage.getItem("radioWidgetSeen") !== "1") {
-        setWidgetOpen(true);
-        localStorage.setItem("radioWidgetSeen", "1");
-      }
-    } catch {
-      /* ignore */
-    }
+    // The panel opens only from the header radio icon. It used to open by
+    // itself on a browser's first visit, covering the header search and taking
+    // the keystrokes meant for ⌘K.
   }, [myId]);
 
   const someoneElseTalking = !!snap.speaker && snap.speaker.userId !== myId;

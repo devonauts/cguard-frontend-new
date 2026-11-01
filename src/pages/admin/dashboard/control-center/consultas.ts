@@ -89,7 +89,9 @@ const FUENTES = {
   // Contadores de «hoy», calculados en el servidor con el día de la empresa.
   ops: {
     clave: () => ["dashboard", tid(), "kpis"],
-    pedir: () => api.get(`/operations/kpis`).then((r) => r.data),
+    // Background counters: a refusal (a role without incident/station read)
+    // must not raise a «Prohibido» toast on the Panel; the card shows «—».
+    pedir: () => api.get(`/operations/kpis`, { toast: { silentError: true } } as any).then((r) => r.data),
   },
   sups: {
     clave: () => ["dashboard", tid(), "supervisors"],
