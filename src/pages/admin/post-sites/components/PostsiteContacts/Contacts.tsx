@@ -26,6 +26,8 @@ type Contact = {
 interface SiteProp extends PostSite {
   contacts?: Contact[];
   postSiteId?: string;
+  clientAccountId?: string;
+  clientAccount?: { id?: string } | null;
 }
 
 // A raw contact row from the post-site / client contacts endpoint (aliases vary).
@@ -135,9 +137,14 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
   const postSiteId =
     paramsId || site?.id || site?.postSiteId || site?.id?.toString();
 
-  const [resolvedClientId, setResolvedClientId] = useState<string | undefined>(
-    undefined,
-  );
+  // Post sites come from the API with `clientAccountId` / `clientAccount`;
+  // `clientId` / `client` are older aliases some callers still pass.
+  const resolvedClientId: string | undefined =
+    site?.clientId ||
+    site?.client?.id ||
+    site?.clientAccountId ||
+    site?.clientAccount?.id ||
+    undefined;
 
   useEffect(() => {
     let mounted = true;
@@ -181,10 +188,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
         }
 
         // Fallback: if we only have clientId, load all contacts for the client
-        const clientId =
-          site?.clientId ||
-          (site?.client && site.client.id) ||
-          resolvedClientId;
+        const clientId = resolvedClientId;
         if (clientId) {
           const resp = await clientService.getClientContacts(String(clientId), {
             limit: 9999,
@@ -223,7 +227,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
     return () => {
       mounted = false;
     };
-  }, [postSiteId, site?.clientId, resolvedClientId]);
+  }, [postSiteId, resolvedClientId]);
 
   function handleOpenAdd() {
     setForm({});
@@ -304,24 +308,10 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
       return;
     }
 
-    const contactId = String((form && (form as any).id) || Date.now());
-    const newContact: any = {
-      id: contactId,
-      name: nameVal,
-      email: emailVal,
-      mobile: mobileVal,
-      postSite:
-        site?.name || site?.companyName || (form.postSite as string) || "",
-      description: (form as any).description || "",
-      allowGuard: !!(form as any).allowGuard,
-    };
     (async () => {
       try {
         // If we resolved a clientId, persist via clientService (primary flow)
-        const clientIdLocal =
-          site?.clientId ||
-          (site?.client && site.client.id) ||
-          resolvedClientId;
+        const clientIdLocal = resolvedClientId;
         if (clientIdLocal) {
           const payload: any = {
             name: nameVal,
@@ -376,27 +366,12 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             );
           }
         } else {
-          // No clientId: we can only update local state or optionally call a post-site specific endpoint if available.
-          // Currently backend only exposes GET by post-site; show a message to the user.
-          if (form && (form as any).id) {
-            setContacts((prev) =>
-              prev.map((c) => (c.id === (form as any).id ? newContact : c)),
-            );
-            toast.success(
-              t(
-                "clients.contacts.contactUpdated",
-                "Contact updated successfully",
-              ),
-            );
-          } else {
-            setContacts((prev) => [newContact, ...prev]);
-            toast.success(
-              t(
-                "clients.contacts.contactCreated",
-                "Contact created successfully",
-              ),
-            );
-          }
+          // Contacts are stored under the client account; without it nothing
+          // would be saved, so never report a fake success.
+          toast.error(
+            t("clients.contacts.contactCreateFailed", "Could not create contact"),
+          );
+          return;
         }
 
         setShowAdd(false);
@@ -422,22 +397,21 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
   function deleteContact(id: string) {
     (async () => {
       try {
-        const clientIdLocal =
-          site?.clientId ||
-          (site?.client && site.client.id) ||
-          resolvedClientId;
-        if (clientIdLocal) {
-          await clientService.destroyClientContact(String(clientIdLocal), id);
-        }
-      } catch (err) {
-        console.warn("[PostSiteContacts] delete error", err);
-      } finally {
+        const clientIdLocal = resolvedClientId;
+        if (!clientIdLocal) throw new Error("Post site has no client account");
+        await clientService.destroyClientContact(String(clientIdLocal), id);
         setContacts((prev) => prev.filter((c) => c.id !== id));
         setSelectedIds((prev) => prev.filter((x) => x !== id));
-        setOpenMenuId(null);
         toast.success(
           t("clients.contacts.contactDeleted", "Contact deleted successfully"),
         );
+      } catch (err) {
+        console.warn("[PostSiteContacts] delete error", err);
+        toast.error(
+          t("clients.contacts.contactDeleteFailed", "Could not delete contact"),
+        );
+      } finally {
+        setOpenMenuId(null);
       }
     })();
   }
