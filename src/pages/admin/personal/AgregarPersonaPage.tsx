@@ -373,7 +373,7 @@ export default function AgregarPersonaPage() {
         ...p,
         sinRotacion: !rot,
         detalle: [
-          plazaEnPalabras(p.plaza, plaza?.startTime, plaza?.endTime, t),
+          plazaEnPalabras(p.plaza, plaza?.startTime, plaza?.endTime, t, rot),
           turnoEnPalabras(rot, plaza?.startTime, plaza?.endTime, t),
         ]
           .filter(Boolean)

@@ -601,4 +601,26 @@ describe("seat half of the day", () => {
     expect(plazaEnPalabras("Fijo 1", null, null, t)).toBe("Fijo 1");
     expect(plazaEnPalabras("", "07:00", "19:00", t)).toBe("de día");
   });
+
+  it("a rotation through nights has no fixed half of the day", () => {
+    expect(
+      plazaEnPalabras("Fijo 1", "07:00", "19:00", t, {
+        dayShifts: 2,
+        nightShifts: 2,
+        restDays: 2,
+      } as any),
+    ).toBe("Fijo 1");
+    expect(
+      plazaEnPalabras("Fijo 2", "19:00", "07:00", t, {
+        dayShifts: 5,
+        nightShifts: 0,
+        restDays: 2,
+      } as any),
+    ).toBe("Fijo 2 · de noche");
+    expect(
+      plazaEnPalabras("Fijo 1", "07:00", "19:00", t, {
+        sequence: "DLLNNLL",
+      } as any),
+    ).toBe("Fijo 1");
+  });
 });

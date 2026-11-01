@@ -328,8 +328,15 @@ export function plazaEnPalabras(
   inicio: string | null | undefined,
   fin: string | null | undefined,
   t: Traductor,
+  rot?: RotacionLeida | null,
 ): string {
-  const mitad = mitadDelDia(inicio, fin);
+  // A rotation that goes through nights (2-2-2, 4x4 with nights…) moves the
+  // guard between day and night: the seat has no fixed half of the day.
+  const rota =
+    !!rot &&
+    (Number(rot.nightShifts) > 0 ||
+      /N/i.test(String((rot as { sequence?: string | null }).sequence || "")));
+  const mitad = rota ? null : mitadDelDia(inicio, fin);
   const etiqueta =
     mitad === "dia"
       ? t("agregarPersona.plaza.deDia", { defaultValue: "de día" })
