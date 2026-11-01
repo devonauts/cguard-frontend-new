@@ -334,6 +334,13 @@ api.interceptors.response.use(
         __lastErrorMsg = msg;
         __lastErrorAt = now;
       }
+      // Already shown (or deduped): callers that toast their own errors check
+      // this so the same message never appears twice.
+      try {
+        (apiError as any).toastShown = true;
+      } catch {
+        /* frozen error object: harmless */
+      }
     }
 
     return Promise.reject(apiError);

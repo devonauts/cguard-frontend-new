@@ -19883,7 +19883,7 @@
       "llegaron": "Przybyli",
       "dePermiso": "Na urlopie lub zwolnieniu",
       "aunPorLlegar": "Jeszcze nie przyszli",
-      "comoSeCuenta": "Liczy się dzień firmy, w jej czasie. Zmiana nocna liczy się w dniu rozpoczęcia; zastępstwo to jedno miejsce; kto nie odbił się 20 minut po rozpoczęciu, liczy się jako nieobecny.",
+      "comoSeCuenta": "Liczy się dzień firmy, w jej czasie. Zmiana nocna liczy się w dniu rozpoczęcia; zastępstwo to jedno miejsce; kto nie odbił się {{min}} minut po rozpoczęciu, liczy się jako nieobecny.",
       "lote": {
         "diaCerrado": "zamknięty dzień płacowy",
         "noEncontrado": "już nie istnieje lub spoza Twoich obiektów",

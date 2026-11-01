@@ -19581,7 +19581,7 @@
       "llegaron": "Aangekomen",
       "dePermiso": "Met verlof of vakantie",
       "aunPorLlegar": "Nog te komen",
-      "comoSeCuenta": "De bedrijfsdag telt in bedrijfstijd. Een nachtdienst telt op de dag dat hij begint; een vervanging is één plek; wie 20 minuten na de start niet heeft ingeklokt, telt als afwezig.",
+      "comoSeCuenta": "De bedrijfsdag telt in bedrijfstijd. Een nachtdienst telt op de dag dat hij begint; een vervanging is één plek; wie {{min}} minuten na de start niet heeft ingeklokt, telt als afwezig.",
       "lote": {
         "diaCerrado": "loondag afgesloten",
         "noEncontrado": "bestaat niet meer of niet van jouw locaties",

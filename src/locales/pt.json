@@ -19044,7 +19044,7 @@
       "llegaron": "Chegaram",
       "dePermiso": "De licença ou férias",
       "aunPorLlegar": "Ainda por chegar",
-      "comoSeCuenta": "Conta-se o dia da empresa, no horário dela. Um turno noturno conta no dia em que começa; quem cobre outro ocupa um só posto; quem não marcou 20 minutos após o início conta como falta.",
+      "comoSeCuenta": "Conta-se o dia da empresa, no horário dela. Um turno noturno conta no dia em que começa; quem cobre outro ocupa um só posto; quem não marcou {{min}} minutos após o início conta como falta.",
       "lote": {
         "diaCerrado": "dia de pagamento fechado",
         "noEncontrado": "já não existe ou não é dos seus locais",

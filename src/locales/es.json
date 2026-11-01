@@ -19044,7 +19044,7 @@
       "llegaron": "Llegaron",
       "dePermiso": "De permiso o vacaciones",
       "aunPorLlegar": "Aún por llegar",
-      "comoSeCuenta": "Se cuenta el día de la empresa, en su hora. Un turno de noche cuenta el día en que empieza; quien cubre a otro ocupa un solo puesto; quien no marcó a los 20 minutos del inicio cuenta como inasistencia.",
+      "comoSeCuenta": "Se cuenta el día de la empresa, en su hora. Un turno de noche cuenta el día en que empieza; quien cubre a otro ocupa un solo puesto; quien no marcó a los {{min}} minutos del inicio cuenta como inasistencia.",
       "lote": {
         "diaCerrado": "día de pago cerrado",
         "noEncontrado": "ya no existe o no es de tus sedes",

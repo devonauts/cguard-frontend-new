@@ -16,6 +16,8 @@ export interface ResumenDelDia {
   overtimeToday: number;
   pendingApprovals: number;
   attendancePct: number | null;
+  /** Minutes with no clock-in before a person counts as absent (Umbral inasistencia). */
+  absentAfterMin?: number;
 }
 
 const delDia = (day: string, extra: Record<string, string> = {}) =>

@@ -19581,7 +19581,7 @@
       "llegaron": "Arrivés",
       "dePermiso": "En congé ou vacances",
       "aunPorLlegar": "Pas encore arrivés",
-      "comoSeCuenta": "On compte la journée de l'entreprise, à son heure. Un poste de nuit compte le jour où il commence ; un remplacement occupe une seule place ; qui n'a pas pointé 20 minutes après le début compte comme absent.",
+      "comoSeCuenta": "On compte la journée de l'entreprise, à son heure. Un poste de nuit compte le jour où il commence ; un remplacement occupe une seule place ; qui n'a pas pointé {{min}} minutes après le début compte comme absent.",
       "lote": {
         "diaCerrado": "jour de paie clôturé",
         "noEncontrado": "n'existe plus ou hors de vos sites",

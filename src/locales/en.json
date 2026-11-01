@@ -19044,7 +19044,7 @@
       "llegaron": "Arrived",
       "dePermiso": "On leave or vacation",
       "aunPorLlegar": "Not due yet",
-      "comoSeCuenta": "The company's day is counted in its own time. A night shift counts on the day it starts; a cover is one seat; anyone who hasn't clocked in 20 minutes after the start counts as absent.",
+      "comoSeCuenta": "The company's day is counted in its own time. A night shift counts on the day it starts; a cover is one seat; anyone who hasn't clocked in {{min}} minutes after the start counts as absent.",
       "lote": {
         "diaCerrado": "pay day closed",
         "noEncontrado": "no longer exists or isn't in your sites",

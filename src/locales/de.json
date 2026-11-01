@@ -19581,7 +19581,7 @@
       "llegaron": "Angekommen",
       "dePermiso": "Im Urlaub oder freigestellt",
       "aunPorLlegar": "Noch nicht fällig",
-      "comoSeCuenta": "Gezählt wird der Firmentag in Firmenzeit. Eine Nachtschicht zählt am Tag ihres Beginns; eine Vertretung ist ein Platz; wer 20 Minuten nach Beginn nicht eingestempelt hat, gilt als abwesend.",
+      "comoSeCuenta": "Gezählt wird der Firmentag in Firmenzeit. Eine Nachtschicht zählt am Tag ihres Beginns; eine Vertretung ist ein Platz; wer {{min}} Minuten nach Beginn nicht eingestempelt hat, gilt als abwesend.",
       "lote": {
         "diaCerrado": "Lohntag abgeschlossen",
         "noEncontrado": "existiert nicht mehr oder nicht in Ihren Standorten",

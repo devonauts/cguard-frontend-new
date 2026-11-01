@@ -19581,7 +19581,7 @@
       "llegaron": "Arrivati",
       "dePermiso": "In permesso o ferie",
       "aunPorLlegar": "Ancora da arrivare",
-      "comoSeCuenta": "Si conta il giorno dell'azienda, nella sua ora. Un turno di notte conta nel giorno in cui inizia; chi copre un altro occupa un solo posto; chi non ha timbrato 20 minuti dopo l'inizio conta come assente.",
+      "comoSeCuenta": "Si conta il giorno dell'azienda, nella sua ora. Un turno di notte conta nel giorno in cui inizia; chi copre un altro occupa un solo posto; chi non ha timbrato {{min}} minuti dopo l'inizio conta come assente.",
       "lote": {
         "diaCerrado": "giorno di paga chiuso",
         "noEncontrado": "non esiste più o non è delle tue sedi",
