@@ -19378,7 +19378,8 @@
       "sinTurnosPuesto": "Jego posterunek nie ma zmian w tych dniach",
       "invitacionPendiente": "Zaproszenie oczekuje",
       "invitacionPendienteAyuda": "Zaproszenie wysłano, a osoba jeszcze się nie zalogowała. Można już przypisać grafik.",
-      "sinTurnosIr": "Sprawdź rotację posterunku w Posterunkach nadzoru"
+      "sinTurnosIr": "Sprawdź rotację posterunku w Posterunkach nadzoru",
+      "desdeFecha": "od {{fecha}}"
     },
     "OfficeHours": {
       "copiarLunes": "Kopiuj poniedziałek do wszystkich",

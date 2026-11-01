@@ -18547,7 +18547,8 @@
       "sinTurnosPuesto": "Their post has no shifts on these days",
       "invitacionPendiente": "Invite pending",
       "invitacionPendienteAyuda": "The invite was sent and they have not signed in yet. You can already give them a schedule.",
-      "sinTurnosIr": "Check the post's rotation in Supervisor posts"
+      "sinTurnosIr": "Check the post's rotation in Supervisor posts",
+      "desdeFecha": "from {{fecha}}"
     },
     "OfficeHours": {
       "copiarLunes": "Copy Monday to all",

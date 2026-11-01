@@ -50,6 +50,11 @@ export interface PersonaDelHorario {
   /** Invited and not yet signed in («invitación pendiente»). Optional: the
    *  server field arrives with the staff sign-up work; absent = false. */
   pendingInvite?: boolean;
+  /** Supervisors: the posts they hold (names may be null). */
+  positions?: Array<{ id: string; name: string | null }>;
+  /** Supervisors with a post and no shift in the range: local date of the
+   *  next one after it, or null. */
+  nextShiftDate?: string | null;
 }
 
 export interface Cuentas {
@@ -144,6 +149,17 @@ export function sinTurnosEnElRango(p: PersonaDelHorario): boolean {
   );
 }
 
+function puestosDe(p: any): Array<{ id: string; name: string | null }> {
+  return (Array.isArray(p?.positions) ? p.positions : [])
+    .map((x: any) => ({ id: texto(x?.id) || "", name: texto(x?.name) || null }))
+    .filter((x: { id: string }) => !!x.id);
+}
+
+function proximoDe(p: any): string | null {
+  const v = texto(p?.nextShiftDate) || "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
+}
+
 /**
  * The server answer → rows: unwrapped (`{data}` or bare), ONE row per userId
  * (a duplicate merges its days into the first), sorted supervisor → office →
@@ -176,6 +192,8 @@ export function normalizarPersonas(res: unknown): PersonaDelHorario[] {
       ya.hasSchedule = ya.hasSchedule || !!p?.hasSchedule;
       ya.assigned = ya.assigned || !!p?.assigned;
       ya.pendingInvite = ya.pendingInvite || invitacionPendiente(p);
+      if (!ya.positions?.length) ya.positions = puestosDe(p);
+      ya.nextShiftDate = ya.nextShiftDate || proximoDe(p);
       continue;
     }
     porId.set(userId, {
@@ -187,6 +205,8 @@ export function normalizarPersonas(res: unknown): PersonaDelHorario[] {
       assigned: !!p?.assigned,
       days: dias,
       pendingInvite: invitacionPendiente(p),
+      positions: puestosDe(p),
+      nextShiftDate: proximoDe(p),
     });
   }
   const out = [...porId.values()];
@@ -246,11 +266,14 @@ export function filtrarPersonas(
  * What the row offers when the person has no schedule:
  *  · office / supervisor → «Asignar horario» (the weekly editor);
  *  · a guard with no assignment → «Asignar a un puesto».
+ * A supervisor who holds a post has a schedule (the post's rotation), even in
+ * a week with no shift: the row shows the post, not «Asignar horario».
  */
 export function accionDePersona(
   p: Pick<PersonaDelHorario, "kind" | "hasSchedule" | "assigned">,
 ): "asignarHorario" | "asignarPuesto" | null {
   if (p.kind === "guard") return p.assigned ? null : "asignarPuesto";
+  if (p.kind === "supervisor" && p.assigned) return null;
 
   return p.hasSchedule ? null : "asignarHorario";
 }

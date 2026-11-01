@@ -19082,7 +19082,8 @@
       "sinTurnosPuesto": "Ihr Posten hat an diesen Tagen keine Schichten",
       "invitacionPendiente": "Einladung ausstehend",
       "invitacionPendienteAyuda": "Die Einladung wurde gesendet, die Person hat sich noch nicht angemeldet. Ein Dienstplan kann schon zugewiesen werden.",
-      "sinTurnosIr": "Rotation des Postens unter Aufsichtsposten prüfen"
+      "sinTurnosIr": "Rotation des Postens unter Aufsichtsposten prüfen",
+      "desdeFecha": "ab {{fecha}}"
     },
     "OfficeHours": {
       "copiarLunes": "Montag auf alle kopieren",

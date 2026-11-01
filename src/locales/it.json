@@ -19082,7 +19082,8 @@
       "sinTurnosPuesto": "La sua postazione non ha turni in questi giorni",
       "invitacionPendiente": "Invito in sospeso",
       "invitacionPendienteAyuda": "L’invito è stato inviato e la persona non è ancora entrata. Puoi già assegnarle un turnario.",
-      "sinTurnosIr": "Controlla la rotazione del posto in Posti di supervisione"
+      "sinTurnosIr": "Controlla la rotazione del posto in Posti di supervisione",
+      "desdeFecha": "dal {{fecha}}"
     },
     "OfficeHours": {
       "copiarLunes": "Copia il lunedì su tutti",
