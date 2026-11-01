@@ -550,11 +550,11 @@ function AllStaffSection({
                       ) : (
                         <div
                           className="flex min-w-0 items-center gap-1 text-[10px]"
-                          style={{ color: p.hasSchedule || (p.kind === "supervisor" && p.assigned) ? "var(--ink-soft)" : "var(--warn-text)" }}
+                          style={{ color: p.hasSchedule || (p.kind === "supervisor" && p.assigned) || (p.kind === "office" && !!p.nextShiftDate) ? "var(--ink-soft)" : "var(--warn-text)" }}
                         >
                           <MapPin size={9} className="shrink-0" />
                           <span className="truncate" title={textoDonde(p)}>
-                            {p.hasSchedule || (p.kind === "supervisor" && p.assigned)
+                            {p.hasSchedule || (p.kind === "supervisor" && p.assigned) || (p.kind === "office" && !!p.nextShiftDate)
                               ? textoDonde(p)
                               : `${textoDonde(p)} · ${t("ui.AllStaff.sinHorario", "Sin horario")}`}
                           </span>
