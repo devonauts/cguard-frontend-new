@@ -303,19 +303,34 @@ export default function AgregarVariasPage() {
         const libro = XLSX.read(await f.arrayBuffer(), {
           type: "array",
           cellDates: false,
+          // Keep each cell's number format: it tells a date from a number.
+          cellNF: true,
         });
         const hoja = libro.Sheets[libro.SheetNames[0]];
-        const matriz: any[][] = XLSX.utils.sheet_to_json(hoja, {
-          header: 1,
-          raw: false,
-          dateNF: "yyyy-mm-dd",
-          defval: "",
-        });
-        const tsv = matriz
-          .map((r) =>
-            r.map((c) => String(c ?? "").replace(/[\t\n]/g, " ")).join("\t"),
-          )
-          .join("\n");
+        // Cell by cell: the text as shown (keeps «0912…» and phone formats), but
+        // a date cell from its serial — the shown text is US month/day.
+        const rango = XLSX.utils.decode_range(hoja["!ref"] || "A1:A1");
+        const filasXlsx: string[] = [];
+
+        for (let r = rango.s.r; r <= rango.e.r; r++) {
+          const celdas: string[] = [];
+
+          for (let c = rango.s.c; c <= rango.e.c; c++) {
+            const cell: any = hoja[XLSX.utils.encode_cell({ r, c })];
+            let v = "";
+
+            if (cell) {
+              if (cell.t === "n" && cell.z && XLSX.SSF.is_date(cell.z)) {
+                const d = XLSX.SSF.parse_date_code(cell.v);
+
+                v = `${d.y}-${String(d.m).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`;
+              } else v = String(cell.w ?? cell.v ?? "");
+            }
+            celdas.push(v.replace(/[\t\n]/g, " "));
+          }
+          filasXlsx.push(celdas.join("\t"));
+        }
+        const tsv = filasXlsx.join("\n");
 
         setTexto(tsv);
         leer(tsv);
