@@ -22448,6 +22448,43 @@
     },
     "semana": {
       "almuerzo": "pranzo {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "di giorno",
+      "deNoche": "di notte",
+      "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "Ti serve la scheda completa, con zona e veicolo?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Profilo completo della guardia",
+      "subtitulo": "Per quando hai i suoi documenti a portata di mano. Solo nome, documento ed e-mail (o «senza e-mail») sono obbligatori; il resto si completa dopo dalla sua scheda."
+    },
+    "supervisor": {
+      "titulo": "Profilo completo del supervisore",
+      "subtitulo": "La sua scheda con documento, zona, veicolo e dati personali. Solo nome, documento ed e-mail (o «senza e-mail») sono obbligatori."
+    },
+    "soloAcceso": "Vuoi solo dargli accesso e orario?",
+    "usaAgregarPersona": "Usa «Aggiungi persona»",
+    "hojaDeVida": {
+      "titulo": "Hai il suo curriculum?",
+      "texto": "Caricalo in PDF o foto e compiliamo quello che possiamo. Controlla i dati prima di salvare: nulla viene salvato finché non tocchi «Crea e dai accesso»."
+    },
+    "pasos": {
+      "quienEs": "Chi è?",
+      "documento": "Documento e contatto",
+      "documentoNota": "Con l'e-mail riceve l'invito. Senza e-mail entra con un nome utente e alla fine gli mandi il link via WhatsApp.",
+      "documentoNotaSup": "Con l'e-mail riceve l'invito all'app supervisore. Senza e-mail entra con un nome utente e alla fine gli mandi il link via WhatsApp.",
+      "foto": "La sua foto",
+      "fotoNota": "Facoltativa. È la foto del badge e quella che vedono i supervisori.",
+      "personales": "Dati personali (facoltativi)",
+      "personalesNota": "Tutto facoltativo. Serve per il fascicolo e i report del personale.",
+      "licencias": "Licenze e credenziali (facoltative)",
+      "licenciasNota": "Tutto facoltativo. Si possono caricare dopo dalla sua scheda, in Licenze e Documenti.",
+      "trabajo": "Zona e veicolo (facoltativi)",
+      "trabajoNota": "Facoltativi. Appaiono nell'elenco dei supervisori. L'orario lo dà la sua postazione di supervisione.",
+      "credenciales": "Credenziali (facoltative)"
     }
   }
 }

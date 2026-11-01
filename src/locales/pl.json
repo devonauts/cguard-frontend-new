@@ -22758,6 +22758,43 @@
     },
     "semana": {
       "almuerzo": "przerwa obiadowa {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "dzienny",
+      "deNoche": "nocny",
+      "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "Potrzebujesz pełnego profilu ze strefą i pojazdem?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Pełny profil pracownika ochrony",
+      "subtitulo": "Gdy masz dokumenty pod ręką. Wymagane są tylko imię, dokument i e-mail (lub «bez e-maila»); resztę można uzupełnić później w profilu."
+    },
+    "supervisor": {
+      "titulo": "Pełny profil nadzorcy",
+      "subtitulo": "Profil z dokumentem, strefą, pojazdem i danymi osobowymi. Wymagane są tylko imię, dokument i e-mail (lub «bez e-maila»)."
+    },
+    "soloAcceso": "Chcesz tylko dać dostęp i grafik?",
+    "usaAgregarPersona": "Użyj «Dodaj osobę»",
+    "hojaDeVida": {
+      "titulo": "Masz CV?",
+      "texto": "Prześlij je jako PDF lub zdjęcie, a uzupełnimy, co się da. Sprawdź dane przed zapisem: nic nie zostanie zapisane, dopóki nie dotkniesz «Utwórz i daj dostęp»."
+    },
+    "pasos": {
+      "quienEs": "Kto to?",
+      "documento": "Dokument i kontakt",
+      "documentoNota": "Z e-mailem dostanie zaproszenie. Bez e-maila loguje się nazwą użytkownika, a link wyślesz na końcu przez WhatsApp.",
+      "documentoNotaSup": "Z e-mailem dostanie zaproszenie do aplikacji nadzorcy. Bez e-maila loguje się nazwą użytkownika, a link wyślesz na końcu przez WhatsApp.",
+      "foto": "Zdjęcie",
+      "fotoNota": "Opcjonalne. To zdjęcie z identyfikatora, widoczne dla nadzorców.",
+      "personales": "Dane osobowe (opcjonalne)",
+      "personalesNota": "Wszystko opcjonalne. Do akt i raportów kadrowych.",
+      "licencias": "Licencje i uprawnienia (opcjonalne)",
+      "licenciasNota": "Wszystko opcjonalne. Można je dodać później w profilu, w Licencjach i Dokumentach.",
+      "trabajo": "Strefa i pojazd (opcjonalne)",
+      "trabajoNota": "Opcjonalne. Widoczne na liście nadzorców. Grafik wynika ze stanowiska nadzoru.",
+      "credenciales": "Uprawnienia (opcjonalne)"
     }
   }
 }

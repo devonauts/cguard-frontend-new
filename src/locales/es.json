@@ -22448,6 +22448,43 @@
     },
     "semana": {
       "almuerzo": "almuerzo {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "de día",
+      "deNoche": "de noche",
+      "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "¿Necesitas su ficha completa, con zona y vehículo?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Perfil completo del vigilante",
+      "subtitulo": "Para cuando tienes sus papeles a mano. Solo su nombre, su documento y su correo (o «sin correo») son obligatorios; lo demás se puede completar después desde su ficha."
+    },
+    "supervisor": {
+      "titulo": "Perfil completo del supervisor",
+      "subtitulo": "Su ficha con documento, zona, vehículo y datos personales. Solo su nombre, su documento y su correo (o «sin correo») son obligatorios."
+    },
+    "soloAcceso": "¿Solo quieres darle acceso y su horario?",
+    "usaAgregarPersona": "Usa «Agregar persona»",
+    "hojaDeVida": {
+      "titulo": "¿Tienes su hoja de vida?",
+      "texto": "Súbela en PDF o foto y llenamos lo que se pueda. Revisa los datos antes de guardar: nada se guarda hasta que toques «Crear y dar acceso»."
+    },
+    "pasos": {
+      "quienEs": "¿Quién es?",
+      "documento": "Documento y contacto",
+      "documentoNota": "Con el correo le llega su invitación. Si no tiene correo, entra con un usuario y le das el enlace por WhatsApp al terminar.",
+      "documentoNotaSup": "Con el correo le llega su invitación a la app de supervisor. Si no tiene correo, entra con un usuario y le das el enlace por WhatsApp al terminar.",
+      "foto": "Su foto",
+      "fotoNota": "Opcional. Es la foto de su credencial y la que ven los supervisores.",
+      "personales": "Datos personales (opcionales)",
+      "personalesNota": "Todo opcional. Sirve para su expediente y los reportes de personal.",
+      "licencias": "Licencias y credenciales (opcionales)",
+      "licenciasNota": "Todo opcional. Se pueden subir después desde su ficha, en Licencias y Documentos.",
+      "trabajo": "Zona y vehículo (opcionales)",
+      "trabajoNota": "Opcional. Salen en la lista de supervisores. Su horario lo da su puesto de supervisión.",
+      "credenciales": "Credenciales (opcionales)"
     }
   }
 }

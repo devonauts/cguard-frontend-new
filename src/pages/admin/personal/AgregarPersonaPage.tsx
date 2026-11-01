@@ -66,6 +66,7 @@ import {
   puedeSeguir,
   rolesDeOficina,
   rolVeTodo,
+  plazaEnPalabras,
   rotacionDePlaza,
   rotacionEnPalabras,
   horasDe,
@@ -392,7 +393,7 @@ export default function AgregarPersonaPage() {
         ...p,
         sinRotacion: !rot,
         detalle: [
-          p.plaza,
+          plazaEnPalabras(p.plaza, plaza?.startTime, plaza?.endTime, t),
           turnoEnPalabras(rot, plaza?.startTime, plaza?.endTime, t),
         ]
           .filter(Boolean)
@@ -1619,23 +1620,33 @@ export default function AgregarPersonaPage() {
                   </Button>
                 )}
               </div>
-              {tipo === "vigilante" && paso === 2 && (
-                <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                  {t(
-                    "agregarPersona.perfilCompleto",
-                    "¿Necesitas su ficha completa o importar su hoja de vida?",
-                  )}{" "}
-                  <Link
-                    className="cg-btn-link font-semibold underline-offset-4 hover:underline"
-                    to="/security-guards/new"
-                  >
-                    {t(
-                      "agregarPersona.perfilCompletoLink",
-                      "Crear perfil completo",
-                    )}
-                  </Link>
-                </p>
-              )}
+              {(tipo === "vigilante" || tipo === "supervisor") &&
+                paso === 2 && (
+                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {tipo === "vigilante"
+                      ? t(
+                          "agregarPersona.perfilCompleto",
+                          "¿Necesitas su ficha completa o importar su hoja de vida?",
+                        )
+                      : t(
+                          "agregarPersona.perfilCompletoSup",
+                          "¿Necesitas su ficha completa, con zona y vehículo?",
+                        )}{" "}
+                    <Link
+                      className="cg-btn-link font-semibold underline-offset-4 hover:underline"
+                      to={
+                        tipo === "vigilante"
+                          ? "/security-guards/new"
+                          : "/supervisors/new"
+                      }
+                    >
+                      {t(
+                        "agregarPersona.perfilCompletoLink",
+                        "Crear perfil completo",
+                      )}
+                    </Link>
+                  </p>
+                )}
             </div>
           </Section>
         )}

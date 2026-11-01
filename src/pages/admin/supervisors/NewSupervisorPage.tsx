@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { User, Phone, FileCheck, Car, UserPlus } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import AppLayout from "@/layouts/app-layout";
 import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -26,18 +27,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GuardTabsHeader } from "@/components/app/guard-tabs";
-import { FormBlock } from "@/components/app/form-block";
-import { AddBlockButton, RemoveBlockButton } from "@/components/app/add-remove";
-import { SubmitBar } from "@/components/app/submit-bar";
 import AddressAutocomplete from "@/components/maps/AddressAutocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CampoUsuarioDeAcceso } from "@/components/usuarioDeAcceso/CampoUsuarioDeAcceso";
 import {
-  type AccesoParaCompartir,
-  useCompartirAcceso,
-} from "@/components/usuarioDeAcceso/CompartirAcceso";
-import i18n from "@/i18n";
+  PerfilCreado,
+  type AccesoCreado,
+} from "@/components/alta/PerfilCreado";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import {
@@ -54,14 +50,13 @@ import {
 } from "@/lib/validators/create-profile.schema";
 
 /*
- * «Nuevo supervisor», con la misma forma que «Nuevo vigilante»: una pestaña para
- * INVITAR (sólo por correo — la invitación del supervisor lleva a la app de
- * supervisor, y el servidor ya la manda con su enlace propio) y otra para CREAR
- * EL PERFIL completo. Las dos acaban en el mismo `POST /supervisors`: el alta
- * crea el usuario con rol de supervisor y le envía la invitación.
+ * THE FULL SUPERVISOR PROFILE (2026-11-01). Adding a supervisor with access
+ * and a post lives in «Agregar persona»; this page keeps the long profile
+ * (ID, zone, vehicle, personal data) with the same numbered questions. Both
+ * end in the same `POST /supervisors`.
  */
 
-// Las opciones viajan al API en español; sólo se traducen al pintarlas.
+// Options travel to the API in Spanish; they are only translated when painted.
 const OPTION_KEY: Record<string, string> = {
   Masculino: "invite.guard.male",
   Femenino: "invite.guard.female",
@@ -76,63 +71,9 @@ const OPTION_KEY: Record<string, string> = {
   Especial: "guards.profile.academic.special",
 };
 
-const msj = (clave: string, texto: string) => () => i18n.t(clave, texto);
-const nameRegex = /^[\p{L} '\-]+$/u;
-
-const inviteSchema = z.object({
-  entries: z
-    .array(
-      z.object({
-        firstName: z
-          .string()
-          .trim()
-          .min(1, {
-            error: msj("validation.common.nameRequired", "El nombre es requerido"),
-          })
-          .regex(nameRegex, {
-            error: msj(
-              "validation.common.nameInvalid",
-              "El nombre no debe contener números ni caracteres inválidos",
-            ),
-          }),
-        lastName: z
-          .string()
-          .trim()
-          .min(1, {
-            error: msj(
-              "validation.common.lastNameRequired",
-              "El apellido es requerido",
-            ),
-          })
-          .regex(nameRegex, {
-            error: msj(
-              "validation.common.lastNameInvalid",
-              "El apellido no debe contener números ni caracteres inválidos",
-            ),
-          }),
-        email: z
-          .string()
-          .trim()
-          .email({
-            error: msj("validation.common.emailInvalid", "Ingrese un correo válido"),
-          })
-          .optional()
-          .or(z.literal("")),
-        /** Sin correo: entra sólo con su usuario (alias). */
-        sinCorreo: z.boolean().optional(),
-        username: z.string().trim().max(32).optional().or(z.literal("")),
-      })
-      .superRefine(exigirCorreoSalvoSinCorreo),
-    )
-    .min(1),
-});
-
-type InviteValues = z.infer<typeof inviteSchema>;
-
-/* El perfil del vigilante sin lo que el supervisor no guarda: el alta del
-   supervisor no conserva teléfono ni segundo nombre, y no se asigna a clientes ni
-   estaciones (su cobertura vive en el puesto de supervisor). Se añaden zona y
-   vehículo, que son suyos. */
+/* The guard profile minus what a supervisor does not keep (phone, middle name,
+   clients and stations: their coverage lives in the supervisor post), plus
+   their own zone and vehicle. */
 const profileSchema = createProfileSchema
   .omit({
     middleName: true,
@@ -150,17 +91,29 @@ const profileSchema = createProfileSchema
 
 type ProfileValues = z.infer<typeof profileSchema>;
 
-const blankInvite = () => ({
+const DEFAULTS: ProfileValues = {
   firstName: "",
   lastName: "",
+  gender: undefined,
+  birthDate: "",
+  birthPlace: "",
+  maritalStatus: undefined,
+  academicInstruction: undefined,
+  hiringContractDate: "",
+  guardCredentials: "",
   email: "",
   sinCorreo: false,
   username: "",
-});
+  homeAddress: "",
+  homeAddressLat: undefined,
+  homeAddressLng: undefined,
+  identificationNumber: "",
+  bloodType: undefined,
+  zone: "",
+  assignedVehicle: "",
+} as ProfileValues;
 
-type EntradaDeInvitacion = InviteValues["entries"][number];
-
-/** El cuerpo del alta: sin correo viaja `sinCorreo: true` y ningún correo. */
+/** The create body: without e-mail travels `sinCorreo: true` and no address. */
 const cuerpoDeAcceso = (e: {
   email?: string;
   sinCorreo?: boolean;
@@ -174,14 +127,42 @@ const cuerpoDeAcceso = (e: {
     : {}),
 });
 
-type TabKey = "invite" | "create_profile";
+/** A numbered question of the profile, with an optional line under it. */
+function Paso({
+  n,
+  titulo,
+  nota,
+  children,
+}: {
+  n: number;
+  titulo: string;
+  nota?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Section title={`${n} · ${titulo}`}>
+      {nota && (
+        <p className="-mt-2 mb-4 text-sm" style={{ color: "var(--ink-soft)" }}>
+          {nota}
+        </p>
+      )}
+      {children}
+    </Section>
+  );
+}
+
+interface Creado {
+  id: string | null;
+  nombre: string;
+  acceso: AccesoCreado;
+}
 
 export default function NewSupervisorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { platformName: nombreDeMarca } = useWhiteLabel();
-  const [activeTab, setActiveTab] = useState<TabKey>("invite");
+  const [creado, setCreado] = useState<Creado | null>(null);
 
   useEffect(() => {
     if (!hasPermission("securityGuardCreate")) {
@@ -190,113 +171,9 @@ export default function NewSupervisorPage() {
     }
   }, [hasPermission, navigate]);
 
-  /* ============== INVITAR POR CORREO (bloques) ============== */
-  const inviteForm = useForm<InviteValues>({
-    resolver: zodResolver(inviteSchema),
-    defaultValues: { entries: [blankInvite()] },
-    mode: "onTouched",
-  });
-  const {
-    control: inviteCtrl,
-    handleSubmit: submitInvite,
-    formState: inviteState,
-  } = inviteForm;
-  const {
-    fields: inviteFields,
-    append: inviteAppend,
-    remove: inviteRemove,
-  } = useFieldArray({ control: inviteCtrl, name: "entries" });
-  const inviteEntries = useWatch({ control: inviteCtrl, name: "entries" });
-  // «Usuario: jmiranda · comparte este enlace» de las altas sin correo.
-  const compartir = useCompartirAcceso();
-
-  /** Cómo se nombra una fila en los avisos: su correo, o su nombre si no tiene. */
-  const etiquetaDe = (e: EntradaDeInvitacion) =>
-    e.sinCorreo
-      ? `${e.firstName} ${e.lastName}`.trim()
-      : String(e.email || "").trim();
-
-  const onSubmitInvite = async (v: InviteValues) => {
-    // Uno a uno: si un correo falla, los demás siguen y se dice cuál no salió.
-    const fallidos: string[] = [];
-    const motivos = new Set<string>();
-    const enlazados: string[] = [];
-    // Las altas sin correo devuelven su enlace: no hay buzón al que mandarlo.
-    const accesos: AccesoParaCompartir[] = [];
-
-    for (const e of v.entries) {
-      try {
-        const sup = await supervisorService.create({
-          ...cuerpoDeAcceso(e),
-          firstName: e.firstName.trim(),
-          lastName: e.lastName.trim(),
-        });
-
-        if ((sup as any)?.linkedExistingAccount) enlazados.push(etiquetaDe(e));
-        if (sup?.invitationLink)
-          accesos.push({
-            nombre: `${e.firstName} ${e.lastName}`.trim(),
-            username: sup.username || e.username || null,
-            link: sup.invitationLink,
-          });
-      } catch (err: any) {
-        console.error("[NewSupervisorPage] invite error <-", err);
-        fallidos.push(etiquetaDe(e));
-        // El motivo del servidor (p. ej. «ese usuario ya está en uso»).
-        if (err?.message) motivos.add(String(err.message));
-      }
-    }
-
-    if (enlazados.length) {
-      toast.success(
-        t("ui.SupervisorsPage.esteCorreoYaTeniaCuenta", { marca: nombreDeMarca }),
-        { description: enlazados.join(", "), duration: 8000 },
-      );
-    }
-    if (fallidos.length) {
-      toast.error(
-        t("supervisors.new.inviteFailed", {
-          emails: fallidos.join(", "),
-          defaultValue: "No se pudo invitar a: {{emails}}",
-        }),
-        motivos.size ? { description: [...motivos].join(" · ") } : undefined,
-      );
-      // Se queda en pantalla sólo con los que fallaron, para reintentar.
-      inviteForm.reset({
-        entries: v.entries.filter((e) => fallidos.includes(etiquetaDe(e))),
-      });
-      compartir.abrir(accesos, "invitacion");
-
-      return;
-    }
-    toast.success(t("supervisors.new.invitesSent", "Invitaciones enviadas"));
-    compartir.abrir(accesos, "invitacion", () => navigate("/supervisors"));
-  };
-
-  /* ============== CREAR PERFIL ============== */
   const createForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      gender: undefined,
-      birthDate: "",
-      birthPlace: "",
-      maritalStatus: undefined,
-      academicInstruction: undefined,
-      hiringContractDate: "",
-      guardCredentials: "",
-      email: "",
-      sinCorreo: false,
-      username: "",
-      homeAddress: "",
-      homeAddressLat: undefined,
-      homeAddressLng: undefined,
-      identificationNumber: "",
-      bloodType: undefined,
-      zone: "",
-      assignedVehicle: "",
-    },
+    defaultValues: DEFAULTS,
     mode: "onTouched",
   });
   const {
@@ -310,7 +187,7 @@ export default function NewSupervisorPage() {
   const createApellido = useWatch({ control: createCtrl, name: "lastName" });
 
   const onSubmitCreate = async (v: ProfileValues) => {
-    // Los vacíos no viajan: una fecha "" rompe la columna DATEONLY.
+    // Blanks do not travel: a "" date breaks the DATEONLY column.
     const opt = (s?: string) => (s && s.trim() ? s.trim() : undefined);
     const body: CreateSupervisorBody = {
       ...cuerpoDeAcceso(v),
@@ -334,454 +211,196 @@ export default function NewSupervisorPage() {
 
     try {
       const sup = await supervisorService.create(body);
+      const nombre = `${v.firstName} ${v.lastName}`.trim();
 
-      // Cuenta que ya existía (trabaja con otra empresa): se ENLAZÓ, no se creó,
-      // y no le llegará el correo de «crea tu cuenta».
+      // An account that already existed (works for another company) was
+      // LINKED, not created, and gets no «create your account» e-mail.
       if ((sup as any)?.linkedExistingAccount) {
         toast.success(
-          t("ui.SupervisorsPage.esteCorreoYaTeniaCuenta", { marca: nombreDeMarca }),
+          t("ui.SupervisorsPage.esteCorreoYaTeniaCuenta", {
+            marca: nombreDeMarca,
+          }),
           { duration: 8000 },
         );
-      } else if (sup?.invitationLink) {
-        toast.success(
-          t(
-            "supervisors.new.creadoSinCorreo",
-            "Supervisor creado. Comparte su acceso para que ponga su contraseña.",
-          ),
-        );
       } else {
-        toast.success(t("ui.SupervisorsPage.supervisorCreadoYEnviadaLa"));
+        toast.success(
+          t("agregarPersona.listo.titulo", {
+            defaultValue: "Listo: {{nombre}} ya está en el sistema",
+            nombre,
+          }),
+        );
       }
-      compartir.abrir(
-        sup?.invitationLink
-          ? [
-              {
-                nombre: `${v.firstName} ${v.lastName}`.trim(),
-                username: sup.username || v.username || null,
-                link: sup.invitationLink,
-              },
-            ]
-          : [],
-        "invitacion",
-        () => navigate(`/supervisors/${sup.id}`),
-      );
+      setCreado({
+        id: (sup as any)?.id || null,
+        nombre,
+        acceso: {
+          username: sup?.username || v.username || null,
+          link: sup?.invitationLink || null,
+          correo:
+            !v.sinCorreo && v.email && !(sup as any)?.linkedExistingAccount
+              ? String(v.email).trim()
+              : null,
+        },
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e: any) {
       console.error("[NewSupervisorPage] create error <-", e);
       toast.error(
         e?.message ||
-          t("supervisors.errors.createFailed", "No se pudo crear el supervisor"),
+          t(
+            "supervisors.errors.createFailed",
+            "No se pudo crear el supervisor",
+          ),
       );
     }
   };
 
+  const otra = () => {
+    createForm.reset(DEFAULTS);
+    setCreado(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const required = <span className="text-destructive">*</span>;
+  const guardando = createState.isSubmitting;
 
   return (
     <AppLayout>
-      <PageContainer width="wide">
+      <PageContainer className="pb-28" width="default">
         <PageHeader
           icon={<UserPlus />}
           subtitle={t(
-            "supervisors.new.subtitle",
-            "Invítalo por correo para que cree su cuenta en la app de supervisor, o crea su perfil completo.",
+            "perfilCompleto.supervisor.subtitulo",
+            "Su ficha con documento, zona, vehículo y datos personales. Solo su nombre, su documento y su correo (o «sin correo») son obligatorios.",
           )}
-          title={t("ui.SupervisorsPage.nuevoSupervisor", "Nuevo supervisor")}
+          title={t(
+            "perfilCompleto.supervisor.titulo",
+            "Perfil completo del supervisor",
+          )}
         />
 
-        <GuardTabsHeader
-          inviteLabel={t(
-            "supervisors.new.tabInvite",
-            "Invitar por correo electrónico",
-          )}
-          value={activeTab}
-          onValueChange={(v) => setActiveTab(v as TabKey)}
-        >
-          {/* ------- INVITAR ------- */}
-          {activeTab === "invite" && (
-            <>
-              <p className="mt-8 max-w-5xl text-sm text-muted-foreground">
-                {t(
-                  "supervisors.new.inviteDescription",
-                  "Le llegará un correo con el enlace para crear su cuenta y entrar a la app de supervisor.",
-                )}
-              </p>
-              <Form {...inviteForm}>
-                <form
-                  className="mt-6 grid gap-8"
-                  onSubmit={submitInvite(onSubmitInvite)}
+        {creado ? (
+          <PerfilCreado
+            acceso={creado.acceso}
+            fichaUrl={creado.id ? `/supervisors/${creado.id}` : null}
+            horarioUrl="/supervisor-positions"
+            nombre={creado.nombre}
+            onOtra={otra}
+            onVer={(url) => navigate(url)}
+          />
+        ) : (
+          <div className="space-y-6">
+            <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+              {t(
+                "perfilCompleto.soloAcceso",
+                "¿Solo quieres darle acceso y su horario?",
+              )}{" "}
+              <Link
+                className="cg-btn-link font-semibold underline-offset-4 hover:underline"
+                to="/personal/nueva?tipo=supervisor"
+              >
+                {t("perfilCompleto.usaAgregarPersona", "Usa «Agregar persona»")}
+              </Link>
+            </p>
+
+            <Form {...createForm}>
+              <form
+                className="space-y-6"
+                onSubmit={submitCreate(onSubmitCreate)}
+              >
+                <Paso
+                  n={1}
+                  titulo={t("perfilCompleto.pasos.quienEs", "¿Quién es?")}
                 >
-                  {inviteFields.map((f, idx) => (
-                    <FormBlock key={f.id}>
-                      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        <FormField
-                          control={inviteCtrl}
-                          name={`entries.${idx}.firstName`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t("guards.new.form.firstName")}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder={t(
-                                    "guards.new.form.firstNamePlaceholder",
-                                  )}
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={inviteCtrl}
-                          name={`entries.${idx}.lastName`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t("guards.new.form.lastName")}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder={t(
-                                    "guards.new.form.lastNamePlaceholder",
-                                  )}
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        {inviteEntries?.[idx]?.sinCorreo ? (
-                          <FormField
-                            control={inviteCtrl}
-                            name={`entries.${idx}.username`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>
-                                  {t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
-                                </FormLabel>
-                                <FormControl>
-                                  <CampoUsuarioDeAcceso
-                                    sugerir
-                                    ayuda={false}
-                                    firstName={inviteEntries?.[idx]?.firstName}
-                                    lastName={inviteEntries?.[idx]?.lastName}
-                                    value={field.value || ""}
-                                    onChange={field.onChange}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        ) : (
-                          <FormField
-                            control={inviteCtrl}
-                            name={`entries.${idx}.email`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>{t("guards.new.form.contactEmail")}</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder={t(
-                                      "supervisors.new.emailPlaceholder",
-                                      "supervisor@ejemplo.com",
-                                    )}
-                                    type="email"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        )}
-                      </div>
-                      {/* Sin correo: no le llega invitación; al enviar te damos
-                          su usuario y el enlace para compartirlo. */}
-                      <FormField
-                        control={inviteCtrl}
-                        name={`entries.${idx}.sinCorreo`}
-                        render={({ field }) => (
-                          <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm">
-                            <Checkbox
-                              checked={!!field.value}
-                              onCheckedChange={(c) => field.onChange(c === true)}
-                            />
-                            {t("usuarioDeAcceso.sinCorreo", "Sin correo (sólo usuario)")}
-                          </label>
-                        )}
-                      />
-
-                      <div className="mt-4 flex items-center gap-3">
-                        <AddBlockButton onClick={() => inviteAppend(blankInvite())} />
-                        {inviteFields.length > 1 && (
-                          <RemoveBlockButton onConfirm={() => inviteRemove(idx)} />
-                        )}
-                      </div>
-                    </FormBlock>
-                  ))}
-
-                  <SubmitBar
-                    loading={inviteState.isSubmitting}
-                    primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
-                    primaryLabel={t("guards.new.form.send")}
-                    onPrimary={submitInvite(onSubmitInvite)}
-                  />
-                </form>
-              </Form>
-            </>
-          )}
-
-          {/* ------- CREAR PERFIL ------- */}
-          {activeTab === "create_profile" && (
-            <>
-              <p className="mt-8 max-w-5xl text-sm text-muted-foreground">
-                {t(
-                  "supervisors.new.createDescription",
-                  "Completa la ficha del supervisor. Al crearla le enviamos la invitación a su correo para que entre a la app.",
-                )}
-              </p>
-
-              <Form {...createForm}>
-                <form
-                  className="mt-6 space-y-6"
-                  onSubmit={submitCreate(onSubmitCreate)}
-                >
-                  {/* ── Información personal ─────────────────────────────── */}
-                  <Section
-                    icon={<User />}
-                    title={t(
-                      "ui.NewSecurityGuard.informacionPersonal",
-                      "Información Personal",
-                    )}
-                  >
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <FormField
-                        control={createCtrl}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("ui.NewSecurityGuardPage.nombreS")} {required}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder={t("ui.NewSecurityGuard.ejCarlos", "Ej. Carlos")}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("guards.list.details.fields.lastName", "Apellidos")}{" "}
-                              {required}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder={t(
-                                  "ui.NewSecurityGuard.ejGarciaLopez",
-                                  "Ej. García López",
-                                )}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-                      <FormField
-                        control={createCtrl}
-                        name="gender"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("ui.NewSecurityGuard.genero", "Género")}
-                            </FormLabel>
-                            <Select
-                              value={field.value ?? ""}
-                              onValueChange={field.onChange}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue
-                                    placeholder={t(
-                                      "ui.NewSecurityGuard.seleccionarGenero",
-                                      "Seleccionar género",
-                                    )}
-                                  />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {GENDER_OPTIONS.map((g) => (
-                                  <SelectItem key={g} value={g}>
-                                    {t(OPTION_KEY[g], g)}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="bloodType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("ui.NewSecurityGuardPage.tipoDeSangre")}
-                            </FormLabel>
-                            <Select
-                              value={field.value ?? ""}
-                              onValueChange={field.onChange}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue
-                                    placeholder={t(
-                                      "ui.NewSecurityGuardPage.seleccionarTipoDeSangre",
-                                    )}
-                                  />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {BLOOD_TYPES.map((bt) => (
-                                  <SelectItem key={bt} value={bt}>
-                                    {bt}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="maritalStatus"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("ui.NewSecurityGuardPage.estadoCivil")}
-                            </FormLabel>
-                            <Select
-                              value={field.value ?? ""}
-                              onValueChange={field.onChange}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue
-                                    placeholder={t(
-                                      "ui.NewSecurityGuardPage.seleccionarEstadoCivil",
-                                    )}
-                                  />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {MARITAL_STATUS_OPTIONS.map((m) => (
-                                  <SelectItem key={m} value={m}>
-                                    {t(OPTION_KEY[m], m)}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-                      <FormField
-                        control={createCtrl}
-                        name="birthDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("ui.NewSecurityGuardPage.fechaDeNacimiento")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input type="date" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="birthPlace"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("guards.new.form.birthPlace", "Lugar de Nacimiento")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder={t(
-                                  "ui.NewSecurityGuard.ejQuitoEcuador",
-                                  "Ej. Quito, Ecuador",
-                                )}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="academicInstruction"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t(
-                                "ui.NewSecurityGuard.instruccionAcademica",
-                                "Instrucción Académica",
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <FormField
+                      control={createCtrl}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("ui.NewSecurityGuardPage.nombreS")} {required}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t(
+                                "ui.NewSecurityGuard.ejCarlos",
+                                "Ej. Carlos",
                               )}
-                            </FormLabel>
-                            <Select
-                              value={field.value ?? ""}
-                              onValueChange={field.onChange}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue
-                                    placeholder={t(
-                                      "ui.NewSecurityGuard.seleccionarNivelAcademico",
-                                      "Seleccionar nivel académico",
-                                    )}
-                                  />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {ACADEMIC_INSTRUCTION_OPTIONS.map((a) => (
-                                  <SelectItem key={a} value={a}>
-                                    {t(OPTION_KEY[a], a)}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </Section>
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createCtrl}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "guards.list.details.fields.lastName",
+                              "Apellidos",
+                            )}{" "}
+                            {required}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t(
+                                "ui.NewSecurityGuard.ejGarciaLopez",
+                                "Ej. García López",
+                              )}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </Paso>
 
-                  {/* ── Contacto y domicilio ─────────────────────────────── */}
-                  <Section
-                    icon={<Phone />}
-                    title={t("ui.NewSecurityGuardPage.contactoYDomicilio")}
-                  >
+                <Paso
+                  n={2}
+                  nota={t(
+                    "perfilCompleto.pasos.documentoNotaSup",
+                    "Con el correo le llega su invitación a la app de supervisor. Si no tiene correo, entra con un usuario y le das el enlace por WhatsApp al terminar.",
+                  )}
+                  titulo={t(
+                    "perfilCompleto.pasos.documento",
+                    "Documento y contacto",
+                  )}
+                >
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <FormField
+                      control={createCtrl}
+                      name="identificationNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "ui.NewSecurityGuard.numeroDeIdentificacion",
+                              "Número de Identificación",
+                            )}{" "}
+                            {required}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t(
+                                "ui.NewSecurityGuard.duiCedulaPasaporte",
+                                "DUI, Cédula, Pasaporte…",
+                              )}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                     <FormField
                       control={createCtrl}
                       name="email"
@@ -843,14 +462,16 @@ export default function NewSupervisorPage() {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={createCtrl}
                       name="username"
                       render={({ field }) => (
                         <FormItem className="mt-4 max-w-xl">
                           <FormLabel>
-                            {t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                            {t(
+                              "usuarioDeAcceso.etiqueta",
+                              "Usuario para entrar",
+                            )}
                           </FormLabel>
                           <FormControl>
                             <CampoUsuarioDeAcceso
@@ -865,188 +486,369 @@ export default function NewSupervisorPage() {
                         </FormItem>
                       )}
                     />
+                  </div>
+                </Paso>
 
-                    <div className="mt-4">
-                      <FormField
-                        control={createCtrl}
-                        name="homeAddress"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("ui.NewSecurityGuard.domicilio", "Domicilio")}
-                            </FormLabel>
-                            <FormControl>
-                              <AddressAutocomplete
-                                defaultValue={field.value || ""}
-                                placeholder={t(
-                                  "supervisors.new.addressPlaceholder",
-                                  "Buscar dirección del supervisor...",
-                                )}
-                                showMap={true}
-                                onAddressSelect={(result) => {
-                                  field.onChange(result.address);
-                                  setCreateValue(
-                                    "homeAddressLat",
-                                    result.latitude ?? undefined,
-                                  );
-                                  setCreateValue(
-                                    "homeAddressLng",
-                                    result.longitude ?? undefined,
-                                  );
-                                }}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              {t(
-                                "ui.NewSecurityGuard.indiqueLaUbicacionExactaMoviendo",
-                                "Indique la ubicación exacta moviendo el pin en el mapa.",
-                              )}
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </Section>
-
-                  {/* ── Identificación y contrato ────────────────────────── */}
-                  <Section
-                    icon={<FileCheck />}
-                    title={t(
-                      "ui.NewSecurityGuard.identificacionYContrato",
-                      "Identificación y Contrato",
-                    )}
-                  >
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                      <FormField
-                        control={createCtrl}
-                        name="identificationNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t(
-                                "ui.NewSecurityGuard.numeroDeIdentificacion",
-                                "Número de Identificación",
-                              )}{" "}
-                              {required}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder={t(
-                                  "ui.NewSecurityGuard.duiCedulaPasaporte",
-                                  "DUI, Cédula, Pasaporte…",
-                                )}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="hiringContractDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t(
-                                "ui.NewSecurityGuard.fechaDeContratacion",
-                                "Fecha de Contratación",
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <Input type="date" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="guardCredentials"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t(
-                                "ui.NewSecurityGuard.credencialesLicencias",
-                                "Credenciales / Licencias",
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder={t(
-                                  "ui.NewSecurityGuard.ejLicenciaArmasCertificacionAfis",
-                                  "Ej. Licencia Armas, Certificación AFIS…",
-                                )}
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </Section>
-
-                  {/* ── Operación: lo propio del supervisor ──────────────── */}
-                  <Section
-                    icon={<Car />}
-                    title={t("supervisors.new.operacion", "Operación")}
-                  >
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                      <FormField
-                        control={createCtrl}
-                        name="zone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t(
-                                "ui.Supervisors.zonaPosicionPEjAguila2",
-                                "Zona / posición (p. ej. Aguila2)",
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={createCtrl}
-                        name="assignedVehicle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t(
-                                "ui.Supervisors.vehiculoAsignado",
-                                "Vehículo asignado",
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </Section>
-
-                  <div className="glass flex items-center justify-end gap-3 px-6 py-4">
-                    <SubmitBar
-                      loading={createState.isSubmitting}
-                      primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
-                      primaryLabel={t("guards.new.form.create_and_send")}
-                      onPrimary={submitCreate(onSubmitCreate)}
+                <Paso
+                  n={3}
+                  nota={t(
+                    "perfilCompleto.pasos.trabajoNota",
+                    "Opcional. Salen en la lista de supervisores. Su horario lo da su puesto de supervisión.",
+                  )}
+                  titulo={t(
+                    "perfilCompleto.pasos.trabajo",
+                    "Zona y vehículo (opcionales)",
+                  )}
+                >
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <FormField
+                      control={createCtrl}
+                      name="zone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "ui.Supervisors.zonaPosicionPEjAguila2",
+                              "Zona / posición (p. ej. Aguila2)",
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createCtrl}
+                      name="assignedVehicle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "ui.Supervisors.vehiculoAsignado",
+                              "Vehículo asignado",
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
-                </form>
-              </Form>
-            </>
-          )}
-        </GuardTabsHeader>
-        {compartir.dialogo}
+                </Paso>
+
+                <Paso
+                  n={4}
+                  nota={t(
+                    "perfilCompleto.pasos.personalesNota",
+                    "Todo opcional. Sirve para su expediente y los reportes de personal.",
+                  )}
+                  titulo={t(
+                    "perfilCompleto.pasos.personales",
+                    "Datos personales (opcionales)",
+                  )}
+                >
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <FormField
+                      control={createCtrl}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("ui.NewSecurityGuard.genero", "Género")}
+                          </FormLabel>
+                          <Select
+                            value={field.value ?? ""}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder={t(
+                                    "ui.NewSecurityGuard.seleccionarGenero",
+                                    "Seleccionar género",
+                                  )}
+                                />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {GENDER_OPTIONS.map((g) => (
+                                <SelectItem key={g} value={g}>
+                                  {t(OPTION_KEY[g], g)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createCtrl}
+                      name="bloodType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("ui.NewSecurityGuardPage.tipoDeSangre")}
+                          </FormLabel>
+                          <Select
+                            value={field.value ?? ""}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder={t(
+                                    "ui.NewSecurityGuardPage.seleccionarTipoDeSangre",
+                                  )}
+                                />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {BLOOD_TYPES.map((bt) => (
+                                <SelectItem key={bt} value={bt}>
+                                  {bt}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createCtrl}
+                      name="maritalStatus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("ui.NewSecurityGuardPage.estadoCivil")}
+                          </FormLabel>
+                          <Select
+                            value={field.value ?? ""}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder={t(
+                                    "ui.NewSecurityGuardPage.seleccionarEstadoCivil",
+                                  )}
+                                />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {MARITAL_STATUS_OPTIONS.map((m) => (
+                                <SelectItem key={m} value={m}>
+                                  {t(OPTION_KEY[m], m)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <FormField
+                      control={createCtrl}
+                      name="birthDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("ui.NewSecurityGuardPage.fechaDeNacimiento")}
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createCtrl}
+                      name="birthPlace"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "guards.new.form.birthPlace",
+                              "Lugar de Nacimiento",
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t(
+                                "ui.NewSecurityGuard.ejQuitoEcuador",
+                                "Ej. Quito, Ecuador",
+                              )}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={createCtrl}
+                      name="academicInstruction"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "ui.NewSecurityGuard.instruccionAcademica",
+                              "Instrucción Académica",
+                            )}
+                          </FormLabel>
+                          <Select
+                            value={field.value ?? ""}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder={t(
+                                    "ui.NewSecurityGuard.seleccionarNivelAcademico",
+                                    "Seleccionar nivel académico",
+                                  )}
+                                />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {ACADEMIC_INSTRUCTION_OPTIONS.map((a) => (
+                                <SelectItem key={a} value={a}>
+                                  {t(OPTION_KEY[a], a)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <FormField
+                      control={createCtrl}
+                      name="hiringContractDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "ui.NewSecurityGuard.fechaDeContratacion",
+                              "Fecha de Contratación",
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="mt-4">
+                    <FormField
+                      control={createCtrl}
+                      name="homeAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("ui.NewSecurityGuard.domicilio", "Domicilio")}
+                          </FormLabel>
+                          <FormControl>
+                            <AddressAutocomplete
+                              defaultValue={field.value || ""}
+                              placeholder={t(
+                                "supervisors.new.addressPlaceholder",
+                                "Buscar dirección del supervisor...",
+                              )}
+                              showMap={true}
+                              onAddressSelect={(result) => {
+                                field.onChange(result.address);
+                                setCreateValue(
+                                  "homeAddressLat",
+                                  result.latitude ?? undefined,
+                                );
+                                setCreateValue(
+                                  "homeAddressLng",
+                                  result.longitude ?? undefined,
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t(
+                              "ui.NewSecurityGuard.indiqueLaUbicacionExactaMoviendo",
+                              "Indique la ubicación exacta moviendo el pin en el mapa.",
+                            )}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </Paso>
+
+                <Paso
+                  n={5}
+                  titulo={t(
+                    "perfilCompleto.pasos.credenciales",
+                    "Credenciales (opcionales)",
+                  )}
+                >
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <FormField
+                      control={createCtrl}
+                      name="guardCredentials"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t(
+                              "ui.NewSecurityGuard.credencialesLicencias",
+                              "Credenciales / Licencias",
+                            )}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t(
+                                "ui.NewSecurityGuard.ejLicenciaArmasCertificacionAfis",
+                                "Ej. Licencia Armas, Certificación AFIS…",
+                              )}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </Paso>
+
+                <div className="glass flex flex-wrap items-center justify-end gap-3 px-4 py-3 sm:px-6">
+                  <Button
+                    disabled={guardando}
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate("/supervisors")}
+                  >
+                    {t("agregarPersona.botones.cancelar", "Cancelar")}
+                  </Button>
+                  <Button disabled={guardando} type="submit" variant="brand">
+                    {guardando && (
+                      <Loader2 className="animate-spin" size={14} />
+                    )}
+                    {t("agregarPersona.botones.crear", "Crear y dar acceso")}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        )}
       </PageContainer>
     </AppLayout>
   );

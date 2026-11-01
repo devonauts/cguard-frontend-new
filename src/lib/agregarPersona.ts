@@ -298,6 +298,50 @@ export function horasDe(inicio?: string | null, fin?: string | null): string {
   return [hhmm(inicio), hhmm(fin)].filter(Boolean).join("–");
 }
 
+export type MitadDelDia = "dia" | "noche" | "24h";
+
+/**
+ * Which half of the day a seat covers, from its window: a start between 05:00
+ * and 16:59 is the day seat, any other start the night seat, and a window that
+ * starts and ends at the same time is a 24 h seat. `null` when it has no hours.
+ */
+export function mitadDelDia(
+  inicio?: string | null,
+  fin?: string | null,
+): MitadDelDia | null {
+  const a = hhmm(inicio);
+
+  if (!/^\d{2}:\d{2}$/.test(a)) return null;
+  if (a === hhmm(fin)) return "24h";
+  const h = Number(a.slice(0, 2));
+
+  return h >= 5 && h < 17 ? "dia" : "noche";
+}
+
+/**
+ * The seat as clients say it, plus its half of the day: «Fijo 1 · de día»,
+ * «Fijo 2 · de noche», «Fijo 1 · 24 h». «Fijo» stays: it is their word (a
+ * fixed guard, as opposed to the sacafranco who covers the days off).
+ */
+export function plazaEnPalabras(
+  nombre: string | null | undefined,
+  inicio: string | null | undefined,
+  fin: string | null | undefined,
+  t: Traductor,
+): string {
+  const mitad = mitadDelDia(inicio, fin);
+  const etiqueta =
+    mitad === "dia"
+      ? t("agregarPersona.plaza.deDia", { defaultValue: "de día" })
+      : mitad === "noche"
+        ? t("agregarPersona.plaza.deNoche", { defaultValue: "de noche" })
+        : mitad === "24h"
+          ? t("agregarPersona.plaza.veinticuatro", { defaultValue: "24 h" })
+          : "";
+
+  return [String(nombre || "").trim(), etiqueta].filter(Boolean).join(" · ");
+}
+
 /** «2 días, 2 noches, 2 libres · 07:00–19:00». */
 export function turnoEnPalabras(
   rot: RotacionLeida | null | undefined,

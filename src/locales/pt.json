@@ -22448,6 +22448,43 @@
     },
     "semana": {
       "almuerzo": "almoço {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "de dia",
+      "deNoche": "de noite",
+      "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "Precisa da ficha completa, com zona e veículo?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Perfil completo do vigilante",
+      "subtitulo": "Para quando você tem os documentos em mãos. Só o nome, o documento e o e-mail (ou «sem e-mail») são obrigatórios; o resto pode ser completado depois na ficha."
+    },
+    "supervisor": {
+      "titulo": "Perfil completo do supervisor",
+      "subtitulo": "A ficha com documento, zona, veículo e dados pessoais. Só o nome, o documento e o e-mail (ou «sem e-mail») são obrigatórios."
+    },
+    "soloAcceso": "Só quer dar acesso e horário?",
+    "usaAgregarPersona": "Use «Adicionar pessoa»",
+    "hojaDeVida": {
+      "titulo": "Tem o currículo?",
+      "texto": "Envie em PDF ou foto e preenchemos o que for possível. Revise os dados antes de salvar: nada é salvo até tocar em «Criar e dar acesso»."
+    },
+    "pasos": {
+      "quienEs": "Quem é?",
+      "documento": "Documento e contato",
+      "documentoNota": "Com o e-mail chega o convite. Sem e-mail, entra com um usuário e você envia o link pelo WhatsApp no final.",
+      "documentoNotaSup": "Com o e-mail chega o convite para o app de supervisor. Sem e-mail, entra com um usuário e você envia o link pelo WhatsApp no final.",
+      "foto": "A foto",
+      "fotoNota": "Opcional. É a foto da credencial e a que os supervisores veem.",
+      "personales": "Dados pessoais (opcionais)",
+      "personalesNota": "Tudo opcional. Serve para o prontuário e os relatórios de pessoal.",
+      "licencias": "Licenças e credenciais (opcionais)",
+      "licenciasNota": "Tudo opcional. Podem ser enviadas depois na ficha, em Licenças e Documentos.",
+      "trabajo": "Zona e veículo (opcionais)",
+      "trabajoNota": "Opcional. Aparecem na lista de supervisores. O horário vem do posto de supervisão.",
+      "credenciales": "Credenciais (opcionais)"
     }
   }
 }
