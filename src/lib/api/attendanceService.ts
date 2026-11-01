@@ -339,6 +339,34 @@ const attendanceService = {
     );
   },
 
+  /** Names for the filters (guards, stations, branches the viewer may see). */
+  async filterOptions(): Promise<OpcionesDeFiltro> {
+    const t = getTenantId();
+
+    return unwrap(await api.get(`/tenant/${t}/attendance/filter-options`));
+  },
+
+  /** Late punches of a range (default: this company week) grouped by person. */
+  async lateSummary(params?: { from?: string; to?: string }): Promise<ResumenDeAtrasos> {
+    const t = getTenantId();
+
+    return unwrap(
+      await api.get(`/tenant/${t}/attendance/late-summary${buildQuery(params)}`),
+    );
+  },
+
+  /**
+   * Many decisions in one call. Each item is decided on its own (same rules
+   * as one click); the answer says which went through and why the rest did not.
+   */
+  async decisions(items: DecisionDeAsistencia[]): Promise<ResultadoDeLote> {
+    const t = getTenantId();
+
+    return unwrap(
+      await api.post(`/tenant/${t}/attendance/decisions`, { data: { items } }),
+    );
+  },
+
   async exceptions(params?: Record<string, unknown>) {
     const t = getTenantId();
 
@@ -677,3 +705,48 @@ const attendanceService = {
 };
 
 export default attendanceService;
+
+export interface OpcionDeFiltro {
+  id: string;
+  name: string;
+  postSiteId?: string | null;
+}
+
+export interface OpcionesDeFiltro {
+  guards: OpcionDeFiltro[];
+  stations: OpcionDeFiltro[];
+  branches: OpcionDeFiltro[];
+}
+
+export interface AtrasoDePersona {
+  personId: string;
+  personName: string;
+  role: "guard" | "supervisor" | "staff";
+  count: number;
+  totalMinutes: number;
+  worst: { id: string; day: string; minutes: number; stationName: string | null };
+  days: string[];
+}
+
+export interface ResumenDeAtrasos {
+  from: string;
+  to: string;
+  tz: string;
+  people: AtrasoDePersona[];
+  punches: number;
+}
+
+export type TipoDeDecision = "exception" | "record" | "correction" | "clockIn" | "clockOut";
+
+export interface DecisionDeAsistencia {
+  kind: TipoDeDecision;
+  id: string;
+  action: "approve" | "reject" | "resolve" | "acknowledge";
+  notes?: string;
+}
+
+export interface ResultadoDeLote {
+  ok: number;
+  failed: number;
+  results: Array<{ kind: string; id: string; ok: boolean; error?: { code: string; message: string } }>;
+}

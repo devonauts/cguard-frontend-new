@@ -5594,7 +5594,8 @@
       "aprobaciones": "Freigaben",
       "horas-periodo": "Stunden des Zeitraums",
       "configuracion": "Einstellungen",
-      "coberturaEnVivo": "Besetzung live"
+      "coberturaEnVivo": "Besetzung live",
+      "atrasos": "Verspätungen der Woche"
     }
   },
   "siteTour": {
@@ -19370,6 +19371,46 @@
       "reintentar": "Erneut versuchen",
       "mostrandoDe": "{{mostrados}} von {{total}} angezeigt",
       "verMas": "Mehr anzeigen"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "Alle Posten",
+      "sucursal": "Niederlassung",
+      "todasLasSucursales": "Alle Niederlassungen",
+      "reintentar": "Erneut versuchen",
+      "horasDeEstaPagina": "Nettostunden dieser Seite:",
+      "aprobarMarcaciones": "Stempelungen genehmigen",
+      "rechazarMarcaciones": "Stempelungen ablehnen",
+      "confirmarLote": "{{count}} Stempelung(en) werden einzeln entschieden. Die an abgeschlossenen Lohntagen oder außerhalb Ihrer Standorte bleiben unverändert – Sie sehen, welche.",
+      "decidir": "Entscheiden",
+      "todasLasFechas": "Alle Daten",
+      "porFechas": "Nach Datum",
+      "resolverSeleccion": "Erledigen",
+      "reconocerSeleccion": "Zur Kenntnis nehmen",
+      "noSeCargo": "Konnte nicht geladen werden",
+      "persona": "Person",
+      "vecesTarde": "Verspätungen",
+      "minutosTotales": "Gesamtzeit",
+      "peorDia": "Schlimmster Tag",
+      "verMarcas": "Stempelungen ansehen",
+      "atrasosSubtitulo": "Wer zu spät kam, wie oft und wie lange – in Firmenzeit",
+      "resumenAtrasos": "{{personas}} Person(en) · {{marcas}} Verspätung(en)",
+      "sinAtrasosDescripcion": "An diesen Tagen kam niemand zu spät. Mit den Pfeilen sehen Sie andere Wochen.",
+      "sinAtrasos": "Keine Verspätungen",
+      "llegaron": "Angekommen",
+      "dePermiso": "Im Urlaub oder freigestellt",
+      "aunPorLlegar": "Noch nicht fällig",
+      "comoSeCuenta": "Gezählt wird der Firmentag in Firmenzeit. Eine Nachtschicht zählt am Tag ihres Beginns; eine Vertretung ist ein Platz; wer 20 Minuten nach Beginn nicht eingestempelt hat, gilt als abwesend.",
+      "lote": {
+        "diaCerrado": "Lohntag abgeschlossen",
+        "noEncontrado": "existiert nicht mehr oder nicht in Ihren Standorten",
+        "yaDecidida": "bereits von jemand anderem entschieden",
+        "yaPagada": "bereits bezahlt",
+        "bloqueada": "Zeitraum abgeschlossen",
+        "faltaNota": "die Firma verlangt eine Notiz",
+        "error": "Fehler",
+        "listo": "{{count}} entschieden",
+        "parcial": "{{ok}} entschieden, {{failed}} unverändert"
+      }
     }
   },
   "visitantes": {

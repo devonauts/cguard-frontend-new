@@ -2,7 +2,7 @@ import { usePuede } from "@/hooks/usePuede";
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CheckCircle2, LogIn, LogOut, PencilLine, Inbox } from "lucide-react";
+import { CheckCircle2, LogIn, LogOut, PencilLine, Inbox, Users, MapPin } from "lucide-react";
 
 import { fmtDateTime } from "./shared";
 
@@ -17,7 +17,22 @@ import {
   StatusBadge,
   EmptyState,
   SkeletonCards,
+  Pagination,
+  Toolbar,
 } from "@/components/kit";
+import type { TipoDeDecision } from "@/lib/api/attendanceService";
+import { SelectorDeFiltro, avisarLote, useFiltrosDeAsistencia, useOpcionesDeFiltro } from "./filtrosAsistencia";
+
+/** Page size of each queue (the server pages; nothing is cut at 100). */
+const POR_COLA = 50;
+
+interface Cola<T> {
+  rows: T[];
+  total: number;
+  page: number;
+  error: string | null;
+}
+const colaVacia = <T,>(): Cola<T> => ({ rows: [], total: 0, page: 1, error: null });
 import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 
 interface CorrectionRow {
@@ -71,31 +86,127 @@ function lateBy(scheduledStart: string | null, createdAt: string): string {
 export default function NominaApprovals() {
   const { t } = useTranslation();
   const aprobar = usePuede("asistencia.aprobarSolicitud");
-  const [rows, setRows] = useState<CorrectionRow[]>([]);
-  const [coRows, setCoRows] = useState<ClockOutReqRow[]>([]);
-  const [ciRows, setCiRows] = useState<ClockInReqRow[]>([]);
+  const [f, setF] = useFiltrosDeAsistencia();
+  const opciones = useOpcionesDeFiltro();
+  const [corr, setCorr] = useState<Cola<CorrectionRow>>(colaVacia);
+  const [co, setCo] = useState<Cola<ClockOutReqRow>>(colaVacia);
+  const [ci, setCi] = useState<Cola<ClockInReqRow>>(colaVacia);
+  const rows = corr.rows;
+  const coRows = co.rows;
+  const ciRows = ci.rows;
+  const [paginas, setPaginas] = useState({ corr: 1, co: 1, ci: 1 });
+  const [sel, setSel] = useState<{ corr: string[]; co: string[]; ci: string[] }>({ corr: [], co: [], ci: [] });
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
   const load = useCallback((opts?: { silent?: boolean }) => {
     if (!opts?.silent) setLoading(true);
+    const filtro = { guardId: f.guard || undefined, stationId: f.station || undefined };
+    const leer = <T,>(
+      pedir: () => Promise<any>,
+      poner: (c: Cola<T>) => void,
+      page: number,
+    ) =>
+      pedir()
+        .then((r) => poner({ rows: r?.rows || [], total: Number(r?.count) || 0, page, error: null }))
+        // A queue that failed says so; it never reads as «todo al día».
+        .catch((e) => poner({ rows: [], total: 0, page, error: e?.message || t("ui.Asistencia.noSeCargo", "No se pudo cargar") }));
+
     Promise.all([
-      attendanceService
-        .corrections({ "filter[status]": "pending", limit: 100 })
-        .then((r) => setRows(r.rows || []))
-        .catch(() => {}),
-      attendanceService
-        .clockOutRequests({ status: "pending", limit: 100 })
-        .then((r) => setCoRows(r.rows || []))
-        .catch(() => {}),
-      attendanceService
-        .clockInRequests({ status: "pending", limit: 100 })
-        .then((r) => setCiRows(r.rows || []))
-        .catch(() => {}),
+      leer<CorrectionRow>(
+        () => attendanceService.corrections({
+          "filter[status]": "pending",
+          "filter[guardId]": filtro.guardId,
+          "filter[stationId]": filtro.stationId,
+          limit: POR_COLA,
+          offset: (paginas.corr - 1) * POR_COLA,
+        }),
+        setCorr,
+        paginas.corr,
+      ),
+      leer<ClockOutReqRow>(
+        () => attendanceService.clockOutRequests({ status: "pending", ...filtro, limit: POR_COLA, offset: (paginas.co - 1) * POR_COLA }),
+        setCo,
+        paginas.co,
+      ),
+      leer<ClockInReqRow>(
+        () => attendanceService.clockInRequests({ status: "pending", ...filtro, limit: POR_COLA, offset: (paginas.ci - 1) * POR_COLA }),
+        setCi,
+        paginas.ci,
+      ),
     ]).finally(() => {
       if (!opts?.silent) setLoading(false);
     });
-  }, []);
+  }, [f.guard, f.station, paginas]);
+
+  useEffect(() => setSel({ corr: [], co: [], ci: [] }), [f.guard, f.station, paginas]);
+
+  /** Approve or reject everything selected in one queue, each on its own. */
+  const decidirSeleccion = async (cola: "corr" | "co" | "ci", accion: "approve" | "reject") => {
+    const ids = sel[cola];
+    if (!ids.length) return;
+    const kind: TipoDeDecision = cola === "corr" ? "correction" : cola === "co" ? "clockOut" : "clockIn";
+    setBusy(true);
+    try {
+      const r = await attendanceService.decisions(ids.map((id) => ({ kind, id, action: accion })));
+      avisarLote(t, r);
+      setSel((p) => ({ ...p, [cola]: [] }));
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || t("ui.Asistencia.lote.error", "error"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** Selection props + batch bar + pager of one queue's table. */
+  const tablaDe = <T extends { id: string }>(cola: "corr" | "co" | "ci", c: Cola<T>) => ({
+    ...(aprobar.puede
+      ? {
+          selectedIds: sel[cola],
+          onSelectOne: (id: string, checked: boolean) =>
+            setSel((p) => ({ ...p, [cola]: checked ? [...p[cola], id] : p[cola].filter((x) => x !== id) })),
+          onSelectAll: (checked: boolean) => setSel((p) => ({ ...p, [cola]: checked ? c.rows.map((r) => r.id) : [] })),
+          toolbar:
+            sel[cola].length > 0 ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-semibold">
+                  {t("ui.NominaRecords.seleccionadas", { count: sel[cola].length, defaultValue: "{{count}} seleccionada(s)" })}
+                </span>
+                <Button disabled={busy} size="sm" onClick={() => decidirSeleccion(cola, "approve")}>
+                  {t("ui.DocumentPacketPublic.approveButton", "Aprobar")}
+                </Button>
+                <Button disabled={busy} size="sm" variant="outline" onClick={() => decidirSeleccion(cola, "reject")}>
+                  {t("revision.rechazar", "Rechazar")}
+                </Button>
+              </div>
+            ) : undefined,
+        }
+      : {}),
+    footer:
+      c.total > POR_COLA ? (
+        <Pagination
+          page={c.page}
+          pageSize={POR_COLA}
+          total={c.total}
+          onPageChange={(n) => setPaginas((p) => ({ ...p, [cola]: n }))}
+        />
+      ) : undefined,
+  });
+
+  const avisoDeError = (c: Cola<unknown>) =>
+    c.error ? (
+      <div
+        className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl px-4 py-3 text-sm font-medium"
+        role="alert"
+        style={{ background: "color-mix(in oklab, var(--bad) 12%, transparent)", color: "var(--bad-text)" }}
+      >
+        <span>{c.error}</span>
+        <Button size="sm" variant="outline" onClick={() => load()}>
+          {t("ui.Asistencia.reintentar", "Reintentar")}
+        </Button>
+      </div>
+    ) : null;
 
   useEffect(() => {
     load();
@@ -423,17 +534,21 @@ export default function NominaApprovals() {
             !loading && (
               <StatusBadge
                 tone={
-                  ciRows.length + coRows.length + rows.length > 0
-                    ? "warn"
-                    : "ok"
+                  ci.error || co.error || corr.error
+                    ? "bad"
+                    : ci.total + co.total + corr.total > 0
+                      ? "warn"
+                      : "ok"
                 }
               >
-                {ciRows.length + coRows.length + rows.length > 0
-                  ? t("ui.NominaApprovals.enEspera", {
-                      count: ciRows.length + coRows.length + rows.length,
-                      defaultValue: "{{count}} en espera",
-                    })
-                  : t("ui.NominaApprovals.todoAlDia", "Todo al día")}
+                {ci.error || co.error || corr.error
+                  ? t("ui.Asistencia.noSeCargo", "No se pudo cargar")
+                  : ci.total + co.total + corr.total > 0
+                    ? t("ui.NominaApprovals.enEspera", {
+                        count: ci.total + co.total + corr.total,
+                        defaultValue: "{{count}} en espera",
+                      })
+                    : t("ui.NominaApprovals.todoAlDia", "Todo al día")}
               </StatusBadge>
             )
           }
@@ -442,6 +557,31 @@ export default function NominaApprovals() {
           title={t("sidebar.asistencia.aprobaciones", "Aprobaciones")}
         />
 
+        <Toolbar>
+          <SelectorDeFiltro
+            ariaLabel={t("comun.vigilante", "Vigilante")}
+            icono={<Users className="size-4" style={{ color: "var(--ink-faint)" }} />}
+            options={opciones.guards}
+            todos={t("ui.NominaRecords.todosLosTrabajadores", "Todos los trabajadores")}
+            value={f.guard}
+            onChange={(v) => {
+              setPaginas({ corr: 1, co: 1, ci: 1 });
+              setF({ guard: v });
+            }}
+          />
+          <SelectorDeFiltro
+            ariaLabel={t("comun.puesto", "Puesto")}
+            icono={<MapPin className="size-4" style={{ color: "var(--ink-faint)" }} />}
+            options={opciones.stations}
+            todos={t("ui.Asistencia.todosLosPuestos", "Todos los puestos")}
+            value={f.station}
+            onChange={(v) => {
+              setPaginas({ corr: 1, co: 1, ci: 1 });
+              setF({ station: v });
+            }}
+          />
+        </Toolbar>
+
         {loading ? (
           <SkeletonCards count={6} />
         ) : (
@@ -449,10 +589,10 @@ export default function NominaApprovals() {
             {/* Late clock-in requests */}
             <Section
               action={
-                ciRows.length > 0 && (
+                ci.total > 0 && (
                   <StatusBadge dot={false} tone="warn">
                     {t("ui.NominaApprovals.pendientes", {
-                      count: ciRows.length,
+                      count: ci.total,
                       defaultValue: "{{count}} pendiente(s)",
                     })}
                   </StatusBadge>
@@ -464,7 +604,9 @@ export default function NominaApprovals() {
                 "Entradas tardías",
               )}
             >
+              {avisoDeError(ci)}
               <DataTable
+                {...tablaDe("ci", ci)}
                 columns={ciColumns}
                 data={ciRows}
                 emptyState={
@@ -485,10 +627,10 @@ export default function NominaApprovals() {
             {/* Early clock-out requests */}
             <Section
               action={
-                coRows.length > 0 && (
+                co.total > 0 && (
                   <StatusBadge dot={false} tone="warn">
                     {t("ui.NominaApprovals.pendientes", {
-                      count: coRows.length,
+                      count: co.total,
                       defaultValue: "{{count}} pendiente(s)",
                     })}
                   </StatusBadge>
@@ -497,7 +639,9 @@ export default function NominaApprovals() {
               icon={<LogOut />}
               title={t("ui.NominaApprovals.salidasAnticipadas", "Salidas anticipadas")}
             >
+              {avisoDeError(co)}
               <DataTable
+                {...tablaDe("co", co)}
                 columns={coColumns}
                 data={coRows}
                 emptyState={
@@ -517,10 +661,10 @@ export default function NominaApprovals() {
             {/* Manual corrections */}
             <Section
               action={
-                rows.length > 0 && (
+                corr.total > 0 && (
                   <StatusBadge dot={false} tone="brand">
                     {t("ui.NominaApprovals.pendientes", {
-                      count: rows.length,
+                      count: corr.total,
                       defaultValue: "{{count}} pendiente(s)",
                     })}
                   </StatusBadge>
@@ -529,7 +673,9 @@ export default function NominaApprovals() {
               icon={<PencilLine />}
               title={t("ui.NominaApprovals.correccionesManuales", "Correcciones manuales")}
             >
+              {avisoDeError(corr)}
               <DataTable
+                {...tablaDe("corr", corr)}
                 columns={columns}
                 data={rows}
                 emptyState={

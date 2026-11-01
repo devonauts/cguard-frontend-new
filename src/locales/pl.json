@@ -5600,7 +5600,8 @@
       "aprobaciones": "Zatwierdzenia",
       "horas-periodo": "Godziny okresu",
       "configuracion": "Ustawienia",
-      "coberturaEnVivo": "Obsada na żywo"
+      "coberturaEnVivo": "Obsada na żywo",
+      "atrasos": "Spóźnienia w tygodniu"
     }
   },
   "siteTour": {
@@ -19666,6 +19667,46 @@
       "reintentar": "Spróbuj ponownie",
       "mostrandoDe": "Wyświetlono {{mostrados}} z {{total}}",
       "verMas": "Pokaż więcej"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "Wszystkie posterunki",
+      "sucursal": "Oddział",
+      "todasLasSucursales": "Wszystkie oddziały",
+      "reintentar": "Spróbuj ponownie",
+      "horasDeEstaPagina": "Godziny netto na tej stronie:",
+      "aprobarMarcaciones": "Zatwierdź odbicia",
+      "rechazarMarcaciones": "Odrzuć odbicia",
+      "confirmarLote": "Zostanie rozpatrzonych {{count}} odbić, każde osobno. Te z zamkniętych dni płacowych lub spoza Twoich obiektów pozostaną bez zmian – pokażę, które.",
+      "decidir": "Rozstrzygnij",
+      "todasLasFechas": "Wszystkie daty",
+      "porFechas": "Według dat",
+      "resolverSeleccion": "Rozwiąż",
+      "reconocerSeleccion": "Potwierdź",
+      "noSeCargo": "Nie udało się wczytać",
+      "persona": "Osoba",
+      "vecesTarde": "Spóźnienia",
+      "minutosTotales": "Łączny czas",
+      "peorDia": "Najgorszy dzień",
+      "verMarcas": "Zobacz odbicia",
+      "atrasosSubtitulo": "Kto się spóźnił, ile razy i o ile – w czasie firmy",
+      "resumenAtrasos": "{{personas}} os. · {{marcas}} spóźnień",
+      "sinAtrasosDescripcion": "W tych dniach nikt się nie spóźnił. Użyj strzałek, aby zobaczyć inne tygodnie.",
+      "sinAtrasos": "Brak spóźnień",
+      "llegaron": "Przybyli",
+      "dePermiso": "Na urlopie lub zwolnieniu",
+      "aunPorLlegar": "Jeszcze nie przyszli",
+      "comoSeCuenta": "Liczy się dzień firmy, w jej czasie. Zmiana nocna liczy się w dniu rozpoczęcia; zastępstwo to jedno miejsce; kto nie odbił się 20 minut po rozpoczęciu, liczy się jako nieobecny.",
+      "lote": {
+        "diaCerrado": "zamknięty dzień płacowy",
+        "noEncontrado": "już nie istnieje lub spoza Twoich obiektów",
+        "yaDecidida": "ktoś inny już zdecydował",
+        "yaPagada": "już opłacone",
+        "bloqueada": "okres zamknięty",
+        "faltaNota": "firma wymaga notatki",
+        "error": "błąd",
+        "listo": "Rozstrzygnięto: {{count}}",
+        "parcial": "Rozstrzygnięto: {{ok}}, bez zmian: {{failed}}"
+      }
     }
   },
   "visitantes": {

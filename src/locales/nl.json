@@ -5594,7 +5594,8 @@
       "aprobaciones": "Goedkeuringen",
       "horas-periodo": "Uren van de periode",
       "configuracion": "Instellingen",
-      "coberturaEnVivo": "Live dekking"
+      "coberturaEnVivo": "Live dekking",
+      "atrasos": "Te laat deze week"
     }
   },
   "siteTour": {
@@ -19370,6 +19371,46 @@
       "reintentar": "Opnieuw proberen",
       "mostrandoDe": "{{mostrados}} van {{total}} getoond",
       "verMas": "Meer tonen"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "Alle posten",
+      "sucursal": "Vestiging",
+      "todasLasSucursales": "Alle vestigingen",
+      "reintentar": "Opnieuw proberen",
+      "horasDeEstaPagina": "Netto-uren op deze pagina:",
+      "aprobarMarcaciones": "Registraties goedkeuren",
+      "rechazarMarcaciones": "Registraties afwijzen",
+      "confirmarLote": "{{count}} registratie(s) worden elk afzonderlijk beslist. Die op afgesloten loondagen of buiten je locaties blijven zoals ze zijn, en je ziet welke.",
+      "decidir": "Beslissen",
+      "todasLasFechas": "Alle data",
+      "porFechas": "Op datum",
+      "resolverSeleccion": "Afhandelen",
+      "reconocerSeleccion": "Bevestigen",
+      "noSeCargo": "Kon niet laden",
+      "persona": "Persoon",
+      "vecesTarde": "Keer te laat",
+      "minutosTotales": "Totale tijd",
+      "peorDia": "Slechtste dag",
+      "verMarcas": "Registraties bekijken",
+      "atrasosSubtitulo": "Wie te laat kwam, hoe vaak en hoeveel, in bedrijfstijd",
+      "resumenAtrasos": "{{personas}} persoon/personen · {{marcas}} keer te laat",
+      "sinAtrasosDescripcion": "Niemand kwam te laat op deze dagen. Gebruik de pijlen voor andere weken.",
+      "sinAtrasos": "Niemand te laat",
+      "llegaron": "Aangekomen",
+      "dePermiso": "Met verlof of vakantie",
+      "aunPorLlegar": "Nog te komen",
+      "comoSeCuenta": "De bedrijfsdag telt in bedrijfstijd. Een nachtdienst telt op de dag dat hij begint; een vervanging is één plek; wie 20 minuten na de start niet heeft ingeklokt, telt als afwezig.",
+      "lote": {
+        "diaCerrado": "loondag afgesloten",
+        "noEncontrado": "bestaat niet meer of niet van jouw locaties",
+        "yaDecidida": "iemand anders heeft al beslist",
+        "yaPagada": "al betaald",
+        "bloqueada": "periode afgesloten",
+        "faltaNota": "het bedrijf vraagt een notitie",
+        "error": "fout",
+        "listo": "{{count}} beslist",
+        "parcial": "{{ok}} beslist, {{failed}} ongewijzigd"
+      }
     }
   },
   "visitantes": {

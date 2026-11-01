@@ -373,6 +373,9 @@ const NominaTimeClock = lazy(
 );
 const NominaRecords = lazy(() => import("./pages/admin/nomina/NominaRecords"));
 const NominaGusto = lazy(() => import("./pages/admin/nomina/NominaGusto"));
+const NominaAtrasos = lazy(
+  () => import("./pages/admin/nomina/NominaAtrasos"),
+);
 const NominaExceptions = lazy(
   () => import("./pages/admin/nomina/NominaExceptions"),
 );
@@ -1947,6 +1950,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/exceptions"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <NominaAtrasos />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/atrasos"
                               />
                               <Route
                                 element={
