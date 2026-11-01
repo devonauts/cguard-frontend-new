@@ -65,6 +65,10 @@ export const ACCIONES = {
   "turnos.publicarPlanificador": { permiso: "stationEdit", nivel: NIVEL.OFICINA },
   "cobertura.registrar": { permiso: "coverageCreate", nivel: NIVEL.OFICINA },
   "cobertura.trasladar": { permiso: "coverageTransfer", nivel: NIVEL.OFICINA },
+  // «Registrar entrada» (the person is at the post and cannot clock in): its
+  // own permission since 2026-11, so the central can have it without editing
+  // every timecard (server: POST coverage/manual-clock-in).
+  "cobertura.registrarEntrada": { permiso: "coverageClockInOnBehalf", nivel: NIVEL.OFICINA },
   "dobletes.gestionar": { permiso: "dobletesManage", nivel: NIVEL.OFICINA },
   "intercambio.decidir": { permiso: "shiftExchangeRequestEdit" },
   // ── Permisos y vacaciones ──

@@ -124,6 +124,8 @@ export interface OfferSearch {
     windowEnd: string;
     station?: StationRef | null;
     absentGuardName?: string | null;
+    /** 'vacancy': an empty seat, nobody absent. */
+    kind?: string | null;
   } | null;
   counts?: Partial<OfferCounts>;
   /** Only in the detail (`GET searches/:id`), not in the list. */
@@ -421,6 +423,7 @@ export function normalizarBusqueda(r: Raw): OfferSearch {
                 }
               : null),
           absentGuardName: ev.absentGuardName ?? null,
+          kind: ev.kind ?? null,
         }
       : null,
     counts: r.counts ?? undefined,
@@ -708,13 +711,23 @@ const real = {
       unwrap(await api.get(`${base()}/searches/${enc(id)}`, SILENT)),
     );
   },
+  /**
+   * Start a search on a novedad (`eventId`) or on an empty seat (`vacancy`):
+   * the server opens the seat as a vacancy in the same call.
+   */
   async start(body: {
-    eventId: string;
+    eventId?: string;
+    vacancy?:
+      | { shiftId: string }
+      | { stationId: string; windowStart: string; windowEnd: string };
     bonusCents?: number | null;
     urgent?: boolean;
     pickedUserIds?: string[];
   }): Promise<OfferSearch> {
-    const cuerpo: Raw = { eventId: body.eventId, urgent: !!body.urgent };
+    const cuerpo: Raw = { urgent: !!body.urgent };
+
+    if (body.eventId) cuerpo.eventId = body.eventId;
+    else if (body.vacancy) cuerpo.vacancy = body.vacancy;
 
     // Omitted = the company default (plus the urgent bonus when urgent).
     if (body.bonusCents != null) cuerpo.bonusCents = body.bonusCents;

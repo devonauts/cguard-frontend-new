@@ -6475,7 +6475,8 @@
       "transporte": "Transportproblem",
       "transferencia_operativa": "Operative Verlegung",
       "refuerzo_cliente": "Zusätzliche Kraft angefordert",
-      "otro": "Sonstiges"
+      "otro": "Sonstiges",
+      "puesto_vacante": "Unbesetzter Platz"
     },
     "status": {
       "covered": "Besetzt",
@@ -19424,7 +19425,8 @@
       "noSePudoOfrecer": "Konnte nicht angeboten werden",
       "sinRequisitoAyuda": "Hier erscheinen Fehlzeiten, leere Plätze und Abwesenheiten ohne Vertretung. Damit klar ist, was fehlt, muss jede Station sagen, wie viele Wachleute sie braucht.",
       "irAEstaciones": "Bedarf einer Station festlegen",
-      "sinRequisitoTitulo": "Noch keine Station mit Bedarf"
+      "sinRequisitoTitulo": "Noch keine Station mit Bedarf",
+      "ofrecido": "Angeboten"
     },
     "HorarioModos": {
       "modos": "Dienstplanmodus",

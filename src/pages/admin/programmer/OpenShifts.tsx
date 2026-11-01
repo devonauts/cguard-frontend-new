@@ -129,6 +129,9 @@ export default function OpenShifts() {
   const conDobletes = useEntitlement("dobletes");
   const puedeCubrir =
     hasPermission("coverageCreate") || hasPermission("shiftEdit");
+  // The offer ends in a coverage assignment: Dobletes asks for both.
+  const puedeOfrecer =
+    hasPermission("dobletesManage") && hasPermission("coverageCreate");
   const hoy = hoyEnLaEmpresa();
 
   const [desde, setDesde] = useState(hoy);
@@ -472,6 +475,11 @@ export default function OpenShifts() {
                               <span className="min-w-0 flex-1 truncate text-sm">
                                 {quien(g)}
                               </span>
+                              {g.vacancy && !g.ended && (
+                                <StatusBadge dot={false} tone="info">
+                                  {t("ui.SinCubrir.ofrecido", "Ofrecido")}
+                                </StatusBadge>
+                              )}
                               {g.ended ? (
                                 <span
                                   className="text-xs"
@@ -483,7 +491,7 @@ export default function OpenShifts() {
                                 <div className="flex shrink-0 gap-2">
                                   {conDobletes &&
                                     admiteDobletes(g) &&
-                                    puedeCubrir && (
+                                    puedeOfrecer && (
                                       <Button
                                         disabled={oferta.enviando === g.key}
                                         size="sm"

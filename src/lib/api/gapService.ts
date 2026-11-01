@@ -35,6 +35,11 @@ export interface Gap {
   guardName: string | null;
   absenceReason: string | null;
   coverageEventId: string | null;
+  /**
+   * `coverageEventId` is an open vacancy: an empty seat opened to be offered
+   * (Dobletes). Covering it goes through that event.
+   */
+  vacancy?: boolean;
   ended: boolean;
 }
 

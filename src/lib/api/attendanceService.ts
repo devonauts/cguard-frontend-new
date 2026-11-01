@@ -295,8 +295,10 @@ const attendanceService = {
   }> {
     const t = getTenantId();
 
+    // Cobertura's own door (permission coverageClockInOnBehalf); the old
+    // `attendance/manual-clock-in` (attendanceEdit) stays for cached bundles.
     return unwrap(
-      await api.post(`/tenant/${t}/attendance/manual-clock-in`, { data }),
+      await api.post(`/tenant/${t}/coverage/manual-clock-in`, { data }),
     );
   },
 

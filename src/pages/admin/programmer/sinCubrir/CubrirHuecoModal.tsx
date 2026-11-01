@@ -10,9 +10,7 @@ import gapService, { type Gap, type GapCandidate } from "@/lib/api/gapService";
 import { soloFechaCivil, soloHora } from "@/lib/horaDeLaEmpresa";
 import {
   leerRespuestaDeError,
-  necesitaReportarFalta,
   peticionParaCubrir,
-  peticionParaReportarFalta,
   type Confirmaciones,
   type Peticion,
 } from "@/lib/cubrirHueco";
@@ -53,8 +51,6 @@ export default function CubrirHuecoModal({
     texto: string;
   } | null>(null);
   const [ok, setOk] = useState<Confirmaciones>({});
-  // A falta reported by this dialog keeps its novedad for the retries.
-  const [eventoId, setEventoId] = useState<string | null>(gap.coverageEventId);
 
   useEffect(() => {
     let vivo = true;
@@ -85,21 +81,11 @@ export default function CubrirHuecoModal({
     if (!elegido) return;
     setEnviando(true);
     try {
-      let g: Gap = { ...gap, coverageEventId: eventoId };
-
-      if (necesitaReportarFalta(g)) {
-        const ev: any = await enviar(peticionParaReportarFalta(tenant(), g));
-        const id = String(ev?.id || ev?.data?.id || "");
-
-        if (!id)
-          throw new Error(
-            t("ui.SinCubrir.faltaSinNovedad", "No se pudo registrar la falta"),
-          );
-        setEventoId(id);
-        g = { ...g, coverageEventId: id };
-      }
+      /* One call per cover. A falta not reported yet is reported and covered
+         in the same transaction (coverage/report-and-cover): a refusal writes
+         nothing, so the confirmed retry is the same call with the flag. */
       await enviar(
-        peticionParaCubrir(tenant(), g, elegido.guardId, confirmaciones),
+        peticionParaCubrir(tenant(), gap, elegido.guardId, confirmaciones),
       );
       toast.success(
         t("ui.SinCubrir.cubierto", {

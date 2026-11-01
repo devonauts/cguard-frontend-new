@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   admiteDobletes,
   agruparPorDiaYEstacion,
+  inicioDeOferta,
   leerRespuestaDeError,
   necesitaReportarFalta,
   peticionParaCubrir,
@@ -80,6 +81,39 @@ describe("cubrir un hueco · cada tipo por su camino", () => {
     });
   });
 
+  it("a falta not reported yet is reported and covered in ONE call", () => {
+    const p = peticionParaCubrir("T", { ...base, kind: "no_show" }, "g9", {
+      allowRestDay: true,
+    });
+
+    expect(p).toEqual({
+      method: "POST",
+      path: "/tenant/T/coverage/report-and-cover",
+      body: {
+        data: {
+          guardId: "g1",
+          shiftId: "s1",
+          reason: "no_call_no_show",
+          coveringGuardId: "g9",
+          allowRestDay: true,
+        },
+      },
+    });
+  });
+
+  it("an empty seat already offered is covered through its vacancy", () => {
+    for (const kind of ["empty_slot", "open_shift", "archived_guard"] as const) {
+      const p = peticionParaCubrir(
+        "T",
+        { ...base, kind, coverageEventId: "v1", vacancy: true },
+        "g9",
+      );
+
+      expect(p.path).toBe("/tenant/T/coverage/events/v1/cover");
+      expect(p.body).toEqual({ data: { coveringGuardId: "g9" } });
+    }
+  });
+
   it("an empty plaza becomes a reinforcement at that station for that window", () => {
     const p = peticionParaCubrir(
       "T",
@@ -144,6 +178,7 @@ describe("sin cubrir · dobletes y agrupado", () => {
         ended: false,
       }),
     ).toBe(true);
+    // An empty seat is offered as a vacancy (opened on the first offer).
     expect(
       admiteDobletes({
         kind: "empty_slot",
@@ -151,6 +186,15 @@ describe("sin cubrir · dobletes y agrupado", () => {
         shiftId: null,
         guardId: null,
         ended: false,
+      }),
+    ).toBe(true);
+    expect(
+      admiteDobletes({
+        kind: "empty_slot",
+        coverageEventId: null,
+        shiftId: null,
+        guardId: null,
+        ended: true,
       }),
     ).toBe(false);
     expect(
@@ -162,6 +206,42 @@ describe("sin cubrir · dobletes y agrupado", () => {
         ended: true,
       }),
     ).toBe(false);
+  });
+  it("the offer starts on the novedad, or on the seat for an empty one", () => {
+    expect(
+      inicioDeOferta({ ...base, kind: "leave", coverageEventId: "e1" }),
+    ).toEqual({ eventId: "e1" });
+    expect(
+      inicioDeOferta({
+        ...base,
+        kind: "empty_slot",
+        shiftId: null,
+        guardId: null,
+      }),
+    ).toEqual({
+      vacancy: {
+        stationId: "st1",
+        windowStart: base.startTime,
+        windowEnd: base.endTime,
+      },
+    });
+    expect(
+      inicioDeOferta({ ...base, kind: "open_shift", guardId: null }),
+    ).toEqual({ vacancy: { shiftId: "s1" } });
+    // A stale event on an archived guard's shift is not the vacancy.
+    expect(
+      inicioDeOferta({ ...base, kind: "archived_guard", coverageEventId: "old" }),
+    ).toEqual({ vacancy: { shiftId: "s1" } });
+    expect(
+      inicioDeOferta({
+        ...base,
+        kind: "empty_slot",
+        coverageEventId: "v1",
+        vacancy: true,
+      }),
+    ).toEqual({ eventId: "v1" });
+    // An unreported falta has nothing to start on yet: it is reported first.
+    expect(inicioDeOferta({ ...base, kind: "no_show" })).toBeNull();
   });
   it("groups by day then station, in the server's order", () => {
     const g = agruparPorDiaYEstacion([

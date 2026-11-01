@@ -386,12 +386,14 @@ export function crearApiDeDemo(): DobletesApi {
     },
     async start(body) {
       await espera(400);
+      // A vacancy (empty seat) gets its event id here, as the server would.
+      const eventId = body.eventId ?? id();
       const picked = body.pickedUserIds?.length
         ? PERSONAS.filter((p) => body.pickedUserIds!.includes(p.id))
         : PERSONAS.slice(0, e.settings.waveSizes[0] ?? 3);
       const s: OfferSearch = {
         id: id(),
-        coverageEventId: body.eventId,
+        coverageEventId: eventId,
         status: "active",
         source: "office",
         startedBy: { id: "me", name: "Tú" },
@@ -409,8 +411,8 @@ export function crearApiDeDemo(): DobletesApi {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         event: {
-          id: body.eventId,
-          reason: "enfermedad",
+          id: eventId,
+          reason: body.vacancy ? "puesto_vacante" : "enfermedad",
           windowStart: enMin(30),
           windowEnd: enMin(30 + 12 * 60),
           station: {

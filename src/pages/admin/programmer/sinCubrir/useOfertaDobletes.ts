@@ -6,14 +6,18 @@ import { ApiService } from "@/services/api/apiService";
 import { dobletesService } from "@/lib/api/dobletesService";
 import type { Gap } from "@/lib/api/gapService";
 import {
+  inicioDeOferta,
   necesitaReportarFalta,
   peticionParaReportarFalta,
 } from "@/lib/cubrirHueco";
 
 /**
- * «Ofrecer» a gap through Dobletes: the offer search needs the gap's novedad,
- * so a falta nobody reported yet is reported first (without a replacement).
- * Leave and open shifts with a novedad are offered as they are.
+ * «Ofrecer» a gap through Dobletes. The offer search hangs off a novedad:
+ *   · a falta nobody reported yet is reported first (without a replacement);
+ *   · an empty seat (a plaza the schedule leaves empty, a shift without a
+ *     guard or held by an archived one) is sent as the seat itself and the
+ *     server opens it as a vacancy in the same call;
+ *   · leave and anything else with a novedad is offered as it is.
  */
 export function useOfertaDobletes() {
   const { t } = useTranslation();
@@ -22,22 +26,23 @@ export function useOfertaDobletes() {
   const ofrecer = async (gap: Gap): Promise<boolean> => {
     setEnviando(gap.key);
     try {
-      let eventId = gap.coverageEventId;
+      let inicio = inicioDeOferta(gap);
 
-      if (!eventId && necesitaReportarFalta(gap)) {
+      if (!inicio && necesitaReportarFalta(gap)) {
         const p = peticionParaReportarFalta(
           localStorage.getItem("tenantId") || "",
           gap,
         );
         const ev: any = await ApiService.post(p.path, p.body);
+        const eventId = String(ev?.id || ev?.data?.id || "");
 
-        eventId = String(ev?.id || ev?.data?.id || "") || null;
+        if (eventId) inicio = { eventId };
       }
-      if (!eventId)
+      if (!inicio)
         throw new Error(
           t("ui.SinCubrir.faltaSinNovedad", "No se pudo registrar la falta"),
         );
-      await dobletesService.start({ eventId });
+      await dobletesService.start(inicio);
       toast.success(
         t(
           "ui.SinCubrir.ofertaEnviada",
