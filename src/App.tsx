@@ -1936,7 +1936,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaRecords />
+                                    <RutaConPermiso permisos={["attendanceRead"]}>
+                                      <NominaRecords />
+                                    </RutaConPermiso>
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/records"
@@ -2100,7 +2102,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaTimecards />
+                                    <RutaConPermiso permisos={["attendanceRead"]}>
+                                      <NominaTimecards />
+                                    </RutaConPermiso>
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/timecards"
