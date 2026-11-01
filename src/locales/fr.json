@@ -8963,7 +8963,8 @@
         "truck": "Camion",
         "van": "Fourgonnette"
       },
-      "exportError": "Impossible de générer le fichier"
+      "exportError": "Impossible de générer le fichier",
+      "invalidNumber": "La capacité et la durée doivent être de 0 ou plus (vide = sans limite)."
     },
     "patrolQr": {
       "empty": "Aucun point de contrôle pour l'instant. Créez-les dans la section « Rondes de sécurité », puis revenez ici pour générer leurs QR.",

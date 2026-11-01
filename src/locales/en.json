@@ -6769,7 +6769,8 @@
         "truck": "Truck",
         "van": "Van"
       },
-      "exportError": "The file could not be generated"
+      "exportError": "The file could not be generated",
+      "invalidNumber": "Capacity and stay must be 0 or more (empty = no limit)."
     },
     "patrolQr": {
       "empty": "No checkpoints yet. Create them under \"Security patrols\" and come back here to generate their QR codes.",

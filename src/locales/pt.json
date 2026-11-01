@@ -7640,7 +7640,8 @@
         "truck": "Caminhão",
         "van": "Furgão"
       },
-      "exportError": "Não foi possível gerar o arquivo"
+      "exportError": "Não foi possível gerar o arquivo",
+      "invalidNumber": "A capacidade e a permanência devem ser 0 ou mais (vazio = sem limite)."
     },
     "patrolQr": {
       "empty": "Ainda não há pontos de controle. Crie-os em \"Rondas de segurança\" e volte aqui para gerar os QR.",

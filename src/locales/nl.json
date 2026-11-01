@@ -8963,7 +8963,8 @@
         "truck": "Vrachtwagen",
         "van": "Bestelbus"
       },
-      "exportError": "Het bestand kon niet worden gemaakt"
+      "exportError": "Het bestand kon niet worden gemaakt",
+      "invalidNumber": "Capaciteit en verblijfsduur moeten 0 of meer zijn (leeg = geen limiet)."
     },
     "patrolQr": {
       "empty": "Er zijn nog geen controlepunten. Maak ze aan bij \"Beveiligingsrondes\" en kom hier terug om hun QR-codes te genereren.",

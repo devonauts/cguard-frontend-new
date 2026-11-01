@@ -6769,7 +6769,8 @@
         "truck": "Camión",
         "van": "Furgoneta"
       },
-      "exportError": "No se pudo generar el archivo"
+      "exportError": "No se pudo generar el archivo",
+      "invalidNumber": "El cupo y la permanencia deben ser 0 o más (vacío = sin límite)."
     },
     "patrolQr": {
       "empty": "Aún no hay puntos de control. Créalos en la sección \"Rondas de Seguridad\" y vuelve aquí para generar sus QR.",

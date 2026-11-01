@@ -8977,7 +8977,8 @@
         "truck": "Ciężarówka",
         "van": "Furgonetka"
       },
-      "exportError": "Nie udało się wygenerować pliku"
+      "exportError": "Nie udało się wygenerować pliku",
+      "invalidNumber": "Limit miejsc i czas postoju muszą wynosić 0 lub więcej (puste = bez limitu)."
     },
     "patrolQr": {
       "empty": "Nie ma jeszcze punktów kontrolnych. Prosimy utworzyć je w sekcji „Obchody ochrony” i wrócić tutaj, aby wygenerować kody QR.",

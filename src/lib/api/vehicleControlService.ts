@@ -35,6 +35,16 @@ export interface PlacaVetada {
   createdAt?: string;
 }
 
+/** «A-01, A-02 ,, B-01» → ["A-01", "A-02", "B-01"] (trimmed, no blanks, no repeats). */
+export function parseBays(text: string): string[] {
+  const out: string[] = [];
+  for (const raw of String(text || "").split(",")) {
+    const bay = raw.trim();
+    if (bay && !out.includes(bay)) out.push(bay);
+  }
+  return out;
+}
+
 const tid = () => localStorage.getItem("tenantId") || "";
 const unwrap = (r: any) => (r?.data !== undefined ? r.data : r);
 

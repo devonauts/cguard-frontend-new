@@ -8963,7 +8963,8 @@
         "truck": "Lkw",
         "van": "Transporter"
       },
-      "exportError": "Die Datei konnte nicht erstellt werden"
+      "exportError": "Die Datei konnte nicht erstellt werden",
+      "invalidNumber": "Kapazität und Verweildauer müssen 0 oder mehr sein (leer = ohne Limit)."
     },
     "patrolQr": {
       "empty": "Es gibt noch keine Kontrollpunkte. Legen Sie sie im Bereich „Sicherheitsrundgänge“ an und kehren Sie hierher zurück, um die QR-Codes zu erzeugen.",
