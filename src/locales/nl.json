@@ -6169,7 +6169,8 @@
         "asientos": "Toegevoegde gebruikers",
         "inicio": "Activering en eerste maand",
         "renovacion": "Maandelijkse verlenging",
-        "anticipo": "Vooruitbetaling"
+        "anticipo": "Vooruitbetaling",
+        "modulo": "Module"
       },
       "loadingForm": "Beveiligd formulier laden…",
       "monthlyFee": "Maandelijkse kosten",
@@ -6225,7 +6226,9 @@
         "cancelled": "De betaling is niet bevestigd. Probeer het opnieuw met „Nu betalen”."
       },
       "awaitingActivationTitle": "Je proefperiode is afgelopen",
-      "awaitingActivationMsg": "Je leverancier moet je account activeren zodat je het systeem kunt blijven gebruiken. Neem contact met hem op om het te activeren; je gegevens blijven bewaard en de veld-apps blijven gewoon werken."
+      "awaitingActivationMsg": "Je leverancier moet je account activeren zodat je het systeem kunt blijven gebruiken. Neem contact met hem op om het te activeren; je gegevens blijven bewaard en de veld-apps blijven gewoon werken.",
+      "payModule": "Betalen",
+      "payModuleDesc": "Voer uw kaart in om deze module te betalen. Het is een eenmalige betaling: die komt niet bij uw maandelijkse afschrijving."
     },
     "plan": "Abonnement",
     "removeUser": "Niet meer betalen voor deze persoon",

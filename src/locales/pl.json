@@ -6175,7 +6175,8 @@
         "asientos": "Dodani użytkownicy",
         "inicio": "Aktywacja i pierwszy miesiąc",
         "renovacion": "Odnowienie miesięczne",
-        "anticipo": "Przedpłata"
+        "anticipo": "Przedpłata",
+        "modulo": "Moduł"
       },
       "loadingForm": "Wczytywanie bezpiecznego formularza…",
       "monthlyFee": "Opłata miesięczna",
@@ -6231,7 +6232,9 @@
         "cancelled": "Płatność nie została potwierdzona. Możesz spróbować ponownie przyciskiem „Zapłać teraz”."
       },
       "awaitingActivationTitle": "Twój okres próbny dobiegł końca",
-      "awaitingActivationMsg": "Twój dostawca musi aktywować Twoje konto, abyś mógł dalej korzystać z systemu. Skontaktuj się z nim, aby je aktywować; Twoje dane są zachowane, a aplikacje terenowe działają normalnie."
+      "awaitingActivationMsg": "Twój dostawca musi aktywować Twoje konto, abyś mógł dalej korzystać z systemu. Skontaktuj się z nim, aby je aktywować; Twoje dane są zachowane, a aplikacje terenowe działają normalnie.",
+      "payModule": "Zapłać",
+      "payModuleDesc": "Wpisz dane karty, aby zapłacić za ten moduł. To płatność jednorazowa: nie dolicza się do miesięcznej opłaty."
     },
     "plan": "Plan",
     "removeUser": "Przestań płacić za tę osobę",

@@ -6169,7 +6169,8 @@
         "asientos": "Hinzugefügte Benutzer",
         "inicio": "Einrichtung und erster Monat",
         "renovacion": "Monatliche Verlängerung",
-        "anticipo": "Vorauszahlung"
+        "anticipo": "Vorauszahlung",
+        "modulo": "Modul"
       },
       "loadingForm": "Sicheres Formular wird geladen…",
       "monthlyFee": "Monatliche Gebühr",
@@ -6225,7 +6226,9 @@
         "cancelled": "Die Zahlung wurde nicht bestätigt. Sie können es mit „Jetzt bezahlen“ erneut versuchen."
       },
       "awaitingActivationTitle": "Ihr Testzeitraum ist abgelaufen",
-      "awaitingActivationMsg": "Ihr Anbieter muss Ihr Konto aktivieren, damit Sie das System weiter nutzen können. Kontaktieren Sie ihn zur Aktivierung; Ihre Daten bleiben erhalten und die Außendienst-Apps funktionieren weiterhin normal."
+      "awaitingActivationMsg": "Ihr Anbieter muss Ihr Konto aktivieren, damit Sie das System weiter nutzen können. Kontaktieren Sie ihn zur Aktivierung; Ihre Daten bleiben erhalten und die Außendienst-Apps funktionieren weiterhin normal.",
+      "payModule": "Bezahlen",
+      "payModuleDesc": "Geben Sie Ihre Karte ein, um dieses Modul zu bezahlen. Es ist eine Einmalzahlung und wird nicht zu Ihrer monatlichen Abbuchung hinzugefügt."
     },
     "plan": "Tarif",
     "removeUser": "Für diese Person nicht mehr bezahlen",
