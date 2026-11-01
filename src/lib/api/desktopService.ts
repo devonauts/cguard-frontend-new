@@ -40,6 +40,8 @@ export interface DesktopDevice {
   lastSeenAt: string | null;
   lastIp: string | null;
   lastAppVersion: string | null;
+  /** The server says the row belongs to the viewer (`mine`), or null. */
+  mine: boolean | null;
 }
 
 export interface DesktopDeviceList {
@@ -114,6 +116,7 @@ export function normalizarDispositivo(r: any): DesktopDevice | null {
     lastSeenAt: texto(r.lastSeenAt),
     lastIp: texto(r.lastIp),
     lastAppVersion: texto(r.lastAppVersion),
+    mine: typeof r.mine === "boolean" ? r.mine : null,
   };
 }
 
@@ -200,16 +203,21 @@ export const desktopService = {
       await ApiService.get(`/tenant/${enc(tenantId)}/desktop-devices`),
     );
   },
-  approve(tenantId: string, id: string) {
+  /**
+   * Approve / reject name the pairing code the admin is looking at: if the
+   * request changed meanwhile (a new code), the server answers 409
+   * `desktop.invalidTransition` instead of deciding on something unseen.
+   */
+  approve(tenantId: string, id: string, pairingCode: string | null) {
     return ApiService.post(
       `/tenant/${enc(tenantId)}/desktop-devices/${enc(id)}/approve`,
-      {},
+      { pairingCode },
     );
   },
-  reject(tenantId: string, id: string) {
+  reject(tenantId: string, id: string, pairingCode: string | null) {
     return ApiService.post(
       `/tenant/${enc(tenantId)}/desktop-devices/${enc(id)}/reject`,
-      {},
+      { pairingCode },
     );
   },
   revoke(tenantId: string, id: string) {

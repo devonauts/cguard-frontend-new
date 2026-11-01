@@ -1,6 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+const post = vi.fn(async () => ({}));
+
+vi.mock("../../services/api/apiService", () => ({
+  ApiService: { post: (...a: unknown[]) => post(...(a as [])), get: vi.fn() },
+}));
 
 import {
+  desktopService,
   normalizarDescargas,
   normalizarDispositivo,
   normalizarLista,
@@ -20,6 +27,7 @@ import {
   completarCatalogo,
   describirSistema,
   elegirDescarga,
+  esCambioDeEstado,
   estadoDelAsistente,
   sinDescargas,
 } from "./computadoras";
@@ -325,5 +333,90 @@ describe("this computer", () => {
   it("installer sizes", () => {
     expect(tamanoLegible(95 * 1024 * 1024, "en")).toBe("95 MB");
     expect(tamanoLegible(null)).toBeNull();
+  });
+});
+
+describe("desktop computers · the backend's list (2026-11-01)", () => {
+  const resp = {
+    canManage: false,
+    available: true,
+    rows: [
+      {
+        id: "a",
+        deviceId: "x",
+        user: { id: "7", name: "Ana Paz", email: "ana@x.test" },
+        mine: true,
+        name: "MacBook",
+        status: "pending",
+        pairingCode: "K7QM-2XPA",
+        decidedBy: null,
+      },
+      {
+        id: "b",
+        userName: "Luis Mora",
+        userEmail: "luis@x.test",
+        userId: "8",
+        mine: false,
+        status: "approved",
+        decidedBy: { id: "1", name: "Admin Uno", email: null },
+      },
+    ],
+  };
+
+  it("reads {rows, canManage, available}, the person and `mine`", () => {
+    const l = normalizarLista(resp);
+
+    expect(l.canManage).toBe(false);
+    expect(l.devices[0]).toMatchObject({
+      userId: "7",
+      userName: "Ana Paz",
+      userEmail: "ana@x.test",
+      mine: true,
+    });
+    expect(l.devices[1]).toMatchObject({
+      userName: "Luis Mora",
+      userEmail: "luis@x.test",
+      decidedByName: "Admin Uno",
+    });
+    // `mine` from the server wins over the user id.
+    expect(agrupar(l.devices, "8").mias.map((d) => d.id)).toEqual(["a"]);
+  });
+
+  it("409 desktop.invalidTransition = the request changed under the admin", () => {
+    expect(
+      esCambioDeEstado({
+        status: 409,
+        data: { code: "desktop.invalidTransition" },
+      }),
+    ).toBe(true);
+    expect(
+      esCambioDeEstado({
+        status: 409,
+        data: { code: 409, messageCode: "desktop.invalidTransition" },
+      }),
+    ).toBe(true);
+    expect(esCambioDeEstado({ status: 409, data: { code: "other" } })).toBe(
+      false,
+    );
+    expect(
+      esCambioDeEstado({
+        status: 400,
+        data: { code: "desktop.invalidTransition" },
+      }),
+    ).toBe(false);
+    expect(esCambioDeEstado(null)).toBe(false);
+  });
+});
+
+describe("desktop computers · decisions name the code on screen", () => {
+  it("approve/reject send {pairingCode}; revoke sends nothing extra", async () => {
+    await desktopService.approve("t1", "d1", "K7QM-2XPA");
+    await desktopService.reject("t1", "d2", "Q3TR-8WLN");
+    await desktopService.revoke("t1", "d3");
+    expect(post.mock.calls).toEqual([
+      ["/tenant/t1/desktop-devices/d1/approve", { pairingCode: "K7QM-2XPA" }],
+      ["/tenant/t1/desktop-devices/d2/reject", { pairingCode: "Q3TR-8WLN" }],
+      ["/tenant/t1/desktop-devices/d3/revoke", {}],
+    ]);
   });
 });

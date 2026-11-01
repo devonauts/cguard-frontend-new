@@ -22501,7 +22501,8 @@
       "actionError": "Não foi possível concluir. Tente de novo.",
       "loadError": "Não foi possível carregar a lista de computadores.",
       "retry": "Tentar de novo",
-      "refresh": "Atualizar"
+      "refresh": "Atualizar",
+      "changedCompare": "Esta solicitação mudou enquanto você a via. Compare de novo o código com o da tela da pessoa antes de decidir."
     },
     "download": {
       "menuItem": "App para desktop",

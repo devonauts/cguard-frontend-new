@@ -22501,7 +22501,8 @@
       "actionError": "L’opération n’a pas abouti. Réessayez.",
       "loadError": "Impossible de charger la liste des ordinateurs.",
       "retry": "Réessayer",
-      "refresh": "Actualiser"
+      "refresh": "Actualiser",
+      "changedCompare": "Cette demande a changé pendant que vous la consultiez. Comparez à nouveau le code avec celui affiché sur l’écran de la personne avant de décider."
     },
     "download": {
       "menuItem": "Application de bureau",

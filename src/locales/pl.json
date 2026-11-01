@@ -22811,7 +22811,8 @@
       "actionError": "Nie udało się. Spróbuj ponownie.",
       "loadError": "Nie udało się wczytać listy komputerów.",
       "retry": "Spróbuj ponownie",
-      "refresh": "Odśwież"
+      "refresh": "Odśwież",
+      "changedCompare": "Ta prośba zmieniła się w trakcie przeglądania. Przed decyzją ponownie porównaj kod z tym na ekranie tej osoby."
     },
     "download": {
       "menuItem": "Aplikacja desktopowa",

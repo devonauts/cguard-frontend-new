@@ -22501,7 +22501,8 @@
       "actionError": "Operazione non riuscita. Riprova.",
       "loadError": "Impossibile caricare l’elenco dei computer.",
       "retry": "Riprova",
-      "refresh": "Aggiorna"
+      "refresh": "Aggiorna",
+      "changedCompare": "Questa richiesta è cambiata mentre la guardavi. Confronta di nuovo il codice con quello sullo schermo della persona prima di decidere."
     },
     "download": {
       "menuItem": "App desktop",

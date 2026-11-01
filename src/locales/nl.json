@@ -22501,7 +22501,8 @@
       "actionError": "Dat is niet gelukt. Probeer het opnieuw.",
       "loadError": "De lijst met computers kon niet worden geladen.",
       "retry": "Opnieuw proberen",
-      "refresh": "Vernieuwen"
+      "refresh": "Vernieuwen",
+      "changedCompare": "Dit verzoek is gewijzigd terwijl je het bekeek. Vergelijk de code opnieuw met die op het scherm van de persoon voordat je beslist."
     },
     "download": {
       "menuItem": "Desktop-app",

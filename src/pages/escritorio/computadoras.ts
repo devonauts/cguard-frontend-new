@@ -43,7 +43,12 @@ export function agrupar(
     cerradas: ordenada.filter(
       (d) => d.status === "rejected" || d.status === "revoked",
     ),
-    mias: yo ? ordenada.filter((d) => d.userId === yo) : [],
+    // The server's `mine` wins; the user id is the fallback.
+    mias: ordenada.filter((d) =>
+      d.mine !== null && d.mine !== undefined
+        ? d.mine
+        : !!yo && d.userId === yo,
+    ),
   };
 }
 
@@ -223,4 +228,16 @@ export function clasificarFallo(
   if (s === 403 || s === 401) return "noElegible";
 
   return "red";
+}
+
+/** 409 `desktop.invalidTransition` (in `code` or `messageCode`). */
+export function esCambioDeEstado(e: any): boolean {
+  const d = e?.data ?? e?.details;
+
+  return (
+    Number(e?.status) === 409 &&
+    !!d &&
+    (d.code === "desktop.invalidTransition" ||
+      d.messageCode === "desktop.invalidTransition")
+  );
 }

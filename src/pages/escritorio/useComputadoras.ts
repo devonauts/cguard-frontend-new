@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-import { agrupar, describirSistema } from "./computadoras";
+import { agrupar, describirSistema, esCambioDeEstado } from "./computadoras";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthToken } from "@/lib/api";
@@ -26,7 +26,7 @@ import { cerrarSocket, crearSocket } from "@/lib/socket";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
 /** Permission that lets a non-admin role decide on computers (admins always can). */
-export const PERMISO_COMPUTADORAS = "desktopDevicesManage";
+export const PERMISO_COMPUTADORAS = "settingsEdit";
 
 const leerTenant = () => {
   try {
@@ -162,12 +162,21 @@ export function useComputadoras() {
     if (!si) return false;
     setOcupado(d.id);
     try {
-      await desktopService[accion](tenantId, d.id);
+      if (accion === "revoke") await desktopService.revoke(tenantId, d.id);
+      else await desktopService[accion](tenantId, d.id, d.pairingCode);
       toast.success(textos.ok);
       await cargar();
 
       return true;
     } catch (e: any) {
+      /* The request changed while the admin looked at it (new code, already
+         decided elsewhere): show the fresh list and ask to compare again. */
+      if (esCambioDeEstado(e)) {
+        toast.warning(t("desktopApp.devices.changedCompare"));
+        await cargar();
+
+        return false;
+      }
       toast.error(
         (typeof e?.message === "string" &&
           e.status &&

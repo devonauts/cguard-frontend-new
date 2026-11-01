@@ -22501,7 +22501,8 @@
       "actionError": "No se pudo completar. Inténtalo de nuevo.",
       "loadError": "No se pudo cargar la lista de computadoras.",
       "retry": "Reintentar",
-      "refresh": "Actualizar"
+      "refresh": "Actualizar",
+      "changedCompare": "Esta solicitud cambió mientras la mirabas. Vuelve a comparar el código con el de la pantalla de la persona antes de decidir."
     },
     "download": {
       "menuItem": "App de escritorio",

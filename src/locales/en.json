@@ -22501,7 +22501,8 @@
       "actionError": "That didn't go through. Please try again.",
       "loadError": "The list of computers couldn't be loaded.",
       "retry": "Try again",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "changedCompare": "This request changed while you were looking at it. Compare the code with the one on the person's screen again before deciding."
     },
     "download": {
       "menuItem": "Desktop app",

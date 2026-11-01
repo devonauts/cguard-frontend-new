@@ -22501,7 +22501,8 @@
       "actionError": "Das hat nicht geklappt. Bitte versuchen Sie es erneut.",
       "loadError": "Die Liste der Computer konnte nicht geladen werden.",
       "retry": "Erneut versuchen",
-      "refresh": "Aktualisieren"
+      "refresh": "Aktualisieren",
+      "changedCompare": "Diese Anfrage hat sich geändert, während Sie sie angesehen haben. Vergleichen Sie den Code erneut mit dem auf dem Bildschirm der Person, bevor Sie entscheiden."
     },
     "download": {
       "menuItem": "Desktop-App",
