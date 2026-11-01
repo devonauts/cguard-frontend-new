@@ -18223,7 +18223,10 @@
         "sucursal": "Vestiging",
         "todaLaEmpresa": "Hele bedrijf",
         "sucursalAyuda": "De loonlijst van een vestiging betaalt alleen het eigen personeel; wie in meerdere invalt, gaat in die van het hele bedrijf.",
-        "deEstaSucursal": "Loonlijst van {{nombre}}: je werkt in die vestiging."
+        "deEstaSucursal": "Loonlijst van {{nombre}}: je werkt in die vestiging.",
+        "tarjetasSinAprobar_one": "{{count}} urenkaart niet goedgekeurd in de periode. De verloning neemt hem toch mee; keur hem goed voor je publiceert.",
+        "tarjetasSinAprobar_other": "{{count}} urenkaarten niet goedgekeurd in de periode. De verloning neemt ze toch mee; keur ze goed voor je publiceert.",
+        "irAHoras": "Naar uren van de periode"
       },
       "prestamos": {
         "estado": {

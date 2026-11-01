@@ -18509,7 +18509,12 @@
         "sucursal": "Oddział",
         "todaLaEmpresa": "Cała firma",
         "sucursalAyuda": "Lista płac oddziału rozlicza tylko jego stały personel; osoby pracujące w kilku oddziałach trafiają do listy całej firmy.",
-        "deEstaSucursal": "Lista płac oddziału {{nombre}}: pracujesz w tym oddziale."
+        "deEstaSucursal": "Lista płac oddziału {{nombre}}: pracujesz w tym oddziale.",
+        "tarjetasSinAprobar_one": "{{count}} karta czasu pracy niezatwierdzona w okresie. Lista płac i tak ją uwzględnia; zatwierdź ją przed publikacją.",
+        "tarjetasSinAprobar_other": "{{count}} kart czasu pracy niezatwierdzonych w okresie. Lista płac i tak je uwzględnia; zatwierdź je przed publikacją.",
+        "irAHoras": "Przejdź do godzin okresu",
+        "tarjetasSinAprobar_few": "{{count}} karty czasu pracy niezatwierdzone w okresie. Lista płac i tak je uwzględnia; zatwierdź je przed publikacją.",
+        "tarjetasSinAprobar_many": "{{count}} kart czasu pracy niezatwierdzonych w okresie. Lista płac i tak je uwzględnia; zatwierdź je przed publikacją."
       },
       "prestamos": {
         "estado": {

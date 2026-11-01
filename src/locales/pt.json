@@ -17687,7 +17687,10 @@
         "sucursal": "Filial",
         "todaLaEmpresa": "Empresa toda",
         "sucursalAyuda": "A folha de uma filial paga só a equipe da casa; quem cobre em várias vai na da empresa toda.",
-        "deEstaSucursal": "Folha de {{nombre}}: você está trabalhando nessa filial."
+        "deEstaSucursal": "Folha de {{nombre}}: você está trabalhando nessa filial.",
+        "tarjetasSinAprobar_one": "{{count}} cartão não aprovado no período. A folha o inclui mesmo assim; aprove-o antes de publicar.",
+        "tarjetasSinAprobar_other": "{{count}} cartões não aprovados no período. A folha os inclui mesmo assim; aprove-os antes de publicar.",
+        "irAHoras": "Ir para Horas do período"
       },
       "prestamos": {
         "estado": {

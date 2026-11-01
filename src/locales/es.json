@@ -17687,7 +17687,10 @@
         "sucursal": "Sucursal",
         "todaLaEmpresa": "Toda la empresa",
         "sucursalAyuda": "La planilla de una sucursal liquida sólo a su gente de casa; quien cubre en varias va en la de toda la empresa.",
-        "deEstaSucursal": "Planilla de {{nombre}}: estás trabajando en esa sucursal."
+        "deEstaSucursal": "Planilla de {{nombre}}: estás trabajando en esa sucursal.",
+        "tarjetasSinAprobar_one": "{{count}} tarjeta sin aprobar en el periodo. La planilla la incluye igual; apruébala antes de publicar.",
+        "tarjetasSinAprobar_other": "{{count}} tarjetas sin aprobar en el periodo. La planilla las incluye igual; apruébalas antes de publicar.",
+        "irAHoras": "Ir a Horas del periodo"
       },
       "prestamos": {
         "estado": {

@@ -18223,7 +18223,10 @@
         "sucursal": "Agence",
         "todaLaEmpresa": "Toute l’entreprise",
         "sucursalAyuda": "La paie d’une agence ne règle que son personnel rattaché ; ceux qui couvrent plusieurs agences vont dans celle de toute l’entreprise.",
-        "deEstaSucursal": "Paie de {{nombre}} : vous travaillez dans cette agence."
+        "deEstaSucursal": "Paie de {{nombre}} : vous travaillez dans cette agence.",
+        "tarjetasSinAprobar_one": "{{count}} feuille de temps non approuvée sur la période. La paie l’inclut quand même ; approuvez-la avant de publier.",
+        "tarjetasSinAprobar_other": "{{count}} feuilles de temps non approuvées sur la période. La paie les inclut quand même ; approuvez-les avant de publier.",
+        "irAHoras": "Aller aux heures de la période"
       },
       "prestamos": {
         "estado": {

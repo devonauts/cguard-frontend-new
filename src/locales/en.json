@@ -17687,7 +17687,10 @@
         "sucursal": "Branch",
         "todaLaEmpresa": "Whole company",
         "sucursalAyuda": "A branch payroll only pays its home-branch staff; people who cover several branches go in the whole-company payroll.",
-        "deEstaSucursal": "Payroll for {{nombre}}: you are working in that branch."
+        "deEstaSucursal": "Payroll for {{nombre}}: you are working in that branch.",
+        "tarjetasSinAprobar_one": "{{count}} timecard not approved in the period. The run includes it anyway; approve it before publishing.",
+        "tarjetasSinAprobar_other": "{{count}} timecards not approved in the period. The run includes them anyway; approve them before publishing.",
+        "irAHoras": "Go to Period hours"
       },
       "prestamos": {
         "estado": {

@@ -417,7 +417,7 @@ const payrollSlipsService = {
     return unwrap(await api.post(`${base()}/runs`, { data: body }));
   },
 
-  async run(id: string): Promise<{ run: PayrollRun; slips: PayrollSlipRow[] }> {
+  async run(id: string): Promise<{ run: PayrollRun; slips: PayrollSlipRow[]; unapprovedTimecards?: number }> {
     return unwrap(await api.get(`${base()}/runs/${encodeURIComponent(id)}`));
   },
 

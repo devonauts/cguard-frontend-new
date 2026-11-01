@@ -112,6 +112,17 @@ export default function CorridaDetalle() {
           <SkeletonCards count={3} />
         ) : (
           <div className="space-y-4">
+            {Number(datos.data?.unapprovedTimecards) > 0 && ["review", "generating"].includes(run.status) && (
+              <InfoNote tone="warn">
+                {t("ui.RolesDePago.corridas.tarjetasSinAprobar", {
+                  count: Number(datos.data?.unapprovedTimecards),
+                  defaultValue: "{{count}} tarjetas sin aprobar en el periodo. La planilla las incluye igual; apruébalas antes de publicar.",
+                })}{" "}
+                <Link className="font-semibold underline" to={`/nomina/timecards?from=${run.periodFrom}&to=${run.periodTo}`}>
+                  {t("ui.RolesDePago.corridas.irAHoras", "Ir a Horas del periodo")}
+                </Link>
+              </InfoNote>
+            )}
             {run.status === "generating" && <InfoNote tone="info">{t("ui.RolesDePago.corridas.generando", "Se están calculando las horas del periodo (tarjetas de nómina). Esta pantalla se actualiza sola.")}</InfoNote>}
             {run.status === "error" && <InfoNote tone="bad">{t("ui.RolesDePago.corridas.fallo", "No se pudieron calcular las horas del periodo. Anula esta planilla y crea otra, o revisa las tarjetas de nómina.")}</InfoNote>}
             {run.status === "voided" && <InfoNote tone="neutral">{t("ui.RolesDePago.corridas.anulada", "Planilla anulada")}{run.voidReason ? `: ${run.voidReason}` : ""}</InfoNote>}

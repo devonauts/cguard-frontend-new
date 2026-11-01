@@ -18223,7 +18223,10 @@
         "sucursal": "Niederlassung",
         "todaLaEmpresa": "Ganzes Unternehmen",
         "sucursalAyuda": "Die Lohnliste einer Niederlassung rechnet nur ihr Stammpersonal ab; wer in mehreren einspringt, kommt in die des ganzen Unternehmens.",
-        "deEstaSucursal": "Lohnliste von {{nombre}}: Sie arbeiten in dieser Niederlassung."
+        "deEstaSucursal": "Lohnliste von {{nombre}}: Sie arbeiten in dieser Niederlassung.",
+        "tarjetasSinAprobar_one": "{{count}} Zeitkarte im Zeitraum nicht genehmigt. Die Abrechnung enthält sie trotzdem; genehmigen Sie sie vor dem Veröffentlichen.",
+        "tarjetasSinAprobar_other": "{{count}} Zeitkarten im Zeitraum nicht genehmigt. Die Abrechnung enthält sie trotzdem; genehmigen Sie sie vor dem Veröffentlichen.",
+        "irAHoras": "Zu den Stunden des Zeitraums"
       },
       "prestamos": {
         "estado": {

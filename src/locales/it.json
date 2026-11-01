@@ -18223,7 +18223,10 @@
         "sucursal": "Filiale",
         "todaLaEmpresa": "Tutta l’azienda",
         "sucursalAyuda": "Il foglio paga di una filiale liquida solo il suo personale; chi copre più filiali va in quello di tutta l’azienda.",
-        "deEstaSucursal": "Foglio paga di {{nombre}}: stai lavorando in quella filiale."
+        "deEstaSucursal": "Foglio paga di {{nombre}}: stai lavorando in quella filiale.",
+        "tarjetasSinAprobar_one": "{{count}} cartellino non approvato nel periodo. Il cedolino lo include comunque; approvalo prima di pubblicare.",
+        "tarjetasSinAprobar_other": "{{count}} cartellini non approvati nel periodo. Il cedolino li include comunque; approvali prima di pubblicare.",
+        "irAHoras": "Vai alle ore del periodo"
       },
       "prestamos": {
         "estado": {
