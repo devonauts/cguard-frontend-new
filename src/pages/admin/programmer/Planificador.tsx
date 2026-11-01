@@ -4199,7 +4199,8 @@ function FranjaEnVivo({
       }}
     >
       <AlertTriangle className="mt-0.5 shrink-0" size={18} style={{ color: "var(--warn)" }} />
-      <div className="min-w-0 flex-1">
+      {/* basis-64: on a phone the text keeps the row and the buttons wrap below. */}
+      <div className="min-w-0 flex-1 basis-64">
         <p className="font-semibold">
           {t("ui.AvisoEnVivo.franjaTitulo", {
             defaultValue: "Cambiaron en vivo lo que este borrador también cambia ({{count}})",
