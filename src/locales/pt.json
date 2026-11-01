@@ -4899,7 +4899,9 @@
       "loadError": "Não foi possível carregar as funções disponíveis.",
       "error": "Não foi possível mudar a função.",
       "hasBothRoles": "Atualmente tem os dois papéis. Ao escolher um, ficará apenas com esse.",
-      "welcomeSent": "Enviámos-lhe um email de boas-vindas com a ligação para descarregar a app de supervisor."
+      "welcomeSent": "Enviámos-lhe um email de boas-vindas com a ligação para descarregar a app de supervisor.",
+      "inviteSent": "Ainda não tinha senha: enviamos o convite para criá-la e entrar no app de supervisor.",
+      "inviteLinkReady": "Ainda não tem senha nem e-mail: compartilhe o link de acesso pela ficha de supervisor («Reenviar convite»)."
     },
     "department": {
       "title": "Departamento",

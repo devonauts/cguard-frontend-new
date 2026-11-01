@@ -2849,7 +2849,9 @@
       "loadError": "Could not load the available roles.",
       "error": "Could not change the role.",
       "hasBothRoles": "They currently hold both roles. Picking one leaves them with only that one.",
-      "welcomeSent": "We sent them a welcome email with the link to download the supervisor app."
+      "welcomeSent": "We sent them a welcome email with the link to download the supervisor app.",
+      "inviteSent": "They had no password yet: we sent them the invitation to create one and sign in to the supervisor app.",
+      "inviteLinkReady": "They have no password and no email yet: share the access link from their supervisor sheet («Resend invitation»)."
     },
     "department": {
       "title": "Department",

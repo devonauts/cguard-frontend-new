@@ -2633,7 +2633,9 @@
       "loadError": "Nie udało się wczytać dostępnych ról.",
       "error": "Nie udało się zmienić roli.",
       "hasBothRoles": "Obecnie pełni obie role. Wybór jednej pozostawi tylko tę jedną.",
-      "welcomeSent": "Wysłaliśmy powitalną wiadomość e-mail z linkiem do pobrania aplikacji nadzorcy."
+      "welcomeSent": "Wysłaliśmy powitalną wiadomość e-mail z linkiem do pobrania aplikacji nadzorcy.",
+      "inviteSent": "Ta osoba nie miała jeszcze hasła: wysłaliśmy zaproszenie, aby je utworzyć i zalogować się w aplikacji supervisora.",
+      "inviteLinkReady": "Brak hasła i adresu e-mail: udostępnij link dostępu z karty supervisora („Wyślij zaproszenie ponownie”)."
     },
     "department": {
       "title": "Dział",

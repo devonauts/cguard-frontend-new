@@ -2621,7 +2621,9 @@
       "loadError": "Impossibile caricare i ruoli disponibili.",
       "error": "Impossibile cambiare il ruolo.",
       "hasBothRoles": "Al momento ricopre entrambi i ruoli. Scegliendone uno, resterà solo con quello.",
-      "welcomeSent": "Gli abbiamo inviato un'email di benvenuto con il link per scaricare l'app supervisore."
+      "welcomeSent": "Gli abbiamo inviato un'email di benvenuto con il link per scaricare l'app supervisore.",
+      "inviteSent": "Non aveva ancora una password: gli abbiamo inviato l’invito per crearla ed entrare nell’app supervisore.",
+      "inviteLinkReady": "Non ha ancora password né e-mail: condividi il link di accesso dalla sua scheda supervisore («Reinvia invito»)."
     },
     "department": {
       "title": "Reparto",

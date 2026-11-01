@@ -2621,7 +2621,9 @@
       "loadError": "De beschikbare rollen konden niet worden geladen.",
       "error": "De rol kon niet worden gewijzigd.",
       "hasBothRoles": "Hij heeft nu beide rollen. Kies je er één, dan houdt hij alleen die.",
-      "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden."
+      "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden.",
+      "inviteSent": "Er was nog geen wachtwoord: we hebben de uitnodiging gestuurd om er een aan te maken en in te loggen in de supervisor-app.",
+      "inviteLinkReady": "Nog geen wachtwoord en geen e-mail: deel de toegangslink vanuit het supervisorprofiel („Uitnodiging opnieuw sturen”)."
     },
     "department": {
       "title": "Afdeling",

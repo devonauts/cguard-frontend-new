@@ -2621,7 +2621,9 @@
       "loadError": "Impossible de charger les rôles disponibles.",
       "error": "Impossible de changer le rôle.",
       "hasBothRoles": "La personne cumule les deux rôles. En choisir un ne lui laissera que celui-là.",
-      "welcomeSent": "Un e-mail de bienvenue lui a été envoyé avec le lien de téléchargement de l'app superviseur."
+      "welcomeSent": "Un e-mail de bienvenue lui a été envoyé avec le lien de téléchargement de l'app superviseur.",
+      "inviteSent": "Cette personne n’avait pas encore de mot de passe : nous lui avons envoyé l’invitation pour le créer et se connecter à l’application superviseur.",
+      "inviteLinkReady": "Pas encore de mot de passe ni d’e-mail : partagez le lien d’accès depuis sa fiche superviseur (« Renvoyer l’invitation »)."
     },
     "department": {
       "title": "Département",

@@ -2849,7 +2849,9 @@
       "loadError": "No se pudieron cargar los roles disponibles.",
       "error": "No se pudo cambiar el rol.",
       "hasBothRoles": "Ahora tiene los dos papeles. Al elegir uno, se quedará sólo con ese.",
-      "welcomeSent": "Le enviamos un correo de bienvenida con el enlace para descargar la app de supervisor."
+      "welcomeSent": "Le enviamos un correo de bienvenida con el enlace para descargar la app de supervisor.",
+      "inviteSent": "Todavía no tenía contraseña: le enviamos la invitación para crearla y entrar en la app de supervisor.",
+      "inviteLinkReady": "Todavía no tenía contraseña y no tiene correo: compártele el enlace de acceso desde su ficha de supervisor («Reenviar invitación»)."
     },
     "department": {
       "title": "Departamento",

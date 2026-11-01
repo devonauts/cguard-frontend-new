@@ -2621,7 +2621,9 @@
       "loadError": "Die verfügbaren Rollen konnten nicht geladen werden.",
       "error": "Die Rolle konnte nicht gewechselt werden.",
       "hasBothRoles": "Aktuell bestehen beide Rollen. Mit der Auswahl bleibt nur die gewählte bestehen.",
-      "welcomeSent": "Wir haben eine Willkommens-E-Mail mit dem Link zum Herunterladen der Supervisor-App gesendet."
+      "welcomeSent": "Wir haben eine Willkommens-E-Mail mit dem Link zum Herunterladen der Supervisor-App gesendet.",
+      "inviteSent": "Es gab noch kein Passwort: Wir haben die Einladung gesendet, um eines zu erstellen und sich in der Supervisor-App anzumelden.",
+      "inviteLinkReady": "Noch kein Passwort und keine E-Mail: Teilen Sie den Zugangslink über das Supervisor-Profil („Einladung erneut senden“)."
     },
     "department": {
       "title": "Abteilung",
