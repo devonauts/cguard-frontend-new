@@ -22822,7 +22822,7 @@
       "celular": "Telefon komórkowy",
       "celularAyuda": "Jeśli nie ma e-maila, z numerem telefonu dostaniesz link do WhatsApp.",
       "correo": "E-mail",
-      "correoAyuda": "Tu przyjdzie zaproszenie do utworzenia hasła.",
+      "correoAyuda": "Zalecane: zaproszenie dotrze samo, a hasło można odzyskać przez e-mail.",
       "sinCorreo": "Bez e-maila (loguje się nazwą użytkownika)",
       "usuario": "Nazwa użytkownika",
       "usuarioAyuda": "Opcjonalnie. Jeśli zostawisz puste, system nada nazwę.",
@@ -22830,7 +22830,8 @@
       "rolElige": "Wybierz rolę",
       "queVe": "Co może widzieć?",
       "rolVeTodo": "Ta rola z definicji widzi całą działalność: nie da się tego zawęzić.",
-      "soloSedes": "Tylko niektóre obiekty"
+      "soloSedes": "Tylko niektóre obiekty",
+      "sinCorreoAyuda": "Link przekazujesz ty: na końcu «Udostępnij przez WhatsApp» otwiera twój WhatsApp z gotową wiadomością i wysyłasz ją ze swojego telefonu. Jeśli później będzie miał e-mail, dodaj go w jego karcie."
     },
     "paso3": {
       "puestoSinRotacionVig": "Ten posterunek nie ma jeszcze rotacji",
@@ -23213,7 +23214,7 @@
     "steps": {
       "title": "Jak zacząć",
       "installTitle": "Pobierz i zainstaluj",
-      "installText": "Otwórz pobrany plik. Na Macu przeciągnij aplikację do folderu Aplikacje; w Windows postępuj zgodnie z instalatorem.",
+      "installText": "Otwórz pobrany plik. Na Macu przeciągnij aplikację do folderu Aplikacje. W Windows, jeśli pojawi się «System Windows ochronił ten komputer», kliknij «Więcej informacji», a potem «Uruchom mimo to»; następnie postępuj zgodnie z instalatorem.",
       "signInTitle": "Zaloguj się i zapisz kod",
       "signInText": "Zaloguj się swoim zwykłym adresem e-mail i hasłem. Aplikacja pokaże Ci 8-znakowy kod.",
       "approveTitle": "Administrator zatwierdza komputer",
@@ -23251,8 +23252,8 @@
       "lostA": "Unieważnij go w sekcji „Moje komputery” albo poproś o to administratora. Aplikacja przestanie działać na tym komputerze w ciągu minuty i usunie zapisane dane.",
       "severalQ": "Czy mogę jej używać na kilku komputerach?",
       "severalA": "Tak. Każdy komputer jest zatwierdzany osobno i możesz go unieważnić bez wpływu na pozostałe.",
-      "windowsQ": "Kiedy pojawi się wersja na Windows?",
-      "windowsA": "Już wkrótce. Publikujemy tylko instalatory z podpisem cyfrowym; gdy instalator dla Windows będzie gotowy, pojawi się na tej stronie."
+      "windowsQ": "Dlaczego Windows pokazuje «System Windows ochronił ten komputer»?",
+      "windowsA": "Ponieważ instalator nie ma certyfikatu Microsoft. Kliknij «Więcej informacji» i «Uruchom mimo to»; zdarza się to tylko za pierwszym razem. Bezpieczeństwo nie zależy od tego ostrzeżenia: aplikacja działa tylko na komputerze zatwierdzonym przez Twoją firmę, a każda aktualizacja jest przez nas podpisana. Jeśli ktoś ją zmieni, aplikacja ją odrzuci."
     }
   }
 }

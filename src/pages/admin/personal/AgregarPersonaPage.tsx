@@ -843,7 +843,7 @@ export default function AgregarPersonaPage() {
                           ? undefined
                           : t(
                               "agregarPersona.campos.correoAyuda",
-                              "Aquí le llega la invitación para crear su contraseña.",
+                              "Recomendado: le llega la invitación sola y puede recuperar su contraseña por correo.",
                             )
                       }
                       htmlFor="alta-correo"
@@ -889,6 +889,17 @@ export default function AgregarPersonaPage() {
                             "No tiene correo (entra con un usuario)",
                           )}
                         </label>
+                      )}
+                      {admiteSinCorreo(tipo) && datos.sinCorreo && (
+                        <p
+                          className="mt-1.5 text-xs leading-relaxed"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {t(
+                            "agregarPersona.campos.sinCorreoAyuda",
+                            "El enlace se lo das tú: al terminar, «Compartir por WhatsApp» abre tu WhatsApp con el mensaje listo y lo envías desde tu teléfono. Si después consigue correo, agrégalo en su ficha.",
+                          )}
+                        </p>
                       )}
                     </FormField>
                     {admiteSinCorreo(tipo) && datos.sinCorreo && (

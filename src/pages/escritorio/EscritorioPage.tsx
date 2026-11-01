@@ -6,7 +6,7 @@
  * look: «como Apple, liquid glass y glassmorphism en todo» → `vidrio.css`).
  *
  *   · Hero: the installer for THIS computer (macOS chip detected when the
- *     browser tells), the others as secondary options, Windows «coming soon»
+ *     browser tells), the others as secondary options (Windows «coming soon» only while no installer is published)
  *     until a signed installer is published.
  *   · The 3 steps, following the person's real state: a request waiting for
  *     approval shows its pairing code on step 3 (and «approve now» to admins).

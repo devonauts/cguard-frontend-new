@@ -16,9 +16,28 @@ export interface ModuloEnTienda {
   key: string;
   name: string;
   description: string;
-  priceCents: number;
+  /** null when the module is switched on: the company is not shown its amount. */
+  priceCents: number | null;
+  /** The company's currency (a partner's company: its partner's). */
   currency: string;
-  status: "pending_payment" | "active" | "comp" | "revoked" | "trial" | "expired" | "canceled" | null;
+  /** Converted from the USD catalog with the day's rate. */
+  approximate?: boolean;
+  /** The module is switched on: no amount is shown. */
+  priceHidden?: boolean;
+  /** What the card is really charged, when it differs from what is shown. */
+  chargePriceCents?: number | null;
+  chargeCurrency?: string;
+  chargeMonthlyCents?: number | null;
+  chargeYearlyCents?: number | null;
+  status:
+    | "pending_payment"
+    | "active"
+    | "comp"
+    | "revoked"
+    | "trial"
+    | "expired"
+    | "canceled"
+    | null;
   source: string | null;
   purchasedAt: string | null;
   owned: boolean;
@@ -83,8 +102,18 @@ export const modulosAdicionalesService = {
     return ApiService.post(`/tenant/${tenantId()}/addons/${key}/trial`, {});
   },
   /** Módulo mensual: elegir pago (en prueba, se cobra al vencer). */
-  suscribir(key: string, interval: "month" | "year"): Promise<{ estado: string; enlaceDePago?: string | null; seCobraEl?: string; aviso?: string }> {
-    return ApiService.post(`/tenant/${tenantId()}/addons/${key}/subscribe`, { interval });
+  suscribir(
+    key: string,
+    interval: "month" | "year",
+  ): Promise<{
+    estado: string;
+    enlaceDePago?: string | null;
+    seCobraEl?: string;
+    aviso?: string;
+  }> {
+    return ApiService.post(`/tenant/${tenantId()}/addons/${key}/subscribe`, {
+      interval,
+    });
   },
   /** Pago único: apagarlo (no se borra nada; sus menús desaparecen). */
   apagar(key: string): Promise<ResultadoDePausa> {
@@ -107,10 +136,12 @@ export const modulosAdicionalesService = {
  */
 export function tiendaVisible(t: Tienda | null | undefined): boolean {
   if (!t || !t.modules.length) return false;
-  if (t.modules.some((m) => m.owned || m.status === "pending_payment")) return true;
+  if (t.modules.some((m) => m.owned || m.status === "pending_payment"))
+    return true;
   /* Una PRUEBA gratis se ofrece aunque la empresa aún no pueda comprar (está en
      su periodo de prueba, la mayoría): es justo cuando hay que enseñársela. */
-  if (t.modules.some((m) => m.canStartTrial || m.status === "trial")) return true;
+  if (t.modules.some((m) => m.canStartTrial || m.status === "trial"))
+    return true;
 
   return t.canPurchase || t.reason === "la_factura_el_socio";
 }

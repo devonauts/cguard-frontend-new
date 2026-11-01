@@ -22516,7 +22516,7 @@
       "celular": "Celular",
       "celularAyuda": "Si no tiene correo, con su celular te damos el enlace para WhatsApp.",
       "correo": "Correo electrónico",
-      "correoAyuda": "Aquí le llega la invitación para crear su contraseña.",
+      "correoAyuda": "Recomendado: le llega la invitación sola y puede recuperar su contraseña por correo.",
       "sinCorreo": "No tiene correo (entra con un usuario)",
       "usuario": "Usuario para entrar",
       "usuarioAyuda": "Opcional. Si lo dejas vacío, el sistema le pone uno.",
@@ -22524,7 +22524,8 @@
       "rolElige": "Elige su rol",
       "queVe": "¿Qué puede ver?",
       "rolVeTodo": "Este rol ve toda la operación por definición: no se puede acotar.",
-      "soloSedes": "Solo algunas sedes"
+      "soloSedes": "Solo algunas sedes",
+      "sinCorreoAyuda": "El enlace se lo das tú: al terminar, «Compartir por WhatsApp» abre tu WhatsApp con el mensaje listo y lo envías desde tu teléfono. Si después consigue correo, agrégalo en su ficha."
     },
     "paso3": {
       "puestoSinRotacionVig": "Este puesto todavía no tiene rotación",
@@ -22879,7 +22880,7 @@
     "steps": {
       "title": "Cómo empezar",
       "installTitle": "Descarga e instala",
-      "installText": "Abre el archivo descargado. En Mac, arrastra la app a Aplicaciones; en Windows, sigue el instalador.",
+      "installText": "Abre el archivo descargado. En Mac, arrastra la app a Aplicaciones. En Windows, si aparece «Windows protegió su PC», pulsa «Más información» y luego «Ejecutar de todas formas»; después sigue el instalador.",
       "signInTitle": "Inicia sesión y anota el código",
       "signInText": "Entra con tu correo y tu contraseña de siempre. La app te mostrará un código de 8 caracteres.",
       "approveTitle": "Tu administrador aprueba la computadora",
@@ -22917,8 +22918,8 @@
       "lostA": "Revócala en «Mis computadoras» o pide a un administrador que lo haga. La app deja de funcionar en ese equipo en menos de un minuto y borra lo que guardaba.",
       "severalQ": "¿Puedo usarla en varias computadoras?",
       "severalA": "Sí. Cada computadora se aprueba por separado y la puedes revocar sin afectar a las demás.",
-      "windowsQ": "¿Cuándo llega la versión para Windows?",
-      "windowsA": "Muy pronto. Solo publicamos instaladores firmados digitalmente; en cuanto el de Windows esté listo, aparecerá en esta página."
+      "windowsQ": "¿Por qué Windows muestra «Windows protegió su PC»?",
+      "windowsA": "Porque el instalador no lleva el certificado de Microsoft. Pulsa «Más información» y «Ejecutar de todas formas»; solo pasa la primera vez. La seguridad no depende de ese aviso: la app solo funciona en una computadora aprobada por tu empresa, y cada actualización viene firmada por nosotros. Si alguien la altera, la app la rechaza."
     }
   }
 }
