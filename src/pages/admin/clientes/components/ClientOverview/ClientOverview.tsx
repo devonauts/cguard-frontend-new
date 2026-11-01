@@ -329,7 +329,7 @@ export default function ClientOverview({
         : undefined,
       detalle: estaciones.length
         ? t("clients.overview.nPuestos", {
-            defaultValue: "{{n}} puestos",
+            defaultValue: "{{n}} estaciones",
             n: estaciones.length,
           })
         : undefined,

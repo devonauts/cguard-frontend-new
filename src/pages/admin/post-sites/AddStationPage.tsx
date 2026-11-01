@@ -85,7 +85,7 @@ export default function AddStationPage() {
             icon={<ShieldPlus />}
             subtitle={t(
               "postSites.stations.createSubtitle",
-              "Define el turno, horario y la geocerca del puesto.",
+              "Define el turno, el horario y la geocerca de la estación.",
             )}
             title={t("postSites.stations.createTitle", "Crear estación")}
           />

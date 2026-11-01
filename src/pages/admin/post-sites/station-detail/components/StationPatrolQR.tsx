@@ -374,7 +374,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
       toast.error(
         t(
           "station.patrolQr.stationNoCoords",
-          "El puesto no tiene coordenadas configuradas.",
+          "La estación no tiene coordenadas configuradas.",
         ),
       );
 
@@ -575,7 +575,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
                           )}
                           {t(
                             "station.patrolQr.useStationLocation",
-                            "Usar ubicación del puesto",
+                            "Usar ubicación de la estación",
                           )}
                         </button>
                       )}

@@ -108,7 +108,7 @@ export default function StationInventory({ stationId }: Props) {
             icon={<Package />}
             title={t(
               "station.inventory.empty",
-              "No hay inventario para este puesto.",
+              "No hay inventario para esta estación.",
             )}
           />
         </div>

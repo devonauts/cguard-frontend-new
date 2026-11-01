@@ -1131,7 +1131,7 @@ export default function ClientForm({
                       <p className="text-[10px] text-muted-foreground mt-1">
                         {t(
                           "clients.form.commercialNameHint",
-                          "Se usará como nombre del sitio de servicio.",
+                          "Se usará como nombre de la sede.",
                         )}
                       </p>
                       <FormMessage />

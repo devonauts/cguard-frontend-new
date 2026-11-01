@@ -1317,7 +1317,7 @@ export default function NewDispatchPage() {
                 s.businessName ||
                 s.companyName ||
                 s.address ||
-                t("dispatcher.header_post_site", "Sitio"),
+                t("dispatcher.header_post_site", "Sede"),
               businessName:
                 s.businessName || s.companyName || s.name || s.address || "",
             })),

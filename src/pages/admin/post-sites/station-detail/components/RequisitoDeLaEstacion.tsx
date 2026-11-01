@@ -253,7 +253,7 @@ export default function RequisitoDeLaEstacion({
       <p className="text-xs text-muted-foreground">
         {t(
           "ui.Requisito.explicacion",
-          "Cuántos vigilantes pide la estación, a qué hora y qué días. Es lo único que define sus plazas: el Horario, Sin cubrir y los informes lo leen de aquí.",
+          "Cuántos vigilantes pide la estación, a qué hora y qué días. Es lo único que define sus puestos: el Horario, Sin cubrir y los informes lo leen de aquí.",
         )}
       </p>
 
@@ -287,7 +287,7 @@ export default function RequisitoDeLaEstacion({
               <li className="text-xs text-muted-foreground">
                 {t("ui.Requisito.sacafrancosAparte", {
                   defaultValue:
-                    "Además, {{count}} plaza(s) de sacafranco: cubren descansos y no cuentan en el requisito.",
+                    "Además, {{count}} puesto(s) de sacafranco: cubren descansos y no cuentan en el requisito.",
                   count: sacafrancos,
                 })}
               </li>
@@ -432,7 +432,7 @@ export default function RequisitoDeLaEstacion({
                     <li key={`s${s.nombre}${s.ventana}`}>
                       {t("ui.Requisito.sale", {
                         defaultValue:
-                          "{{nombre}} deja la estación (su plaza de {{ventana}} desaparece).",
+                          "{{nombre}} deja la estación (su puesto de {{ventana}} desaparece).",
                         nombre: s.nombre,
                         ventana: s.ventana,
                       })}
@@ -452,7 +452,7 @@ export default function RequisitoDeLaEstacion({
                     <li>
                       {t("ui.Requisito.plazasNuevas", {
                         defaultValue:
-                          "{{count}} plaza(s) nueva(s) sin vigilante: saldrán en Sin cubrir.",
+                          "{{count}} puesto(s) nuevo(s) sin vigilante: saldrán en Sin cubrir.",
                         count: efecto.nuevas,
                       })}
                     </li>

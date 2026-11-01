@@ -266,7 +266,7 @@ export function globoDe(
         ],
         fields: campos,
         tags: m.isMobile
-          ? [i18n.t("ui.StationHero.puestoMovil", "Puesto móvil")]
+          ? [i18n.t("ui.StationHero.puestoMovil", "Estación móvil")]
           : undefined,
         note:
           estado === "sinDatos"

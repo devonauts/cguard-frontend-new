@@ -1460,7 +1460,7 @@ export default function StationCreateForm({
               <label className="mb-1 block text-sm font-medium">
                 {t(
                   "ui.StationCreateForm.comoTrabajan",
-                  "¿Cómo trabajan los vigilantes de este puesto?",
+                  "¿Cómo trabajan los vigilantes de esta estación?",
                 )}
                 <span
                   className="ml-2 text-xs font-normal"
@@ -1507,7 +1507,7 @@ export default function StationCreateForm({
                     {pp
                       ? t(
                           "ui.StationCreateForm.cadaPlazaSuCiclo",
-                          "Cada plaza con su propio ciclo",
+                          "Cada puesto con su propio ciclo",
                         )
                       : t(
                           "ui.StationCreateForm.mismoCicloTodos",
@@ -1661,7 +1661,7 @@ export default function StationCreateForm({
                       <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                         {t(
                           "ui.StationCreateForm.semanalExplica",
-                          "Cada vigilante trabaja esos días de la semana, empiece cuando empiece, y el puesto se cubre solo esos días. Un vigilante por plaza, sin sacafranco.",
+                          "Cada vigilante trabaja esos días de la semana, empiece cuando empiece, y la estación se cubre solo esos días. Un vigilante por puesto, sin sacafranco.",
                         )}
                       </p>
                     </>
@@ -1686,7 +1686,7 @@ export default function StationCreateForm({
                       <span className="w-40 shrink-0 text-xs">
                         <span className="font-semibold">
                           {t("ui.StationCreateForm.plazaN", {
-                            defaultValue: "Plaza {{n}}",
+                            defaultValue: "Puesto {{n}}",
                             n: i + 1,
                           })}
                         </span>
@@ -1992,7 +1992,7 @@ export default function StationCreateForm({
             <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>
               {t(
                 "ui.StationCreateForm.ubicacionYGeocercaExplica",
-                "Arrastra el pin al punto exacto del puesto. La línea punteada es el radio de arriba: dentro de ella el vigilante puede marcar entrada. Si dibujas un polígono (3+ puntos), manda el polígono.",
+                "Arrastra el pin al punto exacto de la estación. La línea punteada es el radio de arriba: dentro de ella el vigilante puede marcar entrada. Si dibujas un polígono (3+ puntos), manda el polígono.",
               )}
             </p>
             <StationGeofencePolygon

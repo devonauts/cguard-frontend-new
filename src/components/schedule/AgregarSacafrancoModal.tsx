@@ -154,7 +154,7 @@ export default function AgregarSacafrancoModal({
     <Modal
       description={t(
         "ui.Sacafranco.descripcion",
-        "No tiene plaza: cubre los libres de los fijos de las estaciones que marques. El Planificador le coloca los días.",
+        "No tiene puesto fijo: cubre los libres de los fijos de las estaciones que marques. El Planificador le coloca los días.",
       )}
       footer={
         <div className="flex justify-end gap-2">

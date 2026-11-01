@@ -901,7 +901,7 @@ export default function StationSiteTours({
                                     ? {
                                         lat: stationLat,
                                         lng: stationLng,
-                                        label: t("ui.StationSiteTours.elPuesto", "el puesto"),
+                                        label: t("ui.StationSiteTours.elPuesto", "la estación"),
                                       }
                                     : null
                                 }
@@ -917,7 +917,7 @@ export default function StationSiteTours({
                                   <Crosshair size={13} />{" "}
                                   {t(
                                     "station.siteTours.useStationLoc",
-                                    "Usar ubicación del puesto",
+                                    "Usar ubicación de la estación",
                                   )}
                                 </button>
                               )}

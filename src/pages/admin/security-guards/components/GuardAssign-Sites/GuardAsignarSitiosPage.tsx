@@ -355,7 +355,7 @@ export default function GuardAsignarSitiosPage() {
     if (!selectedClient || !selectedPostSite) {
       toast.error(
         t("guards.assignSites.errors.selectClientSite", {
-          defaultValue: "Selecciona un cliente y un puesto",
+          defaultValue: "Selecciona un cliente y una sede",
         }),
       );
 
@@ -372,7 +372,7 @@ export default function GuardAsignarSitiosPage() {
       toast.error(
         t("guards.assignSites.errors.siteHasNoStations", {
           defaultValue:
-            "Esta sede todavía no tiene puestos. Crea un puesto en la sede y luego asigna al vigilante.",
+            "Esta sede todavía no tiene estaciones. Crea una estación en la sede y luego asigna al vigilante.",
         }),
       );
 
@@ -480,7 +480,7 @@ export default function GuardAsignarSitiosPage() {
           err?.data?.message ||
             err?.message ||
             t("guards.assignSites.errors.assignFailed", {
-              defaultValue: "No se pudo asignar el puesto",
+              defaultValue: "No se pudo asignar la estación",
             }),
         );
       } finally {
@@ -579,7 +579,7 @@ export default function GuardAsignarSitiosPage() {
       valid.length === 1
         ? valid[0].station ||
           valid[0].postSite ||
-          t("guards.assignSites.thisPost", { defaultValue: "este puesto" })
+          t("guards.assignSites.thisPost", { defaultValue: "esta estación" })
         : t("guards.assignSites.nStations", {
             defaultValue: "{{count}} estaciones",
             count: valid.length,
@@ -756,7 +756,7 @@ export default function GuardAsignarSitiosPage() {
                 <SearchInput
                   className="hidden sm:block"
                   placeholder={t("guards.assignSites.searchPlaceholder", {
-                      defaultValue: "Buscar puesto o estación",
+                      defaultValue: "Buscar sede o estación",
                     })}
                   type="text"
                   value={query}
@@ -814,7 +814,7 @@ export default function GuardAsignarSitiosPage() {
             }
             icon={<Building2 className="w-4 h-4" />}
             title={t("guards.assignSites.table.postSites", {
-              defaultValue: "Puesto y estaciones",
+              defaultValue: "Estación y puesto",
             })}
           >
             {loading ? (
@@ -935,7 +935,7 @@ export default function GuardAsignarSitiosPage() {
                         className="shrink-0 hover:[color:var(--bad-text)]"
                         size="icon-sm"
                         title={t("guards.assignSites.actions.removeFromPost", {
-                          defaultValue: "Quitar del puesto",
+                          defaultValue: "Quitar de la estación",
                         })}
                         variant="ghost"
                         onClick={() => requestDelete([g])}
@@ -1066,7 +1066,7 @@ export default function GuardAsignarSitiosPage() {
                             >
                               {t("guards.assignSites.loadingPostSite", {
                                 defaultValue:
-                                  "Cargando información del puesto…",
+                                  "Cargando información de la sede…",
                               })}
                             </div>
                           }

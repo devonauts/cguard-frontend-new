@@ -167,7 +167,7 @@ export default function SupervisorCoveragePage() {
                       <div>
                         <div className="cg-eyebrow mb-2 flex items-center gap-1.5">
                           <Car className="h-3.5 w-3.5" />{" "}
-                          {t("ui.StationHero.puestoMovil", "Puesto móvil")}
+                          {t("ui.StationHero.puestoMovil", "Estación móvil")}
                         </div>
                         <StatusBadge dot={false} tone="brand">
                           <Car className="h-3 w-3" /> {p.mobileStation.name}

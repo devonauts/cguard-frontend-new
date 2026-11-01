@@ -447,7 +447,7 @@ export function PerSiteTable({
       <table className="cg-tabla-fichas min-w-full text-sm">
         <thead className="border-b text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
-            <th className="px-3 py-2 text-left font-semibold">{t("ui.shared.sitio", "Sitio")}</th>
+            <th className="px-3 py-2 text-left font-semibold">{t("ui.shared.sitio", "Sede")}</th>
             <th className="px-3 py-2 text-right font-semibold">
               {t("ui.shared.vigilantes", "Vigilantes")}
             </th>

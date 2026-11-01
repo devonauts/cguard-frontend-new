@@ -2057,7 +2057,7 @@ export default function PostSiteTours({
       )}
 
       <Modal
-        description={site?.companyName || site?.name || t('station.siteTours.thisSite', 'Este sitio')}
+        description={site?.companyName || site?.name || t('station.siteTours.thisSite', 'Esta sede')}
         icon={<Settings className="h-5 w-5" />}
         open={showSettingsModal}
         size="lg"

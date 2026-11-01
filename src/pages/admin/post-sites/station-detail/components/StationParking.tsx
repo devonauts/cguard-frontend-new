@@ -312,7 +312,7 @@ export default function StationParking({ stationId }: Props) {
                 }
                 title={t(
                   "station.parking.capacityHint",
-                  "Vehículos dentro respecto al cupo del puesto",
+                  "Vehículos dentro respecto al cupo de la estación",
                 )}
               >
                 {ocup.dentro}/{ocup.capacidad}
@@ -361,7 +361,7 @@ export default function StationParking({ stationId }: Props) {
       <p className="px-5 -mt-2 mb-3 text-xs text-muted-foreground">
         {t(
           "station.parking.subtitle",
-          "Entrada y salida de vehículos en este puesto. El vigilante los registra desde la app y marca la salida cuando se van.",
+          "Entrada y salida de vehículos en esta estación. El vigilante los registra desde la app y marca la salida cuando se van.",
         )}
       </p>
 
@@ -386,7 +386,7 @@ export default function StationParking({ stationId }: Props) {
             />
             <span className="min-w-0">
               <span className="block text-sm font-semibold">
-                {t("station.parking.enable", "Activar reglas en este puesto")}
+                {t("station.parking.enable", "Activar reglas en esta estación")}
               </span>
               <span
                 className="block text-[11px]"
@@ -394,7 +394,7 @@ export default function StationParking({ stationId }: Props) {
               >
                 {t(
                   "station.parking.enableHint",
-                  "Sin activar, el puesto sigue registrando entradas y salidas: sólo se apagan el cupo, el aviso de permanencia y las placas vetadas.",
+                  "Sin activar, la estación sigue registrando entradas y salidas: sólo se apagan el cupo, el aviso de permanencia y las placas vetadas.",
                 )}
               </span>
             </span>
@@ -607,7 +607,7 @@ export default function StationParking({ stationId }: Props) {
                   )
                 : t(
                     "station.parking.empty",
-                    "Todavía no se ha registrado ningún vehículo en este puesto.",
+                    "Todavía no se ha registrado ningún vehículo en esta estación.",
                   )
             }
             description={

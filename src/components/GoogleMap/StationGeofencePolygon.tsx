@@ -204,7 +204,7 @@ export default function StationGeofencePolygon({
               draggable: true,
               title: t(
                 "station.geofence.centerPinTitle",
-                "Ubicación del puesto (arrastra para ajustar)",
+                "Ubicación de la estación (arrastra para ajustar)",
               ),
               zIndex: 5000,
             }),
@@ -696,7 +696,7 @@ export default function StationGeofencePolygon({
               type="text"
               placeholder={t(
                 "ui.StationGeofencePolygon.buscarDireccionDelPuesto",
-                "Buscar dirección del puesto…",
+                "Buscar dirección de la estación…",
               )}
               className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
@@ -710,7 +710,7 @@ export default function StationGeofencePolygon({
               <Building2 size={13} />{" "}
               {t(
                 "ui.StationGeofencePolygon.igualQueElSitio",
-                "Igual que el sitio",
+                "Igual que la sede",
               )}
             </button>
           )}

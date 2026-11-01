@@ -94,7 +94,7 @@ export default function CambiarVigilanteModal({
     <Modal
       description={t("ui.CambiarVigilante.descripcion", {
         defaultValue:
-          "{{nombre}} deja {{puesto}}; quien entre hereda su plaza y su ciclo desde la fecha que elijas.",
+          "{{nombre}} deja {{puesto}}; quien entre hereda su puesto y su ciclo desde la fecha que elijas.",
         nombre: nombreActual,
         puesto,
       })}

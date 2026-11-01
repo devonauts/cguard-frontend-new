@@ -252,7 +252,7 @@ export default function EditDispatchPage() {
           setSitios(
             resp.rows.map((s: any) => ({
               id: String(s.id),
-              name: s.name || s.companyName || s.address || t("dispatcher.header_post_site", "Sitio"),
+              name: s.name || s.companyName || s.address || t("dispatcher.header_post_site", "Sede"),
             })),
           );
         } else {

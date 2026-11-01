@@ -379,7 +379,7 @@ export default function DispatchPublicView() {
                       "-"}
                   </td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("dispatcher.post_site_label", "Puesto")}
+                    {t("dispatcher.post_site_label", "Sede")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {(payload.site &&

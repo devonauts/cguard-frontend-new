@@ -306,7 +306,7 @@ export default function GuardSummary({ guard }: Props) {
       {/* ── STATION / POST ASSIGNMENT ─────────────────────────────────────── */}
       <Section
         icon={<MapPin className="h-4 w-4" />}
-        title={t("ui.GuardSummary.puestoYEstacion", "Puesto y estación")}
+        title={t("ui.GuardSummary.puestoYEstacion", "Estación y puesto")}
       >
         {assignmentsLoading && assignments === null ? (
           <div

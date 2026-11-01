@@ -132,10 +132,10 @@ function insigniaDeCobertura(
           (s.onDutyCount > 1
             ? t("stations.coverage.onDutyN", {
                 count: s.onDutyCount,
-                defaultValue: "{{count}} en puesto",
+                defaultValue: "{{count}} en la estación",
               })
             : t("stations.coverage.onDuty", {
-                defaultValue: "Vigilante en puesto",
+                defaultValue: "Vigilante en la estación",
               })),
       };
     case "at_risk":
@@ -165,7 +165,7 @@ function insigniaDeCobertura(
                 defaultValue: "Hueco declarado",
               })
             : t("stations.coverage.uncovered", {
-                defaultValue: "Puesto sin cubrir",
+                defaultValue: "Estación sin cubrir",
               }),
       };
     default:
@@ -470,7 +470,7 @@ export default function StationCardsGrid({
                   <button
                     aria-label={
                       t("stations.openRondas", {
-                        defaultValue: "Rondas del puesto",
+                        defaultValue: "Rondas de la estación",
                       }) as string
                     }
                     className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md sm:h-7 sm:w-7"

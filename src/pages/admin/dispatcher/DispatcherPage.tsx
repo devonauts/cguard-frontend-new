@@ -1013,7 +1013,7 @@ export default function DispatcherPage() {
 
       const rows = records.map((r: any) => ({
         [t("dispatcher.client_name", "Cliente")]: getClientDisplay(r),
-        [t("dispatcher.post_site", "Puesto de seguridad")]:
+        [t("dispatcher.post_site", "Sede")]:
           r.site?.name ||
           r.site?.companyName ||
           (typeof r.site === "string" ? r.site : "") ||

@@ -1442,7 +1442,7 @@ export default function SecurityGuardsPage() {
 
                     <div className="space-y-2">
                       <Label>
-                        {t("guards.list.filter.site", "Puesto de seguridad")}
+                        {t("guards.list.filter.site", "Sede")}
                       </Label>
                       <Select
                         value={filterSite}

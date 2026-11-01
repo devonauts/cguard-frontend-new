@@ -419,12 +419,12 @@ export default function ClientCoverage({ client }: { client: Client }) {
           <LayoutGrid className="h-4 w-4" />{" "}
           {t(
             "ui.ClientCoverage.puestosYCoberturaEnVivo",
-            "Puestos y cobertura en vivo de la sede seleccionada",
+            "Estaciones y cobertura en vivo de la sede seleccionada",
           )}
         </div>
         <div className="flex items-center gap-2">
           <label className="cg-eyebrow">
-            {t("ui.ClientCoverage.sedeSitio", "Sede / Sitio")}
+            {t("ui.ClientCoverage.sedeSitio", "Sede")}
           </label>
           <select
             className={`${FIELD_CLS} min-w-[220px]`}
@@ -978,7 +978,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                     >
                       {t(
                         "ui.ClientCoverage.estePuestoAunNoTiene",
-                        "Este puesto aún no tiene ubicación exacta.",
+                        "Esta estación aún no tiene ubicación exacta.",
                       )}
                     </div>
                   )}
@@ -1099,7 +1099,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 <CheckCircle2 className="h-4 w-4" />{" "}
                 {t(
                   "ui.ClientCoverage.todosLosPuestosConTurno",
-                  "Todos los puestos con turno están cubiertos.",
+                  "Todas las estaciones con turno están cubiertas.",
                 )}
               </div>
             ) : (

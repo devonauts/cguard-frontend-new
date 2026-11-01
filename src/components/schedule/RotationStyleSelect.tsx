@@ -621,7 +621,7 @@ export default function RotationStyleSelect({
                 <>
                   {t(
                     "ui.RotationStyleSelect.seCreanDosPlazasEspejo",
-                    "Se crean dos plazas con horarios espejo:",
+                    "Se crean dos puestos con horarios espejo:",
                   )}{" "}
                   <strong>
                     {t(
@@ -638,14 +638,14 @@ export default function RotationStyleSelect({
                   </strong>
                   {t(
                     "ui.RotationStyleSelect.cadaVigilanteSeQuedaEnLaSuyaTurno",
-                    ". Cada vigilante se queda en la suya — al asignarlos, el turno lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos días libran.",
+                    ". Cada vigilante se queda en el suyo — al asignarlos, el turno lo decide el puesto que elijas. Abajo sólo queda decidir cada cuántos días libran.",
                   )}
                 </>
               ) : (
                 <>
                   {t("ui.RotationStyleSelect.seCreaUnaPlazaPorTramo", {
                     defaultValue:
-                      "Se crea una plaza por tramo ({{n}} en total). Cada vigilante se queda en la suya — al asignarlo, el tramo lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos días libran.",
+                      "Se crea un puesto por tramo ({{n}} en total). Cada vigilante se queda en el suyo — al asignarlo, el tramo lo decide el puesto que elijas. Abajo sólo queda decidir cada cuántos días libran.",
                     n: tramos,
                   })}
                 </>
@@ -659,7 +659,7 @@ export default function RotationStyleSelect({
             >
               {t(
                 "ui.RotationStyleSelect.elCicloAlternaEntreElTramo",
-                "El ciclo alterna entre el tramo de la plaza y el siguiente. Un",
+                "El ciclo alterna entre el tramo del puesto y el siguiente. Un",
               )}{" "}
               <strong>2-2-2</strong>{" "}
               {t(
@@ -737,12 +737,12 @@ export default function RotationStyleSelect({
                         dosTramos
                           ? t("ui.RotationStyleSelect.sinSegundoTooltip", {
                               defaultValue:
-                                "Sin {{segundo}}: cada fijo se queda en SU tramo. Úsalo con una plaza por tramo, cada una con sus horas.",
+                                "Sin {{segundo}}: cada fijo se queda en SU tramo. Úsalo con un puesto por tramo, cada uno con sus horas.",
                               segundo: lblSegundo,
                             })
                           : t("ui.RotationStyleSelect.conSegundoTooltip", {
                               defaultValue:
-                                "Con {{segundo}}: pensado para puestos que alternan dos tramos.",
+                                "Con {{segundo}}: pensado para estaciones que alternan dos tramos.",
                               segundo: lblSegundo,
                             })
                       }
@@ -933,7 +933,7 @@ export default function RotationStyleSelect({
                   >
                     {t("ui.RotationStyleSelect.paraUnPuestoDe24h", {
                       defaultValue:
-                        "Para un puesto de 24 h con dos fijos: trabaja {{n}} de día, descansa, {{n}} de noche, descansa.",
+                        "Para una estación de 24 h con dos fijos: trabaja {{n}} de día, descansa, {{n}} de noche, descansa.",
                       n: parseInt(cWork) || 0,
                     })}
                   </span>

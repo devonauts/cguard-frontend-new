@@ -139,7 +139,7 @@ export default function StationsPage() {
           <SearchInput
             className="w-full sm:max-w-md"
             placeholder={t("stations.searchPlaceholder", {
-              defaultValue: "Buscar por nominativo, puesto o cliente…",
+              defaultValue: "Buscar por nominativo, estación o cliente…",
             })}
             value={query}
             onChange={setQuery}

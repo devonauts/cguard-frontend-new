@@ -79,7 +79,7 @@ export default function NewOrEditPostSitePage() {
               enPuesta
                 ? t(
                     "postSites.wizardSubtitlePuesta",
-                    "Qué servicio se presta, los puestos y quién los cubre. Al terminar, el horario.",
+                    "Qué servicio se presta, las estaciones y quién las cubre. Al terminar, el horario.",
                   )
                 : presetClientName
                   ? t(
@@ -89,15 +89,15 @@ export default function NewOrEditPostSitePage() {
                     )
                   : t(
                       "postSites.wizardSubtitle",
-                      "Configura el sitio, su ubicación, servicio y estaciones paso a paso.",
+                      "Configura la sede, su ubicación, el servicio y las estaciones paso a paso.",
                     )
             }
             title={
               enPuesta
                 ? t("postSites.configurarLaSede", "Configurar la sede")
                 : id
-                  ? t("postSites.editPostSite", "Editar Puesto de seguridad")
-                  : t("postSites.newPostSite", "Nuevo Puesto de seguridad")
+                  ? t("postSites.editPostSite", "Editar sede")
+                  : t("postSites.newPostSite", "Nueva sede")
             }
           />
           {loading ? (

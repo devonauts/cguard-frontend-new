@@ -728,7 +728,7 @@ export default function StationRondaHistory({ station, stationId }: Props) {
       >
         {t(
           "station.rondaHistory.hint",
-          "Todas las rondas realizadas en este puesto. Toca una ronda para ver cada punto de control, con foto, nota y ubicación.",
+          "Todas las rondas realizadas en esta estación. Toca una ronda para ver cada punto de control, con foto, nota y ubicación.",
         )}
       </p>
 
@@ -746,7 +746,7 @@ export default function StationRondaHistory({ station, stationId }: Props) {
             icon={<Route />}
             title={t(
               "station.rondaHistory.empty",
-              "No hay rondas registradas en este puesto.",
+              "No hay rondas registradas en esta estación.",
             )}
           />
         </div>
