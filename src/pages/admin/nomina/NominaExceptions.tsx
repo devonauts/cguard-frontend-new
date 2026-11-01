@@ -1,5 +1,7 @@
 import { usePuede } from "@/hooks/usePuede";
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
+import { MapPin, Users, Building2, CalendarDays } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -37,8 +39,17 @@ import {
   SkeletonCards,
   StatusBadge,
   Toolbar,
+  Pagination,
 } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
+import { paginaDe, TAMANOS_DE_PAGINA } from "@/lib/filtrosDeAsistencia";
+import {
+  RangoDeAsistencia,
+  SelectorDeFiltro,
+  avisarLote,
+  useFiltrosDeAsistencia,
+  useOpcionesDeFiltro,
+} from "./filtrosAsistencia";
 import { limitesDelDia, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 interface ExceptionRow {
   id: string;
@@ -160,9 +171,20 @@ export default function NominaExceptions() {
   const resolver = usePuede("asistencia.resolverNovedad");
   const enLote = usePuede("asistencia.resolverEnLote");
   const [rows, setRows] = useState<ExceptionRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [type, setType] = useState("");
-  const [status, setStatus] = useState("open");
+  /* Filters in the URL. The inbox opens on everything still open, whatever
+     the date; a date range applies only once one is chosen. */
+  const [sp, setSp] = useSearchParams();
+  const conFechas = sp.has("from");
+  const [f, setF] = useFiltrosDeAsistencia({ status: "open" });
+  const opciones = useOpcionesDeFiltro();
+  const type = f.type;
+  const status = f.status || "open";
+  const setType = (v: string) => setF({ type: v });
+  const setStatus = (v: string) => setF({ status: v });
+  const [seleccion, setSeleccion] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState<ExceptionRow | null>(null);
   const [notes, setNotes] = useState("");
@@ -173,19 +195,53 @@ export default function NominaExceptions() {
 
   const load = useCallback(() => {
     setLoading(true);
+    setErrorCarga(null);
     attendanceService
       .exceptions({
         "filter[status]": status === "all" ? undefined : status,
         "filter[type]": type || undefined,
-        limit: 200,
+        "filter[guardId]": f.guard || undefined,
+        "filter[stationId]": f.station || undefined,
+        "filter[branchId]": f.branch || undefined,
+        "filter[dateFrom]": conFechas ? f.from : undefined,
+        "filter[dateTo]": conFechas ? f.to : undefined,
+        ...paginaDe(f),
       })
-      .then((r) => setRows(r.rows || []))
-      .catch((e) => toast.error(
+      .then((r) => {
+        setRows(r.rows || []);
+        setTotal(Number(r.count) || 0);
+      })
+      .catch((e) => {
+        // «Sin excepciones» only when the list loaded; a failure is said.
+        setRows([]);
+        setTotal(0);
+        setErrorCarga(
           e?.message ||
             t("ui.NominaExceptions.errorAlCargarExcepciones", "Error al cargar excepciones"),
-        ))
+        );
+      })
       .finally(() => setLoading(false));
-  }, [type, status]);
+  }, [type, status, f.guard, f.station, f.branch, f.from, f.to, f.page, f.size, conFechas]);
+
+  useEffect(() => setSeleccion([]), [type, status, f.guard, f.station, f.branch, f.from, f.to, f.page, f.size, conFechas]);
+
+  /** Resolve or acknowledge everything selected, each on its own. */
+  const decidirSeleccion = async (accion: "resolve" | "acknowledge") => {
+    if (!seleccion.length) return;
+    setBusy(true);
+    try {
+      const r = await attendanceService.decisions(
+        seleccion.map((id) => ({ kind: "exception" as const, id, action: accion })),
+      );
+      avisarLote(t, r);
+      setSeleccion([]);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || t("ui.Asistencia.lote.error", "error"));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   useEffect(load, [load]);
 
@@ -392,6 +448,60 @@ export default function NominaExceptions() {
               </option>
             ))}
           </FilterSelect>
+          <SelectorDeFiltro
+            ariaLabel={t("comun.vigilante", "Vigilante")}
+            icono={<Users className="size-4" style={{ color: "var(--ink-faint)" }} />}
+            options={opciones.guards}
+            todos={t("ui.NominaRecords.todosLosTrabajadores", "Todos los trabajadores")}
+            value={f.guard}
+            onChange={(v) => setF({ guard: v })}
+          />
+          <SelectorDeFiltro
+            ariaLabel={t("comun.puesto", "Puesto")}
+            icono={<MapPin className="size-4" style={{ color: "var(--ink-faint)" }} />}
+            options={opciones.stations}
+            todos={t("ui.Asistencia.todosLosPuestos", "Todos los puestos")}
+            value={f.station}
+            onChange={(v) => setF({ station: v })}
+          />
+          {opciones.branches.length > 1 && (
+            <SelectorDeFiltro
+              ariaLabel={t("ui.Asistencia.sucursal", "Sucursal")}
+              icono={<Building2 className="size-4" style={{ color: "var(--ink-faint)" }} />}
+              options={opciones.branches}
+              todos={t("ui.Asistencia.todasLasSucursales", "Todas las sucursales")}
+              value={f.branch}
+              onChange={(v) => setF({ branch: v })}
+            />
+          )}
+          {conFechas ? (
+            <>
+              <RangoDeAsistencia f={f} onChange={setF} />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  setSp(
+                    (prev) => {
+                      const sin = new URLSearchParams(prev);
+                      sin.delete("from");
+                      sin.delete("to");
+                      sin.delete("page");
+
+                      return sin;
+                    },
+                    { replace: true },
+                  )
+                }
+              >
+                {t("ui.Asistencia.todasLasFechas", "Todas las fechas")}
+              </Button>
+            </>
+          ) : (
+            <Button size="sm" variant="outline" onClick={() => setF({ from: f.from, to: f.to })}>
+              <CalendarDays className="size-4" /> {t("ui.Asistencia.porFechas", "Por fechas")}
+            </Button>
+          )}
           <span
             className="ml-auto pr-1 text-xs tabular-nums"
             style={{ color: "var(--ink-soft)" }}
@@ -399,7 +509,7 @@ export default function NominaExceptions() {
             {loading
               ? t("ui.NominaExceptions.cargando", "Cargando…")
               : t("ui.NominaExceptions.excepcionesCount", {
-                  count: rows.length,
+                  count: total,
                   defaultValue: "{{count}} excepción(es)",
                 })}
           </span>
@@ -480,12 +590,63 @@ export default function NominaExceptions() {
             })()
           }
         >
+          {errorCarga && (
+            <div
+              className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl px-4 py-3 text-sm font-medium"
+              role="alert"
+              style={{ background: "color-mix(in oklab, var(--bad) 12%, transparent)", color: "var(--bad-text)" }}
+            >
+              <span>{errorCarga}</span>
+              <Button size="sm" variant="outline" onClick={load}>
+                {t("ui.Asistencia.reintentar", "Reintentar")}
+              </Button>
+            </div>
+          )}
           {loading ? (
             <SkeletonCards count={4} />
-          ) : (
+          ) : errorCarga ? null : (
             <DataTable
               columns={columns}
               data={rows}
+              {...(resolver.puede
+                ? {
+                    selectedIds: seleccion,
+                    onSelectOne: (id: string, checked: boolean) =>
+                      setSeleccion((p) => (checked ? [...p, id] : p.filter((x) => x !== id))),
+                    onSelectAll: (checked: boolean) => setSeleccion(checked ? rows.map((r) => r.id) : []),
+                  }
+                : {})}
+              toolbar={
+                resolver.puede && seleccion.length > 0 ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold">
+                      {t("ui.NominaRecords.seleccionadas", {
+                        count: seleccion.length,
+                        defaultValue: "{{count}} seleccionada(s)",
+                      })}
+                    </span>
+                    <Button disabled={busy} size="sm" variant="brand" onClick={() => decidirSeleccion("resolve")}>
+                      {t("ui.Asistencia.resolverSeleccion", "Resolver")}
+                    </Button>
+                    <Button disabled={busy} size="sm" variant="outline" onClick={() => decidirSeleccion("acknowledge")}>
+                      {t("ui.Asistencia.reconocerSeleccion", "Reconocer")}
+                    </Button>
+                  </div>
+                ) : undefined
+              }
+              footer={
+                total > f.size ? (
+                  <Pagination
+                    numbered
+                    page={f.page}
+                    pageSize={f.size}
+                    pageSizes={TAMANOS_DE_PAGINA}
+                    total={total}
+                    onPageChange={(p) => setF({ page: p })}
+                    onPageSizeChange={(n) => setF({ size: n })}
+                  />
+                ) : undefined
+              }
               emptyState={
                 <EmptyState
                   description={t(
