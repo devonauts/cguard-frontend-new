@@ -19242,7 +19242,9 @@
         "noSePaga": "non pagato",
         "recargosV2": "Domenica {{domingo}} · Riposo lavorato {{descanso}} · Festivo {{feriado}}",
         "combinaciones": "Se coincidono — festivo e riposo: {{fd}} · festivo e domenica: {{fo}} · domenica e riposo: {{od}} · notte in quei giorni: {{noche}} · straordinario in quei giorni: {{extra}}",
-        "segunElDia": "secondo il giorno"
+        "segunElDia": "secondo il giorno",
+        "septimoDia": "Settimo giorno consecutivo della settimana: le prime {{h}} h a +{{a}} %, il resto a +{{b}} %",
+        "septimoSoloSi": " (se la settimana supera {{h}} h)"
       },
       "semanaLaboralEmpieza": "La settimana lavorativa inizia il",
       "semanalAyuda": "Oltre questo, nella settimana, è straordinario (USA: 40). 0 = nessuna regola settimanale.",
@@ -19296,7 +19298,16 @@
         "extra": "Maggiorazione straordinari",
         "extraAyuda": "Disattivata, gli straordinari si pagano a tariffa semplice."
       },
-      "ausenciasAyudaV2": "Spuntata: pagata. Non spuntata: resta giustificata (non è un'assenza ingiustificata), ma si detrae. Un permesso «personale» si paga o no secondo quanto indica il permesso."
+      "ausenciasAyudaV2": "Spuntata: pagata. Non spuntata: resta giustificata (non è un'assenza ingiustificata), ma si detrae. Un permesso «personale» si paga o no secondo quanto indica il permesso.",
+      "estado": "Stato",
+      "estadoFederal": "Altro stato (solo legge federale)",
+      "usarSeptimoDia": "Pagare a parte il settimo giorno consecutivo",
+      "septimoDiaAyuda": "Quando qualcuno lavora tutti e sette i giorni di una settimana lavorativa (California, Kentucky). Ogni ora di quel giorno prende la più alta tra la sua maggiorazione e questa: mai pagata due volte.",
+      "septimoPrimeras": "Prime ore (h)",
+      "septimoRecargo": "Maggiorazione di quelle ore (%)",
+      "septimoDespues": "Maggiorazione dopo (%)",
+      "septimoSoloSi": "Solo se la settimana supera (h)",
+      "septimoSoloSiAyuda": "0 = sempre. Kentucky: 40."
     },
     "puede": {
       "sinPermiso": "Il tuo ruolo non ha il permesso per questo. Chiedilo a un amministratore.",
@@ -19513,6 +19524,29 @@
       "clockIn": "Prima timbratura",
       "clockInAyuda": "Quando una guardia timbra l’entrata, la vedrai in Presenze.",
       "compactoProgreso": "Avvio · {{listos}} di {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Modifiche di legge con data",
+      "campo": {
+        "jornadaSemanal": "Orario settimanale",
+        "domingo": "Maggiorazione domenicale",
+        "feriado": "Maggiorazione festiva",
+        "descanso": "Maggiorazione del giorno di riposo"
+      },
+      "estado": {
+        "vigente": "In vigore dal {{fecha}}",
+        "seAplicara": "Si applicherà da sola il {{fecha}}",
+        "valorPropio": "Nessuna modifica: la tua azienda usa {{valor}}, un valore proprio",
+        "omitido": "Non si applicherà: la tua azienda l'ha saltata",
+        "apagado": "Non si applicherà: le modifiche di legge sono disattivate"
+      },
+      "convenioVence": "Il contratto «{{convenio}}» scade il {{fecha}}.",
+      "convenioRevisar": "Verifica con il tuo consulente cosa vale dopo e aggiorna le tue regole di paga. Non cambiamo nulla da soli: i nuovi valori non sono ancora noti.",
+      "seguir": "Applicare le modifiche di legge alla loro data",
+      "seguirAyuda": "Cambia solo un valore che corrisponde a quello di legge. Se la tua azienda paga un altro valore (contratto collettivo o individuale), resta. Le schede già approvate non vengono ricalcolate.",
+      "omitir": "Non applicare questa modifica",
+      "enVigorDesde": "La legge fissa {{valor}} dal {{fecha}}: si paga così anche se qui appare un'altra cifra.",
+      "cambiaEl": "Passa a {{valor}} il {{fecha}} (legge)."
     }
   },
   "visitantes": {

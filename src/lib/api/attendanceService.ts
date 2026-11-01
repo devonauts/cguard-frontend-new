@@ -563,10 +563,32 @@ const attendanceService = {
       fuentes: string[];
       confirmar: string[];
     }>;
+    /** State presets (US): `regiones.US.CA`. */
+    regiones?: Record<string, Record<string, {
+      pais: string | null;
+      region?: string;
+      periodo: string;
+      politica: Record<string, unknown>;
+      fuentes: string[];
+      confirmar: string[];
+    }>>;
   }> {
     const t = getTenantId();
 
     return unwrap(await api.get(`/tenant/${t}/attendance/pay-rules/presets`));
+  },
+
+  /** The law's dated changes for the company's country, and agreements to review. */
+  async payRuleLegalChanges(): Promise<{
+    pais: string | null;
+    today: string;
+    choice: { seguirCambios: boolean; omitidos: string[] };
+    changes: import("@/lib/cambiosDeLey").CambioDeLey[];
+    notices: import("@/lib/cambiosDeLey").AvisoDeConvenio[];
+  }> {
+    const t = getTenantId();
+
+    return unwrap(await api.get(`/tenant/${t}/attendance/pay-rules/legal-changes`));
   },
 
   /** Current guard's clock status + assigned stations (worker-app endpoint). */

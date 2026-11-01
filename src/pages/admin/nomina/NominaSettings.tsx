@@ -52,6 +52,8 @@ interface NominaSettings {
     requireApprovalForExceptions?: boolean;
     lockAfterPayrollClose?: boolean;
   };
+  /** The law's dated changes: follow them, or skip some (backend lib/payroll/legalCalendar). */
+  leyes?: { seguirCambios?: boolean; omitidos?: string[] };
   payroll?: {
     /** La política de pago de la empresa. Ver `ReglasDePago` y `backend/lib/politicaDeNomina`. */
     politica?: Politica;
@@ -378,6 +380,8 @@ export default function NominaSettings() {
             <ReglasDePago
               payroll={(s.payroll || {}) as PayrollDeAjustes}
               onChange={(payroll) => setS((p) => ({ ...(p as NominaSettings), payroll: payroll as NominaSettings["payroll"] }))}
+              leyes={s.leyes}
+              onLeyesChange={(leyes) => setS((p) => ({ ...(p as NominaSettings), leyes }))}
             />
 
             {/* ── COSTOS DEL HORARIO ────────────────────────────────────────────

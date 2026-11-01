@@ -18706,7 +18706,9 @@
         "noSePaga": "não é pago",
         "recargosV2": "Domingo {{domingo}} · Descanso trabalhado {{descanso}} · Feriado {{feriado}}",
         "combinaciones": "Quando coincidem — feriado e descanso: {{fd}} · feriado e domingo: {{fo}} · domingo e descanso: {{od}} · noite nesses dias: {{noche}} · hora extra nesses dias: {{extra}}",
-        "segunElDia": "conforme o dia"
+        "segunElDia": "conforme o dia",
+        "septimoDia": "Sétimo dia seguido da semana: as primeiras {{h}} h a +{{a}} %, o resto a +{{b}} %",
+        "septimoSoloSi": " (se a semana passar de {{h}} h)"
       },
       "semanaLaboralEmpieza": "A semana de trabalho começa na",
       "semanalAyuda": "O que passar disto na semana é hora extra (EUA: 40). 0 = sem regra semanal.",
@@ -18760,7 +18762,16 @@
         "extra": "Adicional de horas extra",
         "extraAyuda": "Desligado, as horas extra são pagas a valor simples."
       },
-      "ausenciasAyudaV2": "Marcada: é paga. Desmarcada: continua justificada (não é falta), mas é descontada. Uma licença «pessoal» é paga ou não conforme a própria licença."
+      "ausenciasAyudaV2": "Marcada: é paga. Desmarcada: continua justificada (não é falta), mas é descontada. Uma licença «pessoal» é paga ou não conforme a própria licença.",
+      "estado": "Estado",
+      "estadoFederal": "Outro estado (só a lei federal)",
+      "usarSeptimoDia": "Pagar à parte o sétimo dia seguido",
+      "septimoDiaAyuda": "Quando alguém trabalha os sete dias de uma semana de trabalho (Califórnia, Kentucky). Cada hora desse dia recebe o maior entre o seu adicional e este: nunca se paga duas vezes.",
+      "septimoPrimeras": "Primeiras horas (h)",
+      "septimoRecargo": "Adicional dessas horas (%)",
+      "septimoDespues": "Adicional depois (%)",
+      "septimoSoloSi": "Só se a semana passar de (h)",
+      "septimoSoloSiAyuda": "0 = sempre. Kentucky: 40."
     },
     "puede": {
       "sinPermiso": "Seu papel não tem permissão para isto. Peça a um administrador.",
@@ -18977,6 +18988,29 @@
       "clockIn": "Primeira marcação",
       "clockInAyuda": "Quando um vigilante marcar entrada, você verá em Assiduidade.",
       "compactoProgreso": "Primeiros passos · {{listos}} de {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Mudanças da lei com data",
+      "campo": {
+        "jornadaSemanal": "Jornada semanal",
+        "domingo": "Adicional de domingo",
+        "feriado": "Adicional de feriado",
+        "descanso": "Adicional do dia de descanso"
+      },
+      "estado": {
+        "vigente": "Em vigor desde {{fecha}}",
+        "seAplicara": "Será aplicada sozinha em {{fecha}}",
+        "valorPropio": "Não muda: sua empresa usa {{valor}}, um valor próprio",
+        "omitido": "Não será aplicada: sua empresa a ignorou",
+        "apagado": "Não será aplicada: as mudanças da lei estão desligadas"
+      },
+      "convenioVence": "A convenção «{{convenio}}» vence em {{fecha}}.",
+      "convenioRevisar": "Confirme com seu assessor o que vale depois e ajuste suas regras de pagamento. Não mudamos nada por conta própria: os novos valores ainda não são conhecidos.",
+      "seguir": "Aplicar as mudanças da lei na data delas",
+      "seguirAyuda": "Só muda um valor que esteja no número da lei. Se sua empresa paga outro valor (convenção ou contrato), ele é mantido. Cartões já aprovados não são recalculados.",
+      "omitir": "Não aplicar esta mudança",
+      "enVigorDesde": "A lei fixa {{valor}} desde {{fecha}}: é isso que se paga, mesmo que aqui apareça outro número.",
+      "cambiaEl": "Muda para {{valor}} em {{fecha}} (lei)."
     }
   },
   "map": {

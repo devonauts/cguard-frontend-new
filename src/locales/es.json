@@ -18706,7 +18706,9 @@
         "noSePaga": "no se paga",
         "recargosV2": "Domingo {{domingo}} · Descanso trabajado {{descanso}} · Feriado {{feriado}}",
         "combinaciones": "Si caen juntos — feriado y descanso: {{fd}} · feriado y domingo: {{fo}} · domingo y descanso: {{od}} · noche con esos días: {{noche}} · hora extra con esos días: {{extra}}",
-        "segunElDia": "según el día"
+        "segunElDia": "según el día",
+        "septimoDia": "Séptimo día seguido de la semana: las primeras {{h}} h a +{{a}} %, el resto a +{{b}} %",
+        "septimoSoloSi": " (si la semana pasa de {{h}} h)"
       },
       "semanaLaboralEmpieza": "La semana laboral empieza el",
       "semanalAyuda": "Lo que pase de aquí en la semana es hora extra (EE. UU.: 40). 0 = sin regla semanal.",
@@ -18760,7 +18762,16 @@
         "extra": "Recargo de horas extra",
         "extraAyuda": "Apagado, las horas extra se pagan a tarifa simple."
       },
-      "ausenciasAyudaV2": "Marcada: se paga. Sin marcar: sigue justificada (no es una falta), pero se descuenta. Un permiso «personal» se paga o no según lo que diga el propio permiso."
+      "ausenciasAyudaV2": "Marcada: se paga. Sin marcar: sigue justificada (no es una falta), pero se descuenta. Un permiso «personal» se paga o no según lo que diga el propio permiso.",
+      "estado": "Estado",
+      "estadoFederal": "Otro estado (sólo la ley federal)",
+      "usarSeptimoDia": "Pagar aparte el séptimo día seguido",
+      "septimoDiaAyuda": "Cuando alguien trabaja los siete días de una semana laboral (California, Kentucky). Cada hora de ese día cobra lo más alto entre su recargo y este: nunca se paga dos veces.",
+      "septimoPrimeras": "Primeras horas (h)",
+      "septimoRecargo": "Recargo de esas horas (%)",
+      "septimoDespues": "Recargo después (%)",
+      "septimoSoloSi": "Sólo si la semana pasa de (h)",
+      "septimoSoloSiAyuda": "0 = siempre. Kentucky: 40."
     },
     "puede": {
       "sinPermiso": "Tu rol no tiene permiso para esto. Pídeselo a un administrador.",
@@ -18977,6 +18988,29 @@
       "clockIn": "Primera marcación",
       "clockInAyuda": "Cuando un vigilante marque entrada, la verás en Asistencia.",
       "compactoProgreso": "Puesta en marcha · {{listos}} de {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Cambios de ley con fecha",
+      "campo": {
+        "jornadaSemanal": "Jornada semanal",
+        "domingo": "Recargo dominical",
+        "feriado": "Recargo en feriado",
+        "descanso": "Recargo por día de descanso"
+      },
+      "estado": {
+        "vigente": "En vigor desde el {{fecha}}",
+        "seAplicara": "Se aplicará sola el {{fecha}}",
+        "valorPropio": "No cambia: tu empresa usa {{valor}}, un valor propio",
+        "omitido": "No se aplicará: tu empresa lo omitió",
+        "apagado": "No se aplicará: los cambios de ley están apagados"
+      },
+      "convenioVence": "El convenio «{{convenio}}» vence el {{fecha}}.",
+      "convenioRevisar": "Revisa con tu asesor qué rige después y ajusta tus reglas de pago. No cambiamos nada por nuestra cuenta: los valores nuevos aún no se conocen.",
+      "seguir": "Aplicar los cambios de la ley en su fecha",
+      "seguirAyuda": "Sólo cambia un valor que esté en la cifra de la ley. Si tu empresa paga otro valor (convenio o contrato), se mantiene. Las tarjetas ya aprobadas no se recalculan.",
+      "omitir": "No aplicar este cambio",
+      "enVigorDesde": "La ley fija {{valor}} desde el {{fecha}}: se paga así aunque aquí diga otra cifra.",
+      "cambiaEl": "Cambia el {{fecha}} a {{valor}} (ley)."
     }
   },
   "map": {

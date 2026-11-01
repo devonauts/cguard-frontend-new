@@ -18706,7 +18706,9 @@
         "noSePaga": "not paid",
         "recargosV2": "Sunday {{domingo}} · Rest day worked {{descanso}} · Holiday {{feriado}}",
         "combinaciones": "When they fall together — holiday and rest day: {{fd}} · holiday and Sunday: {{fo}} · Sunday and rest day: {{od}} · night on those days: {{noche}} · overtime on those days: {{extra}}",
-        "segunElDia": "depends on the day"
+        "segunElDia": "depends on the day",
+        "septimoDia": "Seventh consecutive day of the week: the first {{h}} h at +{{a}} %, the rest at +{{b}} %",
+        "septimoSoloSi": " (if the week passes {{h}} h)"
       },
       "semanaLaboralEmpieza": "The workweek starts on",
       "semanalAyuda": "Anything over this in the week is overtime (US: 40). 0 = no weekly rule.",
@@ -18760,7 +18762,16 @@
         "extra": "Overtime surcharge",
         "extraAyuda": "Off, overtime is paid at straight time."
       },
-      "ausenciasAyudaV2": "Ticked: paid. Unticked: still excused (not a fault), but deducted. A “personal” leave is paid or not as the leave itself says."
+      "ausenciasAyudaV2": "Ticked: paid. Unticked: still excused (not a fault), but deducted. A “personal” leave is paid or not as the leave itself says.",
+      "estado": "State",
+      "estadoFederal": "Other state (federal law only)",
+      "usarSeptimoDia": "Pay the seventh consecutive day separately",
+      "septimoDiaAyuda": "When someone works all seven days of a workweek (California, Kentucky). Each hour of that day gets the higher of its own surcharge and this one: never paid twice.",
+      "septimoPrimeras": "First hours (h)",
+      "septimoRecargo": "Surcharge on those hours (%)",
+      "septimoDespues": "Surcharge after that (%)",
+      "septimoSoloSi": "Only if the week passes (h)",
+      "septimoSoloSiAyuda": "0 = always. Kentucky: 40."
     },
     "puede": {
       "sinPermiso": "Your role doesn't have permission for this. Ask an administrator.",
@@ -18977,6 +18988,29 @@
       "clockIn": "First clock-in",
       "clockInAyuda": "When a guard clocks in, you’ll see it in Attendance.",
       "compactoProgreso": "Getting started · {{listos}} of {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Dated changes in the law",
+      "campo": {
+        "jornadaSemanal": "Weekly hours",
+        "domingo": "Sunday surcharge",
+        "feriado": "Holiday surcharge",
+        "descanso": "Rest-day surcharge"
+      },
+      "estado": {
+        "vigente": "In force since {{fecha}}",
+        "seAplicara": "Applies by itself on {{fecha}}",
+        "valorPropio": "No change: your company uses {{valor}}, its own value",
+        "omitido": "Won't apply: your company skipped it",
+        "apagado": "Won't apply: legal updates are off"
+      },
+      "convenioVence": "The agreement «{{convenio}}» expires on {{fecha}}.",
+      "convenioRevisar": "Check with your advisor what applies afterwards and adjust your pay rules. We change nothing on our own: the new values are not known yet.",
+      "seguir": "Apply changes in the law on their date",
+      "seguirAyuda": "Only a value at the law's figure changes. If your company pays another value (agreement or contract), it is kept. Approved timecards are not recalculated.",
+      "omitir": "Don't apply this change",
+      "enVigorDesde": "The law sets {{valor}} since {{fecha}}: that is what is paid, even if a different figure shows here.",
+      "cambiaEl": "Changes to {{valor}} on {{fecha}} (law)."
     }
   },
   "map": {
