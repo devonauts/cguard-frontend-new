@@ -88,7 +88,7 @@ export default function ConfiguracionDeRoles() {
                     {paises.map((p) => <option key={p.code} value={p.code}>{p.nombre}</option>)}
                   </select>
                 </FormField>
-                <FormField label={t("ui.RolesDePago.config.monedaIso", "Moneda (código ISO)")}>
+                <FormField hint={t("ui.RolesDePago.config.monedaUnica", "Es la moneda de toda la empresa: también la de Ajustes de asistencia.")} label={t("ui.RolesDePago.config.monedaIso", "Moneda (código ISO)")}>
                   <input className={FIELD_CLS} disabled={!canEdit} maxLength={3} value={s.currency} onChange={(e) => set("currency", e.target.value.toUpperCase())} />
                 </FormField>
                 <FormField label={t("ui.RolesDePago.config.decimales", "Decimales")}>

@@ -89,6 +89,7 @@ export function dateToWall(
   if (!tz)
     return {
       dateStr: fmtDate(date),
+      // tz: no company zone given — the caller asked for the device clock.
       minutes: date.getHours() * 60 + date.getMinutes(),
     };
   const shifted = new Date(date.getTime() + tzOffsetMs(date, tz));

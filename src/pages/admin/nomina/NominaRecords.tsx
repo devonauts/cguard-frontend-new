@@ -886,24 +886,18 @@ export default function NominaRecords() {
                           value: "reviewed",
                           label: t("ui.NominaRecords.marcarRevisadas", "Marcar revisadas"),
                         },
-                        {
-                          value: "approved",
-                          label: t("ui.NominaRecords.aprobarYEnviarAPago", "Aprobar y enviar a pago"),
-                        },
-                        {
-                          value: "paid",
-                          label: t("ui.NominaRecords.marcarPagadas", "Marcar pagadas"),
-                        },
                         { value: "rejected", label: t("revision.rechazar", "Rechazar") },
                         {
                           value: "pending_review",
                           label: t("ui.NominaRecords.devolverARevision", "Devolver a revisión"),
                         },
-                      ].filter((a) =>
-                        a.value === "approved" ? paraPago.puede : a.value === "paid" ? pagado.puede : true,
-                      )}
+                      ]}
                       onChange={(v) => void bulk(v)}
                     />
+                    {/* ONE approval flow: pay is approved on the person's card. */}
+                    <a className="text-xs underline" href="/nomina/timecards" style={{ color: "var(--ink-soft)" }}>
+                      {t("ui.NominaRecords.aprobarEnHoras", "Aprobar para pago en Horas del periodo")} →
+                    </a>
                   </div>
                 ) : undefined
               }

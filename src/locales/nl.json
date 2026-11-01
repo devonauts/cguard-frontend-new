@@ -7428,7 +7428,7 @@
       "jornada.desc": "Aaneengesloten dagen, rust tussen diensten, weeklimiet en of dubbele diensten zijn toegestaan.",
       "festivos": "Feestdagen",
       "festivos.desc": "Wettelijke en eigen feestdagen, met bijbehorende toeslag.",
-      "attendance-setup": "Diensten en klokken",
+      "attendance-setup": "Aanwezigheidsinstellingen",
       "attendance-setup.desc": "Marges bij in- en uitklokken, geofence bij het klokken, periode en goedkeuringen.",
       "publishing-sites": "Regels voor posten en geofences",
       "publishing-sites.desc": "Meldingen bij het verlaten en terugkeren, en na hoeveel minuten een onbezette post wordt geëscaleerd.",
@@ -7540,7 +7540,9 @@
       "swapAllowGiveawayLabel": "Dienst afstaan toestaan",
       "swapAllowGiveawayHint": "Een dienst geven zonder er een terug te nemen, aan een collega of als open aanbod voor wie op dezelfde locatie werkt.",
       "swapMinNoticeLabel": "Minimale termijn",
-      "swapMinNoticeHint": "Uren voor de dienst waarna een ruil niet meer gevraagd, geaccepteerd of goedgekeurd kan worden."
+      "swapMinNoticeHint": "Uren voor de dienst waarna een ruil niet meer gevraagd, geaccepteerd of goedgekeurd kan worden.",
+      "maxSeguidasLabel": "Maximaal aantal uren achter elkaar",
+      "maxSeguidasHint": "Een dienst plus de verdubbeling. Bij 0 volgt een waarschuwing vanaf 16 uur achter elkaar."
     },
     "rondas": {
       "loadError": "De instellingen konden niet worden geladen",
@@ -8422,7 +8424,23 @@
       "kindCompanyBadge": "Van het bedrijf",
       "deleteAriaLabel": "{{name}} verwijderen",
       "recargoUnico": "Toeslag",
-      "recargoUnicoAyuda": "Die is voor alle feestdagen gelijk en stel je in bij de loonregels."
+      "recargoUnicoAyuda": "Die is voor alle feestdagen gelijk en stel je in bij de loonregels.",
+      "calendarError": "De kalender kon niet worden gewijzigd.",
+      "restoreError": "Kon niet worden teruggezet.",
+      "paisTitle": "Officiële kalender: {{pais}}",
+      "paisSinCalendarioTitle": "Officiële kalender",
+      "paisSwitch": "Nationale feestdagen gebruiken ({{pais}}), elk jaar automatisch berekend",
+      "paisAyuda": "Dit bepaalt welke diensten als feestdag worden betaald. U kunt dagen verwijderen die uw bedrijf niet viert en lokale toevoegen.",
+      "paisFuente": "Bron: {{fuente}}",
+      "paisSinCalendario": "De feestdagen van uw land berekenen we nog niet. Voeg ze hieronder toe en vink „Elk jaar” aan voor vaste dagen.",
+      "anioAnterior": "Vorig jaar",
+      "anioSiguiente": "Volgend jaar",
+      "kindCountryBadge": "Nationaal",
+      "movidoDesde": "Verplaatst van {{fecha}}",
+      "quitarAriaLabel": "Wij vieren {{name}} niet",
+      "quitarTitle": "Uw bedrijf viert deze feestdag niet",
+      "quitadosTitle": "Feestdagen die u niet viert",
+      "devolver": "Weer vieren"
     },
     "userRoles": {
       "actionBtn": "Actie",
@@ -11182,7 +11200,8 @@
       "deEnElPuesto": "van {{horas}} op de post",
       "horasNetasTotales": "Netto-uren:",
       "sinResolver": "Onopgelost",
-      "descansoCubreElTurnoAyuda": "De pauze beslaat de hele dienst: corrigeer de pauze zodat die betaald wordt."
+      "descansoCubreElTurnoAyuda": "De pauze beslaat de hele dienst: corrigeer de pauze zodat die betaald wordt.",
+      "aprobarEnHoras": "Goedkeuren voor betaling in Uren van de periode"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",
@@ -11197,7 +11216,7 @@
       "martes": "Dinsdag",
       "jueves": "Donderdag",
       "viernes": "Vrijdag",
-      "asistenciaTimeAttendance": "Klokken / tijdregistratie",
+      "asistenciaTimeAttendance": "Aanwezigheidsinstellingen",
       "relojDeAsistenciaHabilitado": "Tijdklok ingeschakeld",
       "requerirNotasEnExcepciones": "Notities verplicht bij afwijkingen",
       "umbralSinMarcarSalida": "Drempel niet uitgeklokt",
@@ -11276,7 +11295,11 @@
       "motivoAprobadores": "Alleen wie verlof goedkeurt (en de aanvrager)",
       "motivoRrhh": "Personeelszaken en hogere niveaus (en de aanvrager)",
       "motivoOficina": "Al het kantoorpersoneel",
-      "motivoAyuda": "De reden is vaak medisch. De anderen zien de aanvraag (wie, data, status) zonder de reden."
+      "motivoAyuda": "De reden is vaak medisch. De anderen zien de aanvraag (wie, data, status) zonder de reden.",
+      "nocheSegunReglas": "De nacht en de toeslag komen uit de loonregels hierboven: de schatting gebruikt wat echt wordt betaald.",
+      "descansoEnJornada": "Rust tussen diensten en uren achter elkaar stelt u in bij Werktijd en rust.",
+      "irAJornada": "Werktijd en rust",
+      "monedaUnica": "Dit is de valuta van het hele bedrijf: ook voor loonstroken."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",
@@ -15838,7 +15861,8 @@
       "reabrirPeriodo": "Periode heropenen",
       "reabrirPeriodoMensaje": "Prikkingen, diensten en markeringen vanaf die dag kunnen weer worden gewijzigd. Al goedgekeurde of geëxporteerde tijdkaarten blijven ongewijzigd. Geef de reden op: die komt in het logboek.",
       "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?",
-      "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen."
+      "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen.",
+      "enviarAPago": "Naar betaling sturen"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",
@@ -17908,7 +17932,7 @@
         "exentoHint": "Beveiliging in meerdere landen: tot dit aantal uren zijn er geen overuren. 0 = bestaat niet.",
         "maxTurno": "Wettelijk maximum aan uren per dienst (waarschuwing)",
         "recargosDonde": "De percentages voor overuren, nacht, zondagen en feestdagen bewerk je in",
-        "politicaDeHoras": "Aanwezigheidsinstellingen › Betaalbeleid",
+        "politicaDeHoras": "Aanwezigheidsinstellingen › Loonregels",
         "recargosYConceptos": "en de bedragen van elke looncomponent in",
         "dobladaTitulo": "Dubbele diensten (dubbele en 24-uursdiensten)",
         "premioDobladaFijo": "of vast bedrag per dubbele dienst ({{moneda}})",
@@ -17951,7 +17975,8 @@
         "horasTarjetaTitulo": "Uren van de tijdkaart die de loonstrook betaalt",
         "horasTarjetaAyuda": "De tijdkaart berekent ze altijd; de loonstrook betaalt ze alleen als u dit aanzet. Goedgekeurde loonstroken veranderen niet.",
         "pagarDescanso": "Op de rustdag gewerkte uren betalen (post „Uren op rustdag”)",
-        "pagarExtraNocturna": "Nachtoveruren op een eigen regel betalen (vereist een post „Nachtoveruren”)"
+        "pagarExtraNocturna": "Nachtoveruren op een eigen regel betalen (vereist een post „Nachtoveruren”)",
+        "monedaUnica": "Dit is de valuta van het hele bedrijf: ook in Aanwezigheidsinstellingen."
       },
       "atras": "Terug",
       "continuar": "Doorgaan",

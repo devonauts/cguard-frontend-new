@@ -73,6 +73,7 @@ const DAY_MS = 86400000;
 /** Short weekday label in the active UI language ("Lun", "Mon"…). */
 const diaCorto = (d: Date): string => {
   const s = d
+    // tz: civil day built at local midnight (a calendar date, not an instant).
     .toLocaleDateString(localeActual(), { weekday: "short" })
     .replace(".", "");
 

@@ -6926,7 +6926,7 @@
       "jornada.desc": "Consecutive days, rest between shifts, weekly cap and whether doubling up is allowed.",
       "festivos": "Public holidays",
       "festivos.desc": "Statutory and company holidays, with their pay multiplier.",
-      "attendance-setup": "Shifts and clock-ins",
+      "attendance-setup": "Attendance settings",
       "attendance-setup.desc": "Clock-in and clock-out tolerances, geofence on punching, payroll period.",
       "publishing-sites": "Post and geofence rules",
       "publishing-sites.desc": "Exit and return alerts, and how long before an uncovered post escalates.",
@@ -7038,7 +7038,9 @@
       "swapAllowGiveawayLabel": "Allow giving a shift away",
       "swapAllowGiveawayHint": "Give a shift without taking one back, to a colleague or as an open offer for anyone at the same site.",
       "swapMinNoticeLabel": "Minimum notice",
-      "swapMinNoticeHint": "Hours before the shift after which a swap can no longer be asked, accepted or approved."
+      "swapMinNoticeHint": "Hours before the shift after which a swap can no longer be asked, accepted or approved.",
+      "maxSeguidasLabel": "Maximum consecutive hours",
+      "maxSeguidasHint": "A shift plus its double. Leave 0 and you are warned from 16 hours in a row."
     },
     "rondas": {
       "loadError": "The settings could not be loaded",
@@ -7920,7 +7922,23 @@
       "kindCompanyBadge": "Company",
       "deleteAriaLabel": "Delete {{name}}",
       "recargoUnico": "Surcharge",
-      "recargoUnicoAyuda": "It is the same for every holiday and is set in the pay rules."
+      "recargoUnicoAyuda": "It is the same for every holiday and is set in the pay rules.",
+      "calendarError": "Could not change the calendar.",
+      "restoreError": "Could not put it back.",
+      "paisTitle": "Official calendar of {{pais}}",
+      "paisSinCalendarioTitle": "Official calendar",
+      "paisSwitch": "Use the national holidays of {{pais}} (worked out every year)",
+      "paisAyuda": "This changes which shifts are paid as holidays. You can remove the days your company does not observe and add local ones.",
+      "paisFuente": "Source: {{fuente}}",
+      "paisSinCalendario": "We don't work out your country's holidays yet. Add them below and tick «Repeats every year» for fixed ones.",
+      "anioAnterior": "Previous year",
+      "anioSiguiente": "Next year",
+      "kindCountryBadge": "National",
+      "movidoDesde": "Moved from {{fecha}}",
+      "quitarAriaLabel": "We don't observe {{name}}",
+      "quitarTitle": "Your company does not observe this holiday",
+      "quitadosTitle": "National holidays you don't observe",
+      "devolver": "Observe it again"
     },
     "userRoles": {
       "actionBtn": "Action",
@@ -10647,7 +10665,8 @@
       "deEnElPuesto": "of {{horas}} on post",
       "horasNetasTotales": "Net hours:",
       "sinResolver": "Unresolved",
-      "descansoCubreElTurnoAyuda": "The break covers the whole shift: correct the break so it gets paid."
+      "descansoCubreElTurnoAyuda": "The break covers the whole shift: correct the break so it gets paid.",
+      "aprobarEnHoras": "Approve for pay in Period hours"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",
@@ -10662,7 +10681,7 @@
       "martes": "Tuesday",
       "jueves": "Thursday",
       "viernes": "Friday",
-      "asistenciaTimeAttendance": "Time and attendance",
+      "asistenciaTimeAttendance": "Attendance settings",
       "relojDeAsistenciaHabilitado": "Time clock enabled",
       "requerirNotasEnExcepciones": "Require notes on exceptions",
       "umbralSinMarcarSalida": "No-clock-out threshold",
@@ -10741,7 +10760,11 @@
       "motivoAprobadores": "Only people who approve leave (and the requester)",
       "motivoRrhh": "Human resources and higher levels (and the requester)",
       "motivoOficina": "All office staff",
-      "motivoAyuda": "The reason is often medical. Everyone else sees the request (who, dates, status) without the reason."
+      "motivoAyuda": "The reason is often medical. Everyone else sees the request (who, dates, status) without the reason.",
+      "nocheSegunReglas": "Night hours and their surcharge come from the pay rules above: the estimate uses what is actually paid.",
+      "descansoEnJornada": "Rest between shifts and consecutive hours are set in Working time and rest.",
+      "irAJornada": "Working time and rest",
+      "monedaUnica": "It is the company's one currency: payslips use it too."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",
@@ -15303,7 +15326,8 @@
       "reabrirPeriodo": "Reopen period",
       "reabrirPeriodoMensaje": "Punches, shifts and marks from that day on can be changed again. Timecards already approved or exported are not touched. Write the reason: it goes to the audit log.",
       "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?",
-      "generarCerrado": "This period is closed. Reopen it to recalculate."
+      "generarCerrado": "This period is closed. Reopen it to recalculate.",
+      "enviarAPago": "Send to pay"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",
@@ -17373,7 +17397,7 @@
         "exentoHint": "Security work in several countries: no overtime up to these hours. 0 = none.",
         "maxTurno": "Legal cap on hours per shift (warning)",
         "recargosDonde": "Overtime, night, Sunday and holiday percentages are edited in",
-        "politicaDeHoras": "Attendance settings › Pay policy",
+        "politicaDeHoras": "Attendance settings › Pay rules",
         "recargosYConceptos": "and the amounts of each pay item in",
         "dobladaTitulo": "Double shifts (double and 24 h shifts)",
         "premioDobladaFijo": "or fixed amount per double shift ({{moneda}})",
@@ -17416,7 +17440,8 @@
         "horasTarjetaTitulo": "Timecard hours the payslip pays",
         "horasTarjetaAyuda": "The timecard always computes them; the payslip only pays them if you turn this on. Approved payslips don't change.",
         "pagarDescanso": "Pay hours worked on the rest day (the “Rest day hours” concept)",
-        "pagarExtraNocturna": "Pay night overtime on its own line (needs a “Night overtime hours” concept)"
+        "pagarExtraNocturna": "Pay night overtime on its own line (needs a “Night overtime hours” concept)",
+        "monedaUnica": "It is the company's one currency: Attendance settings use it too."
       },
       "atras": "Back",
       "continuar": "Continue",

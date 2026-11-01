@@ -7428,7 +7428,7 @@
       "jornada.desc": "Giorni consecutivi, riposo tra i turni, tetto settimanale e se si può fare il doppio turno.",
       "festivos": "Festività",
       "festivos.desc": "Festività di legge e giorni propri, con la relativa maggiorazione.",
-      "attendance-setup": "Turni e timbrature",
+      "attendance-setup": "Impostazioni presenze",
       "attendance-setup.desc": "Tolleranze di entrata e uscita, geofence alla timbratura, periodo e approvazioni.",
       "publishing-sites": "Regole dei posti e geofence",
       "publishing-sites.desc": "Avvisi di uscita e rientro, e minuti prima di far salire di livello un posto scoperto.",
@@ -7540,7 +7540,9 @@
       "swapAllowGiveawayLabel": "Consenti di cedere un turno",
       "swapAllowGiveawayHint": "Dare un turno senza riceverne un altro, a un collega o come offerta aperta per chi lavora nella stessa sede.",
       "swapMinNoticeLabel": "Preavviso minimo",
-      "swapMinNoticeHint": "Ore prima del turno oltre le quali non si può più chiedere, accettare né approvare un cambio."
+      "swapMinNoticeHint": "Ore prima del turno oltre le quali non si può più chiedere, accettare né approvare un cambio.",
+      "maxSeguidasLabel": "Ore consecutive massime",
+      "maxSeguidasHint": "Un turno più il raddoppio. Con 0, si avvisa da 16 ore di fila."
     },
     "rondas": {
       "loadError": "Impossibile caricare le impostazioni",
@@ -8422,7 +8424,23 @@
       "kindCompanyBadge": "Dell'azienda",
       "deleteAriaLabel": "Elimina {{name}}",
       "recargoUnico": "Maggiorazione",
-      "recargoUnicoAyuda": "È la stessa per tutti i festivi e si imposta nelle regole di paga."
+      "recargoUnicoAyuda": "È la stessa per tutti i festivi e si imposta nelle regole di paga.",
+      "calendarError": "Impossibile modificare il calendario.",
+      "restoreError": "Impossibile ripristinarlo.",
+      "paisTitle": "Calendario ufficiale: {{pais}}",
+      "paisSinCalendarioTitle": "Calendario ufficiale",
+      "paisSwitch": "Usa le festività nazionali ({{pais}}), calcolate ogni anno",
+      "paisAyuda": "Cambia quali turni sono pagati come festivi. Puoi togliere i giorni che l'azienda non osserva e aggiungere quelli locali.",
+      "paisFuente": "Fonte: {{fuente}}",
+      "paisSinCalendario": "Non calcoliamo ancora le festività del tuo paese. Aggiungile qui sotto e spunta «Si ripete ogni anno» per quelle fisse.",
+      "anioAnterior": "Anno precedente",
+      "anioSiguiente": "Anno successivo",
+      "kindCountryBadge": "Nazionale",
+      "movidoDesde": "Spostato dal {{fecha}}",
+      "quitarAriaLabel": "Non osserviamo {{name}}",
+      "quitarTitle": "La tua azienda non osserva questa festività",
+      "quitadosTitle": "Festività nazionali non osservate",
+      "devolver": "Osservarla di nuovo"
     },
     "userRoles": {
       "actionBtn": "Azione",
@@ -11182,7 +11200,8 @@
       "deEnElPuesto": "su {{horas}} in postazione",
       "horasNetasTotales": "Ore nette:",
       "sinResolver": "Non risolto",
-      "descansoCubreElTurnoAyuda": "La pausa copre tutto il turno: correggi la pausa perché venga pagato."
+      "descansoCubreElTurnoAyuda": "La pausa copre tutto il turno: correggi la pausa perché venga pagato.",
+      "aprobarEnHoras": "Approva per la paga in Ore del periodo"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avvisa anche questi indirizzi email",
@@ -11197,7 +11216,7 @@
       "martes": "Martedì",
       "jueves": "Giovedì",
       "viernes": "Venerdì",
-      "asistenciaTimeAttendance": "Presenze / rilevazione oraria",
+      "asistenciaTimeAttendance": "Impostazioni presenze",
       "relojDeAsistenciaHabilitado": "Timbratore delle presenze attivo",
       "requerirNotasEnExcepciones": "Richiedi note sulle anomalie",
       "umbralSinMarcarSalida": "Soglia di uscita non timbrata",
@@ -11276,7 +11295,11 @@
       "motivoAprobadores": "Solo chi approva le assenze (e chi l'ha chiesta)",
       "motivoRrhh": "Risorse umane e livelli superiori (e chi l'ha chiesta)",
       "motivoOficina": "Tutto il personale d'ufficio",
-      "motivoAyuda": "Il motivo è spesso medico. Gli altri vedono la richiesta (chi, date, stato) senza il motivo."
+      "motivoAyuda": "Il motivo è spesso medico. Gli altri vedono la richiesta (chi, date, stato) senza il motivo.",
+      "nocheSegunReglas": "La notte e la sua maggiorazione vengono dalle regole di paga qui sopra: la stima usa ciò che si paga.",
+      "descansoEnJornada": "Il riposo tra turni e le ore consecutive si impostano in Orario e riposo.",
+      "irAJornada": "Orario e riposo",
+      "monedaUnica": "È la valuta di tutta l’azienda: anche quella delle buste paga."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Dove vai a lavorare?",
@@ -15838,7 +15861,8 @@
       "reabrirPeriodo": "Riapri periodo",
       "reabrirPeriodoMensaje": "Timbrature, turni e segni da quel giorno potranno essere di nuovo modificati. Le schede già approvate o esportate non vengono toccate. Scrivi il motivo: resta nel registro.",
       "reabrirPeriodoTitulo": "Riaprire le paghe dal {{desde}}?",
-      "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo."
+      "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo.",
+      "enviarAPago": "Invia al pagamento"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",
@@ -17908,7 +17932,7 @@
         "exentoHint": "Vigilanza in vari paesi: fino a queste ore non ci sono straordinari. 0 = non esiste.",
         "maxTurno": "Tetto legale di ore per turno (avviso)",
         "recargosDonde": "Le percentuali di straordinari, notturni, domeniche e festivi si modificano in",
-        "politicaDeHoras": "Configurazione presenze › Politica di pagamento",
+        "politicaDeHoras": "Impostazioni presenze › Regole di paga",
         "recargosYConceptos": "e gli importi di ogni voce in",
         "dobladaTitulo": "Doppi turni (turni doppi e di 24 h)",
         "premioDobladaFijo": "o importo fisso per doppio turno ({{moneda}})",
@@ -17951,7 +17975,8 @@
         "horasTarjetaTitulo": "Ore del cartellino pagate dalla busta paga",
         "horasTarjetaAyuda": "Il cartellino le calcola sempre; la busta paga le paga solo se lo attivi. Le buste già approvate non cambiano.",
         "pagarDescanso": "Pagare le ore lavorate nel giorno di riposo (voce «Ore nel giorno di riposo»)",
-        "pagarExtraNocturna": "Pagare lo straordinario notturno su una riga propria (serve una voce «Ore di straordinario notturno»)"
+        "pagarExtraNocturna": "Pagare lo straordinario notturno su una riga propria (serve una voce «Ore di straordinario notturno»)",
+        "monedaUnica": "È la valuta di tutta l’azienda: anche quella delle Impostazioni presenze."
       },
       "atras": "Indietro",
       "continuar": "Continua",

@@ -159,7 +159,7 @@
           },
           {
             "id": "attendance-setup",
-            "label": "Turnos y marcaciones",
+            "label": "Ajustes de asistencia",
             "path": "/nomina/settings",
             "icon": "Clock",
             "desc": "Tolerancias de entrada y salida, geocerca al marcar, periodo y aprobaciones.",

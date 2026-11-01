@@ -7428,7 +7428,7 @@
       "jornada.desc": "Aufeinanderfolgende Tage, Ruhezeit zwischen Schichten, Wochenobergrenze und ob Doppelschichten erlaubt sind.",
       "festivos": "Feiertage",
       "festivos.desc": "Gesetzliche Feiertage und eigene Tage, mit ihrem Zuschlag.",
-      "attendance-setup": "Schichten und Stempelungen",
+      "attendance-setup": "Anwesenheitseinstellungen",
       "attendance-setup.desc": "Toleranzen beim Ein- und Ausstempeln, Geofence beim Stempeln, Abrechnungszeitraum und Freigaben.",
       "publishing-sites": "Objekt- und Geofence-Regeln",
       "publishing-sites.desc": "Warnungen bei Verlassen und Rückkehr sowie Minuten bis zur Eskalation eines unbesetzten Objekts.",
@@ -7540,7 +7540,9 @@
       "swapAllowGiveawayLabel": "Abgeben einer Schicht erlauben",
       "swapAllowGiveawayHint": "Eine Schicht ohne Gegenschicht abgeben, an jemanden oder als offenes Angebot für alle am selben Standort.",
       "swapMinNoticeLabel": "Mindestfrist",
-      "swapMinNoticeHint": "Stunden vor der Schicht, ab denen kein Tausch mehr angefragt, angenommen oder genehmigt werden kann."
+      "swapMinNoticeHint": "Stunden vor der Schicht, ab denen kein Tausch mehr angefragt, angenommen oder genehmigt werden kann.",
+      "maxSeguidasLabel": "Höchstens Stunden am Stück",
+      "maxSeguidasHint": "Eine Schicht plus Verlängerung. Bei 0 kommt ab 16 Stunden am Stück eine Warnung."
     },
     "rondas": {
       "loadError": "Die Einstellungen konnten nicht geladen werden",
@@ -8422,7 +8424,23 @@
       "kindCompanyBadge": "Firma",
       "deleteAriaLabel": "{{name}} löschen",
       "recargoUnico": "Zuschlag",
-      "recargoUnicoAyuda": "Er gilt für alle Feiertage gleich und wird in den Vergütungsregeln festgelegt."
+      "recargoUnicoAyuda": "Er gilt für alle Feiertage gleich und wird in den Vergütungsregeln festgelegt.",
+      "calendarError": "Der Kalender konnte nicht geändert werden.",
+      "restoreError": "Konnte nicht wiederhergestellt werden.",
+      "paisTitle": "Offizieller Kalender: {{pais}}",
+      "paisSinCalendarioTitle": "Offizieller Kalender",
+      "paisSwitch": "Gesetzliche Feiertage ({{pais}}) verwenden – jedes Jahr automatisch berechnet",
+      "paisAyuda": "Das ändert, welche Schichten als Feiertag bezahlt werden. Sie können Tage entfernen, die Ihr Unternehmen nicht begeht, und lokale hinzufügen.",
+      "paisFuente": "Quelle: {{fuente}}",
+      "paisSinCalendario": "Für Ihr Land berechnen wir die Feiertage noch nicht. Fügen Sie sie unten hinzu und markieren Sie feste Tage mit „Wiederholt sich jedes Jahr“.",
+      "anioAnterior": "Vorheriges Jahr",
+      "anioSiguiente": "Nächstes Jahr",
+      "kindCountryBadge": "Gesetzlich",
+      "movidoDesde": "Verschoben vom {{fecha}}",
+      "quitarAriaLabel": "Wir begehen {{name}} nicht",
+      "quitarTitle": "Ihr Unternehmen begeht diesen Feiertag nicht",
+      "quitadosTitle": "Nicht begangene Feiertage",
+      "devolver": "Wieder begehen"
     },
     "userRoles": {
       "actionBtn": "Aktion",
@@ -11182,7 +11200,8 @@
       "deEnElPuesto": "von {{horas}} am Posten",
       "horasNetasTotales": "Nettostunden:",
       "sinResolver": "Ungeklärt",
-      "descansoCubreElTurnoAyuda": "Die Pause deckt die ganze Schicht ab: Korrigiere die Pause, damit sie bezahlt wird."
+      "descansoCubreElTurnoAyuda": "Die Pause deckt die ganze Schicht ab: Korrigiere die Pause, damit sie bezahlt wird.",
+      "aprobarEnHoras": "Zur Zahlung freigeben unter Stunden des Zeitraums"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",
@@ -11197,7 +11216,7 @@
       "martes": "Dienstag",
       "jueves": "Donnerstag",
       "viernes": "Freitag",
-      "asistenciaTimeAttendance": "Anwesenheit und Zeiterfassung",
+      "asistenciaTimeAttendance": "Anwesenheitseinstellungen",
       "relojDeAsistenciaHabilitado": "Stempeluhr aktiviert",
       "requerirNotasEnExcepciones": "Notizen bei Ausnahmen verlangen",
       "umbralSinMarcarSalida": "Schwelle ohne Ausstempeln",
@@ -11276,7 +11295,11 @@
       "motivoAprobadores": "Nur wer Abwesenheiten genehmigt (und der Antragsteller)",
       "motivoRrhh": "Personalwesen und höhere Stufen (und der Antragsteller)",
       "motivoOficina": "Das gesamte Büropersonal",
-      "motivoAyuda": "Der Grund ist oft medizinisch. Die anderen sehen den Antrag (wer, Daten, Status) ohne den Grund."
+      "motivoAyuda": "Der Grund ist oft medizinisch. Die anderen sehen den Antrag (wer, Daten, Status) ohne den Grund.",
+      "nocheSegunReglas": "Nachtzeit und Zuschlag kommen aus den Lohnregeln oben: Die Schätzung nutzt, was tatsächlich gezahlt wird.",
+      "descansoEnJornada": "Ruhezeit zwischen Schichten und Stunden am Stück legen Sie unter Arbeitszeit und Ruhe fest.",
+      "irAJornada": "Arbeitszeit und Ruhe",
+      "monedaUnica": "Das ist die Währung des ganzen Unternehmens – auch für Lohnzettel."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",
@@ -15838,7 +15861,8 @@
       "reabrirPeriodo": "Periode wieder öffnen",
       "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
       "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?",
-      "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen."
+      "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen.",
+      "enviarAPago": "Zur Zahlung senden"
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",
@@ -17908,7 +17932,7 @@
         "exentoHint": "Bewachung in mehreren Ländern: Bis zu diesen Stunden gibt es keine Überstunden. 0 = nicht vorhanden.",
         "maxTurno": "Gesetzliche Obergrenze an Stunden pro Schicht (Hinweis)",
         "recargosDonde": "Die Prozentsätze für Überstunden, Nacht, Sonntage und Feiertage werden bearbeitet unter",
-        "politicaDeHoras": "Anwesenheitseinstellungen › Vergütungsrichtlinie",
+        "politicaDeHoras": "Anwesenheitseinstellungen › Lohnregeln",
         "recargosYConceptos": "und die Beträge jeder Lohnart unter",
         "dobladaTitulo": "Doppelschichten (Doppel- und 24-h-Schichten)",
         "premioDobladaFijo": "oder fester Betrag pro Doppelschicht ({{moneda}})",
@@ -17951,7 +17975,8 @@
         "horasTarjetaTitulo": "Stunden der Zeitkarte, die die Abrechnung bezahlt",
         "horasTarjetaAyuda": "Die Zeitkarte berechnet sie immer; die Abrechnung bezahlt sie nur, wenn Sie das einschalten. Genehmigte Abrechnungen ändern sich nicht.",
         "pagarDescanso": "Am Ruhetag gearbeitete Stunden bezahlen (Posten „Stunden am Ruhetag“)",
-        "pagarExtraNocturna": "Nacht-Überstunden in eigener Zeile bezahlen (braucht einen Posten „Nacht-Überstunden“)"
+        "pagarExtraNocturna": "Nacht-Überstunden in eigener Zeile bezahlen (braucht einen Posten „Nacht-Überstunden“)",
+        "monedaUnica": "Das ist die Währung des ganzen Unternehmens – auch in den Anwesenheitseinstellungen."
       },
       "atras": "Zurück",
       "continuar": "Weiter",

@@ -425,6 +425,10 @@ export default function NominaSettings() {
                   {t(
                     "ui.NominaSettings.codigoDeTresLetras",
                     "Código de tres letras: USD, MXN, COP…",
+                  )}{" "}
+                  {t(
+                    "ui.NominaSettings.monedaUnica",
+                    "Es la moneda de toda la empresa: también la de los roles de pago.",
                   )}
                 </span>
               </label>
@@ -440,18 +444,14 @@ export default function NominaSettings() {
                 label={t("ui.NominaSettings.multiplicadorDeHoraExtra")}
                 path="payroll.overtimeMultiplier"
               />
-              <Num
-                label={t("ui.NominaSettings.recargoNocturnoDecimal", "Recargo nocturno (0.25 = 25 %)")}
-                path="payroll.nightSurchargePct"
-              />
-              <Num
-                label={t("ui.NominaSettings.laNocheEmpiezaALas")}
-                path="payroll.nightStartHour"
-              />
-              <Num
-                label={t("ui.NominaSettings.laNocheTerminaALas")}
-                path="payroll.nightEndHour"
-              />
+              {/* ONE night surcharge (phase 3): the estimate uses the pay
+                  rule's window and rate, the same ones that are paid. */}
+              <p className="text-xs sm:col-span-2" style={{ color: "var(--ink-faint)" }}>
+                {t(
+                  "ui.NominaSettings.nocheSegunReglas",
+                  "La noche y su recargo salen de las reglas de pago de arriba: la estimación usa lo mismo que se paga.",
+                )}
+              </p>
             </SettingsSection>
 
             {/* ── VACACIONES Y DESCANSO: LO DE LA EMPRESA, O LO DE SU PAÍS ──────
@@ -473,8 +473,6 @@ export default function NominaSettings() {
               {(
                 [
                   ["vacaciones", "diasPorAnio", t("ui.NominaSettings.diasDeVacacionesPorAnio", "Días de vacaciones por año")],
-                  ["descanso", "minimoHoras", t("ui.NominaSettings.descansoMinimoEntreTurnos", "Descanso mínimo entre turnos (horas)")],
-                  ["descanso", "maxHorasSeguidas", t("ui.NominaSettings.maximoDeHorasSeguidas", "Máximo de horas seguidas")],
                 ] as const
               ).map(([grupo, campo, etiqueta]) => (
                 <label key={`${grupo}.${campo}`} className="block">
@@ -534,6 +532,16 @@ export default function NominaSettings() {
                   </option>
                 </select>
               </label>
+              {/* ONE rest rule (phase 3): Configuración › Jornada y descanso. */}
+              <p className="text-xs sm:col-span-2" style={{ color: "var(--ink-soft)" }}>
+                {t(
+                  "ui.NominaSettings.descansoEnJornada",
+                  "El descanso entre turnos y las horas seguidas se definen en Jornada y descanso.",
+                )}{" "}
+                <a className="underline" href="/setting/jornada">
+                  {t("ui.NominaSettings.irAJornada", "Jornada y descanso")} →
+                </a>
+              </p>
             </SettingsSection>
 
             {/* In the page flow like every other settings page: a fixed button

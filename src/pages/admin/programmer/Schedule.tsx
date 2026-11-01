@@ -209,6 +209,7 @@ interface SelRow {
 /** Short weekday label in the active UI language ("Lun", "Mon"…). */
 const diaCorto = (d: Date): string => {
   const s = d
+    // tz: civil day built at local midnight (a calendar date, not an instant).
     .toLocaleDateString(localeActual(), { weekday: "short" })
     .replace(".", "");
 
@@ -4806,6 +4807,7 @@ export default function Schedule() {
           const fmt = (d: Date) =>
             `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
           const fmtHuman = (s: string) =>
+            // tz: civil day built at local midnight (a calendar date, not an instant).
             toLocal(s).toLocaleDateString(localeActual(), {
               weekday: "long",
               day: "numeric",
@@ -6085,6 +6087,7 @@ export default function Schedule() {
 
   const monthLabel = useMemo(() => {
     return visibleMonth
+      // tz: civil day built at local midnight (a calendar date, not an instant).
       .toLocaleDateString(localeActual(), { month: "long", year: "numeric" })
       .replace(/^./, (c) => c.toUpperCase());
   }, [visibleMonth]);
@@ -6098,6 +6101,7 @@ export default function Schedule() {
     )
       return monthLabel;
     const fmt = (d: Date) =>
+      // tz: civil day built at local midnight (a calendar date, not an instant).
       d.toLocaleDateString(localeActual(), { day: "numeric", month: "short" });
 
     if (view === "week") {
@@ -6108,6 +6112,7 @@ export default function Schedule() {
     }
 
     return currentDate
+      // tz: civil day built at local midnight (a calendar date, not an instant).
       .toLocaleDateString(localeActual(), {
         weekday: "long",
         day: "numeric",
@@ -9561,6 +9566,7 @@ export default function Schedule() {
             setSfCover((m) => (m ? { ...m, startStr: start, endStr: end } : m));
           const fechaHuman = new Date(
             sfCover.dateStr + "T00:00:00",
+          // tz: civil day built at local midnight (a calendar date, not an instant).
           ).toLocaleDateString(localeActual(), {
             weekday: "long",
             day: "numeric",
@@ -9742,6 +9748,7 @@ export default function Schedule() {
       {sfPick &&
         (() => {
           const { station, pos, dateStr } = sfPick;
+          // tz: civil day built at local midnight (a calendar date, not an instant).
           const fecha = new Date(dateStr + "T00:00:00").toLocaleDateString(
             localeActual(),
             { weekday: "long", day: "numeric", month: "long" },
@@ -9976,6 +9983,7 @@ export default function Schedule() {
           const stDestino = stationsById.get(moveCover.stationId);
           const origen = diaDelTurno(moveCover.shift);
           const fmtDia = (v: string) =>
+            // tz: civil day built at local midnight (a calendar date, not an instant).
             new Date(v + "T00:00:00").toLocaleDateString(localeActual(), {
               weekday: "short",
               day: "numeric",
