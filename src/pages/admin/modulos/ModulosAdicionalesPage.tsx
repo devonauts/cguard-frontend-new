@@ -15,6 +15,7 @@ import {
   Siren,
   Cctv,
   Power,
+  Layers,
 } from "lucide-react";
 
 /** El icono de cada módulo en la tienda; uno nuevo sin entrada sale con la pieza de puzle. */
@@ -27,11 +28,13 @@ const ICONO_DEL_MODULO: Record<string, React.ReactNode> = {
   // Same icons as their side-menu groups.
   monitoring_center: <Siren />,
   video_surveillance: <Cctv />,
+  multimarca: <Layers />,
 };
 
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";
 import TarjetaModuloMensual from "./TarjetaModuloMensual";
 import { precioACobrar, precioDeModulo } from "./precioDeModulo";
+import { MARCAS_INCLUIDAS, precioDeMultimarca } from "./precioDeMultimarca";
 
 import BotonDemo from "@/components/modulos/demo/BotonDemo";
 import AppLayout from "@/layouts/app-layout";
@@ -111,6 +114,11 @@ function useConsecuenciaDeApagar(): (key: string) => string | null {
         return t("modulosAdicionales.pausa.consecuencias.monitoring_center");
       case "video_surveillance":
         return t("modulosAdicionales.pausa.consecuencias.video_surveillance");
+      case "multimarca":
+        return t(
+          "ui.TiendaMultimarca.consecuencia",
+          "El selector de marca y la columna «Marca» desaparecen; las marcas y sus datos se quedan.",
+        );
       default:
         return null;
     }
@@ -480,7 +488,28 @@ export default function ModulosAdicionalesPage() {
                           className="truncate text-xs"
                           style={{ color: "var(--ink-faint)" }}
                         >
-                          {" "}
+                          {m.key === "multimarca"
+                            ? (() => {
+                                /* «450 USD (incluye 2 marcas) · 50 USD por cada
+                                   marca adicional», in the company's currency;
+                                   nothing once it is theirs. */
+                                const p = precioDeMultimarca(m);
+
+                                if (!p) return " ";
+
+                                return p.extra
+                                  ? t(
+                                      "ui.TiendaMultimarca.detalle",
+                                      "(incluye {{n}} marcas) · {{extra}} por cada marca adicional",
+                                      { n: MARCAS_INCLUIDAS, extra: p.extra },
+                                    )
+                                  : t(
+                                      "ui.TiendaMultimarca.incluye",
+                                      "(incluye {{n}} marcas)",
+                                      { n: MARCAS_INCLUIDAS },
+                                    );
+                              })()
+                            : " "}
                         </div>
                       </div>
                     }

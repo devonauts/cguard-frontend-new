@@ -33,6 +33,8 @@ import {
 } from "@/components/kit";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import { localeActual } from "@/lib/localeActual";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * «CON COBERTURA» NO QUERÍA DECIR LO QUE PARECÍA
@@ -275,6 +277,8 @@ export default function StationCardsGrid({
 }) {
   // Módulo Sucursales (vista global): la etiqueta de sucursal de cada fila.
   const suc = useEtiquetasDeSucursal();
+  // Multimarca («Todas las marcas»): a station is of its client's brand.
+  const marcas = useEtiquetasDeMarca({ clientes: true });
   const { t } = useTranslation();
 
   if (loading)
@@ -367,6 +371,7 @@ export default function StationCardsGrid({
                 >
                   <span className="truncate">{title}</span>
                   <EtiquetaDeSucursal sucursal={suc.deSede(s.postSiteId)} />
+                  <EtiquetaDeMarca marca={marcas.deCliente(s.clientId)} />
                 </p>
                 {subtitle && (
                   <p

@@ -658,6 +658,16 @@
     ]
   },
   {
+    "id": "marcas",
+    "name": "Marcas",
+    "icon": "Layers",
+    "path": "/marcas",
+    "modulo": "multimarca",
+    "permission": [
+      "settingsRead"
+    ]
+  },
+  {
     "id": "modulos-adicionales",
     "name": "Módulos adicionales",
     "icon": "Puzzle",

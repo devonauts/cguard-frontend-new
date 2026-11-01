@@ -47,6 +47,13 @@ describe("entitlements · módulos adicionales", () => {
     }
   });
 
+  it("multimarca fails closed (it is paid for)", () => {
+    expect(MODULE_KEYS).toContain("multimarca");
+    expect(hasFeature(conFunciones(undefined), "multimarca")).toBe(false);
+    expect(hasFeature(conFunciones(["rondas"]), "multimarca")).toBe(false);
+    expect(hasFeature(conFunciones(["multimarca"]), "multimarca")).toBe(true);
+  });
+
   it("las funciones de siempre siguen fallando abierto", () => {
     expect(hasFeature(conFunciones(undefined), "rondas")).toBe(true);
     expect(hasFeature(conFunciones([]), "radio")).toBe(true);

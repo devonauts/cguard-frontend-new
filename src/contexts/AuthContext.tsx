@@ -21,6 +21,7 @@ import {
 import { ApiError } from "../services/api/apiService";
 
 import { marcarQueHayQuePreguntarElEspacio } from "@/lib/sucursalElegida";
+import { marcarQueHayQuePreguntarLaMarca } from "@/lib/marcaElegida";
 import i18n from "@/i18n";
 import { olvidarApariencia } from "@/lib/appearanceSync";
 import { leerPerfil, olvidarPerfil } from "@/lib/perfilDeLaCuenta";
@@ -665,6 +666,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         void abrirSesionDeCodigo(response.token);
         // Sucursales: la primera pantalla del CRM pregunta dónde trabajar.
         marcarQueHayQuePreguntarElEspacio();
+        marcarQueHayQuePreguntarLaMarca();
         try {
           setAuthToken(response.token);
         } catch {}
@@ -995,6 +997,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Desktop app: the shell keeps the session across launches.
       notifyDesktopSessionUpdated(token);
       marcarQueHayQuePreguntarElEspacio();
+      marcarQueHayQuePreguntarLaMarca();
       try {
         setAuthToken(token);
       } catch {}

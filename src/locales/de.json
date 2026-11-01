@@ -5601,7 +5601,8 @@
       "coberturaEnVivo": "Besetzung live",
       "atrasos": "Verspätungen der Woche"
     },
-    "app-escritorio": "Desktop-App"
+    "app-escritorio": "Desktop-App",
+    "marcas": "Marken"
   },
   "siteTour": {
     "newTour": "Neuer Rundgang",
@@ -9183,7 +9184,10 @@
       "logo": "Logo",
       "fotoDelLugar": "Foto des Ortes",
       "rangoLatitud": "-90 bis 90",
-      "rangoLongitud": "-180 bis 180"
+      "rangoLongitud": "-180 bis 180",
+      "faltaMarca": "Wählen Sie die Marke, zu der der Kunde gehört.",
+      "marca": "Marke",
+      "marcaAyuda": "Das Unternehmen, mit dem dieser Kunde den Vertrag hat. Sie können es später ändern."
     },
     "Clients": {
       "comoFunciona": "Wie funktioniert das?",
@@ -14435,7 +14439,8 @@
       "enviarInvitacion": "Einladung senden",
       "seEnviaraInvitacionApp": "Eine Einladung zum Herunterladen und Nutzen der App {{app}} wird an {{email}} gesendet.",
       "enlacesAGooglePlay": "Links zu Google Play und App Store",
-      "invitacionAppEnviadaA": "App-Einladung an {{to}} gesendet"
+      "invitacionAppEnviadaA": "App-Einladung an {{to}} gesendet",
+      "marca": "Marke"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": Jeder Block wird geteilt von",
@@ -19677,6 +19682,126 @@
     "RutaConPermiso": {
       "titulo": "Kein Zugriff auf diese Seite",
       "descripcion": "Ihre Rolle kann diese Seite nicht sehen. Wenn Sie sie brauchen, fragen Sie einen Administrator."
+    },
+    "CampoDeMarca": {
+      "elige": "Marke wählen",
+      "marca": "Marke"
+    },
+    "CampoMarcaDeRegistro": {
+      "ayuda": "Legt fest, über welche Lohnabrechnung diese Person bezahlt wird",
+      "etiqueta": "Unternehmen der Anmeldung"
+    },
+    "ComprarCupoDeMarca": {
+      "boton": "{{precio}} bezahlen",
+      "botonSinPrecio": "Bezahlen",
+      "exito": "Fertig: Sie können jetzt eine weitere Marke hinzufügen.",
+      "mensaje": "Eine Einmalzahlung von {{precio}} wird von der Karte Ihres Abonnements abgebucht. Die Marke bleibt dauerhaft verfügbar.",
+      "mensajeSinPrecio": "Eine Einmalzahlung wird von der Karte Ihres Abonnements abgebucht. Die Marke bleibt dauerhaft verfügbar.",
+      "titulo": "Weitere Marke hinzufügen?"
+    },
+    "CotizacionEditor": {
+      "faltaMarca": "Wählen Sie die Marke, die das Angebot ausstellt.",
+      "marca": "Anbietende Marke",
+      "marcaAyuda": "Das Unternehmen, das das Angebot ausstellt. Wird es angenommen, entsteht der Kunde in dieser Marke.",
+      "marcaDelCliente": "Ausgestellt von {{marca}}, der Marke des Kunden."
+    },
+    "EditorDeMarca": {
+      "archivada": "Marke archiviert",
+      "archivar": "Archivieren",
+      "archivarMensaje": "Sie erscheint nicht mehr in der Leiste und in Formularen. Nichts wird gelöscht und Sie können sie jederzeit wieder aktivieren.",
+      "archivarTitulo": "{{nombre}} archivieren?",
+      "cambiarLogo": "Logo ändern",
+      "codigo": "Kürzel",
+      "color": "Farbe",
+      "correo": "E-Mail",
+      "desarchivar": "Wieder aktivieren",
+      "direccion": "Adresse",
+      "editar": "Marke bearbeiten",
+      "eligePais": "Land wählen",
+      "establecimiento": "Betriebsstättennummer",
+      "establecimientoAyuda": "Falls die Steuerbehörde eine vergibt (z. B. 001).",
+      "faltaIdentificador": "Geben Sie die {{documento}} ein.",
+      "faltaNombre": "Geben Sie den Handelsnamen ein.",
+      "faltaPais": "Wählen Sie das Land.",
+      "faltaRazon": "Geben Sie den Firmennamen ein.",
+      "guardada": "Marke gespeichert",
+      "guardando": "Wird gespeichert…",
+      "guardar": "Marke speichern",
+      "identidadAyuda": "Jede Marke ist ein eigenes Unternehmen: Firmenname, Steuernummer und Land sind Pflicht.",
+      "identidadTitulo": "Rechtliche Identität",
+      "identificador": "Steuernummer",
+      "identificadorMalo": "Diese {{documento}} scheint für das gewählte Land nicht gültig zu sein.",
+      "logoError": "Das Logo konnte nicht hochgeladen werden. Versuchen Sie ein anderes Bild.",
+      "nombre": "Handelsname",
+      "nombreEjemplo": "Z. B.: Andina Security",
+      "nueva": "Neue Marke",
+      "otroColor": "Andere Farbe",
+      "pais": "Land",
+      "quitarLogo": "Entfernen",
+      "razonSocial": "Firmenname",
+      "reactivada": "Marke wieder aktiv",
+      "sinCuposMensaje": "Ihr Tarif umfasst die Marken, die Sie bereits nutzen. Jede weitere Marke ist eine Einmalzahlung von {{precio}}.",
+      "sinCuposMensajeSinPrecio": "Ihr Tarif umfasst die Marken, die Sie bereits nutzen. Jede weitere Marke ist eine Einmalzahlung.",
+      "sinCuposTitulo": "Sie nutzen bereits alle Ihre Marken",
+      "subirLogo": "Logo hochladen",
+      "telefono": "Telefon"
+    },
+    "ElegirMarca": {
+      "ahora": "Sie sind hier",
+      "cambiaCuandoQuieras": "Sie können die Marke jederzeit über die obere Leiste wechseln.",
+      "marcaDesc": "Nur ihre Kunden, deren Standorte und die Personen, die dort arbeiten.",
+      "principalDesc": "Die Marke, mit der das Konto erstellt wurde.",
+      "subtitulo": "Jede Marke ist ein Unternehmen mit eigenen Kunden. Wählen Sie eine, um nur ihre Daten zu sehen, oder alle zugleich.",
+      "titulo": "Mit welcher Marke arbeiten Sie gerade?",
+      "todasDesc": "Die Kunden und das Personal aller Marken.",
+      "ultimaVez": "Letztes Mal"
+    },
+    "MarcasPage": {
+      "abrir": "{{nombre}} öffnen",
+      "agregarOtra": "Weitere Marke hinzufügen ({{precio}})",
+      "agregarOtraSinPrecio": "Weitere Marke hinzufügen",
+      "archivada": "Archiviert",
+      "clientes": "{{n}} Kunden",
+      "cupos": "{{usadas}} von {{pagadas}} Marken in Nutzung",
+      "cuposLibres": "Marken, die Sie noch kostenlos anlegen können: {{n}}.",
+      "cuposLlenos": "Um eine weitere Marke anzulegen, fügen Sie eine hinzu.",
+      "errores": {
+        "esPrincipal": "Die Hauptmarke kann nicht archiviert werden: Mit diesem Unternehmen wurde das Konto erstellt.",
+        "faltanDatos": "Pflichtangaben fehlen: Name, Firmenname, Steuernummer und Land.",
+        "guardar": "Die Marke konnte nicht gespeichert werden.",
+        "identificadorMalo": "Die Steuernummer ist für das gewählte Land nicht gültig.",
+        "sinCupos": "Sie nutzen bereits alle Ihre Marken. Fügen Sie eine weitere hinzu, um fortzufahren.",
+        "sinModulo": "Das Modul Multimarke ist nicht aktiv.",
+        "tieneClientes": "Diese Marke hat noch Kunden. Verschieben Sie sie in eine andere Marke und versuchen Sie es erneut."
+      },
+      "irALaTienda": "In Zusatzmodulen ansehen",
+      "nueva": "Neue Marke",
+      "personas": "{{n}} Personen angemeldet",
+      "sinModulo": "Das Modul Multimarke ist nicht aktiv",
+      "sinModuloDesc": "Mit dem Modul Multimarke führen Sie mehrere Sicherheitsmarken in einem Konto.",
+      "subtitulo": "Jede Marke ist ein eigenes Unternehmen mit eigenen Kunden und eigener Lohnabrechnung. Wachleute, Dienstplan und Karte werden geteilt.",
+      "titulo": "Marken",
+      "vacio": "Noch keine Marken",
+      "vacioDesc": "Die Hauptmarke wird beim Aktivieren des Moduls automatisch angelegt.",
+      "verArchivadas": "Archivierte anzeigen"
+    },
+    "Multimarca": {
+      "principal": "Hauptmarke"
+    },
+    "NuevaCorrida": {
+      "faltaMarca": "Wählen Sie das Unternehmen (Marke): Jede Marke zahlt ihre eigene Lohnabrechnung.",
+      "marca": "Unternehmen (Marke)",
+      "marcaAyuda": "Abgerechnet werden nur Personen, die in dieser Marke angemeldet sind, auch wenn sie an Standorten einer anderen gearbeitet haben."
+    },
+    "SelectorDeMarca": {
+      "elegir": "Marke wählen",
+      "todas": "Alle Marken",
+      "todasCorto": "Marken"
+    },
+    "TiendaMultimarca": {
+      "consecuencia": "Die Markenauswahl und die Spalte „Marke“ verschwinden; die Marken und ihre Daten bleiben.",
+      "detalle": "(inkl. {{n}} Marken) · {{extra}} je weitere Marke",
+      "incluye": "(inkl. {{n}} Marken)"
     }
   },
   "visitantes": {

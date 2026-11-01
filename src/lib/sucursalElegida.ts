@@ -64,11 +64,19 @@ export function hayQuePreguntarElEspacio(): boolean {
   }
 }
 
+/** Fired when the branch question is answered (the brand question waits for it). */
+export const EVENTO_ESPACIO_PREGUNTADO = "cg:espacio-preguntado";
+
 export function yaSePreguntoElEspacio(): void {
   try {
     localStorage.removeItem(PREGUNTAR);
   } catch {
     /* nada */
+  }
+  try {
+    window.dispatchEvent(new Event(EVENTO_ESPACIO_PREGUNTADO));
+  } catch {
+    /* sin ventana (pruebas) */
   }
 }
 

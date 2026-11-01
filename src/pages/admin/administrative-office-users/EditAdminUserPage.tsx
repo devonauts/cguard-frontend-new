@@ -53,6 +53,9 @@ import {
 } from "@/components/kit";
 import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
 import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
+import CampoMarcaDeRegistro, {
+  useMarcaDeRegistro,
+} from "@/components/multimarca/CampoMarcaDeRegistro";
 
 const CLIENT_OPTIONS_PLACEHOLDER: Array<{ id: string; name: string }> = [];
 
@@ -60,6 +63,8 @@ export default function EditAdminUserPage() {
   const { t } = useTranslation();
   const params = useParams();
   const id = params.id;
+  // Multimarca: the brand whose payroll pays this person.
+  const marcaDeRegistro = useMarcaDeRegistro(id ?? null);
 
   const form = useForm<NewAdminUserValues>({
     resolver: zodResolver(newAdminUserSchema),
@@ -728,6 +733,7 @@ export default function EditAdminUserPage() {
           await userService.cambiarNombre(id, nombres.trim(), apellidos.trim());
           setNombreOriginal({ first: nombres.trim(), last: apellidos.trim() });
         }
+        await marcaDeRegistro.guardar();
         toast.success(
           t("adminOfficeUsers.editUser.toasts.updated", {
             defaultValue: "Usuario actualizado correctamente",
@@ -877,6 +883,13 @@ export default function EditAdminUserPage() {
                     }
                   />
                 </div>
+                {/* Multimarca: whose payroll pays this person. */}
+                <CampoMarcaDeRegistro
+                  className="md:col-span-2"
+                  estado={marcaDeRegistro}
+                  labelClassName="text-sm font-medium leading-none"
+                  selectClassName="cg-input cg-focus flex h-10 w-full px-3 text-sm"
+                />
 
                 <FormField
                   control={control}

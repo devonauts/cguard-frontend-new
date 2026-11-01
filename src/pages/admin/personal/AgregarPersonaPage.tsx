@@ -36,6 +36,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 import JornadaEnLinea from "@/components/alta/JornadaEnLinea";
+import CampoDeMarca from "@/components/multimarca/CampoDeMarca";
 import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
 import { ApiService } from "@/services/api/apiService";
 import {
@@ -870,6 +871,22 @@ export default function AgregarPersonaPage() {
                         />
                       </FormField>
                     )}
+                    {/* Multimarca: whose payroll pays this person. */}
+                    <CampoDeMarca
+                      className="sm:col-span-2"
+                      hint={t(
+                        "ui.CampoMarcaDeRegistro.ayuda",
+                        "Define en qué planilla de roles de pago cobra esta persona",
+                      )}
+                      id="alta-marca"
+                      label={t(
+                        "ui.CampoMarcaDeRegistro.etiqueta",
+                        "Empresa en la que se registró",
+                      )}
+                      selectClassName={FIELD_CLS}
+                      value={datos.marca ?? ""}
+                      onChange={(v) => cambiar({ marca: v })}
+                    />
                     {tipo !== "oficina" && (
                       <FormField
                         error={errorDeCampo(errores.celular)}

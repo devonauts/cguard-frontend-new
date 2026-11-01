@@ -36,6 +36,8 @@ import {
   EmptyState,
   SmartImage,
 } from "@/components/kit";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
 
 /**
  * Dónde está asignado un vigilante. Sale de `guardAssignment` —la fuente única
@@ -126,6 +128,8 @@ export default function GuardCardsGrid({
 }) {
   // Módulo Sucursales (vista global): la de casa o, si no tiene, la de su puesto.
   const etiquetas = useEtiquetasDeSucursal({ personas: true });
+  // Multimarca («Todas las marcas»): the brand each guard is registered in.
+  const marcas = useEtiquetasDeMarca({ personas: true });
   const { t } = useTranslation();
 
   if (loading)
@@ -219,6 +223,7 @@ export default function GuardCardsGrid({
                       etiquetas.deSede(asignacion?.postSiteId)
                     }
                   />
+                  <EtiquetaDeMarca marca={marcas.dePersona(userId)} />
                   <StatusBadge tone={tone}>
                     {g.status === "Activo"
                       ? t("common.active", "Activo")

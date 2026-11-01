@@ -637,6 +637,8 @@ export interface Quote {
   id: string;
   /** Branch it belongs to (null = the company). */
   branchId?: string | null;
+  /** Multimarca: the brand issuing it (the client's, or chosen for a prospect). */
+  brandId?: string | null;
   number: string;
   revision: number;
   title: string;
@@ -688,6 +690,8 @@ export interface QuotePipeline {
 export interface QuoteInput {
   prospect?: Partial<QuoteProspect>;
   clientAccountId?: string;
+  /** Multimarca: the brand of a prospect's quote (a client's comes from the client). */
+  brandId?: string;
   title?: string;
   language?: QuoteLanguage;
   currency?: string;

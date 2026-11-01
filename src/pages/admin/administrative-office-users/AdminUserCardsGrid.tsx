@@ -28,6 +28,8 @@ import {
   GlassPanel,
   SmartImage,
 } from "@/components/kit";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
 
 export type AdminUserCardAction = {
   label: string;
@@ -148,6 +150,8 @@ export default function AdminUserCardsGrid({
   actions: (u: AdminUserRow) => AdminUserCardAction[];
 }) {
   const { t } = useTranslation();
+  // Multimarca («Todas las marcas»): the brand each person is registered in.
+  const marcas = useEtiquetasDeMarca({ personas: true });
 
   if (loading)
     return (
@@ -228,7 +232,8 @@ export default function AdminUserCardsGrid({
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold leading-tight">{name}</p>
-                <div className="mt-1">
+                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  <EtiquetaDeMarca marca={marcas.dePersona(id)} />
                   <StatusBadge tone={st.tone}>
                     {t(st.labelKey, st.label)}
                   </StatusBadge>

@@ -47,6 +47,8 @@ import OperationSetupAlert, {
   OperationSetupBadge,
   needsOperationSetup,
 } from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
 
 // A post-site row from getClientPostSites (raw businessInfo columns).
 interface PostSiteRow {
@@ -135,6 +137,8 @@ const markerRole = (s: Sede) =>
 
 export default function ClientPostSites({ client }: { client: Client }) {
   const etiquetas = useEtiquetasDeSucursal();
+  // Multimarca («Todas las marcas»): every site is of its client's brand.
+  const marcas = useEtiquetasDeMarca();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [sedes, setSedes] = useState<Sede[]>([]);
@@ -430,6 +434,9 @@ export default function ClientPostSites({ client }: { client: Client }) {
                             <span className="truncate">{s.name}</span>
                             <EtiquetaDeSucursal
                               sucursal={etiquetas.deSede(s.id)}
+                            />
+                            <EtiquetaDeMarca
+                              marca={marcas.marca(client.brandId)}
                             />
                           </p>
                           {s.setupPending ? (

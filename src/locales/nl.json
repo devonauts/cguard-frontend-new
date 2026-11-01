@@ -5601,7 +5601,8 @@
       "coberturaEnVivo": "Live dekking",
       "atrasos": "Te laat deze week"
     },
-    "app-escritorio": "Desktop-app"
+    "app-escritorio": "Desktop-app",
+    "marcas": "Merken"
   },
   "siteTour": {
     "newTour": "Nieuwe ronde",
@@ -9183,7 +9184,10 @@
       "logo": "Logo",
       "fotoDelLugar": "Foto van de locatie",
       "rangoLatitud": "-90 tot 90",
-      "rangoLongitud": "-180 tot 180"
+      "rangoLongitud": "-180 tot 180",
+      "faltaMarca": "Kies het merk waartoe de klant behoort.",
+      "marca": "Merk",
+      "marcaAyuda": "Het bedrijf waarmee deze klant het contract heeft. Je kunt het later wijzigen."
     },
     "Clients": {
       "comoFunciona": "Hoe werkt het?",
@@ -14435,7 +14439,8 @@
       "enviarInvitacion": "Uitnodiging verzenden",
       "seEnviaraInvitacionApp": "Er wordt een uitnodiging om de app {{app}} te downloaden en te gebruiken naar {{email}} gestuurd.",
       "enlacesAGooglePlay": "Links naar Google Play en de App Store",
-      "invitacionAppEnviadaA": "App-uitnodiging verzonden naar {{to}}"
+      "invitacionAppEnviadaA": "App-uitnodiging verzonden naar {{to}}",
+      "marca": "Merk"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": elk blok wordt gedeeld door",
@@ -19677,6 +19682,126 @@
     "RutaConPermiso": {
       "titulo": "Geen toegang tot deze pagina",
       "descripcion": "Je rol kan deze pagina niet zien. Heb je hem nodig, vraag het een beheerder."
+    },
+    "CampoDeMarca": {
+      "elige": "Kies het merk",
+      "marca": "Merk"
+    },
+    "CampoMarcaDeRegistro": {
+      "ayuda": "Bepaalt via welke loonlijst deze persoon wordt betaald",
+      "etiqueta": "Bedrijf van inschrijving"
+    },
+    "ComprarCupoDeMarca": {
+      "boton": "{{precio}} betalen",
+      "botonSinPrecio": "Betalen",
+      "exito": "Klaar: je kunt nu nog een merk toevoegen.",
+      "mensaje": "Er wordt een eenmalige betaling van {{precio}} afgeschreven van de kaart van je abonnement. Het merk blijft voor altijd beschikbaar.",
+      "mensajeSinPrecio": "Er wordt een eenmalige betaling afgeschreven van de kaart van je abonnement. Het merk blijft voor altijd beschikbaar.",
+      "titulo": "Nog een merk toevoegen?"
+    },
+    "CotizacionEditor": {
+      "faltaMarca": "Kies het merk dat de offerte uitbrengt.",
+      "marca": "Merk dat offreert",
+      "marcaAyuda": "Het bedrijf dat de offerte uitbrengt. Als die wordt aanvaard, ontstaat de klant in dit merk.",
+      "marcaDelCliente": "Uitgebracht door {{marca}}, het merk van de klant."
+    },
+    "EditorDeMarca": {
+      "archivada": "Merk gearchiveerd",
+      "archivar": "Archiveren",
+      "archivarMensaje": "Het verschijnt niet meer in de balk en in formulieren. Er wordt niets verwijderd en je kunt het altijd weer activeren.",
+      "archivarTitulo": "{{nombre}} archiveren?",
+      "cambiarLogo": "Logo wijzigen",
+      "codigo": "Code",
+      "color": "Kleur",
+      "correo": "E-mail",
+      "desarchivar": "Weer activeren",
+      "direccion": "Adres",
+      "editar": "Merk bewerken",
+      "eligePais": "Kies een land",
+      "establecimiento": "Vestigingscode",
+      "establecimientoAyuda": "Als de belastingdienst er een toekent (bijv. 001).",
+      "faltaIdentificador": "Vul het {{documento}} in.",
+      "faltaNombre": "Vul de handelsnaam in.",
+      "faltaPais": "Kies het land.",
+      "faltaRazon": "Vul de statutaire naam in.",
+      "guardada": "Merk opgeslagen",
+      "guardando": "Opslaan…",
+      "guardar": "Merk opslaan",
+      "identidadAyuda": "Elk merk is een apart bedrijf: de statutaire naam, het fiscale nummer en het land zijn verplicht.",
+      "identidadTitulo": "Juridische identiteit",
+      "identificador": "Fiscaal nummer",
+      "identificadorMalo": "Dat {{documento}} lijkt niet geldig voor het gekozen land.",
+      "logoError": "Het logo kon niet worden geüpload. Probeer een andere afbeelding.",
+      "nombre": "Handelsnaam",
+      "nombreEjemplo": "Bijv.: Andina Security",
+      "nueva": "Nieuw merk",
+      "otroColor": "Andere kleur",
+      "pais": "Land",
+      "quitarLogo": "Verwijderen",
+      "razonSocial": "Statutaire naam",
+      "reactivada": "Merk weer actief",
+      "sinCuposMensaje": "Je abonnement omvat de merken die je al gebruikt. Elk extra merk is een eenmalige betaling van {{precio}}.",
+      "sinCuposMensajeSinPrecio": "Je abonnement omvat de merken die je al gebruikt. Elk extra merk is een eenmalige betaling.",
+      "sinCuposTitulo": "Je gebruikt al je merken al",
+      "subirLogo": "Logo uploaden",
+      "telefono": "Telefoon"
+    },
+    "ElegirMarca": {
+      "ahora": "Je bent hier",
+      "cambiaCuandoQuieras": "Je kunt altijd van merk wisselen via de bovenste balk.",
+      "marcaDesc": "Alleen de klanten, hun locaties en de mensen die er werken.",
+      "principalDesc": "Het merk waarmee het account is aangemaakt.",
+      "subtitulo": "Elk merk is een bedrijf met eigen klanten. Kies er één om alleen het zijne te zien, of allemaal tegelijk.",
+      "titulo": "Met welk merk werk je nu?",
+      "todasDesc": "De klanten en het personeel van alle merken.",
+      "ultimaVez": "De vorige keer"
+    },
+    "MarcasPage": {
+      "abrir": "{{nombre}} openen",
+      "agregarOtra": "Nog een merk toevoegen ({{precio}})",
+      "agregarOtraSinPrecio": "Nog een merk toevoegen",
+      "archivada": "Gearchiveerd",
+      "clientes": "{{n}} klanten",
+      "cupos": "{{usadas}} van {{pagadas}} merken in gebruik",
+      "cuposLibres": "Merken die je nog gratis kunt aanmaken: {{n}}.",
+      "cuposLlenos": "Voeg er nog een toe om een ander merk aan te maken.",
+      "errores": {
+        "esPrincipal": "Het hoofdmerk kan niet worden gearchiveerd: het is het bedrijf waarmee het account is aangemaakt.",
+        "faltanDatos": "Er ontbreken verplichte gegevens: naam, statutaire naam, fiscaal nummer en land.",
+        "guardar": "Het merk kon niet worden opgeslagen.",
+        "identificadorMalo": "Het fiscale nummer is niet geldig voor het gekozen land.",
+        "sinCupos": "Je gebruikt al je merken al. Voeg er nog een toe om verder te gaan.",
+        "sinModulo": "De module Multimerk is niet actief.",
+        "tieneClientes": "Dit merk heeft nog klanten. Verplaats ze naar een ander merk en probeer het opnieuw."
+      },
+      "irALaTienda": "Bekijken in Extra modules",
+      "nueva": "Nieuw merk",
+      "personas": "{{n}} mensen ingeschreven",
+      "sinModulo": "De module Multimerk is niet actief",
+      "sinModuloDesc": "Met de module Multimerk beheer je meerdere beveiligingsmerken in één account.",
+      "subtitulo": "Elk merk is een apart bedrijf met eigen klanten en loonlijst. Bewakers, rooster en kaart worden gedeeld.",
+      "titulo": "Merken",
+      "vacio": "Nog geen merken",
+      "vacioDesc": "Het hoofdmerk wordt automatisch aangemaakt als de module wordt ingeschakeld.",
+      "verArchivadas": "Gearchiveerde tonen"
+    },
+    "Multimarca": {
+      "principal": "Hoofdmerk"
+    },
+    "NuevaCorrida": {
+      "faltaMarca": "Kies het bedrijf (merk): elk merk betaalt zijn eigen loonlijst.",
+      "marca": "Bedrijf (merk)",
+      "marcaAyuda": "Alleen mensen die in dit merk zijn ingeschreven worden uitbetaald, ook als ze op locaties van een ander merk werkten."
+    },
+    "SelectorDeMarca": {
+      "elegir": "Merk kiezen",
+      "todas": "Alle merken",
+      "todasCorto": "Merken"
+    },
+    "TiendaMultimarca": {
+      "consecuencia": "De merkkiezer en de kolom ‘Merk’ verdwijnen; de merken en hun gegevens blijven.",
+      "detalle": "(inclusief {{n}} merken) · {{extra}} per extra merk",
+      "incluye": "(inclusief {{n}} merken)"
     }
   },
   "visitantes": {

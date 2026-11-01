@@ -12,6 +12,7 @@ import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { announceAddonRequired } from "@/lib/addonRequired";
 import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
+import { cabeceraDeMarca } from "@/lib/marcaElegida";
 import { resolveApiBase } from "@/lib/apiBase";
 import { handleDesktopApiError } from "@/lib/desktop";
 import {
@@ -77,6 +78,7 @@ export class ApiService {
       Accept: "application/json",
       "Content-Type": "application/json",
       ...cabeceraDeSucursal(),
+      ...cabeceraDeMarca(),
       ...cabeceraDeIdioma(),
       ...(options.headers || {}),
     };
@@ -348,6 +350,7 @@ export class ApiService {
 
     const headers: Record<string, string> = {
       ...cabeceraDeSucursal(),
+      ...cabeceraDeMarca(),
       ...cabeceraDeIdioma(),
       ...(options.headers || {}),
     };

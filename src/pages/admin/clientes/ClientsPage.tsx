@@ -30,6 +30,8 @@ import ClientCardsGrid, {
 
 import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
 import { clientDisplayName } from "@/lib/clientName";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
@@ -656,8 +658,10 @@ export default function ClientesPage() {
   }, [filters.active, filters.archived, hasPermission, t]);
 
   const etiquetas = useEtiquetasDeSucursal();
+  // Multimarca («Todas las marcas»): the brand of each client, in its own column.
+  const marcas = useEtiquetasDeMarca();
 
-  const columns: Column<Client>[] = useMemo(
+  const columns: Column<Client>[] = useMemo<Column<Client>[]>(
     () => [
       {
         key: "name",
@@ -682,6 +686,18 @@ export default function ClientesPage() {
           );
         },
       },
+      ...(marcas.activo
+        ? [
+            {
+              key: "brandId",
+              header: t("ui.ClientsPage.marca", "Marca"),
+              className: "hidden md:table-cell",
+              render: (_v: unknown, row: Client) => (
+                <EtiquetaDeMarca marca={marcas.marca(row.brandId)} />
+              ),
+            } as Column<Client>,
+          ]
+        : []),
       // Hide less-important columns on smaller breakpoints to favor compact layouts
       {
         key: "address",
@@ -801,7 +817,7 @@ export default function ClientesPage() {
         },
       },
     ],
-    [t, etiquetas],
+    [t, etiquetas, marcas],
   );
 
   const rowActions = (client: Client): RowAction[] => {
@@ -1374,6 +1390,7 @@ export default function ClientesPage() {
                             sucursal={etiquetas.sucursal(client.branchId)}
                           />
                         )}
+                        <EtiquetaDeMarca marca={marcas.marca(client.brandId)} />
                       </div>
                       <div
                         className="truncate text-xs"

@@ -5607,7 +5607,8 @@
       "coberturaEnVivo": "Obsada na żywo",
       "atrasos": "Spóźnienia w tygodniu"
     },
-    "app-escritorio": "Aplikacja desktopowa"
+    "app-escritorio": "Aplikacja desktopowa",
+    "marcas": "Marki"
   },
   "siteTour": {
     "newTour": "Nowy obchód",
@@ -9197,7 +9198,10 @@
       "logo": "Logo",
       "fotoDelLugar": "Zdjęcie miejsca",
       "rangoLatitud": "od -90 do 90",
-      "rangoLongitud": "od -180 do 180"
+      "rangoLongitud": "od -180 do 180",
+      "faltaMarca": "Wybierz markę, do której należy klient.",
+      "marca": "Marka",
+      "marcaAyuda": "Firma, z którą ten klient ma umowę. Możesz ją później zmienić."
     },
     "Clients": {
       "comoFunciona": "Jak to działa?",
@@ -14583,7 +14587,8 @@
       "enviarInvitacion": "Wyślij zaproszenie",
       "seEnviaraInvitacionApp": "Na adres {{email}} zostanie wysłane zaproszenie do pobrania i korzystania z aplikacji {{app}}.",
       "enlacesAGooglePlay": "Linki do Google Play i App Store",
-      "invitacionAppEnviadaA": "Zaproszenie do aplikacji wysłane do {{to}}"
+      "invitacionAppEnviadaA": "Zaproszenie do aplikacji wysłane do {{to}}",
+      "marca": "Marka"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": każdy blok dzielą między siebie",
@@ -19985,6 +19990,126 @@
     "RutaConPermiso": {
       "titulo": "Brak dostępu do tej strony",
       "descripcion": "Twoja rola nie może zobaczyć tej strony. Jeśli jej potrzebujesz, poproś administratora."
+    },
+    "CampoDeMarca": {
+      "elige": "Wybierz markę",
+      "marca": "Marka"
+    },
+    "CampoMarcaDeRegistro": {
+      "ayuda": "Określa, z której listy płac ta osoba otrzymuje wynagrodzenie",
+      "etiqueta": "Firma, w której została zarejestrowana"
+    },
+    "ComprarCupoDeMarca": {
+      "boton": "Zapłać {{precio}}",
+      "botonSinPrecio": "Zapłać",
+      "exito": "Gotowe: możesz teraz dodać kolejną markę.",
+      "mensaje": "Jednorazowa opłata {{precio}} zostanie pobrana z karty Twojej subskrypcji. Marka pozostaje dostępna na zawsze.",
+      "mensajeSinPrecio": "Jednorazowa opłata zostanie pobrana z karty Twojej subskrypcji. Marka pozostaje dostępna na zawsze.",
+      "titulo": "Dodać kolejną markę?"
+    },
+    "CotizacionEditor": {
+      "faltaMarca": "Wybierz markę, która wystawia ofertę.",
+      "marca": "Marka wystawiająca ofertę",
+      "marcaAyuda": "Firma wystawiająca ofertę. Jeśli zostanie przyjęta, klient powstaje w tej marce.",
+      "marcaDelCliente": "Wystawia {{marca}}, marka klienta."
+    },
+    "EditorDeMarca": {
+      "archivada": "Marka zarchiwizowana",
+      "archivar": "Archiwizuj",
+      "archivarMensaje": "Przestaje być widoczna na pasku i w formularzach. Nic nie jest usuwane i możesz ją ponownie aktywować w dowolnym momencie.",
+      "archivarTitulo": "Zarchiwizować {{nombre}}?",
+      "cambiarLogo": "Zmień logo",
+      "codigo": "Kod",
+      "color": "Kolor",
+      "correo": "E-mail",
+      "desarchivar": "Aktywuj ponownie",
+      "direccion": "Adres",
+      "editar": "Edytuj markę",
+      "eligePais": "Wybierz kraj",
+      "establecimiento": "Kod zakładu",
+      "establecimientoAyuda": "Jeśli urząd skarbowy go nadaje (np. 001).",
+      "faltaIdentificador": "Wpisz {{documento}}.",
+      "faltaNombre": "Wpisz nazwę handlową.",
+      "faltaPais": "Wybierz kraj.",
+      "faltaRazon": "Wpisz nazwę prawną.",
+      "guardada": "Marka zapisana",
+      "guardando": "Zapisywanie…",
+      "guardar": "Zapisz markę",
+      "identidadAyuda": "Każda marka to osobna firma: nazwa prawna, identyfikator podatkowy i kraj są obowiązkowe.",
+      "identidadTitulo": "Tożsamość prawna",
+      "identificador": "Identyfikator podatkowy",
+      "identificadorMalo": "Ten {{documento}} nie wygląda na poprawny dla wybranego kraju.",
+      "logoError": "Nie udało się przesłać logo. Spróbuj innego obrazu.",
+      "nombre": "Nazwa handlowa",
+      "nombreEjemplo": "Np.: Andina Ochrona",
+      "nueva": "Nowa marka",
+      "otroColor": "Inny kolor",
+      "pais": "Kraj",
+      "quitarLogo": "Usuń",
+      "razonSocial": "Nazwa prawna",
+      "reactivada": "Marka znów aktywna",
+      "sinCuposMensaje": "Twój plan obejmuje marki, których już używasz. Każda dodatkowa marka to jednorazowa opłata {{precio}}.",
+      "sinCuposMensajeSinPrecio": "Twój plan obejmuje marki, których już używasz. Każda dodatkowa marka to jednorazowa opłata.",
+      "sinCuposTitulo": "Używasz już wszystkich swoich marek",
+      "subirLogo": "Prześlij logo",
+      "telefono": "Telefon"
+    },
+    "ElegirMarca": {
+      "ahora": "Jesteś tutaj",
+      "cambiaCuandoQuieras": "Markę możesz zmienić w dowolnej chwili na górnym pasku.",
+      "marcaDesc": "Tylko jej klienci, ich obiekty i osoby, które w nich pracują.",
+      "principalDesc": "Marka, z którą utworzono konto.",
+      "subtitulo": "Każda marka to firma z własnymi klientami. Wybierz jedną, aby widzieć tylko jej dane, albo wszystkie naraz.",
+      "titulo": "Z którą marką teraz pracujesz?",
+      "todasDesc": "Klienci i personel wszystkich marek.",
+      "ultimaVez": "Ostatnim razem"
+    },
+    "MarcasPage": {
+      "abrir": "Otwórz {{nombre}}",
+      "agregarOtra": "Dodaj kolejną markę ({{precio}})",
+      "agregarOtraSinPrecio": "Dodaj kolejną markę",
+      "archivada": "Zarchiwizowana",
+      "clientes": "Klienci: {{n}}",
+      "cupos": "Marki w użyciu: {{usadas}} z {{pagadas}}",
+      "cuposLibres": "Marki, które możesz jeszcze utworzyć bez opłat: {{n}}.",
+      "cuposLlenos": "Aby utworzyć kolejną markę, dodaj jeszcze jedną.",
+      "errores": {
+        "esPrincipal": "Marki głównej nie można zarchiwizować: to firma, z którą utworzono konto.",
+        "faltanDatos": "Brakuje obowiązkowych danych: nazwa, nazwa prawna, identyfikator podatkowy i kraj.",
+        "guardar": "Nie udało się zapisać marki.",
+        "identificadorMalo": "Identyfikator podatkowy nie jest poprawny dla wybranego kraju.",
+        "sinCupos": "Używasz już wszystkich swoich marek. Dodaj kolejną, aby kontynuować.",
+        "sinModulo": "Moduł Wielomarkowość nie jest aktywny.",
+        "tieneClientes": "Ta marka wciąż ma klientów. Przenieś ich do innej marki i spróbuj ponownie."
+      },
+      "irALaTienda": "Zobacz w Modułach dodatkowych",
+      "nueva": "Nowa marka",
+      "personas": "Zarejestrowane osoby: {{n}}",
+      "sinModulo": "Moduł Wielomarkowość nie jest aktywny",
+      "sinModuloDesc": "Dzięki modułowi Wielomarkowość prowadzisz kilka marek ochrony na jednym koncie.",
+      "subtitulo": "Każda marka to osobna firma z własnymi klientami i listą płac. Pracownicy ochrony, grafik i mapa są wspólne.",
+      "titulo": "Marki",
+      "vacio": "Brak marek",
+      "vacioDesc": "Marka główna tworzy się sama po włączeniu modułu.",
+      "verArchivadas": "Pokaż zarchiwizowane"
+    },
+    "Multimarca": {
+      "principal": "Główna"
+    },
+    "NuevaCorrida": {
+      "faltaMarca": "Wybierz firmę (markę): każda marka płaci własną listę płac.",
+      "marca": "Firma (marka)",
+      "marcaAyuda": "Rozliczane są tylko osoby zarejestrowane w tej marce, nawet jeśli pracowały w obiektach innej."
+    },
+    "SelectorDeMarca": {
+      "elegir": "Wybierz markę",
+      "todas": "Wszystkie marki",
+      "todasCorto": "Marki"
+    },
+    "TiendaMultimarca": {
+      "consecuencia": "Wybór marki i kolumna „Marka” znikają; marki i ich dane zostają.",
+      "detalle": "(zawiera {{n}} marki) · {{extra}} za każdą dodatkową markę",
+      "incluye": "(zawiera {{n}} marki)"
     }
   },
   "visitantes": {

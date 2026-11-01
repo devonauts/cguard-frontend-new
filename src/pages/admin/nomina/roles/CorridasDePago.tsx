@@ -2,7 +2,7 @@
  * ROLES DE PAGO — las planillas (corridas) de la empresa: una por periodo.
  * Crear una pide las tarjetas de horas del periodo y liquida a todos.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +21,9 @@ import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
 import { useSucursales } from "@/hooks/useSucursales";
 import { useEspacio } from "@/hooks/useEspacio";
+import { marcaPorDefecto, useEtiquetasDeMarca, useMarcas } from "@/hooks/useMarcas";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { codigoDeError } from "@/lib/api/marcasService";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,6 +77,8 @@ export default function CorridasDePago() {
   const [nueva, setNueva] = useState(false);
   // Sucursales (vista global): de quién es cada planilla.
   const etiquetasSuc = useEtiquetasDeSucursal();
+  // Multimarca («Todas las marcas»): which brand (company) each run pays.
+  const etiquetasMarca = useEtiquetasDeMarca();
   // Switched off (read-only): only the issued sheets, and no /settings call.
   const acceso = usePayrollAccess();
   const vista = useQuery({
@@ -183,6 +188,14 @@ export default function CorridasDePago() {
                         ) : (
                           <EtiquetaDeSucursal empresa sucursal={null} />
                         ))}
+                      {etiquetasMarca.activo &&
+                        (r.brandId ?? r.population?.brandIds?.[0]) && (
+                          <EtiquetaDeMarca
+                            marca={etiquetasMarca.marca(
+                              r.brandId ?? r.population?.brandIds?.[0],
+                            )}
+                          />
+                        )}
                       <StatusBadge tone={estado.tone[r.status]}>
                         {estado.label[r.status]}
                       </StatusBadge>
@@ -261,8 +274,27 @@ export function NuevaCorrida({
   const etiquetasSuc = useEtiquetasDeSucursal();
   const espacio = useEspacio();
   const [sucursal, setSucursal] = useState("");
+  // Multimarca: payroll is per brand (the company that registered each person): required.
+  const multimarca = useMarcas();
+  const conMarcas = multimarca.activo && multimarca.marcas.length > 0;
+  const [marca, setMarca] = useState(() =>
+    marcaPorDefecto(multimarca.marcas, multimarca.principal),
+  );
+  const [faltaMarca, setFaltaMarca] = useState(false);
+
+  // The brand list may arrive after the modal opens: propose the default then.
+  useEffect(() => {
+    if (conMarcas && !marca)
+      setMarca(marcaPorDefecto(multimarca.marcas, multimarca.principal));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conMarcas]);
 
   const crear = async () => {
+    if (conMarcas && !marca) {
+      setFaltaMarca(true);
+
+      return;
+    }
     setSaving(true);
     try {
       const r = await payrollSlipsService.createRun({
@@ -270,6 +302,7 @@ export function NuevaCorrida({
         to: to || undefined,
         populations: poblaciones,
         branchIds: etiquetasSuc.activo && sucursal ? [sucursal] : undefined,
+        ...(conMarcas && marca ? { brandId: marca } : {}),
       });
 
       toast.success(
@@ -282,10 +315,19 @@ export function NuevaCorrida({
       await qc.invalidateQueries({ queryKey: ["payroll-slips"] });
       onCreated(r);
     } catch (e) {
-      toast.error(
-        (e as { message?: string })?.message ||
-          t("ui.RolesDePago.errorAlGuardar", "No se pudo guardar"),
-      );
+      if (codigoDeError(e) === "payroll_brand_required") {
+        setFaltaMarca(true);
+        toast.error(
+          t(
+            "ui.NuevaCorrida.faltaMarca",
+            "Elige la empresa (marca): cada marca paga su propia planilla.",
+          ),
+        );
+      } else
+        toast.error(
+          (e as { message?: string })?.message ||
+            t("ui.RolesDePago.errorAlGuardar", "No se pudo guardar"),
+        );
     } finally {
       setSaving(false);
     }
@@ -315,7 +357,9 @@ export function NuevaCorrida({
             {t("ui.RolesDePago.cancelar", "Cancelar")}
           </Button>
           <Button
-            disabled={saving || !from || !poblaciones.length}
+            disabled={
+              saving || !from || !poblaciones.length || (conMarcas && !marca)
+            }
             variant="brand"
             onClick={crear}
           >
@@ -357,6 +401,48 @@ export function NuevaCorrida({
             onChange={(e) => setTo(e.target.value)}
           />
         </FormField>
+        {conMarcas && (
+          <div className="sm:col-span-2">
+            <FormField
+              required
+              error={
+                faltaMarca && !marca
+                  ? t(
+                      "ui.NuevaCorrida.faltaMarca",
+                      "Elige la empresa (marca): cada marca paga su propia planilla.",
+                    )
+                  : undefined
+              }
+              hint={t(
+                "ui.NuevaCorrida.marcaAyuda",
+                "Se liquida solo a las personas registradas en esta marca, aunque hayan trabajado en sitios de otra.",
+              )}
+              label={t("ui.NuevaCorrida.marca", "Empresa (marca)")}
+            >
+              <select
+                aria-required
+                className={FIELD_CLS}
+                value={marca}
+                onChange={(e) => {
+                  setMarca(e.target.value);
+                  setFaltaMarca(false);
+                }}
+              >
+                <option disabled value="">
+                  {t("ui.CampoDeMarca.elige", "Elige la marca")}
+                </option>
+                {multimarca.marcas.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                    {b.legalName && b.legalName !== b.name
+                      ? ` · ${b.legalName}`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+        )}
         {etiquetasSuc.activo ? (
           <div className="sm:col-span-2">
             <FormField

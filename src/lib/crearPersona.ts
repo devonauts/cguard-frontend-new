@@ -18,6 +18,7 @@ import { securityGuardService } from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
 import { supervisorPositionService } from "@/lib/api/supervisorPositionService";
 import { userService } from "@/lib/api/userService";
+import { fijarMarcaDeRegistro } from "@/lib/api/marcasService";
 import {
   cuerpoDeAsignacion,
   cuerpoDeHorarioDeOficina,
@@ -119,6 +120,12 @@ export async function crearPersona(
     r.userId = u?.id ? String(u.id) : null;
     r.fichaId = r.userId;
     r.acceso = { username: null, link: null, correo };
+  }
+
+  // Multimarca: the registration brand also goes on the person record itself
+  // (best effort: the create bodies already carry it; a refusal changes nothing).
+  if (datos.marca && r.userId) {
+    await fijarMarcaDeRegistro(r.userId, datos.marca).catch(() => null);
   }
 
   if (horario) await ponerHorario(r, horario, o.t);

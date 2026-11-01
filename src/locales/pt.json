@@ -2517,7 +2517,8 @@
       "coberturaEnVivo": "Cobertura ao vivo",
       "atrasos": "Atrasos da semana"
     },
-    "app-escritorio": "App para desktop"
+    "app-escritorio": "App para desktop",
+    "marcas": "Marcas"
   },
   "settings": {
     "configuracion": {
@@ -8643,7 +8644,10 @@
       "logo": "Logotipo",
       "fotoDelLugar": "Foto do local",
       "rangoLatitud": "-90 a 90",
-      "rangoLongitud": "-180 a 180"
+      "rangoLongitud": "-180 a 180",
+      "faltaMarca": "Escolha a marca à qual o cliente pertence.",
+      "marca": "Marca",
+      "marcaAyuda": "A empresa com a qual este cliente tem o contrato. Você pode mudá-la depois."
     },
     "Clients": {
       "comoFunciona": "Como funciona?",
@@ -13895,7 +13899,8 @@
       "enviarInvitacion": "Enviar convite",
       "seEnviaraInvitacionApp": "Um convite para baixar e usar o app {{app}} será enviado para {{email}}.",
       "enlacesAGooglePlay": "Links para o Google Play e a App Store",
-      "invitacionAppEnviadaA": "Convite do app enviado para {{to}}"
+      "invitacionAppEnviadaA": "Convite do app enviado para {{to}}",
+      "marca": "Marca"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": cada bloco é dividido por",
@@ -19137,6 +19142,126 @@
     "RutaConPermiso": {
       "titulo": "Sem acesso a esta página",
       "descripcion": "Sua função não pode ver esta página. Se precisar dela, peça a um administrador."
+    },
+    "CampoDeMarca": {
+      "elige": "Escolha a marca",
+      "marca": "Marca"
+    },
+    "CampoMarcaDeRegistro": {
+      "ayuda": "Define em qual folha de pagamento esta pessoa recebe",
+      "etiqueta": "Empresa em que foi registrada"
+    },
+    "ComprarCupoDeMarca": {
+      "boton": "Pagar {{precio}}",
+      "botonSinPrecio": "Pagar",
+      "exito": "Pronto: agora você pode adicionar outra marca.",
+      "mensaje": "É cobrado um pagamento único de {{precio}} no cartão da sua assinatura. A marca fica disponível para sempre.",
+      "mensajeSinPrecio": "É cobrado um pagamento único no cartão da sua assinatura. A marca fica disponível para sempre.",
+      "titulo": "Adicionar outra marca?"
+    },
+    "CotizacionEditor": {
+      "faltaMarca": "Escolha a marca que emite a cotação.",
+      "marca": "Marca que cota",
+      "marcaAyuda": "A empresa que emite a cotação. Se for aceita, o cliente nasce nesta marca.",
+      "marcaDelCliente": "Emitida por {{marca}}, a marca do cliente."
+    },
+    "EditorDeMarca": {
+      "archivada": "Marca arquivada",
+      "archivar": "Arquivar",
+      "archivarMensaje": "Deixa de aparecer na barra e nos formulários. Nada é apagado e você pode reativá-la quando quiser.",
+      "archivarTitulo": "Arquivar {{nombre}}?",
+      "cambiarLogo": "Trocar logo",
+      "codigo": "Código",
+      "color": "Cor",
+      "correo": "E-mail",
+      "desarchivar": "Reativar",
+      "direccion": "Endereço",
+      "editar": "Editar marca",
+      "eligePais": "Escolha um país",
+      "establecimiento": "Código de estabelecimento",
+      "establecimientoAyuda": "Se a autoridade fiscal lhe der um (ex.: 001).",
+      "faltaIdentificador": "Escreva o {{documento}}.",
+      "faltaNombre": "Escreva o nome comercial.",
+      "faltaPais": "Escolha o país.",
+      "faltaRazon": "Escreva a razão social.",
+      "guardada": "Marca salva",
+      "guardando": "Salvando…",
+      "guardar": "Salvar marca",
+      "identidadAyuda": "Cada marca é uma empresa à parte: sua razão social, seu identificador fiscal e seu país são obrigatórios.",
+      "identidadTitulo": "Identidade legal",
+      "identificador": "Identificador fiscal",
+      "identificadorMalo": "Esse {{documento}} não parece válido para o país escolhido.",
+      "logoError": "Não foi possível enviar o logo. Tente outra imagem.",
+      "nombre": "Nome comercial",
+      "nombreEjemplo": "Ex.: Andina Segurança",
+      "nueva": "Nova marca",
+      "otroColor": "Outra cor",
+      "pais": "País",
+      "quitarLogo": "Remover",
+      "razonSocial": "Razão social",
+      "reactivada": "Marca ativa novamente",
+      "sinCuposMensaje": "Seu plano inclui as marcas que você já usa. Cada marca adicional é um pagamento único de {{precio}}.",
+      "sinCuposMensajeSinPrecio": "Seu plano inclui as marcas que você já usa. Cada marca adicional é um pagamento único.",
+      "sinCuposTitulo": "Você já usa todas as suas marcas",
+      "subirLogo": "Enviar logo",
+      "telefono": "Telefone"
+    },
+    "ElegirMarca": {
+      "ahora": "Você está aqui",
+      "cambiaCuandoQuieras": "Você pode mudar de marca quando quiser pela barra superior.",
+      "marcaDesc": "Só seus clientes, seus locais e quem trabalha neles.",
+      "principalDesc": "A marca com a qual a conta foi criada.",
+      "subtitulo": "Cada marca é uma empresa com seus próprios clientes. Escolha uma para ver só o que é dela, ou todas de uma vez.",
+      "titulo": "Com qual marca você trabalha agora?",
+      "todasDesc": "Os clientes e o pessoal de todas as marcas.",
+      "ultimaVez": "Da última vez"
+    },
+    "MarcasPage": {
+      "abrir": "Abrir {{nombre}}",
+      "agregarOtra": "Adicionar outra marca ({{precio}})",
+      "agregarOtraSinPrecio": "Adicionar outra marca",
+      "archivada": "Arquivada",
+      "clientes": "{{n}} clientes",
+      "cupos": "{{usadas}} de {{pagadas}} marcas em uso",
+      "cuposLibres": "Marcas que você ainda pode criar sem custo: {{n}}.",
+      "cuposLlenos": "Para criar outra marca, adicione mais uma.",
+      "errores": {
+        "esPrincipal": "A marca principal não pode ser arquivada: é a empresa com a qual a conta foi criada.",
+        "faltanDatos": "Faltam dados obrigatórios: nome, razão social, identificador fiscal e país.",
+        "guardar": "Não foi possível salvar a marca.",
+        "identificadorMalo": "O identificador fiscal não é válido para o país escolhido.",
+        "sinCupos": "Você já usa todas as marcas que tem. Adicione outra para continuar.",
+        "sinModulo": "O módulo Multimarca não está ativo.",
+        "tieneClientes": "Esta marca ainda tem clientes. Passe-os para outra marca e tente de novo."
+      },
+      "irALaTienda": "Ver em Módulos adicionais",
+      "nueva": "Nova marca",
+      "personas": "{{n}} pessoas registradas",
+      "sinModulo": "O módulo Multimarca não está ativo",
+      "sinModuloDesc": "Com o módulo Multimarca você gerencia várias marcas de segurança em uma só conta.",
+      "subtitulo": "Cada marca é uma empresa à parte, com seus próprios clientes e sua folha. Os vigilantes, o horário e o mapa são compartilhados.",
+      "titulo": "Marcas",
+      "vacio": "Ainda não há marcas",
+      "vacioDesc": "A marca principal é criada sozinha ao ativar o módulo.",
+      "verArchivadas": "Ver arquivadas"
+    },
+    "Multimarca": {
+      "principal": "Principal"
+    },
+    "NuevaCorrida": {
+      "faltaMarca": "Escolha a empresa (marca): cada marca paga sua própria folha.",
+      "marca": "Empresa (marca)",
+      "marcaAyuda": "Só são liquidadas as pessoas registradas nesta marca, mesmo que tenham trabalhado em locais de outra."
+    },
+    "SelectorDeMarca": {
+      "elegir": "Escolher a marca",
+      "todas": "Todas as marcas",
+      "todasCorto": "Marcas"
+    },
+    "TiendaMultimarca": {
+      "consecuencia": "O seletor de marca e a coluna «Marca» desaparecem; as marcas e seus dados permanecem.",
+      "detalle": "(inclui {{n}} marcas) · {{extra}} por cada marca adicional",
+      "incluye": "(inclui {{n}} marcas)"
     }
   },
   "map": {

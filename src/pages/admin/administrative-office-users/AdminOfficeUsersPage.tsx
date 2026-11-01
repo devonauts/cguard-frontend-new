@@ -82,6 +82,8 @@ import MobileCardList from "@/components/responsive/MobileCardList";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
 /* Debounce helper */
 /** Lower-case role slug (as the list normalizes them) → its key in `adminOfficeUsers.roleNames`. */
 const ROLES_CONOCIDOS: Record<string, string> = {
@@ -112,6 +114,8 @@ function useDebounced<T>(value: T, delay = 400) {
 
 export default function AdminOfficeUsersPage() {
   const { t } = useTranslation();
+  // Multimarca («Todas las marcas»): the brand each person is registered in.
+  const marcas = useEtiquetasDeMarca({ personas: true });
   /** A role slug in the reader's language («dispatcher» → «Despachador»); custom roles keep their name. */
   const nombreDeRol = (slug: string) => {
     const clave = ROLES_CONOCIDOS[slug.toLowerCase()];
@@ -1357,6 +1361,12 @@ export default function AdminOfficeUsersPage() {
                               .join(" ") ||
                               u.name ||
                               "-"}
+                            <EtiquetaDeMarca
+                              className="ml-1.5"
+                              marca={marcas.dePersona(
+                                String(u.id || u._id || u.raw?.id || ""),
+                              )}
+                            />
                           </td>
                           <td className="px-4 py-3">
                             {u.email || "-"}
@@ -1685,6 +1695,12 @@ export default function AdminOfficeUsersPage() {
                             u.name ||
                             u.email ||
                             "-"}
+                          <EtiquetaDeMarca
+                            className="ml-1.5"
+                            marca={marcas.dePersona(
+                              String(u.id || u._id || u.raw?.id || ""),
+                            )}
+                          />
                         </div>
                         <div
                           className="text-xs"

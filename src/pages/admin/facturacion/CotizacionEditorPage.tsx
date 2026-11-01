@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { PageContainer, PageHeader, Section, SkeletonCards, EmptyState, FormField, FIELD_CLS, InfoNote, Segmented } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useMarcas } from "@/hooks/useMarcas";
+import CampoDeMarca from "@/components/multimarca/CampoDeMarca";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, {
   BILLING_CYCLES,
@@ -104,6 +106,9 @@ function CotizacionEditorPage() {
   const [para, setPara] = useState<Para>("prospecto");
   const [prospecto, setProspecto] = useState<ProspectoBorrador>(prospectoVacio());
   const [clientAccountId, setClientAccountId] = useState("");
+  // Multimarca: a client's quote is issued by the client's brand; a prospect's, by the one chosen here.
+  const multimarca = useMarcas();
+  const [marcaProspecto, setMarcaProspecto] = useState("");
   const [title, setTitle] = useState("");
   const [language, setLanguage] = useState<QuoteLanguage>("en");
   const [validUntil, setValidUntil] = useState("");
@@ -134,6 +139,7 @@ function CotizacionEditorPage() {
     if (!quote || cargado) return;
     setPara(quote.clientAccountId ? "cliente" : "prospecto");
     setClientAccountId(quote.clientAccountId || "");
+    setMarcaProspecto(quote.brandId || "");
     const p = quote.prospect;
 
     setProspecto({
@@ -202,6 +208,7 @@ function CotizacionEditorPage() {
   const falta = (() => {
     if (para === "prospecto" && !prospecto.company.trim() && !prospecto.contactName.trim()) return t("ui.Cotizaciones.editor.faltaProspecto", "Escribe la empresa o el nombre del contacto.");
     if (para === "cliente" && !clientAccountId) return t("ui.Cotizaciones.editor.faltaCliente", "Elige el cliente.");
+    if (para === "prospecto" && multimarca.activo && multimarca.marcas.length && !marcaProspecto) return t("ui.CotizacionEditor.faltaMarca", "Elige la marca que emite la cotización.");
     if (!cuerpoDeLineas.length) return t("ui.Cotizaciones.editor.faltaLineas", "Agrega al menos una línea con descripción.");
     if (editando && !title.trim()) return t("ui.Cotizaciones.editor.faltaTitulo", "La cotización necesita un título.");
 
@@ -224,6 +231,7 @@ function CotizacionEditorPage() {
       const dias = Number(paymentTermsDays);
       const body: QuoteInput = {
         ...(para === "cliente" ? (editando ? {} : { clientAccountId }) : { prospect }),
+        ...(para === "prospecto" && multimarca.activo && marcaProspecto ? { brandId: marcaProspecto } : {}),
         ...(title.trim() ? { title: title.trim() } : {}),
         language,
         validUntil: validUntil || (editando ? null : undefined),
@@ -314,9 +322,28 @@ function CotizacionEditorPage() {
                       <option value={quote.clientAccountId || ""}>{nombreDelCliente(quote.clientAccount)}</option>
                     )}
                   </select>
+                  {multimarca.activo && clientAccountId && (() => {
+                    const idDeMarca = (clientes.data ?? []).find((c) => c.id === clientAccountId)?.brandId ?? quote?.brandId ?? null;
+                    const m = multimarca.todas.find((b) => b.id === idDeMarca);
+
+                    return m ? (
+                      <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                        {t("ui.CotizacionEditor.marcaDelCliente", "La emite {{marca}}, la marca del cliente.", { marca: m.name })}
+                      </p>
+                    ) : null;
+                  })()}
                 </FormField>
               ) : (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <CampoDeMarca
+                    className="sm:col-span-2"
+                    hint={t("ui.CotizacionEditor.marcaAyuda", "La empresa que emite la cotización. Si se acepta, el cliente nace en esta marca.")}
+                    id="cotizacion-marca"
+                    label={t("ui.CotizacionEditor.marca", "Marca que cotiza")}
+                    selectClassName={FIELD_CLS}
+                    value={marcaProspecto}
+                    onChange={setMarcaProspecto}
+                  />
                   <FormField label={t("ui.Cotizaciones.editor.empresa", "Empresa")}>
                     <input className={FIELD_CLS} value={prospecto.company} onChange={(e) => setP("company", e.target.value)} />
                   </FormField>

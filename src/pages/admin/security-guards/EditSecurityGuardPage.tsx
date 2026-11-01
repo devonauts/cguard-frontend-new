@@ -16,6 +16,9 @@ import {
   Section,
   SkeletonCards,
 } from "@/components/kit";
+import CampoMarcaDeRegistro, {
+  useMarcaDeRegistro,
+} from "@/components/multimarca/CampoMarcaDeRegistro";
 
 // Valores que viajan al API tal cual (en español); sólo se traducen al pintar.
 const ESTADO_CIVIL_KEY: Record<string, string> = {
@@ -85,6 +88,8 @@ export default function EditSecurityGuardPage() {
     guardCredentials: "",
   });
   const [fetchedData, setFetchedData] = useState<any>(null);
+  // Multimarca: the brand whose payroll pays this guard (on the person record).
+  const marcaDeRegistro = useMarcaDeRegistro(fetchedData?.guard?.id ?? null);
   // ¿Tenía un correo de verdad? Si no (entra con su usuario), es opcional.
   const tieneCorreo = !!correoVisible(fetchedData?.guard?.email ?? fetchedData?.email);
 
@@ -236,6 +241,7 @@ export default function EditSecurityGuardPage() {
             : null;
 
         await securityGuardService.update(id!, payload);
+        await marcaDeRegistro.guardar();
         navigate("/security-guards");
       } catch (err: any) {
         const msg = err?.message || String(err);
@@ -543,6 +549,13 @@ export default function EditSecurityGuardPage() {
                     onChange={handleChange}
                   />
                 </div>
+                {/* Multimarca: whose payroll pays this guard. */}
+                <CampoMarcaDeRegistro
+                  className="md:col-span-2"
+                  estado={marcaDeRegistro}
+                  labelClassName="block text-sm font-medium mb-1"
+                  selectClassName={selectClass}
+                />
               </div>
             </Section>
 

@@ -24,6 +24,8 @@ import { clientService } from "@/lib/api/clientService";
 import { categoryService } from "@/lib/api/categoryService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSucursales } from "@/hooks/useSucursales";
+import { useMarcas } from "@/hooks/useMarcas";
+import CampoDeMarca from "@/components/multimarca/CampoDeMarca";
 import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
 import {
   taxIdLabelFor,
@@ -112,6 +114,10 @@ export default function ClientForm({
   const gerente = useEsGerenteDeSucursal();
   const sucursalesDelCliente = suc.lista.data?.sucursales ?? [];
   const [sucursalCliente, setSucursalCliente] = useState<string>("");
+  // Multimarca module: every client belongs to exactly one brand (required).
+  const multimarca = useMarcas();
+  const [marcaCliente, setMarcaCliente] = useState<string>("");
+  const [faltaMarca, setFaltaMarca] = useState(false);
 
   useEffect(() => {
     // Un gerente no crea clientes «de toda la empresa»: nace en su sucursal.
@@ -343,6 +349,9 @@ export default function ClientForm({
           setSucursalCliente(
             (data as any)?.branchId ? String((data as any).branchId) : "",
           );
+          setMarcaCliente(
+            (data as any)?.brandId ? String((data as any).brandId) : "",
+          );
           const initial: FormValues = {
             name: data.name ?? "",
             lastName:
@@ -516,6 +525,17 @@ export default function ClientForm({
     if (values.country !== undefined) basePayload.country = values.country;
     if (suc.activo && sucursalesDelCliente.length)
       basePayload.branchId = sucursalCliente || null;
+    if (multimarca.activo && multimarca.marcas.length) {
+      if (!marcaCliente) {
+        setFaltaMarca(true);
+        toast.error(
+          t("ui.ClientForm.faltaMarca", "Elige la marca a la que pertenece el cliente."),
+        );
+
+        return;
+      }
+      basePayload.brandId = marcaCliente;
+    }
     // A landline left with just the country prefix is "no landline", not
     // «+593» (QA-140) — same rule as the main phone.
     if (values.faxNumber !== undefined)
@@ -1102,6 +1122,26 @@ export default function ClientForm({
                   </p>
                 </div>
               )}
+              {/* Multimarca: the brand (legal company) this client belongs to. */}
+              <CampoDeMarca
+                error={
+                  faltaMarca && !marcaCliente
+                    ? t("ui.ClientForm.faltaMarca", "Elige la marca a la que pertenece el cliente.")
+                    : null
+                }
+                hint={t(
+                  "ui.ClientForm.marcaAyuda",
+                  "La empresa con la que este cliente tiene el contrato. Puedes cambiarla después.",
+                )}
+                id="cliente-marca"
+                label={t("ui.ClientForm.marca", "Marca")}
+                labelClassName="text-xs font-medium text-foreground/70 uppercase tracking-wide"
+                value={marcaCliente}
+                onChange={(v) => {
+                  setMarcaCliente(v);
+                  setFaltaMarca(false);
+                }}
+              />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField<ClientInput>
                   control={form.control}

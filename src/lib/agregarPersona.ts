@@ -69,6 +69,12 @@ export interface Datos {
   /** Office only: sees the whole operation, or only some sites. */
   alcance: "todo" | "sedes";
   sedes: string[];
+  /**
+   * Multimarca: the brand the person is registered in (`homeBrandId`), which
+   * decides whose payroll pays them. Empty = the server default (the brand in
+   * the top bar, else the principal).
+   */
+  marca?: string;
 }
 
 export const datosVacios = (): Datos => ({
@@ -455,11 +461,15 @@ const limpio = (s: string) => s.trim();
 const opcional = (s: string) => (s.trim() ? s.trim() : undefined);
 
 /** POST /security-guard/invite → `entries[0]`. */
+/** Multimarca: the registration brand, only when one was chosen. */
+const conMarca = (d: Datos) => (d.marca ? { homeBrandId: d.marca } : {});
+
 export function cuerpoDeVigilante(d: Datos) {
   const base = {
     firstName: limpio(d.nombres),
     lastName: limpio(d.apellidos),
     ...(opcional(d.documento) ? { governmentId: limpio(d.documento) } : {}),
+    ...conMarca(d),
   };
 
   if (d.sinCorreo && !d.correo.trim()) {
@@ -504,6 +514,7 @@ export function cuerpoDeSupervisor(d: Datos) {
       : { email: limpio(d.correo) }),
     ...(opcional(d.documento) ? { governmentId: limpio(d.documento) } : {}),
     ...(opcional(d.celular) ? { phoneNumber: limpio(d.celular) } : {}),
+    ...conMarca(d),
   };
 }
 
@@ -527,6 +538,7 @@ export function cuerpoDeOficina(
     clientIds: [...new Set(elegidas.flatMap((s) => s.clientIds || []))],
     invited: true,
     pending: true,
+    ...conMarca(d),
   };
 }
 

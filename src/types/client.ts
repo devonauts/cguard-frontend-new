@@ -3,6 +3,8 @@
 export interface Client {
   /** Módulo Sucursales: de qué sucursal es (null = de toda la empresa). */
   branchId?: string | null;
+  /** Multimarca: the brand (legal company) the client belongs to. */
+  brandId?: string | null;
   /** Cuándo se archivó, y por qué. Nulos salvo en la sección Archivados. */
   archivedAt?: string | null;
   archiveReason?: string | null;

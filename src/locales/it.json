@@ -5601,7 +5601,8 @@
       "coberturaEnVivo": "Copertura in diretta",
       "atrasos": "Ritardi della settimana"
     },
-    "app-escritorio": "App desktop"
+    "app-escritorio": "App desktop",
+    "marcas": "Marchi"
   },
   "siteTour": {
     "newTour": "Nuovo percorso",
@@ -9183,7 +9184,10 @@
       "logo": "Logo",
       "fotoDelLugar": "Foto del luogo",
       "rangoLatitud": "da -90 a 90",
-      "rangoLongitud": "da -180 a 180"
+      "rangoLongitud": "da -180 a 180",
+      "faltaMarca": "Scegli il marchio a cui appartiene il cliente.",
+      "marca": "Marchio",
+      "marcaAyuda": "L'azienda con cui questo cliente ha il contratto. Puoi cambiarla in seguito."
     },
     "Clients": {
       "comoFunciona": "Come funziona?",
@@ -14435,7 +14439,8 @@
       "enviarInvitacion": "Invia invito",
       "seEnviaraInvitacionApp": "Verrà inviato a {{email}} un invito a scaricare e usare l'app {{app}}.",
       "enlacesAGooglePlay": "Link a Google Play e App Store",
-      "invitacionAppEnviadaA": "Invito all'app inviato a {{to}}"
+      "invitacionAppEnviadaA": "Invito all'app inviato a {{to}}",
+      "marca": "Marchio"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": ogni blocco è condiviso da",
@@ -19677,6 +19682,126 @@
     "RutaConPermiso": {
       "titulo": "Nessun accesso a questa pagina",
       "descripcion": "Il tuo ruolo non può vedere questa pagina. Se ti serve, chiedila a un amministratore."
+    },
+    "CampoDeMarca": {
+      "elige": "Scegli il marchio",
+      "marca": "Marchio"
+    },
+    "CampoMarcaDeRegistro": {
+      "ayuda": "Definisce in quale busta paga viene pagata questa persona",
+      "etiqueta": "Azienda di registrazione"
+    },
+    "ComprarCupoDeMarca": {
+      "boton": "Paga {{precio}}",
+      "botonSinPrecio": "Paga",
+      "exito": "Fatto: ora puoi aggiungere un altro marchio.",
+      "mensaje": "Viene addebitato un pagamento unico di {{precio}} sulla carta del tuo abbonamento. Il marchio resta disponibile per sempre.",
+      "mensajeSinPrecio": "Viene addebitato un pagamento unico sulla carta del tuo abbonamento. Il marchio resta disponibile per sempre.",
+      "titulo": "Aggiungere un altro marchio?"
+    },
+    "CotizacionEditor": {
+      "faltaMarca": "Scegli il marchio che emette il preventivo.",
+      "marca": "Marchio che fa il preventivo",
+      "marcaAyuda": "L'azienda che emette il preventivo. Se viene accettato, il cliente nasce in questo marchio.",
+      "marcaDelCliente": "Emesso da {{marca}}, il marchio del cliente."
+    },
+    "EditorDeMarca": {
+      "archivada": "Marchio archiviato",
+      "archivar": "Archivia",
+      "archivarMensaje": "Non appare più nella barra né nei moduli. Non si cancella nulla e puoi riattivarlo quando vuoi.",
+      "archivarTitulo": "Archiviare {{nombre}}?",
+      "cambiarLogo": "Cambia logo",
+      "codigo": "Codice",
+      "color": "Colore",
+      "correo": "Email",
+      "desarchivar": "Riattiva",
+      "direccion": "Indirizzo",
+      "editar": "Modifica marchio",
+      "eligePais": "Scegli un paese",
+      "establecimiento": "Codice dello stabilimento",
+      "establecimientoAyuda": "Se l'autorità fiscale gliene assegna uno (es. 001).",
+      "faltaIdentificador": "Inserisci il {{documento}}.",
+      "faltaNombre": "Inserisci il nome commerciale.",
+      "faltaPais": "Scegli il paese.",
+      "faltaRazon": "Inserisci la ragione sociale.",
+      "guardada": "Marchio salvato",
+      "guardando": "Salvataggio…",
+      "guardar": "Salva marchio",
+      "identidadAyuda": "Ogni marchio è un'azienda a sé: ragione sociale, identificativo fiscale e paese sono obbligatori.",
+      "identidadTitulo": "Identità legale",
+      "identificador": "Identificativo fiscale",
+      "identificadorMalo": "Questo {{documento}} non sembra valido per il paese scelto.",
+      "logoError": "Impossibile caricare il logo. Prova con un'altra immagine.",
+      "nombre": "Nome commerciale",
+      "nombreEjemplo": "Es.: Andina Sicurezza",
+      "nueva": "Nuovo marchio",
+      "otroColor": "Altro colore",
+      "pais": "Paese",
+      "quitarLogo": "Rimuovi",
+      "razonSocial": "Ragione sociale",
+      "reactivada": "Marchio di nuovo attivo",
+      "sinCuposMensaje": "Il tuo piano include i marchi che usi già. Ogni marchio aggiuntivo è un pagamento unico di {{precio}}.",
+      "sinCuposMensajeSinPrecio": "Il tuo piano include i marchi che usi già. Ogni marchio aggiuntivo è un pagamento unico.",
+      "sinCuposTitulo": "Usi già tutti i tuoi marchi",
+      "subirLogo": "Carica logo",
+      "telefono": "Telefono"
+    },
+    "ElegirMarca": {
+      "ahora": "Sei qui",
+      "cambiaCuandoQuieras": "Puoi cambiare marchio quando vuoi dalla barra in alto.",
+      "marcaDesc": "Solo i suoi clienti, i loro siti e chi ci lavora.",
+      "principalDesc": "Il marchio con cui è stato creato l'account.",
+      "subtitulo": "Ogni marchio è un'azienda con i propri clienti. Scegline uno per vedere solo ciò che è suo, o tutti insieme.",
+      "titulo": "Con quale marchio lavori adesso?",
+      "todasDesc": "I clienti e il personale di tutti i marchi.",
+      "ultimaVez": "L'ultima volta"
+    },
+    "MarcasPage": {
+      "abrir": "Apri {{nombre}}",
+      "agregarOtra": "Aggiungi un altro marchio ({{precio}})",
+      "agregarOtraSinPrecio": "Aggiungi un altro marchio",
+      "archivada": "Archiviato",
+      "clientes": "{{n}} clienti",
+      "cupos": "{{usadas}} di {{pagadas}} marchi in uso",
+      "cuposLibres": "Marchi che puoi ancora creare senza costi: {{n}}.",
+      "cuposLlenos": "Per creare un altro marchio, aggiungine uno.",
+      "errores": {
+        "esPrincipal": "Il marchio principale non si può archiviare: è l'azienda con cui è stato creato l'account.",
+        "faltanDatos": "Mancano dati obbligatori: nome, ragione sociale, identificativo fiscale e paese.",
+        "guardar": "Impossibile salvare il marchio.",
+        "identificadorMalo": "L'identificativo fiscale non è valido per il paese scelto.",
+        "sinCupos": "Usi già tutti i marchi che hai. Aggiungine un altro per continuare.",
+        "sinModulo": "Il modulo Multimarchio non è attivo.",
+        "tieneClientes": "Questo marchio ha ancora clienti. Spostali in un altro marchio e riprova."
+      },
+      "irALaTienda": "Vedi in Moduli aggiuntivi",
+      "nueva": "Nuovo marchio",
+      "personas": "{{n}} persone registrate",
+      "sinModulo": "Il modulo Multimarchio non è attivo",
+      "sinModuloDesc": "Con il modulo Multimarchio gestisci più marchi di sicurezza in un solo account.",
+      "subtitulo": "Ogni marchio è un'azienda a sé, con i propri clienti e la propria busta paga. Le guardie, l'orario e la mappa sono condivisi.",
+      "titulo": "Marchi",
+      "vacio": "Ancora nessun marchio",
+      "vacioDesc": "Il marchio principale si crea da solo attivando il modulo.",
+      "verArchivadas": "Mostra archiviati"
+    },
+    "Multimarca": {
+      "principal": "Principale"
+    },
+    "NuevaCorrida": {
+      "faltaMarca": "Scegli l'azienda (marchio): ogni marchio paga la propria busta paga.",
+      "marca": "Azienda (marchio)",
+      "marcaAyuda": "Si liquidano solo le persone registrate in questo marchio, anche se hanno lavorato nei siti di un altro."
+    },
+    "SelectorDeMarca": {
+      "elegir": "Scegli il marchio",
+      "todas": "Tutti i marchi",
+      "todasCorto": "Marchi"
+    },
+    "TiendaMultimarca": {
+      "consecuencia": "Il selettore del marchio e la colonna «Marchio» scompaiono; i marchi e i loro dati restano.",
+      "detalle": "(include {{n}} marchi) · {{extra}} per ogni marchio aggiuntivo",
+      "incluye": "(include {{n}} marchi)"
     }
   },
   "visitantes": {

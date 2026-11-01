@@ -19,6 +19,8 @@ import {
 
 import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { DataTable, type Column } from "@/components/table/DataTable";
@@ -79,6 +81,8 @@ function CotizacionesPage() {
 
   // Sucursales (vista global): de qué sucursal es cada propuesta.
   const etiquetasSuc = useEtiquetasDeSucursal();
+  // Multimarca («Todas las marcas»): which brand issues each quote.
+  const etiquetasMarca = useEtiquetasDeMarca();
   const columnas: Column<Quote>[] = [
     {
       key: "number",
@@ -104,6 +108,10 @@ function CotizacionesPage() {
               sucursal={etiquetasSuc.sucursal(r.branchId)}
             />
           )}
+          <EtiquetaDeMarca
+            className="ml-1.5"
+            marca={etiquetasMarca.marca(r.brandId)}
+          />
         </span>
       ),
     },

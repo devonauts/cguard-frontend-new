@@ -15,6 +15,7 @@ import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
+import { CABECERA_DE_MARCA, cabeceraDeMarca } from "@/lib/marcaElegida";
 import { resolveApiBase } from "@/lib/apiBase";
 import { handleDesktopApiError } from "@/lib/desktop";
 
@@ -83,6 +84,18 @@ api.interceptors.request.use((config) => {
     }
   } catch {
     /* sin sucursal elegida */
+  }
+
+  // Multimarca module: the brand chosen in the top bar (combines with the branch).
+  try {
+    const m = cabeceraDeMarca()[CABECERA_DE_MARCA];
+
+    if (m) {
+      if (!config.headers) config.headers = {} as any;
+      (config.headers as any)[CABECERA_DE_MARCA] = m;
+    }
+  } catch {
+    /* no brand chosen */
   }
 
   if (token) {

@@ -11,6 +11,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import ElegirEspacio from "@/components/sucursales/ElegirEspacio";
 import { LineaDeEspacio } from "@/components/SelectorDeSucursal";
+import ElegirMarca from "@/components/multimarca/ElegirMarca";
+import { LineaDeMarca } from "@/components/multimarca/SelectorDeMarca";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import BarraInferiorMovil from "@/components/BarraInferiorMovil";
@@ -423,6 +425,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         <VisitBeacon />
         {/* Sucursales: «¿dónde trabajas ahora?» una vez por inicio de sesión. */}
         <ElegirEspacio />
+        {/* Multimarca: «¿con qué marca trabajas ahora?», after the branch question. */}
+        <ElegirMarca />
         {/* El velo de los menús flotantes vive AQUÍ DENTRO, no en el <body>.
           `.app-shell` lleva `isolation: isolate`, así que crea su propio contexto
           de apilamiento: un velo hermano suyo pintaba por encima del armazón
@@ -444,6 +448,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
           {/* Sucursales: el color del espacio en el que se trabaja, al pie de la barra. */}
           <LineaDeEspacio />
+          {/* Multimarca: the brand's colour (the branch line wins when both narrow). */}
+          <LineaDeMarca />
         </div>
 
         {/* 17rem es el menú SOLO: la barra ya no lleva un riel de secciones de

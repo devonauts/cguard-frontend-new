@@ -105,6 +105,8 @@ import { correoVisible } from "@/lib/correoVisible";
 import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 import { listarTodo } from "@/lib/listarCompleto";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
 
 // Fallback local Breadcrumb component (avoid missing module error)
 interface BreadcrumbItem {
@@ -205,6 +207,8 @@ export default function SecurityGuardsPage() {
   // Módulo Sucursales (vista global): la sucursal de casa de cada persona; si no
   // tiene, la de la sede donde está asignada.
   const etiquetas = useEtiquetasDeSucursal({ personas: true });
+  // Multimarca («Todas las marcas»): the brand each guard is registered in.
+  const marcas = useEtiquetasDeMarca({ personas: true });
 
   usePageTitle(t("guards.list.headerTitle", "Vigilantes de Seguridad"));
   const { hasPermission } = usePermissions();
@@ -1722,6 +1726,15 @@ export default function SecurityGuardsPage() {
                                         />
                                       );
                                     })()}
+                                  {marcas.activo && (
+                                    <EtiquetaDeMarca
+                                      marca={marcas.dePersona(
+                                        guard.raw?.guard?.id ??
+                                          guard.raw?.guardId ??
+                                          null,
+                                      )}
+                                    />
+                                  )}
                                   {(() => {
                                     const realId = guard.raw?.id || guard.id;
                                     const r = ratings[realId];

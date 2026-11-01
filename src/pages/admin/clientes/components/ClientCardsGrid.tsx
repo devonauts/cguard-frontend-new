@@ -20,6 +20,8 @@ import {
 
 import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
 import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
+import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
+import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -98,6 +100,8 @@ export default function ClientCardsGrid({
 }) {
   // Módulo Sucursales (vista global): la etiqueta de sucursal de cada fila.
   const etiquetas = useEtiquetasDeSucursal();
+  // Multimarca («Todas las marcas»): the brand of each client.
+  const marcas = useEtiquetasDeMarca();
   const { t } = useTranslation();
   const cards = useMemo(() => clients, [clients]);
 
@@ -177,6 +181,7 @@ export default function ClientCardsGrid({
                       sucursal={etiquetas.sucursal(c.branchId)}
                     />
                   )}
+                  <EtiquetaDeMarca marca={marcas.marca(c.brandId)} />
                   <StatusBadge tone={isActive ? "ok" : "bad"}>
                     {isActive
                       ? t("common.active", "Activo")

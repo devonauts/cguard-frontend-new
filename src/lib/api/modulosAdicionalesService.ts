@@ -27,6 +27,8 @@ export interface ModuloEnTienda {
   /** What the card is really charged, when it differs from what is shown. */
   chargePriceCents?: number | null;
   chargeCurrency?: string;
+  /** Multimarca only, when the server sends it: one extra brand in `currency`. */
+  extraBrandPriceCents?: number | null;
   chargeMonthlyCents?: number | null;
   chargeYearlyCents?: number | null;
   status:

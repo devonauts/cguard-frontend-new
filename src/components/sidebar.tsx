@@ -68,6 +68,7 @@ import {
   LayoutGrid,
   ClipboardSignature,
   Puzzle,
+  Layers,
   type LucideIcon,
   Sparkles,
   MonitorDown,
@@ -153,6 +154,7 @@ const iconMap: Record<string, LucideIcon> = {
   Star,
   ClipboardSignature,
   Puzzle,
+  Layers,
   Sparkles,
   MonitorDown,
 };
@@ -237,7 +239,12 @@ const GROUPS: GroupDef[] = [
     /* «superadmin» salió del menú: apuntaba a `/superadmin/tenants`, que vive
        en OTRA app. Quien lo pulsaba —cualquiera cuyo rol normalice a «admin»,
        no sólo un superadmin de plataforma— caía en el 404 de este CRM. */
-    ids: ["seguridad-auditoria", "modulos-adicionales", "app-escritorio"],
+    ids: [
+      "seguridad-auditoria",
+      "marcas",
+      "modulos-adicionales",
+      "app-escritorio",
+    ],
   },
 ];
 

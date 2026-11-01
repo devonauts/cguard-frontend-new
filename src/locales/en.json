@@ -6077,7 +6077,8 @@
       "coberturaEnVivo": "Live coverage",
       "atrasos": "Late arrivals this week"
     },
-    "app-escritorio": "Desktop app"
+    "app-escritorio": "Desktop app",
+    "marcas": "Brands"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -8643,7 +8644,10 @@
       "logo": "Logo",
       "fotoDelLugar": "Site photo",
       "rangoLatitud": "-90 to 90",
-      "rangoLongitud": "-180 to 180"
+      "rangoLongitud": "-180 to 180",
+      "faltaMarca": "Choose the brand this client belongs to.",
+      "marca": "Brand",
+      "marcaAyuda": "The company this client has the contract with. You can change it later."
     },
     "Clients": {
       "comoFunciona": "How does it work?",
@@ -13895,7 +13899,8 @@
       "enviarInvitacion": "Send invitation",
       "seEnviaraInvitacionApp": "An invitation to download and use the {{app}} app will be sent to {{email}}.",
       "enlacesAGooglePlay": "Links to Google Play and the App Store",
-      "invitacionAppEnviadaA": "App invitation sent to {{to}}"
+      "invitacionAppEnviadaA": "App invitation sent to {{to}}",
+      "marca": "Brand"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": ": each block is shared by",
@@ -19137,6 +19142,126 @@
     "RutaConPermiso": {
       "titulo": "No access to this page",
       "descripcion": "Your role can’t see this page. If you need it, ask an administrator."
+    },
+    "CampoDeMarca": {
+      "elige": "Choose the brand",
+      "marca": "Brand"
+    },
+    "CampoMarcaDeRegistro": {
+      "ayuda": "Sets which payroll pays this person",
+      "etiqueta": "Company they registered with"
+    },
+    "ComprarCupoDeMarca": {
+      "boton": "Pay {{precio}}",
+      "botonSinPrecio": "Pay",
+      "exito": "Done: you can now add another brand.",
+      "mensaje": "A one-time payment of {{precio}} is charged to your subscription card. The brand stays available forever.",
+      "mensajeSinPrecio": "A one-time payment is charged to your subscription card. The brand stays available forever.",
+      "titulo": "Add another brand?"
+    },
+    "CotizacionEditor": {
+      "faltaMarca": "Choose the brand issuing the quote.",
+      "marca": "Brand quoting",
+      "marcaAyuda": "The company issuing the quote. If it is accepted, the client is created in this brand.",
+      "marcaDelCliente": "Issued by {{marca}}, the client's brand."
+    },
+    "EditorDeMarca": {
+      "archivada": "Brand archived",
+      "archivar": "Archive",
+      "archivarMensaje": "It no longer appears in the top bar or in forms. Nothing is deleted and you can turn it back on whenever you want.",
+      "archivarTitulo": "Archive {{nombre}}?",
+      "cambiarLogo": "Change logo",
+      "codigo": "Code",
+      "color": "Colour",
+      "correo": "Email",
+      "desarchivar": "Turn back on",
+      "direccion": "Address",
+      "editar": "Edit brand",
+      "eligePais": "Choose a country",
+      "establecimiento": "Establishment code",
+      "establecimientoAyuda": "If the tax authority gives it one (e.g. 001).",
+      "faltaIdentificador": "Enter the {{documento}}.",
+      "faltaNombre": "Enter the commercial name.",
+      "faltaPais": "Choose the country.",
+      "faltaRazon": "Enter the legal name.",
+      "guardada": "Brand saved",
+      "guardando": "Saving…",
+      "guardar": "Save brand",
+      "identidadAyuda": "Each brand is a separate company: its legal name, tax ID and country are required.",
+      "identidadTitulo": "Legal identity",
+      "identificador": "Tax ID",
+      "identificadorMalo": "That {{documento}} does not look valid for the chosen country.",
+      "logoError": "The logo could not be uploaded. Try another image.",
+      "nombre": "Commercial name",
+      "nombreEjemplo": "E.g.: Andina Security",
+      "nueva": "New brand",
+      "otroColor": "Another colour",
+      "pais": "Country",
+      "quitarLogo": "Remove",
+      "razonSocial": "Legal name",
+      "reactivada": "Brand active again",
+      "sinCuposMensaje": "Your plan includes the brands you already use. Each additional brand is a one-time payment of {{precio}}.",
+      "sinCuposMensajeSinPrecio": "Your plan includes the brands you already use. Each additional brand is a one-time payment.",
+      "sinCuposTitulo": "You already use all your brands",
+      "subirLogo": "Upload logo",
+      "telefono": "Phone"
+    },
+    "ElegirMarca": {
+      "ahora": "You are here",
+      "cambiaCuandoQuieras": "You can change brand whenever you want from the top bar.",
+      "marcaDesc": "Only its clients, their sites and the people who work there.",
+      "principalDesc": "The brand the account was created with.",
+      "subtitulo": "Each brand is a company with its own clients. Choose one to see only what is theirs, or all of them at once.",
+      "titulo": "Which brand are you working with now?",
+      "todasDesc": "The clients and staff of every brand.",
+      "ultimaVez": "Last time"
+    },
+    "MarcasPage": {
+      "abrir": "Open {{nombre}}",
+      "agregarOtra": "Add another brand ({{precio}})",
+      "agregarOtraSinPrecio": "Add another brand",
+      "archivada": "Archived",
+      "clientes": "{{n}} clients",
+      "cupos": "{{usadas}} of {{pagadas}} brands in use",
+      "cuposLibres": "Brands you can still create at no cost: {{n}}.",
+      "cuposLlenos": "To create another brand, add one more.",
+      "errores": {
+        "esPrincipal": "The principal brand cannot be archived: it is the company the account was created with.",
+        "faltanDatos": "Required data is missing: name, legal name, tax ID and country.",
+        "guardar": "The brand could not be saved.",
+        "identificadorMalo": "The tax ID is not valid for the chosen country.",
+        "sinCupos": "You already use all the brands you have. Add another one to continue.",
+        "sinModulo": "The Multibrand module is not active.",
+        "tieneClientes": "This brand still has clients. Move them to another brand and try again."
+      },
+      "irALaTienda": "See it in Add-on modules",
+      "nueva": "New brand",
+      "personas": "{{n}} people registered",
+      "sinModulo": "The Multibrand module is not active",
+      "sinModuloDesc": "With the Multibrand module you run several security brands in one account.",
+      "subtitulo": "Each brand is a separate company, with its own clients and payroll. Guards, the schedule and the map are shared.",
+      "titulo": "Brands",
+      "vacio": "No brands yet",
+      "vacioDesc": "The principal brand is created automatically when the module is switched on.",
+      "verArchivadas": "Show archived"
+    },
+    "Multimarca": {
+      "principal": "Main"
+    },
+    "NuevaCorrida": {
+      "faltaMarca": "Choose the company (brand): each brand pays its own payroll.",
+      "marca": "Company (brand)",
+      "marcaAyuda": "Only people registered in this brand are paid, even if they worked at another brand's sites."
+    },
+    "SelectorDeMarca": {
+      "elegir": "Choose the brand",
+      "todas": "All brands",
+      "todasCorto": "Brands"
+    },
+    "TiendaMultimarca": {
+      "consecuencia": "The brand selector and the «Brand» column disappear; the brands and their data stay.",
+      "detalle": "(includes {{n}} brands) · {{extra}} for each additional brand",
+      "incluye": "(includes {{n}} brands)"
     }
   },
   "map": {

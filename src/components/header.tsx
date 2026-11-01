@@ -112,6 +112,7 @@ import { useGusto } from "@/hooks/useGusto";
 import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
 import TenantSwitcher from "@/components/TenantSwitcher";
 import SelectorDeSucursal from "@/components/SelectorDeSucursal";
+import SelectorDeMarca from "@/components/multimarca/SelectorDeMarca";
 import { useAgente } from "@/lib/agenteDeMarca";
 import { useAddonChangesLive } from "@/hooks/useAddonChangesLive";
 
@@ -1235,6 +1236,14 @@ export default function Header({
           {/* En el teléfono: una pastilla con el código que abre el selector grande. */}
           <div className="mr-0.5 sm:hidden">
             <SelectorDeSucursal compacto />
+          </div>
+
+          {/* Multimarca module: the brand narrows everything below too (with the branch). */}
+          <div className="mr-1 hidden sm:block">
+            <SelectorDeMarca />
+          </div>
+          <div className="mr-0.5 sm:hidden">
+            <SelectorDeMarca compacto />
           </div>
 
           <div className="mr-1 hidden sm:block">

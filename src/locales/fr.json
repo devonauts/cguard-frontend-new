@@ -5601,7 +5601,8 @@
       "coberturaEnVivo": "Couverture en direct",
       "atrasos": "Retards de la semaine"
     },
-    "app-escritorio": "Application de bureau"
+    "app-escritorio": "Application de bureau",
+    "marcas": "Marques"
   },
   "siteTour": {
     "newTour": "Nouvelle ronde",
@@ -9183,7 +9184,10 @@
       "logo": "Logo",
       "fotoDelLugar": "Photo du lieu",
       "rangoLatitud": "-90 à 90",
-      "rangoLongitud": "-180 à 180"
+      "rangoLongitud": "-180 à 180",
+      "faltaMarca": "Choisissez la marque à laquelle appartient le client.",
+      "marca": "Marque",
+      "marcaAyuda": "L'entreprise avec laquelle ce client a son contrat. Vous pourrez la changer plus tard."
     },
     "Clients": {
       "comoFunciona": "Comment ça marche ?",
@@ -14435,7 +14439,8 @@
       "enviarInvitacion": "Envoyer l'invitation",
       "seEnviaraInvitacionApp": "Une invitation à télécharger et utiliser l'application {{app}} sera envoyée à {{email}}.",
       "enlacesAGooglePlay": "Liens vers Google Play et l'App Store",
-      "invitacionAppEnviadaA": "Invitation à l'application envoyée à {{to}}"
+      "invitacionAppEnviadaA": "Invitation à l'application envoyée à {{to}}",
+      "marca": "Marque"
     },
     "AddStationPage": {
       "cadaBloqueLoComparten": " : chaque bloc est partagé par",
@@ -19677,6 +19682,126 @@
     "RutaConPermiso": {
       "titulo": "Pas d’accès à cette page",
       "descripcion": "Votre rôle ne peut pas voir cette page. Si vous en avez besoin, demandez-la à un administrateur."
+    },
+    "CampoDeMarca": {
+      "elige": "Choisissez la marque",
+      "marca": "Marque"
+    },
+    "CampoMarcaDeRegistro": {
+      "ayuda": "Détermine sur quelle paie cette personne est payée",
+      "etiqueta": "Entreprise d'inscription"
+    },
+    "ComprarCupoDeMarca": {
+      "boton": "Payer {{precio}}",
+      "botonSinPrecio": "Payer",
+      "exito": "C'est fait : vous pouvez maintenant ajouter une autre marque.",
+      "mensaje": "Un paiement unique de {{precio}} est débité sur la carte de votre abonnement. La marque reste disponible pour toujours.",
+      "mensajeSinPrecio": "Un paiement unique est débité sur la carte de votre abonnement. La marque reste disponible pour toujours.",
+      "titulo": "Ajouter une autre marque ?"
+    },
+    "CotizacionEditor": {
+      "faltaMarca": "Choisissez la marque qui émet le devis.",
+      "marca": "Marque qui établit le devis",
+      "marcaAyuda": "L'entreprise qui émet le devis. S'il est accepté, le client est créé dans cette marque.",
+      "marcaDelCliente": "Émis par {{marca}}, la marque du client."
+    },
+    "EditorDeMarca": {
+      "archivada": "Marque archivée",
+      "archivar": "Archiver",
+      "archivarMensaje": "Elle n'apparaît plus dans la barre ni dans les formulaires. Rien n'est supprimé et vous pouvez la réactiver quand vous voulez.",
+      "archivarTitulo": "Archiver {{nombre}} ?",
+      "cambiarLogo": "Changer le logo",
+      "codigo": "Code",
+      "color": "Couleur",
+      "correo": "E-mail",
+      "desarchivar": "Réactiver",
+      "direccion": "Adresse",
+      "editar": "Modifier la marque",
+      "eligePais": "Choisissez un pays",
+      "establecimiento": "Code d'établissement",
+      "establecimientoAyuda": "Si l'administration fiscale lui en attribue un (ex. : 001).",
+      "faltaIdentificador": "Saisissez le {{documento}}.",
+      "faltaNombre": "Saisissez le nom commercial.",
+      "faltaPais": "Choisissez le pays.",
+      "faltaRazon": "Saisissez la raison sociale.",
+      "guardada": "Marque enregistrée",
+      "guardando": "Enregistrement…",
+      "guardar": "Enregistrer la marque",
+      "identidadAyuda": "Chaque marque est une entreprise distincte : sa raison sociale, son identifiant fiscal et son pays sont obligatoires.",
+      "identidadTitulo": "Identité légale",
+      "identificador": "Identifiant fiscal",
+      "identificadorMalo": "Ce {{documento}} ne semble pas valide pour le pays choisi.",
+      "logoError": "Le logo n'a pas pu être envoyé. Essayez une autre image.",
+      "nombre": "Nom commercial",
+      "nombreEjemplo": "Ex. : Andina Sécurité",
+      "nueva": "Nouvelle marque",
+      "otroColor": "Autre couleur",
+      "pais": "Pays",
+      "quitarLogo": "Retirer",
+      "razonSocial": "Raison sociale",
+      "reactivada": "Marque de nouveau active",
+      "sinCuposMensaje": "Votre offre inclut les marques que vous utilisez déjà. Chaque marque supplémentaire est un paiement unique de {{precio}}.",
+      "sinCuposMensajeSinPrecio": "Votre offre inclut les marques que vous utilisez déjà. Chaque marque supplémentaire est un paiement unique.",
+      "sinCuposTitulo": "Vous utilisez déjà toutes vos marques",
+      "subirLogo": "Importer le logo",
+      "telefono": "Téléphone"
+    },
+    "ElegirMarca": {
+      "ahora": "Vous êtes ici",
+      "cambiaCuandoQuieras": "Vous pouvez changer de marque quand vous voulez depuis la barre du haut.",
+      "marcaDesc": "Uniquement ses clients, leurs sites et les personnes qui y travaillent.",
+      "principalDesc": "La marque avec laquelle le compte a été créé.",
+      "subtitulo": "Chaque marque est une entreprise avec ses propres clients. Choisissez-en une pour ne voir que ce qui la concerne, ou toutes à la fois.",
+      "titulo": "Avec quelle marque travaillez-vous maintenant ?",
+      "todasDesc": "Les clients et le personnel de toutes les marques.",
+      "ultimaVez": "La dernière fois"
+    },
+    "MarcasPage": {
+      "abrir": "Ouvrir {{nombre}}",
+      "agregarOtra": "Ajouter une autre marque ({{precio}})",
+      "agregarOtraSinPrecio": "Ajouter une autre marque",
+      "archivada": "Archivée",
+      "clientes": "{{n}} clients",
+      "cupos": "{{usadas}} sur {{pagadas}} marques utilisées",
+      "cuposLibres": "Marques que vous pouvez encore créer sans frais : {{n}}.",
+      "cuposLlenos": "Pour créer une autre marque, ajoutez-en une.",
+      "errores": {
+        "esPrincipal": "La marque principale ne peut pas être archivée : c'est l'entreprise avec laquelle le compte a été créé.",
+        "faltanDatos": "Des données obligatoires manquent : nom, raison sociale, identifiant fiscal et pays.",
+        "guardar": "La marque n'a pas pu être enregistrée.",
+        "identificadorMalo": "L'identifiant fiscal n'est pas valide pour le pays choisi.",
+        "sinCupos": "Vous utilisez déjà toutes vos marques. Ajoutez-en une autre pour continuer.",
+        "sinModulo": "Le module Multimarque n'est pas actif.",
+        "tieneClientes": "Cette marque a encore des clients. Transférez-les vers une autre marque et réessayez."
+      },
+      "irALaTienda": "Voir dans Modules complémentaires",
+      "nueva": "Nouvelle marque",
+      "personas": "{{n}} personnes inscrites",
+      "sinModulo": "Le module Multimarque n'est pas actif",
+      "sinModuloDesc": "Avec le module Multimarque, vous gérez plusieurs marques de sécurité dans un seul compte.",
+      "subtitulo": "Chaque marque est une entreprise distincte, avec ses propres clients et sa paie. Les agents, le planning et la carte sont partagés.",
+      "titulo": "Marques",
+      "vacio": "Pas encore de marques",
+      "vacioDesc": "La marque principale est créée automatiquement à l'activation du module.",
+      "verArchivadas": "Voir les archivées"
+    },
+    "Multimarca": {
+      "principal": "Principale"
+    },
+    "NuevaCorrida": {
+      "faltaMarca": "Choisissez l'entreprise (marque) : chaque marque paie sa propre paie.",
+      "marca": "Entreprise (marque)",
+      "marcaAyuda": "Seules les personnes inscrites dans cette marque sont payées, même si elles ont travaillé sur les sites d'une autre."
+    },
+    "SelectorDeMarca": {
+      "elegir": "Choisir la marque",
+      "todas": "Toutes les marques",
+      "todasCorto": "Marques"
+    },
+    "TiendaMultimarca": {
+      "consecuencia": "Le sélecteur de marque et la colonne « Marque » disparaissent ; les marques et leurs données restent.",
+      "detalle": "(inclut {{n}} marques) · {{extra}} par marque supplémentaire",
+      "incluye": "(inclut {{n}} marques)"
     }
   },
   "visitantes": {

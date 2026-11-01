@@ -47,6 +47,8 @@ export const MODULE_KEYS = [
   "monitoring_center",
   // Video surveillance (/video/*); the public shared clip stays open.
   "video_surveillance",
+  // Several security brands (separate legal companies) in one account.
+  "multimarca",
 ] as const;
 
 export type ModuleKey = (typeof MODULE_KEYS)[number];

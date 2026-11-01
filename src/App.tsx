@@ -188,6 +188,7 @@ const MisTicketsPage = lazy(
 const ModulosAdicionalesPage = lazy(
   () => import("./pages/admin/modulos/ModulosAdicionalesPage"),
 );
+const MarcasPage = lazy(() => import("./pages/admin/marcas/MarcasPage"));
 const ActivitiesPage = lazy(
   () => import("./pages/admin/actividades/ActivitiesPage"),
 );
@@ -2858,6 +2859,15 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/modulos-adicionales"
+                              />
+                              {/* Multimarca module: the company's brands (each a legal company). */}
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <MarcasPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/marcas"
                               />
                               <Route
                                 element={
