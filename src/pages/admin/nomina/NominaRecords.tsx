@@ -55,7 +55,7 @@ import ExportMenu from "@/components/reports/ExportMenu";
 import type { ExportFormat } from "@/lib/export/reportExport";
 
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { diaCivilDe, hoyEnLaEmpresa, limitesDelDia } from "@/lib/horaDeLaEmpresa";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
@@ -126,7 +126,12 @@ const STATUS_OPTIONS = [
 
 type Period = "day" | "week" | "month";
 
-/** [start, end] Date bounds for the period containing `anchor` (local time). */
+/**
+ * [start, end] CALENDAR days of the period containing `anchor` (dates built at
+ * local midnight: they are days, not instants). The query turns them into the
+ * company's midnights (`limitesDelDia`), so a viewer in another zone sees the
+ * same punches as the office.
+ */
 function rangeFor(period: Period, anchor: Date): [Date, Date] {
   const y = anchor.getFullYear(),
     m = anchor.getMonth(),
@@ -166,19 +171,34 @@ function shiftAnchor(period: Period, anchor: Date, dir: number): Date {
 function rangeLabel(period: Period, anchor: Date): string {
   const [s, e] = rangeFor(period, anchor);
   if (period === "day")
-    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    // tz: civil day built at local midnight (a calendar date, not an instant).
+    return s.toLocaleDateString(localeActual(), {
       weekday: "short",
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
   if (period === "month")
-    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    // tz: civil day built at local midnight (a calendar date, not an instant).
+    return s.toLocaleDateString(localeActual(), {
       month: "long",
       year: "numeric",
     });
   const sameMonth = s.getMonth() === e.getMonth();
-  return `${s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: "short", year: "numeric" })}`;
+  // tz: civil days built at local midnight (calendar dates, not instants).
+  return `${s.toLocaleDateString(localeActual(), { day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { day: "2-digit", month: "short", year: "numeric" })}`;
+}
+
+/** The company's «today» as a calendar date (local midnight). */
+function hoyComoFecha(): Date {
+  const [y, m, d] = hoyEnLaEmpresa().split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/** The period as the company's instants (its midnights), for the API. */
+function cotasDeLaEmpresa(start: Date, end: Date): [string, string] {
+  const { start: a, end: b } = limitesDelDia(diaCivilDe(start), diaCivilDe(end));
+  return [a, b];
 }
 
 export default function NominaRecords() {
@@ -209,7 +229,7 @@ export default function NominaRecords() {
       const parsed = new Date(y, m - 1, day);
       if (!isNaN(parsed.getTime())) return parsed;
     }
-    return new Date();
+    return hoyComoFecha();
   });
   const [selected, setSelected] = useState<AttendanceRecord | null>(null);
   const [busy, setBusy] = useState(false);
@@ -260,8 +280,8 @@ export default function NominaRecords() {
         "filter[departmentId]": departmentId || undefined,
         "filter[guardName]": guardId || undefined,
         // Day/week/month window — sent as the backend's punchInTimeRange [start, end].
-        "filter[punchInTimeRange][0]": rangeStart.toISOString(),
-        "filter[punchInTimeRange][1]": rangeEnd.toISOString(),
+        "filter[punchInTimeRange][0]": cotasDeLaEmpresa(rangeStart, rangeEnd)[0],
+        "filter[punchInTimeRange][1]": cotasDeLaEmpresa(rangeStart, rangeEnd)[1],
         limit: 1000,
         orderBy: "punchInTime_DESC",
       })
@@ -669,8 +689,8 @@ export default function NominaRecords() {
         "filter[status]": status || undefined,
         "filter[departmentId]": departmentId || undefined,
         "filter[guardName]": guardId || undefined,
-        "filter[punchInTimeRange][0]": rangeStart.toISOString(),
-        "filter[punchInTimeRange][1]": rangeEnd.toISOString(),
+        "filter[punchInTimeRange][0]": cotasDeLaEmpresa(rangeStart, rangeEnd)[0],
+        "filter[punchInTimeRange][1]": cotasDeLaEmpresa(rangeStart, rangeEnd)[1],
         ids: selectedIds.length ? selectedIds.join(",") : undefined,
       });
       toast.success(
@@ -795,7 +815,7 @@ export default function NominaRecords() {
               <ChevronLeft className="size-4" />
             </button>
             <button
-              onClick={() => setAnchor(new Date())}
+              onClick={() => setAnchor(hoyComoFecha())}
               title={t("ui.NominaRecords.irAHoy", "Ir a hoy")}
               className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium capitalize"
             >
