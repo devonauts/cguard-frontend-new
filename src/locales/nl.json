@@ -19083,7 +19083,8 @@
       "invitacionPendiente": "Uitnodiging openstaand",
       "invitacionPendienteAyuda": "De uitnodiging is verstuurd en de persoon heeft nog niet ingelogd. Je kunt al een rooster toewijzen.",
       "sinTurnosIr": "Controleer de rotatie van de post bij Toezichtposten",
-      "desdeFecha": "vanaf {{fecha}}"
+      "desdeFecha": "vanaf {{fecha}}",
+      "pendiente": "In afwachting"
     },
     "OfficeHours": {
       "copiarLunes": "Maandag naar alle kopiëren",

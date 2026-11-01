@@ -483,48 +483,50 @@ function AllStaffSection({
                       <span className="truncate text-xs font-semibold" title={p.name}>
                         {p.name}
                       </span>
+                    </div>
+                    <div className="flex min-w-0 items-center gap-1.5">
                       {p.pendingInvite && (
                         <span
-                          className="shrink-0 rounded px-1 py-px text-[8px] font-bold uppercase tracking-wide"
+                          className="mt-0.5 shrink-0 rounded px-1 py-px text-[8px] font-bold uppercase tracking-wide"
                           style={tonePill("warn", 16)}
                           title={t(
                             "ui.AllStaff.invitacionPendienteAyuda",
                             "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario.",
                           )}
                         >
-                          {t("ui.AllStaff.invitacionPendiente", "Invitación pendiente")}
+                          {t("ui.AllStaff.pendiente", "Pendiente")}
                         </span>
                       )}
+                      {accion ? (
+                        <button
+                          className="cg-focus mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-[10px] font-semibold hover:underline"
+                          style={{ color: "var(--warn-text)" }}
+                          type="button"
+                          onClick={() =>
+                            accion === "asignarHorario"
+                              ? abrirEditor()
+                              : onAsignarAPuesto({ userId: p.userId, name: p.name })
+                          }
+                        >
+                          <Plus size={10} />
+                          {accion === "asignarHorario"
+                            ? t("ui.AllStaff.asignarHorario", "Asignar horario")
+                            : t("ui.AllStaff.asignarAPuesto", "Asignar a un puesto")}
+                        </button>
+                      ) : (
+                        <div
+                          className="flex min-w-0 items-center gap-1 text-[10px]"
+                          style={{ color: p.hasSchedule || (p.kind === "supervisor" && p.assigned) ? "var(--ink-soft)" : "var(--warn-text)" }}
+                        >
+                          <MapPin size={9} className="shrink-0" />
+                          <span className="truncate" title={textoDonde(p)}>
+                            {p.hasSchedule || (p.kind === "supervisor" && p.assigned)
+                              ? textoDonde(p)
+                              : `${textoDonde(p)} · ${t("ui.AllStaff.sinHorario", "Sin horario")}`}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    {accion ? (
-                      <button
-                        className="cg-focus mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-[10px] font-semibold hover:underline"
-                        style={{ color: "var(--warn-text)" }}
-                        type="button"
-                        onClick={() =>
-                          accion === "asignarHorario"
-                            ? abrirEditor()
-                            : onAsignarAPuesto({ userId: p.userId, name: p.name })
-                        }
-                      >
-                        <Plus size={10} />
-                        {accion === "asignarHorario"
-                          ? t("ui.AllStaff.asignarHorario", "Asignar horario")
-                          : t("ui.AllStaff.asignarAPuesto", "Asignar a un puesto")}
-                      </button>
-                    ) : (
-                      <div
-                        className="flex min-w-0 items-center gap-1 text-[10px]"
-                        style={{ color: p.hasSchedule || (p.kind === "supervisor" && p.assigned) ? "var(--ink-soft)" : "var(--warn-text)" }}
-                      >
-                        <MapPin size={9} className="shrink-0" />
-                        <span className="truncate" title={textoDonde(p)}>
-                          {p.hasSchedule || (p.kind === "supervisor" && p.assigned)
-                            ? textoDonde(p)
-                            : `${textoDonde(p)} · ${t("ui.AllStaff.sinHorario", "Sin horario")}`}
-                        </span>
-                      </div>
-                    )}
                   </div>
                   {p.kind === "office" && p.hasSchedule && (
                     <button

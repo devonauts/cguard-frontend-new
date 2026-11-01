@@ -18548,7 +18548,8 @@
       "invitacionPendiente": "Invitación pendiente",
       "invitacionPendienteAyuda": "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario.",
       "sinTurnosIr": "Revisar la rotación del puesto en Puestos de supervisión",
-      "desdeFecha": "desde {{fecha}}"
+      "desdeFecha": "desde {{fecha}}",
+      "pendiente": "Pendiente"
     },
     "OfficeHours": {
       "copiarLunes": "Copiar el lunes a todos",

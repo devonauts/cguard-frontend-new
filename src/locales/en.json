@@ -18548,7 +18548,8 @@
       "invitacionPendiente": "Invite pending",
       "invitacionPendienteAyuda": "The invite was sent and they have not signed in yet. You can already give them a schedule.",
       "sinTurnosIr": "Check the post's rotation in Supervisor posts",
-      "desdeFecha": "from {{fecha}}"
+      "desdeFecha": "from {{fecha}}",
+      "pendiente": "Pending"
     },
     "OfficeHours": {
       "copiarLunes": "Copy Monday to all",

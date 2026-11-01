@@ -19083,7 +19083,8 @@
       "invitacionPendiente": "Invitation en attente",
       "invitacionPendienteAyuda": "L’invitation a été envoyée et la personne ne s’est pas encore connectée. Vous pouvez déjà lui attribuer un planning.",
       "sinTurnosIr": "Vérifier la rotation du poste dans Postes de supervision",
-      "desdeFecha": "à partir du {{fecha}}"
+      "desdeFecha": "à partir du {{fecha}}",
+      "pendiente": "En attente"
     },
     "OfficeHours": {
       "copiarLunes": "Copier le lundi partout",

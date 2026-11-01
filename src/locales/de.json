@@ -19083,7 +19083,8 @@
       "invitacionPendiente": "Einladung ausstehend",
       "invitacionPendienteAyuda": "Die Einladung wurde gesendet, die Person hat sich noch nicht angemeldet. Ein Dienstplan kann schon zugewiesen werden.",
       "sinTurnosIr": "Rotation des Postens unter Aufsichtsposten prüfen",
-      "desdeFecha": "ab {{fecha}}"
+      "desdeFecha": "ab {{fecha}}",
+      "pendiente": "Ausstehend"
     },
     "OfficeHours": {
       "copiarLunes": "Montag auf alle kopieren",

@@ -18548,7 +18548,8 @@
       "invitacionPendiente": "Convite pendente",
       "invitacionPendienteAyuda": "O convite foi enviado e a pessoa ainda não entrou. Já é possível atribuir uma escala.",
       "sinTurnosIr": "Verifique a rotação do posto em Postos de supervisão",
-      "desdeFecha": "a partir de {{fecha}}"
+      "desdeFecha": "a partir de {{fecha}}",
+      "pendiente": "Pendente"
     },
     "OfficeHours": {
       "copiarLunes": "Copiar segunda para todos",
