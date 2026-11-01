@@ -2535,7 +2535,7 @@
       "report-configuration": "Relatórios",
       "apariencia": "Aparência",
       "asistente-ia": "Assistente {{agente}}",
-      "attendance-setup": "Turnos e marcações",
+      "attendance-setup": "Configurações de presença",
       "billing": "Plano e faturamento",
       "comunicaciones": "Canais e saldo",
       "emergencias": "Emergências e pânico",
@@ -2655,7 +2655,9 @@
       "swapAllowGiveawayLabel": "Permitir ceder um turno",
       "swapAllowGiveawayHint": "Dar um turno sem receber outro, a um colega ou como oferta aberta para quem trabalha na mesma sede.",
       "swapMinNoticeLabel": "Aviso mínimo",
-      "swapMinNoticeHint": "Horas antes do turno a partir das quais não se pode mais pedir, aceitar nem aprovar uma troca."
+      "swapMinNoticeHint": "Horas antes do turno a partir das quais não se pode mais pedir, aceitar nem aprovar uma troca.",
+      "maxSeguidasLabel": "Máximo de horas seguidas",
+      "maxSeguidasHint": "Um turno mais a sua dobra. Com 0, avisa-se a partir de 16 horas seguidas."
     },
     "rondas": {
       "loadError": "Não foi possível carregar as configurações",
@@ -10677,7 +10679,7 @@
       "martes": "Terça-feira",
       "jueves": "Quinta-feira",
       "viernes": "Sexta-feira",
-      "asistenciaTimeAttendance": "Presença / Ponto",
+      "asistenciaTimeAttendance": "Configurações de presença",
       "relojDeAsistenciaHabilitado": "Relógio de ponto habilitado",
       "requerirNotasEnExcepciones": "Exigir notas nas exceções",
       "umbralSinMarcarSalida": "Limite sem marcação de saída",
@@ -10756,7 +10758,11 @@
       "motivoAprobadores": "Só quem aprova ausências (e quem pediu)",
       "motivoRrhh": "Recursos humanos e níveis superiores (e quem pediu)",
       "motivoOficina": "Todo o pessoal de escritório",
-      "motivoAyuda": "O motivo costuma ser médico. Os demais veem o pedido (quem, datas, estado) sem o motivo."
+      "motivoAyuda": "O motivo costuma ser médico. Os demais veem o pedido (quem, datas, estado) sem o motivo.",
+      "nocheSegunReglas": "A noite e o seu adicional vêm das regras de pagamento acima: a estimativa usa o mesmo que se paga.",
+      "descansoEnJornada": "O descanso entre turnos e as horas seguidas definem-se em Jornada e descanso.",
+      "irAJornada": "Jornada e descanso",
+      "monedaUnica": "É a moeda de toda a empresa: também a dos recibos."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",
@@ -17388,7 +17394,7 @@
         "exentoHint": "Vigilância em vários países: até estas horas não há extras. 0 = não existe.",
         "maxTurno": "Teto legal de horas por turno (aviso)",
         "recargosDonde": "Os percentuais de horas extras, noturnas, domingos e feriados são editados em",
-        "politicaDeHoras": "Configurações de presença › Política de pagamento",
+        "politicaDeHoras": "Configurações de presença › Regras de pagamento",
         "recargosYConceptos": "e os valores de cada rubrica em",
         "dobladaTitulo": "Dobras de turno (turnos duplos e de 24 h)",
         "premioDobladaFijo": "ou valor fixo por dobra ({{moneda}})",
@@ -17431,7 +17437,8 @@
         "horasTarjetaTitulo": "Horas do cartão que o recibo paga",
         "horasTarjetaAyuda": "O cartão calcula-as sempre; o recibo só as paga se ativar. Recibos já aprovados não mudam.",
         "pagarDescanso": "Pagar as horas trabalhadas no dia de descanso (conceito «Horas em dia de descanso»)",
-        "pagarExtraNocturna": "Pagar a hora extra noturna na sua própria linha (precisa de um conceito «Horas extra noturnas»)"
+        "pagarExtraNocturna": "Pagar a hora extra noturna na sua própria linha (precisa de um conceito «Horas extra noturnas»)",
+        "monedaUnica": "É a moeda de toda a empresa: também a das Configurações de presença."
       },
       "atras": "Voltar",
       "continuar": "Continuar",

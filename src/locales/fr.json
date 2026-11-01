@@ -7427,7 +7427,7 @@
       "jornada.desc": "Jours consécutifs, repos entre vacations, plafond hebdomadaire et possibilité de doubler.",
       "festivos": "Jours fériés",
       "festivos.desc": "Fériés légaux et jours propres à l'entreprise, avec leur majoration.",
-      "attendance-setup": "Vacations et pointages",
+      "attendance-setup": "Réglages de présence",
       "attendance-setup.desc": "Tolérances d'entrée et de sortie, géorepérage au pointage, période de paie et validations.",
       "publishing-sites": "Règles des postes et géorepérage",
       "publishing-sites.desc": "Alertes de sortie et de retour, et délai avant l'escalade d'un poste non couvert.",
@@ -7539,7 +7539,9 @@
       "swapAllowGiveawayLabel": "Autoriser la cession d'un service",
       "swapAllowGiveawayHint": "Donner un service sans en reprendre, à un collègue ou en offre ouverte pour qui travaille sur le même site.",
       "swapMinNoticeLabel": "Préavis minimum",
-      "swapMinNoticeHint": "Heures avant le service au-delà desquelles on ne peut plus demander, accepter ni approuver un échange."
+      "swapMinNoticeHint": "Heures avant le service au-delà desquelles on ne peut plus demander, accepter ni approuver un échange.",
+      "maxSeguidasLabel": "Heures consécutives maximum",
+      "maxSeguidasHint": "Un service plus son doublement. À 0, une alerte apparaît à partir de 16 heures d’affilée."
     },
     "rondas": {
       "loadError": "Impossible de charger les paramètres",
@@ -11212,7 +11214,7 @@
       "martes": "Mardi",
       "jueves": "Jeudi",
       "viernes": "Vendredi",
-      "asistenciaTimeAttendance": "Présence et temps de travail",
+      "asistenciaTimeAttendance": "Réglages de présence",
       "relojDeAsistenciaHabilitado": "Pointeuse activée",
       "requerirNotasEnExcepciones": "Exiger une note sur les exceptions",
       "umbralSinMarcarSalida": "Seuil de sortie non pointée",
@@ -11291,7 +11293,11 @@
       "motivoAprobadores": "Seulement qui approuve les absences (et le demandeur)",
       "motivoRrhh": "Ressources humaines et niveaux supérieurs (et le demandeur)",
       "motivoOficina": "Tout le personnel de bureau",
-      "motivoAyuda": "Le motif est souvent médical. Les autres voient la demande (qui, dates, statut) sans le motif."
+      "motivoAyuda": "Le motif est souvent médical. Les autres voient la demande (qui, dates, statut) sans le motif.",
+      "nocheSegunReglas": "La nuit et sa majoration viennent des règles de paie ci-dessus : l’estimation utilise ce qui est payé.",
+      "descansoEnJornada": "Le repos entre services et les heures consécutives se règlent dans Temps de travail et repos.",
+      "irAJornada": "Temps de travail et repos",
+      "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des bulletins."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
@@ -17923,7 +17929,7 @@
         "exentoHint": "Gardiennage dans plusieurs pays : pas d'heures sup jusqu'à ce nombre d'heures. 0 = inexistant.",
         "maxTurno": "Plafond légal d'heures par poste (avertissement)",
         "recargosDonde": "Les pourcentages d'heures sup, de nuit, du dimanche et des jours fériés se modifient dans",
-        "politicaDeHoras": "Configuration de la présence › Politique de paie",
+        "politicaDeHoras": "Réglages de présence › Règles de paie",
         "recargosYConceptos": "et les montants de chaque rubrique dans",
         "dobladaTitulo": "Doubles postes (postes doubles et de 24 h)",
         "premioDobladaFijo": "ou montant fixe par double poste ({{moneda}})",
@@ -17966,7 +17972,8 @@
         "horasTarjetaTitulo": "Heures de la carte que paie le bulletin",
         "horasTarjetaAyuda": "La carte les calcule toujours ; le bulletin ne les paie que si vous l'activez. Les bulletins approuvés ne changent pas.",
         "pagarDescanso": "Payer les heures travaillées le jour de repos (rubrique « Heures le jour de repos »)",
-        "pagarExtraNocturna": "Payer les heures sup. de nuit sur leur propre ligne (nécessite une rubrique « Heures sup. de nuit »)"
+        "pagarExtraNocturna": "Payer les heures sup. de nuit sur leur propre ligne (nécessite une rubrique « Heures sup. de nuit »)",
+        "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des Réglages de présence."
       },
       "atras": "Retour",
       "continuar": "Continuer",

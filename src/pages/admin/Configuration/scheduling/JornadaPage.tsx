@@ -57,6 +57,8 @@ type Jornada = {
   maxConsecutiveDays: number;
   minRestHoursBetweenShifts: number;
   maxWeeklyHours: number;
+  /** Phase 3: the one rest rule lives here (it left Nómina › Ajustes). 0 = the law default for warnings. */
+  maxHorasSeguidas: number;
   allowDoubleShift: boolean;
   allowRestDayAssignment: boolean;
   /** Intercambio de turno (backend: SHIFT_EXCHANGE_DEFAULTS). */
@@ -72,6 +74,7 @@ const DEFAULTS: Jornada = {
   maxConsecutiveDays: 7,
   minRestHoursBetweenShifts: 0,
   maxWeeklyHours: 0,
+  maxHorasSeguidas: 0,
   allowDoubleShift: true,
   allowRestDayAssignment: true,
   shiftExchange: { requireApproval: true, allowGiveaway: true, minNoticeHours: 0 },
@@ -298,6 +301,24 @@ export default function JornadaPage() {
                     })}
                     value={j.minRestHoursBetweenShifts}
                     onChange={(v) => set("minRestHoursBetweenShifts", v)}
+                  />
+                  <NumRow
+                    apagadoEn0
+                    disabled={!canEdit}
+                    hint={t("settings.jornada.maxSeguidasHint", {
+                      defaultValue:
+                        "Un turno más su doblaje. Si lo dejas en 0, se avisa a partir de 16 horas seguidas.",
+                    })}
+                    label={t("settings.jornada.maxSeguidasLabel", {
+                      defaultValue: "Máximo de horas seguidas",
+                    })}
+                    max={72}
+                    min={0}
+                    suffix={t("settings.jornada.suffixHoras", {
+                      defaultValue: "horas",
+                    })}
+                    value={j.maxHorasSeguidas}
+                    onChange={(v) => set("maxHorasSeguidas", v)}
                   />
                   <NumRow
                     apagadoEn0

@@ -6925,7 +6925,7 @@
       "jornada.desc": "Días seguidos, descanso entre turnos, tope semanal y si se puede doblar.",
       "festivos": "Festivos",
       "festivos.desc": "Feriados de ley y días propios, con su recargo.",
-      "attendance-setup": "Turnos y marcaciones",
+      "attendance-setup": "Ajustes de asistencia",
       "attendance-setup.desc": "Tolerancias de entrada y salida, geocerca al marcar, periodo y aprobaciones.",
       "publishing-sites": "Reglas de puestos y geocercas",
       "publishing-sites.desc": "Alertas de salida y regreso, y minutos antes de escalar un puesto sin cubrir.",
@@ -7037,7 +7037,9 @@
       "swapAllowGiveawayLabel": "Permitir ceder un turno",
       "swapAllowGiveawayHint": "Dar un turno sin recibir otro, a un compañero o como oferta abierta para quien trabaje en la misma sede.",
       "swapMinNoticeLabel": "Aviso mínimo",
-      "swapMinNoticeHint": "Horas antes del turno a partir de las cuales ya no se puede pedir, aceptar ni aprobar un intercambio."
+      "swapMinNoticeHint": "Horas antes del turno a partir de las cuales ya no se puede pedir, aceptar ni aprobar un intercambio.",
+      "maxSeguidasLabel": "Máximo de horas seguidas",
+      "maxSeguidasHint": "Un turno más su doblaje. Si lo dejas en 0, se avisa a partir de 16 horas seguidas."
     },
     "rondas": {
       "loadError": "No se pudieron cargar las configuraciones",
@@ -10677,7 +10679,7 @@
       "martes": "Martes",
       "jueves": "Jueves",
       "viernes": "Viernes",
-      "asistenciaTimeAttendance": "Asistencia / Time & Attendance",
+      "asistenciaTimeAttendance": "Ajustes de asistencia",
       "relojDeAsistenciaHabilitado": "Reloj de asistencia habilitado",
       "requerirNotasEnExcepciones": "Requerir notas en excepciones",
       "umbralSinMarcarSalida": "Umbral sin marcar salida",
@@ -10756,7 +10758,11 @@
       "motivoAprobadores": "Solo quien aprueba permisos (y quien lo pidió)",
       "motivoRrhh": "Recursos humanos y niveles superiores (y quien lo pidió)",
       "motivoOficina": "Todo el personal de oficina",
-      "motivoAyuda": "El motivo suele ser médico. Los demás ven la solicitud (quién, fechas, estado) sin el motivo."
+      "motivoAyuda": "El motivo suele ser médico. Los demás ven la solicitud (quién, fechas, estado) sin el motivo.",
+      "nocheSegunReglas": "La noche y su recargo salen de las reglas de pago de arriba: la estimación usa lo mismo que se paga.",
+      "descansoEnJornada": "El descanso entre turnos y las horas seguidas se definen en Jornada y descanso.",
+      "irAJornada": "Jornada y descanso",
+      "monedaUnica": "Es la moneda de toda la empresa: también la de los roles de pago."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "¿Dónde vas a trabajar?",
@@ -17388,7 +17394,7 @@
         "exentoHint": "Vigilancia en varios países: hasta estas horas no hay extras. 0 = no existe.",
         "maxTurno": "Tope legal de horas por turno (aviso)",
         "recargosDonde": "Los porcentajes de horas extra, nocturnas, domingos y feriados se editan en",
-        "politicaDeHoras": "Configuración de asistencia › Política de pago",
+        "politicaDeHoras": "Ajustes de asistencia › Reglas de pago",
         "recargosYConceptos": "y los importes de cada concepto en",
         "dobladaTitulo": "Dobladas (turnos dobles y de 24 h)",
         "premioDobladaFijo": "o importe fijo por doblete ({{moneda}})",
@@ -17431,7 +17437,8 @@
         "horasTarjetaTitulo": "Horas de la tarjeta que paga el rol",
         "horasTarjetaAyuda": "La tarjeta las calcula siempre; el rol sólo las paga si lo activas. Los roles ya aprobados no cambian.",
         "pagarDescanso": "Pagar las horas trabajadas en el día de descanso (concepto «Horas en día de descanso»)",
-        "pagarExtraNocturna": "Pagar la hora extra nocturna en su propia línea (necesita un concepto de «Horas extra nocturnas»)"
+        "pagarExtraNocturna": "Pagar la hora extra nocturna en su propia línea (necesita un concepto de «Horas extra nocturnas»)",
+        "monedaUnica": "Es la moneda de toda la empresa: también la de Ajustes de asistencia."
       },
       "atras": "Atrás",
       "continuar": "Continuar",

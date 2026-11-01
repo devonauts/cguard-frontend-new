@@ -7441,7 +7441,7 @@
       "jornada.desc": "Dni pod rząd, odpoczynek między zmianami, limit tygodniowy i podwójne zmiany.",
       "festivos": "Dni świąteczne",
       "festivos.desc": "Święta ustawowe i dni własne wraz z dodatkiem.",
-      "attendance-setup": "Zmiany i rejestracja czasu",
+      "attendance-setup": "Ustawienia obecności",
       "attendance-setup.desc": "Tolerancje wejścia i wyjścia, geostrefa przy rejestracji, okres rozliczeniowy i zatwierdzanie.",
       "publishing-sites": "Zasady posterunków i geostref",
       "publishing-sites.desc": "Alarmy opuszczenia i powrotu oraz liczba minut przed eskalacją nieobsadzonego posterunku.",
@@ -7553,7 +7553,9 @@
       "swapAllowGiveawayLabel": "Pozwól oddać zmianę",
       "swapAllowGiveawayHint": "Oddać zmianę bez brania innej, koledze lub jako otwartą ofertę dla pracujących w tej samej lokalizacji.",
       "swapMinNoticeLabel": "Minimalne wyprzedzenie",
-      "swapMinNoticeHint": "Godziny przed zmianą, po których nie można już prosić, akceptować ani zatwierdzać zamiany."
+      "swapMinNoticeHint": "Godziny przed zmianą, po których nie można już prosić, akceptować ani zatwierdzać zamiany.",
+      "maxSeguidasLabel": "Maksymalnie godzin z rzędu",
+      "maxSeguidasHint": "Zmiana plus jej podwojenie. Przy 0 ostrzeżenie pojawia się od 16 godzin z rzędu."
     },
     "rondas": {
       "loadError": "Nie udało się wczytać ustawień",
@@ -11258,7 +11260,7 @@
       "martes": "Wtorek",
       "jueves": "Czwartek",
       "viernes": "Piątek",
-      "asistenciaTimeAttendance": "Obecność / rejestracja czasu pracy",
+      "asistenciaTimeAttendance": "Ustawienia obecności",
       "relojDeAsistenciaHabilitado": "Rejestrator czasu pracy włączony",
       "requerirNotasEnExcepciones": "Wymagaj notatek przy wyjątkach",
       "umbralSinMarcarSalida": "Próg braku rejestracji wyjścia",
@@ -11337,7 +11339,11 @@
       "motivoAprobadores": "Tylko ten, kto zatwierdza nieobecności (i wnioskujący)",
       "motivoRrhh": "Kadry i wyższe poziomy (i wnioskujący)",
       "motivoOficina": "Cały personel biurowy",
-      "motivoAyuda": "Powód często jest medyczny. Pozostali widzą wniosek (kto, daty, status) bez powodu."
+      "motivoAyuda": "Powód często jest medyczny. Pozostali widzą wniosek (kto, daty, status) bez powodu.",
+      "nocheSegunReglas": "Noc i jej dodatek pochodzą z zasad płacy powyżej: szacunek używa tego, co się płaci.",
+      "descansoEnJornada": "Odpoczynek między zmianami i godziny z rzędu ustawiasz w Czas pracy i odpoczynek.",
+      "irAJornada": "Czas pracy i odpoczynek",
+      "monedaUnica": "To waluta całej firmy: także pasków płacowych."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Gdzie odbędzie się służba?",
@@ -18209,7 +18215,7 @@
         "exentoHint": "Ochrona w wielu krajach: do tylu godzin nie ma nadgodzin. 0 = nie istnieje.",
         "maxTurno": "Ustawowy limit godzin na zmianę (ostrzeżenie)",
         "recargosDonde": "Procenty za nadgodziny, godziny nocne, niedziele i święta edytuje się w",
-        "politicaDeHoras": "Ustawienia obecności › Polityka wynagrodzeń",
+        "politicaDeHoras": "Ustawienia obecności › Zasady płacy",
         "recargosYConceptos": "a kwoty każdego składnika w",
         "dobladaTitulo": "Podwójne zmiany (zmiany podwójne i 24-godzinne)",
         "premioDobladaFijo": "lub stała kwota za podwójną zmianę ({{moneda}})",
@@ -18252,7 +18258,8 @@
         "horasTarjetaTitulo": "Godziny z karty płacone na pasku",
         "horasTarjetaAyuda": "Karta zawsze je liczy; pasek płaci je tylko po włączeniu. Zatwierdzone paski się nie zmieniają.",
         "pagarDescanso": "Płacić za godziny przepracowane w dniu wolnym (składnik „Godziny w dniu wolnym”)",
-        "pagarExtraNocturna": "Płacić nadgodziny nocne w osobnej pozycji (wymaga składnika „Nadgodziny nocne”)"
+        "pagarExtraNocturna": "Płacić nadgodziny nocne w osobnej pozycji (wymaga składnika „Nadgodziny nocne”)",
+        "monedaUnica": "To waluta całej firmy: także w Ustawieniach obecności."
       },
       "atras": "Wstecz",
       "continuar": "Dalej",
