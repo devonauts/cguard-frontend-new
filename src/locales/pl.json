@@ -6481,7 +6481,8 @@
       "transporte": "Problem z dojazdem",
       "transferencia_operativa": "Przeniesienie służbowe",
       "refuerzo_cliente": "Wzmocnienie na wniosek",
-      "otro": "Inne"
+      "otro": "Inne",
+      "puesto_vacante": "Wolne miejsce"
     },
     "status": {
       "covered": "Obsadzony",
@@ -19812,7 +19813,8 @@
       "noSePudoOfrecer": "Nie udało się zaproponować",
       "sinRequisitoAyuda": "Tu pojawiają się nieobecności, wolne miejsca i urlopy bez zastępstwa. Aby wiedzieć, czego brakuje, każdy posterunek musi określić, ilu ochroniarzy potrzebuje.",
       "irAEstaciones": "Określ zapotrzebowanie posterunku",
-      "sinRequisitoTitulo": "Żaden posterunek nie ma jeszcze zapotrzebowania"
+      "sinRequisitoTitulo": "Żaden posterunek nie ma jeszcze zapotrzebowania",
+      "ofrecido": "Zaproponowano"
     },
     "HorarioModos": {
       "modos": "Tryb grafiku",

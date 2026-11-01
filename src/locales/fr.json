@@ -6475,7 +6475,8 @@
       "transporte": "Problème de transport",
       "transferencia_operativa": "Transfert opérationnel",
       "refuerzo_cliente": "Renfort demandé",
-      "otro": "Autre"
+      "otro": "Autre",
+      "puesto_vacante": "Place vacante"
     },
     "status": {
       "covered": "Couvert",
@@ -19510,7 +19511,8 @@
       "noSePudoOfrecer": "Impossible de proposer",
       "sinRequisitoAyuda": "Ici apparaissent les absences, les places vides et les congés sans remplaçant. Pour savoir ce qui manque, chaque poste doit dire combien d’agents il demande.",
       "irAEstaciones": "Définir le besoin d’un poste",
-      "sinRequisitoTitulo": "Aucun poste n’a encore de besoin défini"
+      "sinRequisitoTitulo": "Aucun poste n’a encore de besoin défini",
+      "ofrecido": "Proposée"
     },
     "HorarioModos": {
       "modos": "Mode du planning",

@@ -18974,7 +18974,8 @@
       "noSePudoOfrecer": "Could not offer",
       "sinRequisitoAyuda": "No-shows, empty positions and leave without a replacement show up here. To know what is missing, each station has to say how many guards it needs.",
       "irAEstaciones": "Set a station’s requirement",
-      "sinRequisitoTitulo": "No station has a requirement yet"
+      "sinRequisitoTitulo": "No station has a requirement yet",
+      "ofrecido": "Offered"
     },
     "HorarioModos": {
       "modos": "Schedule mode",
@@ -19385,7 +19386,8 @@
       "transporte": "Transport problem",
       "transferencia_operativa": "Operational transfer",
       "refuerzo_cliente": "Extra cover requested",
-      "otro": "Other"
+      "otro": "Other",
+      "puesto_vacante": "Vacant position"
     },
     "status": {
       "covered": "Covered",

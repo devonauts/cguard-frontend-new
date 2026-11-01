@@ -6475,7 +6475,8 @@
       "transporte": "Vervoersprobleem",
       "transferencia_operativa": "Operationele overplaatsing",
       "refuerzo_cliente": "Extra bezetting gevraagd",
-      "otro": "Overig"
+      "otro": "Overig",
+      "puesto_vacante": "Onbezette plaats"
     },
     "status": {
       "covered": "Bezet",
@@ -19510,7 +19511,8 @@
       "noSePudoOfrecer": "Kon niet aanbieden",
       "sinRequisitoAyuda": "Hier verschijnen no-shows, lege plekken en verlof zonder vervanger. Om te weten wat ontbreekt, moet elke post aangeven hoeveel beveiligers hij nodig heeft.",
       "irAEstaciones": "Bezetting van een post instellen",
-      "sinRequisitoTitulo": "Nog geen post met bezetting"
+      "sinRequisitoTitulo": "Nog geen post met bezetting",
+      "ofrecido": "Aangeboden"
     },
     "HorarioModos": {
       "modos": "Roostermodus",

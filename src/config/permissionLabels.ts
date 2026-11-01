@@ -300,6 +300,11 @@ const SPECIAL_PERMISSION_LABELS: Record<string, Localized3> = {
     en: 'Connect and manage external payroll (Gusto)',
     pt: 'Conectar e gerenciar a folha externa (Gusto)',
   },
+  coverageClockInOnBehalf: {
+    es: 'Registrar la entrada a nombre del vigilante (Cobertura en vivo)',
+    en: 'Clock in on behalf of a guard (Live coverage)',
+    pt: 'Registrar a entrada em nome do vigilante (Cobertura ao vivo)',
+  },
   dobletesManage: {
     es: 'Gestionar dobletes: ofrecer turnos, reserva, campañas y ajustes',
     en: 'Manage double shifts: offer shifts, reserve, campaigns and settings',

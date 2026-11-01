@@ -9,8 +9,11 @@
  *
  *   open_shift / archived_guard → PATCH shift/:id/assign       (the shift row gets a guard)
  *   leave                       → POST coverage/leave-holes/cover (the absent shift is covered)
- *   no_show                     → POST coverage/events/:id/cover  (its novedad; reported first if needed)
+ *   no_show, reported           → POST coverage/events/:id/cover  (its novedad)
+ *   no_show, not reported yet   → POST coverage/report-and-cover  (falta + cover, one transaction)
  *   empty_slot                  → POST coverage/transfer        (a reinforcement shift there)
+ *   any empty seat with an open
+ *   vacancy (offered in Dobletes) → POST coverage/events/:id/cover (the vacancy; its offers close)
  *
  * The server answers `rest_day` / `double_booking` when the person is resting
  * or already working: the screen asks, then retries with the flag.
@@ -39,7 +42,7 @@ export function peticionParaCubrir(
     | "startTime"
     | "endTime"
     | "coverageEventId"
-  >,
+  > & { vacancy?: boolean },
   coveringGuardId: string,
   ok: Confirmaciones = {},
 ): Peticion {
@@ -48,6 +51,16 @@ export function peticionParaCubrir(
     ...(ok.allowRestDay ? { allowRestDay: true } : {}),
     ...(ok.allowDoubleShift ? { allowDoubleShift: true } : {}),
   };
+
+  // An empty seat already offered in Dobletes is covered through its vacancy:
+  // one cover per gap, and the offers still out close.
+  if (gap.vacancy && gap.coverageEventId) {
+    return {
+      method: "POST",
+      path: `${t}/coverage/events/${gap.coverageEventId}/cover`,
+      body: { data: { coveringGuardId, ...flags } },
+    };
+  }
 
   switch (gap.kind) {
     case "open_shift":
@@ -71,9 +84,25 @@ export function peticionParaCubrir(
         },
       };
     case "no_show":
-      /* Always through the novedad: a falta not reported yet is reported
-         first (`peticionParaReportarFalta`), so a refused cover («está en su
-         descanso») can be retried without reporting the falta twice. */
+      /* A falta not reported yet is reported AND covered in one transaction:
+         a refused cover («está en su descanso») writes nothing, so the retry
+         with the flag is the same call. A reported one, through its novedad. */
+      if (!gap.coverageEventId) {
+        return {
+          method: "POST",
+          path: `${t}/coverage/report-and-cover`,
+          body: {
+            data: {
+              guardId: gap.guardId,
+              shiftId: gap.shiftId,
+              reason: "no_call_no_show",
+              coveringGuardId,
+              ...flags,
+            },
+          },
+        };
+      }
+
       return {
         method: "POST",
         path: `${t}/coverage/events/${gap.coverageEventId}/cover`,
@@ -141,15 +170,55 @@ export function leerRespuestaDeError(e: unknown): Respuesta {
   return { tipo: "error", codigo, mensaje };
 }
 
+/** The gaps with nobody planned on them: offered as a vacancy. */
+const ASIENTO_VACIO = new Set(["empty_slot", "open_shift", "archived_guard"]);
+
+/** Is this gap an empty seat (no novedad of its own, offered as a vacancy)? */
+export function esAsientoVacio(gap: Pick<Gap, "kind">): boolean {
+  return ASIENTO_VACIO.has(gap.kind);
+}
+
 /** Can the Dobletes offer be launched for this gap from Sin cubrir? */
 export function admiteDobletes(
-  gap: Pick<Gap, "kind" | "coverageEventId" | "shiftId" | "guardId" | "ended">,
+  gap: Pick<Gap, "kind" | "coverageEventId" | "shiftId" | "guardId" | "ended"> & {
+    vacancy?: boolean;
+  },
 ): boolean {
   if (gap.ended) return false;
+  // An empty seat is offered through its vacancy (opened on the first offer).
+  if (esAsientoVacio(gap)) return true;
   if (gap.coverageEventId) return true;
 
   // A falta not reported yet: it is reported first, then offered.
   return gap.kind === "no_show" && !!gap.shiftId && !!gap.guardId;
+}
+
+/**
+ * What the offer starts on: the gap's novedad, or — for an empty seat not
+ * offered yet — the seat itself, which the server opens as a vacancy in the
+ * same call. A falta not reported yet needs `peticionParaReportarFalta` first.
+ */
+export function inicioDeOferta(
+  gap: Pick<Gap, "kind" | "coverageEventId" | "shiftId" | "stationId" | "startTime" | "endTime"> & {
+    vacancy?: boolean;
+  },
+):
+  | { eventId: string }
+  | { vacancy: { shiftId: string } | { stationId: string; windowStart: string; windowEnd: string } }
+  | null {
+  if (gap.vacancy && gap.coverageEventId) return { eventId: gap.coverageEventId };
+  if (!esAsientoVacio(gap))
+    return gap.coverageEventId ? { eventId: gap.coverageEventId } : null;
+  if (gap.kind !== "empty_slot" && gap.shiftId)
+    return { vacancy: { shiftId: gap.shiftId } };
+
+  return {
+    vacancy: {
+      stationId: gap.stationId,
+      windowStart: gap.startTime,
+      windowEnd: gap.endTime,
+    },
+  };
 }
 
 /** Group the page by day, then by station, keeping the server's order. */

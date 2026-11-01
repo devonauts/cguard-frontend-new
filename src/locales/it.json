@@ -6475,7 +6475,8 @@
       "transporte": "Problema di trasporto",
       "transferencia_operativa": "Trasferimento operativo",
       "refuerzo_cliente": "Rinforzo richiesto",
-      "otro": "Altro"
+      "otro": "Altro",
+      "puesto_vacante": "Posto vacante"
     },
     "status": {
       "covered": "Coperto",
@@ -19510,7 +19511,8 @@
       "noSePudoOfrecer": "Impossibile offrire",
       "sinRequisitoAyuda": "Qui compaiono assenze, posti vuoti e permessi senza sostituto. Per sapere cosa manca, ogni postazione deve indicare quante guardie servono.",
       "irAEstaciones": "Definisci il fabbisogno di una postazione",
-      "sinRequisitoTitulo": "Nessuna postazione ha ancora un fabbisogno"
+      "sinRequisitoTitulo": "Nessuna postazione ha ancora un fabbisogno",
+      "ofrecido": "Offerto"
     },
     "HorarioModos": {
       "modos": "Modalità del turnario",

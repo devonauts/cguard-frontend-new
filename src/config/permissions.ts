@@ -85,6 +85,8 @@ export const PERMISSIONS: string[] = [
   "backupConfirm","backupVolunteer","backupEventRead",
   // Dobletes (módulo): ofrecer turnos a la reserva, campañas, ajustes.
   "dobletesManage",
+  // «Registrar entrada» a nombre del vigilante en Cobertura en vivo.
+  "coverageClockInOnBehalf",
   // ── Autoservicio apps móviles ──
   "staffMe","supervisorMe"
 ,

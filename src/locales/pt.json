@@ -18974,7 +18974,8 @@
       "noSePudoOfrecer": "Não foi possível oferecer",
       "sinRequisitoAyuda": "Aqui aparecem as faltas, as vagas vazias e as licenças sem substituto. Para saber o que falta cobrir, cada estação precisa dizer quantos vigilantes pede.",
       "irAEstaciones": "Definir o requisito de uma estação",
-      "sinRequisitoTitulo": "Ainda não há estações com requisito"
+      "sinRequisitoTitulo": "Ainda não há estações com requisito",
+      "ofrecido": "Oferecida"
     },
     "HorarioModos": {
       "modos": "Modo da escala",
@@ -19385,7 +19386,8 @@
       "transporte": "Problema de transporte",
       "transferencia_operativa": "Transferência operacional",
       "refuerzo_cliente": "Reforço solicitado",
-      "otro": "Outro"
+      "otro": "Outro",
+      "puesto_vacante": "Vaga em aberto"
     },
     "status": {
       "covered": "Coberto",

@@ -89,7 +89,7 @@ export interface LiveCoverage {
 export interface CoverageEvent {
   id: string;
   date: string;
-  kind: "absence" | "transfer" | "reinforcement";
+  kind: "absence" | "transfer" | "reinforcement" | "extension" | "vacancy";
   reason: string;
   reasonNote: string | null;
   status: "open" | "covered" | "resolved" | "cancelled";
@@ -146,6 +146,8 @@ export const REASON_LABEL: Record<string, string> = tablaDeEtiquetas({
   transporte: "coverage.reason.transporte",
   transferencia_operativa: "coverage.reason.transferencia_operativa",
   refuerzo_cliente: "coverage.reason.refuerzo_cliente",
+  // Only on a vacancy (an empty seat offered in Dobletes); never chosen by hand.
+  puesto_vacante: "coverage.reason.puesto_vacante",
   otro: "coverage.reason.otro",
 });
 

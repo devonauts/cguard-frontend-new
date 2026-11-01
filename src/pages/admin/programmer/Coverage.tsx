@@ -100,6 +100,7 @@ export default function Coverage() {
   const { t } = useTranslation();
   // Buttons follow the server's coverage rules (lib/reglasDeAcciones).
   const registrar = usePuede("cobertura.registrar");
+  const registrarEntrada = usePuede("cobertura.registrarEntrada");
   const trasladar = usePuede("cobertura.trasladar");
   const [live, setLive] = useState<LiveCoverage | null>(null);
   const [events, setEvents] = useState<CoverageEvent[]>([]);
@@ -615,22 +616,24 @@ export default function Coverage() {
                     {t("ui.TransferShiftModal.trasladar", "Trasladar")}
                   </Button>
                   )}
+                  {!here && registrarEntrada.puede && (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEntradaManualFor({
+                          ...e,
+                          stationId: st.stationId,
+                          stationName: st.stationName,
+                        });
+                        setMotivoManual("");
+                      }}
+                    >
+                      <UserCheck className="mr-1 size-3.5" />{" "}
+                      {t("ui.Coverage.registrarEntrada", "Registrar entrada")}
+                    </Button>
+                  )}
                   {!here && registrar.puede && (
                     <>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setEntradaManualFor({
-                            ...e,
-                            stationId: st.stationId,
-                            stationName: st.stationName,
-                          });
-                          setMotivoManual("");
-                        }}
-                      >
-                        <UserCheck className="mr-1 size-3.5" />{" "}
-                        {t("ui.Coverage.registrarEntrada", "Registrar entrada")}
-                      </Button>
                       <Button
                         size="sm"
                         variant="destructive"
