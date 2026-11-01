@@ -10104,7 +10104,8 @@
       "yNoPuedeFicharElTurnoSeRegistra": "and cannot clock in. The shift is recorded",
       "yaTieneUnTurnoAbierto": "They already have an open shift — a second one is not opened.",
       "vaEnCamino": "On the way · sent {{min}} min ago",
-      "fueraDeDisponibilidad": "Outside their availability"
+      "fueraDeDisponibilidad": "Outside their availability",
+      "crearPrimeraEstacion": "Create the first station"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Items per page",
@@ -10692,7 +10693,10 @@
       "sinResolver": "Unresolved",
       "descansoCubreElTurnoAyuda": "The break covers the whole shift: correct the break so it gets paid.",
       "aprobarEnHoras": "Approve for pay in Period hours",
-      "personaSeleccionada": "Selected person"
+      "personaSeleccionada": "Selected person",
+      "sinHorarioPublicado": "No schedule published yet",
+      "sinHorarioPublicadoAyuda": "Clock-ins show up here when guards clock in on their shifts. First build and publish the schedule.",
+      "armarHorario": "Build the schedule"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",

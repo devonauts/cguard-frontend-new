@@ -10104,7 +10104,8 @@
       "yNoPuedeFicharElTurnoSeRegistra": "e não consegue registrar ponto. O turno é registrado",
       "yaTieneUnTurnoAbierto": "Já tem um turno aberto — não se abre um segundo.",
       "vaEnCamino": "A caminho · enviado há {{min}} min",
-      "fueraDeDisponibilidad": "Fora da disponibilidade"
+      "fueraDeDisponibilidad": "Fora da disponibilidade",
+      "crearPrimeraEstacion": "Criar o primeiro posto"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Itens por página",
@@ -10692,7 +10693,10 @@
       "sinResolver": "Sem resolver",
       "descansoCubreElTurnoAyuda": "O intervalo cobre todo o turno: corrija o intervalo para que seja pago.",
       "aprobarEnHoras": "Aprovar para pagamento em Horas do período",
-      "personaSeleccionada": "Pessoa selecionada"
+      "personaSeleccionada": "Pessoa selecionada",
+      "sinHorarioPublicado": "Ainda não há escala publicada",
+      "sinHorarioPublicadoAyuda": "As marcações aparecem quando os vigilantes registram entrada nos seus turnos. Primeiro monte e publique a escala.",
+      "armarHorario": "Montar a escala"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar também estes e-mails",

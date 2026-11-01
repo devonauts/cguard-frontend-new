@@ -10679,7 +10679,8 @@
       "yNoPuedeFicharElTurnoSeRegistra": "i nie może się zarejestrować. Zmiana zostaje zapisana",
       "yaTieneUnTurnoAbierto": "Ma już otwartą zmianę — druga nie zostanie otwarta.",
       "vaEnCamino": "W drodze · wysłany {{min}} min temu",
-      "fueraDeDisponibilidad": "Poza dostępnością"
+      "fueraDeDisponibilidad": "Poza dostępnością",
+      "crearPrimeraEstacion": "Utwórz pierwsze stanowisko"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Pozycji na stronę",
@@ -11273,7 +11274,10 @@
       "sinResolver": "Nierozstrzygnięte",
       "descansoCubreElTurnoAyuda": "Przerwa obejmuje całą zmianę: popraw przerwę, aby zmiana została wypłacona.",
       "aprobarEnHoras": "Zatwierdź do wypłaty w Godzinach okresu",
-      "personaSeleccionada": "Wybrana osoba"
+      "personaSeleccionada": "Wybrana osoba",
+      "sinHorarioPublicado": "Nie opublikowano jeszcze grafiku",
+      "sinHorarioPublicadoAyuda": "Odbicia pojawiają się, gdy pracownicy ochrony odbijają wejście na swoich zmianach. Najpierw ułóż i opublikuj grafik.",
+      "armarHorario": "Ułóż grafik"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Powiadamiaj dodatkowo te adresy e-mail",

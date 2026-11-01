@@ -1,4 +1,6 @@
 import { usePuede } from "@/hooks/usePuede";
+import { usePrimerosPasos } from "@/hooks/usePrimerosPasos";
+import { EstadoVacio } from "@/components/EstadoVacio";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
@@ -150,6 +152,11 @@ export default function NominaRecords() {
      semana» is a link) and the range is in COMPANY days — the device's own
      zone used to decide where a week started. */
   const [f, setF] = useFiltrosDeAsistencia();
+  // Empty because of a filter, or because nothing was ever published?
+  const filtrado = !!(f.guard || f.station || f.branch || f.payroll || (f.status && f.status !== "all"));
+  const limpiarFiltros = () => setF({ guard: "", station: "", branch: "", payroll: "", status: "" });
+  const { datos: arranque } = usePrimerosPasos();
+  const sinPublicar = !!arranque && !arranque.established && arranque.steps.some((s) => s.key === "publish" && !s.done);
   const opciones = useOpcionesDeFiltro();
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -912,11 +919,25 @@ export default function NominaRecords() {
                   .catch(() => {});
               }}
               emptyState={
-                <EmptyState
-                  icon={<ClipboardList />}
-                  title={t("comun.sinRegistros")}
-                  description={t("ui.NominaRecords.noHayMarcacionesParaLos")}
-                />
+                filtrado ? (
+                  <EstadoVacio filtrado icon={<ClipboardList />} title="" onLimpiarFiltro={limpiarFiltros} />
+                ) : sinPublicar ? (
+                  <EstadoVacio
+                    description={t(
+                      "ui.NominaRecords.sinHorarioPublicadoAyuda",
+                      "Las marcaciones aparecen cuando los vigilantes marcan entrada en sus turnos. Primero arma y publica el horario.",
+                    )}
+                    icon={<ClipboardList />}
+                    paso={{ label: t("ui.NominaRecords.armarHorario", "Armar el horario"), to: "/schedule?modo=borrador" }}
+                    title={t("ui.NominaRecords.sinHorarioPublicado", "Todavía no hay un horario publicado")}
+                  />
+                ) : (
+                  <EmptyState
+                    icon={<ClipboardList />}
+                    title={t("comun.sinRegistros")}
+                    description={t("ui.NominaRecords.noHayMarcacionesParaLos")}
+                  />
+                )
               }
             />
           )}

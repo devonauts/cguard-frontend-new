@@ -10104,7 +10104,8 @@
       "yNoPuedeFicharElTurnoSeRegistra": "y no puede fichar. El turno se registra",
       "yaTieneUnTurnoAbierto": "Ya tiene un turno abierto — no se abre un segundo.",
       "vaEnCamino": "Va en camino · enviado hace {{min}} min",
-      "fueraDeDisponibilidad": "Fuera de su disponibilidad"
+      "fueraDeDisponibilidad": "Fuera de su disponibilidad",
+      "crearPrimeraEstacion": "Crear la primera estación"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Elementos por página",
@@ -10692,7 +10693,10 @@
       "sinResolver": "Sin resolver",
       "descansoCubreElTurnoAyuda": "El descanso cubre todo el turno: corrige el descanso para que se pague.",
       "aprobarEnHoras": "Aprobar para pago en Horas del periodo",
-      "personaSeleccionada": "Persona seleccionada"
+      "personaSeleccionada": "Persona seleccionada",
+      "sinHorarioPublicado": "Todavía no hay un horario publicado",
+      "sinHorarioPublicadoAyuda": "Las marcaciones aparecen cuando los vigilantes marcan entrada en sus turnos. Primero arma y publica el horario.",
+      "armarHorario": "Armar el horario"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar además a estos correos",

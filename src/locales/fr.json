@@ -10639,7 +10639,8 @@
       "yNoPuedeFicharElTurnoSeRegistra": "et ne peut pas pointer. Le poste est enregistré",
       "yaTieneUnTurnoAbierto": "Il a déjà un poste ouvert — un second n'est pas ouvert.",
       "vaEnCamino": "En route · envoyé il y a {{min}} min",
-      "fueraDeDisponibilidad": "Hors disponibilité"
+      "fueraDeDisponibilidad": "Hors disponibilité",
+      "crearPrimeraEstacion": "Créer le premier poste"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Éléments par page",
@@ -11227,7 +11228,10 @@
       "sinResolver": "Non résolu",
       "descansoCubreElTurnoAyuda": "La pause couvre tout le service : corrigez la pause pour qu’il soit payé.",
       "aprobarEnHoras": "Approuver pour la paie dans Heures de la période",
-      "personaSeleccionada": "Personne sélectionnée"
+      "personaSeleccionada": "Personne sélectionnée",
+      "sinHorarioPublicado": "Aucun planning publié pour l’instant",
+      "sinHorarioPublicadoAyuda": "Les pointages apparaissent quand les agents pointent sur leurs services. Commencez par construire et publier le planning.",
+      "armarHorario": "Construire le planning"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Prévenir aussi ces adresses e-mail",

@@ -10639,7 +10639,8 @@
       "yNoPuedeFicharElTurnoSeRegistra": "en niet kan inklokken. De dienst wordt geregistreerd",
       "yaTieneUnTurnoAbierto": "Er is al een open dienst — een tweede wordt niet geopend.",
       "vaEnCamino": "Onderweg · {{min}} min geleden gestuurd",
-      "fueraDeDisponibilidad": "Buiten beschikbaarheid"
+      "fueraDeDisponibilidad": "Buiten beschikbaarheid",
+      "crearPrimeraEstacion": "Eerste post aanmaken"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Items per pagina",
@@ -11227,7 +11228,10 @@
       "sinResolver": "Onopgelost",
       "descansoCubreElTurnoAyuda": "De pauze beslaat de hele dienst: corrigeer de pauze zodat die betaald wordt.",
       "aprobarEnHoras": "Goedkeuren voor betaling in Uren van de periode",
-      "personaSeleccionada": "Geselecteerde persoon"
+      "personaSeleccionada": "Geselecteerde persoon",
+      "sinHorarioPublicado": "Nog geen rooster gepubliceerd",
+      "sinHorarioPublicadoAyuda": "Klokregistraties verschijnen zodra beveiligers inklokken voor hun diensten. Maak en publiceer eerst het rooster.",
+      "armarHorario": "Rooster maken"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",

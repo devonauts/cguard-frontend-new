@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { MapPin, Users, Building2, CalendarDays } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { EstadoVacio } from "@/components/EstadoVacio";
 import {
   AlertTriangle,
   Filter,
@@ -182,6 +183,7 @@ export default function NominaExceptions() {
   const opciones = useOpcionesDeFiltro();
   const type = f.type;
   const status = f.status || "open";
+  const filtradoN = !!(f.guard || f.station || f.branch || f.type);
   const setType = (v: string) => setF({ type: v });
   const setStatus = (v: string) => setF({ status: v });
   const [seleccion, setSeleccion] = useState<string[]>([]);
@@ -648,6 +650,9 @@ export default function NominaExceptions() {
                 ) : undefined
               }
               emptyState={
+                filtradoN ? (
+                  <EstadoVacio filtrado icon={<PartyPopper />} title="" onLimpiarFiltro={() => setF({ guard: "", station: "", branch: "", type: "" })} />
+                ) : (
                 <EmptyState
                   description={t(
                     "ui.NominaExceptions.noHayDesviacionesDeAsistencia",
@@ -665,6 +670,7 @@ export default function NominaExceptions() {
                         )
                   }
                 />
+                )
               }
               onRowClick={(r) => openSheet(r)}
             />

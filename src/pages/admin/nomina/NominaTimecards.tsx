@@ -18,6 +18,7 @@
  *     después.
  */
 import { usePuede } from "@/hooks/usePuede";
+import { EstadoVacio } from "@/components/EstadoVacio";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -947,13 +948,19 @@ export default function NominaTimecards() {
               fallo ? (
                 <ErrorDeCarga onRetry={cargar} variant="inline" />
               ) : (
-              <EmptyState
+              <EstadoVacio
                 title={t("ui.NominaTimecards.sinTarjetasEnEstePeriodo", "Sin tarjetas en este periodo")}
                 description={t(
                   "ui.NominaTimecards.pulsaGenerarPeriodo",
                   "Pulsa «Generar periodo» para calcularlo.",
                 )}
                 icon={<Wallet />}
+                paso={{
+                  label: t("ui.NominaTimecards.generarPeriodo", "Generar periodo"),
+                  onClick: () => void generar(),
+                  puede: generarT.puede,
+                  porQueNo: generarT.porQueNo,
+                }}
               />
               )
             }

@@ -1,4 +1,5 @@
 import { usePuede } from "@/hooks/usePuede";
+import { EstadoVacio } from "@/components/EstadoVacio";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -821,12 +822,13 @@ export default function Coverage() {
         ) : tab === "board" ? (
           <Section title={t("ui.Coverage.estadoDeLosPuestos")}>
             {!live?.stations.length ? (
-              <EmptyState
+              <EstadoVacio
                 description={t(
                   "ui.Coverage.todaviaNoHayPuestosConfigurados",
                   "Todavía no hay puestos configurados.",
                 )}
                 icon={<ShieldCheck />}
+                paso={{ label: t("ui.Coverage.crearPrimeraEstacion", "Crear la primera estación"), to: "/stations?nueva=1" }}
                 title={t("comun.sinPuestos")}
               />
             ) : (

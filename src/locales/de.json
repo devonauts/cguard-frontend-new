@@ -10639,7 +10639,8 @@
       "yNoPuedeFicharElTurnoSeRegistra": "und nicht einstempeln kann. Die Schicht wird",
       "yaTieneUnTurnoAbierto": "Es gibt bereits eine offene Schicht — eine zweite wird nicht geöffnet.",
       "vaEnCamino": "Unterwegs · vor {{min}} Min. geschickt",
-      "fueraDeDisponibilidad": "Außerhalb der Verfügbarkeit"
+      "fueraDeDisponibilidad": "Außerhalb der Verfügbarkeit",
+      "crearPrimeraEstacion": "Erste Station anlegen"
     },
     "CustomerRequests": {
       "elementosPorPagina": "Einträge pro Seite",
@@ -11227,7 +11228,10 @@
       "sinResolver": "Ungeklärt",
       "descansoCubreElTurnoAyuda": "Die Pause deckt die ganze Schicht ab: Korrigiere die Pause, damit sie bezahlt wird.",
       "aprobarEnHoras": "Zur Zahlung freigeben unter Stunden des Zeitraums",
-      "personaSeleccionada": "Ausgewählte Person"
+      "personaSeleccionada": "Ausgewählte Person",
+      "sinHorarioPublicado": "Noch kein Dienstplan veröffentlicht",
+      "sinHorarioPublicadoAyuda": "Stempelungen erscheinen, sobald Wachleute zu ihren Schichten einstempeln. Erstellen und veröffentlichen Sie zuerst den Dienstplan.",
+      "armarHorario": "Dienstplan erstellen"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",
