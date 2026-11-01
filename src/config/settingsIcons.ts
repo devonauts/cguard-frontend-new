@@ -38,6 +38,8 @@ import {
   Languages,
   CalendarPlus,
   Repeat,
+  Monitor,
+  MonitorDown,
   type LucideIcon,
 } from "lucide-react";
 
@@ -82,6 +84,8 @@ export const SETTINGS_ICONS: Record<string, LucideIcon> = {
   Languages,
   CalendarPlus,
   Repeat,
+  Monitor,
+  MonitorDown,
 };
 
 export function settingsIcon(name?: string): LucideIcon {

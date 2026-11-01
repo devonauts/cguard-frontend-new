@@ -5595,7 +5595,8 @@
       "horas-periodo": "Heures de la période",
       "configuracion": "Paramètres",
       "coberturaEnVivo": "Couverture en direct"
-    }
+    },
+    "app-escritorio": "Application de bureau"
   },
   "siteTour": {
     "newTour": "Nouvelle ronde",
@@ -7481,7 +7482,11 @@
       "dobletes": "Doubles quarts",
       "dobletes.desc": "Vagues, primes, points, niveaux et classement de la réserve.",
       "patrones-rotacion": "Modèles de rotation",
-      "patrones-rotacion.desc": "Les cycles de travail et de repos : renommer, archiver et voir où chacun est utilisé."
+      "patrones-rotacion.desc": "Les cycles de travail et de repos : renommer, archiver et voir où chacun est utilisé.",
+      "computadoras": "Ordinateurs de bureau",
+      "computadoras.desc": "Approuvez ou révoquez chaque ordinateur qui utilise l’application de bureau.",
+      "app-escritorio": "Application de bureau",
+      "app-escritorio.desc": "Téléchargez le tableau de bord pour Mac ou Windows, dans sa propre fenêtre."
     },
     "section": {
       "mi_cuenta": "Mon compte",
@@ -22447,6 +22452,140 @@
     },
     "semana": {
       "almuerzo": "déjeuner {{desde}}–{{hasta}}"
+    }
+  },
+  "desktopApp": {
+    "devices": {
+      "title": "Ordinateurs de bureau",
+      "subtitle": "Chaque ordinateur qui utilise l’application de bureau doit être approuvé par un administrateur avant d’ouvrir le tableau de bord.",
+      "downloadCta": "Télécharger l’application",
+      "pendingTitle": "Demandes en attente",
+      "pendingHint": "N’approuvez que si le code correspond à celui que la personne voit sur son écran. En cas de doute, demandez-lui d’abord.",
+      "pendingEmpty": "Aucun ordinateur en attente d’approbation.",
+      "approvedTitle": "Ordinateurs approuvés",
+      "approvedEmpty": "Aucun ordinateur n’a encore été approuvé.",
+      "closedTitle": "Refusés et révoqués",
+      "mineTitle": "Mes ordinateurs",
+      "mineEmpty": "Vous n’utilisez pas encore l’application de bureau",
+      "mineEmptyText": "Quand vous vous connectez à l’application depuis un ordinateur, il apparaît ici avec son statut.",
+      "notAdmin": "Seuls les administrateurs de votre entreprise approuvent les ordinateurs. Les vôtres sont listés ci-dessous.",
+      "code": "Code",
+      "codeAria": "Code d’association {{codigo}}",
+      "requestedAt": "Demandé le {{fecha}}",
+      "lastSeen": "Dernière connexion : {{fecha}}",
+      "neverSeen": "Aucune connexion pour l’instant",
+      "revokedAt": "Révoqué le {{fecha}}",
+      "rejectedAt": "Refusé le {{fecha}}",
+      "version": "Version {{version}}",
+      "ip": "IP {{ip}}",
+      "unknownComputer": "Ordinateur sans nom",
+      "unknownUser": "Personne sans nom",
+      "approve": "Approuver",
+      "reject": "Refuser",
+      "revoke": "Révoquer",
+      "status": {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "rejected": "Refusé",
+        "revoked": "Révoqué"
+      },
+      "confirmApproveTitle": "Approuver cet ordinateur ?",
+      "confirmApprove": "{{persona}} pourra ouvrir le tableau de bord depuis « {{equipo}} ». Vérifiez que le code {{codigo}} s’affiche sur son écran.",
+      "confirmRejectTitle": "Refuser la demande ?",
+      "confirmReject": "L’application n’ouvrira pas le tableau de bord de {{persona}} sur « {{equipo}} ». Cette personne pourra refaire une demande, avec un nouveau code.",
+      "confirmRevokeTitle": "Révoquer cet ordinateur ?",
+      "confirmRevoke": "L’application se fermera sur « {{equipo}} » en moins d’une minute et effacera ce qu’elle avait enregistré. Pour l’utiliser à nouveau, il faudra l’approuver une nouvelle fois.",
+      "approvedOk": "Ordinateur approuvé.",
+      "rejectedOk": "Demande refusée.",
+      "revokedOk": "Ordinateur révoqué.",
+      "actionError": "L’opération n’a pas abouti. Réessayez.",
+      "loadError": "Impossible de charger la liste des ordinateurs.",
+      "retry": "Réessayer",
+      "refresh": "Actualiser"
+    },
+    "download": {
+      "menuItem": "Application de bureau",
+      "eyebrow": "Pour Mac et Windows",
+      "title": "Application de bureau",
+      "valueProp": "Le tableau de bord dans sa propre fenêtre : notifications système même réduit, toujours à jour, sans navigateur.",
+      "windows": "Windows",
+      "macAppleSilicon": "Mac avec Apple silicon",
+      "macIntel": "Mac avec Intel",
+      "version": "Version {{version}}",
+      "downloadFor": "Télécharger pour {{sistema}}",
+      "comingSoonFor": "{{sistema}} : bientôt disponible",
+      "comingSoon": "Bientôt disponible",
+      "comingSoonHint": "Disponible très bientôt",
+      "download": "Télécharger",
+      "started": "Le téléchargement a commencé. Ouvrez le fichier une fois terminé.",
+      "linkError": "Impossible de préparer le téléchargement. Réessayez.",
+      "suspendedTitle": "Le compte de votre entreprise n’est pas actif",
+      "suspendedText": "L’application de bureau peut être téléchargée lorsque l’abonnement de votre entreprise est à jour.",
+      "notEligibleTitle": "Votre compte ne peut pas utiliser l’application de bureau",
+      "notEligibleText": "L’application est destinée au personnel de bureau. Si vous pensez devoir y avoir accès, demandez-le à un administrateur de votre entreprise.",
+      "loadError": "Impossible de charger les téléchargements",
+      "loadErrorText": "Vérifiez votre connexion et réessayez.",
+      "goToBilling": "Voir l’offre et la facturation",
+      "soonTitle": "Bientôt disponible",
+      "soonText": "Nous préparons les programmes d’installation. Revenez sur cette page dans quelques jours.",
+      "otherSystem": "Impossible de l’installer sur cet appareil. Ouvrez cette page sur un ordinateur Mac ou Windows.",
+      "detectedMac": "Recommandé pour votre ordinateur · {{chip}}",
+      "detectedMacUnknownChip": "Pour votre Mac · choisissez la puce",
+      "detectedWindows": "Recommandé pour votre ordinateur · Windows",
+      "chipHelp": "Vous ne savez pas ? Menu Pomme › À propos de ce Mac. « Puce Apple M… » correspond à Apple silicon ; « Processeur Intel » correspond à Intel.",
+      "otherOptions": "Autres options",
+      "inDesktopTitle": "Vous êtes déjà dans l’application de bureau",
+      "inDesktop": "Cette fenêtre est l’application. Elle se met à jour toute seule quand une nouvelle version sort.",
+      "inDesktopVersion": "Cette fenêtre est l’application (version {{version}}). Elle se met à jour toute seule quand une nouvelle version sort.",
+      "partnerHost": "L’application de bureau n’est pas disponible sur ce site.",
+      "adminPendingTitle": "Ordinateurs en attente de votre approbation : {{n}}",
+      "adminPendingText": "Avant d’approuver, comparez le code de chaque demande avec celui que voit la personne.",
+      "reviewRequests": "Examiner les demandes",
+      "mockAlert": "Nouvelle alerte en direct"
+    },
+    "steps": {
+      "title": "Pour commencer",
+      "installTitle": "Téléchargez et installez",
+      "installText": "Ouvrez le fichier téléchargé. Sur Mac, faites glisser l’application dans Applications ; sur Windows, suivez le programme d’installation.",
+      "signInTitle": "Connectez-vous et notez le code",
+      "signInText": "Connectez-vous avec votre e-mail et votre mot de passe habituels. L’application affiche un code de 8 caractères.",
+      "approveTitle": "Votre administrateur approuve l’ordinateur",
+      "approveText": "Un administrateur de votre entreprise approuve ce code dans Paramètres › Ordinateurs de bureau. L’application s’ouvre alors toute seule.",
+      "waitingText": "« {{equipo}} » attend une approbation. Donnez ce code à votre administrateur :",
+      "approvedText": "C’est fait : votre ordinateur est approuvé. Ouvrez l’application et mettez-vous au travail.",
+      "approveNow": "Approuver maintenant",
+      "state": {
+        "hecho": "Terminé",
+        "actual": "Étape en cours",
+        "pendiente": "En attente"
+      }
+    },
+    "requirements": {
+      "title": "Configuration requise",
+      "mac": "macOS 11 (Big Sur) ou version ultérieure, avec Apple silicon ou Intel",
+      "windows": "Windows 10 ou 11, 64 bits",
+      "internet": "Une connexion internet et un compte actif de votre entreprise"
+    },
+    "security": {
+      "title": "Pourquoi c’est sûr",
+      "approval": "Chaque ordinateur doit être approuvé par un administrateur : un mot de passe volé ne suffit pas pour ouvrir le tableau de bord depuis un autre ordinateur.",
+      "encrypted": "Le tableau de bord n’est téléchargé qu’après la connexion et il est stocké chiffré sur votre ordinateur. Il n’est jamais lisible en clair.",
+      "revoke": "Si vous révoquez un ordinateur, l’application s’y ferme en moins d’une minute et efface ce qu’elle avait enregistré."
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "whyQ": "Pourquoi faut-il approuver chaque ordinateur ?",
+      "whyA": "Pour que seuls les ordinateurs connus de votre entreprise puissent ouvrir le tableau de bord. Même si quelqu’un a votre mot de passe, l’application n’ouvre rien sans approbation.",
+      "codeQ": "Où voir le code ?",
+      "codeA": "L’application l’affiche à la connexion, sous une forme comme K7QM-2XPA. Votre administrateur voit le même code dans sa liste : s’ils correspondent, c’est bien votre ordinateur.",
+      "updatesQ": "Se met-elle à jour toute seule ?",
+      "updatesA": "Oui. Quand une nouvelle version du tableau de bord sort, l’application la télécharge et vous prévient avant de recharger.",
+      "lostQ": "J’ai perdu mon ordinateur ou on me l’a volé. Que faire ?",
+      "lostA": "Révoquez-le dans « Mes ordinateurs » ou demandez à un administrateur de le faire. L’application cesse de fonctionner sur cet ordinateur en moins d’une minute et efface ce qu’elle avait enregistré.",
+      "severalQ": "Puis-je l’utiliser sur plusieurs ordinateurs ?",
+      "severalA": "Oui. Chaque ordinateur est approuvé séparément et peut être révoqué sans affecter les autres.",
+      "windowsQ": "Quand la version Windows arrive-t-elle ?",
+      "windowsA": "Très bientôt. Nous ne publions que des programmes d’installation signés numériquement ; dès que celui pour Windows sera prêt, il apparaîtra sur cette page."
     }
   }
 }

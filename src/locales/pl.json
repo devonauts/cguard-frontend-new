@@ -5601,7 +5601,8 @@
       "horas-periodo": "Godziny okresu",
       "configuracion": "Ustawienia",
       "coberturaEnVivo": "Obsada na żywo"
-    }
+    },
+    "app-escritorio": "Aplikacja desktopowa"
   },
   "siteTour": {
     "newTour": "Nowy obchód",
@@ -7495,7 +7496,11 @@
       "dobletes": "Podwójne zmiany",
       "dobletes.desc": "Tury, premie, punkty, poziomy i ranking rezerwy.",
       "patrones-rotacion": "Wzorce rotacji",
-      "patrones-rotacion.desc": "Cykle pracy i odpoczynku: zmiana nazwy, archiwizacja i gdzie każdy jest używany."
+      "patrones-rotacion.desc": "Cykle pracy i odpoczynku: zmiana nazwy, archiwizacja i gdzie każdy jest używany.",
+      "computadoras": "Komputery z aplikacją desktopową",
+      "computadoras.desc": "Zatwierdzaj lub unieważniaj komputery, na których działa aplikacja desktopowa.",
+      "app-escritorio": "Aplikacja desktopowa",
+      "app-escritorio.desc": "Pobierz panel na Maca lub Windows, we własnym oknie."
     },
     "section": {
       "mi_cuenta": "Moje konto",
@@ -22757,6 +22762,140 @@
     },
     "semana": {
       "almuerzo": "przerwa obiadowa {{desde}}–{{hasta}}"
+    }
+  },
+  "desktopApp": {
+    "devices": {
+      "title": "Komputery z aplikacją desktopową",
+      "subtitle": "Każdy komputer, na którym działa aplikacja desktopowa, musi zostać zatwierdzony przez administratora, zanim otworzy panel.",
+      "downloadCta": "Pobierz aplikację",
+      "pendingTitle": "Oczekujące prośby",
+      "pendingHint": "Zatwierdzaj tylko wtedy, gdy kod zgadza się z tym, który ta osoba widzi na swoim ekranie. W razie wątpliwości najpierw ją zapytaj.",
+      "pendingEmpty": "Żaden komputer nie czeka na zatwierdzenie.",
+      "approvedTitle": "Zatwierdzone komputery",
+      "approvedEmpty": "Nie ma jeszcze zatwierdzonych komputerów.",
+      "closedTitle": "Odrzucone i unieważnione",
+      "mineTitle": "Moje komputery",
+      "mineEmpty": "Nie używasz jeszcze aplikacji desktopowej",
+      "mineEmptyText": "Gdy zalogujesz się w aplikacji na komputerze, pojawi się on tutaj razem ze swoim statusem.",
+      "notAdmin": "Komputery zatwierdzają tylko administratorzy Twojej firmy. Poniżej widzisz swoje.",
+      "code": "Kod",
+      "codeAria": "Kod parowania {{codigo}}",
+      "requestedAt": "Prośba z {{fecha}}",
+      "lastSeen": "Ostatnie połączenie: {{fecha}}",
+      "neverSeen": "Brak połączeń",
+      "revokedAt": "Unieważniony {{fecha}}",
+      "rejectedAt": "Odrzucony {{fecha}}",
+      "version": "Wersja {{version}}",
+      "ip": "IP {{ip}}",
+      "unknownComputer": "Komputer bez nazwy",
+      "unknownUser": "Osoba bez nazwy",
+      "approve": "Zatwierdź",
+      "reject": "Odrzuć",
+      "revoke": "Unieważnij",
+      "status": {
+        "pending": "Oczekuje",
+        "approved": "Zatwierdzony",
+        "rejected": "Odrzucony",
+        "revoked": "Unieważniony"
+      },
+      "confirmApproveTitle": "Zatwierdzić ten komputer?",
+      "confirmApprove": "{{persona}} będzie mieć dostęp do panelu z komputera „{{equipo}}”. Sprawdź, czy na ekranie tej osoby widnieje kod {{codigo}}.",
+      "confirmRejectTitle": "Odrzucić prośbę?",
+      "confirmReject": "{{persona}} nie otworzy panelu w aplikacji na komputerze „{{equipo}}”. Może ponownie poprosić o dostęp, z nowym kodem.",
+      "confirmRevokeTitle": "Unieważnić ten komputer?",
+      "confirmRevoke": "Aplikacja zamknie się na komputerze „{{equipo}}” w ciągu minuty i usunie zapisane dane. Aby znów z niej korzystać, trzeba będzie ponownie ją zatwierdzić.",
+      "approvedOk": "Komputer zatwierdzony.",
+      "rejectedOk": "Prośba odrzucona.",
+      "revokedOk": "Komputer unieważniony.",
+      "actionError": "Nie udało się. Spróbuj ponownie.",
+      "loadError": "Nie udało się wczytać listy komputerów.",
+      "retry": "Spróbuj ponownie",
+      "refresh": "Odśwież"
+    },
+    "download": {
+      "menuItem": "Aplikacja desktopowa",
+      "eyebrow": "Na Maca i Windows",
+      "title": "Aplikacja desktopowa",
+      "valueProp": "Panel we własnym oknie: powiadomienia systemowe nawet po zminimalizowaniu, zawsze aktualny i bez przeglądarki.",
+      "windows": "Windows",
+      "macAppleSilicon": "Mac z Apple silicon",
+      "macIntel": "Mac z procesorem Intel",
+      "version": "Wersja {{version}}",
+      "downloadFor": "Pobierz: {{sistema}}",
+      "comingSoonFor": "{{sistema}}: wkrótce",
+      "comingSoon": "Wkrótce",
+      "comingSoonHint": "Dostępna już niedługo",
+      "download": "Pobierz",
+      "started": "Pobieranie się rozpoczęło. Otwórz plik, gdy się zakończy.",
+      "linkError": "Nie udało się przygotować pobierania. Spróbuj ponownie.",
+      "suspendedTitle": "Konto Twojej firmy nie jest aktywne",
+      "suspendedText": "Aplikację desktopową można pobrać, gdy subskrypcja Twojej firmy jest opłacona.",
+      "notEligibleTitle": "Twoje konto nie może korzystać z aplikacji desktopowej",
+      "notEligibleText": "Aplikacja jest przeznaczona dla pracowników biura. Jeśli uważasz, że potrzebujesz dostępu, poproś o niego administratora swojej firmy.",
+      "loadError": "Nie udało się wczytać plików do pobrania",
+      "loadErrorText": "Sprawdź połączenie i spróbuj ponownie.",
+      "goToBilling": "Zobacz plan i płatności",
+      "soonTitle": "Dostępna wkrótce",
+      "soonText": "Przygotowujemy instalatory. Wróć na tę stronę za kilka dni.",
+      "otherSystem": "Na tym urządzeniu nie da się jej zainstalować. Otwórz tę stronę na Macu lub komputerze z Windows.",
+      "detectedMac": "Zalecana dla Twojego komputera · {{chip}}",
+      "detectedMacUnknownChip": "Dla Twojego Maca · wybierz układ",
+      "detectedWindows": "Zalecana dla Twojego komputera · Windows",
+      "chipHelp": "Nie wiesz który? Menu Apple › Ten Mac. „Układ Apple M…” to Apple silicon; „Procesor Intel” to Intel.",
+      "otherOptions": "Inne opcje",
+      "inDesktopTitle": "Jesteś już w aplikacji desktopowej",
+      "inDesktop": "To okno to aplikacja. Aktualizuje się sama, gdy pojawi się nowa wersja.",
+      "inDesktopVersion": "To okno to aplikacja (wersja {{version}}). Aktualizuje się sama, gdy pojawi się nowa wersja.",
+      "partnerHost": "Aplikacja desktopowa nie jest dostępna w tej witrynie.",
+      "adminPendingTitle": "Komputery czekające na Twoje zatwierdzenie: {{n}}",
+      "adminPendingText": "Przed zatwierdzeniem porównaj kod każdej prośby z tym, który widzi dana osoba.",
+      "reviewRequests": "Przejrzyj prośby",
+      "mockAlert": "Nowy alert na żywo"
+    },
+    "steps": {
+      "title": "Jak zacząć",
+      "installTitle": "Pobierz i zainstaluj",
+      "installText": "Otwórz pobrany plik. Na Macu przeciągnij aplikację do folderu Aplikacje; w Windows postępuj zgodnie z instalatorem.",
+      "signInTitle": "Zaloguj się i zapisz kod",
+      "signInText": "Zaloguj się swoim zwykłym adresem e-mail i hasłem. Aplikacja pokaże Ci 8-znakowy kod.",
+      "approveTitle": "Administrator zatwierdza komputer",
+      "approveText": "Administrator Twojej firmy zatwierdza ten kod w sekcji Ustawienia › Komputery z aplikacją desktopową. Aplikacja otworzy się sama.",
+      "waitingText": "„{{equipo}}” czeka na zatwierdzenie. Przekaż ten kod administratorowi:",
+      "approvedText": "Gotowe: Twój komputer jest zatwierdzony. Otwórz aplikację i działaj.",
+      "approveNow": "Zatwierdź teraz",
+      "state": {
+        "hecho": "Gotowe",
+        "actual": "Bieżący krok",
+        "pendiente": "Oczekuje"
+      }
+    },
+    "requirements": {
+      "title": "Wymagania",
+      "mac": "macOS 11 (Big Sur) lub nowszy, z Apple silicon lub Intel",
+      "windows": "Windows 10 lub 11, 64-bitowy",
+      "internet": "Połączenie z internetem i aktywne konto w Twojej firmie"
+    },
+    "security": {
+      "title": "Dlaczego to bezpieczne",
+      "approval": "Każdy komputer wymaga zatwierdzenia przez administratora: skradzione hasło nie wystarczy, by otworzyć panel na innym komputerze.",
+      "encrypted": "Panel jest pobierany dopiero po zalogowaniu i przechowywany na Twoim komputerze w postaci zaszyfrowanej. Nigdy nie jest dostępny bez szyfrowania.",
+      "revoke": "Jeśli unieważnisz komputer, aplikacja zamknie się na nim w ciągu minuty i usunie zapisane dane."
+    },
+    "faq": {
+      "title": "Najczęstsze pytania",
+      "whyQ": "Dlaczego trzeba zatwierdzać każdy komputer?",
+      "whyA": "Aby panel mogły otworzyć tylko komputery znane Twojej firmie. Nawet jeśli ktoś zna Twoje hasło, bez zatwierdzenia aplikacja niczego nie otworzy.",
+      "codeQ": "Gdzie zobaczę kod?",
+      "codeA": "Aplikacja pokazuje go po zalogowaniu, w formacie takim jak K7QM-2XPA. Administrator widzi ten sam kod na swojej liście: jeśli się zgadzają, to Twój komputer.",
+      "updatesQ": "Czy aktualizuje się sama?",
+      "updatesA": "Tak. Gdy pojawi się nowa wersja panelu, aplikacja ją pobierze i powiadomi Cię przed ponownym załadowaniem.",
+      "lostQ": "Komputer zgubiony lub skradziony. Co zrobić?",
+      "lostA": "Unieważnij go w sekcji „Moje komputery” albo poproś o to administratora. Aplikacja przestanie działać na tym komputerze w ciągu minuty i usunie zapisane dane.",
+      "severalQ": "Czy mogę jej używać na kilku komputerach?",
+      "severalA": "Tak. Każdy komputer jest zatwierdzany osobno i możesz go unieważnić bez wpływu na pozostałe.",
+      "windowsQ": "Kiedy pojawi się wersja na Windows?",
+      "windowsA": "Już wkrótce. Publikujemy tylko instalatory z podpisem cyfrowym; gdy instalator dla Windows będzie gotowy, pojawi się na tej stronie."
     }
   }
 }

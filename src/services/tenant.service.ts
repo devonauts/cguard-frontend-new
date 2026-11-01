@@ -1,5 +1,6 @@
 import i18n from "@/i18n";
 import { ApiService } from "./api/apiService";
+import { notifyDesktopSessionUpdated } from "@/lib/desktop";
 
 import {
   crearLecturaCompartida,
@@ -89,6 +90,8 @@ const tenantService = {
       try {
         // Guardar el nuevo token en localStorage
         localStorage.setItem("authToken", response.token);
+        // Desktop app: the shell keeps the session across launches.
+        notifyDesktopSessionUpdated(response.token);
 
         // Actualizar el usuario en el estado si está disponible
         if (response.user) {

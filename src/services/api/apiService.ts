@@ -13,6 +13,7 @@ import { announceAddonRequired } from "@/lib/addonRequired";
 import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 import { resolveApiBase } from "@/lib/apiBase";
+import { handleDesktopApiError } from "@/lib/desktop";
 import {
   esAccesoBloqueado,
   RUTA_ACCESO_BLOQUEADO,
@@ -206,6 +207,12 @@ export class ApiService {
       if (typeof data === "string" && /<\s*!?doctype|<html/i.test(data)) {
         msg = `Error: ${response.status} ${response.statusText}`;
         fullResponse = null; // avoid logging large HTML blobs
+      }
+      // Desktop app: a `desktop.*` 401/403 is a device problem (pending
+      // approval, revoked, bad proof). The shell shows its own screen; this
+      // client neither signs out nor jumps anywhere.
+      if (handleDesktopApiError(response.status, data)) {
+        throw new ApiError(msg, response.status, fullResponse);
       }
       // An authenticated request rejected with 401 → the token is no longer valid
       // (e.g. this session was ended by a login on another device — single active

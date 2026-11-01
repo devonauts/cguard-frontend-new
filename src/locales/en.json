@@ -6072,7 +6072,8 @@
       "horas-periodo": "Period hours",
       "configuracion": "Settings",
       "coberturaEnVivo": "Live coverage"
-    }
+    },
+    "app-escritorio": "Desktop app"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -6979,7 +6980,11 @@
       "dobletes": "Double shifts",
       "dobletes.desc": "Waves, bonuses, points, levels and ranking of the reserve.",
       "patrones-rotacion": "Rotation patterns",
-      "patrones-rotacion.desc": "Work and rest cycles: rename, archive and see where each one is used."
+      "patrones-rotacion.desc": "Work and rest cycles: rename, archive and see where each one is used.",
+      "computadoras": "Desktop computers",
+      "computadoras.desc": "Approve or revoke each computer that uses the desktop app.",
+      "app-escritorio": "Desktop app",
+      "app-escritorio.desc": "Download the dashboard for Mac or Windows, in its own window."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -22447,6 +22452,140 @@
     },
     "semana": {
       "almuerzo": "lunch {{desde}}–{{hasta}}"
+    }
+  },
+  "desktopApp": {
+    "devices": {
+      "title": "Desktop computers",
+      "subtitle": "Every computer that uses the desktop app needs an administrator's approval before it can open the dashboard.",
+      "downloadCta": "Download the app",
+      "pendingTitle": "Pending requests",
+      "pendingHint": "Approve only if the code matches the one the person sees on their screen. If unsure, ask them first.",
+      "pendingEmpty": "No computers are waiting for approval.",
+      "approvedTitle": "Approved computers",
+      "approvedEmpty": "No computers have been approved yet.",
+      "closedTitle": "Rejected and revoked",
+      "mineTitle": "My computers",
+      "mineEmpty": "You don't use the desktop app yet",
+      "mineEmptyText": "When you sign in to the app on a computer, it shows up here with its status.",
+      "notAdmin": "Only your company's administrators approve computers. Yours are listed below.",
+      "code": "Code",
+      "codeAria": "Pairing code {{codigo}}",
+      "requestedAt": "Requested on {{fecha}}",
+      "lastSeen": "Last connection: {{fecha}}",
+      "neverSeen": "No connections yet",
+      "revokedAt": "Revoked on {{fecha}}",
+      "rejectedAt": "Rejected on {{fecha}}",
+      "version": "Version {{version}}",
+      "ip": "IP {{ip}}",
+      "unknownComputer": "Unnamed computer",
+      "unknownUser": "Unnamed person",
+      "approve": "Approve",
+      "reject": "Reject",
+      "revoke": "Revoke",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "revoked": "Revoked"
+      },
+      "confirmApproveTitle": "Approve this computer?",
+      "confirmApprove": "{{persona}} will be able to open the dashboard from “{{equipo}}”. Check that the code {{codigo}} is shown on their screen.",
+      "confirmRejectTitle": "Reject the request?",
+      "confirmReject": "The app won't open the dashboard for {{persona}} on “{{equipo}}”. They can ask again, with a new code.",
+      "confirmRevokeTitle": "Revoke this computer?",
+      "confirmRevoke": "The app will close on “{{equipo}}” within a minute and erase what it stored. Using it again will need a new approval.",
+      "approvedOk": "Computer approved.",
+      "rejectedOk": "Request rejected.",
+      "revokedOk": "Computer revoked.",
+      "actionError": "That didn't go through. Please try again.",
+      "loadError": "The list of computers couldn't be loaded.",
+      "retry": "Try again",
+      "refresh": "Refresh"
+    },
+    "download": {
+      "menuItem": "Desktop app",
+      "eyebrow": "For Mac and Windows",
+      "title": "Desktop app",
+      "valueProp": "The dashboard in its own window: system alerts even when minimized, always up to date, no browser needed.",
+      "windows": "Windows",
+      "macAppleSilicon": "Mac with Apple silicon",
+      "macIntel": "Mac with Intel",
+      "version": "Version {{version}}",
+      "downloadFor": "Download for {{sistema}}",
+      "comingSoonFor": "{{sistema}}: coming soon",
+      "comingSoon": "Coming soon",
+      "comingSoonHint": "Available very soon",
+      "download": "Download",
+      "started": "Your download has started. Open the file when it finishes.",
+      "linkError": "The download couldn't be prepared. Please try again.",
+      "suspendedTitle": "Your company's account is not active",
+      "suspendedText": "The desktop app can be downloaded while your company's subscription is up to date.",
+      "notEligibleTitle": "Your account can't use the desktop app",
+      "notEligibleText": "The app is for office staff. If you think you should have access, ask an administrator of your company.",
+      "loadError": "Downloads couldn't be loaded",
+      "loadErrorText": "Check your connection and try again.",
+      "goToBilling": "See plan and billing",
+      "soonTitle": "Available soon",
+      "soonText": "We're preparing the installers. Check this page again in a few days.",
+      "otherSystem": "This device can't install it. Open this page on a Mac or Windows computer.",
+      "detectedMac": "Recommended for your computer · {{chip}}",
+      "detectedMacUnknownChip": "For your Mac · choose the chip",
+      "detectedWindows": "Recommended for your computer · Windows",
+      "chipHelp": "Not sure? Apple menu › About This Mac. “Chip Apple M…” means Apple silicon; “Processor Intel” means Intel.",
+      "otherOptions": "Other options",
+      "inDesktopTitle": "You're already in the desktop app",
+      "inDesktop": "This window is the app. It updates itself when a new version is out.",
+      "inDesktopVersion": "This window is the app (version {{version}}). It updates itself when a new version is out.",
+      "partnerHost": "The desktop app isn't available on this site.",
+      "adminPendingTitle": "Computers waiting for your approval: {{n}}",
+      "adminPendingText": "Compare each request's code with the one the person sees before approving.",
+      "reviewRequests": "Review requests",
+      "mockAlert": "New live alert"
+    },
+    "steps": {
+      "title": "How to get started",
+      "installTitle": "Download and install",
+      "installText": "Open the downloaded file. On a Mac, drag the app to Applications; on Windows, follow the installer.",
+      "signInTitle": "Sign in and note the code",
+      "signInText": "Use your usual email and password. The app shows you an 8-character code.",
+      "approveTitle": "Your administrator approves the computer",
+      "approveText": "An administrator of your company approves that code in Settings › Desktop computers. The app then opens by itself.",
+      "waitingText": "“{{equipo}}” is waiting for approval. Give this code to your administrator:",
+      "approvedText": "All set: your computer is approved. Open the app and get to work.",
+      "approveNow": "Approve now",
+      "state": {
+        "hecho": "Done",
+        "actual": "Current step",
+        "pendiente": "Pending"
+      }
+    },
+    "requirements": {
+      "title": "Requirements",
+      "mac": "macOS 11 (Big Sur) or later, Apple silicon or Intel",
+      "windows": "Windows 10 or 11, 64-bit",
+      "internet": "An internet connection and an active account in your company"
+    },
+    "security": {
+      "title": "Why it's secure",
+      "approval": "Every computer needs an administrator's approval: a stolen password is not enough to open the dashboard from another computer.",
+      "encrypted": "The dashboard is only downloaded after you sign in, and it is stored encrypted on your computer. It is never left readable.",
+      "revoke": "If you revoke a computer, the app closes on it within a minute and erases what it stored."
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "whyQ": "Why does every computer need approval?",
+      "whyA": "So only computers your company knows can open the dashboard. Even if someone has your password, the app opens nothing without approval.",
+      "codeQ": "Where do I see the code?",
+      "codeA": "The app shows it when you sign in, in a format like K7QM-2XPA. Your administrator sees the same code in their list: if they match, it's your computer.",
+      "updatesQ": "Does it update itself?",
+      "updatesA": "Yes. When a new version of the dashboard is out, the app downloads it and lets you know before reloading.",
+      "lostQ": "My computer was lost or stolen. What do I do?",
+      "lostA": "Revoke it under “My computers” or ask an administrator to. The app stops working on that computer within a minute and erases what it stored.",
+      "severalQ": "Can I use it on several computers?",
+      "severalA": "Yes. Each computer is approved separately and can be revoked without affecting the others.",
+      "windowsQ": "When is the Windows version coming?",
+      "windowsA": "Very soon. We only publish digitally signed installers; as soon as the Windows one is ready, it will appear on this page."
     }
   }
 }

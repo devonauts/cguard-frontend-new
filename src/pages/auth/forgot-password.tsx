@@ -14,6 +14,7 @@ import Boveda, {
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { AuthService } from "@/services/auth/authService";
+import { isDesktop } from "@/lib/desktop";
 
 /* El mismo marco «Bóveda» que el registro y el inicio de sesión (2026-10-03).
    Al enviar, la tarjeta pasa a «Revisa tu correo» con la dirección: un aviso
@@ -202,9 +203,12 @@ export default function ForgotPassword() {
                   defaultValue: "Volver a iniciar sesión",
                 })}
               </NavLink>
-              <NavLink className="cg-reg-suave hover:underline" to="/register">
-                {t("auth.create_account", { defaultValue: "Crear cuenta" })}
-              </NavLink>
+              {/* No sign-up inside the desktop program. */}
+              {isDesktop() ? null : (
+                <NavLink className="cg-reg-suave hover:underline" to="/register">
+                  {t("auth.create_account", { defaultValue: "Crear cuenta" })}
+                </NavLink>
+              )}
             </div>
           </form>
         </>

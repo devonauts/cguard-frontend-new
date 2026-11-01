@@ -1,5 +1,6 @@
 import { io, type Socket } from "socket.io-client";
 import { resolveApiBase } from "@/lib/apiBase";
+import { handleDesktopApiError } from "@/lib/desktop";
 import { pedirRecarga } from "@/lib/recarga/recarga";
 import { engancharPuerta } from "@/lib/seguridad/puertaEnVivo";
 import { ReconnectFanout, SocketKeeper } from "@/lib/socketKeeper";
@@ -371,6 +372,17 @@ export function crearSocket(token: string, tenantId: string): Socket {
   });
   socket.on("connect_error", (e: any) => {
     fanout.onDisconnect();
+    // Desktop app: a handshake refused with a `desktop.*` code (the server's
+    // auth middleware puts it in `err.data`) goes straight to the shell.
+    try {
+      const d = e?.data;
+
+      if (d && typeof d === "object") {
+        handleDesktopApiError(Number(d.status) || 403, d);
+      }
+    } catch {
+      /* never break the keeper */
+    }
     keeper.onConnectError(String(e?.message || e || "error"));
   });
   // Any packet, and the engine's ping from the server, prove the link is alive.

@@ -21,6 +21,8 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 
+import { notifyDesktopSignedOut } from "@/lib/desktop";
+
 const RUTA = "/__sesion";
 
 /** Refresco mientras la pestaña sigue abierta: la cookie caduca sola. */
@@ -81,6 +83,10 @@ export async function abrirSesionDeCodigo(
  * página justo después, y la petición tiene que salir igual.
  */
 export function cerrarSesionDeCodigo(): Promise<void> {
+  /* In the desktop app there is no cookie: every forced close (401, session
+     replaced, access blocked) passes through here, so this is where the shell
+     learns the session is over and takes the window back to its sign-in. */
+  notifyDesktopSignedOut();
   if (!disponible()) return Promise.resolve();
   try {
     return fetch(RUTA, {

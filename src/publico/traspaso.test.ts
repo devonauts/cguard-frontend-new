@@ -1,13 +1,15 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   MAX_TRASPASOS,
   VENTANA_TRASPASOS_MS,
   destinoSeguro,
+  entregarAlEscritorio,
   guardarDestino,
+  olvidarSesionLocal,
   puedoTraspasar,
   tomarDestino,
   type Almacen,
@@ -65,6 +67,65 @@ describe("traspaso a la sesión del código", () => {
 
     expect(publico).toBe(
       index.replace('src="/src/main.tsx"', 'src="/src/publico/main.tsx"'),
+    );
+  });
+});
+
+describe("traspaso en la app de escritorio", () => {
+  it("entrega el token al escritorio (signedIn) y lo quita de esta página", async () => {
+    const a = almacen();
+
+    a.setItem("authToken", "tok-pending");
+    a.setItem("authUserCache", "{}");
+    const entregar = vi.fn(async () => true);
+
+    expect(await entregarAlEscritorio(a, entregar)).toBe(true);
+    expect(entregar).toHaveBeenCalledWith("tok-pending");
+    expect(a.datos.has("authToken")).toBe(false);
+    expect(a.datos.has("authUserCache")).toBe(false);
+  });
+
+  it("si el escritorio lo rechaza, el token se queda (para reintentar) y avisa", async () => {
+    const a = almacen();
+
+    a.setItem("authToken", "tok-x");
+    expect(await entregarAlEscritorio(a, async () => false)).toBe(false);
+    expect(a.getItem("authToken")).toBe("tok-x");
+  });
+
+  it("sin token no entrega nada", async () => {
+    const entregar = vi.fn(async () => true);
+
+    expect(await entregarAlEscritorio(almacen(), entregar)).toBe(false);
+    expect(entregar).not.toHaveBeenCalled();
+  });
+
+  it("olvidarSesionLocal borra sólo las claves de sesión", () => {
+    const a = almacen();
+
+    a.setItem("authToken", "t");
+    a.setItem("app_language", "es");
+    olvidarSesionLocal(a);
+    expect([...a.datos.keys()]).toEqual(["app_language"]);
+  });
+
+  it("el traspaso usa el escritorio ANTES de la cookie, y la mini-app olvida tokens heredados", () => {
+    const raiz = resolve(__dirname, "../..");
+    const traspaso = readFileSync(
+      resolve(raiz, "src/publico/Traspaso.tsx"),
+      "utf8",
+    );
+    const main = readFileSync(resolve(raiz, "src/publico/main.tsx"), "utf8");
+    const escritorio = traspaso.indexOf("if (isDesktop())");
+    const cookie = traspaso.indexOf("await abrirSesionDeCodigo()");
+
+    expect(escritorio).toBeGreaterThan(0);
+    expect(cookie).toBeGreaterThan(escritorio);
+    expect(traspaso.slice(escritorio, cookie)).toContain(
+      "entregarAlEscritorio(localStorage)",
+    );
+    expect(main).toMatch(
+      /if \(isDesktop\(\)\) olvidarSesionLocal\(localStorage\)/,
     );
   });
 });

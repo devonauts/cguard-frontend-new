@@ -11,6 +11,8 @@
  * `VITE_API_URL` directly any more.
  */
 
+import { desktopApiBase } from "@/lib/desktop";
+
 const PLANOS_PROPIOS = new Set(["app", "www", "api", "partners", "domains"]);
 
 /**
@@ -50,11 +52,16 @@ export function esAnfitrionDePlataforma(
 
 export function resolveApiBase(): string | undefined {
   const configurada = import.meta.env.VITE_API_URL as string | undefined;
+
   if (typeof window === "undefined") return configurada;
   try {
     const { protocol, hostname, origin } = window.location;
-    if (!/^https?:$/.test(protocol) || (window as any).cguardDesktop)
-      return configurada;
+
+    /* Desktop app: the API the shell signs device proofs for. Using its value
+       keeps the bundle and the shell on the same host whatever the build's
+       `.env` said. */
+    if ((window as any).cguardDesktop) return desktopApiBase() || configurada;
+    if (!/^https?:$/.test(protocol)) return configurada;
     if (esAnfitrionDePlataforma(hostname, configurada)) {
       // A build made without VITE_API_URL (2026-10-19: a worktree with no
       // `.env`) left axios with no base at all, so every call went to
@@ -63,6 +70,7 @@ export function resolveApiBase(): string | undefined {
       // floor: a bundle can be misconfigured, never dead.
       return configurada || `${origin}/api`;
     }
+
     return `${origin}/api`;
   } catch {
     return configurada;

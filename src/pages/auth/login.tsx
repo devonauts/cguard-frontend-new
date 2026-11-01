@@ -21,6 +21,7 @@ import {
 } from "@/lib/entradaAlCrm";
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { esVistaPrevia } from "@/lib/vistaPrevia";
+import { isDesktop } from "@/lib/desktop";
 import { consultaDeAtribucion } from "@/lib/atribucionWeb";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthForm } from "@/hooks/useAuthForm";
@@ -403,15 +404,19 @@ export default function Login() {
             {t("auth.login")} <ArrowRight className="h-4 w-4" />
           </BotonDeAccion>
 
-          <p className="cg-reg-suave pt-1 text-center text-sm">
-            {t("auth.no_account_text")}{" "}
-            <NavLink
-              className="cg-reg-enlace -my-2 inline-block py-2"
-              to={`/register${consultaDeAtribucion()}`}
-            >
-              {t("auth.create_account")}
-            </NavLink>
-          </p>
+          {/* The desktop program is only for existing accounts of active
+              companies: no sign-up there. */}
+          {isDesktop() ? null : (
+            <p className="cg-reg-suave pt-1 text-center text-sm">
+              {t("auth.no_account_text")}{" "}
+              <NavLink
+                className="cg-reg-enlace -my-2 inline-block py-2"
+                to={`/register${consultaDeAtribucion()}`}
+              >
+                {t("auth.create_account")}
+              </NavLink>
+            </p>
+          )}
         </form>
       </Boveda>
     </>

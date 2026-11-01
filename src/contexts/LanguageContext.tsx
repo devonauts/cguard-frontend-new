@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import { setAppLanguage } from "@/i18n";
+import { desktopLocale } from "@/lib/desktop";
 import api from "@/lib/api";
 import { leerPerfil } from "@/lib/perfilDeLaCuenta";
 
@@ -123,12 +124,15 @@ const norm = (x: any): Language | null => {
 /** El idioma del navegador/SO (config del sistema), mapeado a es|en|pt. */
 const detectBrowser = (): Language | null => {
   try {
+    const so = desktopLocale();
     const list =
-      (typeof navigator !== "undefined" &&
+      (so ? [so] : []).concat(
+        (typeof navigator !== "undefined" &&
       navigator.languages &&
       navigator.languages.length
         ? navigator.languages
-        : [typeof navigator !== "undefined" ? navigator.language : ""]) || [];
+        : [typeof navigator !== "undefined" ? navigator.language : ""]) || [],
+      );
 
     for (const l of list) {
       const m = norm(l);

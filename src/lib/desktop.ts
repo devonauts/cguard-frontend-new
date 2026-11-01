@@ -21,12 +21,115 @@
 
 import { iconoDeAvisos } from "@/lib/iconoDeAvisos";
 
-interface CguardDesktopBridge {
+/* ════════════════════════════════════════════════════════════════════════════
+ * THE BRIDGE CONTRACT (desktop shell 1.1.0, 2026-10-31)
+ *
+ * `window.cguardDesktop` is exposed by the shell's preload (contextBridge),
+ * only on `app://crm` (main re-checks the caller's origin and top frame). The
+ * shell implements exactly these names. Its MAIN process owns the device key
+ * and adds `X-CG-Desktop` / `X-CG-Device-Proof` to every API request; the
+ * renderer (this code) never sees the key and never builds a proof.
+ *
+ * The web build is the SAME bundle: everything below is a no-op when the
+ * bridge is missing, so a browser behaves exactly as before.
+ * ════════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * The API's desktop error codes (backend i18n keys). They arrive in the JSON
+ * body of a 401/403 as `code` (string) or as `messageCode` (the backend's
+ * usual `Error401/Error403` shape, where `code` is the numeric status).
+ */
+export type DesktopErrorCode =
+  | "desktop.deviceNotApproved"
+  | "desktop.deviceProofInvalid"
+  | "desktop.deviceRevoked"
+  | "desktop.deviceRequired"
+  | "desktop.updateRequired"
+  // Any future `desktop.*` code is forwarded as-is.
+  | (string & {});
+
+/** The session the shell hands to the CRM at boot. */
+export interface DesktopSession {
+  /** JWT with the `dev: <deviceId>` claim (from `POST /api/desktop/session`). */
+  token: string;
+  deviceId?: string;
+  /** Whatever the CRM passed as `data` to `signedIn` (JSON, ≤ 64 KB). */
+  data?: unknown;
+  /** The API the shell signs requests for (same as `apiBase`). */
+  apiBase?: string;
+}
+
+/** A newer CRM bundle was downloaded, verified and switched in by the shell. */
+export interface DesktopUpdateInfo {
+  buildId: string;
+  /** `true` = the API no longer works with the running build: the shell
+   *  reloads by itself; the CRM never has to act on it. */
+  required: boolean;
+}
+
+export interface CguardDesktopBridge {
+  /** Shell version, e.g. "1.1.0". */
+  version?: string;
+  /** The OS (`darwin` | `win32`). */
+  platform?: string;
+  /** The API base the shell adds the device headers to, e.g.
+   *  "https://api.mainconnector.com/api". The CRM uses it in the desktop so
+   *  both always talk about the same host (see `lib/apiBase`). */
+  apiBase?: string;
+  /** OPTIONAL. The OS's preferred language (e.g. "es-EC"), for the first
+   *  paint when the person never chose one. Electron's `navigator.language`
+   *  follows the bundled Chromium locales, not the OS, unless the shell sets
+   *  `--lang`. */
+  locale?: string;
+
+  /* ── Session (new in 1.1.0) ─────────────────────────────────────────────── */
+
+  /**
+   * The current approved-device session, or `null` (and always `null` unless
+   * the CRM itself is loaded). Called ONCE at boot, before anything talks to
+   * the API; `null` → the CRM calls `signedOut()` and does not mount.
+   */
+  getSession: () => Promise<DesktopSession | null>;
+  /**
+   * A token for the shell.
+   *  · From the sign-in mini-app (`/p/`): the sign-in token (`dsk:'pending'`);
+   *    the shell takes over (enrolment, pairing code, approval, CRM). Replaces
+   *    the web's `POST /__sesion` + reload. A rejection makes the sign-in
+   *    screen offer «try again / sign in again».
+   *  · From the CRM, when the API hands it a replacement token (accepting an
+   *    invitation, joining a company): a token whose `dev` claim is this
+   *    device just replaces the stored one.
+   * `data`: optional JSON (≤ 64 KB) returned by `getSession()`.
+   */
+  signedIn: (token: string, data?: unknown) => Promise<void> | void;
+  /**
+   * The session is over (sign-out from the menu, a 401, a session replaced
+   * elsewhere, access blocked). The shell forgets the session token and shows
+   * its sign-in. Idempotent.
+   */
+  signedOut: () => Promise<void> | void;
+  /**
+   * The API answered 401/403 with a `desktop.*` code. The shell shows its own
+   * screen (pending approval, revoked → wipe, proof invalid, update needed…).
+   * The CRM does not sign out on these codes; the shell decides.
+   */
+  deviceProblem: (code: DesktopErrorCode) => void;
+  /**
+   * «A new CRM build is ready» (checked at launch and every 15 min). The CRM
+   * shows its «new version» notice; reloading goes through `applyUpdate()`
+   * when present, else `location.reload()`. Returns an unsubscribe function.
+   */
+  onUpdateReady: (cb: (info: DesktopUpdateInfo) => void) => () => void;
+  /** OPTIONAL. Switch to the downloaded build now (else `location.reload()`). */
+  applyUpdate?: () => Promise<void> | void;
+
+  /* ── OS integration (since 1.0.0) ───────────────────────────────────────── */
+
   setBadge: (count: number, overlayDataUrl?: string) => void;
   /** Des-esconde y enfoca la ventana (bandeja/minimizada). */
   focusWindow?: () => void;
-  onDeepLink: (cb: (path: string) => void) => void;
-  version?: string;
+  /** Returns an unsubscribe function (1.1.0). */
+  onDeepLink: (cb: (path: string) => void) => (() => void) | void;
 }
 
 declare global {
@@ -38,6 +141,285 @@ declare global {
 /** ¿Corremos dentro de la app de escritorio? */
 export function isDesktop(): boolean {
   return typeof window !== "undefined" && !!window.cguardDesktop;
+}
+
+/** The bridge, with every member treated as possibly missing (older shells). */
+function puente(): Partial<CguardDesktopBridge> | null {
+  try {
+    return (typeof window !== "undefined" && window.cguardDesktop) || null;
+  } catch {
+    return null;
+  }
+}
+
+/* ── Session ────────────────────────────────────────────────────────────── */
+
+/**
+ * The boot read of the desktop session.
+ *   · `undefined` — not a session-owning shell (web, or a pre-1.1 shell):
+ *     keep the usual behaviour (the token in localStorage).
+ *   · `null`      — the shell has no session.
+ *   · a string    — the token to use for this run.
+ */
+export async function loadDesktopSession(): Promise<string | null | undefined> {
+  const b = puente();
+
+  if (!b || typeof b.getSession !== "function") return undefined;
+  try {
+    const s = await b.getSession();
+    const token = s && typeof s.token === "string" ? s.token.trim() : "";
+
+    return token || null;
+  } catch {
+    return null;
+  }
+}
+
+/** How long boot waits for `getSession()` before giving up (it may refresh
+ *  the session over the network, so this is generous). */
+export const DESKTOP_SESSION_TIMEOUT_MS = 30_000;
+
+/**
+ * Boot in the desktop app: the CRM takes its session from the shell, never
+ * from whatever an earlier run left in storage. `apply` stores the token the
+ * way the rest of the CRM reads it (`lib/api` `setAuthToken`); it is called
+ * with `null` first so nothing can leave with a stale token while the shell
+ * answers. Resolves `true` when the CRM may mount (web and pre-1.1 shells
+ * always), `false` when there is no session — the shell has then been told
+ * (`signedOut`) and takes the window back to its sign-in.
+ */
+export async function bootDesktopSession(
+  apply: (token: string | null) => void,
+  timeoutMs = DESKTOP_SESSION_TIMEOUT_MS,
+): Promise<boolean> {
+  const b = puente();
+
+  if (!b || typeof b.getSession !== "function") return true;
+  try {
+    apply(null);
+  } catch {
+    /* storage unavailable: the token below still reaches memory */
+  }
+  let reloj: ReturnType<typeof setTimeout> | undefined;
+  const token = await Promise.race([
+    loadDesktopSession(),
+    new Promise<null>((ok) => {
+      reloj = setTimeout(() => ok(null), timeoutMs);
+    }),
+  ]);
+
+  if (reloj !== undefined) clearTimeout(reloj);
+  if (!token) {
+    notifyDesktopSignedOut("/login");
+
+    return false;
+  }
+  try {
+    apply(token);
+  } catch {
+    notifyDesktopSignedOut("/login");
+
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * The sign-in hand-off of the public mini-app, in the desktop. `true` when
+ * the shell took the token (it navigates on its own), `false` when there is
+ * no shell to hand it to or the shell refused it.
+ */
+export async function handOffToDesktop(token: string): Promise<boolean> {
+  const b = puente();
+
+  if (!b || typeof b.signedIn !== "function" || !token) return false;
+  try {
+    await b.signedIn(token);
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+let salidaAvisada = false;
+
+/**
+ * Tell the shell the session is over. Once per page: the sign-out, the 401
+ * of a request in flight and the socket notice usually arrive together.
+ * `true` when a session-owning shell was told (the caller then leaves the
+ * navigation to the shell). `_path` (where the web would go) is not sent:
+ * the shell always opens its own sign-in.
+ */
+export function notifyDesktopSignedOut(_path?: string): boolean {
+  const b = puente();
+
+  if (!b || typeof b.signedOut !== "function") return false;
+  if (salidaAvisada) return true;
+  salidaAvisada = true;
+  try {
+    void Promise.resolve(b.signedOut()).catch(() => {
+      /* the shell's problem now */
+    });
+  } catch {
+    /* ignore */
+  }
+
+  return true;
+}
+
+/**
+ * A replacement token arrived while running (accepting an invitation, joining
+ * a company): hand it to the shell (`signedIn`) so the next launch uses it.
+ */
+export function notifyDesktopSessionUpdated(token: string): void {
+  const b = puente();
+
+  if (!b || typeof b.signedIn !== "function" || !token) return;
+  try {
+    void Promise.resolve(b.signedIn(token)).catch(() => {
+      /* kept for this run only */
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Reload into the build the shell downloaded. */
+export async function applyDesktopUpdate(): Promise<void> {
+  const b = puente();
+
+  try {
+    if (b && typeof b.applyUpdate === "function") {
+      await b.applyUpdate();
+
+      return;
+    }
+  } catch {
+    /* fall back to a plain reload */
+  }
+  window.location.reload();
+}
+
+/** The OS language the shell reports (desktop only), or null. */
+export function desktopLocale(): string | null {
+  const b = puente();
+  const l = b && typeof b.locale === "string" ? b.locale.trim() : "";
+
+  return l || null;
+}
+
+/** The API base the shell signs for (desktop only, https only), or null. */
+export function desktopApiBase(): string | null {
+  const b = puente();
+  const u = b && typeof b.apiBase === "string" ? b.apiBase.trim() : "";
+
+  return /^https:\/\/[^/\s]+/i.test(u) ? u.replace(/\/+$/, "") : null;
+}
+
+/* ── Device problems (`desktop.*` codes) ────────────────────────────────── */
+
+const PREFIJO_DESKTOP = "desktop.";
+
+/**
+ * The `desktop.*` code of an API error, or `null`. Only inside the desktop
+ * (a browser never gets these codes; if one did, it follows the normal path)
+ * and only for 401/403.
+ */
+export function desktopErrorCode(
+  status: number | undefined,
+  body: unknown,
+): DesktopErrorCode | null {
+  if (!isDesktop()) return null;
+  if (status !== 401 && status !== 403) return null;
+  if (!body || typeof body !== "object") return null;
+  const b = body as { code?: unknown; messageCode?: unknown };
+
+  for (const c of [b.code, b.messageCode]) {
+    if (
+      typeof c === "string" &&
+      c.startsWith(PREFIJO_DESKTOP) &&
+      c.length <= 80
+    )
+      return c;
+  }
+
+  return null;
+}
+
+const VENTANA_PROBLEMA_MS = 10_000;
+const ultimoProblema = new Map<string, number>();
+
+/**
+ * Hand a `desktop.*` code to the shell. The same code is not repeated within
+ * 10 s: a screen fires a dozen requests at once and they all fail together.
+ */
+export function reportDeviceProblem(
+  code: DesktopErrorCode,
+  ahora = Date.now(),
+): boolean {
+  const b = puente();
+
+  if (!b || typeof b.deviceProblem !== "function") return false;
+  const antes = ultimoProblema.get(code);
+
+  if (antes !== undefined && ahora - antes < VENTANA_PROBLEMA_MS) return true;
+  ultimoProblema.set(code, ahora);
+  try {
+    b.deviceProblem(code);
+  } catch {
+    /* ignore */
+  }
+
+  return true;
+}
+
+/**
+ * The API error handlers' single entry point: `true` when the error was a
+ * desktop device problem and has been handed to the shell (the caller then
+ * skips its own sign-out / toast handling).
+ */
+export function handleDesktopApiError(
+  status: number | undefined,
+  body: unknown,
+): boolean {
+  const code = desktopErrorCode(status, body);
+
+  return code ? reportDeviceProblem(code) : false;
+}
+
+/* ── New CRM build ──────────────────────────────────────────────────────── */
+
+/** Subscribe to the shell's «new build ready». No-op on the web. */
+export function onDesktopUpdateReady(
+  cb: (info: DesktopUpdateInfo) => void,
+): () => void {
+  const b = puente();
+
+  if (!b || typeof b.onUpdateReady !== "function") return () => {};
+  try {
+    const off = b.onUpdateReady((info) => {
+      try {
+        cb({
+          buildId: String(info?.buildId ?? ""),
+          required: info?.required === true,
+        });
+      } catch {
+        /* ignore */
+      }
+    });
+
+    return typeof off === "function" ? off : () => {};
+  } catch {
+    return () => {};
+  }
+}
+
+/** Only for tests. */
+export function _resetDesktopForTests(): void {
+  salidaAvisada = false;
+  ultimoProblema.clear();
 }
 
 /* ── Avisos del sistema ─────────────────────────────────────────────────── */
