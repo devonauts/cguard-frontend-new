@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Check, Loader2, Search } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
+import { todosLosVigilantes } from "@/lib/listarCompleto";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 
 export interface VigilanteOpcion {
@@ -26,9 +27,7 @@ export function useVigilantesDisponibles(tenantId: string, abierto: boolean) {
 
     setCargando(true);
     Promise.all([
-      ApiService.get(
-        `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
-      ),
+      todosLosVigilantes(tenantId),
       ApiService.get(`/tenant/${tenantId}/guard-assignments?status=active`),
     ])
       .then(([g, a]: any[]) => {

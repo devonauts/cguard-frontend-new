@@ -23,7 +23,23 @@ function localDateKey(iso: string): string {
 
 import { localToday } from "@/lib/utils";
 import { hoyEnLaEmpresa, sumaDias } from "@/lib/horaDeLaEmpresa";
+import { todosLosVigilantes, turnosEntre } from "@/lib/listarCompleto";
 const today = () => localToday();
+
+/** The window the gap dates span (a day of margin each side, for overnight
+ *  shifts), as ISO instants. No gaps → the next 30 days. */
+function ventanaDeHuecos(gapDates: string[]): [string, string] {
+  const dias = [...gapDates].sort();
+  const desde = dias[0] || localToday();
+  const hasta = dias[dias.length - 1] || new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+  const ini = new Date(`${desde}T00:00:00`);
+  const fin = new Date(`${hasta}T23:59:59`);
+
+  ini.setDate(ini.getDate() - 1);
+  fin.setDate(fin.getDate() + 1);
+
+  return [ini.toISOString(), fin.toISOString()];
+}
 
 interface Candidate {
   id: string;
@@ -118,11 +134,9 @@ export default function SacafrancoAssignModal({
     setLoading(true);
     try {
       const [guardsRes, asgRes, shiftsRes] = await Promise.all([
-        ApiService.get(
-          `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
-        ),
+        todosLosVigilantes(tenantId),
         ApiService.get(`/tenant/${tenantId}/guard-assignments?status=active`),
-        ApiService.get(`/tenant/${tenantId}/shift?limit=999`),
+        turnosEntre(tenantId, ...ventanaDeHuecos(gapDates)),
       ]);
       const guards: GuardAutoRow[] = Array.isArray(guardsRes)
         ? guardsRes
@@ -249,8 +263,11 @@ export default function SacafrancoAssignModal({
         const hasta = new Date(Date.now() + 30 * 86400000)
           .toISOString()
           .slice(0, 10);
-        const res: any = await ApiService.get(
-          `/tenant/${tenantId}/shift?limit=999&guardId=${encodeURIComponent(g.id)}`,
+        const res: any = await turnosEntre(
+          tenantId,
+          new Date(`${desde}T00:00:00`).toISOString(),
+          new Date(`${hasta}T23:59:59`).toISOString(),
+          { guardId: String(g.id) },
         );
         const filas: ShiftRow[] = Array.isArray(res) ? res : res?.rows || [];
 

@@ -138,6 +138,7 @@ import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
 import i18n from "@/i18n";
+import { todosLosVigilantes } from "@/lib/listarCompleto";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -1162,9 +1163,7 @@ export default function Schedule() {
               `/tenant/${tenantId}/scheduler/overview?startDate=${startDateStr}&endDate=${endDateStr}`,
             ),
             ApiService.get(`/tenant/${tenantId}/rotation-styles?includeArchived=1`),
-            ApiService.get(
-              `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
-            ),
+            todosLosVigilantes(tenantId),
             ApiService.get(
               `/tenant/${tenantId}/scheduler/coverage?days=14`,
             ).catch(() => null),
