@@ -42,4 +42,11 @@ describe("Atrasos", () => {
       expect(u.searchParams.get("status")).toBe("late");
     }
   });
+
+  it("a supervisor or office person carries the name for the picker; a guard does not need it", () => {
+    const sup = new URL(`http://x${enlaceAMarcaciones({ personId: "u1", role: "supervisor", personName: "Sara Sup" }, "2026-11-02", "2026-11-08")}`);
+    expect(sup.searchParams.get("persona")).toBe("Sara Sup");
+    const g = new URL(`http://x${enlaceAMarcaciones({ personId: "g1", role: "guard", personName: "Juan" }, "2026-11-02", "2026-11-08")}`);
+    expect(g.searchParams.get("persona")).toBeNull();
+  });
 });

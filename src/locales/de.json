@@ -2912,7 +2912,9 @@
       "correction_pending": "Korrektur offen",
       "missing_location": "Ohne Standort",
       "selfie_no_face": "Selfie ohne Gesicht",
-      "face_mismatch": "Gesicht stimmt nicht überein"
+      "face_mismatch": "Gesicht stimmt nicht überein",
+      "absence_reported": "Gemeldete Abwesenheit",
+      "wrong_post": "An anderem Posten eingestempelt"
     },
     "excEstado": {
       "open": "Offen",
@@ -2951,7 +2953,8 @@
       "autoOut": "Automatisch ausgestempelt",
       "relevoOut": "Durch Ablösung beendet",
       "earlyExit": "Vorzeitig gegangen",
-      "supervisorOut": "Vom Einsatzleiter beendet"
+      "supervisorOut": "Vom Einsatzleiter beendet",
+      "registradaPor": "Erfasst von {{nombre}}"
     }
   },
   "performance": {
@@ -11259,7 +11262,8 @@
       "personaSeleccionada": "Ausgewählte Person",
       "sinHorarioPublicado": "Noch kein Dienstplan veröffentlicht",
       "sinHorarioPublicadoAyuda": "Stempelungen erscheinen, sobald Wachleute zu ihren Schichten einstempeln. Erstellen und veröffentlichen Sie zuerst den Dienstplan.",
-      "armarHorario": "Dienstplan erstellen"
+      "armarHorario": "Dienstplan erstellen",
+      "sinUbicacion": "Ohne Standort"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",
@@ -18250,7 +18254,9 @@
         "deEstaSucursal": "Lohnliste von {{nombre}}: Sie arbeiten in dieser Niederlassung.",
         "tarjetasSinAprobar_one": "{{count}} Zeitkarte im Zeitraum nicht genehmigt. Die Abrechnung enthält sie trotzdem; genehmigen Sie sie vor dem Veröffentlichen.",
         "tarjetasSinAprobar_other": "{{count}} Zeitkarten im Zeitraum nicht genehmigt. Die Abrechnung enthält sie trotzdem; genehmigen Sie sie vor dem Veröffentlichen.",
-        "irAHoras": "Zu den Stunden des Zeitraums"
+        "irAHoras": "Zu den Stunden des Zeitraums",
+        "listaParaCalcular": "Die Stunden des Zeitraums sind fertig, aber diese Abrechnung wurde nie berechnet. Sie nutzt die heutigen Stundenzettel.",
+        "calcularPlanilla": "Abrechnung berechnen"
       },
       "prestamos": {
         "estado": {
@@ -19584,7 +19590,7 @@
       "llegaron": "Angekommen",
       "dePermiso": "Im Urlaub oder freigestellt",
       "aunPorLlegar": "Noch nicht fällig",
-      "comoSeCuenta": "Gezählt wird der Firmentag in Firmenzeit. Eine Nachtschicht zählt am Tag ihres Beginns; eine Vertretung ist ein Platz; wer 20 Minuten nach Beginn nicht eingestempelt hat, gilt als abwesend.",
+      "comoSeCuenta": "Gezählt wird der Firmentag in Firmenzeit. Eine Nachtschicht zählt am Tag ihres Beginns; eine Vertretung ist ein Platz; wer {{min}} Minuten nach Beginn nicht eingestempelt hat, gilt als abwesend.",
       "lote": {
         "diaCerrado": "Lohntag abgeschlossen",
         "noEncontrado": "existiert nicht mehr oder nicht in Ihren Standorten",
@@ -19667,6 +19673,10 @@
       "franjaAyuda": "Zellen mit einem Punkt wurden live geändert. „Neues ansehen“ liest den echten Dienstplan neu, mit Ihren Änderungen darüber; beim Veröffentlichen wird erneut geprüft.",
       "releer": "Neues ansehen",
       "entendido": "Verstanden"
+    },
+    "RutaConPermiso": {
+      "titulo": "Kein Zugriff auf diese Seite",
+      "descripcion": "Ihre Rolle kann diese Seite nicht sehen. Wenn Sie sie brauchen, fragen Sie einen Administrator."
     }
   },
   "visitantes": {

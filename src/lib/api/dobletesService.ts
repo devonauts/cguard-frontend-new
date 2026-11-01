@@ -720,6 +720,8 @@ const real = {
     vacancy?:
       | { shiftId: string }
       | { stationId: string; windowStart: string; windowEnd: string };
+    /** An unreported falta: the server reports it and withdraws it if the offer cannot start. */
+    absence?: { guardId: string; shiftId: string };
     bonusCents?: number | null;
     urgent?: boolean;
     pickedUserIds?: string[];
@@ -728,6 +730,7 @@ const real = {
 
     if (body.eventId) cuerpo.eventId = body.eventId;
     else if (body.vacancy) cuerpo.vacancy = body.vacancy;
+    else if (body.absence) cuerpo.absence = body.absence;
 
     // Omitted = the company default (plus the urgent bonus when urgent).
     if (body.bonusCents != null) cuerpo.bonusCents = body.bonusCents;

@@ -2912,7 +2912,9 @@
       "correction_pending": "Correctie in behandeling",
       "missing_location": "Zonder locatie",
       "selfie_no_face": "Selfie zonder gezicht",
-      "face_mismatch": "Gezicht komt niet overeen"
+      "face_mismatch": "Gezicht komt niet overeen",
+      "absence_reported": "Gemelde afwezigheid",
+      "wrong_post": "Ingeklokt op een andere post"
     },
     "excEstado": {
       "open": "Open",
@@ -2951,7 +2953,8 @@
       "autoOut": "Automatisch uitgeklokt",
       "relevoOut": "Afgesloten door aflossing",
       "earlyExit": "Vroegtijdig vertrek",
-      "supervisorOut": "Afgesloten door supervisor"
+      "supervisorOut": "Afgesloten door supervisor",
+      "registradaPor": "Geregistreerd door {{nombre}}"
     }
   },
   "performance": {
@@ -11259,7 +11262,8 @@
       "personaSeleccionada": "Geselecteerde persoon",
       "sinHorarioPublicado": "Nog geen rooster gepubliceerd",
       "sinHorarioPublicadoAyuda": "Klokregistraties verschijnen zodra beveiligers inklokken voor hun diensten. Maak en publiceer eerst het rooster.",
-      "armarHorario": "Rooster maken"
+      "armarHorario": "Rooster maken",
+      "sinUbicacion": "Geen locatie"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",
@@ -18250,7 +18254,9 @@
         "deEstaSucursal": "Loonlijst van {{nombre}}: je werkt in die vestiging.",
         "tarjetasSinAprobar_one": "{{count}} urenkaart niet goedgekeurd in de periode. De verloning neemt hem toch mee; keur hem goed voor je publiceert.",
         "tarjetasSinAprobar_other": "{{count}} urenkaarten niet goedgekeurd in de periode. De verloning neemt ze toch mee; keur ze goed voor je publiceert.",
-        "irAHoras": "Naar uren van de periode"
+        "irAHoras": "Naar uren van de periode",
+        "listaParaCalcular": "De uren van de periode zijn klaar, maar deze loonrun is nooit berekend. Er worden de urenkaarten van vandaag gebruikt.",
+        "calcularPlanilla": "Loonrun berekenen"
       },
       "prestamos": {
         "estado": {
@@ -19584,7 +19590,7 @@
       "llegaron": "Aangekomen",
       "dePermiso": "Met verlof of vakantie",
       "aunPorLlegar": "Nog te komen",
-      "comoSeCuenta": "De bedrijfsdag telt in bedrijfstijd. Een nachtdienst telt op de dag dat hij begint; een vervanging is één plek; wie 20 minuten na de start niet heeft ingeklokt, telt als afwezig.",
+      "comoSeCuenta": "De bedrijfsdag telt in bedrijfstijd. Een nachtdienst telt op de dag dat hij begint; een vervanging is één plek; wie {{min}} minuten na de start niet heeft ingeklokt, telt als afwezig.",
       "lote": {
         "diaCerrado": "loondag afgesloten",
         "noEncontrado": "bestaat niet meer of niet van jouw locaties",
@@ -19667,6 +19673,10 @@
       "franjaAyuda": "Cellen met een stip zijn live gewijzigd. ‘Bekijk wat nieuw is’ leest het echte rooster opnieuw met jouw wijzigingen erbovenop; bij publiceren wordt opnieuw gecontroleerd.",
       "releer": "Bekijk wat nieuw is",
       "entendido": "Begrepen"
+    },
+    "RutaConPermiso": {
+      "titulo": "Geen toegang tot deze pagina",
+      "descripcion": "Je rol kan deze pagina niet zien. Heb je hem nodig, vraag het een beheerder."
     }
   },
   "visitantes": {

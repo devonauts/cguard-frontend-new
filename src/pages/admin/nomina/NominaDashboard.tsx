@@ -144,7 +144,9 @@ export default function NominaDashboard() {
         <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {t(
             "ui.Asistencia.comoSeCuenta",
-            "Se cuenta el día de la empresa, en su hora. Un turno de noche cuenta el día en que empieza; quien cubre a otro ocupa un solo puesto; quien no marcó a los 20 minutos del inicio cuenta como inasistencia.",
+            "Se cuenta el día de la empresa, en su hora. Un turno de noche cuenta el día en que empieza; quien cubre a otro ocupa un solo puesto; quien no marcó a los {{min}} minutos del inicio cuenta como inasistencia.",
+            // The company's «Umbral inasistencia»; 30 is the setting's default.
+            { min: data?.absentAfterMin ?? 30 },
           )}
         </p>
       </PageContainer>

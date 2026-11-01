@@ -16,6 +16,8 @@ export interface ResumenDelDia {
   overtimeToday: number;
   pendingApprovals: number;
   attendancePct: number | null;
+  /** Minutes with no clock-in before a person counts as absent (Umbral inasistencia). */
+  absentAfterMin?: number;
 }
 
 const delDia = (day: string, extra: Record<string, string> = {}) =>
@@ -63,7 +65,7 @@ export function minutos(n: number): string {
 
 /** Marcaciones filtered to this person's late marks of the range. */
 export function enlaceAMarcaciones(
-  p: { personId: string; role: "guard" | "supervisor" | "staff" },
+  p: { personId: string; role: "guard" | "supervisor" | "staff"; personName?: string | null },
   from: string,
   to: string,
 ): string {
@@ -72,6 +74,9 @@ export function enlaceAMarcaciones(
   // a supervisor's or office person's is their user id — the server matches
   // each leg by its own key, so the link always carries the person.
   sp.set("guard", p.personId);
+  // The person picker lists guards only: a supervisor or office person shows
+  // by name instead of «Persona seleccionada».
+  if (p.role !== "guard" && p.personName) sp.set("persona", p.personName);
 
   return `/nomina/records?${sp.toString()}`;
 }

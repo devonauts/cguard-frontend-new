@@ -109,11 +109,18 @@ export default function NominaSettings() {
   const [s, setS] = useState<NominaSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  // The US state this tab LOADED: the server keeps the stored state when the
+  // body still carries this value (nobody picked a state here), so an older
+  // tab never undoes a state saved elsewhere.
+  const [regionCargada, setRegionCargada] = useState<string | null>(null);
 
   useEffect(() => {
     attendanceService
       .getSettings()
-      .then((d) => setS(d))
+      .then((d) => {
+        setS(d);
+        setRegionCargada(((d as NominaSettings)?.payroll as { regionDeReglas?: string | null } | undefined)?.regionDeReglas ?? null);
+      })
       .catch((e) => toast.error(e?.message || t("ui.NominaSettings.errorAlCargar", "Error al cargar")))
       .finally(() => setLoading(false));
   }, []);
@@ -121,11 +128,13 @@ export default function NominaSettings() {
   const save = async () => {
     setSaving(true);
     try {
-      const saved = await attendanceService.saveSettings(
-        (s ?? {}) as Record<string, unknown>,
-      );
+      const cuerpo = s
+        ? { ...s, payroll: { ...(s.payroll || {}), regionDeReglasCargada: regionCargada } }
+        : {};
+      const saved = await attendanceService.saveSettings(cuerpo as Record<string, unknown>);
 
       setS(saved);
+      setRegionCargada(((saved as NominaSettings)?.payroll as { regionDeReglas?: string | null } | undefined)?.regionDeReglas ?? null);
       toast.success(t("comun.configuracionGuardada"));
     } catch (e) {
       toast.error(

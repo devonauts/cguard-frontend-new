@@ -10722,7 +10722,8 @@
       "personaSeleccionada": "Pessoa selecionada",
       "sinHorarioPublicado": "Ainda não há escala publicada",
       "sinHorarioPublicadoAyuda": "As marcações aparecem quando os vigilantes registram entrada nos seus turnos. Primeiro monte e publique a escala.",
-      "armarHorario": "Montar a escala"
+      "armarHorario": "Montar a escala",
+      "sinUbicacion": "Sem localização"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar também estes e-mails",
@@ -17713,7 +17714,9 @@
         "deEstaSucursal": "Folha de {{nombre}}: você está trabalhando nessa filial.",
         "tarjetasSinAprobar_one": "{{count}} cartão não aprovado no período. A folha o inclui mesmo assim; aprove-o antes de publicar.",
         "tarjetasSinAprobar_other": "{{count}} cartões não aprovados no período. A folha os inclui mesmo assim; aprove-os antes de publicar.",
-        "irAHoras": "Ir para Horas do período"
+        "irAHoras": "Ir para Horas do período",
+        "listaParaCalcular": "As horas do período já estão prontas, mas esta folha não foi calculada. Será calculada com os cartões de hoje.",
+        "calcularPlanilla": "Calcular folha"
       },
       "prestamos": {
         "estado": {
@@ -19047,7 +19050,7 @@
       "llegaron": "Chegaram",
       "dePermiso": "De licença ou férias",
       "aunPorLlegar": "Ainda por chegar",
-      "comoSeCuenta": "Conta-se o dia da empresa, no horário dela. Um turno noturno conta no dia em que começa; quem cobre outro ocupa um só posto; quem não marcou 20 minutos após o início conta como falta.",
+      "comoSeCuenta": "Conta-se o dia da empresa, no horário dela. Um turno noturno conta no dia em que começa; quem cobre outro ocupa um só posto; quem não marcou {{min}} minutos após o início conta como falta.",
       "lote": {
         "diaCerrado": "dia de pagamento fechado",
         "noEncontrado": "já não existe ou não é dos seus locais",
@@ -19130,6 +19133,10 @@
       "franjaAyuda": "As células com um ponto mudaram na escala real. «Ver o novo» lê a escala real de novo com suas alterações por cima; ao publicar, tudo é verificado outra vez.",
       "releer": "Ver o novo",
       "entendido": "Entendi"
+    },
+    "RutaConPermiso": {
+      "titulo": "Sem acesso a esta página",
+      "descripcion": "Sua função não pode ver esta página. Se precisar dela, peça a um administrador."
     }
   },
   "map": {
@@ -19295,7 +19302,9 @@
       "correction_pending": "Correção pendente",
       "missing_location": "Sem localização",
       "selfie_no_face": "Selfie sem rosto",
-      "face_mismatch": "Rosto que não coincide"
+      "face_mismatch": "Rosto que não coincide",
+      "absence_reported": "Ausência comunicada",
+      "wrong_post": "Marcou em outro posto"
     },
     "excEstado": {
       "open": "Aberta",
@@ -19334,7 +19343,8 @@
       "autoOut": "Saída automática",
       "relevoOut": "Fechada pela rendição",
       "earlyExit": "Saída antecipada",
-      "supervisorOut": "Fechada pelo supervisor"
+      "supervisorOut": "Fechada pelo supervisor",
+      "registradaPor": "Registrada por {{nombre}}"
     }
   },
   "maps": {

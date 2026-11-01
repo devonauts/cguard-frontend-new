@@ -10722,7 +10722,8 @@
       "personaSeleccionada": "Selected person",
       "sinHorarioPublicado": "No schedule published yet",
       "sinHorarioPublicadoAyuda": "Clock-ins show up here when guards clock in on their shifts. First build and publish the schedule.",
-      "armarHorario": "Build the schedule"
+      "armarHorario": "Build the schedule",
+      "sinUbicacion": "No location"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",
@@ -17713,7 +17714,9 @@
         "deEstaSucursal": "Payroll for {{nombre}}: you are working in that branch.",
         "tarjetasSinAprobar_one": "{{count}} timecard not approved in the period. The run includes it anyway; approve it before publishing.",
         "tarjetasSinAprobar_other": "{{count}} timecards not approved in the period. The run includes them anyway; approve them before publishing.",
-        "irAHoras": "Go to Period hours"
+        "irAHoras": "Go to Period hours",
+        "listaParaCalcular": "The period's hours are ready, but this payroll run was never calculated. It will use today's timecards.",
+        "calcularPlanilla": "Calculate run"
       },
       "prestamos": {
         "estado": {
@@ -19047,7 +19050,7 @@
       "llegaron": "Arrived",
       "dePermiso": "On leave or vacation",
       "aunPorLlegar": "Not due yet",
-      "comoSeCuenta": "The company's day is counted in its own time. A night shift counts on the day it starts; a cover is one seat; anyone who hasn't clocked in 20 minutes after the start counts as absent.",
+      "comoSeCuenta": "The company's day is counted in its own time. A night shift counts on the day it starts; a cover is one seat; anyone who hasn't clocked in {{min}} minutes after the start counts as absent.",
       "lote": {
         "diaCerrado": "pay day closed",
         "noEncontrado": "no longer exists or isn't in your sites",
@@ -19130,6 +19133,10 @@
       "franjaAyuda": "Cells with a dot changed live. «See what's new» reads the live schedule again with your changes on top; publishing checks again.",
       "releer": "See what's new",
       "entendido": "Got it"
+    },
+    "RutaConPermiso": {
+      "titulo": "No access to this page",
+      "descripcion": "Your role can’t see this page. If you need it, ask an administrator."
     }
   },
   "map": {
@@ -19295,7 +19302,9 @@
       "correction_pending": "Correction pending",
       "missing_location": "No location",
       "selfie_no_face": "Selfie without a face",
-      "face_mismatch": "Face doesn't match"
+      "face_mismatch": "Face doesn't match",
+      "absence_reported": "Reported absence",
+      "wrong_post": "Clocked in at another station"
     },
     "excEstado": {
       "open": "Open",
@@ -19334,7 +19343,8 @@
       "autoOut": "Automatic clock-out",
       "relevoOut": "Closed by the relief",
       "earlyExit": "Early departure",
-      "supervisorOut": "Closed by supervisor"
+      "supervisorOut": "Closed by supervisor",
+      "registradaPor": "Registered by {{nombre}}"
     }
   },
   "maps": {
