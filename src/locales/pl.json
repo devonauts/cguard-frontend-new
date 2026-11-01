@@ -19976,6 +19976,10 @@
       "franjaAyuda": "Komórki z kropką zmieniono na żywo. „Zobacz nowości” ponownie wczytuje rzeczywisty grafik z Twoimi zmianami na wierzchu; przy publikacji wszystko jest sprawdzane jeszcze raz.",
       "releer": "Zobacz nowości",
       "entendido": "Rozumiem"
+    },
+    "RutaConPermiso": {
+      "titulo": "Brak dostępu do tej strony",
+      "descripcion": "Twoja rola nie może zobaczyć tej strony. Jeśli jej potrzebujesz, poproś administratora."
     }
   },
   "visitantes": {

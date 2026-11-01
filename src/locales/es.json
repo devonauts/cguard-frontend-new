@@ -19128,6 +19128,10 @@
       "franjaAyuda": "Las celdas con un punto cambiaron en vivo. «Ver lo nuevo» vuelve a leer el horario real con tus cambios encima; al publicar se revisa otra vez.",
       "releer": "Ver lo nuevo",
       "entendido": "Entendido"
+    },
+    "RutaConPermiso": {
+      "titulo": "Sin acceso a esta página",
+      "descripcion": "Tu rol no puede ver esta página. Si la necesitas, pídesela a un administrador."
     }
   },
   "map": {

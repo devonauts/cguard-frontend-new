@@ -19128,6 +19128,10 @@
       "franjaAyuda": "Cells with a dot changed live. «See what's new» reads the live schedule again with your changes on top; publishing checks again.",
       "releer": "See what's new",
       "entendido": "Got it"
+    },
+    "RutaConPermiso": {
+      "titulo": "No access to this page",
+      "descripcion": "Your role can’t see this page. If you need it, ask an administrator."
     }
   },
   "map": {

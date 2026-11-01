@@ -19128,6 +19128,10 @@
       "franjaAyuda": "As células com um ponto mudaram na escala real. «Ver o novo» lê a escala real de novo com suas alterações por cima; ao publicar, tudo é verificado outra vez.",
       "releer": "Ver o novo",
       "entendido": "Entendi"
+    },
+    "RutaConPermiso": {
+      "titulo": "Sem acesso a esta página",
+      "descripcion": "Sua função não pode ver esta página. Se precisar dela, peça a um administrador."
     }
   },
   "map": {

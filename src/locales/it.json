@@ -19668,6 +19668,10 @@
       "franjaAyuda": "Le celle con un punto sono cambiate dal vivo. «Vedi le novità» rilegge l'orario reale con le tue modifiche sopra; alla pubblicazione si controlla di nuovo.",
       "releer": "Vedi le novità",
       "entendido": "Capito"
+    },
+    "RutaConPermiso": {
+      "titulo": "Nessun accesso a questa pagina",
+      "descripcion": "Il tuo ruolo non può vedere questa pagina. Se ti serve, chiedila a un amministratore."
     }
   },
   "visitantes": {

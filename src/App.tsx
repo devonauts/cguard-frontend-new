@@ -5,6 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import RutaConPermiso from "@/components/RutaConPermiso";
 import { useEffect, lazy, Suspense } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 
@@ -1917,7 +1918,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaDashboard />
+                                    <RutaConPermiso permisos={["attendanceRead"]}>
+                                      <NominaDashboard />
+                                    </RutaConPermiso>
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/dashboard"
@@ -1959,7 +1962,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaAtrasos />
+                                    <RutaConPermiso permisos={["attendanceRead"]}>
+                                      <NominaAtrasos />
+                                    </RutaConPermiso>
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/atrasos"

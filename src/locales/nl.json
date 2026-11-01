@@ -19668,6 +19668,10 @@
       "franjaAyuda": "Cellen met een stip zijn live gewijzigd. ‘Bekijk wat nieuw is’ leest het echte rooster opnieuw met jouw wijzigingen erbovenop; bij publiceren wordt opnieuw gecontroleerd.",
       "releer": "Bekijk wat nieuw is",
       "entendido": "Begrepen"
+    },
+    "RutaConPermiso": {
+      "titulo": "Geen toegang tot deze pagina",
+      "descripcion": "Je rol kan deze pagina niet zien. Heb je hem nodig, vraag het een beheerder."
     }
   },
   "visitantes": {

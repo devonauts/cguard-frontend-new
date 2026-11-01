@@ -19668,6 +19668,10 @@
       "franjaAyuda": "Zellen mit einem Punkt wurden live geändert. „Neues ansehen“ liest den echten Dienstplan neu, mit Ihren Änderungen darüber; beim Veröffentlichen wird erneut geprüft.",
       "releer": "Neues ansehen",
       "entendido": "Verstanden"
+    },
+    "RutaConPermiso": {
+      "titulo": "Kein Zugriff auf diese Seite",
+      "descripcion": "Ihre Rolle kann diese Seite nicht sehen. Wenn Sie sie brauchen, fragen Sie einen Administrator."
     }
   },
   "visitantes": {

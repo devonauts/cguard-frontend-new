@@ -19668,6 +19668,10 @@
       "franjaAyuda": "Les cellules avec un point ont changé en direct. « Voir les nouveautés » relit le planning réel avec vos modifications par-dessus ; la publication vérifie à nouveau.",
       "releer": "Voir les nouveautés",
       "entendido": "Compris"
+    },
+    "RutaConPermiso": {
+      "titulo": "Pas d’accès à cette page",
+      "descripcion": "Votre rôle ne peut pas voir cette page. Si vous en avez besoin, demandez-la à un administrateur."
     }
   },
   "visitantes": {
