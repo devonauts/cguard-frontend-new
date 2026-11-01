@@ -197,6 +197,10 @@ export const partnerBillingService = {
     token: string;
     paymentMethodId?: string;
     issuerId?: string;
+    /** credit_card · debit_card · prepaid_card (the Brick's `paymentTypeId`): Mercado Pago orders want it. */
+    paymentTypeId?: string;
+    /** Only these invoices (a module's order). Without it, everything due. */
+    invoiceIds?: string[];
   }): Promise<ResultadoDelCobro> {
     return ApiService.post(
       `/tenant/${tenantId()}/partner-billing/pay`,

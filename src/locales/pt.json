@@ -7115,7 +7115,8 @@
         "inicio": "Ativação e primeiro mês",
         "renovacion": "Renovação mensal",
         "asientos": "Usuários adicionados",
-        "anticipo": "Pagamento adiantado"
+        "anticipo": "Pagamento adiantado",
+        "modulo": "Módulo"
       },
       "paidOk": "Pagamento realizado. Obrigado!",
       "authFailed": "Seu banco não confirmou o pagamento. Tente novamente ou use outro cartão.",
@@ -7181,7 +7182,9 @@
         "cancelled": "O pagamento não foi confirmado. Você pode tentar novamente com “Pagar agora”."
       },
       "awaitingActivationTitle": "Seu período de teste terminou",
-      "awaitingActivationMsg": "Seu fornecedor precisa ativar sua conta para que você continue usando o sistema. Entre em contato para ativá-la; seus dados são mantidos e os apps de campo continuam funcionando normalmente."
+      "awaitingActivationMsg": "Seu fornecedor precisa ativar sua conta para que você continue usando o sistema. Entre em contato para ativá-la; seus dados são mantidos e os apps de campo continuam funcionando normalmente.",
+      "payModule": "Pagar",
+      "payModuleDesc": "Digite seu cartão para pagar este módulo. É um pagamento único: não é somado à sua cobrança mensal."
     },
     "lockedSuspendedMsgPartner": "O acesso a esta conta foi suspenso. Entre em contato com seu fornecedor para reativá-la.",
     "lockedCanceledMsgPartner": "Sua assinatura foi cancelada. Entre em contato com seu fornecedor para reativá-la.",

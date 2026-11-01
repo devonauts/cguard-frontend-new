@@ -139,6 +139,8 @@ export default function PartnerBillingView({
   const [formularioAbierto, setFormularioAbierto] = useState<
     false | "guardar" | "pagar"
   >(false);
+  /** Paying ONE invoice (a module the provider activated): its id and balance. */
+  const [soloFactura, setSoloFactura] = useState<{ id: string; cents: number } | null>(null);
   const [pagando, setPagando] = useState(false);
   /** Mercado Pago 3-D Secure waiting for the holder (only ever with the owner on screen). */
   const [desafio, setDesafio] = useState<ReturnType<typeof desafioDeMercadoPago>>(null);
@@ -175,6 +177,8 @@ export default function PartnerBillingView({
     anticipo: t("billing.partner.kind.anticipo", {
       defaultValue: "Pago adelantado",
     }),
+    // A module the provider activated: paid once, on its own, never in the monthly charge.
+    modulo: t("billing.partner.kind.modulo", { defaultValue: "Módulo" }),
   };
   const estadosDeRecibo: Record<string, string> = {
     paid: t("billing.invStatusPaid", { defaultValue: "Pagada" }),
@@ -315,6 +319,7 @@ export default function PartnerBillingView({
   };
 
   const pagarAhora = async () => {
+    setSoloFactura(null);
     // Mercado Pago guarda la tarjeta dentro de la suscripción: para pagar ya se teclea otra vez.
     if (pagoConTarjetaTecleada(data)) {
       setFormularioAbierto("pagar");
@@ -692,6 +697,19 @@ export default function PartnerBillingView({
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
+                  {/* A module is paid on its own, with the card typed now (a Mercado Pago order). */}
+                  {inv.status === "open" && inv.kind === "modulo" && pagoConTarjetaTecleada(data) && (
+                    <Button
+                      size="sm"
+                      variant="brand"
+                      onClick={() => {
+                        setSoloFactura({ id: inv.id, cents: inv.totalCents - (inv.amountPaidCents || 0) });
+                        setFormularioAbierto("pagar");
+                      }}
+                    >
+                      {t("billing.partner.payModule", { defaultValue: "Pagar" })}
+                    </Button>
+                  )}
                   <span className="shrink-0 text-sm font-semibold tabular-nums">
                   {dinero(
                     inv.status === "paid" || inv.status === "refunded"
@@ -718,7 +736,12 @@ export default function PartnerBillingView({
 
       <Modal
         description={
-          formularioAbierto === "pagar"
+          formularioAbierto === "pagar" && soloFactura
+            ? t("billing.partner.payModuleDesc", {
+                defaultValue:
+                  "Teclea tu tarjeta para pagar este módulo. Es un pago único: no se suma a tu cobro mensual.",
+              })
+            : formularioAbierto === "pagar"
             ? t("billing.partner.payModalDesc", {
                 defaultValue:
                   "Teclea tu tarjeta para pagar lo pendiente ahora mismo. Tu suscripción mensual no cambia.",
@@ -742,16 +765,24 @@ export default function PartnerBillingView({
                 })
         }
         onOpenChange={(abierto) => {
-          if (!abierto) setFormularioAbierto(false);
+          if (!abierto) {
+            setFormularioAbierto(false);
+            setSoloFactura(null);
+          }
         }}
       >
         {formularioAbierto && (
           <FormularioDeTarjeta
-            amountCents={data.amountDueCents}
+            amountCents={soloFactura ? soloFactura.cents : data.amountDueCents}
+            invoiceIds={soloFactura && formularioAbierto === "pagar" ? [soloFactura.id] : undefined}
             modo={formularioAbierto}
-            onCancel={() => setFormularioAbierto(false)}
+            onCancel={() => {
+              setFormularioAbierto(false);
+              setSoloFactura(null);
+            }}
             onSaved={async (r) => {
               setFormularioAbierto(false);
+              setSoloFactura(null);
               await atenderResultado(r);
             }}
           />
@@ -807,12 +838,15 @@ export default function PartnerBillingView({
 function FormularioDeTarjeta({
   modo = "guardar",
   amountCents = 0,
+  invoiceIds,
   onSaved,
   onCancel,
 }: {
   /** Mercado Pago: guardar la tarjeta (suscripción) o pagar ya con ella. Stripe sólo guarda. */
   modo?: "guardar" | "pagar";
   amountCents?: number;
+  /** Mercado Pago: only these invoices (a module). */
+  invoiceIds?: string[];
   onSaved: (r: ResultadoDelCobro) => Promise<void>;
   onCancel: () => void;
 }) {
@@ -928,6 +962,7 @@ function FormularioDeTarjeta({
     return (
       <FormularioMercadoPago
         amountCents={amountCents}
+        invoiceIds={invoiceIds}
         modo={modo}
         prep={mp}
         onCancel={onCancel}

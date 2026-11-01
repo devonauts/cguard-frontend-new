@@ -541,7 +541,8 @@
         "inicio": "Setup and first month",
         "renovacion": "Monthly renewal",
         "asientos": "Users added",
-        "anticipo": "Advance payment"
+        "anticipo": "Advance payment",
+        "modulo": "Module"
       },
       "paidOk": "Payment received. Thank you!",
       "authFailed": "Your bank did not confirm the payment. Try again or use another card.",
@@ -607,7 +608,9 @@
         "cancelled": "The payment was not confirmed. You can try again with “Pay now”."
       },
       "awaitingActivationTitle": "Your trial period has ended",
-      "awaitingActivationMsg": "Your provider needs to activate your account so you can keep using the system. Contact them to activate it; your data is kept and the field apps keep working as usual."
+      "awaitingActivationMsg": "Your provider needs to activate your account so you can keep using the system. Contact them to activate it; your data is kept and the field apps keep working as usual.",
+      "payModule": "Pay",
+      "payModuleDesc": "Enter your card to pay for this module. It is a one-time payment: it is not added to your monthly charge."
     },
     "lockedSuspendedMsgPartner": "Access to this account has been suspended. Contact your provider to reactivate it.",
     "lockedCanceledMsgPartner": "Your subscription was canceled. Contact your provider to reactivate it.",

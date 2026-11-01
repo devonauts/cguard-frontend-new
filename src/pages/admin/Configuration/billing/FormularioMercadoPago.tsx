@@ -16,7 +16,8 @@ import {
  * Mercado Pago devuelve un token de un solo uso y con él el servidor:
  *   · `guardar`: abre la SUSCRIPCIÓN de la empresa en la cuenta del socio
  *     (Mercado Pago la cobra solo cada mes), o le cambia la tarjeta;
- *   · `pagar`: paga lo pendiente ahora mismo con esa tarjeta («Pagar ahora»).
+ *   · `pagar`: paga lo pendiente ahora mismo con esa tarjeta («Pagar ahora»),
+ *     o sólo las facturas de `invoiceIds` (un módulo): una ORDEN de Mercado Pago.
  *
  * El SDK (`sdk.mercadopago.com/js/v2`) se carga sólo al abrir este formulario.
  */
@@ -48,6 +49,7 @@ export default function FormularioMercadoPago({
   prep,
   modo = "guardar",
   amountCents = 0,
+  invoiceIds,
   onSaved,
   onCancel,
 }: {
@@ -55,6 +57,8 @@ export default function FormularioMercadoPago({
   modo?: "guardar" | "pagar";
   /** Lo pendiente, en centavos: el Brick lo enseña al pagar. */
   amountCents?: number;
+  /** Sólo estas facturas (un módulo); sin ellas, todo lo pendiente. */
+  invoiceIds?: string[];
   onSaved: (r: ResultadoDelCobro) => Promise<void>;
   onCancel: () => void;
 }) {
@@ -100,11 +104,14 @@ export default function FormularioMercadoPago({
                   defaultValue: "No se pudo guardar la tarjeta. Revisa los datos.",
                 }),
               ),
-            onSubmit: async (datos: {
-              token?: string;
-              payment_method_id?: string;
-              issuer_id?: string | number;
-            }) => {
+            onSubmit: async (
+              datos: {
+                token?: string;
+                payment_method_id?: string;
+                issuer_id?: string | number;
+              },
+              extra?: { paymentTypeId?: string },
+            ) => {
               if (!datos?.token) throw new Error("sin-token");
               setError(null);
               try {
@@ -115,6 +122,8 @@ export default function FormularioMercadoPago({
                         paymentMethodId: datos.payment_method_id,
                         issuerId:
                           datos.issuer_id === undefined ? undefined : String(datos.issuer_id),
+                        paymentTypeId: extra?.paymentTypeId,
+                        invoiceIds: invoiceIds?.length ? invoiceIds : undefined,
                       })
                     : await partnerBillingService.confirmarTarjeta(datos.token),
                 );
@@ -149,7 +158,7 @@ export default function FormularioMercadoPago({
         /* ya desmontado */
       }
     };
-  }, [prep.publicKey, modo, amountCents]);
+  }, [prep.publicKey, modo, amountCents, (invoiceIds || []).join(",")]);
 
   return (
     <div className="space-y-4">

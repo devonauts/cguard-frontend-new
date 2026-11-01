@@ -19,6 +19,9 @@ import { Button } from "@/components/ui/button";
  * the «I already confirmed» button does the same: the server re-reads the
  * payment anyway, so pressing it early can only answer «still pending».
  *
+ * ORDERS (Orders API, used for modules and «Pay now» since 2026-11-01) hand
+ * just the bank's URL, with no `creq`: the iframe opens it directly.
+ *
  * Unattended charges (the sweep) never ask for 3-D Secure.
  */
 export default function Desafio3dsMercadoPago({
@@ -51,9 +54,9 @@ export default function Desafio3dsMercadoPago({
     }
   };
 
-  // Post the challenge request into the iframe once it exists.
+  // Post the challenge request into the iframe once it exists (payments; an order's URL opens by itself).
   useEffect(() => {
-    formulario.current?.submit();
+    if (creq) formulario.current?.submit();
   }, [url, creq]);
 
   // The issuer's page tells us when the holder is done.
@@ -99,21 +102,24 @@ export default function Desafio3dsMercadoPago({
         <iframe
           className="h-full w-full"
           name={nombre}
+          src={creq ? undefined : url}
           title={t("billing.partner.mp3ds.frameTitle", {
             defaultValue: "Confirmación de tu banco",
           })}
           onLoad={() => setCargado(true)}
         />
       </div>
-      <form
-        ref={formulario}
-        action={url}
-        className="hidden"
-        method="POST"
-        target={nombre}
-      >
-        <input name="creq" type="hidden" value={creq} />
-      </form>
+      {creq && (
+        <form
+          ref={formulario}
+          action={url}
+          className="hidden"
+          method="POST"
+          target={nombre}
+        >
+          <input name="creq" type="hidden" value={creq} />
+        </form>
+      )}
       <div className="flex flex-wrap justify-end gap-2">
         <Button disabled={terminando} type="button" variant="outline" onClick={onCancel}>
           {t("billing.partner.mp3ds.cancel", { defaultValue: "Cancelar" })}

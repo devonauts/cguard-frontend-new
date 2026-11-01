@@ -6169,7 +6169,8 @@
         "asientos": "Utenti aggiunti",
         "inicio": "Attivazione e primo mese",
         "renovacion": "Rinnovo mensile",
-        "anticipo": "Pagamento anticipato"
+        "anticipo": "Pagamento anticipato",
+        "modulo": "Modulo"
       },
       "loadingForm": "Caricamento del modulo sicuro…",
       "monthlyFee": "Canone mensile",
@@ -6225,7 +6226,9 @@
         "cancelled": "Il pagamento non è stato confermato. Puoi riprovare con «Paga ora»."
       },
       "awaitingActivationTitle": "Il tuo periodo di prova è terminato",
-      "awaitingActivationMsg": "Il tuo fornitore deve attivare il tuo account perché tu possa continuare a usare il sistema. Contattalo per attivarlo; i tuoi dati vengono conservati e le app sul campo continuano a funzionare normalmente."
+      "awaitingActivationMsg": "Il tuo fornitore deve attivare il tuo account perché tu possa continuare a usare il sistema. Contattalo per attivarlo; i tuoi dati vengono conservati e le app sul campo continuano a funzionare normalmente.",
+      "payModule": "Paga",
+      "payModuleDesc": "Inserisci la tua carta per pagare questo modulo. È un pagamento unico: non si aggiunge al tuo addebito mensile."
     },
     "plan": "Piano",
     "removeUser": "Smetti di pagare per questa persona",

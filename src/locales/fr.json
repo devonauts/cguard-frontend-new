@@ -6169,7 +6169,8 @@
         "asientos": "Utilisateurs ajoutés",
         "inicio": "Mise en service et premier mois",
         "renovacion": "Renouvellement mensuel",
-        "anticipo": "Paiement anticipé"
+        "anticipo": "Paiement anticipé",
+        "modulo": "Module"
       },
       "loadingForm": "Chargement du formulaire sécurisé…",
       "monthlyFee": "Mensualité",
@@ -6225,7 +6226,9 @@
         "cancelled": "Le paiement n’a pas été confirmé. Vous pouvez réessayer avec « Payer maintenant »."
       },
       "awaitingActivationTitle": "Votre période d'essai est terminée",
-      "awaitingActivationMsg": "Votre fournisseur doit activer votre compte pour que vous puissiez continuer à utiliser le système. Contactez-le pour l'activer ; vos données sont conservées et les applications de terrain continuent de fonctionner normalement."
+      "awaitingActivationMsg": "Votre fournisseur doit activer votre compte pour que vous puissiez continuer à utiliser le système. Contactez-le pour l'activer ; vos données sont conservées et les applications de terrain continuent de fonctionner normalement.",
+      "payModule": "Payer",
+      "payModuleDesc": "Saisissez votre carte pour payer ce module. C'est un paiement unique : il ne s'ajoute pas à votre prélèvement mensuel."
     },
     "plan": "Forfait",
     "removeUser": "Ne plus payer pour cette personne",
