@@ -35,9 +35,11 @@ describe("Atrasos", () => {
     expect(Object.fromEntries(u.searchParams)).toEqual({ from: "2026-11-02", to: "2026-11-08", status: "late", guard: "g1" });
   });
 
-  it("supervisors and office staff open the range without a guard filter", () => {
-    const u = new URL(`http://x${enlaceAMarcaciones({ personId: "u1", role: "staff" }, "2026-11-02", "2026-11-08")}`);
-    expect(u.searchParams.get("guard")).toBeNull();
-    expect(u.searchParams.get("status")).toBe("late");
+  it("supervisors and office staff open Marcaciones filtered to that person too (by user id)", () => {
+    for (const role of ["supervisor", "staff"] as const) {
+      const u = new URL(`http://x${enlaceAMarcaciones({ personId: "u1", role }, "2026-11-02", "2026-11-08")}`);
+      expect(u.searchParams.get("guard")).toBe("u1");
+      expect(u.searchParams.get("status")).toBe("late");
+    }
   });
 });

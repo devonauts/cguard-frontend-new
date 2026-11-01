@@ -10691,7 +10691,8 @@
       "horasNetasTotales": "Net hours:",
       "sinResolver": "Unresolved",
       "descansoCubreElTurnoAyuda": "The break covers the whole shift: correct the break so it gets paid.",
-      "aprobarEnHoras": "Approve for pay in Period hours"
+      "aprobarEnHoras": "Approve for pay in Period hours",
+      "personaSeleccionada": "Selected person"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",

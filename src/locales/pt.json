@@ -10691,7 +10691,8 @@
       "horasNetasTotales": "Horas líquidas:",
       "sinResolver": "Sem resolver",
       "descansoCubreElTurnoAyuda": "O intervalo cobre todo o turno: corrija o intervalo para que seja pago.",
-      "aprobarEnHoras": "Aprovar para pagamento em Horas do período"
+      "aprobarEnHoras": "Aprovar para pagamento em Horas do período",
+      "personaSeleccionada": "Pessoa selecionada"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar também estes e-mails",

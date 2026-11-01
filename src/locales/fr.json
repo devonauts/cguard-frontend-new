@@ -11226,7 +11226,8 @@
       "horasNetasTotales": "Heures nettes :",
       "sinResolver": "Non résolu",
       "descansoCubreElTurnoAyuda": "La pause couvre tout le service : corrigez la pause pour qu’il soit payé.",
-      "aprobarEnHoras": "Approuver pour la paie dans Heures de la période"
+      "aprobarEnHoras": "Approuver pour la paie dans Heures de la période",
+      "personaSeleccionada": "Personne sélectionnée"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Prévenir aussi ces adresses e-mail",

@@ -11226,7 +11226,8 @@
       "horasNetasTotales": "Nettostunden:",
       "sinResolver": "Ungeklärt",
       "descansoCubreElTurnoAyuda": "Die Pause deckt die ganze Schicht ab: Korrigiere die Pause, damit sie bezahlt wird.",
-      "aprobarEnHoras": "Zur Zahlung freigeben unter Stunden des Zeitraums"
+      "aprobarEnHoras": "Zur Zahlung freigeben unter Stunden des Zeitraums",
+      "personaSeleccionada": "Ausgewählte Person"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",

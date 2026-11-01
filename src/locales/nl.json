@@ -11226,7 +11226,8 @@
       "horasNetasTotales": "Netto-uren:",
       "sinResolver": "Onopgelost",
       "descansoCubreElTurnoAyuda": "De pauze beslaat de hele dienst: corrigeer de pauze zodat die betaald wordt.",
-      "aprobarEnHoras": "Goedkeuren voor betaling in Uren van de periode"
+      "aprobarEnHoras": "Goedkeuren voor betaling in Uren van de periode",
+      "personaSeleccionada": "Geselecteerde persoon"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",

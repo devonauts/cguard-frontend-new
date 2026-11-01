@@ -10691,7 +10691,8 @@
       "horasNetasTotales": "Horas netas:",
       "sinResolver": "Sin resolver",
       "descansoCubreElTurnoAyuda": "El descanso cubre todo el turno: corrige el descanso para que se pague.",
-      "aprobarEnHoras": "Aprobar para pago en Horas del periodo"
+      "aprobarEnHoras": "Aprobar para pago en Horas del periodo",
+      "personaSeleccionada": "Persona seleccionada"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar además a estos correos",

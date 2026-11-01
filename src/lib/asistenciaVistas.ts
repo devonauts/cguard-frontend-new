@@ -68,7 +68,10 @@ export function enlaceAMarcaciones(
   to: string,
 ): string {
   const sp = new URLSearchParams({ from, to, status: "late" });
-  if (p.role === "guard") sp.set("guard", p.personId);
+  // One person filter for the three kinds: a guard's id is its guard profile,
+  // a supervisor's or office person's is their user id — the server matches
+  // each leg by its own key, so the link always carries the person.
+  sp.set("guard", p.personId);
 
   return `/nomina/records?${sp.toString()}`;
 }

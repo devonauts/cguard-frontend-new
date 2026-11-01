@@ -156,7 +156,10 @@ export function SelectorDeFiltro({
   todos,
   icono,
   ariaLabel,
+  seleccionado,
 }: {
+  /** Label for a value that isn't among the options. */
+  seleccionado?: string;
   value: string;
   onChange: (v: string) => void;
   options: Array<{ id: string; name: string }>;
@@ -175,6 +178,11 @@ export function SelectorDeFiltro({
         onChange={(e) => onChange(e.target.value)}
       >
         <option value="">{todos}</option>
+        {/* A value that came in the link (e.g. a supervisor from Atrasos) but
+            isn't in this list still shows as chosen, not as «Todos». */}
+        {value && !options.some((o) => o.id === value) && (
+          <option value={value}>{seleccionado || value}</option>
+        )}
         {options.map((o) => (
           <option key={o.id} value={o.id}>
             {o.name}

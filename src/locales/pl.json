@@ -11272,7 +11272,8 @@
       "horasNetasTotales": "Godziny netto:",
       "sinResolver": "Nierozstrzygnięte",
       "descansoCubreElTurnoAyuda": "Przerwa obejmuje całą zmianę: popraw przerwę, aby zmiana została wypłacona.",
-      "aprobarEnHoras": "Zatwierdź do wypłaty w Godzinach okresu"
+      "aprobarEnHoras": "Zatwierdź do wypłaty w Godzinach okresu",
+      "personaSeleccionada": "Wybrana osoba"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Powiadamiaj dodatkowo te adresy e-mail",
