@@ -22371,7 +22371,7 @@
       "celular": "Cellulare",
       "celularAyuda": "Se non ha e-mail, con il cellulare ti diamo il link per WhatsApp.",
       "correo": "E-mail",
-      "correoAyuda": "Qui arriva l’invito per creare la password.",
+      "correoAyuda": "Consigliato: l'invito arriva da solo e può recuperare la password via e-mail.",
       "sinCorreo": "Non ha e-mail (entra con un nome utente)",
       "usuario": "Nome utente",
       "usuarioAyuda": "Facoltativo. Se lo lasci vuoto, il sistema ne assegna uno.",
@@ -22379,7 +22379,8 @@
       "rolElige": "Scegli il ruolo",
       "queVe": "Che cosa può vedere?",
       "rolVeTodo": "Questo ruolo vede tutta l’operatività per definizione: non si può limitare.",
-      "soloSedes": "Solo alcune sedi"
+      "soloSedes": "Solo alcune sedi",
+      "sinCorreoAyuda": "Il link lo dai tu: alla fine, «Condividi su WhatsApp» apre il tuo WhatsApp con il messaggio pronto e lo invii dal tuo telefono. Se poi ha un'e-mail, aggiungila nella sua scheda."
     },
     "paso3": {
       "puestoSinRotacionVig": "Questo posto non ha ancora una rotazione",

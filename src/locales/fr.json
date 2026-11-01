@@ -22371,7 +22371,7 @@
       "celular": "Portable",
       "celularAyuda": "S’il n’a pas d’e-mail, avec son portable nous vous donnons le lien pour WhatsApp.",
       "correo": "E-mail",
-      "correoAyuda": "L’invitation pour créer son mot de passe arrive ici.",
+      "correoAyuda": "Recommandé : l'invitation arrive toute seule et la personne peut récupérer son mot de passe par e-mail.",
       "sinCorreo": "Pas d’e-mail (se connecte avec un identifiant)",
       "usuario": "Identifiant",
       "usuarioAyuda": "Facultatif. Si vous le laissez vide, le système en choisit un.",
@@ -22379,7 +22379,8 @@
       "rolElige": "Choisissez son rôle",
       "queVe": "Que peut-elle voir ?",
       "rolVeTodo": "Ce rôle voit toute l’activité par définition : impossible de la restreindre.",
-      "soloSedes": "Seulement certains sites"
+      "soloSedes": "Seulement certains sites",
+      "sinCorreoAyuda": "C'est vous qui donnez le lien : à la fin, « Partager sur WhatsApp » ouvre votre WhatsApp avec le message prêt et vous l'envoyez depuis votre téléphone. S'il obtient un e-mail plus tard, ajoutez-le dans sa fiche."
     },
     "paso3": {
       "puestoSinRotacionVig": "Ce poste n’a pas encore de rotation",

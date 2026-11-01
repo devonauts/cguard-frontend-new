@@ -22371,7 +22371,7 @@
       "celular": "Celular",
       "celularAyuda": "Si no tiene correo, con su celular te damos el enlace para WhatsApp.",
       "correo": "Correo electrónico",
-      "correoAyuda": "Aquí le llega la invitación para crear su contraseña.",
+      "correoAyuda": "Recomendado: le llega la invitación sola y puede recuperar su contraseña por correo.",
       "sinCorreo": "No tiene correo (entra con un usuario)",
       "usuario": "Usuario para entrar",
       "usuarioAyuda": "Opcional. Si lo dejas vacío, el sistema le pone uno.",
@@ -22379,7 +22379,8 @@
       "rolElige": "Elige su rol",
       "queVe": "¿Qué puede ver?",
       "rolVeTodo": "Este rol ve toda la operación por definición: no se puede acotar.",
-      "soloSedes": "Solo algunas sedes"
+      "soloSedes": "Solo algunas sedes",
+      "sinCorreoAyuda": "El enlace se lo das tú: al terminar, «Compartir por WhatsApp» abre tu WhatsApp con el mensaje listo y lo envías desde tu teléfono. Si después consigue correo, agrégalo en su ficha."
     },
     "paso3": {
       "puestoSinRotacionVig": "Este puesto todavía no tiene rotación",

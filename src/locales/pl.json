@@ -22675,7 +22675,7 @@
       "celular": "Telefon komórkowy",
       "celularAyuda": "Jeśli nie ma e-maila, z numerem telefonu dostaniesz link do WhatsApp.",
       "correo": "E-mail",
-      "correoAyuda": "Tu przyjdzie zaproszenie do utworzenia hasła.",
+      "correoAyuda": "Zalecane: zaproszenie dotrze samo, a hasło można odzyskać przez e-mail.",
       "sinCorreo": "Bez e-maila (loguje się nazwą użytkownika)",
       "usuario": "Nazwa użytkownika",
       "usuarioAyuda": "Opcjonalnie. Jeśli zostawisz puste, system nada nazwę.",
@@ -22683,7 +22683,8 @@
       "rolElige": "Wybierz rolę",
       "queVe": "Co może widzieć?",
       "rolVeTodo": "Ta rola z definicji widzi całą działalność: nie da się tego zawęzić.",
-      "soloSedes": "Tylko niektóre obiekty"
+      "soloSedes": "Tylko niektóre obiekty",
+      "sinCorreoAyuda": "Link przekazujesz ty: na końcu «Udostępnij przez WhatsApp» otwiera twój WhatsApp z gotową wiadomością i wysyłasz ją ze swojego telefonu. Jeśli później będzie miał e-mail, dodaj go w jego karcie."
     },
     "paso3": {
       "puestoSinRotacionVig": "Ten posterunek nie ma jeszcze rotacji",

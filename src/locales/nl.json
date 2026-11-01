@@ -22371,7 +22371,7 @@
       "celular": "Mobiel",
       "celularAyuda": "Zonder e-mail geven we je met het mobiele nummer de link voor WhatsApp.",
       "correo": "E-mail",
-      "correoAyuda": "Hier komt de uitnodiging om een wachtwoord te maken.",
+      "correoAyuda": "Aanbevolen: de uitnodiging komt vanzelf aan en het wachtwoord kan via e-mail worden hersteld.",
       "sinCorreo": "Geen e-mail (logt in met een gebruikersnaam)",
       "usuario": "Gebruikersnaam",
       "usuarioAyuda": "Optioneel. Laat je het leeg, dan kiest het systeem er een.",
@@ -22379,7 +22379,8 @@
       "rolElige": "Kies een rol",
       "queVe": "Wat mag deze persoon zien?",
       "rolVeTodo": "Deze rol ziet per definitie de hele operatie: dat kan niet worden beperkt.",
-      "soloSedes": "Alleen sommige locaties"
+      "soloSedes": "Alleen sommige locaties",
+      "sinCorreoAyuda": "Jij geeft de link door: aan het eind opent «Delen via WhatsApp» je WhatsApp met het bericht klaar en verstuur je het vanaf je telefoon. Krijgt de persoon later een e-mail, voeg die dan toe in het profiel."
     },
     "paso3": {
       "puestoSinRotacionVig": "Deze post heeft nog geen rotatie",

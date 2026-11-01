@@ -22371,7 +22371,7 @@
       "celular": "Celular",
       "celularAyuda": "Se não tiver e-mail, com o celular damos o link para o WhatsApp.",
       "correo": "E-mail",
-      "correoAyuda": "Aqui chega o convite para criar a senha.",
+      "correoAyuda": "Recomendado: o convite chega sozinho e a pessoa pode recuperar a senha por e-mail.",
       "sinCorreo": "Não tem e-mail (entra com um usuário)",
       "usuario": "Usuário para entrar",
       "usuarioAyuda": "Opcional. Se deixar vazio, o sistema escolhe um.",
@@ -22379,7 +22379,8 @@
       "rolElige": "Escolha a função",
       "queVe": "O que pode ver?",
       "rolVeTodo": "Esta função vê toda a operação por definição: não pode ser limitada.",
-      "soloSedes": "Só algumas sedes"
+      "soloSedes": "Só algumas sedes",
+      "sinCorreoAyuda": "Você entrega o link: ao terminar, «Compartilhar no WhatsApp» abre o seu WhatsApp com a mensagem pronta e você envia do seu telefone. Se depois tiver e-mail, adicione na ficha."
     },
     "paso3": {
       "puestoSinRotacionVig": "Este posto ainda não tem rotação",

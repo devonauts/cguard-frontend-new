@@ -22371,7 +22371,7 @@
       "celular": "Handy",
       "celularAyuda": "Ohne E-Mail geben wir dir mit der Handynummer den Link für WhatsApp.",
       "correo": "E-Mail",
-      "correoAyuda": "Hierhin kommt die Einladung zum Erstellen des Passworts.",
+      "correoAyuda": "Empfohlen: Die Einladung kommt von selbst an, und das Passwort lässt sich per E-Mail wiederherstellen.",
       "sinCorreo": "Keine E-Mail (meldet sich mit Benutzernamen an)",
       "usuario": "Benutzername",
       "usuarioAyuda": "Optional. Bleibt es leer, vergibt das System einen.",
@@ -22379,7 +22379,8 @@
       "rolElige": "Rolle wählen",
       "queVe": "Was darf die Person sehen?",
       "rolVeTodo": "Diese Rolle sieht per Definition den gesamten Betrieb: Das lässt sich nicht einschränken.",
-      "soloSedes": "Nur einige Objekte"
+      "soloSedes": "Nur einige Objekte",
+      "sinCorreoAyuda": "Den Link geben Sie weiter: Am Ende öffnet «Über WhatsApp teilen» Ihr WhatsApp mit fertiger Nachricht, und Sie senden sie von Ihrem Telefon. Bekommt die Person später eine E-Mail, tragen Sie sie in ihrem Profil ein."
     },
     "paso3": {
       "puestoSinRotacionVig": "Dieser Posten hat noch keine Rotation",
