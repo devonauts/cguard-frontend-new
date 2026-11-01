@@ -1,4 +1,5 @@
 import { usePuede } from "@/hooks/usePuede";
+import { EstadoVacio } from "@/components/EstadoVacio";
 import { useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
@@ -141,7 +142,10 @@ export default function TimeOff() {
       .then(setPuestos)
       .catch(() => setPuestos([]));
   }, []);
-  const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
+  // `/time-off?nuevo=1` (⌘K, empty states) opens the form straight away.
+  const [isNewRequestOpen, setIsNewRequestOpen] = useState(
+    () => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("nuevo") === "1",
+  );
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
@@ -1016,11 +1020,42 @@ export default function TimeOff() {
             containerless
             data={paginated as any}
             emptyState={
-              <EmptyState
+              <EstadoVacio
                 className="border-0 py-2"
-                description={t("comun.noPudimosEncontrarNingunElemento")}
+                description={t(
+                  "ui.TimeOff.vacioAyuda",
+                  "Vacaciones, permisos y faltas justificadas de todo el personal, vengan de aquí, del Horario o de la app del vigilante.",
+                )}
+                filtrado={
+                  records.length > 0 ||
+                  !!q ||
+                  statusFilter !== "all" ||
+                  typeFilter !== "all" ||
+                  stationFilter !== "all" ||
+                  branchFilter !== "all" ||
+                  !!personFilter ||
+                  !!dateFrom ||
+                  !!dateTo
+                }
                 icon={<CalendarOff />}
-                title={t("kit.table.emptyTitle")}
+                paso={{
+                  label: t("ui.TimeOff.registrarElPrimero", "Registrar un permiso"),
+                  onClick: () => setIsNewRequestOpen(true),
+                  puede: crear.puede,
+                  porQueNo: crear.porQueNo,
+                }}
+                title={t("ui.TimeOff.vacioTitulo", "Todavía no hay permisos ni vacaciones")}
+                variant="inline"
+                onLimpiarFiltro={() => {
+                  setSearchQuery("");
+                  setStatusFilter("all");
+                  setTypeFilter("all");
+                  setStationFilter("all");
+                  setBranchFilter("all");
+                  setPersonFilter(null);
+                  setDateFrom("");
+                  setDateTo("");
+                }}
               />
             }
             loading={loading}

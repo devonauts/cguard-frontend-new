@@ -71,6 +71,10 @@ export const ACCIONES = {
   "permisos.crear": { permiso: "timeOffRequestCreate" },
   "permisos.decidir": { permiso: "timeOffRequestEdit" },
   "permisos.borrar": { permiso: "timeOffRequestDestroy" },
+  // ── Empresa nueva (phase 3): the first step of each empty page ──
+  "estaciones.crear": { permiso: "stationCreate", nivel: NIVEL.OFICINA },
+  "personal.crearVigilante": { permiso: "securityGuardCreate", nivel: NIVEL.OFICINA },
+  "personal.crearOficina": { permiso: "userCreate", nivel: NIVEL.OFICINA },
 } satisfies Record<string, Regla>;
 
 export type Accion = keyof typeof ACCIONES;

@@ -9151,7 +9151,10 @@
       "patron": "Muster"
     },
     "AdminOfficeUsers": {
-      "masAcciones": "Weitere Aktionen"
+      "masAcciones": "Weitere Aktionen",
+      "vacioAyuda": "Wer im Büro arbeitet: Einsatzleitung, Personal, Geschäftsführung. Alle melden sich mit ihrer Rolle im CRM an.",
+      "agregarPrimera": "Jemanden aus dem Büro hinzufügen",
+      "vacioTitulo": "Noch kein Büropersonal"
     },
     "ChangePasswordForm": {
       "mostrarContrasena": "Passwort anzeigen",
@@ -9606,7 +9609,29 @@
       "comoPodemosAyudar": "Wie können wir helfen?",
       "encuentraArticulosVideosYSoporte": "Finden Sie Artikel, Videos und Unterstützung für Ihre Fragen.",
       "noHayNadaCon": "Nichts gefunden für „{{q}}“",
-      "radioCanalGeneral": "Funk · Allgemeiner Kanal"
+      "radioCanalGeneral": "Funk · Allgemeiner Kanal",
+      "cmdk": {
+        "nuevoVigilante": "Neue Wache",
+        "claveAgregar": "hinzufügen",
+        "claveCrear": "anlegen",
+        "nuevaPersona": "Bürokraft hinzufügen",
+        "nuevaEstacion": "Neue Station",
+        "irAHorario": "Zum Dienstplan",
+        "sinCubrir": "Unbesetzt",
+        "nuevoPermiso": "Abwesenheit oder Urlaub erfassen",
+        "buscando": "Suche…",
+        "personasYLugares": "Personen und Orte",
+        "acciones": "Aktionen",
+        "paginas": "Seiten",
+        "tipoVigilante": "Wache",
+        "tipoSupervisor": "Supervisor",
+        "tipoOficina": "Büro",
+        "tipoEstacion": "Station",
+        "tipoSede": "Standort",
+        "tipoCliente": "Kunde",
+        "invitacionPendiente": "Einladung ausstehend",
+        "accion": "Aktion"
+      }
     },
     "registration": {
       "confirmarContrasena": "Passwort bestätigen",
@@ -13470,7 +13495,10 @@
       "filtroSucursal": "Niederlassung",
       "todasLasSucursales": "Alle Niederlassungen",
       "quitarFiltroPersona": "Personenfilter entfernen",
-      "calendario": "Kalender"
+      "calendario": "Kalender",
+      "vacioAyuda": "Urlaub, Abwesenheiten und entschuldigte Fehlzeiten des ganzen Personals, ob hier, im Dienstplan oder in der App der Wache erfasst.",
+      "registrarElPrimero": "Abwesenheit erfassen",
+      "vacioTitulo": "Noch keine Abwesenheiten oder Urlaube"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -16802,7 +16830,10 @@
       "nEstaciones_other": "{{count}} Stationen",
       "agregarEstacion": "Posten hinzufügen",
       "errorAlCargar": "Die Stationen konnten nicht geladen werden",
-      "errorAlCargarAyuda": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut. Ihre Stationen sind noch da: Legen Sie sie nicht neu an."
+      "errorAlCargarAyuda": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut. Ihre Stationen sind noch da: Legen Sie sie nicht neu an.",
+      "vacioAyuda": "Eine Station ist ein Posten, den deine Firma besetzt: ein Pförtnerhaus, ein Empfang, ein Rundgang. Wähle Kunde und Standort, dann wie viele Wachleute nötig sind.",
+      "crearLaPrimera": "Erste Station anlegen",
+      "vacioTitulo": "Noch keine Stationen"
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Dieses Dashboard ist nur für Verwaltungspersonal. Ihre Arbeit wird über die mobile App verwaltet.",
@@ -19376,7 +19407,10 @@
       "conoceElPuesto": "{{n}} Schichten hier",
       "descansoCorto": "Nur {{h}} h Ruhe",
       "ofertaEnviada": "Angebot an die verfügbaren Wachen gesendet.",
-      "noSePudoOfrecer": "Konnte nicht angeboten werden"
+      "noSePudoOfrecer": "Konnte nicht angeboten werden",
+      "sinRequisitoAyuda": "Hier erscheinen Fehlzeiten, leere Plätze und Abwesenheiten ohne Vertretung. Damit klar ist, was fehlt, muss jede Station sagen, wie viele Wachleute sie braucht.",
+      "irAEstaciones": "Bedarf einer Station festlegen",
+      "sinRequisitoTitulo": "Noch keine Station mit Bedarf"
     },
     "HorarioModos": {
       "modos": "Dienstplanmodus",
@@ -19436,6 +19470,35 @@
         "listo": "{{count}} entschieden",
         "parcial": "{{ok}} entschieden, {{failed}} unverändert"
       }
+    },
+    "EstadoVacio": {
+      "limpiarFiltro": "Filter entfernen",
+      "filtradoAyuda": "Versuche andere Wörter oder entferne den Filter.",
+      "nadaCoincide": "Nichts passt zur Suche",
+      "pideloAUnAdministrador": "Bitte eine Administratorin oder einen Administrator der Firma darum."
+    },
+    "PrimerosPasos": {
+      "titulo": "Bring deine Firma ans Laufen",
+      "progreso": "{{listos}} von {{total}} erledigt. Jeder Schritt hakt sich selbst ab, sobald du ihn machst.",
+      "ocultar": "Anleitung ausblenden",
+      "ocultarAyuda": "Für die ganze Firma ausblenden",
+      "noSeOculto": "Die Anleitung konnte nicht ausgeblendet werden. Versuche es erneut.",
+      "hecho": "erledigt",
+      "hacerlo": "Jetzt erledigen",
+      "ir": "Öffnen",
+      "station": "Lege eine Station an",
+      "stationAyuda": "Der Posten, den du besetzt: wähle Kunde und Standort.",
+      "requirement": "Lege den Bedarf fest",
+      "requirementAyuda": "Wie viele Wachleute die Station braucht und zu welchen Zeiten.",
+      "guards": "Füge deine Wachleute hinzu",
+      "guardsAyuda": "Mit oder ohne E-Mail: Sie kommen in die App, wann du willst.",
+      "schedule": "Erstelle den Dienstplan",
+      "scheduleAyuda": "Weise im Entwurf jede Wache ihrer Station zu.",
+      "publish": "Veröffentliche",
+      "publishAyuda": "Mit «Veröffentlichen» landen die Schichten in der App jeder Wache.",
+      "clockIn": "Erste Stempelung",
+      "clockInAyuda": "Wenn eine Wache einstempelt, siehst du es unter Anwesenheit.",
+      "compactoProgreso": "Start · {{listos}} von {{total}}"
     }
   },
   "visitantes": {

@@ -34,12 +34,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  EmptyState,
-  GlassPanel,
-  SkeletonCards,
-  Stagger,
-} from "@/components/kit";
+import PrimerosPasos from "@/components/arranque/PrimerosPasos";
 
 import "./control-center.css";
 import type { Kpi } from "./types";
@@ -85,6 +80,12 @@ import { ComparativaDeSucursales } from "./sucursales/ComparativaDeSucursales";
 import { GLOBAL } from "./sucursales/paradas";
 import { InvitacionADividir } from "./sucursales/InvitacionADividir";
 
+import {
+  EmptyState,
+  GlassPanel,
+  SkeletonCards,
+  Stagger,
+} from "@/components/kit";
 import { sucursalElegida } from "@/lib/sucursalElegida";
 import { useSucursales } from "@/hooks/useSucursales";
 import AppLayout from "@/layouts/app-layout";
@@ -218,6 +219,10 @@ export default function ControlCenter() {
     return (
       <AppLayout>
         <DashboardErrorBoundary>
+          {/* Empresa nueva: the guide as one band; the map measures from below it. */}
+          <div className="px-3 pt-3 empty:hidden">
+            <PrimerosPasos compacto />
+          </div>
           <MobileCommandCenter
             cargando={cargando}
             cifras={[...vitales, ...recursos]}
@@ -261,6 +266,9 @@ export default function ControlCenter() {
             userName={nombreDe(user)}
             onCustomize={() => setCustomizeOpen(true)}
           />
+
+          {/* Empresa nueva: the getting-started guide (hides by itself). */}
+          <PrimerosPasos />
 
           {data.error === "no-tenant" ? (
             <GlassPanel className="p-4">

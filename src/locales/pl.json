@@ -9165,7 +9165,10 @@
       "patron": "Wzorzec"
     },
     "AdminOfficeUsers": {
-      "masAcciones": "Więcej akcji"
+      "masAcciones": "Więcej akcji",
+      "vacioAyuda": "Osoby z biura: dyspozytornia, kadry, kierownictwo. Każdy loguje się do CRM ze swoją rolą.",
+      "agregarPrimera": "Dodaj kogoś z biura",
+      "vacioTitulo": "Brak personelu biurowego"
     },
     "ChangePasswordForm": {
       "mostrarContrasena": "Pokaż hasło",
@@ -9632,7 +9635,29 @@
       "comoPodemosAyudar": "W czym możemy pomóc?",
       "encuentraArticulosVideosYSoporte": "Prosimy znaleźć artykuły, filmy i wsparcie, aby rozwiać wątpliwości.",
       "noHayNadaCon": "Brak wyników dla „{{q}}”",
-      "radioCanalGeneral": "Radio · Kanał ogólny"
+      "radioCanalGeneral": "Radio · Kanał ogólny",
+      "cmdk": {
+        "nuevoVigilante": "Nowy ochroniarz",
+        "claveAgregar": "dodaj",
+        "claveCrear": "utwórz",
+        "nuevaPersona": "Dodaj osobę z biura",
+        "nuevaEstacion": "Nowy posterunek",
+        "irAHorario": "Przejdź do Grafiku",
+        "sinCubrir": "Nieobsadzone",
+        "nuevoPermiso": "Zarejestruj nieobecność lub urlop",
+        "buscando": "Szukam…",
+        "personasYLugares": "Osoby i miejsca",
+        "acciones": "Działania",
+        "paginas": "Strony",
+        "tipoVigilante": "Ochroniarz",
+        "tipoSupervisor": "Kierownik zmiany",
+        "tipoOficina": "Biuro",
+        "tipoEstacion": "Posterunek",
+        "tipoSede": "Obiekt",
+        "tipoCliente": "Klient",
+        "invitacionPendiente": "zaproszenie oczekuje",
+        "accion": "Działanie"
+      }
     },
     "registration": {
       "confirmarContrasena": "Potwierdź hasło",
@@ -13582,7 +13607,10 @@
       "filtroSucursal": "Oddział",
       "todasLasSucursales": "Wszystkie oddziały",
       "quitarFiltroPersona": "Usuń filtr osoby",
-      "calendario": "Kalendarz"
+      "calendario": "Kalendarz",
+      "vacioAyuda": "Urlopy, nieobecności i usprawiedliwione absencje całego personelu – wpisane tutaj, w Grafiku lub w aplikacji ochroniarza.",
+      "registrarElPrimero": "Zarejestruj nieobecność",
+      "vacioTitulo": "Brak nieobecności i urlopów"
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
@@ -17026,7 +17054,10 @@
       "nEstaciones_many": "{{count}} stanowisk",
       "agregarEstacion": "Dodaj posterunek",
       "errorAlCargar": "Nie udało się wczytać stanowisk",
-      "errorAlCargarAyuda": "Sprawdź połączenie i spróbuj ponownie. Twoje stanowiska nadal istnieją: nie twórz ich ponownie."
+      "errorAlCargarAyuda": "Sprawdź połączenie i spróbuj ponownie. Twoje stanowiska nadal istnieją: nie twórz ich ponownie.",
+      "vacioAyuda": "Posterunek to miejsce, które obsadza twoja firma: wartownia, recepcja, obchód. Wybierz klienta i obiekt, a potem liczbę ochroniarzy.",
+      "crearLaPrimera": "Utwórz pierwszy posterunek",
+      "vacioTitulo": "Brak posterunków"
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Ten panel jest przeznaczony wyłącznie dla personelu administracyjnego. Swoją pracą zarządzasz w aplikacji mobilnej.",
@@ -19672,7 +19703,10 @@
       "conoceElPuesto": "{{n}} zmian tutaj",
       "descansoCorto": "Tylko {{h}} h odpoczynku",
       "ofertaEnviada": "Oferta wysłana do dostępnych pracowników.",
-      "noSePudoOfrecer": "Nie udało się zaproponować"
+      "noSePudoOfrecer": "Nie udało się zaproponować",
+      "sinRequisitoAyuda": "Tu pojawiają się nieobecności, wolne miejsca i urlopy bez zastępstwa. Aby wiedzieć, czego brakuje, każdy posterunek musi określić, ilu ochroniarzy potrzebuje.",
+      "irAEstaciones": "Określ zapotrzebowanie posterunku",
+      "sinRequisitoTitulo": "Żaden posterunek nie ma jeszcze zapotrzebowania"
     },
     "HorarioModos": {
       "modos": "Tryb grafiku",
@@ -19732,6 +19766,35 @@
         "listo": "Rozstrzygnięto: {{count}}",
         "parcial": "Rozstrzygnięto: {{ok}}, bez zmian: {{failed}}"
       }
+    },
+    "EstadoVacio": {
+      "limpiarFiltro": "Usuń filtr",
+      "filtradoAyuda": "Spróbuj innych słów lub usuń filtr.",
+      "nadaCoincide": "Nic nie pasuje do wyszukiwania",
+      "pideloAUnAdministrador": "Poproś administratora firmy."
+    },
+    "PrimerosPasos": {
+      "titulo": "Uruchom swoją firmę",
+      "progreso": "Gotowe: {{listos}} z {{total}}. Każdy krok zaznacza się sam, gdy go wykonasz.",
+      "ocultar": "Ukryj przewodnik",
+      "ocultarAyuda": "Ukryj dla całej firmy",
+      "noSeOculto": "Nie udało się ukryć przewodnika. Spróbuj ponownie.",
+      "hecho": "zrobione",
+      "hacerlo": "Zrób to teraz",
+      "ir": "Przejdź",
+      "station": "Utwórz posterunek",
+      "stationAyuda": "Posterunek do obsadzenia: wybierz klienta i obiekt.",
+      "requirement": "Określ zapotrzebowanie",
+      "requirementAyuda": "Ilu ochroniarzy potrzebuje posterunek i w jakich godzinach.",
+      "guards": "Dodaj swoich ochroniarzy",
+      "guardsAyuda": "Z e-mailem lub bez: dołączają do aplikacji, kiedy zdecydujesz.",
+      "schedule": "Ułóż grafik",
+      "scheduleAyuda": "W wersji roboczej przypisz każdego ochroniarza do posterunku.",
+      "publish": "Opublikuj",
+      "publishAyuda": "Po «Opublikuj» zmiany trafiają do aplikacji każdego ochroniarza.",
+      "clockIn": "Pierwsze odbicie",
+      "clockInAyuda": "Gdy ochroniarz odbije wejście, zobaczysz to w Obecności.",
+      "compactoProgreso": "Start · {{listos}} z {{total}}"
     }
   },
   "visitantes": {

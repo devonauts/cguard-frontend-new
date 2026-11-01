@@ -9151,7 +9151,10 @@
       "patron": "Schema"
     },
     "AdminOfficeUsers": {
-      "masAcciones": "Altre azioni"
+      "masAcciones": "Altre azioni",
+      "vacioAyuda": "Chi lavora in ufficio: centrale, risorse umane, direzione. Ognuno entra nel CRM con il suo ruolo.",
+      "agregarPrimera": "Aggiungi qualcuno dell’ufficio",
+      "vacioTitulo": "Ancora nessun personale d’ufficio"
     },
     "ChangePasswordForm": {
       "mostrarContrasena": "Mostra password",
@@ -9606,7 +9609,29 @@
       "comoPodemosAyudar": "Come possiamo aiutarti?",
       "encuentraArticulosVideosYSoporte": "Trova articoli, video e assistenza per risolvere i tuoi dubbi.",
       "noHayNadaCon": "Nessun risultato per «{{q}}»",
-      "radioCanalGeneral": "Radio · Canale generale"
+      "radioCanalGeneral": "Radio · Canale generale",
+      "cmdk": {
+        "nuevoVigilante": "Nuova guardia",
+        "claveAgregar": "aggiungi",
+        "claveCrear": "crea",
+        "nuevaPersona": "Aggiungi una persona dell’ufficio",
+        "nuevaEstacion": "Nuova postazione",
+        "irAHorario": "Vai all’Orario",
+        "sinCubrir": "Scoperti",
+        "nuevoPermiso": "Registra un permesso o ferie",
+        "buscando": "Ricerca…",
+        "personasYLugares": "Persone e luoghi",
+        "acciones": "Azioni",
+        "paginas": "Pagine",
+        "tipoVigilante": "Guardia",
+        "tipoSupervisor": "Supervisore",
+        "tipoOficina": "Ufficio",
+        "tipoEstacion": "Postazione",
+        "tipoSede": "Sede",
+        "tipoCliente": "Cliente",
+        "invitacionPendiente": "invito in sospeso",
+        "accion": "Azione"
+      }
     },
     "registration": {
       "confirmarContrasena": "Conferma password",
@@ -13470,7 +13495,10 @@
       "filtroSucursal": "Filiale",
       "todasLasSucursales": "Tutte le filiali",
       "quitarFiltroPersona": "Rimuovi il filtro persona",
-      "calendario": "Calendario"
+      "calendario": "Calendario",
+      "vacioAyuda": "Ferie, permessi e assenze giustificate di tutto il personale, da qui, dall’Orario o dall’app della guardia.",
+      "registrarElPrimero": "Registra un permesso",
+      "vacioTitulo": "Ancora nessun permesso né ferie"
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",
@@ -16802,7 +16830,10 @@
       "nEstaciones_other": "{{count}} stazioni",
       "agregarEstacion": "Aggiungi postazione",
       "errorAlCargar": "Impossibile caricare le postazioni",
-      "errorAlCargarAyuda": "Controlla la connessione e riprova. Le tue postazioni sono ancora lì: non crearle di nuovo."
+      "errorAlCargarAyuda": "Controlla la connessione e riprova. Le tue postazioni sono ancora lì: non crearle di nuovo.",
+      "vacioAyuda": "Una postazione è ciò che la tua azienda copre: una guardiola, una reception, una ronda. Scegli cliente e sede, poi quante guardie servono.",
+      "crearLaPrimera": "Crea la prima postazione",
+      "vacioTitulo": "Ancora nessuna postazione"
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Questo pannello è riservato al personale amministrativo. Il tuo lavoro si gestisce dall'app mobile.",
@@ -19376,7 +19407,10 @@
       "conoceElPuesto": "{{n}} turni qui",
       "descansoCorto": "Solo {{h}} h di riposo",
       "ofertaEnviada": "Offerta inviata alle guardie disponibili.",
-      "noSePudoOfrecer": "Impossibile offrire"
+      "noSePudoOfrecer": "Impossibile offrire",
+      "sinRequisitoAyuda": "Qui compaiono assenze, posti vuoti e permessi senza sostituto. Per sapere cosa manca, ogni postazione deve indicare quante guardie servono.",
+      "irAEstaciones": "Definisci il fabbisogno di una postazione",
+      "sinRequisitoTitulo": "Nessuna postazione ha ancora un fabbisogno"
     },
     "HorarioModos": {
       "modos": "Modalità del turnario",
@@ -19436,6 +19470,35 @@
         "listo": "{{count}} decisa/e",
         "parcial": "{{ok}} decisa/e, {{failed}} invariata/e"
       }
+    },
+    "EstadoVacio": {
+      "limpiarFiltro": "Rimuovi il filtro",
+      "filtradoAyuda": "Prova con altre parole o rimuovi il filtro.",
+      "nadaCoincide": "Nessun risultato per la ricerca",
+      "pideloAUnAdministrador": "Chiedilo a un amministratore dell’azienda."
+    },
+    "PrimerosPasos": {
+      "titulo": "Avvia la tua azienda",
+      "progreso": "{{listos}} di {{total}} fatti. Ogni passo si spunta da solo quando lo fai.",
+      "ocultar": "Nascondi la guida",
+      "ocultarAyuda": "Nasconderla per tutta l’azienda",
+      "noSeOculto": "Impossibile nascondere la guida. Riprova.",
+      "hecho": "fatto",
+      "hacerlo": "Fallo ora",
+      "ir": "Vai",
+      "station": "Crea una postazione",
+      "stationAyuda": "La postazione da coprire: scegli il cliente e la sede.",
+      "requirement": "Definisci il fabbisogno",
+      "requirementAyuda": "Quante guardie servono alla postazione e in quali orari.",
+      "guards": "Aggiungi le tue guardie",
+      "guardsAyuda": "Con o senza e-mail: entrano nell’app quando decidi tu.",
+      "schedule": "Prepara l’orario",
+      "scheduleAyuda": "Nella bozza, assegna ogni guardia alla sua postazione.",
+      "publish": "Pubblica",
+      "publishAyuda": "Con «Pubblica», i turni arrivano nell’app di ogni guardia.",
+      "clockIn": "Prima timbratura",
+      "clockInAyuda": "Quando una guardia timbra l’entrata, la vedrai in Presenze.",
+      "compactoProgreso": "Avvio · {{listos}} di {{total}}"
     }
   },
   "visitantes": {

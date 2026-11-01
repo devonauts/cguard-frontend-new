@@ -5,15 +5,15 @@
  * encuentre y abra una estación de un vistazo.
  */
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Plus, RadioTower, RotateCcw } from "lucide-react";
 
 import StationCardsGrid from "./StationCardsGrid";
 
+import { usePuede } from "@/hooks/usePuede";
 import ElegirSedeParaEstacion from "@/components/stations/ElegirSedeParaEstacion";
 import { Button } from "@/components/ui/button";
-
 import AppLayout from "@/layouts/app-layout";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
@@ -43,7 +43,20 @@ export default function StationsPage() {
   const [reloadKey, setReloadKey] = useState(0);
   const [query, setQuery] = useState("");
   // «Agregar estación»: primero de qué cliente y sede, luego el formulario.
-  const [eligiendo, setEligiendo] = useState(false);
+  const [params, setParams] = useSearchParams();
+  // `/stations?nueva=1` (⌘K «Nueva estación», the getting-started guide) opens
+  // the site picker straight away.
+  const [eligiendo, setEligiendo] = useState(() => params.get("nueva") === "1");
+  const crear = usePuede("estaciones.crear");
+
+  useEffect(() => {
+    if (params.get("nueva") === "1") {
+      const p = new URLSearchParams(params);
+
+      p.delete("nueva");
+      setParams(p, { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -169,11 +182,14 @@ export default function StationsPage() {
           />
         ) : (
           <StationCardsGrid
+            consulta={query}
             loading={loading}
+            porQueNoPuedeCrear={crear.puede ? undefined : crear.porQueNo || ""}
             stations={filtered}
+            onAdd={() => setEligiendo(true)}
+            onLimpiarConsulta={() => setQuery("")}
             onOpen={openStation}
             onOpenTab={openStationTab}
-            onAdd={() => setEligiendo(true)}
           />
         )}
         <ElegirSedeParaEstacion open={eligiendo} onOpenChange={setEligiendo} />

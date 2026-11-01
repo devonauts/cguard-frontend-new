@@ -8616,7 +8616,10 @@
       "patron": "Patrón"
     },
     "AdminOfficeUsers": {
-      "masAcciones": "Más acciones"
+      "masAcciones": "Más acciones",
+      "vacioAyuda": "Quien trabaja en la oficina: despacho, recursos humanos, gerencia. Cada uno entra al CRM con su rol.",
+      "agregarPrimera": "Agregar a alguien de la oficina",
+      "vacioTitulo": "Todavía no hay personal de oficina"
     },
     "ChangePasswordForm": {
       "mostrarContrasena": "Mostrar contraseña",
@@ -9071,7 +9074,29 @@
       "comoPodemosAyudar": "¿Cómo podemos ayudar?",
       "encuentraArticulosVideosYSoporte": "Encuentra artículos, videos y soporte para resolver tus dudas.",
       "noHayNadaCon": "No hay nada con «{{q}}»",
-      "radioCanalGeneral": "Radio · Canal general"
+      "radioCanalGeneral": "Radio · Canal general",
+      "cmdk": {
+        "nuevoVigilante": "Nuevo vigilante",
+        "claveAgregar": "agregar",
+        "claveCrear": "crear",
+        "nuevaPersona": "Agregar persona de oficina",
+        "nuevaEstacion": "Nueva estación",
+        "irAHorario": "Ir a Horario",
+        "sinCubrir": "Sin cubrir",
+        "nuevoPermiso": "Registrar un permiso o vacaciones",
+        "buscando": "Buscando…",
+        "personasYLugares": "Personas y lugares",
+        "acciones": "Acciones",
+        "paginas": "Páginas",
+        "tipoVigilante": "Vigilante",
+        "tipoSupervisor": "Supervisor",
+        "tipoOficina": "Oficina",
+        "tipoEstacion": "Estación",
+        "tipoSede": "Sede",
+        "tipoCliente": "Cliente",
+        "invitacionPendiente": "invitación pendiente",
+        "accion": "Acción"
+      }
     },
     "registration": {
       "confirmarContrasena": "Confirmar contraseña",
@@ -12935,7 +12960,10 @@
       "filtroSucursal": "Sucursal",
       "todasLasSucursales": "Todas las sucursales",
       "quitarFiltroPersona": "Quitar el filtro de persona",
-      "calendario": "Calendario"
+      "calendario": "Calendario",
+      "vacioAyuda": "Vacaciones, permisos y faltas justificadas de todo el personal, vengan de aquí, del Horario o de la app del vigilante.",
+      "registrarElPrimero": "Registrar un permiso",
+      "vacioTitulo": "Todavía no hay permisos ni vacaciones"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -16267,7 +16295,10 @@
       "nEstaciones_other": "{{count}} estaciones",
       "agregarEstacion": "Agregar estación",
       "errorAlCargar": "No se pudieron cargar las estaciones",
-      "errorAlCargarAyuda": "Revisa tu conexión y vuelve a intentarlo. Tus estaciones siguen ahí: no las crees de nuevo."
+      "errorAlCargarAyuda": "Revisa tu conexión y vuelve a intentarlo. Tus estaciones siguen ahí: no las crees de nuevo.",
+      "vacioAyuda": "Una estación es el puesto que tu empresa cubre: una garita, una recepción, una ronda. Elige el cliente y la sede, y luego cuántos vigilantes pide.",
+      "crearLaPrimera": "Crear la primera estación",
+      "vacioTitulo": "Todavía no hay estaciones"
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Este panel es solo para el personal administrativo. Tu trabajo se gestiona desde la aplicación móvil.",
@@ -18841,7 +18872,10 @@
       "conoceElPuesto": "{{n}} turnos aquí",
       "descansoCorto": "Solo {{h}} h de descanso",
       "ofertaEnviada": "Oferta enviada a los vigilantes disponibles.",
-      "noSePudoOfrecer": "No se pudo ofrecer"
+      "noSePudoOfrecer": "No se pudo ofrecer",
+      "sinRequisitoAyuda": "Aquí aparecen las faltas, las plazas vacías y los permisos sin reemplazo. Para saber qué falta cubrir, cada estación tiene que decir cuántos vigilantes pide.",
+      "irAEstaciones": "Definir el requisito de una estación",
+      "sinRequisitoTitulo": "Todavía no hay estaciones con requisito"
     },
     "HorarioModos": {
       "modos": "Modo del horario",
@@ -18901,6 +18935,35 @@
         "listo": "{{count}} decidida(s)",
         "parcial": "{{ok}} decidida(s), {{failed}} sin cambiar"
       }
+    },
+    "EstadoVacio": {
+      "limpiarFiltro": "Quitar el filtro",
+      "filtradoAyuda": "Prueba con otras palabras o quita el filtro.",
+      "nadaCoincide": "Nada coincide con la búsqueda",
+      "pideloAUnAdministrador": "Pídeselo a un administrador de la empresa."
+    },
+    "PrimerosPasos": {
+      "titulo": "Pon en marcha tu empresa",
+      "progreso": "{{listos}} de {{total}} listos. Cada paso se marca solo cuando lo haces.",
+      "ocultar": "Ocultar la guía",
+      "ocultarAyuda": "Ocultarla para toda la empresa",
+      "noSeOculto": "No se pudo ocultar la guía. Vuelve a intentarlo.",
+      "hecho": "hecho",
+      "hacerlo": "Hacerlo ahora",
+      "ir": "Ir",
+      "station": "Crea una estación",
+      "stationAyuda": "El puesto que vas a cubrir: elige el cliente y la sede.",
+      "requirement": "Define su requisito",
+      "requirementAyuda": "Cuántos vigilantes pide la estación y en qué horario.",
+      "guards": "Agrega a tus vigilantes",
+      "guardsAyuda": "Con correo o sin él: entran a la app cuando tú decidas.",
+      "schedule": "Arma el horario",
+      "scheduleAyuda": "En el borrador, asigna cada vigilante a su estación.",
+      "publish": "Publica",
+      "publishAyuda": "Con «Publicar», los turnos llegan a la app de cada vigilante.",
+      "clockIn": "Primera marcación",
+      "clockInAyuda": "Cuando un vigilante marque entrada, la verás en Asistencia.",
+      "compactoProgreso": "Puesta en marcha · {{listos}} de {{total}}"
     }
   },
   "map": {

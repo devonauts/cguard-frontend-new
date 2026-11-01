@@ -61,12 +61,12 @@ import {
   PageContainer,
   PageHeader,
   StatusBadge,
-  EmptyState,
   Segmented,
   Toolbar,
   GlassPanel,
 } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
+import { EstadoVacio } from "@/components/EstadoVacio";
 import { PermissionedButton } from "@/components/permissions/Permissioned";
 import {
   AlertDialog,
@@ -1286,16 +1286,28 @@ export default function AdminOfficeUsersPage() {
                     {filteredRows.length === 0 ? (
                       <tr>
                         <td className="py-12" colSpan={7}>
-                          <EmptyState
+                          <EstadoVacio
                             className="border-0"
-                            description={t("adminOfficeUsers.noData.message", {
-                              defaultValue:
-                                "No pudimos encontrar ningún elemento que coincida con su búsqueda",
-                            })}
+                            description={t(
+                              "ui.AdminOfficeUsers.vacioAyuda",
+                              "Quien trabaja en la oficina: despacho, recursos humanos, gerencia. Cada uno entra al CRM con su rol.",
+                            )}
+                            filtrado={(rows || []).length > 0}
                             icon={<Users />}
-                            title={t("adminOfficeUsers.noData.title", {
-                              defaultValue: "No se encontraron resultados",
-                            })}
+                            paso={{
+                              label: t(
+                                "ui.AdminOfficeUsers.agregarPrimera",
+                                "Agregar a alguien de la oficina",
+                              ),
+                              to: "/personal/nueva?tipo=oficina",
+                              puede: hasPermission("userCreate"),
+                            }}
+                            title={t(
+                              "ui.AdminOfficeUsers.vacioTitulo",
+                              "Todavía no hay personal de oficina",
+                            )}
+                            variant="inline"
+                            onLimpiarFiltro={() => setQuery("")}
                           />
                         </td>
                       </tr>

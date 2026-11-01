@@ -18,6 +18,11 @@ import {
   LayoutGrid,
 } from "lucide-react";
 
+import CubrirHuecoModal from "./sinCubrir/CubrirHuecoModal";
+import { useOfertaDobletes } from "./sinCubrir/useOfertaDobletes";
+
+import { EstadoVacio } from "@/components/EstadoVacio";
+import { usePrimerosPasos } from "@/hooks/usePrimerosPasos";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,8 +62,6 @@ import {
 import { agruparPorDiaYEstacion, admiteDobletes } from "@/lib/cubrirHueco";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { usePermissions } from "@/hooks/usePermissions";
-import CubrirHuecoModal from "./sinCubrir/CubrirHuecoModal";
-import { useOfertaDobletes } from "./sinCubrir/useOfertaDobletes";
 import { listarTodo } from "@/lib/listarCompleto";
 
 /**
@@ -115,6 +118,11 @@ export function useEtiquetasDeHueco() {
 const MAX_DIAS = 62;
 
 export default function OpenShifts() {
+  // A company with no station requirement has nothing «covered»: say what to do instead.
+  const { datos: arranque } = usePrimerosPasos();
+  const sinRequisito =
+    !!arranque &&
+    arranque.steps.some((p) => p.key === "requirement" && !p.done);
   const { t } = useTranslation();
   const etiqueta = useEtiquetasDeHueco();
   const { hasPermission } = usePermissions();
@@ -359,13 +367,32 @@ export default function OpenShifts() {
 
         {error ? (
           <InfoNote
-            tone="bad"
             title={t("ui.SinCubrir.noCargo", "No se pudo cargar")}
+            tone="bad"
           >
             {error}
           </InfoNote>
         ) : cargando && !datos ? (
           <SkeletonCards count={3} />
+        ) : !grupos.length && totalTodos === 0 && sinRequisito ? (
+          <EstadoVacio
+            description={t(
+              "ui.SinCubrir.sinRequisitoAyuda",
+              "Aquí aparecen las faltas, las plazas vacías y los permisos sin reemplazo. Para saber qué falta cubrir, cada estación tiene que decir cuántos vigilantes pide.",
+            )}
+            icon={<UserCheck />}
+            paso={{
+              label: t(
+                "ui.SinCubrir.irAEstaciones",
+                "Definir el requisito de una estación",
+              ),
+              to: "/stations",
+            }}
+            title={t(
+              "ui.SinCubrir.sinRequisitoTitulo",
+              "Todavía no hay estaciones con requisito",
+            )}
+          />
         ) : !grupos.length ? (
           <EmptyState
             description={
