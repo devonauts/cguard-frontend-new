@@ -115,6 +115,27 @@ describe("Todo el personal · filters and actions", () => {
     expect(rotuloDeDonde({ stationId: "s", stationName: "Garita", postSiteId: "p", postSiteName: "garita" } as any)).toBe("garita");
   });
 
+  it("asks only for the visible days plus a margin, and then only for what is missing", async () => {
+    const { ventanaVisible, tramosQueFaltan } = await import("./personalDelHorario");
+    expect(ventanaVisible("2026-11-10", "2026-11-23", "2026-09-01", "2026-11-30")).toEqual({ desde: "2026-11-03", hasta: "2026-11-30" });
+    expect(ventanaVisible("2026-09-02", "2026-09-10", "2026-09-01", "2026-11-30")).toEqual({ desde: "2026-09-01", hasta: "2026-09-17" });
+    const cargado = { desde: "2026-11-03", hasta: "2026-11-30" };
+    expect(tramosQueFaltan(null, cargado)).toBeNull();
+    expect(tramosQueFaltan(cargado, { desde: "2026-10-27", hasta: "2026-11-20" })).toEqual([{ desde: "2026-10-27", hasta: "2026-11-02" }]);
+    expect(tramosQueFaltan(cargado, { desde: "2026-09-01", hasta: "2026-09-20" })).toBeNull();
+    expect(tramosQueFaltan(cargado, { desde: "2026-11-05", hasta: "2026-11-25" })).toEqual([]);
+  });
+
+  it("merging chunks keeps the pending chip, the supervisor posts and the next shift date", async () => {
+    const { unirPersonas } = await import("./personalDelHorario");
+    const a = { userId: "s", name: "S", roles: [], kind: "supervisor" as const, hasSchedule: false, assigned: true, days: [], positions: [], nextShiftDate: null, pendingInvite: false };
+    const b = { ...a, positions: [{ id: "p", name: "Aguila1" }], nextShiftDate: "2026-12-07", pendingInvite: true };
+    const [m] = unirPersonas([[a], [b]]);
+    expect(m.positions).toEqual([{ id: "p", name: "Aguila1" }]);
+    expect(m.nextShiftDate).toBe("2026-12-07");
+    expect(m.pendingInvite).toBe(true);
+  });
+
   it("where they are: that day, else the first place seen", () => {
     const ana = ps.find((p) => p.userId === "g1")!;
 

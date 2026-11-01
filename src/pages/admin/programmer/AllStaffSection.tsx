@@ -29,7 +29,8 @@ import {
   rotuloDeDonde,
   tramosDe,
   unirPersonas,
-  ventanaParaLaHoja,
+  tramosQueFaltan,
+  ventanaVisible,
   type DiaDePersona,
   type FiltroDeTipo,
   type PersonaDelHorario,
@@ -118,15 +119,26 @@ function AllStaffSection({
   const visDesde = visibleDays.length ? ymd(visibleDays[0]) : "";
   const visHasta = visibleDays.length ? ymd(visibleDays[visibleDays.length - 1]) : "";
   const ultimo = monthDays.length ? ymd(monthDays[monthDays.length - 1]) : "";
+  const primero = monthDays.length ? ymd(monthDays[0]) : "";
+  const personasRef = useRef<PersonaDelHorario[] | null>(null);
 
-  const pedir = useCallback(async (w: { desde: string; hasta: string }) => {
+  personasRef.current = personas;
+
+  /**
+   * Loads `piezas` and, when `base` is given, adds them to what is already
+   * loaded (scrolling sideways asks only for the new days).
+   */
+  const pedir = useCallback(async (
+    piezas: Array<{ desde: string; hasta: string }>,
+    base: { desde: string; hasta: string } | null,
+  ) => {
     const yo = ++pedido.current;
 
     setCargando(true);
     try {
-      // The endpoint takes ≤ 62 days; the painted sheet can be wider.
+      // The endpoint takes ≤ 62 days per request.
       const respuestas = await Promise.all(
-        tramosDe(w.desde, w.hasta).map((tr) =>
+        piezas.flatMap((w) => tramosDe(w.desde, w.hasta)).map((tr) =>
           ApiService.get(
             `/tenant/${tenantId()}/scheduler/people?startDate=${tr.desde}&endDate=${tr.hasta}`,
           ),
@@ -134,31 +146,41 @@ function AllStaffSection({
       );
 
       if (yo !== pedido.current) return;
-      setPersonas(unirPersonas(respuestas.map(normalizarPersonas)));
+      const nuevas = respuestas.map(normalizarPersonas);
+      const todo = [...(base ? [{ desde: base.desde, hasta: base.hasta }] : []), ...piezas];
+      const w = {
+        desde: todo.reduce((m, x) => (x.desde < m ? x.desde : m), todo[0].desde),
+        hasta: todo.reduce((m, x) => (x.hasta > m ? x.hasta : m), todo[0].hasta),
+      };
+
+      setPersonas(unirPersonas(base && personasRef.current ? [personasRef.current, ...nuevas] : nuevas));
       setCargado(w);
       setError(false);
     } catch {
       if (yo !== pedido.current) return;
       setError(true);
-      setCargado(w);
+      setCargado(base);
     } finally {
       if (yo === pedido.current) setCargando(false);
     }
   }, []);
 
-  // Follow the visible window; wait for the scroll to settle before asking.
+  // Follow the visible window, only while the section is open; wait for the
+  // scroll to settle before asking, and ask only for the days not loaded yet.
   useEffect(() => {
-    if (!visDesde || cubreLaVentana(cargado, visDesde, visHasta)) return;
+    if (!abierta || !visDesde || cubreLaVentana(cargado, visDesde, visHasta)) return;
+    const quiere = ventanaVisible(visDesde, visHasta, primero, ultimo);
+    const faltan = tramosQueFaltan(cargado, quiere);
     const id = window.setTimeout(
-      () => void pedir(ventanaParaLaHoja(visDesde, visHasta, ultimo)),
+      () => void (faltan ? pedir(faltan, cargado) : pedir([quiere], null)),
       cargado ? 250 : 0,
     );
 
     return () => window.clearTimeout(id);
-  }, [visDesde, visHasta, ultimo, cargado, pedir]);
+  }, [abierta, visDesde, visHasta, primero, ultimo, cargado, pedir]);
 
   const recargar = useCallback(() => {
-    if (cargado) void pedir(cargado);
+    if (cargado) void pedir([cargado], null);
   }, [cargado, pedir]);
 
   // A change elsewhere in the Schedule (new assignment…) moves people around.

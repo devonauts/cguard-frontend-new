@@ -361,6 +361,49 @@ export function ventanaParaLaHoja(
   return { desde, hasta: fin };
 }
 
+/**
+ * The days «Todo el personal» asks for: what is on screen plus a small margin,
+ * inside the painted range. A 2,000-person company used to download the whole
+ * painted sheet (three months, ~29 MB) the moment the Horario opened.
+ */
+export function ventanaVisible(
+  desde: string,
+  hasta: string,
+  primero?: string,
+  ultimo?: string,
+  margen = 7,
+): { desde: string; hasta: string } {
+  let a = sumarDias(desde, -margen);
+  let b = sumarDias(hasta, margen);
+
+  if (primero && a < primero) a = primero;
+  if (ultimo && b > ultimo) b = ultimo;
+  if (b < a) b = a;
+
+  return { desde: a, hasta: b };
+}
+
+/**
+ * What of `w` is still missing next to what is loaded: at most one piece on
+ * each side. `null` when `w` doesn't touch the loaded range (a jump far away):
+ * then the caller loads `w` alone and forgets the rest.
+ */
+export function tramosQueFaltan(
+  cargado: { desde: string; hasta: string } | null,
+  w: { desde: string; hasta: string },
+): Array<{ desde: string; hasta: string }> | null {
+  if (!cargado) return null;
+  const toca = w.desde <= sumarDias(cargado.hasta, 1) && w.hasta >= sumarDias(cargado.desde, -1);
+
+  if (!toca) return null;
+  const out: Array<{ desde: string; hasta: string }> = [];
+
+  if (w.desde < cargado.desde) out.push({ desde: w.desde, hasta: sumarDias(cargado.desde, -1) });
+  if (w.hasta > cargado.hasta) out.push({ desde: sumarDias(cargado.hasta, 1), hasta: w.hasta });
+
+  return out;
+}
+
 /** Splits a range into requests the endpoint accepts (≤ `MAX_DIAS_PERSONAL` days each). */
 export function tramosDe(desde: string, hasta: string): Array<{ desde: string; hasta: string }> {
   const out: Array<{ desde: string; hasta: string }> = [];
@@ -394,6 +437,9 @@ export function unirPersonas(listas: PersonaDelHorario[][]): PersonaDelHorario[]
       for (const d of p.days) if (!fechas.has(d.date)) ya.days.push(d);
       ya.hasSchedule = ya.hasSchedule || p.hasSchedule;
       ya.assigned = ya.assigned || p.assigned;
+      ya.pendingInvite = ya.pendingInvite || p.pendingInvite;
+      if (!ya.positions?.length && p.positions?.length) ya.positions = p.positions;
+      if (!ya.nextShiftDate && p.nextShiftDate) ya.nextShiftDate = p.nextShiftDate;
     }
   }
   const out = [...porId.values()];
