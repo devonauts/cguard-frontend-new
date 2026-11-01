@@ -89,9 +89,14 @@ const FUENTES = {
   // Contadores de «hoy», calculados en el servidor con el día de la empresa.
   ops: {
     clave: () => ["dashboard", tid(), "kpis"],
-    // Background counters: a refusal (a role without incident/station read)
+    // The route has no tenant in its path: name the company explicitly (it
+    // answered 403 when the header was missing). A refusal (a role without
+    // incident/station read)
     // must not raise a «Prohibido» toast on the Panel; the card shows «—».
-    pedir: () => api.get(`/operations/kpis`, { toast: { silentError: true } } as any).then((r) => r.data),
+    pedir: () =>
+      api
+        .get(`/operations/kpis`, { headers: { "X-Tenant-Id": tid() }, toast: { silentError: true } } as any)
+        .then((r) => r.data),
   },
   sups: {
     clave: () => ["dashboard", tid(), "supervisors"],
