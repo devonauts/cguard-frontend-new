@@ -3066,7 +3066,7 @@
       "guardsAssigned": "Guards Assigned",
       "hoursLogged": "Hrs Logged (Last 7 Days)",
       "incidentsReported": "Incidents Reported",
-      "kpiadded": "KPI added",
+      "kpiadded": "Add KPI",
       "kpisearch": "Search KPIs",
       "tasksCompleted": "Tasks Completed (Last 7 Days)",
       "title": "KPI Indicators",
@@ -3108,6 +3108,11 @@
           "monthly": "Monthly",
           "select": "Select frequency",
           "weekly": "Weekly"
+        },
+        "errors": {
+          "frequencyRequired": "Select the frequency",
+          "descriptionRequired": "Enter a description",
+          "emailsRequired": "Add at least one email to send the report to"
         }
       },
       "status": {

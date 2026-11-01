@@ -6961,7 +6961,7 @@
       "guardsAssigned": "Agents affectés",
       "hoursLogged": "Heures enregistrées (7 derniers jours)",
       "incidentsReported": "Incidents signalés (7 derniers jours)",
-      "kpiadded": "KPI ajouté",
+      "kpiadded": "Ajouter un KPI",
       "kpisearch": "Rechercher un KPI",
       "tasksCompleted": "Tâches terminées (7 derniers jours)",
       "title": "Indicateurs KPI",
@@ -7003,6 +7003,11 @@
           "monthly": "Mensuelle",
           "select": "Sélectionner une fréquence",
           "weekly": "Hebdomadaire"
+        },
+        "errors": {
+          "frequencyRequired": "Sélectionnez la fréquence",
+          "descriptionRequired": "Saisissez une description",
+          "emailsRequired": "Ajoutez au moins une adresse e-mail pour envoyer le rapport"
         }
       },
       "status": {

@@ -6961,7 +6961,7 @@
       "guardsAssigned": "Zugewiesene Sicherheitskräfte",
       "hoursLogged": "Erfasste Stunden (letzte 7 Tage)",
       "incidentsReported": "Gemeldete Vorfälle (letzte 7 Tage)",
-      "kpiadded": "KPI hinzugefügt",
+      "kpiadded": "KPI hinzufügen",
       "kpisearch": "KPIs suchen",
       "tasksCompleted": "Erledigte Aufgaben (letzte 7 Tage)",
       "title": "KPI-Kennzahlen",
@@ -7003,6 +7003,11 @@
           "monthly": "Monatlich",
           "select": "Häufigkeit auswählen",
           "weekly": "Wöchentlich"
+        },
+        "errors": {
+          "frequencyRequired": "Wählen Sie die Häufigkeit",
+          "descriptionRequired": "Geben Sie eine Beschreibung ein",
+          "emailsRequired": "Fügen Sie mindestens eine E-Mail-Adresse für den Bericht hinzu"
         }
       },
       "status": {

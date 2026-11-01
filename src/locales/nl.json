@@ -6961,7 +6961,7 @@
       "guardsAssigned": "Toegewezen beveiligers",
       "hoursLogged": "Geregistreerde uren (laatste 7 dagen)",
       "incidentsReported": "Gemelde incidenten (laatste 7 dagen)",
-      "kpiadded": "KPI toegevoegd",
+      "kpiadded": "KPI toevoegen",
       "kpisearch": "KPI's zoeken",
       "tasksCompleted": "Afgeronde taken (laatste 7 dagen)",
       "title": "KPI-indicatoren",
@@ -7003,6 +7003,11 @@
           "monthly": "Maandelijks",
           "select": "Frequentie selecteren",
           "weekly": "Wekelijks"
+        },
+        "errors": {
+          "frequencyRequired": "Kies de frequentie",
+          "descriptionRequired": "Voer een beschrijving in",
+          "emailsRequired": "Voeg minstens één e-mailadres toe om het rapport naar te sturen"
         }
       },
       "status": {

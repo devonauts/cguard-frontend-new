@@ -6094,7 +6094,7 @@
       "guardsAssigned": "Vigilantes atribuídos",
       "hoursLogged": "Horas registradas (últimos 7 dias)",
       "incidentsReported": "Incidentes reportados (últimos 7 dias)",
-      "kpiadded": "KPI adicionado",
+      "kpiadded": "Adicionar KPI",
       "kpisearch": "Buscar KPIs",
       "kpitable": {
         "kpicreatedfor": "Criado por",
@@ -6128,7 +6128,12 @@
         "standardReports": "Relatórios padrão",
         "taskReports": "Relatórios de tarefas",
         "title": "Adicionar novos KPIs (Indicadores-chave de desempenho)",
-        "verificationReports": "Relatórios de verificação"
+        "verificationReports": "Relatórios de verificação",
+        "errors": {
+          "frequencyRequired": "Selecione a frequência",
+          "descriptionRequired": "Escreva uma descrição",
+          "emailsRequired": "Adicione pelo menos um e-mail para enviar o relatório"
+        }
       },
       "status": {
         "achieved": "Alcançado",

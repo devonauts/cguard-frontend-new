@@ -6969,7 +6969,7 @@
       "guardsAssigned": "Przypisani pracownicy ochrony",
       "hoursLogged": "Zarejestrowane godziny (ostatnie 7 dni)",
       "incidentsReported": "Zgłoszone zdarzenia (ostatnie 7 dni)",
-      "kpiadded": "Wskaźnik KPI dodany",
+      "kpiadded": "Dodaj KPI",
       "kpisearch": "Szukaj wskaźników KPI",
       "tasksCompleted": "Wykonane zadania (ostatnie 7 dni)",
       "title": "Wskaźniki KPI",
@@ -7011,6 +7011,11 @@
           "monthly": "Miesięcznie",
           "select": "Wybierz częstotliwość",
           "weekly": "Co tydzień"
+        },
+        "errors": {
+          "frequencyRequired": "Wybierz częstotliwość",
+          "descriptionRequired": "Wpisz opis",
+          "emailsRequired": "Dodaj co najmniej jeden adres e-mail, na który wysłać raport"
         }
       },
       "status": {

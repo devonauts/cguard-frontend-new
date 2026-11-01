@@ -6961,7 +6961,7 @@
       "guardsAssigned": "Guardie assegnate",
       "hoursLogged": "Ore registrate (ultimi 7 giorni)",
       "incidentsReported": "Incidenti segnalati (ultimi 7 giorni)",
-      "kpiadded": "KPI aggiunto",
+      "kpiadded": "Aggiungi KPI",
       "kpisearch": "Cerca KPI",
       "tasksCompleted": "Attività completate (ultimi 7 giorni)",
       "title": "Indicatori KPI",
@@ -7003,6 +7003,11 @@
           "monthly": "Mensile",
           "select": "Seleziona la frequenza",
           "weekly": "Settimanale"
+        },
+        "errors": {
+          "frequencyRequired": "Seleziona la frequenza",
+          "descriptionRequired": "Inserisci una descrizione",
+          "emailsRequired": "Aggiungi almeno un'email a cui inviare il report"
         }
       },
       "status": {
