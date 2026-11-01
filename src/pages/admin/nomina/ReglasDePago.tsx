@@ -11,7 +11,7 @@
  * number), so no company could actually configure its pay rules. Everything
  * here edits `payroll` as a whole object.
  */
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarRange, Scale, ListChecks } from "lucide-react";
@@ -20,6 +20,11 @@ import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { Section } from "@/components/kit";
 import attendanceService from "@/lib/api/attendanceService";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  cambioDelCampo, eleccionDe, estadoDeLosCambios, type CampoFechado, type EleccionDeLeyes,
+} from "@/lib/cambiosDeLey";
+import CambiosDeLey, { fechaDeLey, valorDelCampo } from "./CambiosDeLey";
 import {
   activosDe, combinacionesDe, horaCon, turnoDeEjemplo,
   type Combinaciones, type RecargosActivos, type Regla,
@@ -79,7 +84,23 @@ export interface Politica {
   /** How each pair of surcharges combines on the same hour. */
   combinaciones?: Partial<Combinaciones>;
   configuradaEl?: string | null;
+  /** Premium on the seventh day of a workweek worked whole (California, Kentucky); null = none. */
+  septimoDia?: {
+    primerasHoras?: number;
+    recargoPct?: number;
+    recargoPctDespues?: number;
+    soloSiSemanaPasaDe?: number | null;
+  } | null;
 }
+
+/** US states with their own overtime rules (backend PRESETS_REGIONALES). */
+const NOMBRE_DE_ESTADO: Record<string, string> = {
+  CA: "California",
+  AK: "Alaska",
+  NV: "Nevada",
+  CO: "Colorado",
+  KY: "Kentucky",
+};
 
 export interface PayrollDeAjustes {
   periodType?: string;
@@ -435,9 +456,14 @@ function SelectorDePar({
 export default function ReglasDePago({
   payroll,
   onChange,
+  leyes: leyesGuardadas,
+  onLeyesChange,
 }: {
   payroll: PayrollDeAjustes;
   onChange: (p: PayrollDeAjustes) => void;
+  /** The company's choice about the law's dated changes (`nominaSettings.leyes`). */
+  leyes?: Partial<EleccionDeLeyes> | null;
+  onLeyesChange?: (l: EleccionDeLeyes) => void;
 }) {
   const { t } = useTranslation();
   const presets = useQuery({
@@ -445,6 +471,12 @@ export default function ReglasDePago({
     queryFn: () => attendanceService.payRulePresets(),
     staleTime: 10 * 60_000,
   });
+  const ley = useQuery({
+    queryKey: ["attendance", "pay-rule-legal-changes"],
+    queryFn: () => attendanceService.payRuleLegalChanges(),
+    staleTime: 10 * 60_000,
+  });
+  const [estadoElegido, setEstadoElegido] = useState("");
 
   const pol: Politica = payroll.politica || {};
   const setPol = (patch: Partial<Politica>) =>
@@ -498,15 +530,30 @@ export default function ReglasDePago({
   };
 
   const pais = presets.data?.pais || null;
-  const preset = pais ? presets.data?.presets?.[pais] : undefined;
+  const regiones = pais ? presets.data?.regiones?.[pais] : undefined;
+  const presetDelEstado = estadoElegido && regiones ? regiones[estadoElegido] : undefined;
+  const preset = presetDelEstado || (pais ? presets.data?.presets?.[pais] : undefined);
+  const nombreDelPreset = presetDelEstado ? NOMBRE_DE_ESTADO[estadoElegido] || estadoElegido : nombrePais(pais);
 
-  const aplicarPreset = async (code: string) => {
-    const p = presets.data?.presets?.[code];
+  /* The law's dated changes, with their status for the values ON SCREEN. */
+  const leyes = eleccionDe(leyesGuardadas);
+  const cambios = estadoDeLosCambios(pol, ley.data?.changes || [], leyes, ley.data?.today || hoyEnLaEmpresa());
+  const avisoDeLey = (campo: CampoFechado): string | undefined => {
+    const c = cambioDelCampo(cambios, campo);
+    if (!c) return undefined;
+    const datos = { fecha: fechaDeLey(c.effectiveFrom), valor: valorDelCampo(c.field, c.to) };
+    return c.vigente
+      ? t("ui.CambiosDeLey.enVigorDesde", { ...datos, defaultValue: "La ley fija {{valor}} desde el {{fecha}}: se paga así aunque aquí diga otra cifra." })
+      : t("ui.CambiosDeLey.cambiaEl", { ...datos, defaultValue: "Cambia el {{fecha}} a {{valor}} (ley)." });
+  };
+
+  const aplicarPreset = async () => {
+    const p = preset;
 
     if (!p) return;
     const ok = await confirmDialog({
       title: t("ui.ReglasDePago.aplicarTitulo", {
-        pais: nombrePais(code),
+        pais: nombreDelPreset,
         defaultValue: "¿Aplicar las reglas de {{pais}}?",
       }),
       message: t(
@@ -579,6 +626,20 @@ export default function ReglasDePago({
           tramos: (anio.tramos || []).map((x) => `+${x.recargoPct} %${x.desdeHora > 0 ? ` (${t("ui.ReglasDePago.resumen.desdeLaHora", { n: x.desdeHora + 1, defaultValue: "desde la {{n}}.ª" })})` : ""}`).join(", "),
           defaultValue: "Pasadas {{h}} h extra en el año: {{tramos}}",
         }),
+      );
+    }
+    if (pol.septimoDia) {
+      const sd = pol.septimoDia;
+      filas.push(
+        t("ui.ReglasDePago.resumen.septimoDia", {
+          h: sd.primerasHoras ?? 8,
+          a: sd.recargoPct ?? 50,
+          b: sd.recargoPctDespues ?? sd.recargoPct ?? 50,
+          defaultValue: "Séptimo día seguido de la semana: las primeras {{h}} h a +{{a}} %, el resto a +{{b}} %",
+        }) +
+          (sd.soloSiSemanaPasaDe
+            ? t("ui.ReglasDePago.resumen.septimoSoloSi", { h: sd.soloSiSemanaPasaDe, defaultValue: " (si la semana pasa de {{h}} h)" })
+            : ""),
       );
     }
     const n = pol.nocturno || {};
@@ -758,14 +819,32 @@ export default function ReglasDePago({
                   defaultValue: "País de la empresa: {{pais}}",
                 })}
               </span>
-              {preset && pais && (
-                <Button size="sm" variant="outline" onClick={() => aplicarPreset(pais)}>
-                  {t("ui.ReglasDePago.aplicarReglasDe", {
-                    pais: nombrePais(pais),
-                    defaultValue: "Aplicar reglas de {{pais}}",
-                  })}
-                </Button>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {regiones && Object.keys(regiones).length > 0 && (
+                  <label className="flex items-center gap-1.5 text-sm">
+                    <span className="sr-only">{t("ui.ReglasDePago.estado", "Estado")}</span>
+                    <select
+                      className="cg-input cg-focus px-2 py-1.5 text-sm"
+                      value={estadoElegido}
+                      onChange={(e) => setEstadoElegido(e.target.value)}
+                      aria-label={t("ui.ReglasDePago.estado", "Estado")}
+                    >
+                      <option value="">{t("ui.ReglasDePago.estadoFederal", "Otro estado (sólo la ley federal)")}</option>
+                      {Object.keys(regiones).map((r) => (
+                        <option key={r} value={r}>{NOMBRE_DE_ESTADO[r] || r}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                {preset && pais && (
+                  <Button size="sm" variant="outline" onClick={() => aplicarPreset()}>
+                    {t("ui.ReglasDePago.aplicarReglasDe", {
+                      pais: nombreDelPreset,
+                      defaultValue: "Aplicar reglas de {{pais}}",
+                    })}
+                  </Button>
+                )}
+              </div>
             </div>
             {preset ? (
               <>
@@ -791,6 +870,12 @@ export default function ReglasDePago({
                 )}
               </p>
             )}
+            <CambiosDeLey
+              cambios={cambios}
+              avisos={ley.data?.notices || []}
+              leyes={leyes}
+              onChange={(l) => onLeyesChange?.(l)}
+            />
             {!pol.configuradaEl && (
               <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                 {t(
@@ -869,7 +954,43 @@ export default function ReglasDePago({
                 value={pol.horasOrdinariasSemana}
                 min={1}
                 max={168}
+                hint={avisoDeLey("horasOrdinariasSemana")}
                 onChange={(v) => setPol({ horasOrdinariasSemana: v })}
+              />
+            </FilaDeRecargo>
+            <FilaDeRecargo
+              titulo={t("ui.ReglasDePago.usarSeptimoDia", "Pagar aparte el séptimo día seguido")}
+              ayuda={t(
+                "ui.ReglasDePago.septimoDiaAyuda",
+                "Cuando alguien trabaja los siete días de una semana laboral (California, Kentucky). Cada hora de ese día cobra lo más alto entre su recargo y este: nunca se paga dos veces.",
+              )}
+              activo={!!pol.septimoDia}
+              onActivo={(v) =>
+                setPol({ septimoDia: v ? { primerasHoras: 8, recargoPct: 50, recargoPctDespues: 100, soloSiSemanaPasaDe: null } : null })
+              }
+            >
+              <NumeroField
+                label={t("ui.ReglasDePago.septimoPrimeras", "Primeras horas (h)")}
+                value={pol.septimoDia?.primerasHoras}
+                max={24}
+                onChange={(v) => setPol({ septimoDia: { ...(pol.septimoDia || {}), primerasHoras: v } })}
+              />
+              <NumeroField
+                label={t("ui.ReglasDePago.septimoRecargo", "Recargo de esas horas (%)")}
+                value={pol.septimoDia?.recargoPct}
+                onChange={(v) => setPol({ septimoDia: { ...(pol.septimoDia || {}), recargoPct: v } })}
+              />
+              <NumeroField
+                label={t("ui.ReglasDePago.septimoDespues", "Recargo después (%)")}
+                value={pol.septimoDia?.recargoPctDespues}
+                onChange={(v) => setPol({ septimoDia: { ...(pol.septimoDia || {}), recargoPctDespues: v } })}
+              />
+              <NumeroField
+                label={t("ui.ReglasDePago.septimoSoloSi", "Sólo si la semana pasa de (h)")}
+                value={pol.septimoDia?.soloSiSemanaPasaDe ?? 0}
+                max={168}
+                hint={t("ui.ReglasDePago.septimoSoloSiAyuda", "0 = siempre. Kentucky: 40.")}
+                onChange={(v) => setPol({ septimoDia: { ...(pol.septimoDia || {}), soloSiSemanaPasaDe: v > 0 ? v : null } })}
               />
             </FilaDeRecargo>
             <FilaDeRecargo
@@ -931,6 +1052,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.NominaSettings.recargoDominicalPct", "Recargo dominical (%)")}
                 value={pol.domingoRecargoPct}
+                hint={avisoDeLey("domingoRecargoPct")}
                 onChange={(v) => setPol({ domingoRecargoPct: v })}
               />
             </FilaDeRecargo>
@@ -946,6 +1068,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.NominaSettings.recargoEnDiaDeDescansoPct", "Recargo en día de descanso (%)")}
                 value={pol.descansoRecargoPct}
+                hint={avisoDeLey("descansoRecargoPct")}
                 onChange={(v) => setPol({ descansoRecargoPct: v })}
               />
               <label className="block sm:col-span-2">
@@ -974,6 +1097,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.NominaSettings.recargoEnFeriadoPct", "Recargo en feriado (%)")}
                 value={pol.feriadoRecargoPct}
+                hint={avisoDeLey("feriadoRecargoPct")}
                 onChange={(v) => setPol({ feriadoRecargoPct: v })}
               />
             </FilaDeRecargo>

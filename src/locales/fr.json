@@ -19256,7 +19256,9 @@
         "porHora": "/h",
         "porTurno": " par jour",
         "cadaSemanas_one": "chaque semaine",
-        "cadaSemanas_other": "toutes les {{count}} semaines"
+        "cadaSemanas_other": "toutes les {{count}} semaines",
+        "septimoDia": "Septième jour consécutif de la semaine : les {{h}} premières h à +{{a}} %, le reste à +{{b}} %",
+        "septimoSoloSi": " (si la semaine dépasse {{h}} h)"
       },
       "semanaLaboralEmpieza": "La semaine de travail commence le",
       "semanalAyuda": "Au-delà, dans la semaine, ce sont des heures supplémentaires (États-Unis : 40). 0 = pas de règle hebdomadaire.",
@@ -19371,7 +19373,16 @@
       },
       "sabadoAyuda": "Sur les heures qui tombent un samedi (Pays-Bas : +35 %). Se combine avec le jour férié et le repos selon la règle générale, et s'ajoute à la nuit.",
       "recargoSabadoPct": "Majoration du samedi (%)",
-      "plusesAyuda": "Des montants, pas des pourcentages : par heure ou une fois par jour travaillé, sur les heures choisies (Espagne : nuit 1,26 €/h, week-end et jours fériés 1,02 €/h). Ils entrent dans le montant de la fiche et apparaissent sur leur propre ligne du bulletin."
+      "plusesAyuda": "Des montants, pas des pourcentages : par heure ou une fois par jour travaillé, sur les heures choisies (Espagne : nuit 1,26 €/h, week-end et jours fériés 1,02 €/h). Ils entrent dans le montant de la fiche et apparaissent sur leur propre ligne du bulletin.",
+      "estado": "État",
+      "estadoFederal": "Autre État (loi fédérale seulement)",
+      "usarSeptimoDia": "Payer à part le septième jour consécutif",
+      "septimoDiaAyuda": "Quand quelqu'un travaille les sept jours d'une semaine de travail (Californie, Kentucky). Chaque heure de ce jour prend la plus élevée entre sa majoration et celle-ci : jamais payée deux fois.",
+      "septimoPrimeras": "Premières heures (h)",
+      "septimoRecargo": "Majoration de ces heures (%)",
+      "septimoDespues": "Majoration ensuite (%)",
+      "septimoSoloSi": "Seulement si la semaine dépasse (h)",
+      "septimoSoloSiAyuda": "0 = toujours. Kentucky : 40."
     },
     "puede": {
       "sinPermiso": "Votre rôle n'a pas la permission pour cela. Demandez à un administrateur.",
@@ -19588,6 +19599,29 @@
       "clockIn": "Premier pointage",
       "clockInAyuda": "Quand un agent pointe, vous le verrez dans Présence.",
       "compactoProgreso": "Démarrage · {{listos}} sur {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Changements de la loi datés",
+      "campo": {
+        "jornadaSemanal": "Durée hebdomadaire",
+        "domingo": "Majoration du dimanche",
+        "feriado": "Majoration jour férié",
+        "descanso": "Majoration du jour de repos"
+      },
+      "estado": {
+        "vigente": "En vigueur depuis le {{fecha}}",
+        "seAplicara": "S'appliquera seul le {{fecha}}",
+        "valorPropio": "Pas de changement : votre entreprise utilise {{valor}}, une valeur propre",
+        "omitido": "Ne s'appliquera pas : votre entreprise l'a ignoré",
+        "apagado": "Ne s'appliquera pas : les changements de la loi sont désactivés"
+      },
+      "convenioVence": "La convention « {{convenio}} » expire le {{fecha}}.",
+      "convenioRevisar": "Vérifiez avec votre conseiller ce qui s'applique ensuite et ajustez vos règles de paie. Nous ne changeons rien de nous-mêmes : les nouvelles valeurs ne sont pas encore connues.",
+      "seguir": "Appliquer les changements de la loi à leur date",
+      "seguirAyuda": "Seule une valeur au chiffre de la loi change. Si votre entreprise paie une autre valeur (convention ou contrat), elle est conservée. Les fiches déjà approuvées ne sont pas recalculées.",
+      "omitir": "Ne pas appliquer ce changement",
+      "enVigorDesde": "La loi fixe {{valor}} depuis le {{fecha}} : c'est ce qui est payé, même si un autre chiffre s'affiche ici.",
+      "cambiaEl": "Passe à {{valor}} le {{fecha}} (loi)."
     }
   },
   "visitantes": {

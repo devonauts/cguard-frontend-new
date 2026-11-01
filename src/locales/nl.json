@@ -19256,7 +19256,9 @@
         "porHora": "/u",
         "porTurno": " per dag",
         "cadaSemanas_one": "elke week",
-        "cadaSemanas_other": "elke {{count}} weken"
+        "cadaSemanas_other": "elke {{count}} weken",
+        "septimoDia": "Zevende dag op rij van de week: de eerste {{h}} u tegen +{{a}} %, de rest tegen +{{b}} %",
+        "septimoSoloSi": " (als de week meer is dan {{h}} u)"
       },
       "semanaLaboralEmpieza": "De werkweek begint op",
       "semanalAyuda": "Wat daarboven in de week valt, zijn overuren (VS: 40). 0 = geen weekregel.",
@@ -19371,7 +19373,16 @@
       },
       "sabadoAyuda": "Op de uren die op zaterdag vallen (Nederland: +35 %). Combineert met feestdag en rustdag volgens de algemene regel en komt bovenop de nachttoeslag.",
       "recargoSabadoPct": "Zaterdagtoeslag (%)",
-      "plusesAyuda": "Bedragen, geen percentages: per uur of één keer per gewerkte dag, over de uren die je kiest (Spanje: nachttoeslag € 1,26/u, weekend en feestdagen € 1,02/u). Ze tellen mee in het bedrag van de urenkaart en staan als eigen regel op de loonstrook."
+      "plusesAyuda": "Bedragen, geen percentages: per uur of één keer per gewerkte dag, over de uren die je kiest (Spanje: nachttoeslag € 1,26/u, weekend en feestdagen € 1,02/u). Ze tellen mee in het bedrag van de urenkaart en staan als eigen regel op de loonstrook.",
+      "estado": "Staat",
+      "estadoFederal": "Andere staat (alleen federale wet)",
+      "usarSeptimoDia": "De zevende dag op rij apart betalen",
+      "septimoDiaAyuda": "Als iemand alle zeven dagen van een werkweek werkt (Californië, Kentucky). Elk uur van die dag krijgt de hoogste van zijn eigen toeslag en deze: nooit dubbel betaald.",
+      "septimoPrimeras": "Eerste uren (u)",
+      "septimoRecargo": "Toeslag op die uren (%)",
+      "septimoDespues": "Toeslag daarna (%)",
+      "septimoSoloSi": "Alleen als de week meer is dan (u)",
+      "septimoSoloSiAyuda": "0 = altijd. Kentucky: 40."
     },
     "puede": {
       "sinPermiso": "Je rol heeft hier geen toestemming voor. Vraag het een beheerder.",
@@ -19588,6 +19599,29 @@
       "clockIn": "Eerste inklokking",
       "clockInAyuda": "Zodra een beveiliger inklokt, zie je dat bij Aanwezigheid.",
       "compactoProgreso": "Aan de slag · {{listos}} van {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Wetswijzigingen met datum",
+      "campo": {
+        "jornadaSemanal": "Weekuren",
+        "domingo": "Zondagstoeslag",
+        "feriado": "Feestdagtoeslag",
+        "descanso": "Rustdagtoeslag"
+      },
+      "estado": {
+        "vigente": "Van kracht sinds {{fecha}}",
+        "seAplicara": "Gaat vanzelf in op {{fecha}}",
+        "valorPropio": "Geen wijziging: je bedrijf gebruikt {{valor}}, een eigen waarde",
+        "omitido": "Wordt niet toegepast: je bedrijf heeft hem overgeslagen",
+        "apagado": "Wordt niet toegepast: wetswijzigingen staan uit"
+      },
+      "convenioVence": "De cao «{{convenio}}» loopt af op {{fecha}}.",
+      "convenioRevisar": "Bespreek met je adviseur wat daarna geldt en pas je looninstellingen aan. We wijzigen niets uit onszelf: de nieuwe waarden zijn nog niet bekend.",
+      "seguir": "Wetswijzigingen op hun datum toepassen",
+      "seguirAyuda": "Alleen een waarde die op het wettelijke getal staat verandert. Betaalt je bedrijf een andere waarde (cao of contract), dan blijft die. Goedgekeurde tijdkaarten worden niet herberekend.",
+      "omitir": "Deze wijziging niet toepassen",
+      "enVigorDesde": "De wet legt sinds {{fecha}} {{valor}} vast: zo wordt betaald, ook als hier een ander getal staat.",
+      "cambiaEl": "Wordt {{valor}} op {{fecha}} (wet)."
     }
   },
   "visitantes": {

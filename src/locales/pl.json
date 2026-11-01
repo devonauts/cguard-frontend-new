@@ -19556,7 +19556,9 @@
         "cadaSemanas_one": "co tydzień",
         "cadaSemanas_few": "co {{count}} tygodnie",
         "cadaSemanas_many": "co {{count}} tygodni",
-        "cadaSemanas_other": "co {{count}} tygodnia"
+        "cadaSemanas_other": "co {{count}} tygodnia",
+        "septimoDia": "Siódmy dzień z rzędu w tygodniu: pierwsze {{h}} h z +{{a}} %, reszta z +{{b}} %",
+        "septimoSoloSi": " (jeśli tydzień przekracza {{h}} h)"
       },
       "semanaLaboralEmpieza": "Tydzień pracy zaczyna się w",
       "semanalAyuda": "Powyżej tego w tygodniu to nadgodziny (USA: 40). 0 = brak zasady tygodniowej.",
@@ -19673,7 +19675,16 @@
       },
       "sabadoAyuda": "Od godzin przypadających w sobotę (Holandia: +35 %). Łączy się ze świętem i dniem wolnym według reguły ogólnej i dodaje do dodatku nocnego.",
       "recargoSabadoPct": "Dodatek sobotni (%)",
-      "plusesAyuda": "Kwoty, nie procenty: za godzinę lub raz za przepracowany dzień, od wybranych godzin (Hiszpania: dodatek nocny 1,26 €/h, weekend i święta 1,02 €/h). Wchodzą do kwoty karty i pojawiają się jako osobna pozycja na pasku płacowym."
+      "plusesAyuda": "Kwoty, nie procenty: za godzinę lub raz za przepracowany dzień, od wybranych godzin (Hiszpania: dodatek nocny 1,26 €/h, weekend i święta 1,02 €/h). Wchodzą do kwoty karty i pojawiają się jako osobna pozycja na pasku płacowym.",
+      "estado": "Stan",
+      "estadoFederal": "Inny stan (tylko prawo federalne)",
+      "usarSeptimoDia": "Płacić osobno za siódmy dzień z rzędu",
+      "septimoDiaAyuda": "Gdy ktoś pracuje wszystkie siedem dni tygodnia pracy (Kalifornia, Kentucky). Każda godzina tego dnia dostaje wyższy z dodatków: własny lub ten. Nigdy nie płaci się dwa razy.",
+      "septimoPrimeras": "Pierwsze godziny (h)",
+      "septimoRecargo": "Dodatek za te godziny (%)",
+      "septimoDespues": "Dodatek potem (%)",
+      "septimoSoloSi": "Tylko jeśli tydzień przekracza (h)",
+      "septimoSoloSiAyuda": "0 = zawsze. Kentucky: 40."
     },
     "puede": {
       "sinPermiso": "Twoja rola nie ma do tego uprawnień. Poproś administratora.",
@@ -19890,6 +19901,29 @@
       "clockIn": "Pierwsze odbicie",
       "clockInAyuda": "Gdy ochroniarz odbije wejście, zobaczysz to w Obecności.",
       "compactoProgreso": "Start · {{listos}} z {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Zmiany prawa z datą",
+      "campo": {
+        "jornadaSemanal": "Tygodniowy wymiar pracy",
+        "domingo": "Dodatek niedzielny",
+        "feriado": "Dodatek świąteczny",
+        "descanso": "Dodatek za dzień wolny"
+      },
+      "estado": {
+        "vigente": "Obowiązuje od {{fecha}}",
+        "seAplicara": "Zacznie obowiązywać sama {{fecha}}",
+        "valorPropio": "Bez zmian: twoja firma używa {{valor}}, własnej wartości",
+        "omitido": "Nie zostanie zastosowana: twoja firma ją pominęła",
+        "apagado": "Nie zostanie zastosowana: zmiany prawa są wyłączone"
+      },
+      "convenioVence": "Układ «{{convenio}}» wygasa {{fecha}}.",
+      "convenioRevisar": "Sprawdź z doradcą, co obowiązuje później, i dostosuj zasady wynagrodzeń. Niczego nie zmieniamy sami: nowe wartości nie są jeszcze znane.",
+      "seguir": "Stosować zmiany prawa w dniu ich wejścia",
+      "seguirAyuda": "Zmienia się tylko wartość ustawiona na liczbę z ustawy. Jeśli twoja firma płaci inną wartość (układ lub umowa), zostaje. Zatwierdzone karty nie są przeliczane.",
+      "omitir": "Nie stosuj tej zmiany",
+      "enVigorDesde": "Prawo ustala {{valor}} od {{fecha}}: tak się płaci, nawet jeśli tu widnieje inna liczba.",
+      "cambiaEl": "Zmienia się na {{valor}} {{fecha}} (prawo)."
     }
   },
   "visitantes": {

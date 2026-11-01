@@ -19256,7 +19256,9 @@
         "porHora": "/h",
         "porTurno": " pro Tag",
         "cadaSemanas_one": "jede Woche",
-        "cadaSemanas_other": "alle {{count}} Wochen"
+        "cadaSemanas_other": "alle {{count}} Wochen",
+        "septimoDia": "Siebter Tag in Folge der Woche: die ersten {{h}} h mit +{{a}} %, der Rest mit +{{b}} %",
+        "septimoSoloSi": " (wenn die Woche {{h}} h überschreitet)"
       },
       "semanaLaboralEmpieza": "Die Arbeitswoche beginnt am",
       "semanalAyuda": "Was darüber hinaus in der Woche geht, sind Überstunden (USA: 40). 0 = keine Wochenregel.",
@@ -19371,7 +19373,16 @@
       },
       "sabadoAyuda": "Auf die Stunden, die auf einen Samstag fallen (Niederlande: +35 %). Mit Feiertag und Ruhetag nach der allgemeinen Regel kombiniert, zum Nachtzuschlag addiert.",
       "recargoSabadoPct": "Samstagszuschlag (%)",
-      "plusesAyuda": "Beträge, keine Prozente: pro Stunde oder einmal pro Arbeitstag, auf die gewählten Stunden (Spanien: Nachtzulage 1,26 €/h, Wochenende und Feiertage 1,02 €/h). Sie fließen in den Betrag der Zeitkarte und erscheinen als eigene Zeile auf der Abrechnung."
+      "plusesAyuda": "Beträge, keine Prozente: pro Stunde oder einmal pro Arbeitstag, auf die gewählten Stunden (Spanien: Nachtzulage 1,26 €/h, Wochenende und Feiertage 1,02 €/h). Sie fließen in den Betrag der Zeitkarte und erscheinen als eigene Zeile auf der Abrechnung.",
+      "estado": "Bundesstaat",
+      "estadoFederal": "Anderer Bundesstaat (nur Bundesrecht)",
+      "usarSeptimoDia": "Den siebten Tag in Folge gesondert bezahlen",
+      "septimoDiaAyuda": "Wenn jemand alle sieben Tage einer Arbeitswoche arbeitet (Kalifornien, Kentucky). Jede Stunde dieses Tages erhält den höheren Zuschlag – ihren eigenen oder diesen: nie doppelt bezahlt.",
+      "septimoPrimeras": "Erste Stunden (h)",
+      "septimoRecargo": "Zuschlag dieser Stunden (%)",
+      "septimoDespues": "Zuschlag danach (%)",
+      "septimoSoloSi": "Nur wenn die Woche überschreitet (h)",
+      "septimoSoloSiAyuda": "0 = immer. Kentucky: 40."
     },
     "puede": {
       "sinPermiso": "Deine Rolle hat dafür keine Berechtigung. Frag einen Administrator.",
@@ -19588,6 +19599,29 @@
       "clockIn": "Erste Stempelung",
       "clockInAyuda": "Wenn eine Wache einstempelt, siehst du es unter Anwesenheit.",
       "compactoProgreso": "Start · {{listos}} von {{total}}"
+    },
+    "CambiosDeLey": {
+      "titulo": "Datierte Gesetzesänderungen",
+      "campo": {
+        "jornadaSemanal": "Wochenarbeitszeit",
+        "domingo": "Sonntagszuschlag",
+        "feriado": "Feiertagszuschlag",
+        "descanso": "Ruhetagszuschlag"
+      },
+      "estado": {
+        "vigente": "In Kraft seit {{fecha}}",
+        "seAplicara": "Gilt automatisch ab {{fecha}}",
+        "valorPropio": "Keine Änderung: Ihre Firma nutzt {{valor}}, einen eigenen Wert",
+        "omitido": "Wird nicht angewendet: Ihre Firma hat sie übersprungen",
+        "apagado": "Wird nicht angewendet: Gesetzesänderungen sind ausgeschaltet"
+      },
+      "convenioVence": "Der Vertrag «{{convenio}}» läuft am {{fecha}} aus.",
+      "convenioRevisar": "Klären Sie mit Ihrem Berater, was danach gilt, und passen Sie Ihre Lohnregeln an. Wir ändern nichts von selbst: Die neuen Werte sind noch nicht bekannt.",
+      "seguir": "Gesetzesänderungen an ihrem Datum anwenden",
+      "seguirAyuda": "Es ändert sich nur ein Wert, der auf dem gesetzlichen Wert steht. Zahlt Ihre Firma einen anderen Wert (Vertrag oder GAV), bleibt er. Genehmigte Zeitkarten werden nicht neu berechnet.",
+      "omitir": "Diese Änderung nicht anwenden",
+      "enVigorDesde": "Das Gesetz legt seit {{fecha}} {{valor}} fest: So wird bezahlt, auch wenn hier eine andere Zahl steht.",
+      "cambiaEl": "Ändert sich am {{fecha}} auf {{valor}} (Gesetz)."
     }
   },
   "visitantes": {
