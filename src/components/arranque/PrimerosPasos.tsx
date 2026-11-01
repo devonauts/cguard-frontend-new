@@ -27,7 +27,7 @@ import { hechos, type ClaveDePaso } from "@/lib/primerosPasos";
 export function PrimerosPasos({ compacto = false }: { compacto?: boolean }) {
   const { t } = useTranslation();
   const { user } = useAuth() as any;
-  const { datos, ocultar } = usePrimerosPasos();
+  const { datos, ocultar } = usePrimerosPasos({ fresco: true });
   const [ocultando, setOcultando] = useState(false);
   const [abierta, setAbierta] = useState(false);
 

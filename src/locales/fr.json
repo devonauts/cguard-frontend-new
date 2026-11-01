@@ -18254,7 +18254,9 @@
         "deEstaSucursal": "Paie de {{nombre}} : vous travaillez dans cette agence.",
         "tarjetasSinAprobar_one": "{{count}} feuille de temps non approuvée sur la période. La paie l’inclut quand même ; approuvez-la avant de publier.",
         "tarjetasSinAprobar_other": "{{count}} feuilles de temps non approuvées sur la période. La paie les inclut quand même ; approuvez-les avant de publier.",
-        "irAHoras": "Aller aux heures de la période"
+        "irAHoras": "Aller aux heures de la période",
+        "listaParaCalcular": "Les heures de la période sont prêtes, mais ce bulletin collectif n'a pas été calculé. Il utilisera les feuilles d'heures d'aujourd'hui.",
+        "calcularPlanilla": "Calculer la paie"
       },
       "prestamos": {
         "estado": {

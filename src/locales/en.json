@@ -17714,7 +17714,9 @@
         "deEstaSucursal": "Payroll for {{nombre}}: you are working in that branch.",
         "tarjetasSinAprobar_one": "{{count}} timecard not approved in the period. The run includes it anyway; approve it before publishing.",
         "tarjetasSinAprobar_other": "{{count}} timecards not approved in the period. The run includes them anyway; approve them before publishing.",
-        "irAHoras": "Go to Period hours"
+        "irAHoras": "Go to Period hours",
+        "listaParaCalcular": "The period's hours are ready, but this payroll run was never calculated. It will use today's timecards.",
+        "calcularPlanilla": "Calculate run"
       },
       "prestamos": {
         "estado": {

@@ -18542,7 +18542,9 @@
         "tarjetasSinAprobar_other": "{{count}} kart czasu pracy niezatwierdzonych w okresie. Lista płac i tak je uwzględnia; zatwierdź je przed publikacją.",
         "irAHoras": "Przejdź do godzin okresu",
         "tarjetasSinAprobar_few": "{{count}} karty czasu pracy niezatwierdzone w okresie. Lista płac i tak je uwzględnia; zatwierdź je przed publikacją.",
-        "tarjetasSinAprobar_many": "{{count}} kart czasu pracy niezatwierdzonych w okresie. Lista płac i tak je uwzględnia; zatwierdź je przed publikacją."
+        "tarjetasSinAprobar_many": "{{count}} kart czasu pracy niezatwierdzonych w okresie. Lista płac i tak je uwzględnia; zatwierdź je przed publikacją.",
+        "listaParaCalcular": "Godziny okresu są gotowe, ale ta lista płac nie została obliczona. Zostaną użyte dzisiejsze karty czasu pracy.",
+        "calcularPlanilla": "Oblicz listę płac"
       },
       "prestamos": {
         "estado": {

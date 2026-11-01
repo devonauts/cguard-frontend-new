@@ -21,6 +21,7 @@ import { usePuede } from "@/hooks/usePuede";
 import { EstadoVacio } from "@/components/EstadoVacio";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -143,8 +144,17 @@ export default function NominaTimecards() {
   /* With Roles de pago or Gusto, exporting the approved cards IS sending them
      to pay (one approval flow, phase 3): their punches become «paid». */
   const conDinero = tarifasT.motivo !== "modulo";
-  const [desde, setDesde] = useState(isoDay(new Date(Date.now() - 14 * 864e5)));
-  const [hasta, setHasta] = useState(isoDay(new Date()));
+  /* A link can name the range (the run screen's «Ir a Horas del periodo»
+     sends the run's from/to): the page opens on it instead of today's period. */
+  const [params] = useSearchParams();
+  const diaValido = (v: string | null) => (v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null);
+  const rangoDelEnlace = (() => {
+    const a = diaValido(params.get("from"));
+    const b = diaValido(params.get("to"));
+    return a && b && a <= b ? { desde: a, hasta: b } : null;
+  })();
+  const [desde, setDesde] = useState(rangoDelEnlace?.desde ?? isoDay(new Date(Date.now() - 14 * 864e5)));
+  const [hasta, setHasta] = useState(rangoDelEnlace?.hasta ?? isoDay(new Date()));
   const [rows, setRows] = useState<TarjetaDeNomina[]>([]);
   const [sel, setSel] = useState<string[]>([]);
   /* La tarjeta abierta día por día —con su descanso de cada día—. */
@@ -190,13 +200,15 @@ export default function NominaTimecards() {
     next?: { desde: string; hasta: string };
     closedThrough?: string | null;
   } | null>(null);
-  const irAlPeriodo = useCallback((dia?: string) => {
+  const irAlPeriodo = useCallback((dia?: string, mantenerRango = false) => {
     attendanceService
       .currentPeriod(dia)
       .then((p) => {
         if (p?.from && p?.to) {
-          setDesde(p.from.slice(0, 10));
-          setHasta(p.to.slice(0, 10));
+          if (!mantenerRango) {
+            setDesde(p.from.slice(0, 10));
+            setHasta(p.to.slice(0, 10));
+          }
           setPeriodo({ label: p.label, previous: p.previous, next: p.next, closedThrough: p.closedThrough ?? null });
         }
       })
@@ -204,7 +216,10 @@ export default function NominaTimecards() {
   }, []);
 
   useEffect(() => {
-    irAlPeriodo();
+    // With a range from the link, keep it and only read the period's label and arrows.
+    if (rangoDelEnlace) irAlPeriodo(rangoDelEnlace.desde, true);
+    else irAlPeriodo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [irAlPeriodo]);
 
   useEffect(() => {

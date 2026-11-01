@@ -18254,7 +18254,9 @@
         "deEstaSucursal": "Loonlijst van {{nombre}}: je werkt in die vestiging.",
         "tarjetasSinAprobar_one": "{{count}} urenkaart niet goedgekeurd in de periode. De verloning neemt hem toch mee; keur hem goed voor je publiceert.",
         "tarjetasSinAprobar_other": "{{count}} urenkaarten niet goedgekeurd in de periode. De verloning neemt ze toch mee; keur ze goed voor je publiceert.",
-        "irAHoras": "Naar uren van de periode"
+        "irAHoras": "Naar uren van de periode",
+        "listaParaCalcular": "De uren van de periode zijn klaar, maar deze loonrun is nooit berekend. Er worden de urenkaarten van vandaag gebruikt.",
+        "calcularPlanilla": "Loonrun berekenen"
       },
       "prestamos": {
         "estado": {
