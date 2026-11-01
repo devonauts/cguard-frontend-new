@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { Archive, ArchiveRestore, ImageUp, Layers, Loader2 } from "lucide-react";
 
 import { mensajeDeMarca } from "./mensajesDeMarca";
+import { revisarMarca } from "./reglasDeMarca";
 import { useComprarCupoDeMarca } from "./comprarCupoDeMarca";
 
 import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
@@ -31,7 +32,6 @@ import {
   type Marca,
 } from "@/lib/api/marcasService";
 import { listaDePaises, terminosFiscales } from "@/lib/paisDeLaEmpresa";
-import { validateTaxNumberForCountry } from "@/lib/validators/id";
 import { getTenantCountry } from "@/utils/tenantLocation";
 
 export const COLORES_DE_MARCA = [
@@ -72,24 +72,6 @@ const borradorDe = (m: Marca | null, pais: string): Borrador => ({
   phone: m?.phone || "",
   establishmentCode: m?.establishmentCode || "",
 });
-
-/** What is missing or wrong, field by field (the required ones). */
-export function revisarMarca(
-  b: Pick<Borrador, "name" | "legalName" | "taxId" | "country">,
-): Partial<Record<"name" | "legalName" | "taxId" | "country", "falta" | "malo">> {
-  const e: Partial<
-    Record<"name" | "legalName" | "taxId" | "country", "falta" | "malo">
-  > = {};
-
-  if (!b.name.trim()) e.name = "falta";
-  if (!b.legalName.trim()) e.legalName = "falta";
-  if (!b.country.trim()) e.country = "falta";
-  if (!b.taxId.trim()) e.taxId = "falta";
-  else if (!validateTaxNumberForCountry(b.taxId.trim(), b.country))
-    e.taxId = "malo";
-
-  return e;
-}
 
 export function EditorDeMarca({
   abierto,
