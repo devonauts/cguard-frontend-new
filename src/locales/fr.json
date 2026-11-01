@@ -19645,6 +19645,25 @@
       "omitir": "Ne pas appliquer ce changement",
       "enVigorDesde": "La loi fixe {{valor}} depuis le {{fecha}} : c'est ce qui est payé, même si un autre chiffre s'affiche ici.",
       "cambiaEl": "Passe à {{valor}} le {{fecha}} (loi)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "un service",
+      "desde": "à partir du {{dia}}",
+      "yMas_one": "{{lista}} et {{count}} de plus",
+      "yMas_other": "{{lista}} et {{count}} de plus",
+      "otraPersona": "Quelqu'un d'autre",
+      "vivoEditando": "{{quien}} modifie un brouillon qui change aussi {{que}}. Votre modification est déjà dans le planning réel ; elle sera visible avant la publication.",
+      "vivo": "Le brouillon non publié de {{quien}} change aussi {{que}}. Votre modification est déjà dans le planning réel ; elle sera visible avant la publication.",
+      "borrador": "{{quien}} vient de modifier en direct {{que}}, que ce brouillon change aussi. Vérifiez avant de publier.",
+      "marca": "Modifié en direct par {{quien}} : {{que}}",
+      "franjaTitulo_one": "Un élément que ce brouillon change aussi a été modifié en direct",
+      "franjaTitulo_other": "{{count}} éléments que ce brouillon change aussi ont été modifiés en direct",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "et {{count}} de plus",
+      "franjaMas_other": "et {{count}} de plus",
+      "franjaAyuda": "Les cellules avec un point ont changé en direct. « Voir les nouveautés » relit le planning réel avec vos modifications par-dessus ; la publication vérifie à nouveau.",
+      "releer": "Voir les nouveautés",
+      "entendido": "Compris"
     }
   },
   "visitantes": {

@@ -19645,6 +19645,25 @@
       "omitir": "Deze wijziging niet toepassen",
       "enVigorDesde": "De wet legt sinds {{fecha}} {{valor}} vast: zo wordt betaald, ook als hier een ander getal staat.",
       "cambiaEl": "Wordt {{valor}} op {{fecha}} (wet)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "een dienst",
+      "desde": "vanaf {{dia}}",
+      "yMas_one": "{{lista}} en nog {{count}}",
+      "yMas_other": "{{lista}} en nog {{count}}",
+      "otraPersona": "Iemand anders",
+      "vivoEditando": "{{quien}} bewerkt een concept dat ook {{que}} wijzigt. Je wijziging staat al in het echte rooster; die wordt vóór het publiceren getoond.",
+      "vivo": "Het niet-gepubliceerde concept van {{quien}} wijzigt ook {{que}}. Je wijziging staat al in het echte rooster; die wordt vóór het publiceren getoond.",
+      "borrador": "{{quien}} heeft net live {{que}} gewijzigd, wat dit concept ook wijzigt. Controleer het vóór het publiceren.",
+      "marca": "Live gewijzigd door {{quien}}: {{que}}",
+      "franjaTitulo_one": "Iets dat dit concept ook wijzigt is live gewijzigd",
+      "franjaTitulo_other": "{{count}} dingen die dit concept ook wijzigt zijn live gewijzigd",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "en nog {{count}}",
+      "franjaMas_other": "en nog {{count}}",
+      "franjaAyuda": "Cellen met een stip zijn live gewijzigd. ‘Bekijk wat nieuw is’ leest het echte rooster opnieuw met jouw wijzigingen erbovenop; bij publiceren wordt opnieuw gecontroleerd.",
+      "releer": "Bekijk wat nieuw is",
+      "entendido": "Begrepen"
     }
   },
   "visitantes": {

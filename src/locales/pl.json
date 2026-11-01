@@ -19947,6 +19947,31 @@
       "omitir": "Nie stosuj tej zmiany",
       "enVigorDesde": "Prawo ustala {{valor}} od {{fecha}}: tak się płaci, nawet jeśli tu widnieje inna liczba.",
       "cambiaEl": "Zmienia się na {{valor}} {{fecha}} (prawo)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "zmiana",
+      "desde": "od {{dia}}",
+      "yMas_one": "{{lista}} i jeszcze {{count}}",
+      "yMas_few": "{{lista}} i jeszcze {{count}}",
+      "yMas_many": "{{lista}} i jeszcze {{count}}",
+      "yMas_other": "{{lista}} i jeszcze {{count}}",
+      "otraPersona": "Inna osoba",
+      "vivoEditando": "{{quien}} edytuje szkic, który też zmienia {{que}}. Twoja zmiana jest już w rzeczywistym grafiku; ta osoba zobaczy ją przed publikacją.",
+      "vivo": "Nieopublikowany szkic zapisany przez {{quien}} też zmienia {{que}}. Twoja zmiana jest już w rzeczywistym grafiku; ta osoba zobaczy ją przed publikacją.",
+      "borrador": "{{quien}} właśnie zmienił(a) na żywo {{que}}, co ten szkic też zmienia. Sprawdź przed publikacją.",
+      "marca": "Zmienione na żywo przez {{quien}}: {{que}}",
+      "franjaTitulo_one": "Coś, co ten szkic też zmienia, zostało zmienione na żywo",
+      "franjaTitulo_few": "{{count}} rzeczy, które ten szkic też zmienia, zostały zmienione na żywo",
+      "franjaTitulo_many": "{{count}} rzeczy, które ten szkic też zmienia, zostało zmienionych na żywo",
+      "franjaTitulo_other": "{{count}} rzeczy, które ten szkic też zmienia, zostało zmienionych na żywo",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "i jeszcze {{count}}",
+      "franjaMas_few": "i jeszcze {{count}}",
+      "franjaMas_many": "i jeszcze {{count}}",
+      "franjaMas_other": "i jeszcze {{count}}",
+      "franjaAyuda": "Komórki z kropką zmieniono na żywo. „Zobacz nowości” ponownie wczytuje rzeczywisty grafik z Twoimi zmianami na wierzchu; przy publikacji wszystko jest sprawdzane jeszcze raz.",
+      "releer": "Zobacz nowości",
+      "entendido": "Rozumiem"
     }
   },
   "visitantes": {

@@ -127,6 +127,15 @@ import {
 import { useFrenoAlSalir } from "@/lib/useFrenoAlSalir";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import HorarioModos from "./HorarioModos";
+import {
+  indiceDeMarcas,
+  juntarCambios,
+  queCambio,
+  textoDeBorrador,
+  type AvisoDeBorrador,
+  type CambioEnVivo,
+  type IndiceDeMarcas,
+} from "@/lib/planificador/avisoEnVivo";
 
 /**
  * TURNOS › HORARIO › BORRADOR (antes «Planificador»)
@@ -374,6 +383,8 @@ export default function Planificador() {
      guardado). Se combina, nunca se pisa: ver `rebase.ts`. */
   const firmaRef = useRef("");
   const srvRef = useRef<EnElServidor>({ version: 0, baseAt: null, guardado: null });
+  /** Live edits on what this draft changes (phase 5): banner + marked cells. */
+  const [enVivo, setEnVivo] = useState<CambioEnVivo[]>([]);
   const leidoRef = useRef<PlanReal | null>(null);
   const cambiosRef = useRef(0);
 
@@ -463,6 +474,12 @@ export default function Planificador() {
             ),
           );
           draft = null;
+        }
+        if (draft?.liveChanges?.length) {
+          const leidoEn = draft.baseAt || "";
+          const nuevos = draft.liveChanges.filter((c) => !leidoEn || c.at > leidoEn);
+
+          if (nuevos.length) setEnVivo((prev) => juntarCambios(prev, nuevos));
         }
         if (b !== baseRef.current) {
           baseRef.current = b;
@@ -677,6 +694,52 @@ export default function Planificador() {
   );
   const borrador = estadoDelBorrador(publicacion?.cambios.length, cambios);
 
+  /** The guards and stations this draft changes: the plan diff plus what its
+      publish calls write (sent with every save and with «Publicar»). */
+  const tocadoDelBorrador = useCallback(
+    (
+      l: NonNullable<typeof leidoRef.current>,
+      p: Plan,
+      pub?: ReturnType<typeof planificarPublicacion>,
+    ) => {
+      const a = touchedBy(l.plan, p, l.enlace.personas);
+      let b = { guardIds: [] as string[], stationIds: [] as string[] };
+
+      try {
+        const pp = pub || planificarPublicacion(l.plan, p, l.enlace, contextoDePublicacion());
+
+        b = touchedByCalls(
+          pp.cambios.flatMap((c) => c.llamadas),
+          l.enlace.personas,
+        );
+      } catch {
+        /* the plan diff alone still names most of it */
+      }
+
+      return {
+        guardIds: [...new Set([...a.guardIds, ...b.guardIds])],
+        stationIds: [...new Set([...a.stationIds, ...b.stationIds])],
+      };
+    },
+    [contextoDePublicacion],
+  );
+
+  /** Someone changed live what this draft also changes (phase 5). */
+  const alAvisoDeBorrador = useCallback(
+    (a: AvisoDeBorrador) => {
+      setEnVivo((prev) => juntarCambios(prev, a.items || []));
+      toast.warning(textoDeBorrador(t, a), {
+        id: `cruce-borrador-${a.draftId}`,
+        duration: 12000,
+      });
+    },
+    [t],
+  );
+  const marcas = useMemo(
+    () => indiceDeMarcas(enVivo, leido?.enlace.personas || {}),
+    [enVivo, leido],
+  );
+
   /* ── SAVE TO THE SERVER ───────────────────────────────────────────────────
      One save at a time, in order. A 409 means someone else saved the shared
      draft (or published / discarded it): re-read and merge, never overwrite. */
@@ -713,6 +776,7 @@ export default function Planificador() {
           baseAt: s.baseAt,
           signature: firmaRef.current,
           touches: cambiosRef.current,
+          touched: tocadoDelBorrador(l, p),
         });
 
         srvRef.current = { ...srvRef.current, version: d.version, guardado: p };
@@ -749,7 +813,7 @@ export default function Planificador() {
     enCursoRef.current = siguiente.catch(() => false);
 
     return siguiente;
-  }, [tenantId, cargar, t]);
+  }, [tenantId, cargar, t, tocadoDelBorrador]);
 
   // Save the touched draft (with a breather: one drag is many touches).
   useEffect(() => {
@@ -833,18 +897,7 @@ export default function Planificador() {
     return publicarEnElServidor(tenantId, {
       version: srvRef.current.version,
       baseAt: srvRef.current.baseAt,
-      touched: (() => {
-        const a = touchedBy(l.plan, p, l.enlace.personas);
-        const b = touchedByCalls(
-          pub.cambios.flatMap((c) => c.llamadas),
-          l.enlace.personas,
-        );
-
-        return {
-          guardIds: [...new Set([...a.guardIds, ...b.guardIds])],
-          stationIds: [...new Set([...a.stationIds, ...b.stationIds])],
-        };
-      })(),
+      touched: tocadoDelBorrador(l, p, pub),
       changes: pub.cambios.map((c) => ({
         text: c.texto,
         calls: c.llamadas.map((x) => ({
@@ -1196,7 +1249,15 @@ export default function Planificador() {
           )}
           title={t("ui.Planificador.tituloBorrador", "Horario · borrador")}
         />
-        <HorarioModos modo="borrador" />
+        <HorarioModos alAvisoDeBorrador={alAvisoDeBorrador} modo="borrador" />
+
+        {!cargando && enVivo.length > 0 && (
+          <FranjaEnVivo
+            cambios={enVivo}
+            onEntendido={() => setEnVivo([])}
+            onReleer={() => void cargar()}
+          />
+        )}
 
         {/* LA FRANJA DEL BORRADOR. Una pastilla en la cabecera no bastó: se
             corrió el ciclo de un vigilante, no se publicó, y la pantalla lo
@@ -1589,6 +1650,8 @@ export default function Planificador() {
                                       abierto={estaAbierto(`p:${pu.id}`)}
                                       d0={d0}
                                       dias={diasVista}
+                                      marcas={marcas}
+                                      base={base}
                                       plan={plan}
                                       pu={pu}
                                       cambiar={cambiar}
@@ -2192,6 +2255,8 @@ function FilasDePuesto({
   pu,
   d0,
   dias,
+  marcas,
+  base,
   cambiar,
   setHoja,
   abierto,
@@ -2207,6 +2272,9 @@ function FilasDePuesto({
   pu: Puesto;
   d0: number;
   dias: number[];
+  /** Live edits on what the draft changes (phase 5), by person/station and day. */
+  marcas?: IndiceDeMarcas;
+  base?: string;
   cambiar: Cambiar;
   setHoja: (h: Hoja) => void;
   abierto: boolean;
@@ -2405,6 +2473,9 @@ function FilasDePuesto({
               );
           }
 
+          const enVivoAqui =
+            marcas && base && !marcas.vacio ? marcas.puesto(pu.id, sumaDias(base, d)) : [];
+
           return (
             <td
               key={i}
@@ -2413,8 +2484,10 @@ function FilasDePuesto({
                 borderColor: "var(--hairline)",
                 background:
                   "color-mix(in oklab, var(--background) 94%, var(--ink) 6%)",
+                position: enVivoAqui.length ? "relative" : undefined,
               }}
             >
+              <MarcaEnVivo cambios={enVivoAqui} />
               <div className={CELDA}>
                 {celdas.length ? (
                   celdas
@@ -2552,12 +2625,19 @@ function FilasDePuesto({
                       orden[(orden.indexOf(propio(q, d)) + 1) % orden.length];
                   });
 
+                const enVivoAqui =
+                  marcas && base && !marcas.vacio ? marcas.persona(p.id, sumaDias(base, d)) : [];
+
                 return (
                   <td
                     key={i}
                     className={TD}
-                    style={{ borderColor: "var(--hairline)" }}
+                    style={{
+                      borderColor: "var(--hairline)",
+                      position: enVivoAqui.length ? "relative" : undefined,
+                    }}
                   >
+                    <MarcaEnVivo cambios={enVivoAqui} />
                     <div className={CELDA}>
                       {aus ? (
                         <span
@@ -4069,5 +4149,95 @@ function HojaPublicar({
         </>
       )}
     </Marco>
+  );
+}
+
+/** A small mark on a cell someone changed live after the draft was read (phase 5). */
+function MarcaEnVivo({ cambios }: { cambios: CambioEnVivo[] }) {
+  const { t } = useTranslation();
+
+  if (!cambios.length) return null;
+  const c = cambios[0];
+  const texto = t("ui.AvisoEnVivo.marca", {
+    defaultValue: "Cambiado en vivo por {{quien}}: {{que}}",
+    quien: c.by || "—",
+    que: queCambio(t, c),
+  });
+
+  return (
+    <span
+      aria-label={texto}
+      className="absolute right-0.5 top-0.5 z-10 inline-block size-2.5 rounded-full ring-2"
+      role="img"
+      style={{ background: "var(--warn)", ["--tw-ring-color" as any]: "var(--background)" }}
+      title={texto}
+    />
+  );
+}
+
+/** «Cambiaron en vivo…»: stays until it is read or the draft is re-read. */
+function FranjaEnVivo({
+  cambios,
+  onEntendido,
+  onReleer,
+}: {
+  cambios: CambioEnVivo[];
+  onEntendido: () => void;
+  onReleer: () => void;
+}) {
+  const { t } = useTranslation();
+  const primeros = cambios.slice(0, 3);
+  const resto = cambios.length - primeros.length;
+
+  return (
+    <div
+      className="mb-4 flex flex-wrap items-start gap-3 rounded-xl border px-4 py-3 text-sm"
+      role="status"
+      style={{
+        borderColor: "color-mix(in oklab, var(--warn) 55%, transparent)",
+        background: "color-mix(in oklab, var(--warn) 12%, var(--background))",
+      }}
+    >
+      <AlertTriangle className="mt-0.5 shrink-0" size={18} style={{ color: "var(--warn)" }} />
+      {/* basis-64: on a phone the text keeps the row and the buttons wrap below. */}
+      <div className="min-w-0 flex-1 basis-64">
+        <p className="font-semibold">
+          {t("ui.AvisoEnVivo.franjaTitulo", {
+            defaultValue: "Cambiaron en vivo lo que este borrador también cambia ({{count}})",
+            count: cambios.length,
+          })}
+        </p>
+        <ul className="mt-1 space-y-0.5">
+          {primeros.map((c, i) => (
+            <li key={i} className="min-w-0 break-words">
+              {t("ui.AvisoEnVivo.franjaLinea", {
+                defaultValue: "{{que}} — {{quien}}",
+                que: queCambio(t, c),
+                quien: c.by || "—",
+              })}
+            </li>
+          ))}
+          {resto > 0 && (
+            <li style={{ color: "var(--ink-soft)" }}>
+              {t("ui.AvisoEnVivo.franjaMas", { defaultValue: "y {{count}} más", count: resto })}
+            </li>
+          )}
+        </ul>
+        <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
+          {t(
+            "ui.AvisoEnVivo.franjaAyuda",
+            "Las celdas con un punto cambiaron en vivo. «Ver lo nuevo» vuelve a leer el horario real con tus cambios encima; al publicar se revisa otra vez.",
+          )}
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" onClick={onReleer}>
+          <RotateCcw size={14} /> {t("ui.AvisoEnVivo.releer", "Ver lo nuevo")}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={onEntendido}>
+          {t("ui.AvisoEnVivo.entendido", "Entendido")}
+        </Button>
+      </div>
+    </div>
   );
 }

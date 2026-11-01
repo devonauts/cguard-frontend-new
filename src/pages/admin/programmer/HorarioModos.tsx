@@ -11,6 +11,9 @@
  *
  * In live mode the switch also says when a draft is waiting, and who saved
  * it, so nobody edits live without knowing someone is preparing changes.
+ *
+ * Phase 5: it also listens for `schedule:draftOverlap` — a live edit on what
+ * the draft changes is told to both sides (see lib/planificador/avisoEnVivo).
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,6 +21,10 @@ import { Link, useLocation } from "react-router-dom";
 import { CalendarCheck2, CalendarRange } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
+import {
+  useAvisosDeBorrador,
+  type AvisoDeBorrador,
+} from "@/lib/planificador/avisoEnVivo";
 
 interface Resumen {
   updatedBy: string | null;
@@ -38,14 +45,19 @@ export function rutaDelModo(modo: "vivo" | "borrador", search = ""): string {
 export default function HorarioModos({
   modo,
   className = "mb-4",
+  alAvisoDeBorrador,
 }: {
   modo: "vivo" | "borrador";
   className?: string;
+  /** The draft on screen takes the notice itself (marks, banner). */
+  alAvisoDeBorrador?: (a: AvisoDeBorrador) => void;
 }) {
   const { t } = useTranslation();
   const { search } = useLocation();
   const tenantId = localStorage.getItem("tenantId") || "";
   const [resumen, setResumen] = useState<Resumen | null>(null);
+
+  useAvisosDeBorrador(tenantId, alAvisoDeBorrador);
 
   useEffect(() => {
     if (modo !== "vivo" || !tenantId) return;
