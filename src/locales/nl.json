@@ -1342,7 +1342,8 @@
     "eliminar": "Verwijderen",
     "guardando": "Opslaan…",
     "guardar": "Opslaan",
-    "tarjetas": "Kaarten"
+    "tarjetas": "Kaarten",
+    "estacion": "Post"
   },
   "customer": {
     "registration_title": "Registratie opdrachtgever"

@@ -1192,7 +1192,7 @@ export default function Planificador() {
           icon={<CalendarRange />}
           subtitle={t(
             "ui.Planificador.subtitulo",
-            "Di qué pide cada puesto, dale a cada quien su rotación y deja que los sacafrancos cubran lo que falta.",
+            "Di qué pide cada estación, dale a cada quien su rotación y deja que los sacafrancos cubran lo que falta.",
           )}
           title={t("ui.Planificador.tituloBorrador", "Horario · borrador")}
         />
@@ -1258,7 +1258,7 @@ export default function Planificador() {
             icon={<CalendarRange />}
             title={t(
               "ui.Planificador.sinPuestos",
-              "Todavía no hay puestos que planificar.",
+              "Todavía no hay estaciones que planificar.",
             )}
           />
         ) : (
@@ -1365,7 +1365,7 @@ export default function Planificador() {
                   className="cg-input h-9 w-full pl-8 pr-3 text-sm"
                   placeholder={t(
                     "ui.Planificador.buscar",
-                    "Buscar puesto o vigilante",
+                    "Buscar estación o vigilante",
                   )}
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
@@ -1411,7 +1411,7 @@ export default function Planificador() {
                 />
                 {t(
                   "ui.Planificador.soloConHuecos",
-                  "Sólo puestos con algo sin cubrir",
+                  "Sólo estaciones con algo sin cubrir",
                 )}
               </label>
               <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
@@ -1463,7 +1463,7 @@ export default function Planificador() {
                     >
                       {t(
                         "ui.Planificador.puestoYVigilante",
-                        "Puesto y vigilante",
+                        "Estación y vigilante",
                       )}
                     </th>
                     {fechas.map((f, i) => (
@@ -1629,7 +1629,7 @@ export default function Planificador() {
                           ·{" "}
                           {t(
                             "ui.Planificador.cubrenSusPuestos",
-                            "cubren lo que falta en sus puestos fijos",
+                            "cubren lo que falta en sus estaciones fijas",
                           )}
                         </span>
                         <button
@@ -1736,7 +1736,7 @@ export default function Planificador() {
                             ) : (
                               <ChevronRight className="h-3.5 w-3.5" />
                             )}
-                            {t("ui.Planificador.sinPuesto", "Sin puesto")}{" "}
+                            {t("ui.Planificador.sinPuesto", "Sin estación")}{" "}
                             <span
                               className="font-normal"
                               style={{ color: "var(--ink-soft)" }}
@@ -1775,7 +1775,7 @@ export default function Planificador() {
             <p className="mt-3 text-xs" style={{ color: "var(--ink-soft)" }}>
               {t(
                 "ui.Planificador.pie",
-                "Toca un turno para cambiar ese día, la rotación para cambiarla entera, y lo rojo para ver quién puede cubrirlo. El punto ● marca lo que cubre el sacafranco fijo del puesto.",
+                "Toca un turno para cambiar ese día, la rotación para cambiarla entera, y lo rojo para ver quién puede cubrirlo. El punto ● marca lo que cubre el sacafranco fijo de la estación.",
               )}
             </p>
           </>
@@ -2269,7 +2269,7 @@ function FilasDePuesto({
               className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
               title={t(
                 "ui.Planificador.cambiarCobertura",
-                "Cambiar lo que pide el puesto",
+                "Cambiar lo que pide la estación",
               )}
               onClick={() => setHoja({ tipo: "cobertura", puesto: pu.id })}
             >
@@ -2308,7 +2308,7 @@ function FilasDePuesto({
                     {
                       label: t(
                         "ui.Planificador.cambiarCobertura",
-                        "Cambiar lo que pide el puesto",
+                        "Cambiar lo que pide la estación",
                       ),
                       icon: <Ajustes className="h-4 w-4" />,
                       onClick: () =>
@@ -2523,7 +2523,7 @@ function FilasDePuesto({
                         {
                           label: t(
                             "ui.Planificador.quitarMenu",
-                            "Quitar del puesto",
+                            "Quitar de la estación",
                           ),
                           icon: <UserMinus className="h-4 w-4" />,
                           onClick: () => quitar(p, false),
@@ -2618,7 +2618,7 @@ function FilasDePuesto({
                 >
                   {t(
                     "ui.Planificador.nadieAsignado",
-                    "Nadie asignado a este puesto.",
+                    "Nadie asignado a esta estación.",
                   )}
                   {pu.sedeId && (
                     <button
@@ -2710,7 +2710,7 @@ function FilaDeSacafranco({
             onClick={() => setHoja({ tipo: "fijos", persona: s.id })}
           >
             {n === 1
-              ? t("ui.Planificador.unPuestoFijo", "1 puesto fijo")
+              ? t("ui.Planificador.unPuestoFijo", "1 estación fija")
               : t("ui.Planificador.nPuestosFijos", {
                   defaultValue: "{{n}} puestos fijos",
                   n,
@@ -3080,14 +3080,14 @@ function HojaHueco({
                     (c.sinPuesto
                       ? t(
                           "ui.Planificador.sinPuestoDisponible",
-                          "Sin puesto: disponible",
+                          "Sin estación: disponible",
                         )
                       : c.extra
                         ? t(
                             "ui.Planificador.horaExtra",
                             "Está en franco: se paga como hora extra",
                           )
-                        : `${c.suyo ? t("ui.Planificador.esSuPuesto", "Es su puesto fijo") + " · " : t("ui.Planificador.sacafranco", "Sacafranco") + " · "}${c.dias === 1 ? t("ui.Planificador.unDiaSemana", "1 día esta semana") : t("ui.Planificador.nDiasSemana", { defaultValue: "{{n}} días esta semana", n: c.dias })}`)}
+                        : `${c.suyo ? t("ui.Planificador.esSuPuesto", "Es su estación fija") + " · " : t("ui.Planificador.sacafranco", "Sacafranco") + " · "}${c.dias === 1 ? t("ui.Planificador.unDiaSemana", "1 día esta semana") : t("ui.Planificador.nDiasSemana", { defaultValue: "{{n}} días esta semana", n: c.dias })}`)}
                   {!c.bloqueo && c.aviso && (
                     <span
                       className="ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
@@ -3150,7 +3150,7 @@ function HojaCobertura({
       cerrar={cerrar}
       detalle={t(
         "ui.Planificador.coberturaDetalle",
-        "Cuánta gente pide el puesto. La hoja marca en rojo lo que falte y en ámbar lo que sobre.",
+        "Cuánta gente pide la estación. La hoja marca en rojo lo que falte y en ámbar lo que sobre.",
       )}
       titulo={t("ui.Planificador.coberturaDe", {
         defaultValue: "Qué pide {{puesto}}",
@@ -3464,7 +3464,7 @@ function HojaFijos({
       cerrar={cerrar}
       detalle={t(
         "ui.Planificador.fijosDetalle",
-        "Cubre solo lo que falte en estos puestos.",
+        "Cubre solo lo que falte en estas estaciones.",
       )}
       titulo={t("ui.Planificador.fijosDe", {
         defaultValue: "Puestos fijos de {{nombre}}",

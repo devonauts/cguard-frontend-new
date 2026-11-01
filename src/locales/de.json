@@ -1342,7 +1342,8 @@
     "eliminar": "Löschen",
     "guardando": "Wird gespeichert…",
     "guardar": "Speichern",
-    "tarjetas": "Karten"
+    "tarjetas": "Karten",
+    "estacion": "Posten"
   },
   "customer": {
     "registration_title": "Registrierung des Auftraggebers"

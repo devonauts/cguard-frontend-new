@@ -44,7 +44,7 @@ export function PrimerosPasos({ compacto = false }: { compacto?: boolean }) {
       titulo: t("ui.PrimerosPasos.station", "Crea una estación"),
       ayuda: t(
         "ui.PrimerosPasos.stationAyuda",
-        "El puesto que vas a cubrir: elige el cliente y la sede.",
+        "El punto que vas a cuidar: elige el cliente y la sede.",
       ),
     },
     requirement: {

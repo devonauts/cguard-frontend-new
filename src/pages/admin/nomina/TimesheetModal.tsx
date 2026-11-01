@@ -559,7 +559,7 @@ export default function TimesheetModal({
 
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <Field
-                    label={t("comun.puesto", "Puesto")}
+                    label={t("comun.estacion", "Estación")}
                     value={record.stationName?.stationName || "—"}
                   />
                   <Field

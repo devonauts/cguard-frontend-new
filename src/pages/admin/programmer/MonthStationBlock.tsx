@@ -939,7 +939,7 @@ function MonthStationBlockInner({
                   className="cg-focus block max-w-full truncate text-left text-xs font-semibold hover:underline"
                   title={t(
                     "ui.MonthStationBlock.editarElPuestoSinRehacer",
-                    "Editar el puesto (nombre, horas, plazas) sin rehacer la estación",
+                    "Editar la estación (nombre, horas, puestos) sin rehacerla",
                   )}
                   type="button"
                   onClick={() => h.editPosition(station, pos)}

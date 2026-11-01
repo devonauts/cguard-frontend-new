@@ -1342,7 +1342,8 @@
     "eliminar": "Supprimer",
     "guardando": "Enregistrement…",
     "guardar": "Enregistrer",
-    "tarjetas": "Cartes"
+    "tarjetas": "Cartes",
+    "estacion": "Poste"
   },
   "customer": {
     "registration_title": "Inscription client"

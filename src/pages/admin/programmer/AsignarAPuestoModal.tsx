@@ -117,7 +117,7 @@ export default function AsignarAPuestoModal({
         />
         {!lista.length ? (
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            {t("ui.AllStaff.sinPlazas", "No hay plazas. Crea primero un puesto en la sede.")}
+            {t("ui.AllStaff.sinPlazas", "No hay puestos. Crea primero una estación en la sede.")}
           </p>
         ) : (
           <div

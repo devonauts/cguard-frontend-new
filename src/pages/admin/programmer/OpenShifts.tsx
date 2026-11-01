@@ -109,7 +109,7 @@ export function useEtiquetasDeHueco() {
           "ui.SinCubrir.tipo.archived_guard",
           "Vigilante archivado",
         ),
-        empty_slot: t("ui.SinCubrir.tipo.empty_slot", "Plaza vacía"),
+        empty_slot: t("ui.SinCubrir.tipo.empty_slot", "Puesto vacío"),
       }) as Record<GapKind, string>,
     [t],
   );
@@ -274,7 +274,7 @@ export default function OpenShifts() {
           icon={<CalendarClock />}
           subtitle={t(
             "ui.SinCubrir.subtitulo",
-            "Faltas, permisos sin reemplazo, plazas vacías y turnos sin vigilante, según el requisito de cada estación.",
+            "Faltas, permisos sin reemplazo, puestos vacíos y turnos sin vigilante, según el requisito de cada estación.",
           )}
           title={t("sidebar.turnos.sin-cubrir", "Sin cubrir")}
         />
@@ -378,7 +378,7 @@ export default function OpenShifts() {
           <EstadoVacio
             description={t(
               "ui.SinCubrir.sinRequisitoAyuda",
-              "Aquí aparecen las faltas, las plazas vacías y los permisos sin reemplazo. Para saber qué falta cubrir, cada estación tiene que decir cuántos vigilantes pide.",
+              "Aquí aparecen las faltas, los puestos vacíos y los permisos sin reemplazo. Para saber qué falta cubrir, cada estación tiene que decir cuántos vigilantes pide.",
             )}
             icon={<UserCheck />}
             paso={{

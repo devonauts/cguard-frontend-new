@@ -570,10 +570,10 @@ export default function NominaApprovals() {
             }}
           />
           <SelectorDeFiltro
-            ariaLabel={t("comun.puesto", "Puesto")}
+            ariaLabel={t("comun.estacion", "Estación")}
             icono={<MapPin className="size-4" style={{ color: "var(--ink-faint)" }} />}
             options={opciones.stations}
-            todos={t("ui.Asistencia.todosLosPuestos", "Todos los puestos")}
+            todos={t("ui.Asistencia.todosLosPuestos", "Todas las estaciones")}
             value={f.station}
             onChange={(v) => {
               setPaginas({ corr: 1, co: 1, ci: 1 });

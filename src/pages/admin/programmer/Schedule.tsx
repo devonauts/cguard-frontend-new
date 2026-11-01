@@ -1526,7 +1526,7 @@ export default function Schedule() {
 
         return {
           key: String(pos.id),
-          plaza: pos.name || t("ui.Schedule.plaza", "Plaza"),
+          plaza: pos.name || t("ui.Schedule.plaza", "Puesto"),
           vigilante: a
             ? nombreDeVigilante(
                 a.guard,
@@ -1551,7 +1551,7 @@ export default function Schedule() {
         key: String(a.id),
         plaza: t(
           "ui.Schedule.cuadranteDiarioSinPlaza",
-          "Cuadrante diario (sin plaza)",
+          "Cuadrante diario (sin puesto)",
         ),
         vigilante: nombreDeVigilante(
           a.guard,
@@ -6454,7 +6454,7 @@ export default function Schedule() {
               icon={<MapPin />}
               title={t(
                 "ui.Schedule.todaviaNoHayPuestosConfigurados",
-                "Todavía no hay puestos configurados",
+                "Todavía no hay estaciones",
               )}
             />
           </div>
@@ -8192,7 +8192,7 @@ export default function Schedule() {
                   >
                     {t(
                       "ui.Schedule.elAcompanamientoTieneFinal",
-                      "El acompañamiento tiene final: cuando termine, el aprendiz deja de seguir este puesto. Para que se quede, asígnalo a su propia plaza.",
+                      "El acompañamiento tiene final: cuando termine, el aprendiz deja de seguir este puesto. Para que se quede, asígnalo a su propio puesto.",
                     )}
                   </p>
                 </div>
@@ -9341,7 +9341,7 @@ export default function Schedule() {
                         className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        {t("ui.Schedule.plazas", "Plazas")}
+                        {t("ui.Schedule.plazas", "Puestos")}
                       </label>
                       <input
                         className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary"
@@ -10975,7 +10975,7 @@ export default function Schedule() {
                         })}
                         {vacias
                           ? t("ui.Schedule.nPlazasSinCubrir", {
-                              defaultValue: " · {{count}} plazas sin cubrir",
+                              defaultValue: " · {{count}} puestos sin cubrir",
                               count: vacias,
                             })
                           : t("ui.Schedule.completo", " · completo")}
@@ -10993,7 +10993,7 @@ export default function Schedule() {
                   className="px-3 py-6 text-center text-[11px]"
                   style={{ color: "var(--ink-faint)" }}
                 >
-                  {t("ui.Schedule.noHayPuestosTodavia", "No hay puestos todavía.")}
+                  {t("ui.Schedule.noHayPuestosTodavia", "No hay estaciones todavía.")}
                 </p>
               )}
             </div>
@@ -11076,7 +11076,7 @@ export default function Schedule() {
                     >
                       {t(
                         "ui.Schedule.estePuestoTodaviaNoTienePlazas",
-                        "Este puesto todavía no tiene plazas. Créalas en el paso 3, eligiendo su jornada.",
+                        "Esta estación todavía no tiene puestos. Créalos en el paso 3, eligiendo su jornada.",
                       )}
                     </p>
                   ) : (
@@ -11144,7 +11144,7 @@ export default function Schedule() {
                                   className="cg-btn-ghost cg-focus rounded-lg px-2 py-1 text-[10px] font-semibold"
                                   title={t(
                                     "ui.Schedule.ponerAOtroVigilanteEnEstaPlaza",
-                                    "Poner a otro vigilante en esta plaza",
+                                    "Poner a otro vigilante en este puesto",
                                   )}
                                   type="button"
                                   onClick={() => {
@@ -11188,7 +11188,7 @@ export default function Schedule() {
                               className="cg-btn-ghost cg-focus shrink-0 rounded-lg px-2 py-1 text-[10px] font-semibold"
                               title={t(
                                 "ui.Schedule.asignarUnVigilanteAEstaPlaza",
-                                "Asignar un vigilante a esta plaza",
+                                "Asignar un vigilante a este puesto",
                               )}
                               type="button"
                               onClick={() => {
@@ -11996,7 +11996,7 @@ export default function Schedule() {
                       >
                         {t(
                           "ui.Schedule.elTurnoSeMueveDeEstacion",
-                          "El turno se mueve de estación. Deja de contar como cobertura de su plaza anterior.",
+                          "El turno se mueve de estación. Deja de contar como cobertura de su puesto anterior.",
                         )}
                       </p>
                     )}
@@ -12090,7 +12090,7 @@ export default function Schedule() {
                       <p className="text-[11px]">
                         {t(
                           "ui.Schedule.esteTurnoLoGeneroLaRotacion",
-                          "Este turno lo generó la rotación. El cambio se queda hasta que se reoptimice o se reasigne el puesto; para que no vuelva, corrige las horas de la plaza en la cabecera de la estación.",
+                          "Este turno lo generó la rotación. El cambio se queda hasta que se reoptimice o se reasigne el puesto; para que no vuelva, corrige las horas del puesto en la cabecera de la estación.",
                         )}
                       </p>
                     </div>

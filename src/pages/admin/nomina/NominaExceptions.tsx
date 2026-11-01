@@ -359,7 +359,7 @@ export default function NominaExceptions() {
     },
     {
       key: "station",
-      header: t("comun.puesto", "Puesto"),
+      header: t("comun.estacion", "Estación"),
       render: (_v, r) => r.station?.stationName || "—",
     },
     {
@@ -459,10 +459,10 @@ export default function NominaExceptions() {
             onChange={(v) => setF({ guard: v })}
           />
           <SelectorDeFiltro
-            ariaLabel={t("comun.puesto", "Puesto")}
+            ariaLabel={t("comun.estacion", "Estación")}
             icono={<MapPin className="size-4" style={{ color: "var(--ink-faint)" }} />}
             options={opciones.stations}
-            todos={t("ui.Asistencia.todosLosPuestos", "Todos los puestos")}
+            todos={t("ui.Asistencia.todosLosPuestos", "Todas las estaciones")}
             value={f.station}
             onChange={(v) => setF({ station: v })}
           />
@@ -710,7 +710,7 @@ export default function NominaExceptions() {
                     value={selected.guard?.fullName || "—"}
                   />
                   <Field
-                    label={t("comun.puesto")}
+                    label={t("comun.estacion", "Estación")}
                     value={selected.station?.stationName || "—"}
                   />
                   <Field

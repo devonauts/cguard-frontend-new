@@ -478,7 +478,7 @@ export default function NominaTimeClock() {
               {mode === "guard" && !isClockedIn && (
                 <div className="mt-5 text-left">
                   <label className="cg-eyebrow flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" /> {t("comun.puesto", "Puesto")}
+                    <MapPin className="h-3.5 w-3.5" /> {t("comun.estacion", "Estación")}
                   </label>
                   <select
                     className="cg-input cg-focus mt-1.5 w-full px-3 py-2.5 text-sm"

@@ -1342,7 +1342,8 @@
     "eliminar": "Usuń",
     "guardando": "Zapisywanie…",
     "guardar": "Zapisz",
-    "tarjetas": "Karty"
+    "tarjetas": "Karty",
+    "estacion": "Posterunek"
   },
   "customer": {
     "registration_title": "Rejestracja zleceniodawcy"
