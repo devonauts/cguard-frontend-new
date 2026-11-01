@@ -16,6 +16,7 @@ import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 import { resolveApiBase } from "@/lib/apiBase";
+import { handleDesktopApiError } from "@/lib/desktop";
 
 const API_URL = resolveApiBase() as string | undefined;
 
@@ -240,6 +241,12 @@ api.interceptors.response.use(
       else reportRequestOk();
     } catch {
       /* ignore */
+    }
+
+    // Desktop app: a `desktop.*` 401/403 goes to the shell, which shows its
+    // own screen. No toast: the window is about to change.
+    if (handleDesktopApiError(apiError.status, apiError.details)) {
+      return Promise.reject(apiError);
     }
 
     // La puerta anti-copia: esta dirección o esta cuenta tiene que verificarse.

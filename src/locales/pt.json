@@ -2515,7 +2515,8 @@
       "horas-periodo": "Horas do período",
       "configuracion": "Configuração",
       "coberturaEnVivo": "Cobertura ao vivo"
-    }
+    },
+    "app-escritorio": "App para desktop"
   },
   "settings": {
     "configuracion": {
@@ -2597,7 +2598,11 @@
       "dobletes": "Dobras de turno",
       "dobletes.desc": "Rodadas, bônus, pontos, níveis e ranking da reserva.",
       "patrones-rotacion": "Padrões de rotação",
-      "patrones-rotacion.desc": "Os ciclos de trabalho e descanso: renomear, arquivar e ver onde cada um é usado."
+      "patrones-rotacion.desc": "Os ciclos de trabalho e descanso: renomear, arquivar e ver onde cada um é usado.",
+      "computadoras": "Computadores desktop",
+      "computadoras.desc": "Aprove ou revogue cada computador que usa o app para desktop.",
+      "app-escritorio": "App para desktop",
+      "app-escritorio.desc": "Baixe o painel para Mac ou Windows, em uma janela própria."
     },
     "section": {
       "apps_y_portales": "Apps e portais",
@@ -21973,6 +21978,34 @@
       "error": "Não foi possível abrir o painel. Entre novamente.",
       "reintentar": "Tentar de novo",
       "volverAEntrar": "Entrar novamente"
+    },
+    "accesoNegado": {
+      "revisar": "Verificar novamente",
+      "salir": "Sair",
+      "review": {
+        "titulo": "Sua empresa está em análise",
+        "texto": "Estamos analisando o cadastro da sua empresa. Assim que for aprovado, você poderá abrir o painel com este mesmo usuário."
+      },
+      "rejected": {
+        "titulo": "Não foi possível aprovar sua empresa",
+        "texto": "A solicitação da sua empresa não foi aprovada. Se achar que é um erro, escreva para o suporte."
+      },
+      "suspended": {
+        "titulo": "Sua empresa está suspensa",
+        "texto": "O acesso ao painel está pausado para sua empresa. Escreva para o suporte para reativá-la."
+      },
+      "field": {
+        "titulo": "Sua conta é do aplicativo móvel",
+        "texto": "Vigilantes e supervisores de campo trabalham pelo aplicativo no celular. Entre lá com este mesmo usuário."
+      },
+      "customer": {
+        "titulo": "Sua conta é do portal de clientes",
+        "texto": "Esta conta é do portal de clientes. Entre pelo link que sua empresa de segurança enviou."
+      },
+      "noCompany": {
+        "titulo": "Sua conta não tem uma empresa ativa",
+        "texto": "Seu usuário não pertence a nenhuma empresa ativa. Peça a um administrador da sua empresa que o convide ou reative seu acesso."
+      }
     }
   },
   "dobletes": {
@@ -22606,6 +22639,141 @@
       "correoEnviado": "E-mail enviado para {{c}}",
       "reintentar": "Tentar de novo",
       "reintentarHorario": "Tentar horário de novo"
+    }
+  },
+  "desktopApp": {
+    "devices": {
+      "title": "Computadores desktop",
+      "subtitle": "Cada computador que usa o app para desktop precisa da aprovação de um administrador antes de abrir o painel.",
+      "downloadCta": "Baixar o app",
+      "pendingTitle": "Solicitações pendentes",
+      "pendingHint": "Aprove só se o código for igual ao que a pessoa vê na tela dela. Se não tiver certeza, pergunte antes.",
+      "pendingEmpty": "Nenhum computador aguardando aprovação.",
+      "approvedTitle": "Computadores aprovados",
+      "approvedEmpty": "Ainda não há computadores aprovados.",
+      "closedTitle": "Recusados e revogados",
+      "mineTitle": "Meus computadores",
+      "mineEmpty": "Você ainda não usa o app para desktop",
+      "mineEmptyText": "Quando você entrar no app em um computador, ele aparecerá aqui com o status.",
+      "notAdmin": "Só os administradores da sua empresa aprovam computadores. Os seus aparecem abaixo.",
+      "code": "Código",
+      "codeAria": "Código de pareamento {{codigo}}",
+      "requestedAt": "Solicitado em {{fecha}}",
+      "lastSeen": "Última conexão: {{fecha}}",
+      "neverSeen": "Nenhuma conexão ainda",
+      "revokedAt": "Revogado em {{fecha}}",
+      "rejectedAt": "Recusado em {{fecha}}",
+      "version": "Versão {{version}}",
+      "ip": "IP {{ip}}",
+      "unknownComputer": "Computador sem nome",
+      "unknownUser": "Pessoa sem nome",
+      "approve": "Aprovar",
+      "reject": "Recusar",
+      "revoke": "Revogar",
+      "status": {
+        "pending": "Pendente",
+        "approved": "Aprovado",
+        "rejected": "Recusado",
+        "revoked": "Revogado"
+      },
+      "confirmApproveTitle": "Aprovar este computador?",
+      "confirmApprove": "{{persona}} poderá abrir o painel em “{{equipo}}”. Confira se o código {{codigo}} aparece na tela dessa pessoa.",
+      "confirmRejectTitle": "Recusar a solicitação?",
+      "confirmReject": "O app não abrirá o painel de {{persona}} em “{{equipo}}”. A pessoa poderá pedir acesso de novo, com um código novo.",
+      "confirmRevokeTitle": "Revogar este computador?",
+      "confirmRevoke": "O app será fechado em “{{equipo}}” em menos de um minuto e apagará o que tinha guardado. Para usá-lo de novo, será preciso aprová-lo outra vez.",
+      "approvedOk": "Computador aprovado.",
+      "rejectedOk": "Solicitação recusada.",
+      "revokedOk": "Computador revogado.",
+      "actionError": "Não foi possível concluir. Tente de novo.",
+      "loadError": "Não foi possível carregar a lista de computadores.",
+      "retry": "Tentar de novo",
+      "refresh": "Atualizar",
+      "changedCompare": "Esta solicitação mudou enquanto você a via. Compare de novo o código com o da tela da pessoa antes de decidir."
+    },
+    "download": {
+      "menuItem": "App para desktop",
+      "eyebrow": "Para Mac e Windows",
+      "title": "App para desktop",
+      "valueProp": "O painel em uma janela própria: avisos do sistema mesmo minimizado, sempre atualizado e sem depender do navegador.",
+      "windows": "Windows",
+      "macAppleSilicon": "Mac com Apple silicon",
+      "macIntel": "Mac com Intel",
+      "version": "Versão {{version}}",
+      "downloadFor": "Baixar para {{sistema}}",
+      "comingSoonFor": "{{sistema}}: em breve",
+      "comingSoon": "Em breve",
+      "comingSoonHint": "Disponível muito em breve",
+      "download": "Baixar",
+      "started": "O download começou. Abra o arquivo quando terminar.",
+      "linkError": "Não foi possível preparar o download. Tente de novo.",
+      "suspendedTitle": "A conta da sua empresa não está ativa",
+      "suspendedText": "O app para desktop pode ser baixado quando a assinatura da sua empresa está em dia.",
+      "notEligibleTitle": "Sua conta não pode usar o app para desktop",
+      "notEligibleText": "O app é para a equipe do escritório. Se você acha que deveria ter acesso, peça a um administrador da sua empresa.",
+      "loadError": "Não foi possível carregar os downloads",
+      "loadErrorText": "Verifique sua conexão e tente de novo.",
+      "goToBilling": "Ver plano e faturamento",
+      "soonTitle": "Disponível em breve",
+      "soonText": "Estamos preparando os instaladores. Volte a esta página em alguns dias.",
+      "otherSystem": "Não é possível instalar neste dispositivo. Abra esta página em um computador com Mac ou Windows.",
+      "detectedMac": "Recomendado para o seu computador · {{chip}}",
+      "detectedMacUnknownChip": "Para o seu Mac · escolha o chip",
+      "detectedWindows": "Recomendado para o seu computador · Windows",
+      "chipHelp": "Não sabe qual? Menu Apple › Sobre Este Mac. “Chip Apple M…” é Apple silicon; “Processador Intel” é Intel.",
+      "otherOptions": "Outras opções",
+      "inDesktopTitle": "Você já está no app para desktop",
+      "inDesktop": "Esta janela é o app. Ele se atualiza sozinho quando sai uma versão nova.",
+      "inDesktopVersion": "Esta janela é o app (versão {{version}}). Ele se atualiza sozinho quando sai uma versão nova.",
+      "partnerHost": "O app para desktop não está disponível neste site.",
+      "adminPendingTitle": "Computadores aguardando sua aprovação: {{n}}",
+      "adminPendingText": "Antes de aprovar, compare o código de cada solicitação com o que a pessoa vê.",
+      "reviewRequests": "Revisar solicitações",
+      "mockAlert": "Novo alerta ao vivo"
+    },
+    "steps": {
+      "title": "Como começar",
+      "installTitle": "Baixe e instale",
+      "installText": "Abra o arquivo baixado. No Mac, arraste o app para Aplicativos; no Windows, siga o instalador.",
+      "signInTitle": "Entre e anote o código",
+      "signInText": "Entre com o e-mail e a senha de sempre. O app mostrará um código de 8 caracteres.",
+      "approveTitle": "Seu administrador aprova o computador",
+      "approveText": "Um administrador da sua empresa aprova esse código em Configurações › Computadores desktop. O app abre sozinho.",
+      "waitingText": "“{{equipo}}” aguarda aprovação. Passe este código ao seu administrador:",
+      "approvedText": "Pronto: seu computador está aprovado. Abra o app e comece a trabalhar.",
+      "approveNow": "Aprovar agora",
+      "state": {
+        "hecho": "Concluído",
+        "actual": "Passo atual",
+        "pendiente": "Pendente"
+      }
+    },
+    "requirements": {
+      "title": "Requisitos",
+      "mac": "macOS 11 (Big Sur) ou posterior, com Apple silicon ou Intel",
+      "windows": "Windows 10 ou 11 de 64 bits",
+      "internet": "Conexão com a internet e uma conta ativa da sua empresa"
+    },
+    "security": {
+      "title": "Por que é seguro",
+      "approval": "Cada computador precisa da aprovação de um administrador: uma senha roubada não basta para abrir o painel em outro computador.",
+      "encrypted": "O painel só é baixado depois que você entra e fica guardado com criptografia no seu computador. Nunca fica exposto sem criptografia.",
+      "revoke": "Se você revogar um computador, o app fecha nele em menos de um minuto e apaga o que tinha guardado."
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "whyQ": "Por que é preciso aprovar cada computador?",
+      "whyA": "Para que só os computadores que sua empresa conhece possam abrir o painel. Mesmo que alguém tenha sua senha, sem a aprovação o app não abre nada.",
+      "codeQ": "Onde vejo o código?",
+      "codeA": "O app mostra o código quando você entra, em um formato como K7QM-2XPA. Seu administrador vê o mesmo código na lista dele: se forem iguais, é o seu computador.",
+      "updatesQ": "Ele se atualiza sozinho?",
+      "updatesA": "Sim. Quando sai uma versão nova do painel, o app a baixa e avisa você antes de recarregar.",
+      "lostQ": "Perdi meu computador ou ele foi roubado. O que faço?",
+      "lostA": "Revogue-o em “Meus computadores” ou peça a um administrador que faça isso. O app para de funcionar nesse computador em menos de um minuto e apaga o que tinha guardado.",
+      "severalQ": "Posso usar em vários computadores?",
+      "severalA": "Sim. Cada computador é aprovado separadamente, e você pode revogá-lo sem afetar os outros.",
+      "windowsQ": "Quando chega a versão para Windows?",
+      "windowsA": "Muito em breve. Só publicamos instaladores com assinatura digital; assim que o do Windows estiver pronto, ele aparecerá nesta página."
     }
   }
 }

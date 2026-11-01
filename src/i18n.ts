@@ -1,6 +1,8 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
+import { desktopLocale } from "@/lib/desktop";
+
 /**
  * NINGÚN DICCIONARIO VA DENTRO DEL ARCHIVO DE ARRANQUE.
  *
@@ -55,6 +57,11 @@ export function idiomaDeArranque(): string {
       .toLowerCase();
 
     if (CARGADORES[guardado]) return guardado;
+    // Desktop app: the OS language the shell reports (Electron's own
+    // `navigator.language` may be its bundled locale, not the OS's).
+    const so = (desktopLocale() || "").slice(0, 2).toLowerCase();
+
+    if (CARGADORES[so]) return so;
     const nav = (navigator.language || "").slice(0, 2).toLowerCase();
 
     if (CARGADORES[nav]) return nav;

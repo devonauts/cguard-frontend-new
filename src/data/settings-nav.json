@@ -125,6 +125,14 @@
             "icon": "ShieldCheck",
             "desc": "Política de contraseñas, cierre por inactividad y protecciones de la plataforma.",
             "keywords": "seguridad contrasena contraseña password sesion inactividad cierre 2fa doble factor politica proteccion sesiones"
+          },
+          {
+            "id": "computadoras",
+            "label": "Computadoras de escritorio",
+            "path": "/setting/computadoras",
+            "icon": "Monitor",
+            "desc": "Aprueba o revoca cada computadora que usa la app de escritorio.",
+            "keywords": "escritorio computadora equipo ordenador pc mac windows app programa aprobar revocar codigo dispositivo desktop"
           }
         ]
       },
@@ -291,6 +299,14 @@
         "label": "Apps y portales",
         "hint": "Lo que ven quienes nunca entran al CRM",
         "items": [
+          {
+            "id": "app-escritorio",
+            "label": "App de escritorio",
+            "path": "/escritorio",
+            "icon": "MonitorDown",
+            "desc": "Descarga el panel para Mac o Windows, en su propia ventana.",
+            "keywords": "escritorio descargar instalar mac windows programa app computadora desktop"
+          },
           {
             "id": "mobile-hub",
             "label": "App del equipo",

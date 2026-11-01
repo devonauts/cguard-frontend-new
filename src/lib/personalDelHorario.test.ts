@@ -109,6 +109,12 @@ describe("Todo el personal · filters and actions", () => {
     expect(q.nextShiftDate).toBeNull();
   });
 
+  it("the place line never repeats the same name twice", async () => {
+    const { rotuloDeDonde } = await import("./personalDelHorario");
+    expect(rotuloDeDonde({ stationId: "s", stationName: "Estacionamiento", postSiteId: "p", postSiteName: "Charlie 3" } as any)).toBe("Charlie 3 · Estacionamiento");
+    expect(rotuloDeDonde({ stationId: "s", stationName: "Garita", postSiteId: "p", postSiteName: "garita" } as any)).toBe("garita");
+  });
+
   it("where they are: that day, else the first place seen", () => {
     const ana = ps.find((p) => p.userId === "g1")!;
 

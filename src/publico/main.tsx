@@ -9,9 +9,10 @@ import ReactDOM from "react-dom/client";
 import { Toaster } from "sonner";
 
 import PublicApp from "./PublicApp";
-import { guardarDestino } from "./traspaso";
+import { guardarDestino, olvidarSesionLocal } from "./traspaso";
 
 import { instalarBlindajeDom } from "@/lib/blindajeDom";
+import { isDesktop } from "@/lib/desktop";
 import { guardarAtribucionWeb } from "@/lib/atribucionWeb";
 import { instalarIdiomaEnFetch } from "@/lib/idiomaElegido";
 import { iniciarCentinela } from "@/lib/centinela";
@@ -26,6 +27,11 @@ import { PromptHost } from "@/components/ui/promptDialog";
 
 instalarBlindajeDom();
 guardarAtribucionWeb();
+
+/* Desktop app: the shell owns the session. A token left in this page's
+   storage by an earlier run is never handed off again — only one obtained by
+   signing in on this page. */
+if (isDesktop()) olvidarSesionLocal(localStorage);
 
 /* Un enlace `/login?next=/clients/…` (correo, marcador) recuerda adónde iba,
    para que el traspaso tras iniciar sesión llegue allí y no al tablero. */
