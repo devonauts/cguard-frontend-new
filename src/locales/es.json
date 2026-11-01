@@ -21976,6 +21976,34 @@
       "error": "No se pudo abrir el panel. Vuelve a iniciar sesión.",
       "reintentar": "Reintentar",
       "volverAEntrar": "Iniciar sesión de nuevo"
+    },
+    "accesoNegado": {
+      "revisar": "Revisar de nuevo",
+      "salir": "Cerrar sesión",
+      "review": {
+        "titulo": "Tu empresa está en revisión",
+        "texto": "Estamos revisando el registro de tu empresa. Cuando lo aprobemos podrás entrar al panel con este mismo usuario."
+      },
+      "rejected": {
+        "titulo": "No pudimos aprobar tu empresa",
+        "texto": "La solicitud de tu empresa no fue aprobada. Si crees que es un error, escríbenos a soporte."
+      },
+      "suspended": {
+        "titulo": "Tu empresa está suspendida",
+        "texto": "El acceso al panel está en pausa para tu empresa. Escríbenos a soporte para reactivarla."
+      },
+      "field": {
+        "titulo": "Tu cuenta es de la app móvil",
+        "texto": "Los vigilantes y supervisores de campo trabajan desde la app en su teléfono. Inicia sesión allí con este mismo usuario."
+      },
+      "customer": {
+        "titulo": "Tu cuenta es del portal de clientes",
+        "texto": "Esta cuenta es para el portal de clientes. Entra desde el enlace que te envió tu empresa de seguridad."
+      },
+      "noCompany": {
+        "titulo": "Tu cuenta no tiene una empresa activa",
+        "texto": "Tu usuario no pertenece a ninguna empresa activa. Pide a un administrador de tu empresa que te invite o reactive tu acceso."
+      }
     }
   },
   "dobletes": {

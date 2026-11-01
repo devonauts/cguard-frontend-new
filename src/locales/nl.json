@@ -21976,6 +21976,34 @@
       "error": "Het dashboard kon niet worden geopend. Log opnieuw in.",
       "reintentar": "Opnieuw proberen",
       "volverAEntrar": "Opnieuw inloggen"
+    },
+    "accesoNegado": {
+      "revisar": "Opnieuw controleren",
+      "salir": "Afmelden",
+      "review": {
+        "titulo": "Je bedrijf wordt beoordeeld",
+        "texto": "We beoordelen de aanmelding van je bedrijf. Zodra die is goedgekeurd, kun je het paneel openen met deze gebruiker."
+      },
+      "rejected": {
+        "titulo": "We konden je bedrijf niet goedkeuren",
+        "texto": "De aanvraag van je bedrijf is niet goedgekeurd. Denk je dat dit een vergissing is, schrijf dan naar support."
+      },
+      "suspended": {
+        "titulo": "Je bedrijf is opgeschort",
+        "texto": "De toegang tot het paneel is gepauzeerd voor je bedrijf. Schrijf naar support om het te heractiveren."
+      },
+      "field": {
+        "titulo": "Je account is voor de mobiele app",
+        "texto": "Bewakers en veldsupervisors werken met de app op hun telefoon. Meld je daar aan met deze gebruiker."
+      },
+      "customer": {
+        "titulo": "Je account is voor het klantenportaal",
+        "texto": "Dit account is voor het klantenportaal. Open het via de link die je beveiligingsbedrijf je stuurde."
+      },
+      "noCompany": {
+        "titulo": "Je account heeft geen actief bedrijf",
+        "texto": "Je gebruiker hoort bij geen enkel actief bedrijf. Vraag een beheerder van je bedrijf om je uit te nodigen of je toegang te heractiveren."
+      }
     }
   },
   "dobletes": {

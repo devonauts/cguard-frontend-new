@@ -117,7 +117,7 @@ describe("traspaso en la app de escritorio", () => {
     );
     const main = readFileSync(resolve(raiz, "src/publico/main.tsx"), "utf8");
     const escritorio = traspaso.indexOf("if (isDesktop())");
-    const cookie = traspaso.indexOf("await abrirSesionDeCodigo()");
+    const cookie = traspaso.indexOf("await abrirSesionDeCodigoConMotivo()");
 
     expect(escritorio).toBeGreaterThan(0);
     expect(cookie).toBeGreaterThan(escritorio);

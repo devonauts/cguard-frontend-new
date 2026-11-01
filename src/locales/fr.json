@@ -21976,6 +21976,34 @@
       "error": "Impossible d'ouvrir le tableau de bord. Reconnectez-vous.",
       "reintentar": "Réessayer",
       "volverAEntrar": "Se reconnecter"
+    },
+    "accesoNegado": {
+      "revisar": "Vérifier à nouveau",
+      "salir": "Se déconnecter",
+      "review": {
+        "titulo": "Votre entreprise est en cours de vérification",
+        "texto": "Nous vérifions l'inscription de votre entreprise. Une fois approuvée, vous pourrez ouvrir le panneau avec ce même utilisateur."
+      },
+      "rejected": {
+        "titulo": "Nous n'avons pas pu approuver votre entreprise",
+        "texto": "La demande de votre entreprise n'a pas été approuvée. Si vous pensez qu'il s'agit d'une erreur, écrivez au support."
+      },
+      "suspended": {
+        "titulo": "Votre entreprise est suspendue",
+        "texto": "L'accès au panneau est en pause pour votre entreprise. Écrivez au support pour la réactiver."
+      },
+      "field": {
+        "titulo": "Votre compte est celui de l'application mobile",
+        "texto": "Les agents et superviseurs de terrain travaillent depuis l'application sur leur téléphone. Connectez-vous-y avec ce même utilisateur."
+      },
+      "customer": {
+        "titulo": "Votre compte est celui du portail client",
+        "texto": "Ce compte est destiné au portail client. Ouvrez-le depuis le lien envoyé par votre entreprise de sécurité."
+      },
+      "noCompany": {
+        "titulo": "Votre compte n'a pas d'entreprise active",
+        "texto": "Votre utilisateur n'appartient à aucune entreprise active. Demandez à un administrateur de votre entreprise de vous inviter ou de réactiver votre accès."
+      }
     }
   },
   "dobletes": {

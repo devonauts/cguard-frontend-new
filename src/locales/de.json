@@ -21976,6 +21976,34 @@
       "error": "Das Dashboard konnte nicht geöffnet werden. Bitte melden Sie sich erneut an.",
       "reintentar": "Erneut versuchen",
       "volverAEntrar": "Erneut anmelden"
+    },
+    "accesoNegado": {
+      "revisar": "Erneut prüfen",
+      "salir": "Abmelden",
+      "review": {
+        "titulo": "Ihr Unternehmen wird geprüft",
+        "texto": "Wir prüfen die Registrierung Ihres Unternehmens. Nach der Freigabe können Sie das Panel mit diesem Benutzer öffnen."
+      },
+      "rejected": {
+        "titulo": "Wir konnten Ihr Unternehmen nicht freigeben",
+        "texto": "Die Anfrage Ihres Unternehmens wurde nicht freigegeben. Wenn Sie das für einen Fehler halten, schreiben Sie dem Support."
+      },
+      "suspended": {
+        "titulo": "Ihr Unternehmen ist gesperrt",
+        "texto": "Der Zugang zum Panel ist für Ihr Unternehmen pausiert. Schreiben Sie dem Support, um es zu reaktivieren."
+      },
+      "field": {
+        "titulo": "Ihr Konto ist für die mobile App",
+        "texto": "Wachleute und Außendienst-Supervisoren arbeiten mit der App auf ihrem Telefon. Melden Sie sich dort mit diesem Benutzer an."
+      },
+      "customer": {
+        "titulo": "Ihr Konto ist für das Kundenportal",
+        "texto": "Dieses Konto ist für das Kundenportal. Öffnen Sie es über den Link, den Ihnen Ihr Sicherheitsunternehmen geschickt hat."
+      },
+      "noCompany": {
+        "titulo": "Ihr Konto hat kein aktives Unternehmen",
+        "texto": "Ihr Benutzer gehört zu keinem aktiven Unternehmen. Bitten Sie einen Administrator Ihres Unternehmens, Sie einzuladen oder Ihren Zugang zu reaktivieren."
+      }
     }
   },
   "dobletes": {

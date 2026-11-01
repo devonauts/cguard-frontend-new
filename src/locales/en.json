@@ -21976,6 +21976,34 @@
       "error": "We couldn't open the dashboard. Please sign in again.",
       "reintentar": "Try again",
       "volverAEntrar": "Sign in again"
+    },
+    "accesoNegado": {
+      "revisar": "Check again",
+      "salir": "Sign out",
+      "review": {
+        "titulo": "Your company is under review",
+        "texto": "We are reviewing your company's sign-up. Once it is approved you can open the panel with this same user."
+      },
+      "rejected": {
+        "titulo": "We could not approve your company",
+        "texto": "Your company's request was not approved. If you think this is a mistake, write to support."
+      },
+      "suspended": {
+        "titulo": "Your company is suspended",
+        "texto": "Access to the panel is paused for your company. Write to support to reactivate it."
+      },
+      "field": {
+        "titulo": "Your account is for the mobile app",
+        "texto": "Guards and field supervisors work from the app on their phone. Sign in there with this same user."
+      },
+      "customer": {
+        "titulo": "Your account is for the client portal",
+        "texto": "This account is for the client portal. Open it from the link your security company sent you."
+      },
+      "noCompany": {
+        "titulo": "Your account has no active company",
+        "texto": "Your user does not belong to any active company. Ask an administrator of your company to invite you or reactivate your access."
+      }
     }
   },
   "dobletes": {

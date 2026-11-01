@@ -22280,6 +22280,34 @@
       "error": "Nie udało się otworzyć panelu. Zaloguj się ponownie.",
       "reintentar": "Spróbuj ponownie",
       "volverAEntrar": "Zaloguj się ponownie"
+    },
+    "accesoNegado": {
+      "revisar": "Sprawdź ponownie",
+      "salir": "Wyloguj się",
+      "review": {
+        "titulo": "Twoja firma jest weryfikowana",
+        "texto": "Weryfikujemy rejestrację Twojej firmy. Po zatwierdzeniu otworzysz panel tym samym użytkownikiem."
+      },
+      "rejected": {
+        "titulo": "Nie mogliśmy zatwierdzić Twojej firmy",
+        "texto": "Wniosek Twojej firmy nie został zatwierdzony. Jeśli uważasz, że to błąd, napisz do wsparcia."
+      },
+      "suspended": {
+        "titulo": "Twoja firma jest zawieszona",
+        "texto": "Dostęp do panelu jest wstrzymany dla Twojej firmy. Napisz do wsparcia, aby ją reaktywować."
+      },
+      "field": {
+        "titulo": "Twoje konto jest do aplikacji mobilnej",
+        "texto": "Ochroniarze i nadzorcy terenowi pracują w aplikacji na telefonie. Zaloguj się tam tym samym użytkownikiem."
+      },
+      "customer": {
+        "titulo": "Twoje konto jest do portalu klienta",
+        "texto": "To konto jest do portalu klienta. Otwórz je z linku, który wysłała Ci Twoja firma ochroniarska."
+      },
+      "noCompany": {
+        "titulo": "Twoje konto nie ma aktywnej firmy",
+        "texto": "Twój użytkownik nie należy do żadnej aktywnej firmy. Poproś administratora swojej firmy o zaproszenie lub przywrócenie dostępu."
+      }
     }
   },
   "dobletes": {

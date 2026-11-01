@@ -31,6 +31,31 @@ export const REFRESCO_MS = 4 * 60 * 60 * 1000;
 export type ResultadoDeSesion = "ok" | "rechazada" | "fallo";
 
 /**
+ * Why the server refuses the CRM code to a valid session (owner, 2026-10-31:
+ * only active, approved companies get it). The public sign-in explains each one.
+ */
+export type MotivoSinCodigo =
+  "review" | "rejected" | "suspended" | "field" | "customer" | "noCompany";
+
+const MOTIVOS: ReadonlySet<string> = new Set([
+  "review",
+  "rejected",
+  "suspended",
+  "field",
+  "customer",
+  "noCompany",
+]);
+
+/** The reason in a 403 body, or null when it is not one of ours. */
+export function motivoDe(body: unknown): MotivoSinCodigo | null {
+  const m = (body as any)?.motivo;
+
+  return typeof m === "string" && MOTIVOS.has(m)
+    ? (m as MotivoSinCodigo)
+    : null;
+}
+
+/**
  * Sólo en la web: la app de escritorio carga el bundle desde `app://` (no hay
  * nginx ni cookie que valga) y las pruebas no tienen `location` http.
  */
@@ -57,7 +82,17 @@ function leerToken(): string | null {
 export async function abrirSesionDeCodigo(
   token: string | null = leerToken(),
 ): Promise<ResultadoDeSesion> {
-  if (!disponible() || !token) return "fallo";
+  return (await abrirSesionDeCodigoConMotivo(token)).resultado;
+}
+
+/**
+ * Same request, plus WHY a valid session gets no code (403 with `motivo`):
+ * the sign-in shows that reason instead of sending the person back to log in.
+ */
+export async function abrirSesionDeCodigoConMotivo(
+  token: string | null = leerToken(),
+): Promise<{ resultado: ResultadoDeSesion; motivo: MotivoSinCodigo | null }> {
+  if (!disponible() || !token) return { resultado: "fallo", motivo: null };
   try {
     const r = await fetch(RUTA, {
       method: "POST",
@@ -66,15 +101,27 @@ export async function abrirSesionDeCodigo(
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (r.ok) return "ok";
-    if (r.status === 401 || r.status === 403) return "rechazada";
+    if (r.ok) return { resultado: "ok", motivo: null };
+    if (r.status === 401 || r.status === 403) {
+      let motivo: MotivoSinCodigo | null = null;
+
+      if (r.status === 403) {
+        try {
+          motivo = motivoDe(await r.json());
+        } catch {
+          motivo = null;
+        }
+      }
+
+      return { resultado: "rechazada", motivo };
+    }
     console.warn(`[sesion-de-codigo] no se pudo abrir: ${r.status}`);
 
-    return "fallo";
+    return { resultado: "fallo", motivo: null };
   } catch (e: any) {
     console.warn("[sesion-de-codigo] no se pudo abrir:", e?.message || e);
 
-    return "fallo";
+    return { resultado: "fallo", motivo: null };
   }
 }
 

@@ -21976,6 +21976,34 @@
       "error": "Não foi possível abrir o painel. Entre novamente.",
       "reintentar": "Tentar de novo",
       "volverAEntrar": "Entrar novamente"
+    },
+    "accesoNegado": {
+      "revisar": "Verificar novamente",
+      "salir": "Sair",
+      "review": {
+        "titulo": "Sua empresa está em análise",
+        "texto": "Estamos analisando o cadastro da sua empresa. Assim que for aprovado, você poderá abrir o painel com este mesmo usuário."
+      },
+      "rejected": {
+        "titulo": "Não foi possível aprovar sua empresa",
+        "texto": "A solicitação da sua empresa não foi aprovada. Se achar que é um erro, escreva para o suporte."
+      },
+      "suspended": {
+        "titulo": "Sua empresa está suspensa",
+        "texto": "O acesso ao painel está pausado para sua empresa. Escreva para o suporte para reativá-la."
+      },
+      "field": {
+        "titulo": "Sua conta é do aplicativo móvel",
+        "texto": "Vigilantes e supervisores de campo trabalham pelo aplicativo no celular. Entre lá com este mesmo usuário."
+      },
+      "customer": {
+        "titulo": "Sua conta é do portal de clientes",
+        "texto": "Esta conta é do portal de clientes. Entre pelo link que sua empresa de segurança enviou."
+      },
+      "noCompany": {
+        "titulo": "Sua conta não tem uma empresa ativa",
+        "texto": "Seu usuário não pertence a nenhuma empresa ativa. Peça a um administrador da sua empresa que o convide ou reative seu acesso."
+      }
     }
   },
   "dobletes": {

@@ -21976,6 +21976,34 @@
       "error": "Impossibile aprire la dashboard. Accedi di nuovo.",
       "reintentar": "Riprova",
       "volverAEntrar": "Accedi di nuovo"
+    },
+    "accesoNegado": {
+      "revisar": "Controlla di nuovo",
+      "salir": "Esci",
+      "review": {
+        "titulo": "La tua azienda è in revisione",
+        "texto": "Stiamo esaminando la registrazione della tua azienda. Una volta approvata potrai aprire il pannello con questo stesso utente."
+      },
+      "rejected": {
+        "titulo": "Non abbiamo potuto approvare la tua azienda",
+        "texto": "La richiesta della tua azienda non è stata approvata. Se pensi sia un errore, scrivi al supporto."
+      },
+      "suspended": {
+        "titulo": "La tua azienda è sospesa",
+        "texto": "L'accesso al pannello è in pausa per la tua azienda. Scrivi al supporto per riattivarla."
+      },
+      "field": {
+        "titulo": "Il tuo account è per l'app mobile",
+        "texto": "Le guardie e i supervisori sul campo lavorano dall'app sul telefono. Accedi lì con questo stesso utente."
+      },
+      "customer": {
+        "titulo": "Il tuo account è per il portale clienti",
+        "texto": "Questo account è per il portale clienti. Aprilo dal link che ti ha inviato la tua azienda di sicurezza."
+      },
+      "noCompany": {
+        "titulo": "Il tuo account non ha un'azienda attiva",
+        "texto": "Il tuo utente non appartiene a nessuna azienda attiva. Chiedi a un amministratore della tua azienda di invitarti o riattivare il tuo accesso."
+      }
     }
   },
   "dobletes": {
