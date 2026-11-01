@@ -26,14 +26,17 @@ const cache = new Map<
 const tenantActivo = () =>
   typeof window !== "undefined" ? localStorage.getItem("tenantId") || "" : "";
 
-async function pedir(
+export async function pedirPrimerosPasos(
   tenantId: string,
   fresco = false,
 ): Promise<PrimerosPasos | null> {
   const ya = cache.get(tenantId);
 
-  if (!fresco && ya && Date.now() - ya.at < TTL_MS)
-    return ya.promesa ?? ya.valor;
+  /* A request already on its way answers everyone, «fresco» included: the
+     guide asking on mount and on focus, or two readers on one page, used to
+     send two (QA 2026-11-01). */
+  if (ya?.promesa) return ya.promesa;
+  if (!fresco && ya && Date.now() - ya.at < TTL_MS) return ya.valor;
   const promesa = ApiService.get(`/tenant/${tenantId}/getting-started`)
     .then((r: unknown) => normalizarPrimerosPasos(r))
     .catch(() => null);
@@ -76,7 +79,7 @@ export function usePrimerosPasos({ fresco = false }: { fresco?: boolean } = {}):
     let vivo = true;
 
     setCargando(!cache.get(tenantId)?.valor);
-    pedir(tenantId, fresco || vuelta > 0).then((v) => {
+    pedirPrimerosPasos(tenantId, fresco || vuelta > 0).then((v) => {
       if (!vivo) return;
       setDatos(v);
       setCargando(false);

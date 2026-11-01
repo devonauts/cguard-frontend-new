@@ -167,17 +167,27 @@ export default function NominaTimecards() {
      guarda su id mientras se espera, y cuándo se pidió (para el tope). */
   const [calculo, setCalculo] = useState<string | null>(null);
   const pedidoEl = useRef(0);
+  /* The list waits for the range: without a link range it is the company's
+     period, which the server says. Loading the default range first and the
+     period after asked twice on every visit, and a late first answer could
+     paint the wrong period (QA 2026-11-01). */
+  const [rangoListo, setRangoListo] = useState(!!rangoDelEnlace);
+  const ultimaCarga = useRef(0);
 
   const cargar = useCallback(() => {
+    const esta = ++ultimaCarga.current;
+
     setCargando(true);
     setFallo(false);
     payrollService
       .listar({ desde, hasta })
       .then((d) => {
+        if (esta !== ultimaCarga.current) return;
         setRows(d.rows || []);
         setSel([]);
       })
       .catch((e) => {
+        if (esta !== ultimaCarga.current) return;
         setRows([]);
         setSel([]);
         setFallo(true);
@@ -186,7 +196,9 @@ export default function NominaTimecards() {
             t("ui.NominaTimecards.noSePudieronCargarLasTarjetas", "No se pudieron cargar las tarjetas"),
         );
       })
-      .finally(() => setCargando(false));
+      .finally(() => {
+        if (esta === ultimaCarga.current) setCargando(false);
+      });
   }, [desde, hasta]);
 
   /* ── THE PERIOD IS THE COMPANY'S, WHOLE AND FIXED ──────────────────────
@@ -212,7 +224,9 @@ export default function NominaTimecards() {
           setPeriodo({ label: p.label, previous: p.previous, next: p.next, closedThrough: p.closedThrough ?? null });
         }
       })
-      .catch(() => undefined);
+      .catch(() => undefined)
+      // Whatever the answer, the list may load now (on failure, the default range).
+      .finally(() => setRangoListo(true));
   }, []);
 
   useEffect(() => {
@@ -223,8 +237,9 @@ export default function NominaTimecards() {
   }, [irAlPeriodo]);
 
   useEffect(() => {
+    if (!rangoListo) return;
     cargar();
-  }, [cargar]);
+  }, [cargar, rangoListo]);
 
   const seleccionadas = useMemo(
     () => rows.filter((r) => sel.includes(r.id)),
