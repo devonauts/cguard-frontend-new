@@ -52,7 +52,13 @@ export function olvidarPrimerosPasos(tenantId?: string) {
   else cache.clear();
 }
 
-export function usePrimerosPasos(): {
+/**
+ * `fresco`: the Panel guide asks the server again each time it mounts (and when
+ * the window regains focus), showing the cached answer meanwhile, so a step
+ * done on another page shows as done when the user comes back (QA 2026-11-01:
+ * still 0/6 after creating a station, until a reload).
+ */
+export function usePrimerosPasos({ fresco = false }: { fresco?: boolean } = {}): {
   datos: PrimerosPasos | null;
   cargando: boolean;
   ocultar: () => Promise<void>;
@@ -69,8 +75,8 @@ export function usePrimerosPasos(): {
     if (!tenantId) return;
     let vivo = true;
 
-    setCargando(true);
-    pedir(tenantId, vuelta > 0).then((v) => {
+    setCargando(!cache.get(tenantId)?.valor);
+    pedir(tenantId, fresco || vuelta > 0).then((v) => {
       if (!vivo) return;
       setDatos(v);
       setCargando(false);
@@ -79,7 +85,16 @@ export function usePrimerosPasos(): {
     return () => {
       vivo = false;
     };
-  }, [tenantId, vuelta]);
+  }, [tenantId, vuelta, fresco]);
+
+  useEffect(() => {
+    if (!fresco || typeof window === "undefined") return;
+    const alVolver = () => setVuelta((n) => n + 1);
+
+    window.addEventListener("focus", alVolver);
+
+    return () => window.removeEventListener("focus", alVolver);
+  }, [fresco]);
 
   const ocultar = useCallback(async () => {
     if (!tenantId) return;

@@ -17710,7 +17710,9 @@
         "deEstaSucursal": "Planilla de {{nombre}}: estás trabajando en esa sucursal.",
         "tarjetasSinAprobar_one": "{{count}} tarjeta sin aprobar en el periodo. La planilla la incluye igual; apruébala antes de publicar.",
         "tarjetasSinAprobar_other": "{{count}} tarjetas sin aprobar en el periodo. La planilla las incluye igual; apruébalas antes de publicar.",
-        "irAHoras": "Ir a Horas del periodo"
+        "irAHoras": "Ir a Horas del periodo",
+        "listaParaCalcular": "Las horas del periodo ya están listas, pero esta planilla no se calculó. Se calcula con las tarjetas de hoy.",
+        "calcularPlanilla": "Calcular planilla"
       },
       "prestamos": {
         "estado": {

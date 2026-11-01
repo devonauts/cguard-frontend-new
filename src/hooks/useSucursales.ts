@@ -12,7 +12,7 @@ import { sucursalesService } from "@/lib/api/sucursalesService";
  * Module off (paused or lapsed) but the company already has branches: the
  * server still answers the list read-only and lets an admin hand out branch
  * access, so whoever can edit settings still gets the list (`soloLectura`).
- * A company that never had branches answers a silent 402 and nothing changes.
+ * A company that never had branches gets an empty list (sinModulo) and nothing changes.
  * Creating, editing and archiving branches stay behind `activo`.
  */
 export function useSucursales() {

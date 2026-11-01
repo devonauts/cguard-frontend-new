@@ -38,7 +38,8 @@ export default function CorridaDetalle() {
     queryFn: () => payrollSlipsService.run(id),
     retry: false,
     enabled: Boolean(id) && acceso.canRead,
-    refetchInterval: (q) => (q.state.data?.run.status === "generating" ? 3000 : false),
+    // An old run whose hours are ready waits for «Calcular planilla»: no polling.
+    refetchInterval: (q) => (q.state.data?.run.status === "generating" && !q.state.data?.listoParaCalcular ? 3000 : false),
   });
   const modo = acceso.resolve(undefined, datos.error);
   const soloLectura = modo === "readOnly";
@@ -123,7 +124,17 @@ export default function CorridaDetalle() {
                 </Link>
               </InfoNote>
             )}
-            {run.status === "generating" && <InfoNote tone="info">{t("ui.RolesDePago.corridas.generando", "Se están calculando las horas del periodo (tarjetas de nómina). Esta pantalla se actualiza sola.")}</InfoNote>}
+            {run.status === "generating" && datos.data?.listoParaCalcular && (
+              <InfoNote tone="warn">
+                {t("ui.RolesDePago.corridas.listaParaCalcular", "Las horas del periodo ya están listas, pero esta planilla no se calculó. Se calcula con las tarjetas de hoy.")}{" "}
+                {completo && canEdit && (
+                  <Button size="sm" variant="outline" disabled={!!ocupado} onClick={() => accion("recompute", () => payrollSlipsService.recompute(run.id), t("ui.RolesDePago.corridas.recalculada", "Planilla recalculada"))}>
+                    <RefreshCw size={14} /> {t("ui.RolesDePago.corridas.calcularPlanilla", "Calcular planilla")}
+                  </Button>
+                )}
+              </InfoNote>
+            )}
+            {run.status === "generating" && !datos.data?.listoParaCalcular && <InfoNote tone="info">{t("ui.RolesDePago.corridas.generando", "Se están calculando las horas del periodo (tarjetas de nómina). Esta pantalla se actualiza sola.")}</InfoNote>}
             {run.status === "error" && <InfoNote tone="bad">{t("ui.RolesDePago.corridas.fallo", "No se pudieron calcular las horas del periodo. Anula esta planilla y crea otra, o revisa las tarjetas de nómina.")}</InfoNote>}
             {run.status === "voided" && <InfoNote tone="neutral">{t("ui.RolesDePago.corridas.anulada", "Planilla anulada")}{run.voidReason ? `: ${run.voidReason}` : ""}</InfoNote>}
             {run.status === "review" && (run.totals?.withoutTimecard || 0) > 0 && <InfoNote tone="warn">{t("ui.RolesDePago.corridas.sinTarjeta", "{{n}} persona(s) sin tarjeta de horas en el periodo: su rol solo lleva el sueldo y las novedades.", { n: run.totals?.withoutTimecard })}</InfoNote>}

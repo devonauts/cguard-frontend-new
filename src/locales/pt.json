@@ -17710,7 +17710,9 @@
         "deEstaSucursal": "Folha de {{nombre}}: você está trabalhando nessa filial.",
         "tarjetasSinAprobar_one": "{{count}} cartão não aprovado no período. A folha o inclui mesmo assim; aprove-o antes de publicar.",
         "tarjetasSinAprobar_other": "{{count}} cartões não aprovados no período. A folha os inclui mesmo assim; aprove-os antes de publicar.",
-        "irAHoras": "Ir para Horas do período"
+        "irAHoras": "Ir para Horas do período",
+        "listaParaCalcular": "As horas do período já estão prontas, mas esta folha não foi calculada. Será calculada com os cartões de hoje.",
+        "calcularPlanilla": "Calcular folha"
       },
       "prestamos": {
         "estado": {
