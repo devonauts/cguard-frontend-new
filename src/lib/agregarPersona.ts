@@ -164,6 +164,7 @@ export type ErrorDeLugar =
   | "eligeRotacion"
   | "puestoSinRotacion"
   | "fechaInvalida"
+  | "fechaPasada"
   | "jornadaInvalida"
   | "ubicacionInvalida"
   | null;
@@ -191,9 +192,14 @@ export function ubicacionValida(o: OficinaFisica | null): boolean {
   );
 }
 
-export function validarLugar(h: Horario): ErrorDeLugar {
+/**
+ * `hoy` (YYYY-MM-DD, the company's today): a start before it would generate
+ * shifts the person never worked (false absences, payroll noise).
+ */
+export function validarLugar(h: Horario, hoy?: string): ErrorDeLugar {
   if (!h) return null;
   if (h.desde && !fechaValida(h.desde)) return "fechaInvalida";
+  if (h.desde && hoy && h.desde < hoy) return "fechaPasada";
   if (h.tipo === "vigilante") {
     if (!h.stationId || !h.positionId) return "eligePlaza";
 
@@ -216,11 +222,12 @@ export function puedeSeguir(
   tipo: TipoDePersona | null,
   d: Datos,
   h: Horario,
+  hoy?: string,
 ): boolean {
   if (paso === 1) return !!tipo;
   if (!tipo) return false;
   if (paso === 2) return Object.keys(validarDatos(tipo, d)).length === 0;
-  if (paso === 3) return validarLugar(h) === null;
+  if (paso === 3) return validarLugar(h, hoy) === null;
 
   return true;
 }

@@ -522,6 +522,7 @@ export type Problema =
   | "plazaOcupada"
   | "puestoSinRotacion"
   | "fechaInvalida"
+  | "fechaPasada"
   | "documentoRepetido"
   | "correoRepetido"
   | "documentoExiste"
@@ -548,6 +549,8 @@ export function revisarFilas(
   filas: FilaDeLote[],
   cat: Catalogos,
   existentes: Existentes = { documentos: new Set(), correos: new Set() },
+  /** The company's today (YYYY-MM-DD): a start before it is refused. */
+  hoy?: string,
 ): Map<string, Problema[]> {
   const out = new Map<string, Problema[]>();
   const docs = new Map<string, number>();
@@ -580,6 +583,8 @@ export function revisarFilas(
     if (f.tipo === "oficina" && !d.rol)
       p.push(f.rolTexto.trim() ? "rolDesconocido" : "rolRequerido");
     if (f.empiezaInvalida) p.push("fechaInvalida");
+    else if (f.empieza && hoy && f.empieza < hoy)
+      p.push("fechaPasada");
 
     const dk = claveDeDocumento(d.documento);
     const ck = claveDeCorreo(d.correo);

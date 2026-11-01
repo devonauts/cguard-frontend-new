@@ -184,6 +184,15 @@ describe("agregarPersona · step 3 (where and when)", () => {
     ).toBe("fechaInvalida");
   });
 
+  it("a start before the company's today is refused (it would invent past shifts)", () => {
+    const h = { tipo: "supervisor" as const, positionId: "p", desde: "2026-10-01" };
+
+    expect(validarLugar(h, "2026-11-01")).toBe("fechaPasada");
+    expect(validarLugar({ ...h, desde: "2026-11-01" }, "2026-11-01")).toBeNull();
+    expect(validarLugar({ ...h, desde: "" }, "2026-11-01")).toBeNull();
+    expect(validarLugar(h)).toBeNull();
+  });
+
   it("office: the week must be valid and the location sensible", () => {
     const jornada = presetLunesAViernes();
 
