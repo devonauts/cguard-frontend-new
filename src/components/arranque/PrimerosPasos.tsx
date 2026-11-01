@@ -20,11 +20,16 @@ import { usePrimerosPasos } from "@/hooks/usePrimerosPasos";
 import { NIVEL } from "@/lib/reglasDeAcciones";
 import { hechos, type ClaveDePaso } from "@/lib/primerosPasos";
 
-export function PrimerosPasos() {
+/**
+ * `compacto` (phone Panel, where the map is the screen): one band with the
+ * progress and the next step; the full list opens on demand.
+ */
+export function PrimerosPasos({ compacto = false }: { compacto?: boolean }) {
   const { t } = useTranslation();
   const { user } = useAuth() as any;
   const { datos, ocultar } = usePrimerosPasos();
   const [ocultando, setOcultando] = useState(false);
+  const [abierta, setAbierta] = useState(false);
 
   if (!datos || !datos.show) return null;
 
@@ -94,6 +99,40 @@ export function PrimerosPasos() {
       setOcultando(false);
     }
   };
+
+  const siguiente = datos.steps.find((s) => s.key === datos.next);
+
+  if (compacto && !abierta && siguiente) {
+    return (
+      <GlassPanel brand className="flex items-center gap-3 p-3">
+        <IconTile size="sm" tone="brand">
+          <Rocket />
+        </IconTile>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs" style={{ color: "var(--ink-soft)" }}>
+            {t("ui.PrimerosPasos.compactoProgreso", {
+              defaultValue: "Puesta en marcha · {{listos}} de {{total}}",
+              listos,
+              total,
+            })}
+          </p>
+          <button
+            className="cg-focus block max-w-full truncate text-left text-sm font-semibold"
+            style={{ color: "var(--ink)" }}
+            type="button"
+            onClick={() => setAbierta(true)}
+          >
+            {TEXTOS[siguiente.key].titulo}
+          </button>
+        </div>
+        <Button asChild size="sm" variant="brand">
+          <Link to={siguiente.path}>
+            {t("ui.PrimerosPasos.hacerlo", "Hacerlo ahora")}
+          </Link>
+        </Button>
+      </GlassPanel>
+    );
+  }
 
   return (
     <GlassPanel brand className="p-4 sm:p-5">

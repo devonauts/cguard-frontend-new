@@ -18888,7 +18888,8 @@
       "publish": "Publica",
       "publishAyuda": "Con «Publicar», los turnos llegan a la app de cada vigilante.",
       "clockIn": "Primera marcación",
-      "clockInAyuda": "Cuando un vigilante marque entrada, la verás en Asistencia."
+      "clockInAyuda": "Cuando un vigilante marque entrada, la verás en Asistencia.",
+      "compactoProgreso": "Puesta en marcha · {{listos}} de {{total}}"
     }
   },
   "map": {

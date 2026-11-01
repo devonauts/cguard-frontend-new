@@ -19423,7 +19423,8 @@
       "publish": "Pubblica",
       "publishAyuda": "Con «Pubblica», i turni arrivano nell’app di ogni guardia.",
       "clockIn": "Prima timbratura",
-      "clockInAyuda": "Quando una guardia timbra l’entrata, la vedrai in Presenze."
+      "clockInAyuda": "Quando una guardia timbra l’entrata, la vedrai in Presenze.",
+      "compactoProgreso": "Avvio · {{listos}} di {{total}}"
     }
   },
   "visitantes": {

@@ -18888,7 +18888,8 @@
       "publish": "Publish",
       "publishAyuda": "With «Publish», shifts reach each guard’s app.",
       "clockIn": "First clock-in",
-      "clockInAyuda": "When a guard clocks in, you’ll see it in Attendance."
+      "clockInAyuda": "When a guard clocks in, you’ll see it in Attendance.",
+      "compactoProgreso": "Getting started · {{listos}} of {{total}}"
     }
   },
   "map": {

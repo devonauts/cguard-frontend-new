@@ -19423,7 +19423,8 @@
       "publish": "Publiez",
       "publishAyuda": "Avec « Publier », les postes arrivent dans l’application de chaque agent.",
       "clockIn": "Premier pointage",
-      "clockInAyuda": "Quand un agent pointe, vous le verrez dans Présence."
+      "clockInAyuda": "Quand un agent pointe, vous le verrez dans Présence.",
+      "compactoProgreso": "Démarrage · {{listos}} sur {{total}}"
     }
   },
   "visitantes": {

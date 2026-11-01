@@ -19423,7 +19423,8 @@
       "publish": "Publiceer",
       "publishAyuda": "Met «Publiceren» komen de diensten in de app van elke beveiliger.",
       "clockIn": "Eerste inklokking",
-      "clockInAyuda": "Zodra een beveiliger inklokt, zie je dat bij Aanwezigheid."
+      "clockInAyuda": "Zodra een beveiliger inklokt, zie je dat bij Aanwezigheid.",
+      "compactoProgreso": "Aan de slag · {{listos}} van {{total}}"
     }
   },
   "visitantes": {

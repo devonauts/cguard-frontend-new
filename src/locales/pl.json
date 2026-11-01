@@ -19719,7 +19719,8 @@
       "publish": "Opublikuj",
       "publishAyuda": "Po «Opublikuj» zmiany trafiają do aplikacji każdego ochroniarza.",
       "clockIn": "Pierwsze odbicie",
-      "clockInAyuda": "Gdy ochroniarz odbije wejście, zobaczysz to w Obecności."
+      "clockInAyuda": "Gdy ochroniarz odbije wejście, zobaczysz to w Obecności.",
+      "compactoProgreso": "Start · {{listos}} z {{total}}"
     }
   },
   "visitantes": {

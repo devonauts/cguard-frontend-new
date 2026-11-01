@@ -19423,7 +19423,8 @@
       "publish": "Veröffentliche",
       "publishAyuda": "Mit «Veröffentlichen» landen die Schichten in der App jeder Wache.",
       "clockIn": "Erste Stempelung",
-      "clockInAyuda": "Wenn eine Wache einstempelt, siehst du es unter Anwesenheit."
+      "clockInAyuda": "Wenn eine Wache einstempelt, siehst du es unter Anwesenheit.",
+      "compactoProgreso": "Start · {{listos}} von {{total}}"
     }
   },
   "visitantes": {

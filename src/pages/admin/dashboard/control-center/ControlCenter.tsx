@@ -219,6 +219,10 @@ export default function ControlCenter() {
     return (
       <AppLayout>
         <DashboardErrorBoundary>
+          {/* Empresa nueva: the guide as one band; the map measures from below it. */}
+          <div className="px-3 pt-3 empty:hidden">
+            <PrimerosPasos compacto />
+          </div>
           <MobileCommandCenter
             cargando={cargando}
             cifras={[...vitales, ...recursos]}
