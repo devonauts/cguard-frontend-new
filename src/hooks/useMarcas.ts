@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { recargarSinCache } from "@/lib/offline/recargarSinCache";
 import { useQuery } from "@tanstack/react-query";
 
 import { useEntitlement } from "@/hooks/useEntitlement";
@@ -183,7 +184,7 @@ export function useEspacioDeMarca() {
   useEffect(() => {
     if (!invalida) return;
     elegirMarca(null);
-    window.location.reload();
+    void recargarSinCache();
   }, [invalida]);
 
   /** Enter a brand: saved here and in the account; reloads when it changed. */
@@ -197,7 +198,7 @@ export function useEspacioDeMarca() {
     } catch {
       /* the browser copy rules; the account copy is for next time */
     }
-    if ((antes || null) !== nueva) window.location.reload();
+    if ((antes || null) !== nueva) await recargarSinCache();
   };
 
   return {

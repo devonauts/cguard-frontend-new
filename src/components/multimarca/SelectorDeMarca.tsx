@@ -95,7 +95,13 @@ export default function SelectorDeMarca({
             size={18}
           />
         )}
-        <SelectValue />
+        <SelectValue>
+          <span className="truncate">
+            {actual.todas
+              ? t("ui.SelectorDeMarca.todas", "Todas las marcas")
+              : actual.nombre}
+          </span>
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {opciones.map((o) => (

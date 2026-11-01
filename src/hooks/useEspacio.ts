@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { recargarSinCache } from "@/lib/offline/recargarSinCache";
 
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { accesoService, espacioService } from "@/lib/api/sucursalesService";
@@ -76,7 +77,7 @@ export function useEspacio() {
     } catch {
       /* la copia del navegador ya manda; la de la cuenta es para la próxima vez */
     }
-    if ((antes || null) !== nueva) window.location.reload();
+    if ((antes || null) !== nueva) await recargarSinCache();
   };
 
   return {
