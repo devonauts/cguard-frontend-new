@@ -6,6 +6,10 @@
  * cualquiera, la hoja de horas no distingue un turno de Navidad de uno normal, y
  * las metas de cobertura no descuentan el día.
  *
+ * Desde la fase 3 el calendario OFICIAL del país se calcula solo (backend
+ * lib/payroll/feriadosPorPais): aquí se enciende, se quitan los días que la
+ * empresa no guarda y se agregan los locales y los propios.
+ *
  * «Se repite cada año» es la casilla que más ahorra: sin ella habría que teclear
  * Navidad cada enero — el trabajo manual que hundió al motor de nómina anterior,
  * con sus tablas de constantes por año editadas a mano en el repositorio.
@@ -13,7 +17,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CalendarDays, Plus, Trash2, Loader2, Info } from "lucide-react";
+import { CalendarDays, Plus, Trash2, Loader2, Info, Undo2, Landmark, ChevronLeft, ChevronRight } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
@@ -30,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type Festivo = {
   id: string;
@@ -38,7 +43,39 @@ type Festivo = {
   kind: "national" | "company";
   recurring: boolean;
   payMultiplier: number | null;
+  /** «country» = computed from the company's country; «company» = typed here. */
+  source?: "country" | "company";
+  movedFrom?: string | null;
 };
+
+type Calendario = {
+  pais: string | null;
+  activo: boolean;
+  fuente: string | null;
+  nota: string | null;
+  quitados: { id: string; date: string; name: string }[];
+};
+
+/** «9 ago» — a short civil day, in UTC because the string IS the day. */
+function corto(ymd: string) {
+  const [a, m, d] = ymd.split("-").map(Number);
+
+  return new Date(Date.UTC(a || 2000, (m || 1) - 1, d || 1)).toLocaleDateString(localeActual(), {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "short",
+  });
+}
+
+/** Country name in the UI language («Ecuador», «Colombia»). */
+function nombreDelPais(code: string | null) {
+  if (!code) return "";
+  try {
+    return new Intl.DisplayNames([localeActual()], { type: "region" }).of(code) || code;
+  } catch {
+    return code;
+  }
+}
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -77,6 +114,9 @@ export default function FestivosPage() {
   const canEdit = hasPermission("settingsEdit");
 
   const [lista, setLista] = useState<Festivo[]>([]);
+  const [cal, setCal] = useState<Calendario | null>(null);
+  const [anio, setAnio] = useState(() => Number(hoyEnLaEmpresa().slice(0, 4)));
+  const [cambiando, setCambiando] = useState(false);
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [nuevo, setNuevo] = useState({
@@ -88,9 +128,14 @@ export default function FestivosPage() {
 
   const cargar = async () => {
     try {
-      const { data } = await api.get(`/tenant/${tenantId()}/holiday`);
+      const { data } = await api.get(`/tenant/${tenantId()}/holiday`, {
+        params: { desdeAnio: anio, hastaAnio: anio },
+      });
+      const filas: Festivo[] = data?.rows || [];
 
-      setLista(data?.rows || []);
+      // This year's days, plus the yearly ones (they hold every year).
+      setLista(filas.filter((f) => f.recurring || f.date.startsWith(`${anio}-`)));
+      setCal(data?.calendario || null);
     } catch {
       toast.error(
         t("settings.festivos.loadError", {
@@ -104,7 +149,43 @@ export default function FestivosPage() {
 
   useEffect(() => {
     cargar();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anio]);
+
+  const cambiarCalendario = async (activo: boolean) => {
+    setCambiando(true);
+    try {
+      await api.put(`/tenant/${tenantId()}/holiday-calendar`, {
+        data: { usarCalendarioDelPais: activo },
+      });
+      await cargar();
+    } catch {
+      toast.error(t("settings.festivos.calendarError", { defaultValue: "No se pudo cambiar el calendario." }));
+    } finally {
+      setCambiando(false);
+    }
+  };
+
+  /** A national day of the country the company does not observe. */
+  const quitar = async (f: Festivo) => {
+    try {
+      await api.post(`/tenant/${tenantId()}/holiday/quitar`, {
+        data: { date: f.date, name: f.name },
+      });
+      await cargar();
+    } catch {
+      toast.error(t("settings.festivos.deleteError", { defaultValue: "No se pudo borrar." }));
+    }
+  };
+
+  const devolver = async (id: string) => {
+    try {
+      await api.delete(`/tenant/${tenantId()}/holiday/${id}`);
+      await cargar();
+    } catch {
+      toast.error(t("settings.festivos.restoreError", { defaultValue: "No se pudo volver a poner." }));
+    }
+  };
 
   const agregar = async () => {
     if (!nuevo.date || !nuevo.name.trim()) {
@@ -155,7 +236,7 @@ export default function FestivosPage() {
   const borrar = async (id: string) => {
     try {
       await api.delete(`/tenant/${tenantId()}/holiday/${id}`);
-      setLista((l) => l.filter((x) => x.id !== id));
+      await cargar();
     } catch {
       toast.error(
         t("settings.festivos.deleteError", {
@@ -189,6 +270,62 @@ export default function FestivosPage() {
                 "El calendario decide qué turnos caen en feriado. Sin él, el 1 de enero se programa y se cuenta como un martes cualquiera.",
             })}
           </InfoNote>
+
+          {cal && (
+            <Section
+              className="mb-5"
+              icon={<Landmark />}
+              title={
+                cal.fuente
+                  ? t("settings.festivos.paisTitle", {
+                      defaultValue: "Calendario oficial de {{pais}}",
+                      pais: nombreDelPais(cal.pais),
+                    })
+                  : t("settings.festivos.paisSinCalendarioTitle", { defaultValue: "Calendario oficial" })
+              }
+            >
+              {cal.fuente ? (
+                <div className="space-y-2 text-sm">
+                  <label className="flex cursor-pointer items-start gap-2">
+                    <input
+                      checked={cal.activo}
+                      className="mt-0.5"
+                      disabled={!canEdit || cambiando}
+                      type="checkbox"
+                      onChange={(e) => cambiarCalendario(e.target.checked)}
+                    />
+                    <span>
+                      {t("settings.festivos.paisSwitch", {
+                        defaultValue: "Usar los feriados nacionales de {{pais}} (se calculan solos cada año)",
+                        pais: nombreDelPais(cal.pais),
+                      })}
+                      <span className="mt-0.5 block text-xs" style={{ color: "var(--ink-soft)" }}>
+                        {t("settings.festivos.paisAyuda", {
+                          defaultValue:
+                            "Cambia qué turnos se pagan como feriado. Puedes quitar los días que tu empresa no guarda y agregar los locales.",
+                        })}
+                      </span>
+                    </span>
+                  </label>
+                  <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                    {t("settings.festivos.paisFuente", { defaultValue: "Según: {{fuente}}", fuente: cal.fuente })}
+                  </p>
+                  {cal.nota && (
+                    <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                      {cal.nota}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                  {t("settings.festivos.paisSinCalendario", {
+                    defaultValue:
+                      "Todavía no calculamos los feriados de tu país. Agrégalos aquí abajo y marca «Se repite cada año» para los fijos.",
+                  })}
+                </p>
+              )}
+            </Section>
+          )}
 
           {canEdit && (
             <Section
@@ -313,6 +450,25 @@ export default function FestivosPage() {
               count: lista.length,
             })}
           >
+            <div className="mb-2 flex items-center gap-2 text-sm">
+              <button
+                aria-label={t("settings.festivos.anioAnterior", { defaultValue: "Año anterior" })}
+                className="cg-focus rounded-lg p-1.5"
+                type="button"
+                onClick={() => setAnio((a) => a - 1)}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <span className="min-w-[3.5rem] text-center font-semibold tabular-nums">{anio}</span>
+              <button
+                aria-label={t("settings.festivos.anioSiguiente", { defaultValue: "Año siguiente" })}
+                className="cg-focus rounded-lg p-1.5"
+                type="button"
+                onClick={() => setAnio((a) => a + 1)}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
             {loading ? (
               <SkeletonCards count={3} />
             ) : lista.length === 0 ? (
@@ -341,14 +497,26 @@ export default function FestivosPage() {
                           dot={false}
                           tone={f.kind === "national" ? "info" : "neutral"}
                         >
-                          {f.kind === "national"
-                            ? t("settings.festivos.kindNationalBadge", {
-                                defaultValue: "De ley",
+                          {f.source === "country"
+                            ? t("settings.festivos.kindCountryBadge", {
+                                defaultValue: "Del país",
                               })
-                            : t("settings.festivos.kindCompanyBadge", {
-                                defaultValue: "De la empresa",
-                              })}
+                            : f.kind === "national"
+                              ? t("settings.festivos.kindNationalBadge", {
+                                  defaultValue: "De ley",
+                                })
+                              : t("settings.festivos.kindCompanyBadge", {
+                                  defaultValue: "De la empresa",
+                                })}
                         </StatusBadge>
+                        {f.movedFrom && (
+                          <StatusBadge className="px-2 py-0.5 text-[10px]" dot={false} tone="neutral">
+                            {t("settings.festivos.movidoDesde", {
+                              defaultValue: "Movido desde el {{fecha}}",
+                              fecha: corto(f.movedFrom),
+                            })}
+                          </StatusBadge>
+                        )}
                         {f.payMultiplier ? (
                           <StatusBadge
                             className="px-2 py-0.5 text-[10px]"
@@ -368,20 +536,56 @@ export default function FestivosPage() {
                     </div>
                     {canEdit && (
                       <button
-                        aria-label={t("settings.festivos.deleteAriaLabel", {
-                          defaultValue: "Borrar {{name}}",
-                          name: f.name,
-                        })}
+                        aria-label={
+                          f.source === "country"
+                            ? t("settings.festivos.quitarAriaLabel", {
+                                defaultValue: "No guardamos {{name}}",
+                                name: f.name,
+                              })
+                            : t("settings.festivos.deleteAriaLabel", {
+                                defaultValue: "Borrar {{name}}",
+                                name: f.name,
+                              })
+                        }
                         className="cg-focus rounded-lg p-2 transition-colors"
                         style={{ color: "var(--ink-faint)" }}
+                        title={
+                          f.source === "country"
+                            ? t("settings.festivos.quitarTitle", {
+                                defaultValue: "Tu empresa no guarda este feriado",
+                              })
+                            : undefined
+                        }
                         type="button"
-                        onClick={() => borrar(f.id)}
+                        onClick={() => (f.source === "country" ? quitar(f) : borrar(f.id))}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+            {!!cal?.quitados?.filter((q) => q.date.startsWith(`${anio}-`)).length && (
+              <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--hairline)" }}>
+                <p className="cg-eyebrow mb-1.5">
+                  {t("settings.festivos.quitadosTitle", { defaultValue: "Feriados del país que no guardan" })}
+                </p>
+                {cal.quitados
+                  .filter((q) => q.date.startsWith(`${anio}-`))
+                  .map((q) => (
+                    <div key={q.id} className="flex items-center gap-2 py-1.5 text-sm" style={{ color: "var(--ink-soft)" }}>
+                      <span className="flex-1 line-through">
+                        {q.name} · {corto(q.date)}
+                      </span>
+                      {canEdit && (
+                        <Button size="sm" variant="ghost" onClick={() => devolver(q.id)}>
+                          <Undo2 className="mr-1 h-3.5 w-3.5" />
+                          {t("settings.festivos.devolver", { defaultValue: "Volver a guardarlo" })}
+                        </Button>
+                      )}
+                    </div>
+                  ))}
               </div>
             )}
           </Section>
