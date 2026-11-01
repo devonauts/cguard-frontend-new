@@ -2912,7 +2912,9 @@
       "correction_pending": "Correzione in sospeso",
       "missing_location": "Senza posizione",
       "selfie_no_face": "Selfie senza viso",
-      "face_mismatch": "Volto non corrispondente"
+      "face_mismatch": "Volto non corrispondente",
+      "absence_reported": "Assenza segnalata",
+      "wrong_post": "Timbrato in un'altra postazione"
     },
     "excEstado": {
       "open": "Aperta",
@@ -2951,7 +2953,8 @@
       "autoOut": "Uscita automatica",
       "relevoOut": "Chiusa dal cambio",
       "earlyExit": "Uscita anticipata",
-      "supervisorOut": "Chiusa dal supervisore"
+      "supervisorOut": "Chiusa dal supervisore",
+      "registradaPor": "Registrata da {{nombre}}"
     }
   },
   "performance": {
@@ -11256,7 +11259,8 @@
       "personaSeleccionada": "Persona selezionata",
       "sinHorarioPublicado": "Nessun orario pubblicato",
       "sinHorarioPublicadoAyuda": "Le timbrature compaiono quando le guardie timbrano l’entrata nei loro turni. Prima prepara e pubblica l’orario.",
-      "armarHorario": "Prepara l’orario"
+      "armarHorario": "Prepara l’orario",
+      "sinUbicacion": "Senza posizione"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avvisa anche questi indirizzi email",

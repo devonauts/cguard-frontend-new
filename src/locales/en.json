@@ -10719,7 +10719,8 @@
       "personaSeleccionada": "Selected person",
       "sinHorarioPublicado": "No schedule published yet",
       "sinHorarioPublicadoAyuda": "Clock-ins show up here when guards clock in on their shifts. First build and publish the schedule.",
-      "armarHorario": "Build the schedule"
+      "armarHorario": "Build the schedule",
+      "sinUbicacion": "No location"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",
@@ -19292,7 +19293,9 @@
       "correction_pending": "Correction pending",
       "missing_location": "No location",
       "selfie_no_face": "Selfie without a face",
-      "face_mismatch": "Face doesn't match"
+      "face_mismatch": "Face doesn't match",
+      "absence_reported": "Reported absence",
+      "wrong_post": "Clocked in at another station"
     },
     "excEstado": {
       "open": "Open",
@@ -19331,7 +19334,8 @@
       "autoOut": "Automatic clock-out",
       "relevoOut": "Closed by the relief",
       "earlyExit": "Early departure",
-      "supervisorOut": "Closed by supervisor"
+      "supervisorOut": "Closed by supervisor",
+      "registradaPor": "Registered by {{nombre}}"
     }
   },
   "maps": {

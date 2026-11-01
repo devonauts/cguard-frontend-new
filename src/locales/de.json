@@ -2912,7 +2912,9 @@
       "correction_pending": "Korrektur offen",
       "missing_location": "Ohne Standort",
       "selfie_no_face": "Selfie ohne Gesicht",
-      "face_mismatch": "Gesicht stimmt nicht überein"
+      "face_mismatch": "Gesicht stimmt nicht überein",
+      "absence_reported": "Gemeldete Abwesenheit",
+      "wrong_post": "An anderem Posten eingestempelt"
     },
     "excEstado": {
       "open": "Offen",
@@ -2951,7 +2953,8 @@
       "autoOut": "Automatisch ausgestempelt",
       "relevoOut": "Durch Ablösung beendet",
       "earlyExit": "Vorzeitig gegangen",
-      "supervisorOut": "Vom Einsatzleiter beendet"
+      "supervisorOut": "Vom Einsatzleiter beendet",
+      "registradaPor": "Erfasst von {{nombre}}"
     }
   },
   "performance": {
@@ -11256,7 +11259,8 @@
       "personaSeleccionada": "Ausgewählte Person",
       "sinHorarioPublicado": "Noch kein Dienstplan veröffentlicht",
       "sinHorarioPublicadoAyuda": "Stempelungen erscheinen, sobald Wachleute zu ihren Schichten einstempeln. Erstellen und veröffentlichen Sie zuerst den Dienstplan.",
-      "armarHorario": "Dienstplan erstellen"
+      "armarHorario": "Dienstplan erstellen",
+      "sinUbicacion": "Ohne Standort"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",

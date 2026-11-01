@@ -2912,7 +2912,9 @@
       "correction_pending": "Correctie in behandeling",
       "missing_location": "Zonder locatie",
       "selfie_no_face": "Selfie zonder gezicht",
-      "face_mismatch": "Gezicht komt niet overeen"
+      "face_mismatch": "Gezicht komt niet overeen",
+      "absence_reported": "Gemelde afwezigheid",
+      "wrong_post": "Ingeklokt op een andere post"
     },
     "excEstado": {
       "open": "Open",
@@ -2951,7 +2953,8 @@
       "autoOut": "Automatisch uitgeklokt",
       "relevoOut": "Afgesloten door aflossing",
       "earlyExit": "Vroegtijdig vertrek",
-      "supervisorOut": "Afgesloten door supervisor"
+      "supervisorOut": "Afgesloten door supervisor",
+      "registradaPor": "Geregistreerd door {{nombre}}"
     }
   },
   "performance": {
@@ -11256,7 +11259,8 @@
       "personaSeleccionada": "Geselecteerde persoon",
       "sinHorarioPublicado": "Nog geen rooster gepubliceerd",
       "sinHorarioPublicadoAyuda": "Klokregistraties verschijnen zodra beveiligers inklokken voor hun diensten. Maak en publiceer eerst het rooster.",
-      "armarHorario": "Rooster maken"
+      "armarHorario": "Rooster maken",
+      "sinUbicacion": "Geen locatie"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",

@@ -10719,7 +10719,8 @@
       "personaSeleccionada": "Pessoa selecionada",
       "sinHorarioPublicado": "Ainda não há escala publicada",
       "sinHorarioPublicadoAyuda": "As marcações aparecem quando os vigilantes registram entrada nos seus turnos. Primeiro monte e publique a escala.",
-      "armarHorario": "Montar a escala"
+      "armarHorario": "Montar a escala",
+      "sinUbicacion": "Sem localização"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar também estes e-mails",
@@ -19292,7 +19293,9 @@
       "correction_pending": "Correção pendente",
       "missing_location": "Sem localização",
       "selfie_no_face": "Selfie sem rosto",
-      "face_mismatch": "Rosto que não coincide"
+      "face_mismatch": "Rosto que não coincide",
+      "absence_reported": "Ausência comunicada",
+      "wrong_post": "Marcou em outro posto"
     },
     "excEstado": {
       "open": "Aberta",
@@ -19331,7 +19334,8 @@
       "autoOut": "Saída automática",
       "relevoOut": "Fechada pela rendição",
       "earlyExit": "Saída antecipada",
-      "supervisorOut": "Fechada pelo supervisor"
+      "supervisorOut": "Fechada pelo supervisor",
+      "registradaPor": "Registrada por {{nombre}}"
     }
   },
   "maps": {

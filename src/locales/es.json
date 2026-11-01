@@ -10719,7 +10719,8 @@
       "personaSeleccionada": "Persona seleccionada",
       "sinHorarioPublicado": "Todavía no hay un horario publicado",
       "sinHorarioPublicadoAyuda": "Las marcaciones aparecen cuando los vigilantes marcan entrada en sus turnos. Primero arma y publica el horario.",
-      "armarHorario": "Armar el horario"
+      "armarHorario": "Armar el horario",
+      "sinUbicacion": "Sin ubicación"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar además a estos correos",
@@ -19292,7 +19293,9 @@
       "correction_pending": "Corrección pendiente",
       "missing_location": "Sin ubicación",
       "selfie_no_face": "Selfie sin cara",
-      "face_mismatch": "Cara que no coincide"
+      "face_mismatch": "Cara que no coincide",
+      "absence_reported": "Ausencia reportada",
+      "wrong_post": "Marcó en otra estación"
     },
     "excEstado": {
       "open": "Abierta",
@@ -19331,7 +19334,8 @@
       "autoOut": "Salida automática",
       "relevoOut": "Cerrada por el relevo",
       "earlyExit": "Salida anticipada",
-      "supervisorOut": "Cerrada por supervisor"
+      "supervisorOut": "Cerrada por supervisor",
+      "registradaPor": "Registrada por {{nombre}}"
     }
   },
   "maps": {

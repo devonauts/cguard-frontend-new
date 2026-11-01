@@ -85,9 +85,12 @@ function ladoDeLaMarca(m?: { accion?: string | null } | null): "entrada" | "sali
 function MetodoDeMarcaje({
   lado,
   metodo,
+  por,
 }: {
   lado: "entrada" | "salida";
   metodo?: string | null;
+  /** Who registered it for the guard (Registrar entrada). */
+  por?: string | null;
 }) {
   const { t } = useTranslation();
   let texto: string | null = null;
@@ -97,7 +100,12 @@ function MetodoDeMarcaje({
     if (metodo === "auto_location")
       texto = t("nomina.punchMethod.autoIn", "Entrada automática");
     else if (metodo === "supervisor")
-      texto = t("nomina.punchMethod.supervisorIn", "Marcada por supervisor");
+      texto = por
+        ? t("nomina.punchMethod.registradaPor", {
+            nombre: por,
+            defaultValue: "Registrada por {{nombre}}",
+          })
+        : t("nomina.punchMethod.supervisorIn", "Marcada por supervisor");
   } else if (metodo === "auto_location")
     texto = t("nomina.punchMethod.autoOut", "Salida automática");
   else if (metodo === "relevo")
@@ -343,7 +351,7 @@ export default function NominaRecords() {
       render: (_v, r) => (
         <span>
           {fmtTime(r.punchInTime)}
-          <MetodoDeMarcaje lado="entrada" metodo={r.punchInMethod} />
+          <MetodoDeMarcaje lado="entrada" metodo={r.punchInMethod} por={r.punchInByName} />
           {/* Marcada sin señal: la hora es la real; llegó después. */}
           {ladoDeLaMarca(marcasSinSenal[String(r.id)]) !== "salida" && (
             <MarcaSinSenal className="ml-1" marca={marcasSinSenal[String(r.id)]} />
@@ -478,6 +486,12 @@ export default function NominaRecords() {
                 defaultValue: "Fuera ({{distancia}} m)",
               })}
             </span>
+          </ToneBadge>
+        ) : r.punchInLatitude == null || r.punchInLongitude == null ? (
+          // No position (a registered entry, a phone without GPS): nothing was
+          // checked, so it is not «Dentro».
+          <ToneBadge tone="neutral" dot={false}>
+            {t("ui.NominaRecords.sinUbicacion", "Sin ubicación")}
           </ToneBadge>
         ) : (
           <ToneBadge tone="ok" dot={false}>

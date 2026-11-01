@@ -2918,7 +2918,9 @@
       "correction_pending": "Korekta w toku",
       "missing_location": "Bez lokalizacji",
       "selfie_no_face": "Selfie bez twarzy",
-      "face_mismatch": "Niezgodna twarz"
+      "face_mismatch": "Niezgodna twarz",
+      "absence_reported": "Zgłoszona nieobecność",
+      "wrong_post": "Odbicie na innym posterunku"
     },
     "excEstado": {
       "open": "Otwarta",
@@ -2957,7 +2959,8 @@
       "autoOut": "Wyjście automatyczne",
       "relevoOut": "Zamknięte przez zmiennika",
       "earlyExit": "Wcześniejsze wyjście",
-      "supervisorOut": "Zamknięte przez nadzorcę"
+      "supervisorOut": "Zamknięte przez nadzorcę",
+      "registradaPor": "Zarejestrowane przez {{nombre}}"
     }
   },
   "performance": {
@@ -11302,7 +11305,8 @@
       "personaSeleccionada": "Wybrana osoba",
       "sinHorarioPublicado": "Nie opublikowano jeszcze grafiku",
       "sinHorarioPublicadoAyuda": "Odbicia pojawiają się, gdy pracownicy ochrony odbijają wejście na swoich zmianach. Najpierw ułóż i opublikuj grafik.",
-      "armarHorario": "Ułóż grafik"
+      "armarHorario": "Ułóż grafik",
+      "sinUbicacion": "Brak lokalizacji"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Powiadamiaj dodatkowo te adresy e-mail",

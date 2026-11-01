@@ -385,6 +385,8 @@ export default function Planificador() {
   const srvRef = useRef<EnElServidor>({ version: 0, baseAt: null, guardado: null });
   /** Live edits on what this draft changes (phase 5): banner + marked cells. */
   const [enVivo, setEnVivo] = useState<CambioEnVivo[]>([]);
+  /** The plan as the draft was opened, untouched: the autosave skips it. */
+  const planAbiertoRef = useRef<Plan | null>(null);
   const leidoRef = useRef<PlanReal | null>(null);
   const cambiosRef = useRef(0);
 
@@ -553,7 +555,6 @@ export default function Planificador() {
         }
         let plan = r.plan;
         let toques = 0;
-        let reGuardar = false;
 
         if (llevar) {
           toques = Math.max(
@@ -568,7 +569,6 @@ export default function Planificador() {
             plan = m.plan;
             limpiar(plan, -ANTES, DESPUES);
             choques.push(...m.conflicts, ...m.dropped);
-            reGuardar = true;
             if (!m.conflicts.length && !m.dropped.length)
               toast.message(
                 t(
@@ -606,7 +606,13 @@ export default function Planificador() {
 
           setSemana(Math.max(0, Math.floor(hoy / 7)));
         }
-        setGuardado(llevar ? (reGuardar || local ? "pendiente" : "guardado") : null);
+        // Opening a draft writes nothing: only my own unsaved edits, or a
+        // rebase that had to drop or override something, are saved (QA: every
+        // open sent a PUT, which also cleared the draft's live-change marks).
+        const guardarAlAbrir = !!llevar && (!!local || choques.length > 0);
+
+        planAbiertoRef.current = guardarAlAbrir ? null : plan;
+        setGuardado(llevar ? (guardarAlAbrir ? "pendiente" : "guardado") : null);
       } catch {
         toast.error(
           t("ui.Planificador.noSePudoCargar", "No se pudo cargar el horario."),
@@ -818,6 +824,10 @@ export default function Planificador() {
   // Save the touched draft (with a breather: one drag is many touches).
   useEffect(() => {
     if (cargando || !plan || !leido || !firmaRef.current || !cambios) return;
+    // The plan exactly as it was opened: nothing to write yet. The first
+    // edit disarms this for good (an undo back to it must still be saved).
+    if (plan === planAbiertoRef.current) return;
+    planAbiertoRef.current = null;
     setGuardado((g) => (g === "guardando" ? g : "pendiente"));
     const id = window.setTimeout(() => void guardarAhora(), 1200);
 
