@@ -57,7 +57,6 @@ import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
-
 export default function SupervisorsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -65,7 +64,6 @@ export default function SupervisorsPage() {
   const [loading, setLoading] = useState(true);
   // «Usuario: jmiranda · comparte este enlace» (cuentas sin correo).
   const compartir = useCompartirAcceso();
-
 
   const load = useCallback(() => {
     setLoading(true);
@@ -229,8 +227,7 @@ export default function SupervisorsPage() {
         via
           ? t("ui.SupervisorsPage.enlaceDeRestablecimientoEnviado", {
               via,
-              defaultValue:
-                "Enlace de restablecimiento enviado por {{via}}",
+              defaultValue: "Enlace de restablecimiento enviado por {{via}}",
             })
           : t(
               "ui.SupervisorsPage.enlaceDeRestablecimientoCopiado",
@@ -251,7 +248,9 @@ export default function SupervisorsPage() {
   // Remove a supervisor from this business (revokes access; account may live in other tenants).
   const removeSupervisor = async (s: Supervisor) => {
     const name =
-      s.fullName || s.email || t("ui.SupervisorsPage.esteSupervisor", "este supervisor");
+      s.fullName ||
+      s.email ||
+      t("ui.SupervisorsPage.esteSupervisor", "este supervisor");
 
     if (
       !(await confirmDialog({
@@ -294,7 +293,8 @@ export default function SupervisorsPage() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
         <DropdownMenuItem onClick={() => navigate(`/supervisors/${s.id}`)}>
-          <Eye className="mr-2 h-4 w-4" /> {t("ui.SupervisorsPage.verDetalles", "Ver detalles")}
+          <Eye className="mr-2 h-4 w-4" />{" "}
+          {t("ui.SupervisorsPage.verDetalles", "Ver detalles")}
         </DropdownMenuItem>
         {/* «Enviar acceso a la app» describía el efecto pero no lo que es:
             quien la busca la busca como «reenviar la invitación», que es como
@@ -390,17 +390,26 @@ export default function SupervisorsPage() {
           <PageHeader
             actions={
               <>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/supervisor-positions")}
-              >
-                <MapPin className="mr-2 h-4 w-4" />{" "}
-                {t("ui.SupervisorPositionsPage.puestos", "Puestos")}
-              </Button>
-              <Button variant="brand" onClick={() => navigate("/personal/nueva?tipo=supervisor")}>
-                <Plus className="mr-2 h-4 w-4" />{" "}
-                {t("ui.SupervisorsPage.nuevoSupervisor")}{" "}
-              </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/supervisor-positions")}
+                >
+                  <MapPin className="mr-2 h-4 w-4" />{" "}
+                  {t("ui.SupervisorPositionsPage.puestos", "Puestos")}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/personal/varias")}
+                >
+                  {t("agregarVarias.boton", "Agregar varias")}
+                </Button>
+                <Button
+                  variant="brand"
+                  onClick={() => navigate("/personal/nueva?tipo=supervisor")}
+                >
+                  <Plus className="mr-2 h-4 w-4" />{" "}
+                  {t("ui.SupervisorsPage.nuevoSupervisor")}{" "}
+                </Button>
               </>
             }
             icon={<ShieldCheck />}
@@ -526,7 +535,9 @@ export default function SupervisorsPage() {
                     <Button
                       size="sm"
                       variant="brand"
-                      onClick={() => navigate("/personal/nueva?tipo=supervisor")}
+                      onClick={() =>
+                        navigate("/personal/nueva?tipo=supervisor")
+                      }
                     >
                       <Plus className="mr-2 h-4 w-4" />{" "}
                       {t("ui.SupervisorsPage.nuevoSupervisor")}
@@ -651,10 +662,15 @@ export default function SupervisorsPage() {
                       {s.username && (
                         <div
                           className="flex items-center gap-1.5"
-                          title={t("usuarioDeAcceso.etiqueta", "Usuario para entrar")}
+                          title={t(
+                            "usuarioDeAcceso.etiqueta",
+                            "Usuario para entrar",
+                          )}
                         >
                           <LogIn className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate font-mono">{s.username}</span>
+                          <span className="truncate font-mono">
+                            {s.username}
+                          </span>
                         </div>
                       )}
                       {s.phoneNumber && (

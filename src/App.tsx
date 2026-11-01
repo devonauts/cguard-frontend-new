@@ -6,7 +6,6 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
-import { useTranslation } from "react-i18next";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import AppErrorBoundary from "./components/AppErrorBoundary";
@@ -121,9 +120,7 @@ const ReportSettingsPage = lazy(
 );
 const GuardsGlobalSettingsPage = lazy(
   () =>
-    import(
-      "./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"
-    ),
+    import("./pages/admin/Configuration/guards-settings/GuardsGlobalSettingsPage"),
 );
 const EmergencySettingsPage = lazy(
   () => import("./pages/admin/Configuration/emergency/EmergencySettingsPage"),
@@ -169,9 +166,7 @@ const MisAvisosPage = lazy(
 );
 const EmailPreferencesPage = lazy(
   () =>
-    import(
-      "./pages/admin/Configuration/email-preferences/EmailPreferencesPage"
-    ),
+    import("./pages/admin/Configuration/email-preferences/EmailPreferencesPage"),
 );
 const SmsBalancePage = lazy(
   () => import("./pages/admin/Configuration/sms/SmsBalancePage"),
@@ -182,9 +177,7 @@ const CommunicationsPage = lazy(
 const BillingPage = lazy(
   () => import("./pages/admin/Configuration/billing/BillingPage"),
 );
-const VigiaProPage = lazy(
-  () => import("./pages/admin/vigiaPro/VigiaProPage"),
-);
+const VigiaProPage = lazy(() => import("./pages/admin/vigiaPro/VigiaProPage"));
 const CarasRegistradasPage = lazy(
   () => import("./pages/admin/rostros/CarasRegistradasPage"),
 );
@@ -245,6 +238,9 @@ const NewSupervisorPage = lazy(
   () => import("./pages/admin/supervisors/NewSupervisorPage"),
 );
 // «Agregar persona»: one flow for guards, supervisors and office staff, with their schedule.
+const AgregarVariasPage = lazy(
+  () => import("./pages/admin/personal/AgregarVariasPage"),
+);
 const AgregarPersonaPage = lazy(
   () => import("./pages/admin/personal/AgregarPersonaPage"),
 );
@@ -426,15 +422,33 @@ const RolIndividual = lazy(
   () => import("./pages/admin/nomina/roles/RolIndividual"),
 );
 // Client billing (what the company charges ITS clients) — /facturacion/*, never /billing.
-const FacturasPage = lazy(() => import("./pages/admin/facturacion/FacturasPage"));
-const FacturaDetallePage = lazy(() => import("./pages/admin/facturacion/FacturaDetallePage"));
-const CorridasPage = lazy(() => import("./pages/admin/facturacion/CorridasPage"));
-const CorridaDetallePage = lazy(() => import("./pages/admin/facturacion/CorridaDetallePage"));
-const AntiguedadPage = lazy(() => import("./pages/admin/facturacion/AntiguedadPage"));
-const AjustesFacturacionPage = lazy(() => import("./pages/admin/facturacion/AjustesFacturacionPage"));
-const CotizacionesPage = lazy(() => import("./pages/admin/facturacion/CotizacionesPage"));
-const CotizacionEditorPage = lazy(() => import("./pages/admin/facturacion/CotizacionEditorPage"));
-const CotizacionDetallePage = lazy(() => import("./pages/admin/facturacion/CotizacionDetallePage"));
+const FacturasPage = lazy(
+  () => import("./pages/admin/facturacion/FacturasPage"),
+);
+const FacturaDetallePage = lazy(
+  () => import("./pages/admin/facturacion/FacturaDetallePage"),
+);
+const CorridasPage = lazy(
+  () => import("./pages/admin/facturacion/CorridasPage"),
+);
+const CorridaDetallePage = lazy(
+  () => import("./pages/admin/facturacion/CorridaDetallePage"),
+);
+const AntiguedadPage = lazy(
+  () => import("./pages/admin/facturacion/AntiguedadPage"),
+);
+const AjustesFacturacionPage = lazy(
+  () => import("./pages/admin/facturacion/AjustesFacturacionPage"),
+);
+const CotizacionesPage = lazy(
+  () => import("./pages/admin/facturacion/CotizacionesPage"),
+);
+const CotizacionEditorPage = lazy(
+  () => import("./pages/admin/facturacion/CotizacionEditorPage"),
+);
+const CotizacionDetallePage = lazy(
+  () => import("./pages/admin/facturacion/CotizacionDetallePage"),
+);
 const Visitors = lazy(
   () => import("./pages/admin/visitor-management/Visitors"),
 );
@@ -492,21 +506,15 @@ const EditSecurityGuardPage = lazy(
 );
 const GuardResumenPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardOverview/GuardOverviewPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardOverview/GuardOverviewPage"),
 );
 const GuardPerfilPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardProfile/GuardProfilepage"
-    ),
+    import("./pages/admin/security-guards/components/GuardProfile/GuardProfilepage"),
 );
 const GuardAvailabilityPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardAvailability/GuardAvailabilitypage"
-    ),
+    import("./pages/admin/security-guards/components/GuardAvailability/GuardAvailabilitypage"),
 );
 const GuardIndicadoresPage = lazy(
   () =>
@@ -514,39 +522,27 @@ const GuardIndicadoresPage = lazy(
 );
 const GuardDispositivoPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardDevice/GuardDevicepage"
-    ),
+    import("./pages/admin/security-guards/components/GuardDevice/GuardDevicepage"),
 );
 const GuardLicenciasPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardLicenses/GuardLicensespage"
-    ),
+    import("./pages/admin/security-guards/components/GuardLicenses/GuardLicensespage"),
 );
 const GuardNotasPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardNotes/GuardNotespage"
-    ),
+    import("./pages/admin/security-guards/components/GuardNotes/GuardNotespage"),
 );
 const GuardMemosPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardMemos/GuardMemosPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardMemos/GuardMemosPage"),
 );
 const GuardReviewsPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardReviews/GuardReviewsPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardReviews/GuardReviewsPage"),
 );
 const GuardHorarioPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardHorario/GuardHorarioPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardHorario/GuardHorarioPage"),
 );
 const GuardLogsPage = lazy(
   () =>
@@ -557,39 +553,27 @@ const SupervisorLogsPage = lazy(
 );
 const GuardAsistenciaPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardAsistencia/GuardAsistenciaPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardAsistencia/GuardAsistenciaPage"),
 );
 const GuardDesempenoPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardDesempeno/GuardDesempenoPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardDesempeno/GuardDesempenoPage"),
 );
 const GuardDocumentosPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardDocumentos/GuardDocumentosPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardDocumentos/GuardDocumentosPage"),
 );
 const GuardFilesPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardFiles/GuardFilesPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardFiles/GuardFilesPage"),
 );
 const GuardAsignarSitiosPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardAssign-Sites/GuardAsignarSitiosPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardAssign-Sites/GuardAsignarSitiosPage"),
 );
 const GuardDepartamentoPage = lazy(
   () =>
-    import(
-      "./pages/admin/security-guards/components/GuardDepartment/GuardDepartamentoPage"
-    ),
+    import("./pages/admin/security-guards/components/GuardDepartment/GuardDepartamentoPage"),
 );
 
 const GuardDashboard = lazy(
@@ -2004,6 +1988,14 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
+                                    <AgregarVariasPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/personal/varias"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
                                     <SupervisorPositionsPage />
                                   </ProtectedRoute>
                                 }
@@ -2935,4 +2927,3 @@ export default function App() {
     </QueryClientProvider>
   );
 }
-

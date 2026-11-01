@@ -110,7 +110,15 @@ async function pryntRequestId(): Promise<string | null> {
 
     if (!cfg || !cfg.publicKey) return null;
     const { default: Prynt } = await import("@/vendor/prynt.mjs");
-    const agente = await Prynt.load({ apiKey: cfg.publicKey, endpoint: cfg.endpoint, timeout: TIMEOUT_MS });
+    // extendedResult: without it Prynt answers with identification only (no
+    // VPN/Tor/incognito/tampering, riskScore 0, always «allow») even though our
+    // tenant is on a Pro plan. The backend only RECORDS these signals.
+    const agente = await Prynt.load({
+      apiKey: cfg.publicKey,
+      endpoint: cfg.endpoint,
+      timeout: TIMEOUT_MS,
+      extendedResult: true,
+    });
     const r = await agente.identify({ tag: { app: "crm" } });
 
     return r?.requestId || null;

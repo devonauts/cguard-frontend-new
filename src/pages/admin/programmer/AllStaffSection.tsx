@@ -102,7 +102,7 @@ function AllStaffSection({
   refreshKey?: number;
   onAsignarAPuesto: (p: { userId: string; name: string }) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [abierta, setAbierta] = useState(leerAbierta);
   const [personas, setPersonas] = useState<PersonaDelHorario[] | null>(null);
   const [cargado, setCargado] = useState<{ desde: string; hasta: string } | null>(null);
@@ -222,7 +222,17 @@ function AllStaffSection({
 
     if (r) return r;
     if (p.kind === "office") return t("ui.AllStaff.enOficina", "Oficina");
-    if (p.kind === "supervisor") return t("ui.AllStaff.supervision", "Supervisión");
+    if (p.kind === "supervisor") {
+      const puestos = (p.positions || []).map((x) => x.name).filter(Boolean).join(", ");
+      const base = puestos || t("ui.AllStaff.supervision", "Supervisión");
+      if (!p.nextShiftDate) return base;
+      let fecha = p.nextShiftDate;
+      try {
+        fecha = new Intl.DateTimeFormat(i18n.language || "es", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })
+          .format(new Date(`${p.nextShiftDate}T12:00:00Z`));
+      } catch { /* keep the ISO date */ }
+      return `${base} · ${t("ui.AllStaff.desdeFecha", "desde {{fecha}}", { fecha })}`;
+    }
 
     return p.assigned
       ? t("ui.AllStaff.sinTurnoVisible", "Sin turno en estos días")
@@ -473,48 +483,50 @@ function AllStaffSection({
                       <span className="truncate text-xs font-semibold" title={p.name}>
                         {p.name}
                       </span>
+                    </div>
+                    <div className="flex min-w-0 items-center gap-1.5">
                       {p.pendingInvite && (
                         <span
-                          className="shrink-0 rounded px-1 py-px text-[8px] font-bold uppercase tracking-wide"
+                          className="mt-0.5 shrink-0 rounded px-1 py-px text-[8px] font-bold uppercase tracking-wide"
                           style={tonePill("warn", 16)}
                           title={t(
                             "ui.AllStaff.invitacionPendienteAyuda",
                             "Se le envió la invitación y todavía no ha entrado. Ya se le puede asignar horario.",
                           )}
                         >
-                          {t("ui.AllStaff.invitacionPendiente", "Invitación pendiente")}
+                          {t("ui.AllStaff.pendiente", "Pendiente")}
                         </span>
                       )}
+                      {accion ? (
+                        <button
+                          className="cg-focus mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-[10px] font-semibold hover:underline"
+                          style={{ color: "var(--warn-text)" }}
+                          type="button"
+                          onClick={() =>
+                            accion === "asignarHorario"
+                              ? abrirEditor()
+                              : onAsignarAPuesto({ userId: p.userId, name: p.name })
+                          }
+                        >
+                          <Plus size={10} />
+                          {accion === "asignarHorario"
+                            ? t("ui.AllStaff.asignarHorario", "Asignar horario")
+                            : t("ui.AllStaff.asignarAPuesto", "Asignar a un puesto")}
+                        </button>
+                      ) : (
+                        <div
+                          className="flex min-w-0 items-center gap-1 text-[10px]"
+                          style={{ color: p.hasSchedule || (p.kind === "supervisor" && p.assigned) ? "var(--ink-soft)" : "var(--warn-text)" }}
+                        >
+                          <MapPin size={9} className="shrink-0" />
+                          <span className="truncate" title={textoDonde(p)}>
+                            {p.hasSchedule || (p.kind === "supervisor" && p.assigned)
+                              ? textoDonde(p)
+                              : `${textoDonde(p)} · ${t("ui.AllStaff.sinHorario", "Sin horario")}`}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    {accion ? (
-                      <button
-                        className="cg-focus mt-0.5 inline-flex max-w-full items-center gap-1 truncate text-[10px] font-semibold hover:underline"
-                        style={{ color: "var(--warn-text)" }}
-                        type="button"
-                        onClick={() =>
-                          accion === "asignarHorario"
-                            ? abrirEditor()
-                            : onAsignarAPuesto({ userId: p.userId, name: p.name })
-                        }
-                      >
-                        <Plus size={10} />
-                        {accion === "asignarHorario"
-                          ? t("ui.AllStaff.asignarHorario", "Asignar horario")
-                          : t("ui.AllStaff.asignarAPuesto", "Asignar a un puesto")}
-                      </button>
-                    ) : (
-                      <div
-                        className="flex min-w-0 items-center gap-1 text-[10px]"
-                        style={{ color: p.hasSchedule ? "var(--ink-soft)" : "var(--warn-text)" }}
-                      >
-                        <MapPin size={9} className="shrink-0" />
-                        <span className="truncate" title={textoDonde(p)}>
-                          {p.hasSchedule
-                            ? textoDonde(p)
-                            : `${textoDonde(p)} · ${t("ui.AllStaff.sinHorario", "Sin horario")}`}
-                        </span>
-                      </div>
-                    )}
                   </div>
                   {p.kind === "office" && p.hasSchedule && (
                     <button

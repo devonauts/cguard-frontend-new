@@ -93,6 +93,28 @@ describe("Todo el personal · filters and actions", () => {
     expect(accionDePersona({ kind: "office", hasSchedule: true, assigned: false })).toBeNull();
   });
 
+  it("a supervisor who holds a post never gets «Asignar horario», even in a week with no shift", async () => {
+    expect(accionDePersona({ kind: "supervisor", hasSchedule: false, assigned: true })).toBeNull();
+    const { normalizarPersonas } = await import("./personalDelHorario");
+    const [p] = normalizarPersonas({
+      people: [{
+        userId: "s1", name: "Ramiro Salas", kind: "supervisor", hasSchedule: false, assigned: true, days: [],
+        positions: [{ id: "pos-1", name: "Aguila1" }, { id: "" }], nextShiftDate: "2026-11-02",
+      }],
+    });
+    expect(p.positions).toEqual([{ id: "pos-1", name: "Aguila1" }]);
+    expect(p.nextShiftDate).toBe("2026-11-02");
+    const [q] = normalizarPersonas({ people: [{ userId: "s2", name: "X", kind: "supervisor", days: [], nextShiftDate: "lunes" }] });
+    expect(q.positions).toEqual([]);
+    expect(q.nextShiftDate).toBeNull();
+  });
+
+  it("the place line never repeats the same name twice", async () => {
+    const { rotuloDeDonde } = await import("./personalDelHorario");
+    expect(rotuloDeDonde({ stationId: "s", stationName: "Estacionamiento", postSiteId: "p", postSiteName: "Charlie 3" } as any)).toBe("Charlie 3 · Estacionamiento");
+    expect(rotuloDeDonde({ stationId: "s", stationName: "Garita", postSiteId: "p", postSiteName: "garita" } as any)).toBe("garita");
+  });
+
   it("where they are: that day, else the first place seen", () => {
     const ana = ps.find((p) => p.userId === "g1")!;
 

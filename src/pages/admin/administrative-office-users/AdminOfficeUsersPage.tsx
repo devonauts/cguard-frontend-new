@@ -859,13 +859,28 @@ export default function AdminOfficeUsersPage() {
       <PageContainer width="wide">
         <PageHeader
           actions={
-            <PermissionedButton asChild permission="userCreate" variant="brand">
-              <Link to="/personal/nueva?tipo=oficina">
-                {t("adminOfficeUsers.newUser.breadcrumb.new", {
-                  defaultValue: "Nuevo Usuario",
-                })}
-              </Link>
-            </PermissionedButton>
+            <>
+              <PermissionedButton
+                asChild
+                permission="userCreate"
+                variant="outline"
+              >
+                <Link to="/personal/varias">
+                  {t("agregarVarias.boton", "Agregar varias")}
+                </Link>
+              </PermissionedButton>
+              <PermissionedButton
+                asChild
+                permission="userCreate"
+                variant="brand"
+              >
+                <Link to="/personal/nueva?tipo=oficina">
+                  {t("adminOfficeUsers.newUser.breadcrumb.new", {
+                    defaultValue: "Nuevo Usuario",
+                  })}
+                </Link>
+              </PermissionedButton>
+            </>
           }
           icon={<Users />}
           subtitle={t("adminOfficeUsers.subtitle", {

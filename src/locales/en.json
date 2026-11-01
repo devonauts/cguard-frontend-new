@@ -18552,7 +18552,9 @@
       "sinTurnosPuesto": "Their post has no shifts on these days",
       "invitacionPendiente": "Invite pending",
       "invitacionPendienteAyuda": "The invite was sent and they have not signed in yet. You can already give them a schedule.",
-      "sinTurnosIr": "Check the post's rotation in Supervisor posts"
+      "sinTurnosIr": "Check the post's rotation in Supervisor posts",
+      "desdeFecha": "from {{fecha}}",
+      "pendiente": "Pending"
     },
     "OfficeHours": {
       "copiarLunes": "Copy Monday to all",
@@ -22480,6 +22482,163 @@
     },
     "semana": {
       "almuerzo": "lunch {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "day",
+      "deNoche": "night",
+      "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "Need their full profile, with zone and vehicle?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Full guard profile",
+      "subtitulo": "For when you have their papers at hand. Only their name, ID and e-mail (or «no e-mail») are required; the rest can be completed later from their profile."
+    },
+    "supervisor": {
+      "titulo": "Full supervisor profile",
+      "subtitulo": "Their record with ID, zone, vehicle and personal data. Only their name, ID and e-mail (or «no e-mail») are required."
+    },
+    "soloAcceso": "Only want to give them access and a schedule?",
+    "usaAgregarPersona": "Use «Add person»",
+    "hojaDeVida": {
+      "titulo": "Do you have their résumé?",
+      "texto": "Upload it as a PDF or photo and we fill in what we can. Check the data before saving: nothing is saved until you tap «Create and give access»."
+    },
+    "pasos": {
+      "quienEs": "Who are they?",
+      "documento": "ID and contact",
+      "documentoNota": "With an e-mail they get their invitation. Without one, they sign in with a username and you send them the link by WhatsApp at the end.",
+      "documentoNotaSup": "With an e-mail they get their invitation to the supervisor app. Without one, they sign in with a username and you send them the link by WhatsApp at the end.",
+      "foto": "Their photo",
+      "fotoNota": "Optional. It is the photo on their badge and the one supervisors see.",
+      "personales": "Personal data (optional)",
+      "personalesNota": "All optional. It is for their file and staff reports.",
+      "licencias": "Licences and credentials (optional)",
+      "licenciasNota": "All optional. They can be uploaded later from their profile, under Licences and Documents.",
+      "trabajo": "Zone and vehicle (optional)",
+      "trabajoNota": "Optional. They show in the supervisors list. Their schedule comes from their supervisor post.",
+      "credenciales": "Credentials (optional)"
+    }
+  },
+  "agregarVarias": {
+    "boton": "Add several",
+    "entrada": "Several people? Add them all at once",
+    "titulo": "Add several people",
+    "subtitulo": "Paste your list from Excel or upload the file. You review each person and their schedule first: nothing is saved until you tap «Create».",
+    "unaSola": "Add just one",
+    "lista": {
+      "titulo": "Your list",
+      "ayuda": "One row per person. Columns: Tipo (vigilante, supervisor or oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (office only), Puesto (station or supervisor post) and Empieza. With a first row of titles, the order doesn't matter.",
+      "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+      "revisar": "Review the list",
+      "subir": "Upload .csv or .xlsx",
+      "plantilla": "Download template",
+      "leida_one": "We read {{count}} person from your list.",
+      "leida_other": "We read {{count}} people from your list.",
+      "cambiar": "Change the list"
+    },
+    "errores": {
+      "vacia": "We found no people in the list. Check it has one row per person.",
+      "archivo": "We couldn't read that file. Try saving it as .csv or .xlsx."
+    },
+    "jornada": {
+      "titulo": "Schedule for the office staff",
+      "ayuda": "The same week for every office person in the list. Later you can change each one's in their profile.",
+      "con": "With this schedule",
+      "sin": "No schedule for now"
+    },
+    "donde": {
+      "jornada": "Office schedule"
+    },
+    "revision": {
+      "listas_one": "{{count}} ready",
+      "listas_other": "{{count}} ready",
+      "conProblemas_one": "{{count}} with problems",
+      "conProblemas_other": "{{count}} with problems",
+      "verTodas": "Show all",
+      "comprobando": "Checking whether they're already in your company…",
+      "titulo_one": "Review: {{count}} person",
+      "titulo_other": "Review: {{count}} people",
+      "vacia": "No rows left in the list."
+    },
+    "col": {
+      "linea": "Row",
+      "tipo": "Role",
+      "nombres": "First names",
+      "apellidos": "Last names",
+      "documento": "ID number",
+      "celular": "Mobile",
+      "correo": "E-mail",
+      "donde": "Role and schedule",
+      "empieza": "Starts"
+    },
+    "elegir": "Choose…",
+    "rol": "Role",
+    "sinCorreo": "No e-mail: signs in with a username",
+    "sinRotacion": "no rotation",
+    "decia": "In your list: «{{x}}»",
+    "quitar": "Remove from the list",
+    "problemas": {
+      "tipo": "Choose what they do: guard, supervisor or office",
+      "nombres": "First names are missing",
+      "apellidos": "Last names are missing",
+      "correoRequerido": "Office staff sign in with their e-mail: it's missing",
+      "correoInvalido": "The e-mail isn't written correctly",
+      "celularInvalido": "The mobile needs at least 7 digits",
+      "rolRequerido": "Choose their role",
+      "rolDesconocido": "That role doesn't exist in your company: choose one",
+      "puestoNoEncontrado": "We couldn't find that post: pick it from the list",
+      "puestoAmbiguo": "Several posts have that name: choose one",
+      "plazaOcupada": "That post is already taken (or a row above takes it)",
+      "puestoSinRotacion": "That post has no rotation: it would give them no shifts",
+      "fechaInvalida": "The start date isn't valid (use 02/11/2026)",
+      "documentoRepetido": "That ID number is twice in the list",
+      "correoRepetido": "That e-mail is twice in the list",
+      "documentoExiste": "Someone in your company already has that ID number",
+      "correoExiste": "That e-mail already belongs to an account in your company"
+    },
+    "pie": {
+      "conProblemas_one": "The row with problems won't be created: fix it here or remove it.",
+      "conProblemas_other": "The {{count}} rows with problems won't be created: fix them here or remove them.",
+      "todoListo": "All set. They're created one by one, in list order.",
+      "otraLista": "Use another list",
+      "crear_one": "Create {{count}} person",
+      "crear_other": "Create {{count}} people"
+    },
+    "creando": {
+      "titulo": "Creating {{hechas}} of {{total}}…"
+    },
+    "hecho": {
+      "titulo": "List processed",
+      "creadas_one": "{{count}} created",
+      "creadas_other": "{{count}} created",
+      "conHorario_one": "{{count}} with a schedule",
+      "conHorario_other": "{{count}} with a schedule",
+      "sinHorario_one": "{{count}} without a schedule yet",
+      "sinHorario_other": "{{count}} without a schedule yet",
+      "fallidas_one": "{{count}} not created",
+      "fallidas_other": "{{count}} not created",
+      "otra": "Add another list",
+      "verHorario": "See the schedule"
+    },
+    "listo": {
+      "toast_one": "List processed: {{count}} person",
+      "toast_other": "List processed: {{count}} people"
+    },
+    "res": {
+      "persona": "Person",
+      "horario": "Schedule",
+      "acceso": "Their access",
+      "creada": "Created",
+      "noCreada": "Not created",
+      "creando": "Creating…",
+      "enEspera": "Waiting",
+      "sinHorario": "No schedule for now",
+      "horarioFallo": "Not saved: {{e}}",
+      "correoEnviado": "E-mail sent to {{c}}",
+      "reintentar": "Try again",
+      "reintentarHorario": "Retry schedule"
     }
   },
   "desktopApp": {

@@ -1160,12 +1160,19 @@ export default function SecurityGuardsPage() {
         <PageHeader
           actions={
             hasPermission("securityGuardCreate") ? (
-              <Button asChild variant="brand">
-                <Link to="/personal/nueva?tipo=vigilante">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  {t("guards.list.newGuard", "Nuevo Vigilante")}
-                </Link>
-              </Button>
+              <>
+                <Button asChild variant="outline">
+                  <Link to="/personal/varias">
+                    {t("agregarVarias.boton", "Agregar varias")}
+                  </Link>
+                </Button>
+                <Button asChild variant="brand">
+                  <Link to="/personal/nueva?tipo=vigilante">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    {t("guards.list.newGuard", "Nuevo Vigilante")}
+                  </Link>
+                </Button>
+              </>
             ) : undefined
           }
           className="mt-2"

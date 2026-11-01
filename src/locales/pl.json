@@ -19383,7 +19383,9 @@
       "sinTurnosPuesto": "Jego posterunek nie ma zmian w tych dniach",
       "invitacionPendiente": "Zaproszenie oczekuje",
       "invitacionPendienteAyuda": "Zaproszenie wysłano, a osoba jeszcze się nie zalogowała. Można już przypisać grafik.",
-      "sinTurnosIr": "Sprawdź rotację posterunku w Posterunkach nadzoru"
+      "sinTurnosIr": "Sprawdź rotację posterunku w Posterunkach nadzoru",
+      "desdeFecha": "od {{fecha}}",
+      "pendiente": "Oczekuje"
     },
     "OfficeHours": {
       "copiarLunes": "Kopiuj poniedziałek do wszystkich",
@@ -22790,6 +22792,185 @@
     },
     "semana": {
       "almuerzo": "przerwa obiadowa {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "dzienny",
+      "deNoche": "nocny",
+      "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "Potrzebujesz pełnego profilu ze strefą i pojazdem?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Pełny profil pracownika ochrony",
+      "subtitulo": "Gdy masz dokumenty pod ręką. Wymagane są tylko imię, dokument i e-mail (lub «bez e-maila»); resztę można uzupełnić później w profilu."
+    },
+    "supervisor": {
+      "titulo": "Pełny profil nadzorcy",
+      "subtitulo": "Profil z dokumentem, strefą, pojazdem i danymi osobowymi. Wymagane są tylko imię, dokument i e-mail (lub «bez e-maila»)."
+    },
+    "soloAcceso": "Chcesz tylko dać dostęp i grafik?",
+    "usaAgregarPersona": "Użyj «Dodaj osobę»",
+    "hojaDeVida": {
+      "titulo": "Masz CV?",
+      "texto": "Prześlij je jako PDF lub zdjęcie, a uzupełnimy, co się da. Sprawdź dane przed zapisem: nic nie zostanie zapisane, dopóki nie dotkniesz «Utwórz i daj dostęp»."
+    },
+    "pasos": {
+      "quienEs": "Kto to?",
+      "documento": "Dokument i kontakt",
+      "documentoNota": "Z e-mailem dostanie zaproszenie. Bez e-maila loguje się nazwą użytkownika, a link wyślesz na końcu przez WhatsApp.",
+      "documentoNotaSup": "Z e-mailem dostanie zaproszenie do aplikacji nadzorcy. Bez e-maila loguje się nazwą użytkownika, a link wyślesz na końcu przez WhatsApp.",
+      "foto": "Zdjęcie",
+      "fotoNota": "Opcjonalne. To zdjęcie z identyfikatora, widoczne dla nadzorców.",
+      "personales": "Dane osobowe (opcjonalne)",
+      "personalesNota": "Wszystko opcjonalne. Do akt i raportów kadrowych.",
+      "licencias": "Licencje i uprawnienia (opcjonalne)",
+      "licenciasNota": "Wszystko opcjonalne. Można je dodać później w profilu, w Licencjach i Dokumentach.",
+      "trabajo": "Strefa i pojazd (opcjonalne)",
+      "trabajoNota": "Opcjonalne. Widoczne na liście nadzorców. Grafik wynika ze stanowiska nadzoru.",
+      "credenciales": "Uprawnienia (opcjonalne)"
+    }
+  },
+  "agregarVarias": {
+    "boton": "Dodaj kilka osób",
+    "entrada": "Kilka osób? Dodaj je naraz",
+    "titulo": "Dodaj kilka osób",
+    "subtitulo": "Wklej listę z Excela lub wgraj plik. Najpierw sprawdzasz każdą osobę i jej grafik: nic się nie zapisze, dopóki nie dotkniesz «Utwórz».",
+    "unaSola": "Dodaj tylko jedną",
+    "lista": {
+      "titulo": "Twoja lista",
+      "ayuda": "Jeden wiersz na osobę. Kolumny: Tipo (vigilante, supervisor lub oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (tylko biuro), Puesto (stacja lub stanowisko nadzoru) i Empieza. Z pierwszym wierszem tytułów kolejność nie ma znaczenia.",
+      "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+      "revisar": "Sprawdź listę",
+      "subir": "Wgraj .csv lub .xlsx",
+      "plantilla": "Pobierz szablon",
+      "leida_one": "Odczytaliśmy {{count}} osobę z Twojej listy.",
+      "leida_few": "Odczytaliśmy {{count}} osoby z Twojej listy.",
+      "leida_many": "Odczytaliśmy {{count}} osób z Twojej listy.",
+      "leida_other": "Odczytaliśmy {{count}} osób z Twojej listy.",
+      "cambiar": "Zmień listę"
+    },
+    "errores": {
+      "vacia": "Nie znaleźliśmy osób na liście. Sprawdź, czy jest jeden wiersz na osobę.",
+      "archivo": "Nie udało się odczytać pliku. Zapisz go jako .csv lub .xlsx."
+    },
+    "jornada": {
+      "titulo": "Grafik dla personelu biurowego",
+      "ayuda": "Ten sam tydzień dla wszystkich osób biurowych z listy. Później możesz zmienić go każdej w jej karcie.",
+      "con": "Z tym grafikiem",
+      "sin": "Na razie bez grafiku"
+    },
+    "donde": {
+      "jornada": "Grafik biurowy"
+    },
+    "revision": {
+      "listas_one": "{{count}} gotowa",
+      "listas_few": "{{count}} gotowe",
+      "listas_many": "{{count}} gotowych",
+      "listas_other": "{{count}} gotowych",
+      "conProblemas_one": "{{count}} z problemami",
+      "conProblemas_few": "{{count}} z problemami",
+      "conProblemas_many": "{{count}} z problemami",
+      "conProblemas_other": "{{count}} z problemami",
+      "verTodas": "Pokaż wszystkie",
+      "comprobando": "Sprawdzamy, czy już są w Twojej firmie…",
+      "titulo_one": "Sprawdź: {{count}} osoba",
+      "titulo_few": "Sprawdź: {{count}} osoby",
+      "titulo_many": "Sprawdź: {{count}} osób",
+      "titulo_other": "Sprawdź: {{count}} osób",
+      "vacia": "Na liście nie ma już wierszy."
+    },
+    "col": {
+      "linea": "Wiersz",
+      "tipo": "Funkcja",
+      "nombres": "Imiona",
+      "apellidos": "Nazwiska",
+      "documento": "Dokument",
+      "celular": "Telefon",
+      "correo": "E-mail",
+      "donde": "Rola i grafik",
+      "empieza": "Zaczyna"
+    },
+    "elegir": "Wybierz…",
+    "rol": "Rola",
+    "sinCorreo": "Bez e-maila: loguje się nazwą użytkownika",
+    "sinRotacion": "bez rotacji",
+    "decia": "Na Twojej liście: «{{x}}»",
+    "quitar": "Usuń z listy",
+    "problemas": {
+      "tipo": "Wybierz funkcję: ochroniarz, nadzorca lub biuro",
+      "nombres": "Brak imion",
+      "apellidos": "Brak nazwisk",
+      "correoRequerido": "Biuro loguje się e-mailem: brakuje go",
+      "correoInvalido": "E-mail jest błędny",
+      "celularInvalido": "Telefon musi mieć co najmniej 7 cyfr",
+      "rolRequerido": "Wybierz rolę",
+      "rolDesconocido": "Takiej roli nie ma w Twojej firmie: wybierz inną",
+      "puestoNoEncontrado": "Nie znaleźliśmy stanowiska: wybierz je z listy",
+      "puestoAmbiguo": "Kilka stanowisk ma tę nazwę: wybierz jedno",
+      "plazaOcupada": "To stanowisko jest już zajęte (lub zajmuje je wiersz wyżej)",
+      "puestoSinRotacion": "To stanowisko nie ma rotacji: nie da żadnych zmian",
+      "fechaInvalida": "Data rozpoczęcia jest błędna (użyj 02/11/2026)",
+      "documentoRepetido": "Ten dokument jest na liście dwa razy",
+      "correoRepetido": "Ten e-mail jest na liście dwa razy",
+      "documentoExiste": "Ktoś w Twojej firmie ma już ten dokument",
+      "correoExiste": "Ten e-mail należy już do konta w Twojej firmie"
+    },
+    "pie": {
+      "conProblemas_one": "Wiersz z problemami nie zostanie utworzony: popraw go lub usuń.",
+      "conProblemas_few": "{{count}} wiersze z problemami nie zostaną utworzone: popraw je lub usuń.",
+      "conProblemas_many": "{{count}} wierszy z problemami nie zostanie utworzonych: popraw je lub usuń.",
+      "conProblemas_other": "{{count}} wierszy z problemami nie zostanie utworzonych: popraw je lub usuń.",
+      "todoListo": "Wszystko gotowe. Tworzymy je po kolei, w kolejności listy.",
+      "otraLista": "Użyj innej listy",
+      "crear_one": "Utwórz {{count}} osobę",
+      "crear_few": "Utwórz {{count}} osoby",
+      "crear_many": "Utwórz {{count}} osób",
+      "crear_other": "Utwórz {{count}} osób"
+    },
+    "creando": {
+      "titulo": "Tworzenie {{hechas}} z {{total}}…"
+    },
+    "hecho": {
+      "titulo": "Lista przetworzona",
+      "creadas_one": "{{count}} utworzona",
+      "creadas_few": "{{count}} utworzone",
+      "creadas_many": "{{count}} utworzonych",
+      "creadas_other": "{{count}} utworzonych",
+      "conHorario_one": "{{count}} z grafikiem",
+      "conHorario_few": "{{count}} z grafikiem",
+      "conHorario_many": "{{count}} z grafikiem",
+      "conHorario_other": "{{count}} z grafikiem",
+      "sinHorario_one": "{{count}} jeszcze bez grafiku",
+      "sinHorario_few": "{{count}} jeszcze bez grafiku",
+      "sinHorario_many": "{{count}} jeszcze bez grafiku",
+      "sinHorario_other": "{{count}} jeszcze bez grafiku",
+      "fallidas_one": "{{count}} nieutworzona",
+      "fallidas_few": "{{count}} nieutworzone",
+      "fallidas_many": "{{count}} nieutworzonych",
+      "fallidas_other": "{{count}} nieutworzonych",
+      "otra": "Dodaj kolejną listę",
+      "verHorario": "Zobacz grafik"
+    },
+    "listo": {
+      "toast_one": "Lista przetworzona: {{count}} osoba",
+      "toast_few": "Lista przetworzona: {{count}} osoby",
+      "toast_many": "Lista przetworzona: {{count}} osób",
+      "toast_other": "Lista przetworzona: {{count}} osób"
+    },
+    "res": {
+      "persona": "Osoba",
+      "horario": "Grafik",
+      "acceso": "Dostęp",
+      "creada": "Utworzona",
+      "noCreada": "Nie utworzono",
+      "creando": "Tworzenie…",
+      "enEspera": "Czeka",
+      "sinHorario": "Na razie bez grafiku",
+      "horarioFallo": "Nie zapisano: {{e}}",
+      "correoEnviado": "E-mail wysłany do {{c}}",
+      "reintentar": "Spróbuj ponownie",
+      "reintentarHorario": "Ponów grafik"
     }
   },
   "desktopApp": {
