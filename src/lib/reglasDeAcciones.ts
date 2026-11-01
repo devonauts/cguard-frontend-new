@@ -82,7 +82,7 @@ export const ACCIONES = {
   "personal.crearOficina": { permiso: "userCreate", nivel: NIVEL.OFICINA },
   // ── Background reads of the layout (QA 2026-11-01: the office assistant got
   //    silent 403s on every page). Same checks as the server routes. ──
-  "alarmas.verCasos": { permiso: "businessInfoRead" }, // GET alarm/cases
+  "alarmas.verCasos": { permiso: "businessInfoRead", nivel: NIVEL.CENTRAL }, // GET alarm/cases (dispatcher level and up)
   "suscripcion.verResumen": { permiso: "settingsRead", nivel: NIVEL.GERENCIA }, // GET subscription/summary
   "radio.verConsola": { permiso: "radioCheckRead" }, // GET radio-check/console
 } satisfies Record<string, Regla>;
