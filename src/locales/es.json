@@ -18827,6 +18827,12 @@
     },
     "patrones": {
       "archivado": "archivado"
+    },
+    "ErrorDeCarga": {
+      "titulo": "No se pudo cargar",
+      "descripcion": "Lo que ves puede estar incompleto. Revisa la conexión e inténtalo de nuevo.",
+      "reintentar": "Reintentar",
+      "mostrandoDe": "Mostrando {{mostrados}} de {{total}}"
     }
   },
   "map": {

@@ -18827,6 +18827,12 @@
     },
     "patrones": {
       "archivado": "archived"
+    },
+    "ErrorDeCarga": {
+      "titulo": "Could not load",
+      "descripcion": "What you see may be incomplete. Check your connection and try again.",
+      "reintentar": "Try again",
+      "mostrandoDe": "Showing {{mostrados}} of {{total}}"
     }
   },
   "map": {

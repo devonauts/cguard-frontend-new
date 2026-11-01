@@ -15,6 +15,7 @@ import payrollSlipsService, {
   type PersonWithProfile, type PayrollProfile, type Population, type SlipSettings,
 } from "@/lib/api/payrollSlipsService";
 import { aCentavos, deCentavos, dinero, useEtiquetas, MoneyInput } from "./comun";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 type Borrador = Partial<PayrollProfile> & { userId: string };
 
@@ -127,7 +128,9 @@ export function TablaDePerfiles({
         </div>
       )}
 
-      {!filas.length ? (
+      {personas.isError && !filas.length ? (
+        <ErrorDeCarga onRetry={() => personas.refetch()} />
+      ) : !filas.length ? (
         <EmptyState
           icon={<Users />}
           title={t("ui.RolesDePago.perfiles.vacio", "No hay personas que mostrar")}

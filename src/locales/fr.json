@@ -19362,6 +19362,12 @@
     },
     "patrones": {
       "archivado": "archivé"
+    },
+    "ErrorDeCarga": {
+      "titulo": "Chargement impossible",
+      "descripcion": "Ce que vous voyez peut être incomplet. Vérifiez la connexion et réessayez.",
+      "reintentar": "Réessayer",
+      "mostrandoDe": "{{mostrados}} sur {{total}} affichés"
     }
   },
   "visitantes": {

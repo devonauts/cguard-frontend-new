@@ -41,6 +41,7 @@ import payrollSlipsService, {
   type Population,
   type RunStatus,
 } from "@/lib/api/payrollSlipsService";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 export function useEstadoDeCorrida() {
   const { t } = useTranslation();
@@ -130,6 +131,8 @@ export default function CorridasDePago() {
           <PresentacionDelModulo modo={modo} />
         ) : corridas.isLoading ? (
           <SkeletonCards count={3} />
+        ) : corridas.isError && !(corridas.data?.rows ?? []).length ? (
+          <ErrorDeCarga onRetry={() => corridas.refetch()} />
         ) : !(corridas.data?.rows ?? []).length ? (
           <EmptyState
             action={
