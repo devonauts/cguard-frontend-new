@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Sparkles, CheckCircle2 } from "lucide-react";
 
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";
+import { precioACobrar, precioDeModulo } from "./precioDeModulo";
 
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -57,21 +58,9 @@ import {
 /** El tramo sin techo, como lo guarda el servidor (`SIN_TOPE` en lib/moduloMensual). */
 const SIN_TOPE = 999_999;
 
-function dinero(
-  cents: number | null | undefined,
-  currency: string,
-  lang: string,
-) {
-  if (cents == null) return "—";
-  try {
-    return new Intl.NumberFormat(lang, {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(cents / 100);
-  } catch {
-    return `$${Math.round(cents / 100)}`;
-  }
+/** An amount in the company's currency («$925 MXN»); «—» when there is none. */
+function dinero(cents: number | null | undefined, currency: string) {
+  return cents == null ? "—" : precioDeModulo(cents, currency);
 }
 
 /** Un instante (fin de prueba, renovación) en la zona de la EMPRESA. */
@@ -100,7 +89,7 @@ export default function TarjetaModuloMensual({
   esDeSocio: boolean;
   delay?: number;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { refreshProfile, user } = useAuth();
   const gratis = isFreeTierUser(user);
@@ -110,8 +99,15 @@ export default function TarjetaModuloMensual({
     m.interval === "year" ? "year" : "month",
   );
   const [ocupado, setOcupado] = useState(false);
-  const L = i18n.language;
   const precioElegido = intervalo === "year" ? m.yearlyCents : m.monthlyCents;
+  const cobroElegido =
+    intervalo === "year" ? m.chargeYearlyCents : m.chargeMonthlyCents;
+  const aCobrar = precioACobrar(
+    precioElegido,
+    m.currency,
+    cobroElegido,
+    m.chargeCurrency,
+  );
   const porPeriodo =
     intervalo === "year"
       ? t("modulosAdicionales.mensual.porAnio", "/año")
@@ -173,13 +169,13 @@ export default function TarjetaModuloMensual({
             defaultValue:
               "No se cobra nada hoy. El {{fecha}} se cobrará {{precio}}{{periodo}} a tu tarjeta y seguirás sin cortes. Puedes cambiarlo antes.",
             fecha: fecha(m.trialEndsAt),
-            precio: dinero(precioElegido, m.currency, L),
+            precio: aCobrar,
             periodo: porPeriodo,
           })
         : t("modulosAdicionales.mensual.confirmarActivar", {
             defaultValue:
               "Se cobrará {{precio}}{{periodo}} a la tarjeta de tu suscripción. Puedes cancelarlo cuando quieras; sigue activo hasta el fin de lo pagado.",
-            precio: dinero(precioElegido, m.currency, L),
+            precio: aCobrar,
             periodo: porPeriodo,
           }),
       confirmText: enPrueba
@@ -334,15 +330,20 @@ export default function TarjetaModuloMensual({
   const precio = (
     <div>
       <div className="flex items-baseline gap-1">
-        <Cifra
-          className="text-2xl font-semibold tabular-nums"
-          k={`${intervalo}-${suyo?.priceCents ?? "x"}`}
-        >
-          {suyo ? dinero(precioDelTramo(suyo.priceCents), m.currency, L) : "—"}
-        </Cifra>
-        <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-          {porPeriodo}
-        </span>
+        {/* Switched on: no amount (the server sends none). */}
+        {!m.priceHidden && (
+          <>
+            <Cifra
+              className="text-xl font-semibold tabular-nums"
+              k={`${intervalo}-${m.currency}-${suyo?.priceCents ?? "x"}`}
+            >
+              {suyo ? dinero(precioDelTramo(suyo.priceCents), m.currency) : "—"}
+            </Cifra>
+            <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
+              {porPeriodo}
+            </span>
+          </>
+        )}
         {insignia && <span className="ml-auto">{insignia}</span>}
       </div>
       <div
@@ -374,7 +375,6 @@ export default function TarjetaModuloMensual({
                 precio: dinero(
                   precioDelTramo(siguiente.priceCents),
                   m.currency,
-                  L,
                 ),
                 periodo: porPeriodo,
               })
@@ -478,7 +478,7 @@ export default function TarjetaModuloMensual({
     >
       {t("modulosAdicionales.mensual.seguirAlTerminar", {
         defaultValue: "Seguir al terminar · {{precio}}{{periodo}}",
-        precio: dinero(precioElegido, m.currency, L),
+        precio: dinero(precioElegido, m.currency),
         periodo: porPeriodo,
       })}
     </Button>
@@ -500,7 +500,7 @@ export default function TarjetaModuloMensual({
     >
       {t("modulosAdicionales.mensual.activarPrecio", {
         defaultValue: "Activar · {{precio}}{{periodo}}",
-        precio: dinero(precioElegido, m.currency, L),
+        precio: dinero(precioElegido, m.currency),
         periodo: porPeriodo,
       })}
     </Button>

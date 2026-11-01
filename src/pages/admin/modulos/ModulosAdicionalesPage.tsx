@@ -31,6 +31,7 @@ const ICONO_DEL_MODULO: Record<string, React.ReactNode> = {
 
 import TarjetaModulo, { Cifra } from "./TarjetaModulo";
 import TarjetaModuloMensual from "./TarjetaModuloMensual";
+import { precioACobrar, precioDeModulo } from "./precioDeModulo";
 
 import BotonDemo from "@/components/modulos/demo/BotonDemo";
 import AppLayout from "@/layouts/app-layout";
@@ -84,18 +85,6 @@ import {
  * Nombre y descripción llegan ya traducidos del servidor; todo lo demás sale
  * de `modulosAdicionales.*` en los 8 idiomas del CRM.
  */
-function precio(cents: number, currency: string, lang: string) {
-  try {
-    return new Intl.NumberFormat(lang, {
-      style: "currency",
-      currency,
-      maximumFractionDigits: cents % 100 ? 2 : 0,
-    }).format(cents / 100);
-  } catch {
-    return `$${(cents / 100).toFixed(2)}`;
-  }
-}
-
 /**
  * The extra line of the switch-off confirmation: what stops for THIS module.
  * Literal keys (the i18n test sees them). A module without a line just shows
@@ -115,7 +104,9 @@ function useConsecuenciaDeApagar(): (key: string) => string | null {
       case "payroll_slips":
         return t("modulosAdicionales.pausa.consecuencias.payroll_slips");
       case "reconocimiento_facial":
-        return t("modulosAdicionales.pausa.consecuencias.reconocimiento_facial");
+        return t(
+          "modulosAdicionales.pausa.consecuencias.reconocimiento_facial",
+        );
       case "monitoring_center":
         return t("modulosAdicionales.pausa.consecuencias.monitoring_center");
       case "video_surveillance":
@@ -127,7 +118,7 @@ function useConsecuenciaDeApagar(): (key: string) => string | null {
 }
 
 export default function ModulosAdicionalesPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const { refreshProfile, user } = useAuth();
   const { data, isLoading, isError } = useTiendaDeModulos();
@@ -144,7 +135,12 @@ export default function ModulosAdicionalesPage() {
     });
 
   const comprar = async (m: ModuloEnTienda) => {
-    const cuanto = precio(m.priceCents, m.currency, i18n.language);
+    const cuanto = precioACobrar(
+      m.priceCents,
+      m.currency,
+      m.chargePriceCents,
+      m.chargeCurrency,
+    );
     // Completar un pago pendiente no cobra nada nuevo: reabre la MISMA factura.
     const ok =
       m.status === "pending_payment" ||
@@ -202,10 +198,7 @@ export default function ModulosAdicionalesPage() {
     const extra = consecuencia(m.key);
     const ok = await confirmDialog({
       title: t("modulosAdicionales.pausa.titulo", { nombre: m.name }),
-      message: [
-        t("modulosAdicionales.pausa.mensaje"),
-        extra,
-      ]
+      message: [t("modulosAdicionales.pausa.mensaje"), extra]
         .filter(Boolean)
         .join(" "),
       confirmText: t("modulosAdicionales.pausa.boton"),
@@ -216,7 +209,9 @@ export default function ModulosAdicionalesPage() {
     setComprando(m.key);
     try {
       await modulosAdicionalesService.apagar(m.key);
-      toast.success(t("modulosAdicionales.pausa.apagadoAviso", { nombre: m.name }));
+      toast.success(
+        t("modulosAdicionales.pausa.apagadoAviso", { nombre: m.name }),
+      );
     } catch (e: any) {
       toast.error(textoDeMotivo(e?.data?.reason));
     } finally {
@@ -230,7 +225,9 @@ export default function ModulosAdicionalesPage() {
     setComprando(m.key);
     try {
       await modulosAdicionalesService.encender(m.key);
-      toast.success(t("modulosAdicionales.pausa.encendidoAviso", { nombre: m.name }));
+      toast.success(
+        t("modulosAdicionales.pausa.encendidoAviso", { nombre: m.name }),
+      );
     } catch (e: any) {
       toast.error(textoDeMotivo(e?.data?.reason));
     } finally {
@@ -333,14 +330,23 @@ export default function ModulosAdicionalesPage() {
                 const enPruebaDelSocio = loTiene && m.status === "trial";
                 /* Not theirs yet: switching ON = buying. */
                 const puedeComprar =
-                  !tiene && !loTiene && !esDeSocio && (pendiente || data.canPurchase);
+                  !tiene &&
+                  !loTiene &&
+                  !esDeSocio &&
+                  (pendiente || data.canPurchase);
                 const situacionTexto = apagado
                   ? m.pausedBy
-                    ? t("modulosAdicionales.pausa.situacion", { quien: m.pausedBy })
+                    ? t("modulosAdicionales.pausa.situacion", {
+                        quien: m.pausedBy,
+                      })
                     : t("modulosAdicionales.pausa.situacionSinNombre")
                   : enPruebaDelSocio
                     ? t("modulosAdicionales.pausa.pruebaDelSocio", {
-                        fecha: soloFecha(m.trialEndsAt, { day: "numeric", month: "short" }, ""),
+                        fecha: soloFecha(
+                          m.trialEndsAt,
+                          { day: "numeric", month: "short" },
+                          "",
+                        ),
                       })
                     : tiene
                       ? t("modulosAdicionales.paraSiempre")
@@ -427,18 +433,23 @@ export default function ModulosAdicionalesPage() {
                     precio={
                       <div>
                         <div className="flex items-baseline gap-1">
-                          <Cifra
-                            className="text-2xl font-semibold tabular-nums"
-                            k={m.priceCents}
-                          >
-                            {precio(m.priceCents, m.currency, i18n.language)}
-                          </Cifra>
-                          <span
-                            className="text-xs"
-                            style={{ color: "var(--ink-faint)" }}
-                          >
-                            · {t("modulosAdicionales.pagoUnico")}
-                          </span>
+                          {/* Switched on: no amount (the server sends none). */}
+                          {!m.priceHidden && m.priceCents != null && (
+                            <>
+                              <Cifra
+                                className="text-xl font-semibold tabular-nums"
+                                k={`${m.currency}-${m.priceCents}`}
+                              >
+                                {precioDeModulo(m.priceCents, m.currency)}
+                              </Cifra>
+                              <span
+                                className="text-xs"
+                                style={{ color: "var(--ink-faint)" }}
+                              >
+                                · {t("modulosAdicionales.pagoUnico")}
+                              </span>
+                            </>
+                          )}
                           {apagado ? (
                             <span className="ml-auto">
                               <StatusBadge tone="neutral">
