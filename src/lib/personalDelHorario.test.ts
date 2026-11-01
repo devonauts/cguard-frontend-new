@@ -136,6 +136,21 @@ describe("Todo el personal · filters and actions", () => {
     expect(m.pendingInvite).toBe(true);
   });
 
+  it("the row header: that day's place, else the guard's home, else the first place seen", async () => {
+    const { normalizarPersonas, dondeEstaEl, rotuloDeDonde } = await import("./personalDelHorario");
+    const [g] = normalizarPersonas({ people: [{
+      userId: "g1", name: "Pedro", kind: "guard", hasSchedule: true, assigned: true,
+      home: { stationId: "st-a", stationName: "Acceso principal", postSiteId: "ps-a", postSiteName: "Alfa 1" },
+      days: [
+        { date: "2026-10-31", status: "work", start: "07:00", end: "19:00", where: { stationId: "st-c", stationName: "Estacionamiento", postSiteId: "ps-c", postSiteName: "Charlie 3" } },
+        { date: "2026-11-01", status: "off" },
+      ],
+    }] });
+    expect(rotuloDeDonde(dondeEstaEl(g, "2026-11-01"))).toBe("Alfa 1 · Acceso principal");
+    expect(rotuloDeDonde(dondeEstaEl(g, "2026-10-31"))).toBe("Charlie 3 · Estacionamiento");
+    expect(rotuloDeDonde(dondeEstaEl({ ...g, home: null }, "2026-11-01"))).toBe("Charlie 3 · Estacionamiento");
+  });
+
   it("where they are: that day, else the first place seen", () => {
     const ana = ps.find((p) => p.userId === "g1")!;
 

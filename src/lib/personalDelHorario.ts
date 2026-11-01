@@ -50,6 +50,8 @@ export interface PersonaDelHorario {
   /** Invited and not yet signed in («invitación pendiente»). Optional: the
    *  server field arrives with the staff sign-up work; absent = false. */
   pendingInvite?: boolean;
+  /** Guards: the place of their active assignment (their «home»). */
+  home?: DondeEsta | null;
   /** Supervisors: the posts they hold (names may be null). */
   positions?: Array<{ id: string; name: string | null }>;
   /** Supervisors with a post and no shift in the range: local date of the
@@ -91,25 +93,27 @@ const hora = (v: unknown): string | null => {
   return m ? `${m[1].padStart(2, "0")}:${m[2]}` : null;
 };
 
+function dondeLimpio(w: any): DondeEsta | null {
+  return w &&
+    typeof w === "object" &&
+    (texto(w.stationId) || texto(w.postSiteId) || texto(w.positionId))
+    ? {
+        stationId: texto(w.stationId),
+        stationName: texto(w.stationName),
+        postSiteId: texto(w.postSiteId),
+        postSiteName: texto(w.postSiteName),
+        positionId: texto(w.positionId),
+        positionName: texto(w.positionName),
+      }
+    : null;
+}
+
 function diaLimpio(d: any): DiaDePersona | null {
   const date = String(d?.date ?? "").slice(0, 10);
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
   const status: EstadoDelDia = ESTADOS.includes(d?.status) ? d.status : "none";
-  const w = d?.where;
-  const where: DondeEsta | null =
-    w &&
-    typeof w === "object" &&
-    (texto(w.stationId) || texto(w.postSiteId) || texto(w.positionId))
-      ? {
-          stationId: texto(w.stationId),
-          stationName: texto(w.stationName),
-          postSiteId: texto(w.postSiteId),
-          postSiteName: texto(w.postSiteName),
-          positionId: texto(w.positionId),
-          positionName: texto(w.positionName),
-        }
-      : null;
+  const where = dondeLimpio(d?.where);
 
   return {
     date,
@@ -193,6 +197,7 @@ export function normalizarPersonas(res: unknown): PersonaDelHorario[] {
       ya.assigned = ya.assigned || !!p?.assigned;
       ya.pendingInvite = ya.pendingInvite || invitacionPendiente(p);
       if (!ya.positions?.length) ya.positions = puestosDe(p);
+      if (!ya.home) ya.home = dondeLimpio(p?.home);
       ya.nextShiftDate = ya.nextShiftDate || proximoDe(p);
       continue;
     }
@@ -207,6 +212,7 @@ export function normalizarPersonas(res: unknown): PersonaDelHorario[] {
       pendingInvite: invitacionPendiente(p),
       positions: puestosDe(p),
       nextShiftDate: proximoDe(p),
+      home: dondeLimpio(p?.home),
     });
   }
   const out = [...porId.values()];
@@ -295,12 +301,14 @@ export function rotuloDeDonde(w: DondeEsta | null | undefined): string | null {
  * range, otherwise the first place seen in the range.
  */
 export function dondeEstaEl(
-  p: Pick<PersonaDelHorario, "days">,
+  p: Pick<PersonaDelHorario, "days"> & { home?: DondeEsta | null },
   fecha: string,
 ): DondeEsta | null {
   const hoy = p.days.find((d) => d.date === fecha);
 
   if (hoy?.where) return hoy.where;
+  // Where they belong (their assignment) before any place they only covered.
+  if (p.home) return p.home;
 
   return p.days.find((d) => d.where)?.where || null;
 }
@@ -440,6 +448,7 @@ export function unirPersonas(listas: PersonaDelHorario[][]): PersonaDelHorario[]
       ya.pendingInvite = ya.pendingInvite || p.pendingInvite;
       if (!ya.positions?.length && p.positions?.length) ya.positions = p.positions;
       if (!ya.nextShiftDate && p.nextShiftDate) ya.nextShiftDate = p.nextShiftDate;
+      if (!ya.home && p.home) ya.home = p.home;
     }
   }
   const out = [...porId.values()];
