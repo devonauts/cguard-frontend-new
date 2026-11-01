@@ -15,7 +15,11 @@ import {
 import { Modal } from "@/components/kit";
 import { coverageService, coverageErrorCode } from "@/lib/api/coverageService";
 import { ApiService } from "@/services/api/apiService";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  desdeInputFechaHora,
+  paraInputFechaHora,
+  zonaDeLaEmpresa,
+} from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
 
 /**
@@ -86,13 +90,6 @@ const MOTIVOS: { v: string; label: string; clave: string }[] = [
 
 const SIN_AUSENTE = "__nadie__";
 
-/** `Date` → valor de un `<input type="datetime-local">`, en hora local. */
-function paraInput(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, "0");
-
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-}
-
 export default function ExtendShiftDialog({
   target,
   onClose,
@@ -111,7 +108,8 @@ export default function ExtendShiftDialog({
       : new Date();
     const d = Number.isNaN(base.getTime()) ? new Date() : base;
 
-    return paraInput(new Date(d.getTime() + 12 * 3600000));
+    // The input shows the COMPANY wall clock, whatever the viewer's zone.
+    return paraInputFechaHora(new Date(d.getTime() + 12 * 3600000));
   }, [target?.scheduledEnd]);
 
   const [hasta, setHasta] = useState(inicial);
@@ -176,7 +174,7 @@ export default function ExtendShiftDialog({
 
   // Las consecuencias, en vivo mientras se mueve la hora. No impiden nada.
   const horas = useMemo(() => {
-    const fin = new Date(hasta);
+    const fin = new Date(desdeInputFechaHora(hasta));
 
     if (Number.isNaN(fin.getTime()) || !desde) return null;
 
@@ -219,7 +217,7 @@ export default function ExtendShiftDialog({
 
   const guardar = async () => {
     if (!target) return;
-    const fin = new Date(hasta);
+    const fin = new Date(desdeInputFechaHora(hasta));
 
     if (Number.isNaN(fin.getTime())) {
       toast.error(

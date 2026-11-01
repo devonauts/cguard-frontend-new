@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { horaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   handlersDePulsacionLarga,
   type PuntoDePulsacion,
@@ -189,7 +190,8 @@ const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
  */
 /** La letra de un turno REAL: la banda de la hora a la que se entra. */
 function horaDeEntradaAletra(ini: Date): "D" | "N" {
-  const h = ini.getHours();
+  // The band of the COMPANY clock, not the viewer's device.
+  const h = Number(horaDeLaEmpresa(ini).slice(0, 2));
 
   return h >= 18 || h < 6 ? "N" : "D";
 }

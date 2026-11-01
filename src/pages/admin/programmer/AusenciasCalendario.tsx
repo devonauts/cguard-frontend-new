@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -47,6 +48,7 @@ export default function AusenciasCalendario({
   const title = useMemo(() => {
     const [y, m] = month.split("-").map(Number);
 
+    // tz: civil day built at local midnight (a calendar date, not an instant).
     const s = new Date(y, m - 1, 1).toLocaleDateString(localeActual(), {
       month: "long",
       year: "numeric",
@@ -55,13 +57,14 @@ export default function AusenciasCalendario({
     // Only the first letter: «noviembre de 2026» → «Noviembre de 2026».
     return s.charAt(0).toUpperCase() + s.slice(1);
   }, [month]);
-  const today = new Date();
-  const todayYmd = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  // «Today» is the company's day, not the viewer's device day.
+  const todayYmd = hoyEnLaEmpresa();
 
   const weekdayShort = (ymd: string) => {
     const [y, m, d] = ymd.split("-").map(Number);
 
     return new Date(y, m - 1, d)
+      // tz: civil day built at local midnight (a calendar date, not an instant).
       .toLocaleDateString(localeActual(), { weekday: "narrow" })
       .toUpperCase();
   };
