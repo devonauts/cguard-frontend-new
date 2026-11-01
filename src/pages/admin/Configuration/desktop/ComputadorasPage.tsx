@@ -6,7 +6,7 @@
  * with their pairing code (compare it with the one on the person's screen),
  * the approved computers (revoke closes the program there within 30 s and
  * wipes what it kept), and the history. Everyone sees «Mis computadoras».
- * Live: the list follows `desktopDevices:changed` (see `useComputadoras`).
+ * Live: the list follows `desktop:devices` (see `useComputadoras`).
  * Look: the Liquid Glass of the desktop-app pages (`escritorio/vidrio.css`).
  */
 import { Link } from "react-router-dom";

@@ -60,7 +60,7 @@ export interface DesktopDownload {
 }
 
 /** The realtime event the API emits to the tenant when any row changes. */
-export const DESKTOP_DEVICES_EVENT = "desktopDevices:changed";
+export const DESKTOP_DEVICES_EVENT = "desktop:devices";
 
 const ESTADOS: DesktopDeviceStatus[] = [
   "pending",

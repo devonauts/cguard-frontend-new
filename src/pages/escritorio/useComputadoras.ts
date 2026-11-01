@@ -4,7 +4,7 @@
  * escritorio» page («Mis computadoras», step 3 of the guide) and Settings ›
  * «Computadoras de escritorio».
  *
- * Realtime: the API emits `desktopDevices:changed` to the tenant room when a
+ * Realtime: the API emits `desktop:devices` to the tenant room when a
  * request arrives or any row changes; the list reloads (grouped, 400 ms). It
  * also reloads when the socket reconnects and when the tab becomes visible.
  */
