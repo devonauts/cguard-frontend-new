@@ -38,24 +38,15 @@ import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 import JornadaEnLinea from "@/components/alta/JornadaEnLinea";
 import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
 import { ApiService } from "@/services/api/apiService";
-import { securityGuardService } from "@/lib/api/securityGuardService";
-import { supervisorService } from "@/lib/api/supervisorService";
 import {
   supervisorPositionService,
   type SupervisorPosition,
 } from "@/lib/api/supervisorPositionService";
-import { userService } from "@/lib/api/userService";
+import { crearPersona, filasDe, mensajeDeError } from "@/lib/crearPersona";
 import { presetLunesAViernes } from "@/lib/jornadaSemanal";
 import { plazasElegibles } from "@/pages/admin/programmer/AsignarAPuestoModal";
 import {
   admiteSinCorreo,
-  cuerpoDeAsignacion,
-  cuerpoDeHorarioDeOficina,
-  cuerpoDeOficina,
-  cuerpoDePuesto,
-  cuerpoDeSupervisor,
-  cuerpoDeUbicacion,
-  cuerpoDeVigilante,
   datosVacios,
   dondeTerminarHorario,
   enlaceDeWhatsApp,
@@ -106,18 +97,7 @@ const hoyLocal = () => {
 
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
-const filas = (r: any): any[] =>
-  Array.isArray(r)
-    ? r
-    : Array.isArray(r?.rows)
-      ? r.rows
-      : Array.isArray(r?.data?.rows)
-        ? r.data.rows
-        : Array.isArray(r?.data)
-          ? r.data
-          : [];
-const mensajeDeError = (e: any, respaldo: string) =>
-  e?.data?.message || e?.response?.data?.message || e?.message || respaldo;
+const filas = filasDe;
 
 type Sede = { id: string; name: string; clientIds: string[] };
 type Overview = {
@@ -558,168 +538,35 @@ export default function AgregarPersonaPage() {
   };
 
   // ── «Crear» ───────────────────────────────────────────────────────────────
+  // The calls live in lib/crearPersona (shared with «Agregar varias personas»).
   const crear = async () => {
     if (!tipo || creando) return;
     setCreando(true);
-    const h = horarioEfectivo;
-    const r: Resultado = {
-      tipo,
-      nombre: nombreCompleto,
-      userId: null,
-      fichaId: null,
-      acceso: { username: null, link: null, correo: null },
-      horario: h ? "fallo" : "despues",
-      ubicacion: "despues",
-    };
-
-    // 1 · The person. If this fails nothing was created: stay on the step.
     try {
-      if (tipo === "vigilante") {
-        const resp: any = await securityGuardService.invite([
-          cuerpoDeVigilante(datos),
-        ]);
+      const r = await crearPersona(tipo, datos, horarioEfectivo, {
+        sedes,
+        rol: rolElegido,
+        t,
+      });
 
-        r.userId = resp?.userId ? String(resp.userId) : null;
-        // The guard sheet is keyed by the RECORD id; the assignment takes either.
-        r.fichaId = resp?.securityGuardId
-          ? String(resp.securityGuardId)
-          : r.userId;
-        r.acceso = {
-          username: resp?.username || null,
-          link:
-            resp?.invitationLink && (datos.sinCorreo || !datos.correo.trim())
-              ? resp.invitationLink
-              : null,
-          correo: datos.sinCorreo ? null : datos.correo.trim() || null,
-        };
-      } else if (tipo === "supervisor") {
-        const sup: any = await supervisorService.create(
-          cuerpoDeSupervisor(datos),
-        );
-
-        r.userId = sup?.id ? String(sup.id) : null;
-        r.fichaId = r.userId;
-        r.acceso = {
-          username: sup?.username || null,
-          link: sup?.invitationLink || null,
-          correo: datos.sinCorreo ? null : datos.correo.trim() || null,
-        };
-      } else {
-        await userService.createUser(
-          cuerpoDeOficina(datos, sedes, rolElegido) as any,
-        );
-        // The create answers `true`: the new account is found by its e-mail.
-        const correo = datos.correo.trim();
-        const lista: any = await ApiService.get(
-          `/tenant/${tenantId()}/user?filter%5Bemail%5D=${encodeURIComponent(correo)}&limit=5`,
-        ).catch(() => null);
-        const u = filas(lista).find(
-          (x: any) =>
-            String(x.email || "").toLowerCase() === correo.toLowerCase(),
-        );
-
-        r.userId = u?.id ? String(u.id) : null;
-        r.fichaId = r.userId;
-        r.acceso = { username: null, link: null, correo };
-      }
+      setResultado(r);
+      toast.success(
+        t("agregarPersona.listo.toast", {
+          defaultValue: "{{nombre}} ya está en el sistema",
+          nombre: r.nombre,
+        }),
+      );
     } catch (e: any) {
+      // The person could not be created: nothing was written, stay on the step.
       toast.error(
         mensajeDeError(
           e,
           t("agregarPersona.errores.crear", "No se pudo crear a la persona"),
         ),
       );
+    } finally {
       setCreando(false);
-
-      return;
     }
-
-    // 2 · Their schedule. A failure here keeps the person and says what is missing.
-    if (h) {
-      try {
-        if (h.tipo === "vigilante") {
-          const ref = r.userId || r.fichaId;
-
-          if (!ref)
-            throw new Error(
-              t(
-                "agregarPersona.errores.sinId",
-                "No encontramos a la persona recién creada",
-              ),
-            );
-          await ApiService.post(
-            `/tenant/${tenantId()}/guard-assignment`,
-            cuerpoDeAsignacion(ref, h),
-          );
-        } else if (h.tipo === "supervisor") {
-          if (!r.userId)
-            throw new Error(
-              t(
-                "agregarPersona.errores.sinId",
-                "No encontramos a la persona recién creada",
-              ),
-            );
-          await supervisorPositionService.assign(
-            h.positionId,
-            cuerpoDePuesto(r.userId, h),
-          );
-        } else {
-          if (!r.userId)
-            throw new Error(
-              t(
-                "agregarPersona.errores.sinId",
-                "No encontramos a la persona recién creada",
-              ),
-            );
-          await ApiService.put(
-            `/tenant/${tenantId()}/staff-schedule/${r.userId}/pattern`,
-            {
-              data: cuerpoDeHorarioDeOficina(h),
-            },
-          );
-        }
-        r.horario = "hecho";
-      } catch (e: any) {
-        r.horario = "fallo";
-        r.horarioError = mensajeDeError(
-          e,
-          t("agregarPersona.errores.horario", "No se pudo guardar el horario"),
-        );
-      }
-      // 3 · Office location (optional).
-      if (h.tipo === "oficina") {
-        const ubic = cuerpoDeUbicacion(h.oficina);
-
-        if (ubic && r.userId) {
-          try {
-            await ApiService.patch(`/tenant/${tenantId()}/user/${r.userId}`, {
-              data: ubic,
-            });
-            r.ubicacion = "hecho";
-          } catch (e: any) {
-            r.ubicacion = "fallo";
-            r.ubicacionError = mensajeDeError(
-              e,
-              t(
-                "agregarPersona.errores.ubicacion",
-                "No se pudo guardar la oficina",
-              ),
-            );
-          }
-        } else if (ubic) {
-          r.ubicacion = "fallo";
-        }
-      }
-    }
-
-    setResultado(r);
-    setCreando(false);
-    toast.success(
-      t("agregarPersona.listo.toast", {
-        defaultValue: "{{nombre}} ya está en el sistema",
-        nombre: r.nombre,
-      }),
-    );
   };
 
   const empezarDeNuevo = () => {
@@ -753,6 +600,19 @@ export default function AgregarPersonaPage() {
     <AppLayout>
       <PageContainer className="pb-28" width="default">
         <PageHeader
+          actions={
+            // Bulk add: same calls, a whole list at once (lib/crearPersona).
+            !resultado && paso === 1 ? (
+              <Button asChild variant="outline">
+                <Link id="alta-varias" to="/personal/varias">
+                  {t(
+                    "agregarVarias.entrada",
+                    "¿Son varias? Agrégalas de una vez",
+                  )}
+                </Link>
+              </Button>
+            ) : undefined
+          }
           icon={<UserPlus />}
           subtitle={t(
             "agregarPersona.subtitulo",
@@ -1272,8 +1132,8 @@ export default function AgregarPersonaPage() {
                                 <Fila
                                   key={p.positionId}
                                   activa={horario.positionId === p.positionId}
-                                  detalle={p.detalle}
                                   bloqueada={p.libres <= 0}
+                                  detalle={p.detalle}
                                   libre={p.libres > 0}
                                   titulo={p.puesto}
                                   onClick={() =>

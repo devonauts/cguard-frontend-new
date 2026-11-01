@@ -22486,5 +22486,125 @@
       "trabajoNota": "Opcional. Salen en la lista de supervisores. Su horario lo da su puesto de supervisión.",
       "credenciales": "Credenciales (opcionales)"
     }
+  },
+  "agregarVarias": {
+    "boton": "Agregar varias",
+    "entrada": "¿Son varias? Agrégalas de una vez",
+    "titulo": "Agregar varias personas",
+    "subtitulo": "Pega tu lista de Excel o sube el archivo. Revisas cada persona y su horario antes de crear: nada se guarda hasta que toques «Crear».",
+    "unaSola": "Agregar solo una",
+    "lista": {
+      "titulo": "Tu lista",
+      "ayuda": "Una fila por persona. Columnas: Tipo (vigilante, supervisor u oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (solo oficina), Puesto (estación o puesto de supervisión) y Empieza. Con la primera fila de títulos, el orden no importa.",
+      "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+      "revisar": "Revisar la lista",
+      "subir": "Subir .csv o .xlsx",
+      "plantilla": "Descargar plantilla",
+      "leida_one": "Leímos {{count}} persona de tu lista.",
+      "leida_other": "Leímos {{count}} personas de tu lista.",
+      "cambiar": "Cambiar la lista"
+    },
+    "errores": {
+      "vacia": "No encontramos personas en la lista. Revisa que tenga una fila por persona.",
+      "archivo": "No pudimos leer ese archivo. Prueba guardarlo como .csv o .xlsx."
+    },
+    "jornada": {
+      "titulo": "Jornada para el personal de oficina",
+      "ayuda": "La misma semana para todas las personas de oficina de la lista. Después puedes cambiar la de cada una en su ficha.",
+      "con": "Con esta jornada",
+      "sin": "Sin horario por ahora"
+    },
+    "donde": {
+      "jornada": "Jornada de oficina"
+    },
+    "revision": {
+      "listas_one": "{{count}} lista",
+      "listas_other": "{{count}} listas",
+      "conProblemas_one": "{{count}} con problemas",
+      "conProblemas_other": "{{count}} con problemas",
+      "verTodas": "Ver todas",
+      "comprobando": "Comprobando si ya están en tu empresa…",
+      "titulo_one": "Revisa: {{count}} persona",
+      "titulo_other": "Revisa: {{count}} personas",
+      "vacia": "No quedan filas en la lista."
+    },
+    "col": {
+      "linea": "Fila",
+      "tipo": "Qué hace",
+      "nombres": "Nombres",
+      "apellidos": "Apellidos",
+      "documento": "Documento",
+      "celular": "Celular",
+      "correo": "Correo",
+      "donde": "Rol y horario",
+      "empieza": "Empieza"
+    },
+    "elegir": "Elegir…",
+    "rol": "Rol",
+    "sinCorreo": "Sin correo: entra con usuario",
+    "sinRotacion": "sin rotación",
+    "decia": "En tu lista: «{{x}}»",
+    "quitar": "Quitar de la lista",
+    "problemas": {
+      "tipo": "Elige qué hace: vigilante, supervisor u oficina",
+      "nombres": "Faltan los nombres",
+      "apellidos": "Faltan los apellidos",
+      "correoRequerido": "La oficina entra con su correo: falta",
+      "correoInvalido": "El correo no está bien escrito",
+      "celularInvalido": "El celular necesita al menos 7 dígitos",
+      "rolRequerido": "Elige su rol",
+      "rolDesconocido": "Ese rol no existe en tu empresa: elige uno",
+      "puestoNoEncontrado": "No encontramos ese puesto: elígelo en la lista",
+      "puestoAmbiguo": "Hay varios puestos con ese nombre: elige uno",
+      "plazaOcupada": "Ese puesto ya está ocupado (o lo toma otra fila más arriba)",
+      "puestoSinRotacion": "Ese puesto no tiene rotación: no le daría turnos",
+      "fechaInvalida": "La fecha de inicio no es válida (usa 02/11/2026)",
+      "documentoRepetido": "Ese documento está dos veces en la lista",
+      "correoRepetido": "Ese correo está dos veces en la lista",
+      "documentoExiste": "Ya hay alguien con ese documento en tu empresa",
+      "correoExiste": "Ese correo ya es de una cuenta de tu empresa"
+    },
+    "pie": {
+      "conProblemas_one": "La fila con problemas no se crea: corrígela aquí o quítala.",
+      "conProblemas_other": "Las {{count}} filas con problemas no se crean: corrígelas aquí o quítalas.",
+      "todoListo": "Todo listo. Se crean una por una, en el orden de la lista.",
+      "otraLista": "Usar otra lista",
+      "crear_one": "Crear {{count}} persona",
+      "crear_other": "Crear {{count}} personas"
+    },
+    "creando": {
+      "titulo": "Creando {{hechas}} de {{total}}…"
+    },
+    "hecho": {
+      "titulo": "Lista procesada",
+      "creadas_one": "{{count}} creada",
+      "creadas_other": "{{count}} creadas",
+      "conHorario_one": "{{count}} con horario",
+      "conHorario_other": "{{count}} con horario",
+      "sinHorario_one": "{{count}} sin horario todavía",
+      "sinHorario_other": "{{count}} sin horario todavía",
+      "fallidas_one": "{{count}} no se creó",
+      "fallidas_other": "{{count}} no se crearon",
+      "otra": "Agregar otra lista",
+      "verHorario": "Ver el horario"
+    },
+    "listo": {
+      "toast_one": "Lista procesada: {{count}} persona",
+      "toast_other": "Lista procesada: {{count}} personas"
+    },
+    "res": {
+      "persona": "Persona",
+      "horario": "Horario",
+      "acceso": "Su acceso",
+      "creada": "Creada",
+      "noCreada": "No se creó",
+      "creando": "Creando…",
+      "enEspera": "En espera",
+      "sinHorario": "Sin horario por ahora",
+      "horarioFallo": "No se guardó: {{e}}",
+      "correoEnviado": "Correo enviado a {{c}}",
+      "reintentar": "Reintentar",
+      "reintentarHorario": "Reintentar horario"
+    }
   }
 }

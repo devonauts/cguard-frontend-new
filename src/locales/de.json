@@ -22486,5 +22486,125 @@
       "trabajoNota": "Optional. Erscheinen in der Aufsichtsliste. Der Dienstplan kommt vom Aufsichtsposten.",
       "credenciales": "Nachweise (optional)"
     }
+  },
+  "agregarVarias": {
+    "boton": "Mehrere hinzufügen",
+    "entrada": "Mehrere Personen? Alle auf einmal hinzufügen",
+    "titulo": "Mehrere Personen hinzufügen",
+    "subtitulo": "Fügen Sie Ihre Liste aus Excel ein oder laden Sie die Datei hoch. Sie prüfen jede Person und ihren Dienstplan vorher: Nichts wird gespeichert, bevor Sie auf «Erstellen» tippen.",
+    "unaSola": "Nur eine hinzufügen",
+    "lista": {
+      "titulo": "Ihre Liste",
+      "ayuda": "Eine Zeile pro Person. Spalten: Tipo (vigilante, supervisor oder oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (nur Büro), Puesto (Station oder Aufsichtsposten) und Empieza. Mit einer ersten Titelzeile ist die Reihenfolge egal.",
+      "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+      "revisar": "Liste prüfen",
+      "subir": ".csv oder .xlsx hochladen",
+      "plantilla": "Vorlage herunterladen",
+      "leida_one": "{{count}} Person aus Ihrer Liste gelesen.",
+      "leida_other": "{{count}} Personen aus Ihrer Liste gelesen.",
+      "cambiar": "Liste ändern"
+    },
+    "errores": {
+      "vacia": "In der Liste wurden keine Personen gefunden. Prüfen Sie, dass es eine Zeile pro Person gibt.",
+      "archivo": "Diese Datei konnte nicht gelesen werden. Speichern Sie sie als .csv oder .xlsx."
+    },
+    "jornada": {
+      "titulo": "Arbeitszeit für das Büropersonal",
+      "ayuda": "Dieselbe Woche für alle Büropersonen der Liste. Später können Sie sie für jede Person in ihrem Profil ändern.",
+      "con": "Mit dieser Arbeitszeit",
+      "sin": "Vorerst ohne Dienstplan"
+    },
+    "donde": {
+      "jornada": "Büroarbeitszeit"
+    },
+    "revision": {
+      "listas_one": "{{count}} bereit",
+      "listas_other": "{{count}} bereit",
+      "conProblemas_one": "{{count}} mit Problemen",
+      "conProblemas_other": "{{count}} mit Problemen",
+      "verTodas": "Alle zeigen",
+      "comprobando": "Prüfe, ob sie schon in Ihrem Unternehmen sind…",
+      "titulo_one": "Prüfen: {{count}} Person",
+      "titulo_other": "Prüfen: {{count}} Personen",
+      "vacia": "Keine Zeilen mehr in der Liste."
+    },
+    "col": {
+      "linea": "Zeile",
+      "tipo": "Tätigkeit",
+      "nombres": "Vornamen",
+      "apellidos": "Nachnamen",
+      "documento": "Ausweisnummer",
+      "celular": "Mobil",
+      "correo": "E-Mail",
+      "donde": "Rolle und Dienstplan",
+      "empieza": "Beginnt"
+    },
+    "elegir": "Wählen…",
+    "rol": "Rolle",
+    "sinCorreo": "Ohne E-Mail: meldet sich mit Benutzername an",
+    "sinRotacion": "ohne Rotation",
+    "decia": "In Ihrer Liste: «{{x}}»",
+    "quitar": "Aus der Liste entfernen",
+    "problemas": {
+      "tipo": "Wählen Sie die Tätigkeit: Wachperson, Aufsicht oder Büro",
+      "nombres": "Vornamen fehlen",
+      "apellidos": "Nachnamen fehlen",
+      "correoRequerido": "Büropersonal meldet sich per E-Mail an: sie fehlt",
+      "correoInvalido": "Die E-Mail ist nicht korrekt",
+      "celularInvalido": "Die Mobilnummer braucht mindestens 7 Ziffern",
+      "rolRequerido": "Wählen Sie die Rolle",
+      "rolDesconocido": "Diese Rolle gibt es in Ihrem Unternehmen nicht: wählen Sie eine",
+      "puestoNoEncontrado": "Posten nicht gefunden: wählen Sie ihn aus der Liste",
+      "puestoAmbiguo": "Mehrere Posten heißen so: wählen Sie einen",
+      "plazaOcupada": "Dieser Posten ist schon besetzt (oder eine Zeile weiter oben nimmt ihn)",
+      "puestoSinRotacion": "Dieser Posten hat keine Rotation: er ergäbe keine Schichten",
+      "fechaInvalida": "Das Startdatum ist ungültig (z. B. 02/11/2026)",
+      "documentoRepetido": "Diese Ausweisnummer steht zweimal in der Liste",
+      "correoRepetido": "Diese E-Mail steht zweimal in der Liste",
+      "documentoExiste": "In Ihrem Unternehmen hat schon jemand diese Ausweisnummer",
+      "correoExiste": "Diese E-Mail gehört schon zu einem Konto Ihres Unternehmens"
+    },
+    "pie": {
+      "conProblemas_one": "Die Zeile mit Problemen wird nicht angelegt: korrigieren oder entfernen Sie sie.",
+      "conProblemas_other": "Die {{count}} Zeilen mit Problemen werden nicht angelegt: korrigieren oder entfernen Sie sie.",
+      "todoListo": "Alles bereit. Sie werden einzeln angelegt, in der Reihenfolge der Liste.",
+      "otraLista": "Andere Liste verwenden",
+      "crear_one": "{{count}} Person anlegen",
+      "crear_other": "{{count}} Personen anlegen"
+    },
+    "creando": {
+      "titulo": "Lege {{hechas}} von {{total}} an…"
+    },
+    "hecho": {
+      "titulo": "Liste verarbeitet",
+      "creadas_one": "{{count}} angelegt",
+      "creadas_other": "{{count}} angelegt",
+      "conHorario_one": "{{count}} mit Dienstplan",
+      "conHorario_other": "{{count}} mit Dienstplan",
+      "sinHorario_one": "{{count}} noch ohne Dienstplan",
+      "sinHorario_other": "{{count}} noch ohne Dienstplan",
+      "fallidas_one": "{{count}} nicht angelegt",
+      "fallidas_other": "{{count}} nicht angelegt",
+      "otra": "Weitere Liste hinzufügen",
+      "verHorario": "Dienstplan ansehen"
+    },
+    "listo": {
+      "toast_one": "Liste verarbeitet: {{count}} Person",
+      "toast_other": "Liste verarbeitet: {{count}} Personen"
+    },
+    "res": {
+      "persona": "Person",
+      "horario": "Dienstplan",
+      "acceso": "Zugang",
+      "creada": "Angelegt",
+      "noCreada": "Nicht angelegt",
+      "creando": "Wird angelegt…",
+      "enEspera": "Wartet",
+      "sinHorario": "Vorerst ohne Dienstplan",
+      "horarioFallo": "Nicht gespeichert: {{e}}",
+      "correoEnviado": "E-Mail an {{c}} gesendet",
+      "reintentar": "Erneut versuchen",
+      "reintentarHorario": "Dienstplan erneut versuchen"
+    }
   }
 }
