@@ -2514,7 +2514,8 @@
       "aprobaciones": "Aprovações",
       "horas-periodo": "Horas do período",
       "configuracion": "Configuração",
-      "coberturaEnVivo": "Cobertura ao vivo"
+      "coberturaEnVivo": "Cobertura ao vivo",
+      "atrasos": "Atrasos da semana"
     }
   },
   "settings": {
@@ -18827,6 +18828,46 @@
     },
     "patrones": {
       "archivado": "arquivado"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "Todos os postos",
+      "sucursal": "Filial",
+      "todasLasSucursales": "Todas as filiais",
+      "reintentar": "Tentar de novo",
+      "horasDeEstaPagina": "Horas líquidas desta página:",
+      "aprobarMarcaciones": "Aprovar marcações",
+      "rechazarMarcaciones": "Rejeitar marcações",
+      "confirmarLote": "Serão decididas {{count}} marcação(ões), cada uma por si. As de dias de pagamento fechados ou fora dos seus locais ficam como estão e eu digo quais.",
+      "decidir": "Decidir",
+      "todasLasFechas": "Todas as datas",
+      "porFechas": "Por datas",
+      "resolverSeleccion": "Resolver",
+      "reconocerSeleccion": "Reconhecer",
+      "noSeCargo": "Não foi possível carregar",
+      "persona": "Pessoa",
+      "vecesTarde": "Vezes atrasado",
+      "minutosTotales": "Tempo total",
+      "peorDia": "Pior dia",
+      "verMarcas": "Ver marcações",
+      "atrasosSubtitulo": "Quem chegou atrasado, quantas vezes e quanto, no horário da empresa",
+      "resumenAtrasos": "{{personas}} pessoa(s) · {{marcas}} chegada(s) atrasada(s)",
+      "sinAtrasosDescripcion": "Ninguém chegou atrasado nestes dias. Use as setas para ver outras semanas.",
+      "sinAtrasos": "Sem atrasos",
+      "llegaron": "Chegaram",
+      "dePermiso": "De licença ou férias",
+      "aunPorLlegar": "Ainda por chegar",
+      "comoSeCuenta": "Conta-se o dia da empresa, no horário dela. Um turno noturno conta no dia em que começa; quem cobre outro ocupa um só posto; quem não marcou 20 minutos após o início conta como falta.",
+      "lote": {
+        "diaCerrado": "dia de pagamento fechado",
+        "noEncontrado": "já não existe ou não é dos seus locais",
+        "yaDecidida": "outra pessoa já decidiu",
+        "yaPagada": "já está paga",
+        "bloqueada": "período fechado",
+        "faltaNota": "a empresa exige uma nota",
+        "error": "erro",
+        "listo": "{{count}} decidida(s)",
+        "parcial": "{{ok}} decidida(s), {{failed}} sem alteração"
+      }
     }
   },
   "map": {

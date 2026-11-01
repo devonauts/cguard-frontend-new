@@ -5594,7 +5594,8 @@
       "aprobaciones": "Approvazioni",
       "horas-periodo": "Ore del periodo",
       "configuracion": "Impostazioni",
-      "coberturaEnVivo": "Copertura in diretta"
+      "coberturaEnVivo": "Copertura in diretta",
+      "atrasos": "Ritardi della settimana"
     }
   },
   "siteTour": {
@@ -19362,6 +19363,46 @@
     },
     "patrones": {
       "archivado": "archiviato"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "Tutte le postazioni",
+      "sucursal": "Filiale",
+      "todasLasSucursales": "Tutte le filiali",
+      "reintentar": "Riprova",
+      "horasDeEstaPagina": "Ore nette di questa pagina:",
+      "aprobarMarcaciones": "Approva le timbrature",
+      "rechazarMarcaciones": "Rifiuta le timbrature",
+      "confirmarLote": "Verranno decise {{count}} timbratura/e, ognuna per conto suo. Quelle di giorni di paga chiusi o fuori dalle tue sedi restano come sono e ti dico quali.",
+      "decidir": "Decidi",
+      "todasLasFechas": "Tutte le date",
+      "porFechas": "Per date",
+      "resolverSeleccion": "Risolvi",
+      "reconocerSeleccion": "Prendi atto",
+      "noSeCargo": "Impossibile caricare",
+      "persona": "Persona",
+      "vecesTarde": "Ritardi",
+      "minutosTotales": "Tempo totale",
+      "peorDia": "Giorno peggiore",
+      "verMarcas": "Vedi timbrature",
+      "atrasosSubtitulo": "Chi è arrivato in ritardo, quante volte e di quanto, nell'ora dell'azienda",
+      "resumenAtrasos": "{{personas}} persona/e · {{marcas}} arrivo/i in ritardo",
+      "sinAtrasosDescripcion": "Nessuno è arrivato in ritardo in questi giorni. Usa le frecce per vedere altre settimane.",
+      "sinAtrasos": "Nessun ritardo",
+      "llegaron": "Arrivati",
+      "dePermiso": "In permesso o ferie",
+      "aunPorLlegar": "Ancora da arrivare",
+      "comoSeCuenta": "Si conta il giorno dell'azienda, nella sua ora. Un turno di notte conta nel giorno in cui inizia; chi copre un altro occupa un solo posto; chi non ha timbrato 20 minuti dopo l'inizio conta come assente.",
+      "lote": {
+        "diaCerrado": "giorno di paga chiuso",
+        "noEncontrado": "non esiste più o non è delle tue sedi",
+        "yaDecidida": "qualcun altro l'ha già decisa",
+        "yaPagada": "già pagata",
+        "bloqueada": "periodo chiuso",
+        "faltaNota": "l'azienda richiede una nota",
+        "error": "errore",
+        "listo": "{{count}} decisa/e",
+        "parcial": "{{ok}} decisa/e, {{failed}} invariata/e"
+      }
     }
   },
   "visitantes": {

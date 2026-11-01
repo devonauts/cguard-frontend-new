@@ -6071,7 +6071,8 @@
       "aprobaciones": "Aprobaciones",
       "horas-periodo": "Horas del periodo",
       "configuracion": "Configuración",
-      "coberturaEnVivo": "Cobertura en vivo"
+      "coberturaEnVivo": "Cobertura en vivo",
+      "atrasos": "Atrasos de la semana"
     }
   },
   "siteTour": {
@@ -18827,6 +18828,46 @@
     },
     "patrones": {
       "archivado": "archivado"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "Todos los puestos",
+      "sucursal": "Sucursal",
+      "todasLasSucursales": "Todas las sucursales",
+      "reintentar": "Reintentar",
+      "horasDeEstaPagina": "Horas netas de esta página:",
+      "aprobarMarcaciones": "Aprobar marcaciones",
+      "rechazarMarcaciones": "Rechazar marcaciones",
+      "confirmarLote": "Se decidirán {{count}} marcación(es), cada una por su cuenta. Las de días de pago cerrados o fuera de tus sedes se quedan como están y te digo cuáles.",
+      "decidir": "Decidir",
+      "todasLasFechas": "Todas las fechas",
+      "porFechas": "Por fechas",
+      "resolverSeleccion": "Resolver",
+      "reconocerSeleccion": "Reconocer",
+      "noSeCargo": "No se pudo cargar",
+      "persona": "Persona",
+      "vecesTarde": "Veces tarde",
+      "minutosTotales": "Tiempo total",
+      "peorDia": "Peor día",
+      "verMarcas": "Ver marcas",
+      "atrasosSubtitulo": "Quién llegó tarde, cuántas veces y cuánto, en la hora de la empresa",
+      "resumenAtrasos": "{{personas}} persona(s) · {{marcas}} llegada(s) tarde",
+      "sinAtrasosDescripcion": "Nadie llegó tarde en estos días. Cambia de semana con las flechas para ver otras.",
+      "sinAtrasos": "Sin atrasos",
+      "llegaron": "Llegaron",
+      "dePermiso": "De permiso o vacaciones",
+      "aunPorLlegar": "Aún por llegar",
+      "comoSeCuenta": "Se cuenta el día de la empresa, en su hora. Un turno de noche cuenta el día en que empieza; quien cubre a otro ocupa un solo puesto; quien no marcó a los 20 minutos del inicio cuenta como inasistencia.",
+      "lote": {
+        "diaCerrado": "día de pago cerrado",
+        "noEncontrado": "ya no existe o no es de tus sedes",
+        "yaDecidida": "otra persona ya la decidió",
+        "yaPagada": "ya está pagada",
+        "bloqueada": "periodo cerrado",
+        "faltaNota": "la empresa pide una nota",
+        "error": "error",
+        "listo": "{{count}} decidida(s)",
+        "parcial": "{{ok}} decidida(s), {{failed}} sin cambiar"
+      }
     }
   },
   "map": {

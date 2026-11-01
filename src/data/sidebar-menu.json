@@ -216,6 +216,14 @@
         ]
       },
       {
+        "id": "atrasos",
+        "name": "Atrasos de la semana",
+        "path": "/nomina/atrasos",
+        "permission": [
+          "attendanceRead"
+        ]
+      },
+      {
         "id": "novedades",
         "name": "Novedades",
         "path": "/nomina/exceptions",

@@ -5594,7 +5594,8 @@
       "aprobaciones": "Approbations",
       "horas-periodo": "Heures de la période",
       "configuracion": "Paramètres",
-      "coberturaEnVivo": "Couverture en direct"
+      "coberturaEnVivo": "Couverture en direct",
+      "atrasos": "Retards de la semaine"
     }
   },
   "siteTour": {
@@ -19362,6 +19363,46 @@
     },
     "patrones": {
       "archivado": "archivé"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "Tous les postes",
+      "sucursal": "Agence",
+      "todasLasSucursales": "Toutes les agences",
+      "reintentar": "Réessayer",
+      "horasDeEstaPagina": "Heures nettes de cette page :",
+      "aprobarMarcaciones": "Approuver les pointages",
+      "rechazarMarcaciones": "Rejeter les pointages",
+      "confirmarLote": "{{count}} pointage(s) seront décidés, chacun à part. Ceux des jours de paie clôturés ou hors de vos sites restent tels quels et je vous dis lesquels.",
+      "decidir": "Décider",
+      "todasLasFechas": "Toutes les dates",
+      "porFechas": "Par dates",
+      "resolverSeleccion": "Résoudre",
+      "reconocerSeleccion": "Prendre en compte",
+      "noSeCargo": "Chargement impossible",
+      "persona": "Personne",
+      "vecesTarde": "Retards",
+      "minutosTotales": "Temps total",
+      "peorDia": "Pire jour",
+      "verMarcas": "Voir les pointages",
+      "atrasosSubtitulo": "Qui est arrivé en retard, combien de fois et de combien, à l'heure de l'entreprise",
+      "resumenAtrasos": "{{personas}} personne(s) · {{marcas}} arrivée(s) en retard",
+      "sinAtrasosDescripcion": "Personne n'est arrivé en retard ces jours-là. Utilisez les flèches pour voir d'autres semaines.",
+      "sinAtrasos": "Aucun retard",
+      "llegaron": "Arrivés",
+      "dePermiso": "En congé ou vacances",
+      "aunPorLlegar": "Pas encore arrivés",
+      "comoSeCuenta": "On compte la journée de l'entreprise, à son heure. Un poste de nuit compte le jour où il commence ; un remplacement occupe une seule place ; qui n'a pas pointé 20 minutes après le début compte comme absent.",
+      "lote": {
+        "diaCerrado": "jour de paie clôturé",
+        "noEncontrado": "n'existe plus ou hors de vos sites",
+        "yaDecidida": "quelqu'un d'autre l'a déjà décidé",
+        "yaPagada": "déjà payé",
+        "bloqueada": "période clôturée",
+        "faltaNota": "l'entreprise exige une note",
+        "error": "erreur",
+        "listo": "{{count}} décidé(s)",
+        "parcial": "{{ok}} décidé(s), {{failed}} inchangé(s)"
+      }
     }
   },
   "visitantes": {

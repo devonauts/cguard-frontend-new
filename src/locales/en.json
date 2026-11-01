@@ -6071,7 +6071,8 @@
       "aprobaciones": "Approvals",
       "horas-periodo": "Period hours",
       "configuracion": "Settings",
-      "coberturaEnVivo": "Live coverage"
+      "coberturaEnVivo": "Live coverage",
+      "atrasos": "Late arrivals this week"
     }
   },
   "siteTour": {
@@ -18827,6 +18828,46 @@
     },
     "patrones": {
       "archivado": "archived"
+    },
+    "Asistencia": {
+      "todosLosPuestos": "All posts",
+      "sucursal": "Branch",
+      "todasLasSucursales": "All branches",
+      "reintentar": "Try again",
+      "horasDeEstaPagina": "Net hours on this page:",
+      "aprobarMarcaciones": "Approve punches",
+      "rechazarMarcaciones": "Reject punches",
+      "confirmarLote": "{{count}} punch(es) will be decided, each on its own. Those on closed pay days or outside your sites stay as they are, and you'll see which.",
+      "decidir": "Decide",
+      "todasLasFechas": "All dates",
+      "porFechas": "By date",
+      "resolverSeleccion": "Resolve",
+      "reconocerSeleccion": "Acknowledge",
+      "noSeCargo": "Could not load",
+      "persona": "Person",
+      "vecesTarde": "Times late",
+      "minutosTotales": "Total time",
+      "peorDia": "Worst day",
+      "verMarcas": "See punches",
+      "atrasosSubtitulo": "Who arrived late, how often and by how much, in company time",
+      "resumenAtrasos": "{{personas}} person(s) · {{marcas}} late arrival(s)",
+      "sinAtrasosDescripcion": "Nobody arrived late on these days. Use the arrows to see other weeks.",
+      "sinAtrasos": "No late arrivals",
+      "llegaron": "Arrived",
+      "dePermiso": "On leave or vacation",
+      "aunPorLlegar": "Not due yet",
+      "comoSeCuenta": "The company's day is counted in its own time. A night shift counts on the day it starts; a cover is one seat; anyone who hasn't clocked in 20 minutes after the start counts as absent.",
+      "lote": {
+        "diaCerrado": "pay day closed",
+        "noEncontrado": "no longer exists or isn't in your sites",
+        "yaDecidida": "someone else already decided it",
+        "yaPagada": "already paid",
+        "bloqueada": "period closed",
+        "faltaNota": "the company requires a note",
+        "error": "error",
+        "listo": "{{count}} decided",
+        "parcial": "{{ok}} decided, {{failed}} unchanged"
+      }
     }
   },
   "map": {
