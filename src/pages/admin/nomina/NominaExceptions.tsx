@@ -178,7 +178,7 @@ export default function NominaExceptions() {
      the date; a date range applies only once one is chosen. */
   const [sp, setSp] = useSearchParams();
   const conFechas = sp.has("from");
-  const [f, setF] = useFiltrosDeAsistencia({ status: "open" });
+  const [f, setF] = useFiltrosDeAsistencia({ status: "open" }, true);
   const opciones = useOpcionesDeFiltro();
   const type = f.type;
   const status = f.status || "open";

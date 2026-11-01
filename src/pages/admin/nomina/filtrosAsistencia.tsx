@@ -30,6 +30,8 @@ import { localeActual } from "@/lib/localeActual";
 /** Filters read from / written to the URL (replace, so Back leaves the page). */
 export function useFiltrosDeAsistencia(
   porDefecto: Parameters<typeof leerFiltros>[1] = {},
+  /** Dates only filter when the URL has them (an inbox: Novedades). */
+  fechasOpcionales = false,
 ): [FiltrosDeAsistencia, (cambio: Partial<FiltrosDeAsistencia>) => void] {
   const [sp, setSp] = useSearchParams();
   const clave = sp.toString();
@@ -37,7 +39,16 @@ export function useFiltrosDeAsistencia(
   const f = useMemo(() => leerFiltros(sp, porDefecto), [clave]);
   const cambiar = useCallback(
     (cambio: Partial<FiltrosDeAsistencia>) => {
-      setSp((prev) => escribirFiltros(conFiltro(leerFiltros(prev, porDefecto), cambio), prev), { replace: true });
+      setSp((prev) => {
+        const next = escribirFiltros(conFiltro(leerFiltros(prev, porDefecto), cambio), prev);
+        // Paging or another filter must not switch the date filter on.
+        if (fechasOpcionales && !prev.has("from") && !("from" in cambio)) {
+          next.delete("from");
+          next.delete("to");
+        }
+
+        return next;
+      }, { replace: true });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [setSp],
