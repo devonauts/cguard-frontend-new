@@ -9132,7 +9132,10 @@
       "patron": "Patroon"
     },
     "AdminOfficeUsers": {
-      "masAcciones": "Meer acties"
+      "masAcciones": "Meer acties",
+      "vacioAyuda": "Wie op kantoor werkt: meldkamer, HR, management. Iedereen logt in op het CRM met zijn rol.",
+      "agregarPrimera": "Iemand van kantoor toevoegen",
+      "vacioTitulo": "Nog geen kantoorpersoneel"
     },
     "ChangePasswordForm": {
       "mostrarContrasena": "Wachtwoord tonen",
@@ -9587,7 +9590,29 @@
       "comoPodemosAyudar": "Waarmee kunnen we helpen?",
       "encuentraArticulosVideosYSoporte": "Vind artikelen, video's en ondersteuning bij uw vragen.",
       "noHayNadaCon": "Niets gevonden voor ‘{{q}}’",
-      "radioCanalGeneral": "Radio · Algemeen kanaal"
+      "radioCanalGeneral": "Radio · Algemeen kanaal",
+      "cmdk": {
+        "nuevoVigilante": "Nieuwe beveiliger",
+        "claveAgregar": "toevoegen",
+        "claveCrear": "aanmaken",
+        "nuevaPersona": "Kantoormedewerker toevoegen",
+        "nuevaEstacion": "Nieuwe post",
+        "irAHorario": "Naar Rooster",
+        "sinCubrir": "Onbezet",
+        "nuevoPermiso": "Verlof of vakantie registreren",
+        "buscando": "Zoeken…",
+        "personasYLugares": "Personen en plaatsen",
+        "acciones": "Acties",
+        "paginas": "Pagina’s",
+        "tipoVigilante": "Beveiliger",
+        "tipoSupervisor": "Supervisor",
+        "tipoOficina": "Kantoor",
+        "tipoEstacion": "Post",
+        "tipoSede": "Locatie",
+        "tipoCliente": "Klant",
+        "invitacionPendiente": "uitnodiging openstaand",
+        "accion": "Actie"
+      }
     },
     "registration": {
       "confirmarContrasena": "Wachtwoord bevestigen",
@@ -13446,7 +13471,10 @@
       "filtroSucursal": "Vestiging",
       "todasLasSucursales": "Alle vestigingen",
       "quitarFiltroPersona": "Persoonsfilter wissen",
-      "calendario": "Kalender"
+      "calendario": "Kalender",
+      "vacioAyuda": "Vakantie, verlof en gemelde afwezigheid van al het personeel, ingevoerd hier, in het Rooster of in de app van de beveiliger.",
+      "registrarElPrimero": "Verlof registreren",
+      "vacioTitulo": "Nog geen verlof of vakantie"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -16777,7 +16805,10 @@
       "nEstaciones_other": "{{count}} stations",
       "agregarEstacion": "Post toevoegen",
       "errorAlCargar": "De posten konden niet worden geladen",
-      "errorAlCargarAyuda": "Controleer je verbinding en probeer het opnieuw. Je posten zijn er nog: maak ze niet opnieuw aan."
+      "errorAlCargarAyuda": "Controleer je verbinding en probeer het opnieuw. Je posten zijn er nog: maak ze niet opnieuw aan.",
+      "vacioAyuda": "Een post is wat je bedrijf bemant: een portiersloge, een receptie, een ronde. Kies de klant en de locatie, en dan hoeveel beveiligers er nodig zijn.",
+      "crearLaPrimera": "Eerste post aanmaken",
+      "vacioTitulo": "Nog geen posten"
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Dit dashboard is alleen voor administratief personeel. Je werk beheer je via de mobiele app.",
@@ -19349,7 +19380,10 @@
       "conoceElPuesto": "{{n}} diensten hier",
       "descansoCorto": "Slechts {{h}} u rust",
       "ofertaEnviada": "Aanbod verstuurd naar de beschikbare bewakers.",
-      "noSePudoOfrecer": "Kon niet aanbieden"
+      "noSePudoOfrecer": "Kon niet aanbieden",
+      "sinRequisitoAyuda": "Hier verschijnen no-shows, lege plekken en verlof zonder vervanger. Om te weten wat ontbreekt, moet elke post aangeven hoeveel beveiligers hij nodig heeft.",
+      "irAEstaciones": "Bezetting van een post instellen",
+      "sinRequisitoTitulo": "Nog geen post met bezetting"
     },
     "HorarioModos": {
       "modos": "Roostermodus",
@@ -19362,6 +19396,34 @@
     },
     "patrones": {
       "archivado": "gearchiveerd"
+    },
+    "EstadoVacio": {
+      "limpiarFiltro": "Filter wissen",
+      "filtradoAyuda": "Probeer andere woorden of wis het filter.",
+      "nadaCoincide": "Niets komt overeen met de zoekopdracht",
+      "pideloAUnAdministrador": "Vraag het aan een beheerder van het bedrijf."
+    },
+    "PrimerosPasos": {
+      "titulo": "Zet je bedrijf op gang",
+      "progreso": "{{listos}} van {{total}} klaar. Elke stap vinkt zichzelf af zodra je hem doet.",
+      "ocultar": "Gids verbergen",
+      "ocultarAyuda": "Voor het hele bedrijf verbergen",
+      "noSeOculto": "De gids kon niet worden verborgen. Probeer het opnieuw.",
+      "hecho": "klaar",
+      "hacerlo": "Nu doen",
+      "ir": "Ga",
+      "station": "Maak een post aan",
+      "stationAyuda": "De post die je gaat bemannen: kies de klant en de locatie.",
+      "requirement": "Stel de bezetting in",
+      "requirementAyuda": "Hoeveel beveiligers de post nodig heeft, en wanneer.",
+      "guards": "Voeg je beveiligers toe",
+      "guardsAyuda": "Met of zonder e-mail: ze komen in de app wanneer jij wilt.",
+      "schedule": "Maak het rooster",
+      "scheduleAyuda": "Wijs in het concept elke beveiliger aan zijn post toe.",
+      "publish": "Publiceer",
+      "publishAyuda": "Met «Publiceren» komen de diensten in de app van elke beveiliger.",
+      "clockIn": "Eerste inklokking",
+      "clockInAyuda": "Zodra een beveiliger inklokt, zie je dat bij Aanwezigheid."
     }
   },
   "visitantes": {

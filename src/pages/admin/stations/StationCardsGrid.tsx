@@ -1,3 +1,4 @@
+import { EstadoVacio } from "@/components/EstadoVacio";
 /**
  * Vista de tarjetas de ESTACIONES (como la de clientes). Cada tarjeta:
  * el LOGO del cliente dueño, el «nominativo» (nickname) como título, el nombre
@@ -259,6 +260,9 @@ export default function StationCardsGrid({
   onOpen,
   onOpenTab,
   onAdd,
+  consulta,
+  onLimpiarConsulta,
+  porQueNoPuedeCrear,
 }: {
   stations: StationCard[];
   loading: boolean;
@@ -267,6 +271,11 @@ export default function StationCardsGrid({
   onOpenTab?: (s: StationCard, tab: string) => void;
   /** Empty company: the empty state offers the same «Agregar estación». */
   onAdd?: () => void;
+  /** The search typed above the grid: an empty result then says «nothing matches». */
+  consulta?: string;
+  onLimpiarConsulta?: () => void;
+  /** Set when the user can't create stations: the empty state says why. */
+  porQueNoPuedeCrear?: string;
 }) {
   // Módulo Sucursales (vista global): la etiqueta de sucursal de cada fila.
   const suc = useEtiquetasDeSucursal();
@@ -281,21 +290,25 @@ export default function StationCardsGrid({
     );
   if (!stations.length) {
     return (
-      <EmptyState
-        action={
-          onAdd ? (
-            <Button variant="brand" onClick={onAdd}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("ui.StationsPage.agregarEstacion", "Agregar estación")}
-            </Button>
-          ) : undefined
-        }
-        description={t("stations.empty.description", {
+      <EstadoVacio
+        description={t("ui.StationsPage.vacioAyuda", {
           defaultValue:
-            "Pulsa «Agregar estación» y elige el cliente y la sede; también se crean desde la sede.",
+            "Una estación es el puesto que tu empresa cubre: una garita, una recepción, una ronda. Elige el cliente y la sede, y luego cuántos vigilantes pide.",
         })}
+        filtrado={!!consulta?.trim()}
         icon={<RadioTower />}
-        title={t("stations.empty.title", { defaultValue: "Sin estaciones" })}
+        paso={
+          onAdd
+            ? {
+                label: t("ui.StationsPage.crearLaPrimera", "Crear la primera estación"),
+                onClick: onAdd,
+                puede: porQueNoPuedeCrear === undefined,
+                porQueNo: porQueNoPuedeCrear || undefined,
+              }
+            : null
+        }
+        title={t("ui.StationsPage.vacioTitulo", "Todavía no hay estaciones")}
+        onLimpiarFiltro={onLimpiarConsulta}
       />
     );
   }

@@ -33,6 +33,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import PrimerosPasos from "@/components/arranque/PrimerosPasos";
 
 import {
   EmptyState,
@@ -261,6 +262,9 @@ export default function ControlCenter() {
             userName={nombreDe(user)}
             onCustomize={() => setCustomizeOpen(true)}
           />
+
+          {/* Empresa nueva: the getting-started guide (hides by itself). */}
+          <PrimerosPasos />
 
           {data.error === "no-tenant" ? (
             <GlassPanel className="p-4">

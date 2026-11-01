@@ -9132,7 +9132,10 @@
       "patron": "Modèle"
     },
     "AdminOfficeUsers": {
-      "masAcciones": "Plus d'actions"
+      "masAcciones": "Plus d'actions",
+      "vacioAyuda": "Ceux qui travaillent au bureau : dispatch, RH, direction. Chacun se connecte au CRM avec son rôle.",
+      "agregarPrimera": "Ajouter une personne du bureau",
+      "vacioTitulo": "Pas encore de personnel de bureau"
     },
     "ChangePasswordForm": {
       "mostrarContrasena": "Afficher le mot de passe",
@@ -9587,7 +9590,29 @@
       "comoPodemosAyudar": "Comment vous aider ?",
       "encuentraArticulosVideosYSoporte": "Trouvez des articles, des vidéos et de l'assistance pour répondre à vos questions.",
       "noHayNadaCon": "Aucun résultat pour « {{q}} »",
-      "radioCanalGeneral": "Radio · Canal général"
+      "radioCanalGeneral": "Radio · Canal général",
+      "cmdk": {
+        "nuevoVigilante": "Nouvel agent",
+        "claveAgregar": "ajouter",
+        "claveCrear": "créer",
+        "nuevaPersona": "Ajouter une personne du bureau",
+        "nuevaEstacion": "Nouveau poste",
+        "irAHorario": "Aller au Planning",
+        "sinCubrir": "Non couvert",
+        "nuevoPermiso": "Enregistrer une absence ou des congés",
+        "buscando": "Recherche…",
+        "personasYLugares": "Personnes et lieux",
+        "acciones": "Actions",
+        "paginas": "Pages",
+        "tipoVigilante": "Agent",
+        "tipoSupervisor": "Superviseur",
+        "tipoOficina": "Bureau",
+        "tipoEstacion": "Poste",
+        "tipoSede": "Site",
+        "tipoCliente": "Client",
+        "invitacionPendiente": "invitation en attente",
+        "accion": "Action"
+      }
     },
     "registration": {
       "confirmarContrasena": "Confirmer le mot de passe",
@@ -13446,7 +13471,10 @@
       "filtroSucursal": "Agence",
       "todasLasSucursales": "Toutes les agences",
       "quitarFiltroPersona": "Retirer le filtre de personne",
-      "calendario": "Calendrier"
+      "calendario": "Calendrier",
+      "vacioAyuda": "Congés, absences et absences justifiées de tout le personnel, saisis ici, dans le Planning ou depuis l’application de l’agent.",
+      "registrarElPrimero": "Enregistrer une absence",
+      "vacioTitulo": "Pas encore d’absences ni de congés"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -16777,7 +16805,10 @@
       "nEstaciones_other": "{{count}} stations",
       "agregarEstacion": "Ajouter un poste",
       "errorAlCargar": "Impossible de charger les stations",
-      "errorAlCargarAyuda": "Vérifiez votre connexion et réessayez. Vos stations sont toujours là : ne les recréez pas."
+      "errorAlCargarAyuda": "Vérifiez votre connexion et réessayez. Vos stations sont toujours là : ne les recréez pas.",
+      "vacioAyuda": "Un poste est ce que votre entreprise couvre : une guérite, un accueil, une ronde. Choisissez le client et le site, puis combien d’agents il demande.",
+      "crearLaPrimera": "Créer le premier poste",
+      "vacioTitulo": "Pas encore de postes"
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "Ce tableau de bord est réservé au personnel administratif. Votre travail se gère depuis l'application mobile.",
@@ -19349,7 +19380,10 @@
       "conoceElPuesto": "{{n}} créneaux ici",
       "descansoCorto": "Seulement {{h}} h de repos",
       "ofertaEnviada": "Offre envoyée aux agents disponibles.",
-      "noSePudoOfrecer": "Impossible de proposer"
+      "noSePudoOfrecer": "Impossible de proposer",
+      "sinRequisitoAyuda": "Ici apparaissent les absences, les places vides et les congés sans remplaçant. Pour savoir ce qui manque, chaque poste doit dire combien d’agents il demande.",
+      "irAEstaciones": "Définir le besoin d’un poste",
+      "sinRequisitoTitulo": "Aucun poste n’a encore de besoin défini"
     },
     "HorarioModos": {
       "modos": "Mode du planning",
@@ -19362,6 +19396,34 @@
     },
     "patrones": {
       "archivado": "archivé"
+    },
+    "EstadoVacio": {
+      "limpiarFiltro": "Retirer le filtre",
+      "filtradoAyuda": "Essayez d’autres mots ou retirez le filtre.",
+      "nadaCoincide": "Rien ne correspond à la recherche",
+      "pideloAUnAdministrador": "Demandez-le à un administrateur de l’entreprise."
+    },
+    "PrimerosPasos": {
+      "titulo": "Lancez votre entreprise",
+      "progreso": "{{listos}} sur {{total}} terminés. Chaque étape se coche toute seule quand vous la faites.",
+      "ocultar": "Masquer le guide",
+      "ocultarAyuda": "La masquer pour toute l’entreprise",
+      "noSeOculto": "Impossible de masquer le guide. Réessayez.",
+      "hecho": "fait",
+      "hacerlo": "Le faire maintenant",
+      "ir": "Y aller",
+      "station": "Créez un poste",
+      "stationAyuda": "Le poste que vous allez couvrir : choisissez le client et le site.",
+      "requirement": "Définissez son besoin",
+      "requirementAyuda": "Combien d’agents le poste demande, et à quelles heures.",
+      "guards": "Ajoutez vos agents",
+      "guardsAyuda": "Avec ou sans e-mail : ils rejoignent l’application quand vous le décidez.",
+      "schedule": "Construisez le planning",
+      "scheduleAyuda": "Dans le brouillon, affectez chaque agent à son poste.",
+      "publish": "Publiez",
+      "publishAyuda": "Avec « Publier », les postes arrivent dans l’application de chaque agent.",
+      "clockIn": "Premier pointage",
+      "clockInAyuda": "Quand un agent pointe, vous le verrez dans Présence."
     }
   },
   "visitantes": {

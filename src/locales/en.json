@@ -8597,7 +8597,10 @@
       "patron": "Pattern"
     },
     "AdminOfficeUsers": {
-      "masAcciones": "More actions"
+      "masAcciones": "More actions",
+      "vacioAyuda": "Who works in the office: dispatch, HR, management. Each signs in to the CRM with their role.",
+      "agregarPrimera": "Add someone from the office",
+      "vacioTitulo": "No office staff yet"
     },
     "ChangePasswordForm": {
       "mostrarContrasena": "Show password",
@@ -9052,7 +9055,29 @@
       "comoPodemosAyudar": "How can we help?",
       "encuentraArticulosVideosYSoporte": "Find articles, videos and support to answer your questions.",
       "noHayNadaCon": "Nothing matches “{{q}}”",
-      "radioCanalGeneral": "Radio · General channel"
+      "radioCanalGeneral": "Radio · General channel",
+      "cmdk": {
+        "nuevoVigilante": "New guard",
+        "claveAgregar": "add",
+        "claveCrear": "create",
+        "nuevaPersona": "Add an office person",
+        "nuevaEstacion": "New station",
+        "irAHorario": "Go to Schedule",
+        "sinCubrir": "Uncovered",
+        "nuevoPermiso": "Record leave or vacation",
+        "buscando": "Searching…",
+        "personasYLugares": "People and places",
+        "acciones": "Actions",
+        "paginas": "Pages",
+        "tipoVigilante": "Guard",
+        "tipoSupervisor": "Supervisor",
+        "tipoOficina": "Office",
+        "tipoEstacion": "Station",
+        "tipoSede": "Site",
+        "tipoCliente": "Client",
+        "invitacionPendiente": "invitation pending",
+        "accion": "Action"
+      }
     },
     "registration": {
       "confirmarContrasena": "Confirm password",
@@ -12911,7 +12936,10 @@
       "filtroSucursal": "Branch",
       "todasLasSucursales": "All branches",
       "quitarFiltroPersona": "Clear the person filter",
-      "calendario": "Calendar"
+      "calendario": "Calendar",
+      "vacioAyuda": "Vacation, leave and excused absences for all staff, whether entered here, in the Schedule or from the guard app.",
+      "registrarElPrimero": "Record a leave",
+      "vacioTitulo": "No leave or vacation yet"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -16242,7 +16270,10 @@
       "nEstaciones_other": "{{count}} stations",
       "agregarEstacion": "Add station",
       "errorAlCargar": "Stations could not be loaded",
-      "errorAlCargarAyuda": "Check your connection and try again. Your stations are still there: do not create them again."
+      "errorAlCargarAyuda": "Check your connection and try again. Your stations are still there: do not create them again.",
+      "vacioAyuda": "A station is a post your company covers: a gatehouse, a front desk, a patrol. Pick the client and the site, then how many guards it needs.",
+      "crearLaPrimera": "Create the first station",
+      "vacioTitulo": "No stations yet"
     },
     "AppAccessPending": {
       "estePanelEsSoloParaElPersonal": "This dashboard is only for administrative staff. Your work is managed from the mobile app.",
@@ -18814,7 +18845,10 @@
       "conoceElPuesto": "{{n}} shifts here",
       "descansoCorto": "Only {{h}} h of rest",
       "ofertaEnviada": "Offer sent to the available guards.",
-      "noSePudoOfrecer": "Could not offer"
+      "noSePudoOfrecer": "Could not offer",
+      "sinRequisitoAyuda": "No-shows, empty slots and leave without a replacement show up here. To know what is missing, each station has to say how many guards it needs.",
+      "irAEstaciones": "Set a station’s requirement",
+      "sinRequisitoTitulo": "No station has a requirement yet"
     },
     "HorarioModos": {
       "modos": "Schedule mode",
@@ -18827,6 +18861,34 @@
     },
     "patrones": {
       "archivado": "archived"
+    },
+    "EstadoVacio": {
+      "limpiarFiltro": "Clear the filter",
+      "filtradoAyuda": "Try other words or clear the filter.",
+      "nadaCoincide": "Nothing matches the search",
+      "pideloAUnAdministrador": "Ask an administrator of the company."
+    },
+    "PrimerosPasos": {
+      "titulo": "Get your company going",
+      "progreso": "{{listos}} of {{total}} done. Each step ticks itself off when you do it.",
+      "ocultar": "Hide the guide",
+      "ocultarAyuda": "Hide it for the whole company",
+      "noSeOculto": "Couldn’t hide the guide. Try again.",
+      "hecho": "done",
+      "hacerlo": "Do it now",
+      "ir": "Go",
+      "station": "Create a station",
+      "stationAyuda": "The post you will cover: pick the client and the site.",
+      "requirement": "Set its requirement",
+      "requirementAyuda": "How many guards the station needs, and when.",
+      "guards": "Add your guards",
+      "guardsAyuda": "With or without an email: they join the app when you decide.",
+      "schedule": "Build the schedule",
+      "scheduleAyuda": "In the draft, assign each guard to their station.",
+      "publish": "Publish",
+      "publishAyuda": "With «Publish», shifts reach each guard’s app.",
+      "clockIn": "First clock-in",
+      "clockInAyuda": "When a guard clocks in, you’ll see it in Attendance."
     }
   },
   "map": {

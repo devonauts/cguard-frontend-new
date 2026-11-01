@@ -32,6 +32,14 @@ import {
   Timer,
   CornerDownLeft,
   LayoutGrid,
+  Building2,
+  Briefcase,
+  RadioTower,
+  Shield,
+  User as UserIcon,
+  UserCog,
+  Zap,
+  Loader2,
   Settings2,
   X,
   Check,
@@ -79,6 +87,16 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
 import { hasFeature } from "@/lib/entitlements";
+import {
+  accionesPermitidas,
+  debeBuscarEnServidor,
+  enOrden,
+  moverCursor,
+  secciones,
+  type Destino,
+  type Hallazgo,
+  type TipoDeHallazgo,
+} from "@/lib/buscadorGlobal";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { useGusto } from "@/hooks/useGusto";
 import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
@@ -151,20 +169,7 @@ function GlassButton({
 }
 
 // ── Buscador global ─────────────────────────────────────────────────────────
-type Destino = {
-  id: string;
-  label: string;
-  path: string;
-  grupo: "menu" | "config";
-  contexto?: string;
-};
-
-/** Sin tildes y en minúsculas: «vigilancia» encuentra «Vigilância» y «RONDAS». */
-const plano = (s: string) =>
-  (s || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+// Ranking, sections and keyboard live in lib/buscadorGlobal (tested there).
 
 /**
  * El conmutador del panel lateral.
@@ -514,27 +519,105 @@ export default function Header({
        del socio — y buscarlo por su nombre no encontraría su propia pantalla. */
   }, [t, agente.nombre, hayTienda, hayGusto, user, hasAny]);
 
-  const resultados = useMemo(() => {
-    const q = plano(consulta.trim());
+  // People and places from the server (debounced; stale answers dropped).
+  const [hallazgos, setHallazgos] = useState<Hallazgo[]>([]);
+  const [buscandoEnServidor, setBuscandoEnServidor] = useState(false);
+  const vueltaDeBusqueda = useRef(0);
 
-    if (!q) return [];
-    const marca = (d: Destino) => {
-      const l = plano(d.label);
+  useEffect(() => {
+    const q = consulta.trim();
+    const mia = ++vueltaDeBusqueda.current;
 
-      if (l.startsWith(q)) return 0;
-      if (l.includes(q)) return 1;
-      if (plano(d.contexto ?? "").includes(q)) return 2;
+    if (!debeBuscarEnServidor(q)) {
+      setHallazgos([]);
+      setBuscandoEnServidor(false);
 
-      return 99;
-    };
+      return;
+    }
+    setBuscandoEnServidor(true);
+    const id = window.setTimeout(async () => {
+      try {
+        const tid = localStorage.getItem("tenantId") || "";
+        const r: any = await ApiService.get(
+          `/tenant/${tid}/search?q=${encodeURIComponent(q)}`,
+        );
+        if (mia !== vueltaDeBusqueda.current) return;
+        const lista = r?.data?.results ?? r?.results;
 
-    return destinos
-      .map((d) => ({ d, r: marca(d) }))
-      .filter((x) => x.r < 99)
-      .sort((a, b) => a.r - b.r)
-      .slice(0, 8)
-      .map((x) => x.d);
-  }, [consulta, destinos]);
+        setHallazgos(Array.isArray(lista) ? lista : []);
+      } catch {
+        // No access or offline: pages and actions still answer.
+        if (mia === vueltaDeBusqueda.current) setHallazgos([]);
+      } finally {
+        if (mia === vueltaDeBusqueda.current) setBuscandoEnServidor(false);
+      }
+    }, 200);
+
+    return () => window.clearTimeout(id);
+  }, [consulta]);
+
+  /** Shortcuts, only the ones this person may use. */
+  const acciones = useMemo(
+    () =>
+      accionesPermitidas(
+        [
+          {
+            id: "nuevo-vigilante",
+            label: t("ui.header.cmdk.nuevoVigilante", "Nuevo vigilante"),
+            path: "/personal/nueva?tipo=vigilante",
+            permisos: ["securityGuardCreate"],
+            claves: [t("ui.header.cmdk.claveAgregar", "agregar"), t("ui.header.cmdk.claveCrear", "crear"), "personal"],
+          },
+          {
+            id: "nueva-persona",
+            label: t("ui.header.cmdk.nuevaPersona", "Agregar persona de oficina"),
+            path: "/personal/nueva?tipo=oficina",
+            permisos: ["userCreate"],
+            claves: [t("ui.header.cmdk.claveAgregar", "agregar"), t("ui.header.cmdk.claveCrear", "crear"), "usuario"],
+          },
+          {
+            id: "nueva-estacion",
+            label: t("ui.header.cmdk.nuevaEstacion", "Nueva estación"),
+            path: "/stations?nueva=1",
+            permisos: ["stationCreate"],
+            claves: [t("ui.header.cmdk.claveAgregar", "agregar"), t("ui.header.cmdk.claveCrear", "crear"), "puesto"],
+          },
+          {
+            id: "horario",
+            label: t("ui.header.cmdk.irAHorario", "Ir a Horario"),
+            path: "/schedule",
+            permisos: ["stationRead"],
+            claves: ["turnos", "planificador", "borrador"],
+          },
+          {
+            id: "sin-cubrir",
+            label: t("ui.header.cmdk.sinCubrir", "Sin cubrir"),
+            path: "/open-shifts",
+            permisos: ["shiftRead"],
+            claves: ["huecos", "faltas", "cubrir"],
+          },
+          {
+            id: "nuevo-permiso",
+            label: t("ui.header.cmdk.nuevoPermiso", "Registrar un permiso o vacaciones"),
+            path: "/time-off?nuevo=1",
+            permisos: ["timeOffRequestCreate"],
+            claves: ["vacaciones", "ausencia", "permiso"],
+          },
+        ],
+        (perm) => hasAny([perm]),
+      ),
+    [t, hasAny],
+  );
+
+  const panel = useMemo(
+    () => secciones(consulta, hallazgos, acciones, destinos),
+    [consulta, hallazgos, acciones, destinos],
+  );
+  const resultados = useMemo(() => enOrden(panel), [panel]);
+
+  useEffect(() => {
+    setCursor((c) => (c < resultados.length ? c : 0));
+  }, [resultados.length]);
 
   useEffect(() => {
     setCursor(0);
@@ -596,10 +679,10 @@ export default function Header({
   const teclasBusqueda = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setCursor((c) => Math.min(c + 1, Math.max(resultados.length - 1, 0)));
+      setCursor((c) => moverCursor(c, 1, resultados.length));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setCursor((c) => Math.max(c - 1, 0));
+      setCursor((c) => moverCursor(c, -1, resultados.length));
     } else if (e.key === "Enter") {
       const d = resultados[cursor];
 
@@ -608,6 +691,50 @@ export default function Header({
         irA(d);
       }
     }
+  };
+
+  const TIPO_DE_HALLAZGO: Record<TipoDeHallazgo, string> = {
+    guard: t("ui.header.cmdk.tipoVigilante", "Vigilante"),
+    supervisor: t("ui.header.cmdk.tipoSupervisor", "Supervisor"),
+    office: t("ui.header.cmdk.tipoOficina", "Oficina"),
+    station: t("ui.header.cmdk.tipoEstacion", "Estación"),
+    postSite: t("ui.header.cmdk.tipoSede", "Sede"),
+    client: t("ui.header.cmdk.tipoCliente", "Cliente"),
+  };
+
+  const iconoDeDestino = (d: Destino) => {
+    if (d.grupo === "config") return <Settings2 />;
+    if (d.grupo === "accion") return <Zap />;
+    if (d.grupo !== "hallazgo") return <LayoutGrid />;
+    switch (d.tipo) {
+      case "guard":
+        return <Shield />;
+      case "supervisor":
+        return <UserCog />;
+      case "office":
+        return <UserIcon />;
+      case "station":
+        return <RadioTower />;
+      case "postSite":
+        return <Building2 />;
+      default:
+        return <Briefcase />;
+    }
+  };
+
+  const segundaLinea = (d: Destino) => {
+    if (d.grupo === "hallazgo") {
+      const tipo = d.tipo ? TIPO_DE_HALLAZGO[d.tipo] : "";
+      const extra =
+        d.contexto === "pending"
+          ? t("ui.header.cmdk.invitacionPendiente", "invitación pendiente")
+          : d.contexto;
+
+      return extra ? `${tipo} · ${extra}` : tipo;
+    }
+    if (d.grupo === "accion") return t("ui.header.cmdk.accion", "Acción");
+
+    return `${d.grupo === "config" ? t("header.cmdk.settingsGroup") : t("header.cmdk.mainGroup")}${d.contexto ? ` · ${d.contexto}` : ""}`;
   };
 
   const esMac =
@@ -829,72 +956,101 @@ export default function Header({
 
             {buscando && consulta.trim().length > 0 && (
               <div className="absolute left-0 right-0 top-full z-50 mt-2">
-                <div className="glass-raised cg-flotante cc-rise max-h-[62vh] overflow-y-auto p-1.5">
+                <div className="glass-raised cg-flotante cc-rise max-h-[62vh] overflow-y-auto p-1.5" role="listbox">
                   {resultados.length === 0 ? (
                     <div
                       className="px-3 py-6 text-center text-xs"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      {t("ui.header.noHayNadaCon", {
-                        defaultValue: "No hay nada con «{{q}}»",
-                        q: consulta.trim(),
-                      })}
+                      {buscandoEnServidor
+                        ? t("ui.header.cmdk.buscando", "Buscando…")
+                        : t("ui.header.noHayNadaCon", {
+                            defaultValue: "No hay nada con «{{q}}»",
+                            q: consulta.trim(),
+                          })}
                     </div>
                   ) : (
-                    resultados.map((d, i) => {
-                      const activo = i === cursor;
+                    (
+                      [
+                        ["hallazgos", t("ui.header.cmdk.personasYLugares", "Personas y lugares")],
+                        ["acciones", t("ui.header.cmdk.acciones", "Acciones")],
+                        ["paginas", t("ui.header.cmdk.paginas", "Páginas")],
+                      ] as const
+                    ).map(([clave, titulo]) => {
+                      const lista = panel[clave];
+
+                      if (!lista.length) return null;
+                      const base =
+                        clave === "hallazgos"
+                          ? 0
+                          : clave === "acciones"
+                            ? panel.hallazgos.length
+                            : panel.hallazgos.length + panel.acciones.length;
 
                       return (
-                        <button
-                          key={d.id}
-                          className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors"
-                          style={
-                            activo
-                              ? {
-                                  background: "var(--brand-wash)",
-                                  boxShadow:
-                                    "inset 0 0 0 1px var(--brand-line)",
-                                }
-                              : undefined
-                          }
-                          type="button"
-                          onClick={() => irA(d)}
-                          onMouseEnter={() => setCursor(i)}
-                        >
-                          <IconTile
-                            size="sm"
-                            tone={activo ? "brand" : "neutral"}
+                        <div key={clave} role="group" aria-label={titulo}>
+                          <div
+                            className="flex items-center gap-1.5 px-2.5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide"
+                            style={{ color: "var(--ink-faint)" }}
                           >
-                            {d.grupo === "config" ? (
-                              <Settings2 />
-                            ) : (
-                              <LayoutGrid />
+                            {titulo}
+                            {clave === "hallazgos" && buscandoEnServidor && (
+                              <Loader2 className="h-3 w-3 animate-spin" />
                             )}
-                          </IconTile>
-                          <span className="min-w-0 flex-1">
-                            <span
-                              className="block truncate text-sm font-semibold"
-                              style={{ color: "var(--ink)" }}
-                            >
-                              {d.label}
-                            </span>
-                            <span
-                              className="block truncate text-[11px]"
-                              style={{ color: "var(--ink-faint)" }}
-                            >
-                              {d.grupo === "config"
-                                ? t("header.cmdk.settingsGroup")
-                                : t("header.cmdk.mainGroup")}
-                              {d.contexto ? ` · ${d.contexto}` : ""}
-                            </span>
-                          </span>
-                          {activo && (
-                            <CornerDownLeft
-                              className="h-3.5 w-3.5 shrink-0"
-                              style={{ color: "var(--brand-text)" }}
-                            />
-                          )}
-                        </button>
+                          </div>
+                          {lista.map((d, j) => {
+                            const i = base + j;
+                            const activo = i === cursor;
+
+                            return (
+                              <button
+                                key={d.id}
+                                aria-selected={activo}
+                                className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors"
+                                role="option"
+                                style={
+                                  activo
+                                    ? {
+                                        background: "var(--brand-wash)",
+                                        boxShadow:
+                                          "inset 0 0 0 1px var(--brand-line)",
+                                      }
+                                    : undefined
+                                }
+                                type="button"
+                                onClick={() => irA(d)}
+                                onMouseEnter={() => setCursor(i)}
+                              >
+                                <IconTile
+                                  size="sm"
+                                  tone={activo ? "brand" : "neutral"}
+                                >
+                                  {iconoDeDestino(d)}
+                                </IconTile>
+                                <span className="min-w-0 flex-1">
+                                  <span
+                                    className="block truncate text-sm font-semibold"
+                                    style={{ color: "var(--ink)" }}
+                                  >
+                                    {d.label}
+                                  </span>
+                                  <span
+                                    className="block truncate text-[11px]"
+                                    style={{ color: "var(--ink-faint)" }}
+                                  >
+                                    {segundaLinea(d)}
+                                  </span>
+                                </span>
+                                {activo && (
+                                  <CornerDownLeft
+                                    className="h-3.5 w-3.5 shrink-0"
+                                    style={{ color: "var(--brand-text)" }}
+                                  />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
                       );
                     })
                   )}

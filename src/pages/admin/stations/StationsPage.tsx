@@ -5,7 +5,8 @@
  * encuentre y abra una estación de un vistazo.
  */
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { usePuede } from "@/hooks/usePuede";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Plus, RadioTower, RotateCcw } from "lucide-react";
 
@@ -43,7 +44,20 @@ export default function StationsPage() {
   const [reloadKey, setReloadKey] = useState(0);
   const [query, setQuery] = useState("");
   // «Agregar estación»: primero de qué cliente y sede, luego el formulario.
-  const [eligiendo, setEligiendo] = useState(false);
+  const [params, setParams] = useSearchParams();
+  // `/stations?nueva=1` (⌘K «Nueva estación», the getting-started guide) opens
+  // the site picker straight away.
+  const [eligiendo, setEligiendo] = useState(() => params.get("nueva") === "1");
+  const crear = usePuede("estaciones.crear");
+
+  useEffect(() => {
+    if (params.get("nueva") === "1") {
+      const p = new URLSearchParams(params);
+      p.delete("nueva");
+      setParams(p, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -173,7 +187,10 @@ export default function StationsPage() {
             stations={filtered}
             onOpen={openStation}
             onOpenTab={openStationTab}
+            consulta={query}
+            porQueNoPuedeCrear={crear.puede ? undefined : crear.porQueNo || ""}
             onAdd={() => setEligiendo(true)}
+            onLimpiarConsulta={() => setQuery("")}
           />
         )}
         <ElegirSedeParaEstacion open={eligiendo} onOpenChange={setEligiendo} />
