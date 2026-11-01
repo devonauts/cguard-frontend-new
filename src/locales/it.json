@@ -19689,7 +19689,8 @@
     },
     "CampoMarcaDeRegistro": {
       "ayuda": "Definisce in quale busta paga viene pagata questa persona",
-      "etiqueta": "Azienda di registrazione"
+      "etiqueta": "Azienda di registrazione",
+      "error": "Il resto è stato salvato, ma non l'azienda di registrazione. Riprova."
     },
     "ComprarCupoDeMarca": {
       "boton": "Paga {{precio}}",

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import CampoDeMarca from "./CampoDeMarca";
 
@@ -20,6 +21,7 @@ import {
  * (`PATCH /user/:id { homeBrandId }`, audited by the server).
  */
 export function useMarcaDeRegistro(userId: string | null | undefined) {
+  const { t } = useTranslation();
   const { activo } = useMarcas();
   const qc = useQueryClient();
   const tenant =
@@ -39,10 +41,20 @@ export function useMarcaDeRegistro(userId: string | null | undefined) {
     if (!tocado) setValor(inicial || "");
   }, [inicial, tocado]);
 
+  /** Never throws: the rest of the person was already saved by the screen. */
   const guardar = async () => {
     if (!activo || !userId || !tocado || !valor || valor === inicial) return;
-    await fijarMarcaDeRegistro(String(userId), valor);
-    await qc.invalidateQueries({ queryKey: ["marcas"] });
+    try {
+      await fijarMarcaDeRegistro(String(userId), valor);
+      await qc.invalidateQueries({ queryKey: ["marcas"] });
+    } catch {
+      toast.error(
+        t(
+          "ui.CampoMarcaDeRegistro.error",
+          "Se guardó lo demás, pero no la empresa en la que se registró. Inténtalo otra vez.",
+        ),
+      );
+    }
   };
 
   return {

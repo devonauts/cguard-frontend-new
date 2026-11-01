@@ -19149,7 +19149,8 @@
     },
     "CampoMarcaDeRegistro": {
       "ayuda": "Sets which payroll pays this person",
-      "etiqueta": "Company they registered with"
+      "etiqueta": "Company they registered with",
+      "error": "Everything else was saved, but not the company they registered with. Try again."
     },
     "ComprarCupoDeMarca": {
       "boton": "Pay {{precio}}",

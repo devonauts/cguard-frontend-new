@@ -19689,7 +19689,8 @@
     },
     "CampoMarcaDeRegistro": {
       "ayuda": "Détermine sur quelle paie cette personne est payée",
-      "etiqueta": "Entreprise d'inscription"
+      "etiqueta": "Entreprise d'inscription",
+      "error": "Le reste a été enregistré, mais pas l'entreprise d'inscription. Réessayez."
     },
     "ComprarCupoDeMarca": {
       "boton": "Payer {{precio}}",

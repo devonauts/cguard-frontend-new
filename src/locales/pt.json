@@ -19149,7 +19149,8 @@
     },
     "CampoMarcaDeRegistro": {
       "ayuda": "Define em qual folha de pagamento esta pessoa recebe",
-      "etiqueta": "Empresa em que foi registrada"
+      "etiqueta": "Empresa em que foi registrada",
+      "error": "O restante foi salvo, mas não a empresa em que foi registrada. Tente de novo."
     },
     "ComprarCupoDeMarca": {
       "boton": "Pagar {{precio}}",

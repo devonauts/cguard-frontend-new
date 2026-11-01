@@ -19689,7 +19689,8 @@
     },
     "CampoMarcaDeRegistro": {
       "ayuda": "Bepaalt via welke loonlijst deze persoon wordt betaald",
-      "etiqueta": "Bedrijf van inschrijving"
+      "etiqueta": "Bedrijf van inschrijving",
+      "error": "De rest is opgeslagen, maar het bedrijf van inschrijving niet. Probeer het opnieuw."
     },
     "ComprarCupoDeMarca": {
       "boton": "{{precio}} betalen",

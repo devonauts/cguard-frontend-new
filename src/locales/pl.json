@@ -19997,7 +19997,8 @@
     },
     "CampoMarcaDeRegistro": {
       "ayuda": "Określa, z której listy płac ta osoba otrzymuje wynagrodzenie",
-      "etiqueta": "Firma, w której została zarejestrowana"
+      "etiqueta": "Firma, w której została zarejestrowana",
+      "error": "Pozostałe dane zapisano, ale nie firmę rejestracji. Spróbuj ponownie."
     },
     "ComprarCupoDeMarca": {
       "boton": "Zapłać {{precio}}",

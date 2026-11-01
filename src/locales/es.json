@@ -19149,7 +19149,8 @@
     },
     "CampoMarcaDeRegistro": {
       "ayuda": "Define en qué planilla de roles de pago cobra esta persona",
-      "etiqueta": "Empresa en la que se registró"
+      "etiqueta": "Empresa en la que se registró",
+      "error": "Se guardó lo demás, pero no la empresa en la que se registró. Inténtalo otra vez."
     },
     "ComprarCupoDeMarca": {
       "boton": "Pagar {{precio}}",
