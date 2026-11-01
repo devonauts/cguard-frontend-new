@@ -704,7 +704,13 @@ export default function NominaRecords() {
             icono={<Users className="size-4" style={{ color: "var(--ink-soft)" }} />}
             options={opciones.guards}
             todos={t("ui.NominaRecords.todosLosTrabajadores", "Todos los trabajadores")}
-            seleccionado={t("ui.NominaRecords.personaSeleccionada", "Persona seleccionada")}
+            seleccionado={
+              // The name from the link (Atrasos), or from the rows it filtered to.
+              searchParams.get("persona") ||
+              rows.find((r) => String(r.guardName?.id || (r as any).guardNameId || "") === String(f.guard))
+                ?.guardName?.fullName ||
+              t("ui.NominaRecords.personaSeleccionada", "Persona seleccionada")
+            }
             value={f.guard}
             onChange={(v) => setF({ guard: v })}
           />
