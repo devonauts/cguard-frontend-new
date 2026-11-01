@@ -2912,7 +2912,9 @@
       "correction_pending": "Correction en attente",
       "missing_location": "Sans localisation",
       "selfie_no_face": "Selfie sans visage",
-      "face_mismatch": "Visage qui ne correspond pas"
+      "face_mismatch": "Visage qui ne correspond pas",
+      "absence_reported": "Absence signalée",
+      "wrong_post": "Pointé à un autre poste"
     },
     "excEstado": {
       "open": "Ouverte",
@@ -2951,7 +2953,8 @@
       "autoOut": "Départ automatique",
       "relevoOut": "Clôturée par la relève",
       "earlyExit": "Départ anticipé",
-      "supervisorOut": "Clôturée par le superviseur"
+      "supervisorOut": "Clôturée par le superviseur",
+      "registradaPor": "Enregistrée par {{nombre}}"
     }
   },
   "performance": {
@@ -11259,7 +11262,8 @@
       "personaSeleccionada": "Personne sélectionnée",
       "sinHorarioPublicado": "Aucun planning publié pour l’instant",
       "sinHorarioPublicadoAyuda": "Les pointages apparaissent quand les agents pointent sur leurs services. Commencez par construire et publier le planning.",
-      "armarHorario": "Construire le planning"
+      "armarHorario": "Construire le planning",
+      "sinUbicacion": "Sans position"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Prévenir aussi ces adresses e-mail",
@@ -19584,7 +19588,7 @@
       "llegaron": "Arrivés",
       "dePermiso": "En congé ou vacances",
       "aunPorLlegar": "Pas encore arrivés",
-      "comoSeCuenta": "On compte la journée de l'entreprise, à son heure. Un poste de nuit compte le jour où il commence ; un remplacement occupe une seule place ; qui n'a pas pointé 20 minutes après le début compte comme absent.",
+      "comoSeCuenta": "On compte la journée de l'entreprise, à son heure. Un poste de nuit compte le jour où il commence ; un remplacement occupe une seule place ; qui n'a pas pointé {{min}} minutes après le début compte comme absent.",
       "lote": {
         "diaCerrado": "jour de paie clôturé",
         "noEncontrado": "n'existe plus ou hors de vos sites",
@@ -19667,6 +19671,10 @@
       "franjaAyuda": "Les cellules avec un point ont changé en direct. « Voir les nouveautés » relit le planning réel avec vos modifications par-dessus ; la publication vérifie à nouveau.",
       "releer": "Voir les nouveautés",
       "entendido": "Compris"
+    },
+    "RutaConPermiso": {
+      "titulo": "Pas d’accès à cette page",
+      "descripcion": "Votre rôle ne peut pas voir cette page. Si vous en avez besoin, demandez-la à un administrateur."
     }
   },
   "visitantes": {

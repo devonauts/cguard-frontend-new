@@ -2918,7 +2918,9 @@
       "correction_pending": "Korekta w toku",
       "missing_location": "Bez lokalizacji",
       "selfie_no_face": "Selfie bez twarzy",
-      "face_mismatch": "Niezgodna twarz"
+      "face_mismatch": "Niezgodna twarz",
+      "absence_reported": "Zgłoszona nieobecność",
+      "wrong_post": "Odbicie na innym posterunku"
     },
     "excEstado": {
       "open": "Otwarta",
@@ -2957,7 +2959,8 @@
       "autoOut": "Wyjście automatyczne",
       "relevoOut": "Zamknięte przez zmiennika",
       "earlyExit": "Wcześniejsze wyjście",
-      "supervisorOut": "Zamknięte przez nadzorcę"
+      "supervisorOut": "Zamknięte przez nadzorcę",
+      "registradaPor": "Zarejestrowane przez {{nombre}}"
     }
   },
   "performance": {
@@ -11305,7 +11308,8 @@
       "personaSeleccionada": "Wybrana osoba",
       "sinHorarioPublicado": "Nie opublikowano jeszcze grafiku",
       "sinHorarioPublicadoAyuda": "Odbicia pojawiają się, gdy pracownicy ochrony odbijają wejście na swoich zmianach. Najpierw ułóż i opublikuj grafik.",
-      "armarHorario": "Ułóż grafik"
+      "armarHorario": "Ułóż grafik",
+      "sinUbicacion": "Brak lokalizacji"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Powiadamiaj dodatkowo te adresy e-mail",
@@ -19886,7 +19890,7 @@
       "llegaron": "Przybyli",
       "dePermiso": "Na urlopie lub zwolnieniu",
       "aunPorLlegar": "Jeszcze nie przyszli",
-      "comoSeCuenta": "Liczy się dzień firmy, w jej czasie. Zmiana nocna liczy się w dniu rozpoczęcia; zastępstwo to jedno miejsce; kto nie odbił się 20 minut po rozpoczęciu, liczy się jako nieobecny.",
+      "comoSeCuenta": "Liczy się dzień firmy, w jej czasie. Zmiana nocna liczy się w dniu rozpoczęcia; zastępstwo to jedno miejsce; kto nie odbił się {{min}} minut po rozpoczęciu, liczy się jako nieobecny.",
       "lote": {
         "diaCerrado": "zamknięty dzień płacowy",
         "noEncontrado": "już nie istnieje lub spoza Twoich obiektów",
@@ -19975,6 +19979,10 @@
       "franjaAyuda": "Komórki z kropką zmieniono na żywo. „Zobacz nowości” ponownie wczytuje rzeczywisty grafik z Twoimi zmianami na wierzchu; przy publikacji wszystko jest sprawdzane jeszcze raz.",
       "releer": "Zobacz nowości",
       "entendido": "Rozumiem"
+    },
+    "RutaConPermiso": {
+      "titulo": "Brak dostępu do tej strony",
+      "descripcion": "Twoja rola nie może zobaczyć tej strony. Jeśli jej potrzebujesz, poproś administratora."
     }
   },
   "visitantes": {

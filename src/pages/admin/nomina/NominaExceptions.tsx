@@ -79,6 +79,7 @@ const TYPE_OPTIONS = [
   "face_mismatch",
   "early_departure",
   "overtime",
+  "absence_reported",
 ];
 // `labelKey` se traduce al pintar (t() aquí congelaría el idioma de arranque).
 const STATUS_OPTIONS: { value: string; label: string; labelKey: string }[] = [

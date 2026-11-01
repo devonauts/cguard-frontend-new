@@ -10722,7 +10722,8 @@
       "personaSeleccionada": "Persona seleccionada",
       "sinHorarioPublicado": "Todavía no hay un horario publicado",
       "sinHorarioPublicadoAyuda": "Las marcaciones aparecen cuando los vigilantes marcan entrada en sus turnos. Primero arma y publica el horario.",
-      "armarHorario": "Armar el horario"
+      "armarHorario": "Armar el horario",
+      "sinUbicacion": "Sin ubicación"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar además a estos correos",
@@ -19047,7 +19048,7 @@
       "llegaron": "Llegaron",
       "dePermiso": "De permiso o vacaciones",
       "aunPorLlegar": "Aún por llegar",
-      "comoSeCuenta": "Se cuenta el día de la empresa, en su hora. Un turno de noche cuenta el día en que empieza; quien cubre a otro ocupa un solo puesto; quien no marcó a los 20 minutos del inicio cuenta como inasistencia.",
+      "comoSeCuenta": "Se cuenta el día de la empresa, en su hora. Un turno de noche cuenta el día en que empieza; quien cubre a otro ocupa un solo puesto; quien no marcó a los {{min}} minutos del inicio cuenta como inasistencia.",
       "lote": {
         "diaCerrado": "día de pago cerrado",
         "noEncontrado": "ya no existe o no es de tus sedes",
@@ -19130,6 +19131,10 @@
       "franjaAyuda": "Las celdas con un punto cambiaron en vivo. «Ver lo nuevo» vuelve a leer el horario real con tus cambios encima; al publicar se revisa otra vez.",
       "releer": "Ver lo nuevo",
       "entendido": "Entendido"
+    },
+    "RutaConPermiso": {
+      "titulo": "Sin acceso a esta página",
+      "descripcion": "Tu rol no puede ver esta página. Si la necesitas, pídesela a un administrador."
     }
   },
   "map": {
@@ -19295,7 +19300,9 @@
       "correction_pending": "Corrección pendiente",
       "missing_location": "Sin ubicación",
       "selfie_no_face": "Selfie sin cara",
-      "face_mismatch": "Cara que no coincide"
+      "face_mismatch": "Cara que no coincide",
+      "absence_reported": "Ausencia reportada",
+      "wrong_post": "Marcó en otra estación"
     },
     "excEstado": {
       "open": "Abierta",
@@ -19334,7 +19341,8 @@
       "autoOut": "Salida automática",
       "relevoOut": "Cerrada por el relevo",
       "earlyExit": "Salida anticipada",
-      "supervisorOut": "Cerrada por supervisor"
+      "supervisorOut": "Cerrada por supervisor",
+      "registradaPor": "Registrada por {{nombre}}"
     }
   },
   "maps": {

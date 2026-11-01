@@ -152,6 +152,8 @@ export const EXCEPTION_LABEL: Record<string, string> = tablaDeEtiquetas({
   face_mismatch: "nomina.excepcion.face_mismatch",
   overtime: "nomina.excepcion.overtime",
   correction_pending: "nomina.excepcion.correction_pending",
+  absence_reported: "nomina.excepcion.absence_reported",
+  wrong_post: "nomina.excepcion.wrong_post",
 });
 
 /** attendanceException.status → etiqueta + tono (de abierta a resuelta). */

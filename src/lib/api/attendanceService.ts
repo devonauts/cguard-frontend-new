@@ -82,6 +82,8 @@ export interface AttendanceRecord {
    * Null en los turnos anteriores al relevo v2 (todos fueron desde la app).
    */
   punchInMethod?: string | null;
+  /** Who registered the entry for the guard (Registrar entrada). */
+  punchInByName?: string | null;
   /** Cómo se cerró: 'app' | 'relevo' | 'auto_location' | 'sweep' | 'early_exit' | 'supervisor'. */
   punchOutMethod?: string | null;
   /** Every clock in/out pair within this shift's record (dedup model). */
