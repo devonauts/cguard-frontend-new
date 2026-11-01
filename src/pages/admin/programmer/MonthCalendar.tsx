@@ -168,9 +168,10 @@ function MonthCalendarInner({
           background: "var(--glass-sunken)",
         }}
       >
-        {diasSemana.map((d) => (
+        {diasSemana.map((d, i) => (
           <div
-            key={d}
+            // Weekday initials repeat in some languages (M, M): the index keeps keys unique.
+            key={`${i}-${d}`}
             className="px-2 py-2 text-center text-[11px] font-semibold uppercase tracking-wider"
             style={{
               color: "var(--ink-soft)",
