@@ -18076,7 +18076,8 @@
         "afectaRenta": "Entra nell'imponibile fiscale",
         "recurrente": "Si applica ogni periodo senza inserirla",
         "activo": "Attiva",
-        "nota": "Nota"
+        "nota": "Nota",
+        "sugerido": "Suggerito dal modello del paese: {{valor}}"
       },
       "editar": "Modifica",
       "tipo": {
@@ -19400,7 +19401,10 @@
       "septimoRecargo": "Maggiorazione di quelle ore (%)",
       "septimoDespues": "Maggiorazione dopo (%)",
       "septimoSoloSi": "Solo se la settimana supera (h)",
-      "septimoSoloSiAyuda": "0 = sempre. Kentucky: 40."
+      "septimoSoloSiAyuda": "0 = sempre. Kentucky: 40.",
+      "sugerido": "Suggerito dalla legge ({{fuente}}): {{valor}}",
+      "volverAlSugerido": "Torna al suggerito",
+      "valoresAbiertos": "Ogni valore è della tua azienda: scrivi quello che usi. Il suggerimento di legge è solo un riferimento."
     },
     "puede": {
       "sinPermiso": "Il tuo ruolo non ha il permesso per questo. Chiedilo a un amministratore.",

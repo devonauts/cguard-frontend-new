@@ -18362,7 +18362,8 @@
         "afectaRenta": "Wchodzi do podstawy opodatkowania",
         "recurrente": "Stosowany w każdym okresie bez wprowadzania",
         "activo": "Aktywny",
-        "nota": "Uwaga"
+        "nota": "Uwaga",
+        "sugerido": "Sugerowane przez szablon kraju: {{valor}}"
       },
       "editar": "Edytuj",
       "tipo": {
@@ -19702,7 +19703,10 @@
       "septimoRecargo": "Dodatek za te godziny (%)",
       "septimoDespues": "Dodatek potem (%)",
       "septimoSoloSi": "Tylko jeśli tydzień przekracza (h)",
-      "septimoSoloSiAyuda": "0 = zawsze. Kentucky: 40."
+      "septimoSoloSiAyuda": "0 = zawsze. Kentucky: 40.",
+      "sugerido": "Sugerowane przez prawo ({{fuente}}): {{valor}}",
+      "volverAlSugerido": "Wróć do sugerowanej",
+      "valoresAbiertos": "Każda wartość należy do Twojej firmy: wpisz tę, której używasz. Sugestia prawna jest tylko punktem odniesienia."
     },
     "puede": {
       "sinPermiso": "Twoja rola nie ma do tego uprawnień. Poproś administratora.",

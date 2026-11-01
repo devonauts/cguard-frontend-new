@@ -17539,7 +17539,8 @@
         "afectaRenta": "Entra en la base de renta",
         "recurrente": "Se aplica cada periodo sin cargarlo",
         "activo": "Activo",
-        "nota": "Nota"
+        "nota": "Nota",
+        "sugerido": "Sugerido por la plantilla del país: {{valor}}"
       },
       "editar": "Editar",
       "tipo": {
@@ -18863,7 +18864,10 @@
       "septimoRecargo": "Recargo de esas horas (%)",
       "septimoDespues": "Recargo después (%)",
       "septimoSoloSi": "Sólo si la semana pasa de (h)",
-      "septimoSoloSiAyuda": "0 = siempre. Kentucky: 40."
+      "septimoSoloSiAyuda": "0 = siempre. Kentucky: 40.",
+      "sugerido": "Sugerido por ley ({{fuente}}): {{valor}}",
+      "volverAlSugerido": "Volver al sugerido",
+      "valoresAbiertos": "Cada valor es de tu empresa: escribe el que uses. Lo sugerido por ley es sólo una referencia."
     },
     "puede": {
       "sinPermiso": "Tu rol no tiene permiso para esto. Pídeselo a un administrador.",

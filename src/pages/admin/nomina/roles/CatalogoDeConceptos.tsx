@@ -18,6 +18,7 @@ import payrollSlipsService, {
   type PayrollConcept, type ConceptKind, type ConceptMethod, type ConceptBase, type HoursOf,
 } from "@/lib/api/payrollSlipsService";
 import { PresentacionDelModulo, usePayrollAccess, nombreDeConcepto, dinero, aCentavos, deCentavos, useEtiquetas } from "./comun";
+import { SugerenciaDeLey } from "../ReglasDePago";
 
 const KINDS: ConceptKind[] = ["earning", "deduction", "employer", "info"];
 const METHODS: ConceptMethod[] = ["fixed", "percent", "hours", "days", "table", "manual"];
@@ -267,6 +268,18 @@ function ConceptoForm({ inicial, moneda, decimals, onClose, onSaved }: { inicial
         {(c.method === "percent" || c.method === "hours") && (
           <FormField label={c.method === "hours" ? t("ui.RolesDePago.conceptos.recargo", "Recargo sobre la hora (%)") : t("ui.RolesDePago.conceptos.porcentaje", "Porcentaje")}>
             <input className={`${FIELD_CLS} tabular-nums`} inputMode="decimal" value={importe} onChange={(e) => setImporte(e.target.value)} />
+            {/* Any value is the company's; the country template only suggests one. */}
+            {inicial.suggestedRate !== null && inicial.suggestedRate !== undefined && c.method === inicial.method && (
+              <SugerenciaDeLey
+                distinto={importe.trim() === "" || Math.abs(Number(importe) - Number(inicial.suggestedRate)) > 1e-9}
+                etiqueta={t("ui.ReglasDePago.volverAlSugerido", "Volver al sugerido")}
+                texto={t("ui.RolesDePago.conceptos.sugerido", {
+                  valor: `${inicial.suggestedRate} %`,
+                  defaultValue: "Sugerido por la plantilla del país: {{valor}}",
+                })}
+                volver={() => setImporte(String(inicial.suggestedRate))}
+              />
+            )}
           </FormField>
         )}
         {c.method === "percent" && (

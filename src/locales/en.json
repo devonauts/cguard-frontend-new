@@ -17539,7 +17539,8 @@
         "afectaRenta": "Counts toward the income tax base",
         "recurrente": "Applied every period without adding it",
         "activo": "Active",
-        "nota": "Note"
+        "nota": "Note",
+        "sugerido": "Suggested by the country template: {{valor}}"
       },
       "editar": "Edit",
       "tipo": {
@@ -18863,7 +18864,10 @@
       "septimoRecargo": "Surcharge on those hours (%)",
       "septimoDespues": "Surcharge after that (%)",
       "septimoSoloSi": "Only if the week passes (h)",
-      "septimoSoloSiAyuda": "0 = always. Kentucky: 40."
+      "septimoSoloSiAyuda": "0 = always. Kentucky: 40.",
+      "sugerido": "Suggested by law ({{fuente}}): {{valor}}",
+      "volverAlSugerido": "Back to suggested",
+      "valoresAbiertos": "Every value belongs to your company: type the one you use. The legal suggestion is only a reference."
     },
     "puede": {
       "sinPermiso": "Your role doesn't have permission for this. Ask an administrator.",

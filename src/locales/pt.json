@@ -17539,7 +17539,8 @@
         "afectaRenta": "Entra na base do imposto de renda",
         "recurrente": "Aplica-se a cada período sem precisar lançar",
         "activo": "Ativa",
-        "nota": "Observação"
+        "nota": "Observação",
+        "sugerido": "Sugerido pelo modelo do país: {{valor}}"
       },
       "editar": "Editar",
       "tipo": {
@@ -18863,7 +18864,10 @@
       "septimoRecargo": "Adicional dessas horas (%)",
       "septimoDespues": "Adicional depois (%)",
       "septimoSoloSi": "Só se a semana passar de (h)",
-      "septimoSoloSiAyuda": "0 = sempre. Kentucky: 40."
+      "septimoSoloSiAyuda": "0 = sempre. Kentucky: 40.",
+      "sugerido": "Sugerido por lei ({{fuente}}): {{valor}}",
+      "volverAlSugerido": "Voltar ao sugerido",
+      "valoresAbiertos": "Cada valor é da sua empresa: escreva o que vocês usam. O sugerido por lei é só uma referência."
     },
     "puede": {
       "sinPermiso": "Seu papel não tem permissão para isto. Peça a um administrador.",

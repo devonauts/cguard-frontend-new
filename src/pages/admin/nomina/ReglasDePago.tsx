@@ -129,6 +129,7 @@ export function TramosExtra({
   titulo,
   ayuda,
   etiquetaDesde,
+  sugerencia,
 }: {
   tramos: Tramo[];
   onChange: (t: Tramo[]) => void;
@@ -136,6 +137,8 @@ export function TramosExtra({
   titulo?: string;
   ayuda?: string;
   etiquetaDesde?: string;
+  /** The preset's tiers as a hint, with «Volver al sugerido» (see `SugerenciaDeLey`). */
+  sugerencia?: ReactNode;
 }) {
   const { t } = useTranslation();
   const set = (i: number, campo: "desdeHora" | "recargoPct", v: number) =>
@@ -152,6 +155,7 @@ export function TramosExtra({
           "A partir de cuántas horas extra acumuladas en el día aplica cada recargo. Sin escalones, las extra se pagan a tarifa simple.",
         )}
       </p>
+      {sugerencia}
       <div className="mt-2 space-y-2">
         {tramos.map((tramo, i) => (
           <div key={i} className="flex flex-wrap items-end gap-2">
@@ -205,6 +209,7 @@ function NumeroField({
   min = 0,
   max,
   hint,
+  sugerencia,
 }: {
   label: string;
   value: number | undefined;
@@ -212,6 +217,8 @@ function NumeroField({
   min?: number;
   max?: number;
   hint?: string;
+  /** The preset's value as a hint, with «Volver al sugerido» (see `SugerenciaDeLey`). */
+  sugerencia?: ReactNode;
 }) {
   return (
     <label className="block">
@@ -229,7 +236,46 @@ function NumeroField({
           {hint}
         </span>
       )}
+      {sugerencia}
     </label>
+  );
+}
+
+/**
+ * THE SUGGESTED VALUE. Mike, 2026-11-01: «las horas extras y tal tienen que ser
+ * abiertas para que el tenant ponga el valor que le guste». Every value is the
+ * company's; the country (or state) preset only shows what it suggests, and
+ * «Volver al sugerido» puts it back when the company typed something else.
+ */
+export function SugerenciaDeLey({
+  texto,
+  distinto,
+  volver,
+  etiqueta,
+}: {
+  texto: string;
+  distinto: boolean;
+  volver: () => void;
+  etiqueta: string;
+}) {
+  return (
+    <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs" data-sugerido="" style={{ color: "var(--ink-faint)" }}>
+      <span>{texto}</span>
+      {distinto && (
+        <button
+          className="cg-focus rounded underline underline-offset-2"
+          data-volver-al-sugerido=""
+          style={{ color: "var(--brand)" }}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            volver();
+          }}
+        >
+          {etiqueta}
+        </button>
+      )}
+    </span>
   );
 }
 
@@ -539,6 +585,45 @@ export default function ReglasDePago({
   const presetDelEstado = estadoElegido && regiones ? regiones[estadoElegido] : undefined;
   const preset = presetDelEstado || (pais ? presets.data?.presets?.[pais] : undefined);
   const nombreDelPreset = presetDelEstado ? NOMBRE_DE_ESTADO[estadoElegido] || estadoElegido : nombrePais(pais);
+
+  /* What the preset suggests for each value. Only a hint: the company's value is
+     the one paid, and «Volver al sugerido» puts the preset's back. */
+  const sp: Politica = (preset?.politica as Politica) || {};
+  const conPct = (n: number) => `${n} %`;
+  const conHoras = (n: number) => `${n} h`;
+  const conHora = (n: number) => `${String(n).padStart(2, "0")}:00`;
+  const textoSugerido = (valor: string) =>
+    t("ui.ReglasDePago.sugerido", { fuente: nombreDelPreset, valor, defaultValue: "Sugerido por ley ({{fuente}}): {{valor}}" });
+  const volverAlSugerido = t("ui.ReglasDePago.volverAlSugerido", "Volver al sugerido");
+  const sug = (
+    actual: number | null | undefined,
+    sugerido: number | null | undefined,
+    formato: (n: number) => string,
+    volver: () => void,
+  ): ReactNode => {
+    if (!preset || sugerido === null || sugerido === undefined || !Number.isFinite(Number(sugerido))) return undefined;
+    const distinto = Math.abs(Number(actual ?? 0) - Number(sugerido)) > 1e-9;
+
+    return <SugerenciaDeLey distinto={distinto} etiqueta={volverAlSugerido} texto={textoSugerido(formato(Number(sugerido)))} volver={volver} />;
+  };
+  const textoDeTramos = (lista: Tramo[]) =>
+    lista
+      .map((x) => `+${x.recargoPct} %${x.desdeHora > 0 ? ` (${t("ui.ReglasDePago.resumen.desdeLaHora", { n: x.desdeHora + 1, defaultValue: "desde la {{n}}.ª" })})` : ""}`)
+      .join(", ");
+  const mismaLista = (a: Tramo[], b: Tramo[]) =>
+    a.length === b.length && a.every((x, i) => Number(x.desdeHora) === Number(b[i].desdeHora) && Number(x.recargoPct) === Number(b[i].recargoPct));
+  const sugTramos = (actual: Tramo[], sugerido: Tramo[] | undefined | null, volver: () => void): ReactNode => {
+    if (!preset || !sugerido || !sugerido.length) return undefined;
+
+    return (
+      <SugerenciaDeLey
+        distinto={!mismaLista(actual, sugerido)}
+        etiqueta={volverAlSugerido}
+        texto={textoSugerido(textoDeTramos(sugerido))}
+        volver={volver}
+      />
+    );
+  };
 
   /* The law's dated changes, with their status for the values ON SCREEN. */
   const leyes = eleccionDe(leyesGuardadas);
@@ -916,6 +1001,7 @@ export default function ReglasDePago({
             <NumeroField
               label={t("ui.NominaSettings.jornadaOrdinariaDiariaH", "Jornada ordinaria diaria (h)")}
               value={pol.horasOrdinariasDia}
+              sugerencia={sug(pol.horasOrdinariasDia, sp.horasOrdinariasDia, conHoras, () => setPol({ horasOrdinariasDia: sp.horasOrdinariasDia }))}
               max={24}
               hint={t("ui.ReglasDePago.diariaAyuda", "Lo que pase de aquí en un día es hora extra. 0 = sin límite diario (EE. UU.).")}
               onChange={(v) => setPol({ horasOrdinariasDia: v })}
@@ -945,6 +1031,13 @@ export default function ReglasDePago({
             </label>
           </div>
 
+          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+            {t(
+              "ui.ReglasDePago.valoresAbiertos",
+              "Cada valor es de tu empresa: escribe el que uses. Lo sugerido por ley es sólo una referencia.",
+            )}
+          </p>
+
           {/* Each rule the company may use or not. */}
           <div className="space-y-2">
             <span className="text-sm font-medium">{t("ui.ReglasDePago.queUsa", "Qué usa tu empresa")}</span>
@@ -957,6 +1050,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.ReglasDePago.jornadaSemanal", "Jornada ordinaria semanal (h)")}
                 value={pol.horasOrdinariasSemana}
+                sugerencia={Number(sp.horasOrdinariasSemana) > 0 ? sug(pol.horasOrdinariasSemana, sp.horasOrdinariasSemana, conHoras, () => setPol({ horasOrdinariasSemana: sp.horasOrdinariasSemana })) : undefined}
                 min={1}
                 max={168}
                 hint={avisoDeLey("horasOrdinariasSemana")}
@@ -977,17 +1071,20 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.ReglasDePago.septimoPrimeras", "Primeras horas (h)")}
                 value={pol.septimoDia?.primerasHoras}
+                sugerencia={sug(pol.septimoDia?.primerasHoras, sp.septimoDia?.primerasHoras, conHoras, () => setPol({ septimoDia: { ...(pol.septimoDia || {}), primerasHoras: sp.septimoDia?.primerasHoras } }))}
                 max={24}
                 onChange={(v) => setPol({ septimoDia: { ...(pol.septimoDia || {}), primerasHoras: v } })}
               />
               <NumeroField
                 label={t("ui.ReglasDePago.septimoRecargo", "Recargo de esas horas (%)")}
                 value={pol.septimoDia?.recargoPct}
+                sugerencia={sug(pol.septimoDia?.recargoPct, sp.septimoDia?.recargoPct, conPct, () => setPol({ septimoDia: { ...(pol.septimoDia || {}), recargoPct: sp.septimoDia?.recargoPct } }))}
                 onChange={(v) => setPol({ septimoDia: { ...(pol.septimoDia || {}), recargoPct: v } })}
               />
               <NumeroField
                 label={t("ui.ReglasDePago.septimoDespues", "Recargo después (%)")}
                 value={pol.septimoDia?.recargoPctDespues}
+                sugerencia={sug(pol.septimoDia?.recargoPctDespues, sp.septimoDia?.recargoPctDespues, conPct, () => setPol({ septimoDia: { ...(pol.septimoDia || {}), recargoPctDespues: sp.septimoDia?.recargoPctDespues } }))}
                 onChange={(v) => setPol({ septimoDia: { ...(pol.septimoDia || {}), recargoPctDespues: v } })}
               />
               <NumeroField
@@ -1034,18 +1131,21 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.NominaSettings.nocturnoDesdeHora", "Nocturno: desde (hora)")}
                 value={pol.nocturno?.desdeHora}
+                sugerencia={sug(pol.nocturno?.desdeHora, sp.nocturno?.desdeHora, conHora, () => setNoct({ desdeHora: sp.nocturno?.desdeHora }))}
                 max={23}
                 onChange={(v) => setNoct({ desdeHora: v })}
               />
               <NumeroField
                 label={t("ui.NominaSettings.nocturnoHastaHora", "Nocturno: hasta (hora)")}
                 value={pol.nocturno?.hastaHora}
+                sugerencia={sug(pol.nocturno?.hastaHora, sp.nocturno?.hastaHora, conHora, () => setNoct({ hastaHora: sp.nocturno?.hastaHora }))}
                 max={23}
                 onChange={(v) => setNoct({ hastaHora: v })}
               />
               <NumeroField
                 label={t("ui.NominaSettings.recargoNocturnoPct", "Recargo nocturno (%)")}
                 value={pol.nocturno?.recargoPct}
+                sugerencia={sug(pol.nocturno?.recargoPct, sp.nocturno?.recargoPct, conPct, () => setNoct({ recargoPct: sp.nocturno?.recargoPct }))}
                 onChange={(v) => setNoct({ recargoPct: v })}
               />
             </FilaDeRecargo>
@@ -1057,6 +1157,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.NominaSettings.recargoDominicalPct", "Recargo dominical (%)")}
                 value={pol.domingoRecargoPct}
+                sugerencia={sug(pol.domingoRecargoPct, sp.domingoRecargoPct, conPct, () => setPol({ domingoRecargoPct: sp.domingoRecargoPct }))}
                 hint={avisoDeLey("domingoRecargoPct")}
                 onChange={(v) => setPol({ domingoRecargoPct: v })}
               />
@@ -1073,6 +1174,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.NominaSettings.recargoEnDiaDeDescansoPct", "Recargo en día de descanso (%)")}
                 value={pol.descansoRecargoPct}
+                sugerencia={sug(pol.descansoRecargoPct, sp.descansoRecargoPct, conPct, () => setPol({ descansoRecargoPct: sp.descansoRecargoPct }))}
                 hint={avisoDeLey("descansoRecargoPct")}
                 onChange={(v) => setPol({ descansoRecargoPct: v })}
               />
@@ -1102,6 +1204,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.NominaSettings.recargoEnFeriadoPct", "Recargo en feriado (%)")}
                 value={pol.feriadoRecargoPct}
+                sugerencia={sug(pol.feriadoRecargoPct, sp.feriadoRecargoPct, conPct, () => setPol({ feriadoRecargoPct: sp.feriadoRecargoPct }))}
                 hint={avisoDeLey("feriadoRecargoPct")}
                 onChange={(v) => setPol({ feriadoRecargoPct: v })}
               />
@@ -1113,7 +1216,11 @@ export default function ReglasDePago({
               onActivo={(v) => setActivo("extra", v)}
             >
               <div className="sm:col-span-3">
-                <TramosExtra tramos={tramos} onChange={(t2) => setPol({ tramosExtra: t2 })} />
+                <TramosExtra
+                  sugerencia={sugTramos(tramos, sp.tramosExtra, () => setPol({ tramosExtra: (sp.tramosExtra || []).map((x) => ({ ...x })) }))}
+                  tramos={tramos}
+                  onChange={(t2) => setPol({ tramosExtra: t2 })}
+                />
               </div>
               {/* The week: tiers by the hours of the workweek (France, Dominican Rep.). */}
               <div className="glass-flat space-y-3 p-3 sm:col-span-3">
@@ -1157,6 +1264,7 @@ export default function ReglasDePago({
                       etiquetaDesde={pol.tramosSemanaCuentan === "semana"
                         ? t("ui.ReglasDePago.semana.desdeLaHora", "Desde la hora de la semana")
                         : t("ui.NominaSettings.desdeLaHoraExtra", "Desde la hora extra")}
+                      sugerencia={sugTramos(tramosSemana, sp.tramosExtraSemana, () => setPol({ tramosExtraSemana: (sp.tramosExtraSemana || []).map((x) => ({ ...x })) }))}
                       onChange={(t2) => setPol({ tramosExtraSemana: t2 })}
                     />
                   </div>
@@ -1185,6 +1293,7 @@ export default function ReglasDePago({
                     <NumeroField
                       label={t("ui.ReglasDePago.periodo.horas", "Horas ordinarias del periodo")}
                       value={periodo.horas}
+                      sugerencia={sug(periodo.horas, sp.extraDelPeriodo?.horas, conHoras, () => setPol({ extraDelPeriodo: { ...periodo, horas: sp.extraDelPeriodo?.horas } }))}
                       min={1}
                       max={744}
                       onChange={(v) => setPol({ extraDelPeriodo: { ...periodo, horas: v } })}
@@ -1192,6 +1301,7 @@ export default function ReglasDePago({
                     <NumeroField
                       label={t("ui.NominaSettings.recargoPct", "Recargo (%)")}
                       value={periodo.recargoPct}
+                      sugerencia={sug(periodo.recargoPct, sp.extraDelPeriodo?.recargoPct, conPct, () => setPol({ extraDelPeriodo: { ...periodo, recargoPct: sp.extraDelPeriodo?.recargoPct } }))}
                       onChange={(v) => setPol({ extraDelPeriodo: { ...periodo, recargoPct: v } })}
                     />
                     <label className="block">
@@ -1249,12 +1359,14 @@ export default function ReglasDePago({
                     <NumeroField
                       label={t("ui.ReglasDePago.anio.horas", "Horas extra en el año")}
                       value={anio.horas}
+                      sugerencia={sug(anio.horas, sp.extraDelAnio?.horas, conHoras, () => setPol({ extraDelAnio: { ...anio, horas: sp.extraDelAnio?.horas } }))}
                       max={2000}
                       onChange={(v) => setPol({ extraDelAnio: { ...anio, horas: v } })}
                     />
                     <TramosExtra
                       tramos={anio.tramos || []}
                       titulo={t("ui.ReglasDePago.anio.titulo", "Escalones del día, pasado ese total")}
+                      sugerencia={sugTramos(anio.tramos || [], sp.extraDelAnio?.tramos, () => setPol({ extraDelAnio: { ...anio, tramos: (sp.extraDelAnio?.tramos || []).map((x) => ({ ...x })) } }))}
                       onChange={(t2) => setPol({ extraDelAnio: { ...anio, tramos: t2 } })}
                     />
                   </div>
@@ -1270,6 +1382,7 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.ReglasDePago.recargoSabadoPct", "Recargo de sábado (%)")}
                 value={pol.sabadoRecargoPct}
+                sugerencia={sug(pol.sabadoRecargoPct, sp.sabadoRecargoPct, conPct, () => setPol({ sabadoRecargoPct: sp.sabadoRecargoPct }))}
                 onChange={(v) => setPol({ sabadoRecargoPct: v })}
               />
             </FilaDeRecargo>
@@ -1282,7 +1395,21 @@ export default function ReglasDePago({
               activo={activos.pluses}
               onActivo={(v) => setActivo("pluses", v)}
             >
-              <PlusesFijos pluses={pol.pluses || []} moneda={pol.moneda || "USD"} onChange={(p) => setPol({ pluses: p })} />
+              <div className="space-y-1 sm:col-span-3">
+                <PlusesFijos pluses={pol.pluses || []} moneda={pol.moneda || "USD"} onChange={(p) => setPol({ pluses: p })} />
+                {preset && (sp.pluses || []).length > 0 && (
+                  <SugerenciaDeLey
+                    distinto={JSON.stringify(pol.pluses || []) !== JSON.stringify(sp.pluses || [])}
+                    etiqueta={volverAlSugerido}
+                    texto={textoSugerido(
+                      (sp.pluses || [])
+                        .map((x) => `${x.nombre} ${(x.importeCentavos / 100).toFixed(2)} ${sp.moneda || pol.moneda || ""}`)
+                        .join(" · "),
+                    )}
+                    volver={() => setPol({ pluses: (sp.pluses || []).map((x) => ({ ...x })) })}
+                  />
+                )}
+              </div>
             </FilaDeRecargo>
             <FilaDeRecargo
               titulo={t("ui.ReglasDePago.extraNocturna", "Hora extra nocturna con su propio recargo")}
@@ -1303,18 +1430,21 @@ export default function ReglasDePago({
               <NumeroField
                 label={t("ui.ReglasDePago.extraNocturnaDesde", "Extra nocturna: desde (hora)")}
                 value={pol.extraNocturna?.desdeHora}
+                sugerencia={sug(pol.extraNocturna?.desdeHora, sp.extraNocturna?.desdeHora, conHora, () => setExtraNoct({ desdeHora: sp.extraNocturna?.desdeHora }))}
                 max={23}
                 onChange={(v) => setExtraNoct({ desdeHora: v })}
               />
               <NumeroField
                 label={t("ui.ReglasDePago.extraNocturnaHasta", "Extra nocturna: hasta (hora)")}
                 value={pol.extraNocturna?.hastaHora}
+                sugerencia={sug(pol.extraNocturna?.hastaHora, sp.extraNocturna?.hastaHora, conHora, () => setExtraNoct({ hastaHora: sp.extraNocturna?.hastaHora }))}
                 max={23}
                 onChange={(v) => setExtraNoct({ hastaHora: v })}
               />
               <NumeroField
                 label={t("ui.ReglasDePago.extraNocturnaPct", "Recargo de la extra nocturna (%)")}
                 value={pol.extraNocturna?.recargoPct}
+                sugerencia={sug(pol.extraNocturna?.recargoPct, sp.extraNocturna?.recargoPct, conPct, () => setExtraNoct({ recargoPct: sp.extraNocturna?.recargoPct }))}
                 onChange={(v) => setExtraNoct({ recargoPct: v })}
               />
             </FilaDeRecargo>

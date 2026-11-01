@@ -18076,7 +18076,8 @@
         "afectaRenta": "Zählt zur Bemessungsgrundlage der Einkommensteuer",
         "recurrente": "Wird jede Periode angewendet, ohne sie zu erfassen",
         "activo": "Aktiv",
-        "nota": "Notiz"
+        "nota": "Notiz",
+        "sugerido": "Vorschlag der Länder-Vorlage: {{valor}}"
       },
       "editar": "Bearbeiten",
       "tipo": {
@@ -19400,7 +19401,10 @@
       "septimoRecargo": "Zuschlag dieser Stunden (%)",
       "septimoDespues": "Zuschlag danach (%)",
       "septimoSoloSi": "Nur wenn die Woche überschreitet (h)",
-      "septimoSoloSiAyuda": "0 = immer. Kentucky: 40."
+      "septimoSoloSiAyuda": "0 = immer. Kentucky: 40.",
+      "sugerido": "Gesetzlicher Vorschlag ({{fuente}}): {{valor}}",
+      "volverAlSugerido": "Zurück zum Vorschlag",
+      "valoresAbiertos": "Jeder Wert gehört Ihrem Unternehmen: Tragen Sie den ein, den Sie verwenden. Der gesetzliche Vorschlag ist nur ein Richtwert."
     },
     "puede": {
       "sinPermiso": "Deine Rolle hat dafür keine Berechtigung. Frag einen Administrator.",

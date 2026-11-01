@@ -125,6 +125,8 @@ export interface PayrollConcept {
   source: "country" | "tenant";
   sortOrder: number;
   note: string | null;
+  /** What the country template suggests for this code (only a hint; null = none). */
+  suggestedRate?: number | null;
 }
 
 export interface ConceptSeed extends Omit<PayrollConcept, "id" | "active" | "source" | "sortOrder" | "table" | "rate"> {

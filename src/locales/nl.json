@@ -18076,7 +18076,8 @@
         "afectaRenta": "Telt mee voor de belastinggrondslag",
         "recurrente": "Wordt elke periode toegepast zonder invoer",
         "activo": "Actief",
-        "nota": "Notitie"
+        "nota": "Notitie",
+        "sugerido": "Voorgesteld door het landsjabloon: {{valor}}"
       },
       "editar": "Bewerken",
       "tipo": {
@@ -19400,7 +19401,10 @@
       "septimoRecargo": "Toeslag op die uren (%)",
       "septimoDespues": "Toeslag daarna (%)",
       "septimoSoloSi": "Alleen als de week meer is dan (u)",
-      "septimoSoloSiAyuda": "0 = altijd. Kentucky: 40."
+      "septimoSoloSiAyuda": "0 = altijd. Kentucky: 40.",
+      "sugerido": "Wettelijk voorstel ({{fuente}}): {{valor}}",
+      "volverAlSugerido": "Terug naar voorstel",
+      "valoresAbiertos": "Elke waarde is van uw bedrijf: vul de waarde in die u gebruikt. Het wettelijke voorstel is alleen een richtlijn."
     },
     "puede": {
       "sinPermiso": "Je rol heeft hier geen toestemming voor. Vraag het een beheerder.",

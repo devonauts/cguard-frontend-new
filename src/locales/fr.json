@@ -18076,7 +18076,8 @@
         "afectaRenta": "Entre dans l'assiette de l'impôt",
         "recurrente": "S'applique chaque période sans la saisir",
         "activo": "Active",
-        "nota": "Note"
+        "nota": "Note",
+        "sugerido": "Suggéré par le modèle du pays : {{valor}}"
       },
       "editar": "Modifier",
       "tipo": {
@@ -19400,7 +19401,10 @@
       "septimoRecargo": "Majoration de ces heures (%)",
       "septimoDespues": "Majoration ensuite (%)",
       "septimoSoloSi": "Seulement si la semaine dépasse (h)",
-      "septimoSoloSiAyuda": "0 = toujours. Kentucky : 40."
+      "septimoSoloSiAyuda": "0 = toujours. Kentucky : 40.",
+      "sugerido": "Suggéré par la loi ({{fuente}}) : {{valor}}",
+      "volverAlSugerido": "Revenir à la suggestion",
+      "valoresAbiertos": "Chaque valeur appartient à votre entreprise : saisissez celle que vous appliquez. La suggestion légale n'est qu'une référence."
     },
     "puede": {
       "sinPermiso": "Votre rôle n'a pas la permission pour cela. Demandez à un administrateur.",
