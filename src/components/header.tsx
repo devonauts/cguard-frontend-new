@@ -114,6 +114,7 @@ import TenantSwitcher from "@/components/TenantSwitcher";
 import SelectorDeSucursal from "@/components/SelectorDeSucursal";
 import { useAgente } from "@/lib/agenteDeMarca";
 import { useAddonChangesLive } from "@/hooks/useAddonChangesLive";
+import { usePuede } from "@/hooks/usePuede";
 
 type HeaderProps = {
   toggleSidebar: () => void;
@@ -252,6 +253,7 @@ export default function Header({
   // Y cómo se llama el asistente, que es otra decisión del socio y otra fuente.
   const agente = useAgente();
   const { t } = useTranslation();
+  const { puede: puedeVerAlarmas } = usePuede("alarmas.verCasos");
   const navigate = useNavigate();
   const radio = useSyncExternalStore(subscribeRadio, getRadioSnapshot);
 
@@ -313,6 +315,8 @@ export default function Header({
   // On mount, re-surface any UNACKNOWLEDGED panic case (status 'queued') so a page
   // reload / navigation never loses an active SOS — it stays until acknowledged.
   useEffect(() => {
+    // Only a role that can read alarm cases asks (the server answers 403 otherwise).
+    if (!puedeVerAlarmas) return;
     let alive = true;
 
     (async () => {
@@ -356,7 +360,7 @@ export default function Header({
     return () => {
       alive = false;
     };
-  }, [tenantId]);
+  }, [tenantId, puedeVerAlarmas]);
 
   const {
     notifications,

@@ -57,3 +57,27 @@ describe("reglasDeAcciones · the buttons mirror the server", () => {
     expect(motivoParaNo(ACCIONES["cobertura.registrar"], ctx(["coverageCreate"], null))).toBeNull();
   });
 });
+
+describe("layout background reads · only for roles the server lets in (QA 2026-11-01)", () => {
+  const ctx = (perms: string[], nivel: number) => ({
+    esAdmin: false,
+    tienePermiso: (p: string) => perms.includes(p),
+    nivel,
+    conDinero: null,
+  });
+  // The office assistant: settings readable, no alarm cases, no radio, level 52.
+  const secretaria = ctx(["settingsRead", "attendanceRead"], 52);
+  const admin = ctx(["settingsRead", "businessInfoRead", "radioCheckRead"], 100);
+
+  it("the office assistant does not ask for alarm cases, the billing summary or the radio console", () => {
+    expect(motivoParaNo(ACCIONES["alarmas.verCasos"], secretaria)).toBe("permiso");
+    expect(motivoParaNo(ACCIONES["suscripcion.verResumen"], secretaria)).toBe("nivel");
+    expect(motivoParaNo(ACCIONES["radio.verConsola"], secretaria)).toBe("permiso");
+  });
+
+  it("an admin asks for all three", () => {
+    expect(motivoParaNo(ACCIONES["alarmas.verCasos"], admin)).toBeNull();
+    expect(motivoParaNo(ACCIONES["suscripcion.verResumen"], admin)).toBeNull();
+    expect(motivoParaNo(ACCIONES["radio.verConsola"], admin)).toBeNull();
+  });
+});

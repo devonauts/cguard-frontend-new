@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 
 import { radioDenied, playTalkPermit, playRoger } from "@/lib/radioTones";
+import { usePuede } from "@/hooks/usePuede";
 import { useAuth } from "@/contexts/AuthContext";
 import { radioCheckService } from "@/lib/api/radioCheckService";
 import {
@@ -61,8 +62,15 @@ export default function RadioVoiceWidget() {
   const [paseBusy, setPaseBusy] = useState(false);
   const [runningId, setRunningId] = useState<string | null>(null);
   const [pasePermitted, setPasePermitted] = useState<boolean | null>(null);
+  const { puede: puedeVerConsola } = usePuede("radio.verConsola");
 
   const refreshPase = async () => {
+    // A role without radio permission cannot run roll calls: say so without asking.
+    if (!puedeVerConsola) {
+      setPasePermitted(false);
+
+      return;
+    }
     try {
       // Silent: a 403 here only means «this role cannot run roll calls» (handled below).
       const c: any = await radioCheckService.getConsole({ silent: true });
@@ -87,7 +95,7 @@ export default function RadioVoiceWidget() {
 
   useEffect(() => {
     if (snap.open) refreshPase();
-  }, [snap.open, radioVersion, paseSeguido.sessionId]);
+  }, [snap.open, radioVersion, paseSeguido.sessionId, puedeVerConsola]);
 
   const startPase = async () => {
     setPaseBusy(true);
