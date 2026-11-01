@@ -35,6 +35,7 @@ import { roleDisplayName } from "@/config/roleLabels";
 import { ApiService } from "@/services/api/apiService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   supervisorPositionService,
   type SupervisorPosition,
@@ -443,7 +444,7 @@ export default function AgregarVariasPage() {
   const problemas = useMemo(
     () =>
       filas && cat
-        ? revisarFilas(filas, cat, existentes)
+        ? revisarFilas(filas, cat, existentes, hoyEnLaEmpresa())
         : new Map<string, Problema[]>(),
     [filas, cat, existentes],
   );
@@ -522,6 +523,10 @@ export default function AgregarVariasPage() {
       fechaInvalida: t(
         "agregarVarias.problemas.fechaInvalida",
         "La fecha de inicio no es válida (usa 02/11/2026)",
+      ),
+      fechaPasada: t(
+        "agregarVarias.problemas.fechaPasada",
+        "La fecha de inicio ya pasó: pon hoy o una fecha futura",
       ),
       documentoRepetido: t(
         "agregarVarias.problemas.documentoRepetido",

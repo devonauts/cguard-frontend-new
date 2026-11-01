@@ -179,9 +179,11 @@ function AllStaffSection({
     return () => window.clearTimeout(id);
   }, [abierta, visDesde, visHasta, primero, ultimo, cargado, pedir]);
 
+  // Reload what is on screen (±7 days), not everything scrolled through so far.
   const recargar = useCallback(() => {
-    if (cargado) void pedir([cargado], null);
-  }, [cargado, pedir]);
+    if (!visDesde) return;
+    void pedir([ventanaVisible(visDesde, visHasta, primero, ultimo)], null);
+  }, [visDesde, visHasta, primero, ultimo, pedir]);
 
   // A change elsewhere in the Schedule (new assignment…) moves people around.
   const primeraVez = useRef(true);
@@ -189,6 +191,13 @@ function AllStaffSection({
   useEffect(() => {
     if (primeraVez.current) {
       primeraVez.current = false;
+
+      return;
+    }
+    // Closed: nothing to ask now; forget what was loaded so opening it loads fresh.
+    if (!abierta) {
+      pedido.current += 1;
+      setCargado(null);
 
       return;
     }
@@ -243,10 +252,13 @@ function AllStaffSection({
     const r = rotuloDeDonde(dondeEstaEl(p, fechaDonde));
 
     if (r) return r;
-    if (p.kind === "office") return t("ui.AllStaff.enOficina", "Oficina");
-    if (p.kind === "supervisor") {
+    if (p.kind === "office" && !p.nextShiftDate) return t("ui.AllStaff.enOficina", "Oficina");
+    if (p.kind === "supervisor" || p.kind === "office") {
       const puestos = (p.positions || []).map((x) => x.name).filter(Boolean).join(", ");
-      const base = puestos || t("ui.AllStaff.supervision", "Supervisión");
+      const base =
+        p.kind === "office"
+          ? t("ui.AllStaff.enOficina", "Oficina")
+          : puestos || t("ui.AllStaff.supervision", "Supervisión");
       if (!p.nextShiftDate) return base;
       let fecha = p.nextShiftDate;
       try {

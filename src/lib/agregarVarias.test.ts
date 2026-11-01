@@ -240,6 +240,16 @@ describe("checks", () => {
       expect.arrayContaining(["correoRequerido", "rolRequerido"]),
     );
   });
+  it("a start date before today is refused", () => {
+    const f = leer([
+      ["Oficina", "Ana", "Ruiz", "", "ana@example.test", "Gerente", "", "01/10/2026"],
+      ["Oficina", "Eva", "Paz", "", "eva@example.test", "Gerente", "", "02/11/2026"],
+    ]);
+    const p = revisarFilas(f, cat, undefined, "2026-11-01");
+
+    expect(p.get(f[0].id)).toContain("fechaPasada");
+    expect(p.get(f[1].id) || []).not.toContain("fechaPasada");
+  });
   it("two rows for one vacant seat: the second is refused; an occupied seat too", () => {
     const f = leer([
       [

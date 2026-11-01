@@ -91,6 +91,8 @@ describe("Todo el personal · filters and actions", () => {
     expect(accionDePersona({ kind: "guard", hasSchedule: false, assigned: false })).toBe("asignarPuesto");
     expect(accionDePersona({ kind: "guard", hasSchedule: false, assigned: true })).toBeNull();
     expect(accionDePersona({ kind: "office", hasSchedule: true, assigned: false })).toBeNull();
+    // Office hours that start after these days: already scheduled, no second editor.
+    expect(accionDePersona({ kind: "office", hasSchedule: false, assigned: true })).toBeNull();
   });
 
   it("a supervisor who holds a post never gets «Asignar horario», even in a week with no shift", async () => {

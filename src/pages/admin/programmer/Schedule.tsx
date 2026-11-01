@@ -603,6 +603,10 @@ export default function Schedule() {
   const hasLoadedRef = useRef(false);
   /** Bumped after every load so «Todo el personal» reloads with the sheet. */
   const [personalVersion, setPersonalVersion] = useState(0);
+  /** Range of the last successful load: «Todo el personal» reloads only when the
+   *  SAME range is fetched again (something changed), never on a week change —
+   *  it follows the visible days on its own. */
+  const rangoCargadoRef = useRef("");
 
   // View state
   const [currentDate, setCurrentDate] = useState(() => {
@@ -1200,7 +1204,10 @@ export default function Schedule() {
 
         hasLoadedRef.current = true;
         setFalloCarga(false);
-        setPersonalVersion((v) => v + 1);
+        const rango = `${startDateStr}|${endDateStr}`;
+
+        if (rangoCargadoRef.current === rango) setPersonalVersion((v) => v + 1);
+        rangoCargadoRef.current = rango;
       } catch (e: any) {
         console.error("[Scheduler] fetch error", e);
         setFalloCarga(true);
@@ -6253,6 +6260,7 @@ export default function Schedule() {
               pulgar lo busca. En `sm` mide lo que mide su contenido. */}
           <div className="flex w-full items-center gap-1.5 sm:w-auto">
             <Button
+              aria-label={t("ui.Schedule.anteriorRePag", "Anterior (Re Pág)")}
               size="sm"
               title={t("ui.Schedule.anteriorRePag", "Anterior (Re Pág)")}
               variant="outline"
@@ -6267,6 +6275,7 @@ export default function Schedule() {
               {rangeLabel}
             </span>
             <Button
+              aria-label={t("ui.Schedule.siguienteAvPag", "Siguiente (Av Pág)")}
               size="sm"
               title={t("ui.Schedule.siguienteAvPag", "Siguiente (Av Pág)")}
               variant="outline"

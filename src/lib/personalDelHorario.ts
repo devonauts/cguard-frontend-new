@@ -280,6 +280,8 @@ export function accionDePersona(
 ): "asignarHorario" | "asignarPuesto" | null {
   if (p.kind === "guard") return p.assigned ? null : "asignarPuesto";
   if (p.kind === "supervisor" && p.assigned) return null;
+  // Office hours that begin after these days: already scheduled («desde …»).
+  if (p.kind === "office" && p.assigned && !p.hasSchedule) return null;
 
   return p.hasSchedule ? null : "asignarHorario";
 }

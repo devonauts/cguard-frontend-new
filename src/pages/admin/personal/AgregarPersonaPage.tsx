@@ -44,6 +44,9 @@ import {
 } from "@/lib/api/supervisorPositionService";
 import { crearPersona, filasDe, mensajeDeError } from "@/lib/crearPersona";
 import { presetLunesAViernes } from "@/lib/jornadaSemanal";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { securityGuardService } from "@/lib/api/securityGuardService";
+import { claveDeDocumento } from "@/lib/agregarVarias";
 import { plazasElegibles } from "@/pages/admin/programmer/AsignarAPuestoModal";
 import {
   admiteSinCorreo,
@@ -229,6 +232,8 @@ export default function AgregarPersonaPage() {
   const [paso, setPaso] = useState<Paso>(tipoInicial ? 2 : 1);
   const [datos, setDatos] = useState<Datos>(datosVacios);
   const [tocado, setTocado] = useState(false);
+  /** Name of the guard who already has the typed ID number (null = free). */
+  const [docDeOtro, setDocDeOtro] = useState<string | null>(null);
   const [horario, setHorario] = useState<Horario>(null);
   /** «Lo hago después» chosen explicitly in step 3. */
   const [despues, setDespues] = useState(false);
@@ -433,9 +438,49 @@ export default function AgregarPersonaPage() {
     [puestosSup, t],
   );
 
+  // Two guards with one ID number: look it up while typing (Agregar varias does too).
+  useEffect(() => {
+    const doc = tipo === "vigilante" ? claveDeDocumento(datos.documento) : "";
+
+    if (!doc) {
+      setDocDeOtro(null);
+
+      return;
+    }
+    let vivo = true;
+    const espera = setTimeout(async () => {
+      const r: any = await securityGuardService
+        .list({ "filter[governmentId]": doc, limit: "5" })
+        .catch(() => null);
+      const otro = filasDe(r).find(
+        (g: any) => claveDeDocumento(g.governmentId || "") === doc,
+      );
+
+      if (!vivo) return;
+      setDocDeOtro(
+        otro
+          ? String(
+              otro.fullName ||
+                otro.guard?.fullName ||
+                [otro.firstName, otro.lastName].filter(Boolean).join(" ") ||
+                t("agregarPersona.errores.otroVigilante", "otro vigilante"),
+            )
+          : null,
+      );
+    }, 500);
+
+    return () => {
+      vivo = false;
+      clearTimeout(espera);
+    };
+  }, [tipo, datos.documento, t]);
+
   // ── Navigation ────────────────────────────────────────────────────────────
   const horarioEfectivo: Horario = despues ? null : horario;
-  const listoParaSeguir = puedeSeguir(paso, tipo, datos, horarioEfectivo);
+  const hoy = hoyEnLaEmpresa();
+  const listoParaSeguir =
+    puedeSeguir(paso, tipo, datos, horarioEfectivo, hoy) &&
+    !(paso === 2 && !!docDeOtro);
   const siguiente = () => {
     if (paso === 2 && !listoParaSeguir) {
       setTocado(true);
@@ -558,6 +603,11 @@ export default function AgregarPersonaPage() {
       );
     } catch (e: any) {
       // The person could not be created: nothing was written, stay on the step.
+      // A refusal from the server was already shown by the API layer (lib/api).
+      const yaAvisado =
+        !!e && typeof e === "object" && !(e instanceof Error) && "status" in e;
+
+      if (yaAvisado) return;
       toast.error(
         mensajeDeError(
           e,
@@ -790,6 +840,15 @@ export default function AgregarPersonaPage() {
                     </FormField>
                     {llevaDocumento(tipo) && (
                       <FormField
+                        error={
+                          docDeOtro
+                            ? t("agregarPersona.errores.documentoExiste", {
+                                defaultValue:
+                                  "Ese número ya lo tiene {{nombre}}. Revísalo: dos vigilantes no comparten documento.",
+                                nombre: docDeOtro,
+                              })
+                            : undefined
+                        }
                         hint={t(
                           "agregarPersona.campos.documentoAyuda",
                           "Cédula, DUI, pasaporte… Opcional: lo puedes poner después.",
@@ -1336,12 +1395,17 @@ export default function AgregarPersonaPage() {
                       <FormField
                         className="max-w-xs"
                         error={
-                          validarLugar(horario) === "fechaInvalida"
+                          validarLugar(horario, hoy) === "fechaInvalida"
                             ? t(
                                 "agregarPersona.errores.fecha",
                                 "Revisa la fecha",
                               )
-                            : undefined
+                            : validarLugar(horario, hoy) === "fechaPasada"
+                              ? t(
+                                  "agregarPersona.errores.fechaPasada",
+                                  "Elige hoy o una fecha futura: antes de hoy le saldrían turnos que no trabajó",
+                                )
+                              : undefined
                         }
                         htmlFor="alta-desde"
                         label={
@@ -1356,6 +1420,7 @@ export default function AgregarPersonaPage() {
                         <input
                           className={FIELD_CLS}
                           id="alta-desde"
+                          min={hoy}
                           type="date"
                           value={horario.desde}
                           onChange={(e) =>
