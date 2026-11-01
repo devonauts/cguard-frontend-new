@@ -22452,6 +22452,38 @@
       "deDia": "day",
       "deNoche": "night",
       "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "Need their full profile, with zone and vehicle?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Full guard profile",
+      "subtitulo": "For when you have their papers at hand. Only their name, ID and e-mail (or «no e-mail») are required; the rest can be completed later from their profile."
+    },
+    "supervisor": {
+      "titulo": "Full supervisor profile",
+      "subtitulo": "Their record with ID, zone, vehicle and personal data. Only their name, ID and e-mail (or «no e-mail») are required."
+    },
+    "soloAcceso": "Only want to give them access and a schedule?",
+    "usaAgregarPersona": "Use «Add person»",
+    "hojaDeVida": {
+      "titulo": "Do you have their résumé?",
+      "texto": "Upload it as a PDF or photo and we fill in what we can. Check the data before saving: nothing is saved until you tap «Create and give access»."
+    },
+    "pasos": {
+      "quienEs": "Who are they?",
+      "documento": "ID and contact",
+      "documentoNota": "With an e-mail they get their invitation. Without one, they sign in with a username and you send them the link by WhatsApp at the end.",
+      "documentoNotaSup": "With an e-mail they get their invitation to the supervisor app. Without one, they sign in with a username and you send them the link by WhatsApp at the end.",
+      "foto": "Their photo",
+      "fotoNota": "Optional. It is the photo on their badge and the one supervisors see.",
+      "personales": "Personal data (optional)",
+      "personalesNota": "All optional. It is for their file and staff reports.",
+      "licencias": "Licences and credentials (optional)",
+      "licenciasNota": "All optional. They can be uploaded later from their profile, under Licences and Documents.",
+      "trabajo": "Zone and vehicle (optional)",
+      "trabajoNota": "Optional. They show in the supervisors list. Their schedule comes from their supervisor post.",
+      "credenciales": "Credentials (optional)"
     }
   }
 }

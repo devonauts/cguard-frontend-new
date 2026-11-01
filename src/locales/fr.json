@@ -22452,6 +22452,38 @@
       "deDia": "de jour",
       "deNoche": "de nuit",
       "veinticuatro": "24 h"
+    },
+    "perfilCompletoSup": "Besoin de sa fiche complète, avec zone et véhicule ?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Profil complet de l'agent",
+      "subtitulo": "Quand vous avez ses papiers sous la main. Seuls son nom, sa pièce d'identité et son e-mail (ou « sans e-mail ») sont obligatoires ; le reste se complète plus tard depuis sa fiche."
+    },
+    "supervisor": {
+      "titulo": "Profil complet du superviseur",
+      "subtitulo": "Sa fiche avec pièce d'identité, zone, véhicule et données personnelles. Seuls son nom, sa pièce d'identité et son e-mail (ou « sans e-mail ») sont obligatoires."
+    },
+    "soloAcceso": "Vous voulez seulement lui donner un accès et un horaire ?",
+    "usaAgregarPersona": "Utilisez « Ajouter une personne »",
+    "hojaDeVida": {
+      "titulo": "Vous avez son CV ?",
+      "texto": "Envoyez-le en PDF ou en photo et nous remplissons ce que nous pouvons. Vérifiez avant d'enregistrer : rien n'est enregistré avant « Créer et donner l'accès »."
+    },
+    "pasos": {
+      "quienEs": "Qui est-ce ?",
+      "documento": "Pièce d'identité et contact",
+      "documentoNota": "Avec un e-mail, il reçoit son invitation. Sans e-mail, il entre avec un identifiant et vous lui envoyez le lien par WhatsApp à la fin.",
+      "documentoNotaSup": "Avec un e-mail, il reçoit son invitation à l'app superviseur. Sans e-mail, il entre avec un identifiant et vous lui envoyez le lien par WhatsApp à la fin.",
+      "foto": "Sa photo",
+      "fotoNota": "Facultatif. C'est la photo de son badge, celle que voient les superviseurs.",
+      "personales": "Données personnelles (facultatives)",
+      "personalesNota": "Tout est facultatif. Cela sert à son dossier et aux rapports du personnel.",
+      "licencias": "Licences et certifications (facultatives)",
+      "licenciasNota": "Tout est facultatif. Vous pourrez les ajouter plus tard depuis sa fiche, dans Licences et Documents.",
+      "trabajo": "Zone et véhicule (facultatifs)",
+      "trabajoNota": "Facultatif. Ils apparaissent dans la liste des superviseurs. Son horaire vient de son poste de supervision.",
+      "credenciales": "Certifications (facultatives)"
     }
   }
 }

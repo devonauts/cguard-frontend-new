@@ -22452,6 +22452,38 @@
       "deDia": "overdag",
       "deNoche": "'s nachts",
       "veinticuatro": "24 u"
+    },
+    "perfilCompletoSup": "Volledig profiel nodig, met zone en voertuig?"
+  },
+  "perfilCompleto": {
+    "vigilante": {
+      "titulo": "Volledig profiel van de beveiliger",
+      "subtitulo": "Voor als je de papieren bij de hand hebt. Alleen naam, identiteitsbewijs en e-mail (of «geen e-mail») zijn verplicht; de rest kan later via het profiel."
+    },
+    "supervisor": {
+      "titulo": "Volledig profiel van de supervisor",
+      "subtitulo": "Het profiel met identiteitsbewijs, zone, voertuig en persoonsgegevens. Alleen naam, identiteitsbewijs en e-mail (of «geen e-mail») zijn verplicht."
+    },
+    "soloAcceso": "Alleen toegang en een rooster geven?",
+    "usaAgregarPersona": "Gebruik «Persoon toevoegen»",
+    "hojaDeVida": {
+      "titulo": "Heb je het cv?",
+      "texto": "Upload het als pdf of foto en we vullen in wat kan. Controleer de gegevens voor het opslaan: er wordt niets opgeslagen tot je op «Aanmaken en toegang geven» tikt."
+    },
+    "pasos": {
+      "quienEs": "Wie is het?",
+      "documento": "Identiteitsbewijs en contact",
+      "documentoNota": "Met een e-mail krijgt hij de uitnodiging. Zonder e-mail logt hij in met een gebruikersnaam en stuur je de link aan het eind via WhatsApp.",
+      "documentoNotaSup": "Met een e-mail krijgt hij de uitnodiging voor de supervisor-app. Zonder e-mail logt hij in met een gebruikersnaam en stuur je de link aan het eind via WhatsApp.",
+      "foto": "Foto",
+      "fotoNota": "Optioneel. Het is de foto op de pas, die ook supervisors zien.",
+      "personales": "Persoonsgegevens (optioneel)",
+      "personalesNota": "Alles optioneel. Voor het dossier en personeelsrapporten.",
+      "licencias": "Licenties en certificaten (optioneel)",
+      "licenciasNota": "Alles optioneel. Kan later via het profiel bij Licenties en Documenten.",
+      "trabajo": "Zone en voertuig (optioneel)",
+      "trabajoNota": "Optioneel. Staan in de lijst van supervisors. Het rooster komt van de supervisiepost.",
+      "credenciales": "Certificaten (optioneel)"
     }
   }
 }
