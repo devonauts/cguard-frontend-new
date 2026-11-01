@@ -19,15 +19,48 @@ import {
 } from "./agregarVarias";
 
 const plazas: PlazaDeLista[] = [
-  { stationId: "s1", positionId: "p1", puesto: "Charlie 3 · Estacionamiento", plaza: "Fijo 1", libres: 1, sinRotacion: false },
-  { stationId: "s1", positionId: "p2", puesto: "Charlie 3 · Estacionamiento", plaza: "Fijo 2", libres: 1, sinRotacion: false },
-  { stationId: "s2", positionId: "p3", puesto: "Alfa 1 · Acceso principal", plaza: "Fijo 1", libres: 0, sinRotacion: false },
-  { stationId: "s3", positionId: "p4", puesto: "Delta · Bodega", plaza: "Fijo 1", libres: 1, sinRotacion: true },
+  {
+    stationId: "s1",
+    positionId: "p1",
+    puesto: "Charlie 3 · Estacionamiento",
+    plaza: "Fijo 1",
+    libres: 1,
+    sinRotacion: false,
+  },
+  {
+    stationId: "s1",
+    positionId: "p2",
+    puesto: "Charlie 3 · Estacionamiento",
+    plaza: "Fijo 2",
+    libres: 1,
+    sinRotacion: false,
+  },
+  {
+    stationId: "s2",
+    positionId: "p3",
+    puesto: "Alfa 1 · Acceso principal",
+    plaza: "Fijo 1",
+    libres: 0,
+    sinRotacion: false,
+  },
+  {
+    stationId: "s3",
+    positionId: "p4",
+    puesto: "Delta · Bodega",
+    plaza: "Fijo 1",
+    libres: 1,
+    sinRotacion: true,
+  },
 ];
 const cat: Catalogos = {
   plazas,
   puestos: [
-    { id: "sp1", titulo: "Aguila1 · Quito Norte", libre: true, sinRotacion: false },
+    {
+      id: "sp1",
+      titulo: "Aguila1 · Quito Norte",
+      libre: true,
+      sinRotacion: false,
+    },
     { id: "sp2", titulo: "Halcón · Sur", libre: true, sinRotacion: true },
   ],
   roles: [
@@ -44,7 +77,8 @@ describe("partirTabla", () => {
     ]);
   });
   it("reads a Spanish CSV with «;», quotes and a BOM", () => {
-    const csv = '﻿Tipo;Nombres;Puesto\r\nVigilante;"Ortega; Luis";"Charlie 3 · ""Fijo"" 1"\r\n';
+    const csv =
+      '﻿Tipo;Nombres;Puesto\r\nVigilante;"Ortega; Luis";"Charlie 3 · ""Fijo"" 1"\r\n';
 
     expect(partirTabla(csv)).toEqual([
       ["Tipo", "Nombres", "Puesto"],
@@ -61,10 +95,19 @@ describe("partirTabla", () => {
 
 describe("columns", () => {
   it("finds columns by header, ignoring accents, case and order", () => {
-    const e = leerEncabezado([["CÉDULA", "e-mail", "Apellido", "nombre", "TIPO", "Estación"]]);
+    const e = leerEncabezado([
+      ["CÉDULA", "e-mail", "Apellido", "nombre", "TIPO", "Estación"],
+    ]);
 
     expect(e.conEncabezado).toBe(true);
-    expect(e.indices).toMatchObject({ documento: 0, correo: 1, apellidos: 2, nombres: 3, tipo: 4, puesto: 5 });
+    expect(e.indices).toMatchObject({
+      documento: 0,
+      correo: 1,
+      apellidos: 2,
+      nombres: 3,
+      tipo: 4,
+      puesto: 5,
+    });
   });
   it("without a header, the template's order is assumed", () => {
     const e = leerEncabezado([["Vigilante", "Luis", "Ortega"]]);
@@ -91,7 +134,9 @@ describe("cells", () => {
     expect(fechaDeCelda("mañana")).toBe("invalida");
   });
   it("normalizes text and documents", () => {
-    expect(normalizar("  Estación   NORTE · Fijo 1 ")).toBe("estacion norte fijo 1");
+    expect(normalizar("  Estación   NORTE · Fijo 1 ")).toBe(
+      "estacion norte fijo 1",
+    );
     expect(claveDeDocumento("09.123-456 7")).toBe("091234567");
   });
   it("a guard without e-mail enters with a username; office never", () => {
@@ -109,8 +154,12 @@ describe("cells", () => {
 
 describe("matching", () => {
   it("a seat by station + seat, by station alone (first vacant) or by a unique part", () => {
-    expect(buscarPlaza("charlie 3 estacionamiento fijo 2", plazas).plaza?.positionId).toBe("p2");
-    expect(buscarPlaza("Charlie 3 · Estacionamiento", plazas).plaza?.positionId).toBe("p1");
+    expect(
+      buscarPlaza("charlie 3 estacionamiento fijo 2", plazas).plaza?.positionId,
+    ).toBe("p2");
+    expect(
+      buscarPlaza("Charlie 3 · Estacionamiento", plazas).plaza?.positionId,
+    ).toBe("p1");
     expect(buscarPlaza("estacionamiento", plazas).plaza?.stationId).toBe("s1");
     expect(buscarPlaza("Fijo 1", plazas).motivo).toBe("ambiguo");
     expect(buscarPlaza("Torre 9", plazas).motivo).toBe("noEncontrado");
@@ -131,14 +180,44 @@ describe("matching", () => {
 
 describe("checks", () => {
   const leer = (filas: string[][]) =>
-    prepararFilas(leerFilas([["Tipo", "Nombres", "Apellidos", "Documento", "Correo", "Rol", "Puesto", "Empieza"], ...filas]), cat);
+    prepararFilas(
+      leerFilas([
+        [
+          "Tipo",
+          "Nombres",
+          "Apellidos",
+          "Documento",
+          "Correo",
+          "Rol",
+          "Puesto",
+          "Empieza",
+        ],
+        ...filas,
+      ]),
+      cat,
+    );
 
   it("a complete row is ready", () => {
-    const f = leer([["Vigilante", "Luis", "Ortega", "0912", "", "", "Charlie 3 Estacionamiento Fijo 1", "02/11/2026"]]);
+    const f = leer([
+      [
+        "Vigilante",
+        "Luis",
+        "Ortega",
+        "0912",
+        "",
+        "",
+        "Charlie 3 Estacionamiento Fijo 1",
+        "02/11/2026",
+      ],
+    ]);
     const p = revisarFilas(f, cat);
 
     expect(p.get(f[0].id)).toEqual([]);
-    expect(f[0].destino).toEqual({ tipo: "plaza", stationId: "s1", positionId: "p1" });
+    expect(f[0].destino).toEqual({
+      tipo: "plaza",
+      stationId: "s1",
+      positionId: "p1",
+    });
     expect(f[0].empieza).toBe("2026-11-02");
   });
   it("missing data, bad e-mail, unknown kind and role, bad date", () => {
@@ -150,14 +229,49 @@ describe("checks", () => {
     const p = revisarFilas(f, cat);
 
     expect(p.get(f[0].id)).toEqual(expect.arrayContaining(["tipo", "nombres"]));
-    expect(p.get(f[1].id)).toEqual(expect.arrayContaining(["correoInvalido", "rolDesconocido", "fechaInvalida"]));
-    expect(p.get(f[2].id)).toEqual(expect.arrayContaining(["correoRequerido", "rolRequerido"]));
+    expect(p.get(f[1].id)).toEqual(
+      expect.arrayContaining([
+        "correoInvalido",
+        "rolDesconocido",
+        "fechaInvalida",
+      ]),
+    );
+    expect(p.get(f[2].id)).toEqual(
+      expect.arrayContaining(["correoRequerido", "rolRequerido"]),
+    );
   });
   it("two rows for one vacant seat: the second is refused; an occupied seat too", () => {
     const f = leer([
-      ["Vigilante", "A", "Uno", "", "", "", "Charlie 3 Estacionamiento Fijo 1", ""],
-      ["Vigilante", "B", "Dos", "", "", "", "Charlie 3 Estacionamiento Fijo 1", ""],
-      ["Vigilante", "C", "Tres", "", "", "", "Alfa 1 Acceso principal Fijo 1", ""],
+      [
+        "Vigilante",
+        "A",
+        "Uno",
+        "",
+        "",
+        "",
+        "Charlie 3 Estacionamiento Fijo 1",
+        "",
+      ],
+      [
+        "Vigilante",
+        "B",
+        "Dos",
+        "",
+        "",
+        "",
+        "Charlie 3 Estacionamiento Fijo 1",
+        "",
+      ],
+      [
+        "Vigilante",
+        "C",
+        "Tres",
+        "",
+        "",
+        "",
+        "Alfa 1 Acceso principal Fijo 1",
+        "",
+      ],
     ]);
     const p = revisarFilas(f, cat);
 
@@ -184,10 +298,17 @@ describe("checks", () => {
       ["Vigilante", "B", "Dos", "0912", "A@X.com", "", "", ""],
       ["Supervisor", "C", "Tres", "777", "c@x.com", "", "", ""],
     ]);
-    const p = revisarFilas(f, cat, { documentos: new Set(["777"]), correos: new Set(["c@x.com"]) });
+    const p = revisarFilas(f, cat, {
+      documentos: new Set(["777"]),
+      correos: new Set(["c@x.com"]),
+    });
 
-    expect(p.get(f[0].id)).toEqual(expect.arrayContaining(["documentoRepetido", "correoRepetido"]));
-    expect(p.get(f[2].id)).toEqual(expect.arrayContaining(["documentoExiste", "correoExiste"]));
+    expect(p.get(f[0].id)).toEqual(
+      expect.arrayContaining(["documentoRepetido", "correoRepetido"]),
+    );
+    expect(p.get(f[2].id)).toEqual(
+      expect.arrayContaining(["documentoExiste", "correoExiste"]),
+    );
   });
   it("no puesto in the paste is not a problem: «sin horario por ahora»", () => {
     const f = leer([["Supervisor", "C", "Tres", "", "", "", "", ""]]);

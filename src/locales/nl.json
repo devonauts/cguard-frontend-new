@@ -22448,5 +22448,122 @@
     "semana": {
       "almuerzo": "lunch {{desde}}–{{hasta}}"
     }
+  },
+  "agregarVarias": {
+    "boton": "Meerdere toevoegen",
+    "entrada": "Meerdere personen? Voeg ze in één keer toe",
+    "titulo": "Meerdere personen toevoegen",
+    "subtitulo": "Plak je lijst uit Excel of upload het bestand. Je controleert eerst elke persoon en het rooster: er wordt niets opgeslagen tot je op «Aanmaken» tikt.",
+    "unaSola": "Eén toevoegen",
+    "lista": {
+      "titulo": "Je lijst",
+      "ayuda": "Eén rij per persoon. Kolommen: Tipo (vigilante, supervisor of oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (alleen kantoor), Puesto (station of supervisiepost) en Empieza. Met een eerste rij titels maakt de volgorde niet uit.",
+      "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+      "revisar": "Lijst controleren",
+      "subir": ".csv of .xlsx uploaden",
+      "plantilla": "Sjabloon downloaden"
+    },
+    "errores": {
+      "vacia": "Geen personen in de lijst gevonden. Controleer dat er één rij per persoon is.",
+      "archivo": "Dit bestand kon niet worden gelezen. Sla het op als .csv of .xlsx."
+    },
+    "jornada": {
+      "titulo": "Rooster voor het kantoorpersoneel",
+      "ayuda": "Dezelfde week voor alle kantoormensen in de lijst. Later kun je die per persoon aanpassen in het profiel.",
+      "con": "Met dit rooster",
+      "sin": "Voorlopig geen rooster"
+    },
+    "donde": {
+      "jornada": "Kantoorrooster"
+    },
+    "revision": {
+      "listas_one": "{{count}} klaar",
+      "listas_other": "{{count}} klaar",
+      "conProblemas_one": "{{count}} met problemen",
+      "conProblemas_other": "{{count}} met problemen",
+      "verTodas": "Alles tonen",
+      "comprobando": "Controleren of ze al in je bedrijf zitten…",
+      "titulo_one": "Controleer: {{count}} persoon",
+      "titulo_other": "Controleer: {{count}} personen",
+      "vacia": "Er zijn geen rijen meer."
+    },
+    "col": {
+      "linea": "Rij",
+      "tipo": "Functie",
+      "nombres": "Voornamen",
+      "apellidos": "Achternamen",
+      "documento": "ID-nummer",
+      "celular": "Mobiel",
+      "correo": "E-mail",
+      "donde": "Rol en rooster",
+      "empieza": "Begint"
+    },
+    "elegir": "Kiezen…",
+    "rol": "Rol",
+    "sinCorreo": "Geen e-mail: logt in met gebruikersnaam",
+    "sinRotacion": "geen rotatie",
+    "decia": "In je lijst: «{{x}}»",
+    "quitar": "Uit de lijst halen",
+    "problemas": {
+      "tipo": "Kies de functie: bewaker, supervisor of kantoor",
+      "nombres": "Voornamen ontbreken",
+      "apellidos": "Achternamen ontbreken",
+      "correoRequerido": "Kantoorpersoneel logt in met e-mail: die ontbreekt",
+      "correoInvalido": "Het e-mailadres klopt niet",
+      "celularInvalido": "Het mobiele nummer heeft minstens 7 cijfers nodig",
+      "rolRequerido": "Kies de rol",
+      "rolDesconocido": "Die rol bestaat niet in je bedrijf: kies er een",
+      "puestoNoEncontrado": "Post niet gevonden: kies hem uit de lijst",
+      "puestoAmbiguo": "Meerdere posten hebben die naam: kies er een",
+      "plazaOcupada": "Die post is al bezet (of een rij hoger neemt hem)",
+      "puestoSinRotacion": "Die post heeft geen rotatie: er komen geen diensten uit",
+      "fechaInvalida": "De startdatum is ongeldig (gebruik 02/11/2026)",
+      "documentoRepetido": "Dat ID-nummer staat twee keer in de lijst",
+      "correoRepetido": "Dat e-mailadres staat twee keer in de lijst",
+      "documentoExiste": "Iemand in je bedrijf heeft dat ID-nummer al",
+      "correoExiste": "Dat e-mailadres hoort al bij een account in je bedrijf"
+    },
+    "pie": {
+      "conProblemas_one": "De rij met problemen wordt niet aangemaakt: verbeter of verwijder hem.",
+      "conProblemas_other": "De {{count}} rijen met problemen worden niet aangemaakt: verbeter of verwijder ze.",
+      "todoListo": "Alles klaar. Ze worden één voor één aangemaakt, in de volgorde van de lijst.",
+      "otraLista": "Andere lijst gebruiken",
+      "crear_one": "{{count}} persoon aanmaken",
+      "crear_other": "{{count}} personen aanmaken"
+    },
+    "creando": {
+      "titulo": "Aanmaken {{hechas}} van {{total}}…"
+    },
+    "hecho": {
+      "titulo": "Lijst verwerkt",
+      "creadas_one": "{{count}} aangemaakt",
+      "creadas_other": "{{count}} aangemaakt",
+      "conHorario_one": "{{count}} met rooster",
+      "conHorario_other": "{{count}} met rooster",
+      "sinHorario_one": "{{count}} nog zonder rooster",
+      "sinHorario_other": "{{count}} nog zonder rooster",
+      "fallidas_one": "{{count}} niet aangemaakt",
+      "fallidas_other": "{{count}} niet aangemaakt",
+      "otra": "Nog een lijst toevoegen",
+      "verHorario": "Rooster bekijken"
+    },
+    "listo": {
+      "toast_one": "Lijst verwerkt: {{count}} persoon",
+      "toast_other": "Lijst verwerkt: {{count}} personen"
+    },
+    "res": {
+      "persona": "Persoon",
+      "horario": "Rooster",
+      "acceso": "Toegang",
+      "creada": "Aangemaakt",
+      "noCreada": "Niet aangemaakt",
+      "creando": "Aanmaken…",
+      "enEspera": "Wachten",
+      "sinHorario": "Voorlopig geen rooster",
+      "horarioFallo": "Niet opgeslagen: {{e}}",
+      "correoEnviado": "E-mail verstuurd naar {{c}}",
+      "reintentar": "Opnieuw proberen",
+      "reintentarHorario": "Rooster opnieuw proberen"
+    }
   }
 }

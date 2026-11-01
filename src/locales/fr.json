@@ -22448,5 +22448,122 @@
     "semana": {
       "almuerzo": "déjeuner {{desde}}–{{hasta}}"
     }
+  },
+  "agregarVarias": {
+    "boton": "Ajouter plusieurs",
+    "entrada": "Plusieurs personnes ? Ajoutez-les d'un coup",
+    "titulo": "Ajouter plusieurs personnes",
+    "subtitulo": "Collez votre liste depuis Excel ou importez le fichier. Vous vérifiez chaque personne et son horaire avant : rien n'est enregistré avant « Créer ».",
+    "unaSola": "En ajouter une seule",
+    "lista": {
+      "titulo": "Votre liste",
+      "ayuda": "Une ligne par personne. Colonnes : Tipo (vigilante, supervisor ou oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (bureau seulement), Puesto (station ou poste de supervision) et Empieza. Avec une première ligne de titres, l'ordre n'a pas d'importance.",
+      "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+      "revisar": "Vérifier la liste",
+      "subir": "Importer .csv ou .xlsx",
+      "plantilla": "Télécharger le modèle"
+    },
+    "errores": {
+      "vacia": "Aucune personne trouvée dans la liste. Vérifiez qu'il y a une ligne par personne.",
+      "archivo": "Impossible de lire ce fichier. Essayez de l'enregistrer en .csv ou .xlsx."
+    },
+    "jornada": {
+      "titulo": "Horaire du personnel de bureau",
+      "ayuda": "La même semaine pour toutes les personnes de bureau de la liste. Ensuite vous pouvez changer celle de chacune dans sa fiche.",
+      "con": "Avec cet horaire",
+      "sin": "Sans horaire pour l'instant"
+    },
+    "donde": {
+      "jornada": "Horaire de bureau"
+    },
+    "revision": {
+      "listas_one": "{{count}} prête",
+      "listas_other": "{{count}} prêtes",
+      "conProblemas_one": "{{count}} avec problèmes",
+      "conProblemas_other": "{{count}} avec problèmes",
+      "verTodas": "Tout voir",
+      "comprobando": "Vérification s'ils sont déjà dans votre entreprise…",
+      "titulo_one": "Vérifiez : {{count}} personne",
+      "titulo_other": "Vérifiez : {{count}} personnes",
+      "vacia": "Il ne reste aucune ligne."
+    },
+    "col": {
+      "linea": "Ligne",
+      "tipo": "Fonction",
+      "nombres": "Prénoms",
+      "apellidos": "Noms",
+      "documento": "Pièce d'identité",
+      "celular": "Mobile",
+      "correo": "E-mail",
+      "donde": "Rôle et horaire",
+      "empieza": "Commence"
+    },
+    "elegir": "Choisir…",
+    "rol": "Rôle",
+    "sinCorreo": "Sans e-mail : se connecte avec un identifiant",
+    "sinRotacion": "sans rotation",
+    "decia": "Dans votre liste : « {{x}} »",
+    "quitar": "Retirer de la liste",
+    "problemas": {
+      "tipo": "Choisissez sa fonction : agent, superviseur ou bureau",
+      "nombres": "Il manque les prénoms",
+      "apellidos": "Il manque les noms",
+      "correoRequerido": "Le bureau se connecte avec son e-mail : il manque",
+      "correoInvalido": "L'e-mail n'est pas correct",
+      "celularInvalido": "Le mobile doit avoir au moins 7 chiffres",
+      "rolRequerido": "Choisissez son rôle",
+      "rolDesconocido": "Ce rôle n'existe pas dans votre entreprise : choisissez-en un",
+      "puestoNoEncontrado": "Poste introuvable : choisissez-le dans la liste",
+      "puestoAmbiguo": "Plusieurs postes portent ce nom : choisissez-en un",
+      "plazaOcupada": "Ce poste est déjà occupé (ou une ligne plus haut le prend)",
+      "puestoSinRotacion": "Ce poste n'a pas de rotation : il ne donnerait aucun service",
+      "fechaInvalida": "La date de début n'est pas valide (utilisez 02/11/2026)",
+      "documentoRepetido": "Cette pièce d'identité figure deux fois",
+      "correoRepetido": "Cet e-mail figure deux fois",
+      "documentoExiste": "Quelqu'un a déjà cette pièce d'identité dans votre entreprise",
+      "correoExiste": "Cet e-mail appartient déjà à un compte de votre entreprise"
+    },
+    "pie": {
+      "conProblemas_one": "La ligne avec problèmes n'est pas créée : corrigez-la ici ou retirez-la.",
+      "conProblemas_other": "Les {{count}} lignes avec problèmes ne sont pas créées : corrigez-les ici ou retirez-les.",
+      "todoListo": "Tout est prêt. Elles sont créées une par une, dans l'ordre de la liste.",
+      "otraLista": "Utiliser une autre liste",
+      "crear_one": "Créer {{count}} personne",
+      "crear_other": "Créer {{count}} personnes"
+    },
+    "creando": {
+      "titulo": "Création {{hechas}} sur {{total}}…"
+    },
+    "hecho": {
+      "titulo": "Liste traitée",
+      "creadas_one": "{{count}} créée",
+      "creadas_other": "{{count}} créées",
+      "conHorario_one": "{{count}} avec horaire",
+      "conHorario_other": "{{count}} avec horaire",
+      "sinHorario_one": "{{count}} encore sans horaire",
+      "sinHorario_other": "{{count}} encore sans horaire",
+      "fallidas_one": "{{count}} non créée",
+      "fallidas_other": "{{count}} non créées",
+      "otra": "Ajouter une autre liste",
+      "verHorario": "Voir l'horaire"
+    },
+    "listo": {
+      "toast_one": "Liste traitée : {{count}} personne",
+      "toast_other": "Liste traitée : {{count}} personnes"
+    },
+    "res": {
+      "persona": "Personne",
+      "horario": "Horaire",
+      "acceso": "Son accès",
+      "creada": "Créée",
+      "noCreada": "Non créée",
+      "creando": "Création…",
+      "enEspera": "En attente",
+      "sinHorario": "Sans horaire pour l'instant",
+      "horarioFallo": "Non enregistré : {{e}}",
+      "correoEnviado": "E-mail envoyé à {{c}}",
+      "reintentar": "Réessayer",
+      "reintentarHorario": "Réessayer l'horaire"
+    }
   }
 }

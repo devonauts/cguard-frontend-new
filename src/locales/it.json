@@ -22448,5 +22448,122 @@
     "semana": {
       "almuerzo": "pranzo {{desde}}–{{hasta}}"
     }
+  },
+  "agregarVarias": {
+    "boton": "Aggiungi più persone",
+    "entrada": "Sono più persone? Aggiungile tutte insieme",
+    "titulo": "Aggiungi più persone",
+    "subtitulo": "Incolla l'elenco da Excel o carica il file. Controlli ogni persona e il suo orario prima: nulla viene salvato finché non tocchi «Crea».",
+    "unaSola": "Aggiungine solo una",
+    "lista": {
+      "titulo": "Il tuo elenco",
+      "ayuda": "Una riga per persona. Colonne: Tipo (vigilante, supervisor o oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (solo ufficio), Puesto (stazione o postazione di supervisione) ed Empieza. Con una prima riga di titoli, l'ordine non conta.",
+      "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+      "revisar": "Controlla l'elenco",
+      "subir": "Carica .csv o .xlsx",
+      "plantilla": "Scarica il modello"
+    },
+    "errores": {
+      "vacia": "Non abbiamo trovato persone nell'elenco. Controlla che ci sia una riga per persona.",
+      "archivo": "Non siamo riusciti a leggere il file. Prova a salvarlo come .csv o .xlsx."
+    },
+    "jornada": {
+      "titulo": "Orario per il personale d'ufficio",
+      "ayuda": "La stessa settimana per tutte le persone d'ufficio dell'elenco. Poi puoi cambiare quella di ognuna nella sua scheda.",
+      "con": "Con questo orario",
+      "sin": "Senza orario per ora"
+    },
+    "donde": {
+      "jornada": "Orario d'ufficio"
+    },
+    "revision": {
+      "listas_one": "{{count}} pronta",
+      "listas_other": "{{count}} pronte",
+      "conProblemas_one": "{{count}} con problemi",
+      "conProblemas_other": "{{count}} con problemi",
+      "verTodas": "Vedi tutte",
+      "comprobando": "Controllo se sono già nella tua azienda…",
+      "titulo_one": "Controlla: {{count}} persona",
+      "titulo_other": "Controlla: {{count}} persone",
+      "vacia": "Non restano righe nell'elenco."
+    },
+    "col": {
+      "linea": "Riga",
+      "tipo": "Cosa fa",
+      "nombres": "Nomi",
+      "apellidos": "Cognomi",
+      "documento": "Documento",
+      "celular": "Cellulare",
+      "correo": "E-mail",
+      "donde": "Ruolo e orario",
+      "empieza": "Inizia"
+    },
+    "elegir": "Scegli…",
+    "rol": "Ruolo",
+    "sinCorreo": "Senza e-mail: entra con un nome utente",
+    "sinRotacion": "senza rotazione",
+    "decia": "Nel tuo elenco: «{{x}}»",
+    "quitar": "Togli dall'elenco",
+    "problemas": {
+      "tipo": "Scegli cosa fa: guardia, supervisore o ufficio",
+      "nombres": "Mancano i nomi",
+      "apellidos": "Mancano i cognomi",
+      "correoRequerido": "L'ufficio entra con l'e-mail: manca",
+      "correoInvalido": "L'e-mail non è scritto bene",
+      "celularInvalido": "Il cellulare richiede almeno 7 cifre",
+      "rolRequerido": "Scegli il ruolo",
+      "rolDesconocido": "Questo ruolo non esiste nella tua azienda: scegline uno",
+      "puestoNoEncontrado": "Postazione non trovata: sceglila dall'elenco",
+      "puestoAmbiguo": "Ci sono più postazioni con quel nome: scegline una",
+      "plazaOcupada": "Quella postazione è già occupata (o la prende una riga sopra)",
+      "puestoSinRotacion": "Quella postazione non ha rotazione: non darebbe turni",
+      "fechaInvalida": "La data di inizio non è valida (usa 02/11/2026)",
+      "documentoRepetido": "Quel documento è due volte nell'elenco",
+      "correoRepetido": "Quell'e-mail è due volte nell'elenco",
+      "documentoExiste": "Qualcuno nella tua azienda ha già quel documento",
+      "correoExiste": "Quell'e-mail appartiene già a un account della tua azienda"
+    },
+    "pie": {
+      "conProblemas_one": "La riga con problemi non viene creata: correggila qui o toglila.",
+      "conProblemas_other": "Le {{count}} righe con problemi non vengono create: correggile qui o toglile.",
+      "todoListo": "Tutto pronto. Vengono create una alla volta, nell'ordine dell'elenco.",
+      "otraLista": "Usa un altro elenco",
+      "crear_one": "Crea {{count}} persona",
+      "crear_other": "Crea {{count}} persone"
+    },
+    "creando": {
+      "titulo": "Creazione {{hechas}} di {{total}}…"
+    },
+    "hecho": {
+      "titulo": "Elenco elaborato",
+      "creadas_one": "{{count}} creata",
+      "creadas_other": "{{count}} create",
+      "conHorario_one": "{{count}} con orario",
+      "conHorario_other": "{{count}} con orario",
+      "sinHorario_one": "{{count}} ancora senza orario",
+      "sinHorario_other": "{{count}} ancora senza orario",
+      "fallidas_one": "{{count}} non creata",
+      "fallidas_other": "{{count}} non create",
+      "otra": "Aggiungi un altro elenco",
+      "verHorario": "Vedi l'orario"
+    },
+    "listo": {
+      "toast_one": "Elenco elaborato: {{count}} persona",
+      "toast_other": "Elenco elaborato: {{count}} persone"
+    },
+    "res": {
+      "persona": "Persona",
+      "horario": "Orario",
+      "acceso": "Il suo accesso",
+      "creada": "Creata",
+      "noCreada": "Non creata",
+      "creando": "Creazione…",
+      "enEspera": "In attesa",
+      "sinHorario": "Senza orario per ora",
+      "horarioFallo": "Non salvato: {{e}}",
+      "correoEnviado": "E-mail inviata a {{c}}",
+      "reintentar": "Riprova",
+      "reintentarHorario": "Riprova l'orario"
+    }
   }
 }

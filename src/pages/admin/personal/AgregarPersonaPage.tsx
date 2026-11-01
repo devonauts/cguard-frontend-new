@@ -599,6 +599,19 @@ export default function AgregarPersonaPage() {
     <AppLayout>
       <PageContainer className="pb-28" width="default">
         <PageHeader
+          actions={
+            // Bulk add: same calls, a whole list at once (lib/crearPersona).
+            !resultado && paso === 1 ? (
+              <Button asChild variant="outline">
+                <Link id="alta-varias" to="/personal/varias">
+                  {t(
+                    "agregarVarias.entrada",
+                    "¿Son varias? Agrégalas de una vez",
+                  )}
+                </Link>
+              </Button>
+            ) : undefined
+          }
           icon={<UserPlus />}
           subtitle={t(
             "agregarPersona.subtitulo",
