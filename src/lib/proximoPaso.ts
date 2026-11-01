@@ -22,8 +22,19 @@ export type Vista =
   | { modo: "nada" };
 
 /** `quienPuede` is the fallback sentence when there is no specific reason. */
-export function vistaDelPaso(paso: Paso | null | undefined, quienPuede: string): Vista {
-  if (!paso || !paso.label || (!paso.to && !paso.onClick)) return { modo: "nada" };
-  if (paso.puede === false) return { modo: "aviso", texto: paso.porQueNo || quienPuede };
-  return { modo: "boton", label: paso.label, to: paso.to, onClick: paso.onClick };
+export function vistaDelPaso(
+  paso: Paso | null | undefined,
+  quienPuede: string,
+): Vista {
+  if (!paso || !paso.label || (!paso.to && !paso.onClick))
+    return { modo: "nada" };
+  if (paso.puede === false)
+    return { modo: "aviso", texto: paso.porQueNo || quienPuede };
+
+  return {
+    modo: "boton",
+    label: paso.label,
+    to: paso.to,
+    onClick: paso.onClick,
+  };
 }

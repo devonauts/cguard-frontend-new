@@ -12,7 +12,8 @@
  * Kept free of React so the ranking and the keyboard are tested on their own.
  */
 
-export type TipoDeHallazgo = "guard" | "supervisor" | "office" | "station" | "postSite" | "client";
+export type TipoDeHallazgo =
+  "guard" | "supervisor" | "office" | "station" | "postSite" | "client";
 export type GrupoDeDestino = "menu" | "config" | "accion" | "hallazgo";
 
 export interface Destino {
@@ -39,26 +40,31 @@ export interface Hallazgo {
 
 /** No accents, lower case: «vigilancia» finds «Vigilância» and «RONDAS». */
 export const plano = (s: string) =>
-  (s || "")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase();
+  (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /** 0 starts with, 1 a word starts with, 2 contains, 3 context/keyword, 99 none. */
 export function marca(d: Destino, q: string): number {
   const l = plano(d.label);
+
   if (!q) return 99;
   if (l.startsWith(q)) return 0;
   if (l.split(/[\s·,./()-]+/).some((w) => w.startsWith(q))) return 1;
   if (l.includes(q)) return 2;
   if (plano(d.contexto ?? "").includes(q)) return 3;
   if ((d.claves || []).some((k) => plano(k).startsWith(q))) return 3;
+
   return 99;
 }
 
-export function filtrar(destinos: Destino[], consulta: string, max: number): Destino[] {
+export function filtrar(
+  destinos: Destino[],
+  consulta: string,
+  max: number,
+): Destino[] {
   const q = plano(consulta.trim());
+
   if (!q) return [];
+
   return destinos
     .map((d, i) => ({ d, r: marca(d, q), i }))
     .filter((x) => x.r < 99)
@@ -90,10 +96,19 @@ export interface AccionRapida {
   permisos?: string[];
 }
 
-export function accionesPermitidas(todas: AccionRapida[], tiene: (p: string) => boolean): Destino[] {
+export function accionesPermitidas(
+  todas: AccionRapida[],
+  tiene: (p: string) => boolean,
+): Destino[] {
   return todas
     .filter((a) => !a.permisos?.length || a.permisos.some((p) => tiene(p)))
-    .map((a) => ({ id: `accion:${a.id}`, label: a.label, path: a.path, grupo: "accion" as const, claves: a.claves }));
+    .map((a) => ({
+      id: `accion:${a.id}`,
+      label: a.label,
+      path: a.path,
+      grupo: "accion" as const,
+      claves: a.claves,
+    }));
 }
 
 export interface Secciones {
@@ -120,14 +135,24 @@ export function secciones(
   };
 }
 
-export const enOrden = (s: Secciones): Destino[] => [...s.hallazgos, ...s.acciones, ...s.paginas];
+export const enOrden = (s: Secciones): Destino[] => [
+  ...s.hallazgos,
+  ...s.acciones,
+  ...s.paginas,
+];
 
 /** Arrow keys wrap around; an empty list keeps the cursor at 0. */
-export function moverCursor(cursor: number, delta: number, total: number): number {
+export function moverCursor(
+  cursor: number,
+  delta: number,
+  total: number,
+): number {
   if (total <= 0) return 0;
+
   return (((cursor + delta) % total) + total) % total;
 }
 
 /** Ask the server only from this length on (matches the backend MIN_QUERY). */
 export const MIN_SERVIDOR = 2;
-export const debeBuscarEnServidor = (consulta: string) => plano(consulta.trim()).length >= MIN_SERVIDOR;
+export const debeBuscarEnServidor = (consulta: string) =>
+  plano(consulta.trim()).length >= MIN_SERVIDOR;

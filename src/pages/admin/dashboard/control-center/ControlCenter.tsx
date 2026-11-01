@@ -33,14 +33,8 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import PrimerosPasos from "@/components/arranque/PrimerosPasos";
 
-import {
-  EmptyState,
-  GlassPanel,
-  SkeletonCards,
-  Stagger,
-} from "@/components/kit";
+import PrimerosPasos from "@/components/arranque/PrimerosPasos";
 
 import "./control-center.css";
 import type { Kpi } from "./types";
@@ -86,6 +80,12 @@ import { ComparativaDeSucursales } from "./sucursales/ComparativaDeSucursales";
 import { GLOBAL } from "./sucursales/paradas";
 import { InvitacionADividir } from "./sucursales/InvitacionADividir";
 
+import {
+  EmptyState,
+  GlassPanel,
+  SkeletonCards,
+  Stagger,
+} from "@/components/kit";
 import { sucursalElegida } from "@/lib/sucursalElegida";
 import { useSucursales } from "@/hooks/useSucursales";
 import AppLayout from "@/layouts/app-layout";

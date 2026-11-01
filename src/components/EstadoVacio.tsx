@@ -10,6 +10,7 @@
  *     filter, instead of pretending the company has nothing.
  */
 import type { ReactNode } from "react";
+
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowRight, FilterX, Lock } from "lucide-react";
@@ -54,9 +55,15 @@ export function EstadoVacio({
           ) : undefined
         }
         className={className}
-        description={t("ui.EstadoVacio.filtradoAyuda", "Prueba con otras palabras o quita el filtro.")}
+        description={t(
+          "ui.EstadoVacio.filtradoAyuda",
+          "Prueba con otras palabras o quita el filtro.",
+        )}
         icon={icon}
-        title={t("ui.EstadoVacio.nadaCoincide", "Nada coincide con la búsqueda")}
+        title={t(
+          "ui.EstadoVacio.nadaCoincide",
+          "Nada coincide con la búsqueda",
+        )}
         variant={variant}
       />
     );
@@ -64,7 +71,10 @@ export function EstadoVacio({
 
   const vista = vistaDelPaso(
     paso,
-    t("ui.EstadoVacio.pideloAUnAdministrador", "Pídeselo a un administrador de la empresa."),
+    t(
+      "ui.EstadoVacio.pideloAUnAdministrador",
+      "Pídeselo a un administrador de la empresa.",
+    ),
   );
 
   const accion =
@@ -83,7 +93,10 @@ export function EstadoVacio({
         </Button>
       )
     ) : vista.modo === "aviso" ? (
-      <p className="inline-flex max-w-sm items-start gap-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+      <p
+        className="inline-flex max-w-sm items-start gap-1.5 text-xs"
+        style={{ color: "var(--ink-soft)" }}
+      >
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>{vista.texto}</span>
       </p>

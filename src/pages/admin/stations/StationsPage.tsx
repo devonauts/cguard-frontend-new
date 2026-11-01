@@ -6,15 +6,14 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { usePuede } from "@/hooks/usePuede";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Plus, RadioTower, RotateCcw } from "lucide-react";
 
 import StationCardsGrid from "./StationCardsGrid";
 
+import { usePuede } from "@/hooks/usePuede";
 import ElegirSedeParaEstacion from "@/components/stations/ElegirSedeParaEstacion";
 import { Button } from "@/components/ui/button";
-
 import AppLayout from "@/layouts/app-layout";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import {
@@ -53,10 +52,10 @@ export default function StationsPage() {
   useEffect(() => {
     if (params.get("nueva") === "1") {
       const p = new URLSearchParams(params);
+
       p.delete("nueva");
       setParams(p, { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -183,14 +182,14 @@ export default function StationsPage() {
           />
         ) : (
           <StationCardsGrid
-            loading={loading}
-            stations={filtered}
-            onOpen={openStation}
-            onOpenTab={openStationTab}
             consulta={query}
+            loading={loading}
             porQueNoPuedeCrear={crear.puede ? undefined : crear.porQueNo || ""}
+            stations={filtered}
             onAdd={() => setEligiendo(true)}
             onLimpiarConsulta={() => setQuery("")}
+            onOpen={openStation}
+            onOpenTab={openStationTab}
           />
         )}
         <ElegirSedeParaEstacion open={eligiendo} onOpenChange={setEligiendo} />

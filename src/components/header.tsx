@@ -232,6 +232,7 @@ export default function Header({
   notificationsCount = 1,
 }: HeaderProps) {
   const { user, signOut, hasAny } = useAuth();
+
   // Another admin switched a module off/on: menus follow without a reload.
   useAddonChangesLive();
   /* El nombre del anfitrión. En el de la plataforma es «C-Guard Pro»; en el de
@@ -541,6 +542,7 @@ export default function Header({
         const r: any = await ApiService.get(
           `/tenant/${tid}/search?q=${encodeURIComponent(q)}`,
         );
+
         if (mia !== vueltaDeBusqueda.current) return;
         const lista = r?.data?.results ?? r?.results;
 
@@ -566,21 +568,36 @@ export default function Header({
             label: t("ui.header.cmdk.nuevoVigilante", "Nuevo vigilante"),
             path: "/personal/nueva?tipo=vigilante",
             permisos: ["securityGuardCreate"],
-            claves: [t("ui.header.cmdk.claveAgregar", "agregar"), t("ui.header.cmdk.claveCrear", "crear"), "personal"],
+            claves: [
+              t("ui.header.cmdk.claveAgregar", "agregar"),
+              t("ui.header.cmdk.claveCrear", "crear"),
+              "personal",
+            ],
           },
           {
             id: "nueva-persona",
-            label: t("ui.header.cmdk.nuevaPersona", "Agregar persona de oficina"),
+            label: t(
+              "ui.header.cmdk.nuevaPersona",
+              "Agregar persona de oficina",
+            ),
             path: "/personal/nueva?tipo=oficina",
             permisos: ["userCreate"],
-            claves: [t("ui.header.cmdk.claveAgregar", "agregar"), t("ui.header.cmdk.claveCrear", "crear"), "usuario"],
+            claves: [
+              t("ui.header.cmdk.claveAgregar", "agregar"),
+              t("ui.header.cmdk.claveCrear", "crear"),
+              "usuario",
+            ],
           },
           {
             id: "nueva-estacion",
             label: t("ui.header.cmdk.nuevaEstacion", "Nueva estación"),
             path: "/stations?nueva=1",
             permisos: ["stationCreate"],
-            claves: [t("ui.header.cmdk.claveAgregar", "agregar"), t("ui.header.cmdk.claveCrear", "crear"), "puesto"],
+            claves: [
+              t("ui.header.cmdk.claveAgregar", "agregar"),
+              t("ui.header.cmdk.claveCrear", "crear"),
+              "puesto",
+            ],
           },
           {
             id: "horario",
@@ -598,7 +615,10 @@ export default function Header({
           },
           {
             id: "nuevo-permiso",
-            label: t("ui.header.cmdk.nuevoPermiso", "Registrar un permiso o vacaciones"),
+            label: t(
+              "ui.header.cmdk.nuevoPermiso",
+              "Registrar un permiso o vacaciones",
+            ),
             path: "/time-off?nuevo=1",
             permisos: ["timeOffRequestCreate"],
             claves: ["vacaciones", "ausencia", "permiso"],
@@ -956,7 +976,10 @@ export default function Header({
 
             {buscando && consulta.trim().length > 0 && (
               <div className="absolute left-0 right-0 top-full z-50 mt-2">
-                <div className="glass-raised cg-flotante cc-rise max-h-[62vh] overflow-y-auto p-1.5" role="listbox">
+                <div
+                  className="glass-raised cg-flotante cc-rise max-h-[62vh] overflow-y-auto p-1.5"
+                  role="listbox"
+                >
                   {resultados.length === 0 ? (
                     <div
                       className="px-3 py-6 text-center text-xs"
@@ -972,7 +995,13 @@ export default function Header({
                   ) : (
                     (
                       [
-                        ["hallazgos", t("ui.header.cmdk.personasYLugares", "Personas y lugares")],
+                        [
+                          "hallazgos",
+                          t(
+                            "ui.header.cmdk.personasYLugares",
+                            "Personas y lugares",
+                          ),
+                        ],
                         ["acciones", t("ui.header.cmdk.acciones", "Acciones")],
                         ["paginas", t("ui.header.cmdk.paginas", "Páginas")],
                       ] as const
@@ -988,7 +1017,7 @@ export default function Header({
                             : panel.hallazgos.length + panel.acciones.length;
 
                       return (
-                        <div key={clave} role="group" aria-label={titulo}>
+                        <div key={clave} aria-label={titulo} role="group">
                           <div
                             className="flex items-center gap-1.5 px-2.5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide"
                             style={{ color: "var(--ink-faint)" }}

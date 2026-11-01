@@ -1,4 +1,3 @@
-import { EstadoVacio } from "@/components/EstadoVacio";
 /**
  * Vista de tarjetas de ESTACIONES (como la de clientes). Cada tarjeta:
  * el LOGO del cliente dueño, el «nominativo» (nickname) como título, el nombre
@@ -11,7 +10,6 @@ import type { StationCard } from "@/lib/api/stationService";
 import { useTranslation } from "react-i18next";
 import {
   RadioTower,
-  Plus,
   Building2,
   Users,
   MapPin,
@@ -24,14 +22,12 @@ import {
   QrCode,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-
+import { EstadoVacio } from "@/components/EstadoVacio";
 import EtiquetaDeSucursal from "@/components/sucursales/EtiquetaDeSucursal";
 import { useEtiquetasDeSucursal } from "@/hooks/useEtiquetasDeSucursal";
 import {
   StatusBadge,
   SkeletonCards,
-  EmptyState,
   GlassPanel,
   SmartImage,
 } from "@/components/kit";
@@ -300,7 +296,10 @@ export default function StationCardsGrid({
         paso={
           onAdd
             ? {
-                label: t("ui.StationsPage.crearLaPrimera", "Crear la primera estación"),
+                label: t(
+                  "ui.StationsPage.crearLaPrimera",
+                  "Crear la primera estación",
+                ),
                 onClick: onAdd,
                 puede: porQueNoPuedeCrear === undefined,
                 porQueNo: porQueNoPuedeCrear || undefined,

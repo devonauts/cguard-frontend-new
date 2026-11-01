@@ -61,7 +61,6 @@ import {
   PageContainer,
   PageHeader,
   StatusBadge,
-  EmptyState,
   Segmented,
   Toolbar,
   GlassPanel,
@@ -1281,11 +1280,17 @@ export default function AdminOfficeUsersPage() {
                             filtrado={(rows || []).length > 0}
                             icon={<Users />}
                             paso={{
-                              label: t("ui.AdminOfficeUsers.agregarPrimera", "Agregar a alguien de la oficina"),
+                              label: t(
+                                "ui.AdminOfficeUsers.agregarPrimera",
+                                "Agregar a alguien de la oficina",
+                              ),
                               to: "/personal/nueva?tipo=oficina",
                               puede: hasPermission("userCreate"),
                             }}
-                            title={t("ui.AdminOfficeUsers.vacioTitulo", "Todavía no hay personal de oficina")}
+                            title={t(
+                              "ui.AdminOfficeUsers.vacioTitulo",
+                              "Todavía no hay personal de oficina",
+                            )}
                             variant="inline"
                             onLimpiarFiltro={() => setQuery("")}
                           />

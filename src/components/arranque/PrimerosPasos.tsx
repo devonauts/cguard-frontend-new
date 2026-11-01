@@ -29,34 +29,53 @@ export function PrimerosPasos() {
   if (!datos || !datos.show) return null;
 
   const nivel = nivelEnLaEmpresa(user);
-  const puedeOcultar = !!user?.isSuperadmin || (nivel != null && nivel >= NIVEL.GERENCIA);
+  const puedeOcultar =
+    !!user?.isSuperadmin || (nivel != null && nivel >= NIVEL.GERENCIA);
   const total = datos.steps.length;
   const listos = hechos(datos);
 
   const TEXTOS: Record<ClaveDePaso, { titulo: string; ayuda: string }> = {
     station: {
       titulo: t("ui.PrimerosPasos.station", "Crea una estación"),
-      ayuda: t("ui.PrimerosPasos.stationAyuda", "El puesto que vas a cubrir: elige el cliente y la sede."),
+      ayuda: t(
+        "ui.PrimerosPasos.stationAyuda",
+        "El puesto que vas a cubrir: elige el cliente y la sede.",
+      ),
     },
     requirement: {
       titulo: t("ui.PrimerosPasos.requirement", "Define su requisito"),
-      ayuda: t("ui.PrimerosPasos.requirementAyuda", "Cuántos vigilantes pide la estación y en qué horario."),
+      ayuda: t(
+        "ui.PrimerosPasos.requirementAyuda",
+        "Cuántos vigilantes pide la estación y en qué horario.",
+      ),
     },
     guards: {
       titulo: t("ui.PrimerosPasos.guards", "Agrega a tus vigilantes"),
-      ayuda: t("ui.PrimerosPasos.guardsAyuda", "Con correo o sin él: entran a la app cuando tú decidas."),
+      ayuda: t(
+        "ui.PrimerosPasos.guardsAyuda",
+        "Con correo o sin él: entran a la app cuando tú decidas.",
+      ),
     },
     schedule: {
       titulo: t("ui.PrimerosPasos.schedule", "Arma el horario"),
-      ayuda: t("ui.PrimerosPasos.scheduleAyuda", "En el borrador, asigna cada vigilante a su estación."),
+      ayuda: t(
+        "ui.PrimerosPasos.scheduleAyuda",
+        "En el borrador, asigna cada vigilante a su estación.",
+      ),
     },
     publish: {
       titulo: t("ui.PrimerosPasos.publish", "Publica"),
-      ayuda: t("ui.PrimerosPasos.publishAyuda", "Con «Publicar», los turnos llegan a la app de cada vigilante."),
+      ayuda: t(
+        "ui.PrimerosPasos.publishAyuda",
+        "Con «Publicar», los turnos llegan a la app de cada vigilante.",
+      ),
     },
     clockIn: {
       titulo: t("ui.PrimerosPasos.clockIn", "Primera marcación"),
-      ayuda: t("ui.PrimerosPasos.clockInAyuda", "Cuando un vigilante marque entrada, la verás en Asistencia."),
+      ayuda: t(
+        "ui.PrimerosPasos.clockInAyuda",
+        "Cuando un vigilante marque entrada, la verás en Asistencia.",
+      ),
     },
   };
 
@@ -65,7 +84,12 @@ export function PrimerosPasos() {
     try {
       await ocultar();
     } catch {
-      toast.error(t("ui.PrimerosPasos.noSeOculto", "No se pudo ocultar la guía. Vuelve a intentarlo."));
+      toast.error(
+        t(
+          "ui.PrimerosPasos.noSeOculto",
+          "No se pudo ocultar la guía. Vuelve a intentarlo.",
+        ),
+      );
     } finally {
       setOcultando(false);
     }
@@ -78,12 +102,16 @@ export function PrimerosPasos() {
           <Rocket />
         </IconTile>
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold" style={{ color: "var(--ink)", textWrap: "balance" } as any}>
+          <h2
+            className="text-base font-semibold"
+            style={{ color: "var(--ink)", textWrap: "balance" } as any}
+          >
             {t("ui.PrimerosPasos.titulo", "Pon en marcha tu empresa")}
           </h2>
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
             {t("ui.PrimerosPasos.progreso", {
-              defaultValue: "{{listos}} de {{total}} listos. Cada paso se marca solo cuando lo haces.",
+              defaultValue:
+                "{{listos}} de {{total}} listos. Cada paso se marca solo cuando lo haces.",
               listos,
               total,
             })}
@@ -94,15 +122,24 @@ export function PrimerosPasos() {
         </div>
         {puedeOcultar && (
           <Button
-            aria-label={t("ui.PrimerosPasos.ocultar", "Ocultar la guía") as string}
+            aria-label={
+              t("ui.PrimerosPasos.ocultar", "Ocultar la guía") as string
+            }
             disabled={ocultando}
             size="sm"
-            title={t("ui.PrimerosPasos.ocultarAyuda", "Ocultarla para toda la empresa") as string}
+            title={
+              t(
+                "ui.PrimerosPasos.ocultarAyuda",
+                "Ocultarla para toda la empresa",
+              ) as string
+            }
             variant="ghost"
             onClick={onOcultar}
           >
             <X className="h-4 w-4" />
-            <span className="ml-1 hidden sm:inline">{t("ui.PrimerosPasos.ocultar", "Ocultar la guía")}</span>
+            <span className="ml-1 hidden sm:inline">
+              {t("ui.PrimerosPasos.ocultar", "Ocultar la guía")}
+            </span>
           </Button>
         )}
       </div>
@@ -117,8 +154,12 @@ export function PrimerosPasos() {
               key={s.key}
               className="flex min-w-0 items-start gap-3 rounded-2xl p-3"
               style={{
-                background: esElSiguiente ? "var(--brand-wash)" : "var(--glass-sunken)",
-                boxShadow: esElSiguiente ? "inset 0 0 0 1px var(--brand-line)" : undefined,
+                background: esElSiguiente
+                  ? "var(--brand-wash)"
+                  : "var(--glass-sunken)",
+                boxShadow: esElSiguiente
+                  ? "inset 0 0 0 1px var(--brand-line)"
+                  : undefined,
                 opacity: s.done ? 0.75 : 1,
               }}
             >
@@ -127,10 +168,20 @@ export function PrimerosPasos() {
                 className="grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-bold"
                 style={
                   s.done
-                    ? { background: "color-mix(in oklab, var(--ok) 18%, transparent)", color: "var(--ok-text)" }
+                    ? {
+                        background:
+                          "color-mix(in oklab, var(--ok) 18%, transparent)",
+                        color: "var(--ok-text)",
+                      }
                     : esElSiguiente
-                      ? { background: "var(--brand)", color: "var(--brand-ink)" }
-                      : { background: "var(--glass-raised)", color: "var(--ink-soft)" }
+                      ? {
+                          background: "var(--brand)",
+                          color: "var(--brand-ink)",
+                        }
+                      : {
+                          background: "var(--glass-raised)",
+                          color: "var(--ink-soft)",
+                        }
                 }
               >
                 {s.done ? <Check className="h-3.5 w-3.5" /> : i + 1}
@@ -138,14 +189,20 @@ export function PrimerosPasos() {
               <span className="min-w-0 flex-1">
                 <span
                   className="block text-sm font-semibold"
-                  style={{ color: "var(--ink)", textDecoration: s.done ? "line-through" : undefined }}
+                  style={{
+                    color: "var(--ink)",
+                    textDecoration: s.done ? "line-through" : undefined,
+                  }}
                 >
                   {txt.titulo}
                   <span className="sr-only">
                     {s.done ? ` · ${t("ui.PrimerosPasos.hecho", "hecho")}` : ""}
                   </span>
                 </span>
-                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>
+                <span
+                  className="block text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
                   {txt.ayuda}
                 </span>
                 {esElSiguiente && (
