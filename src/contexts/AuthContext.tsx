@@ -40,6 +40,7 @@ import { clearQueue } from "@/lib/offline/offlineQueue";
 import { isNetworkFailure } from "@/lib/offline/networkStatus";
 import {
   desktopErrorCode,
+  isDesktop,
   notifyDesktopSessionUpdated,
   notifyDesktopSignedOut,
   setAppBadge,
@@ -367,6 +368,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Ecuaseguridad tickets, 2026-07-09). Reload so the tab adopts the new
   // session instead of dying in a 403 loop.
   useEffect(() => {
+    // In the desktop program the shell owns the session and every window boots
+    // by clearing then re-writing authToken (lib/desktop bootDesktopSession).
+    // Reacting to that here made two program windows reload each other forever
+    // («Abrir en nueva pestaña», desktop e2e 2026-11-01). Sign-out and account
+    // changes reach desktop windows through the shell instead.
+    if (isDesktop()) return;
     const onStorage = (e: StorageEvent) => {
       if (e.key !== "authToken" && e.key !== "tenantId") return;
       if (e.oldValue === e.newValue) return;
