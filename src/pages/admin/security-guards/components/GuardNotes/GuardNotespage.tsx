@@ -242,6 +242,8 @@ export default function GuardNotes({
                     : "notesImages"),
                 // send encrypted token instead of raw privateUrl when available
                 fileToken: up.fileToken || null,
+                // Without one of the two the server refuses the record (400).
+                privateUrl: up.fileToken ? null : up.privateUrl || null,
                 publicUrl: up.publicUrl || null,
                 notableType: "note",
                 notableId: noteId,

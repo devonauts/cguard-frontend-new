@@ -1544,6 +1544,9 @@ export default function NewDispatchPage() {
                 sizeInBytes: uploaded.sizeInBytes || f.size,
                 storageId: "notesImages",
                 fileToken: uploaded.fileToken || null,
+                // Without one of the two the server refuses the record (400) and the
+                // photo was lost without a word (desktop e2e, 2026-11-01).
+                privateUrl: uploaded.fileToken ? null : uploaded.privateUrl || null,
                 publicUrl: uploaded.publicUrl || null,
                 notableType: "incident",
                 notableId:
