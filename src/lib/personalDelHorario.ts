@@ -284,8 +284,10 @@ export function rotuloDeDonde(w: DondeEsta | null | undefined): string | null {
   const partes = [w.postSiteName, w.stationName || w.positionName].filter(
     Boolean,
   ) as string[];
+  // «Charlie 3 · Charlie 3» says nothing twice.
+  const unicas = partes.filter((x, i) => partes.findIndex((y) => y.trim().toLowerCase() === x.trim().toLowerCase()) === i);
 
-  return partes.length ? partes.join(" · ") : null;
+  return unicas.length ? unicas.join(" · ") : null;
 }
 
 /**
