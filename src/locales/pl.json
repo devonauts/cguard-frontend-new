@@ -22771,7 +22771,12 @@
       "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
       "revisar": "Sprawdź listę",
       "subir": "Wgraj .csv lub .xlsx",
-      "plantilla": "Pobierz szablon"
+      "plantilla": "Pobierz szablon",
+      "leida_one": "Odczytaliśmy {{count}} osobę z Twojej listy.",
+      "leida_few": "Odczytaliśmy {{count}} osoby z Twojej listy.",
+      "leida_many": "Odczytaliśmy {{count}} osób z Twojej listy.",
+      "leida_other": "Odczytaliśmy {{count}} osób z Twojej listy.",
+      "cambiar": "Zmień listę"
     },
     "errores": {
       "vacia": "Nie znaleźliśmy osób na liście. Sprawdź, czy jest jeden wiersz na osobę.",

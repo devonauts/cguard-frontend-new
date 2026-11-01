@@ -26,6 +26,7 @@ import {
   PageContainer,
   PageHeader,
   Section,
+  Segmented,
   StatusBadge,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ import {
 } from "@/lib/jornadaSemanal";
 import { plazasElegibles } from "@/pages/admin/programmer/AsignarAPuestoModal";
 import {
+  dondeTerminarHorario,
   enlaceDeWhatsApp,
   fichaDe,
   mensajeDeAcceso,
@@ -141,6 +143,8 @@ export default function AgregarVariasPage() {
   const [texto, setTexto] = useState("");
   const [filas, setFilas] = useState<FilaDeLote[] | null>(null);
   const [soloProblemas, setSoloProblemas] = useState(false);
+  /** After reading, the paste box folds into one line; this reopens it. */
+  const [editandoLista, setEditandoLista] = useState(false);
 
   // Office week shared by every office row.
   const [conJornada, setConJornada] = useState(true);
@@ -286,6 +290,7 @@ export default function AgregarVariasPage() {
       return;
     }
     setFilas(prepararFilas(leidas, cat));
+    setEditandoLista(false);
     setSalidas(null);
     setSoloProblemas(false);
   };
@@ -706,107 +711,85 @@ export default function AgregarVariasPage() {
             icon={<ClipboardPaste />}
             title={t("agregarVarias.lista.titulo", "Tu lista")}
           >
-            <div className="space-y-4">
-              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                {t(
-                  "agregarVarias.lista.ayuda",
-                  "Una fila por persona. Columnas: Tipo (vigilante, supervisor u oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (solo oficina), Puesto (estación o puesto de supervisión) y Empieza. Con la primera fila de títulos, el orden no importa.",
-                )}
-              </p>
-              <textarea
-                className={`${FIELD_CLS} h-40 min-h-[8rem] py-2 font-mono text-xs`}
-                id="varias-pegar"
-                placeholder={t(
-                  "agregarVarias.lista.placeholder",
-                  "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
-                )}
-                value={texto}
-                onChange={(e) => setTexto(e.target.value)}
-              />
-              <div className="flex flex-wrap items-center gap-2">
+            {filas && !editandoLista ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm" id="varias-leida">
+                  {t("agregarVarias.lista.leida", {
+                    defaultValue: "Leímos {{count}} personas de tu lista.",
+                    count: filas.length,
+                  })}
+                </span>
+                <span className="flex-1" />
                 <Button
-                  disabled={!texto.trim() || cargando}
-                  id="varias-leer"
-                  type="button"
-                  variant="brand"
-                  onClick={() => leer(texto)}
-                >
-                  {cargando ? (
-                    <Loader2 className="animate-spin" size={14} />
-                  ) : (
-                    <ClipboardPaste size={14} />
-                  )}
-                  {t("agregarVarias.lista.revisar", "Revisar la lista")}
-                </Button>
-                <Button
+                  size="sm"
                   type="button"
                   variant="outline"
-                  onClick={() => archivoRef.current?.click()}
+                  onClick={() => setEditandoLista(true)}
                 >
-                  <FileUp size={14} />
-                  {t("agregarVarias.lista.subir", "Subir .csv o .xlsx")}
+                  <ClipboardPaste size={14} />
+                  {t("agregarVarias.lista.cambiar", "Cambiar la lista")}
                 </Button>
-                <input
-                  ref={archivoRef}
-                  accept=".csv,.txt,.tsv,.xlsx,.xls"
-                  className="hidden"
-                  id="varias-archivo"
-                  type="file"
-                  onChange={(e) => subirArchivo(e.target.files?.[0])}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                  {t(
+                    "agregarVarias.lista.ayuda",
+                    "Una fila por persona. Columnas: Tipo (vigilante, supervisor u oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (solo oficina), Puesto (estación o puesto de supervisión) y Empieza. Con la primera fila de títulos, el orden no importa.",
+                  )}
+                </p>
+                <textarea
+                  className={`${FIELD_CLS} h-40 min-h-[8rem] py-2 font-mono text-xs`}
+                  id="varias-pegar"
+                  placeholder={t(
+                    "agregarVarias.lista.placeholder",
+                    "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
+                  )}
+                  value={texto}
+                  onChange={(e) => setTexto(e.target.value)}
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={descargarPlantilla}
-                >
-                  <Download size={14} />
-                  {t("agregarVarias.lista.plantilla", "Descargar plantilla")}
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    disabled={!texto.trim() || cargando}
+                    id="varias-leer"
+                    type="button"
+                    variant={filas ? "outline" : "brand"}
+                    onClick={() => leer(texto)}
+                  >
+                    {cargando ? (
+                      <Loader2 className="animate-spin" size={14} />
+                    ) : (
+                      <ClipboardPaste size={14} />
+                    )}
+                    {t("agregarVarias.lista.revisar", "Revisar la lista")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => archivoRef.current?.click()}
+                  >
+                    <FileUp size={14} />
+                    {t("agregarVarias.lista.subir", "Subir .csv o .xlsx")}
+                  </Button>
+                  <input
+                    ref={archivoRef}
+                    accept=".csv,.txt,.tsv,.xlsx,.xls"
+                    className="hidden"
+                    id="varias-archivo"
+                    type="file"
+                    onChange={(e) => subirArchivo(e.target.files?.[0])}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={descargarPlantilla}
+                  >
+                    <Download size={14} />
+                    {t("agregarVarias.lista.plantilla", "Descargar plantilla")}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Section>
-        )}
-
-        {!enResultados && filas && hayOficina && (
-          <Section
-            className="mt-4"
-            icon={<CalendarClock />}
-            title={t(
-              "agregarVarias.jornada.titulo",
-              "Jornada para el personal de oficina",
             )}
-          >
-            <div className="space-y-4">
-              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                {t(
-                  "agregarVarias.jornada.ayuda",
-                  "La misma semana para todas las personas de oficina de la lista. Después puedes cambiar la de cada una en su ficha.",
-                )}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  aria-pressed={conJornada}
-                  size="sm"
-                  type="button"
-                  variant={conJornada ? "brand" : "outline"}
-                  onClick={() => setConJornada(true)}
-                >
-                  {t("agregarVarias.jornada.con", "Con esta jornada")}
-                </Button>
-                <Button
-                  aria-pressed={!conJornada}
-                  size="sm"
-                  type="button"
-                  variant={!conJornada ? "brand" : "outline"}
-                  onClick={() => setConJornada(false)}
-                >
-                  {t("agregarVarias.jornada.sin", "Sin horario por ahora")}
-                </Button>
-              </div>
-              {conJornada && (
-                <JornadaEnLinea value={jornada} onChange={setJornada} />
-              )}
-            </div>
           </Section>
         )}
 
@@ -864,7 +847,7 @@ export default function AgregarVariasPage() {
               style={{ borderColor: "var(--hairline)" }}
             >
               <table
-                className="w-full min-w-[1080px] text-sm"
+                className="w-full min-w-[1320px] text-sm"
                 id="varias-tabla"
               >
                 <thead>
@@ -882,6 +865,12 @@ export default function AgregarVariasPage() {
                       {t("agregarVarias.col.apellidos", "Apellidos")}
                     </th>
                     <th className="px-2 py-2">
+                      {t("agregarVarias.col.donde", "Rol y horario")}
+                    </th>
+                    <th className="px-2 py-2">
+                      {t("agregarVarias.col.empieza", "Empieza")}
+                    </th>
+                    <th className="px-2 py-2">
                       {t("agregarVarias.col.documento", "Documento")}
                     </th>
                     <th className="px-2 py-2">
@@ -889,12 +878,6 @@ export default function AgregarVariasPage() {
                     </th>
                     <th className="px-2 py-2">
                       {t("agregarVarias.col.correo", "Correo")}
-                    </th>
-                    <th className="px-2 py-2">
-                      {t("agregarVarias.col.donde", "Rol y horario")}
-                    </th>
-                    <th className="px-2 py-2">
-                      {t("agregarVarias.col.empieza", "Empieza")}
                     </th>
                     <th className="px-2 py-2" />
                   </tr>
@@ -929,6 +912,46 @@ export default function AgregarVariasPage() {
                 )}
               </p>
             )}
+          </Section>
+        )}
+
+        {!enResultados && filas && hayOficina && (
+          <Section
+            className="mt-4"
+            icon={<CalendarClock />}
+            title={t(
+              "agregarVarias.jornada.titulo",
+              "Jornada para el personal de oficina",
+            )}
+          >
+            <div className="space-y-4">
+              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                {t(
+                  "agregarVarias.jornada.ayuda",
+                  "La misma semana para todas las personas de oficina de la lista. Después puedes cambiar la de cada una en su ficha.",
+                )}
+              </p>
+              <Segmented
+                options={[
+                  {
+                    value: "con",
+                    label: t("agregarVarias.jornada.con", "Con esta jornada"),
+                  },
+                  {
+                    value: "sin",
+                    label: t(
+                      "agregarVarias.jornada.sin",
+                      "Sin horario por ahora",
+                    ),
+                  },
+                ]}
+                value={conJornada ? "con" : "sin"}
+                onChange={(v) => setConJornada(v === "con")}
+              />
+              {conJornada && (
+                <JornadaEnLinea value={jornada} onChange={setJornada} />
+              )}
+            </div>
           </Section>
         )}
 
@@ -1233,6 +1256,24 @@ export default function AgregarVariasPage() {
                                           )}
                                     </Button>
                                   )}
+                                {!progreso && r && r.horario === "despues" && (
+                                  <Button
+                                    size="sm"
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() =>
+                                      navigate(
+                                        dondeTerminarHorario(r.tipo, r.fichaId),
+                                      )
+                                    }
+                                  >
+                                    <CalendarClock size={13} />
+                                    {t(
+                                      "agregarPersona.listo.ponerHorario",
+                                      "Ponerle horario",
+                                    )}
+                                  </Button>
+                                )}
                                 {ficha && (
                                   <Button
                                     size="sm"
@@ -1316,7 +1357,7 @@ function FilaEditable({
   onQuitar: () => void;
 }) {
   const { t } = useTranslation();
-  const celda = `${FIELD_CLS} h-8 min-w-0 text-xs`;
+  const celda = `${FIELD_CLS} h-8 text-xs`;
   const mal = problemas.length > 0;
   const valorDestino =
     f.destino?.tipo === "plaza" || f.destino?.tipo === "puesto"
@@ -1371,7 +1412,7 @@ function FilaEditable({
         <td className="px-2 py-2">
           <select
             aria-label={t("agregarVarias.col.tipo", "Qué hace")}
-            className={celda}
+            className={`${celda} min-w-[9.5rem]`}
             value={f.tipo || ""}
             onChange={(e) => cambiarTipo(e.target.value)}
           >
@@ -1388,7 +1429,7 @@ function FilaEditable({
         <td className="px-2 py-2">
           <input
             aria-label={t("agregarVarias.col.nombres", "Nombres")}
-            className={celda}
+            className={`${celda} min-w-[8rem]`}
             value={f.datos.nombres}
             onChange={(e) => onDatos({ nombres: e.target.value })}
           />
@@ -1396,44 +1437,9 @@ function FilaEditable({
         <td className="px-2 py-2">
           <input
             aria-label={t("agregarVarias.col.apellidos", "Apellidos")}
-            className={celda}
+            className={`${celda} min-w-[8rem]`}
             value={f.datos.apellidos}
             onChange={(e) => onDatos({ apellidos: e.target.value })}
-          />
-        </td>
-        <td className="px-2 py-2">
-          <input
-            aria-label={t("agregarVarias.col.documento", "Documento")}
-            className={celda}
-            disabled={f.tipo === "oficina"}
-            value={f.datos.documento}
-            onChange={(e) => onDatos({ documento: e.target.value })}
-          />
-        </td>
-        <td className="px-2 py-2">
-          <input
-            aria-label={t("agregarVarias.col.celular", "Celular")}
-            className={celda}
-            value={f.datos.celular}
-            onChange={(e) => onDatos({ celular: e.target.value })}
-          />
-        </td>
-        <td className="px-2 py-2">
-          <input
-            aria-label={t("agregarVarias.col.correo", "Correo")}
-            className={celda}
-            placeholder={
-              f.tipo === "oficina"
-                ? ""
-                : t("agregarVarias.sinCorreo", "Sin correo: entra con usuario")
-            }
-            value={f.datos.correo}
-            onChange={(e) =>
-              onDatos({
-                correo: e.target.value,
-                sinCorreo: !e.target.value.trim() && f.tipo !== "oficina",
-              })
-            }
           />
         </td>
         <td className="px-2 py-2">
@@ -1513,11 +1519,46 @@ function FilaEditable({
         <td className="px-2 py-2">
           <input
             aria-label={t("agregarVarias.col.empieza", "Empieza")}
-            className={celda}
+            className={`${celda} min-w-[9.5rem]`}
             type="date"
             value={f.empieza}
             onChange={(e) =>
               onFila({ empieza: e.target.value, empiezaInvalida: false })
+            }
+          />
+        </td>
+        <td className="px-2 py-2">
+          <input
+            aria-label={t("agregarVarias.col.documento", "Documento")}
+            className={`${celda} min-w-[7.5rem]`}
+            disabled={f.tipo === "oficina"}
+            value={f.datos.documento}
+            onChange={(e) => onDatos({ documento: e.target.value })}
+          />
+        </td>
+        <td className="px-2 py-2">
+          <input
+            aria-label={t("agregarVarias.col.celular", "Celular")}
+            className={`${celda} min-w-[8.5rem]`}
+            value={f.datos.celular}
+            onChange={(e) => onDatos({ celular: e.target.value })}
+          />
+        </td>
+        <td className="px-2 py-2">
+          <input
+            aria-label={t("agregarVarias.col.correo", "Correo")}
+            className={`${celda} min-w-[13rem]`}
+            placeholder={
+              f.tipo === "oficina"
+                ? ""
+                : t("agregarVarias.sinCorreo", "Sin correo: entra con usuario")
+            }
+            value={f.datos.correo}
+            onChange={(e) =>
+              onDatos({
+                correo: e.target.value,
+                sinCorreo: !e.target.value.trim() && f.tipo !== "oficina",
+              })
             }
           />
         </td>

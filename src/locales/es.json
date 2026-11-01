@@ -22461,7 +22461,10 @@
       "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
       "revisar": "Revisar la lista",
       "subir": "Subir .csv o .xlsx",
-      "plantilla": "Descargar plantilla"
+      "plantilla": "Descargar plantilla",
+      "leida_one": "Leímos {{count}} persona de tu lista.",
+      "leida_other": "Leímos {{count}} personas de tu lista.",
+      "cambiar": "Cambiar la lista"
     },
     "errores": {
       "vacia": "No encontramos personas en la lista. Revisa que tenga una fila por persona.",

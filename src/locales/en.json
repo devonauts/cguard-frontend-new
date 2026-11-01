@@ -22461,7 +22461,10 @@
       "placeholder": "Tipo\tNombres\tApellidos\tDocumento\tCelular\tCorreo\tRol\tPuesto\tEmpieza\nVigilante\tLuis\tOrtega\t0912345678\t+593 99 555 0101\t\t\tEstación Norte · Fijo 1\t02/11/2026",
       "revisar": "Review the list",
       "subir": "Upload .csv or .xlsx",
-      "plantilla": "Download template"
+      "plantilla": "Download template",
+      "leida_one": "We read {{count}} person from your list.",
+      "leida_other": "We read {{count}} people from your list.",
+      "cambiar": "Change the list"
     },
     "errores": {
       "vacia": "We found no people in the list. Check it has one row per person.",
