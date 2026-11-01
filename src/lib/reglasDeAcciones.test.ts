@@ -10,6 +10,13 @@ const ctx = (perms: string[], nivel: number | null, conDinero: boolean | null = 
 });
 
 describe("reglasDeAcciones · the buttons mirror the server", () => {
+  it("Registrar entrada: its own permission or attendanceEdit (roles not yet synced); a dispatcher neither", () => {
+    const r = ACCIONES["cobertura.registrarEntrada"];
+    expect(motivoParaNo(r, ctx(["coverageClockInOnBehalf"], NIVEL.SUPERVISION))).toBeNull();
+    expect(motivoParaNo(r, ctx(["attendanceEdit"], NIVEL.SUPERVISION))).toBeNull();
+    expect(motivoParaNo(r, ctx(["coverageCreate", "coverageRead"], NIVEL.CENTRAL))).toBe("permiso");
+  });
+
   it("RR. HH. (attendanceRead, no attendanceApprove) does not see Novedades/Aprobaciones buttons", () => {
     const rrhh = ctx(["attendanceRead", "attendanceSettingsEdit"], NIVEL.RRHH);
     expect(motivoParaNo(ACCIONES["asistencia.resolverNovedad"], rrhh)).toBe("permiso");

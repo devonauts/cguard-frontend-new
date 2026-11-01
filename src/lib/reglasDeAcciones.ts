@@ -68,7 +68,8 @@ export const ACCIONES = {
   // «Registrar entrada» (the person is at the post and cannot clock in): its
   // own permission since 2026-11, so the central can have it without editing
   // every timecard (server: POST coverage/manual-clock-in).
-  "cobertura.registrarEntrada": { permiso: "coverageClockInOnBehalf", nivel: NIVEL.OFICINA },
+  // Its own permission, or attendanceEdit until the permission sync copies it into stored roles.
+  "cobertura.registrarEntrada": { permiso: ["coverageClockInOnBehalf", "attendanceEdit"], nivel: NIVEL.OFICINA },
   "dobletes.gestionar": { permiso: "dobletesManage", nivel: NIVEL.OFICINA },
   "intercambio.decidir": { permiso: "shiftExchangeRequestEdit" },
   // ── Permisos y vacaciones ──
