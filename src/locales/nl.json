@@ -7548,7 +7548,8 @@
       "swapMinNoticeLabel": "Minimale termijn",
       "swapMinNoticeHint": "Uren voor de dienst waarna een ruil niet meer gevraagd, geaccepteerd of goedgekeurd kan worden.",
       "maxSeguidasLabel": "Maximaal aantal uren achter elkaar",
-      "maxSeguidasHint": "Een dienst plus de verdubbeling. Bij 0 volgt een waarschuwing vanaf 16 uur achter elkaar."
+      "maxSeguidasHint": "Een dienst plus de verdubbeling. Bij 0 volgt een waarschuwing vanaf 16 uur achter elkaar.",
+      "avisoEnRoles": "De minimale rust en de aaneengesloten uren worden ook op elke loonstrook gemeld bij wie ze niet haalde."
     },
     "rondas": {
       "loadError": "De instellingen konden niet worden geladen",
@@ -18091,7 +18092,8 @@
         "rest_day": "Uren op rustdag",
         "sunday": "Uren op zondag",
         "double_shift": "Uren dubbele dienst",
-        "night_overtime": "Nachtoveruren"
+        "night_overtime": "Nachtoveruren",
+        "saturday": "Uren op zaterdag"
       },
       "frecuencia": {
         "weekly": "Wekelijks",
@@ -19242,7 +19244,19 @@
         "noSePaga": "niet betaald",
         "recargosV2": "Zondag {{domingo}} · Gewerkte rustdag {{descanso}} · Feestdag {{feriado}}",
         "combinaciones": "Als ze samenvallen — feestdag en rustdag: {{fd}} · feestdag en zondag: {{fo}} · zondag en rustdag: {{od}} · nacht op die dagen: {{noche}} · overuur op die dagen: {{extra}}",
-        "segunElDia": "afhankelijk van de dag"
+        "segunElDia": "afhankelijk van de dag",
+        "semana": "Weekstaffels: {{tramos}}, {{cuenta}}",
+        "semanaTodas": "alle uren van de week geteld",
+        "semanaExtra": "de overuren van de week geteld",
+        "periodo": "Meer dan {{h}} gewone uren {{cuando}}: overuren tegen +{{pct}} %",
+        "enElPeriodo": "in de betaalperiode",
+        "anio": "Boven {{h}} overuren in het jaar: {{tramos}}",
+        "sabado": "Zaterdag: +{{pct}} %",
+        "pluses": "Vaste toeslagen: {{lista}}",
+        "porHora": "/u",
+        "porTurno": " per dag",
+        "cadaSemanas_one": "elke week",
+        "cadaSemanas_other": "elke {{count}} weken"
       },
       "semanaLaboralEmpieza": "De werkweek begint op",
       "semanalAyuda": "Wat daarboven in de week valt, zijn overuren (VS: 40). 0 = geen weekregel.",
@@ -19280,7 +19294,8 @@
         "extraFeriado": "Een overuur (eerste trede) op een feestdag",
         "titulo": "Zo betalen deze regels",
         "fila": "{{que}}: +{{pct}}%",
-        "turno": "Dagdienst van 12 u op een feestdag die ook zijn rustdag is, tegen {{tarifa}} per uur: {{ord}} u tegen +{{po}}% en {{extra}} overuren tegen +{{pe}}% = {{total}}"
+        "turno": "Dagdienst van 12 u op een feestdag die ook zijn rustdag is, tegen {{tarifa}} per uur: {{ord}} u tegen +{{po}}% en {{extra}} overuren tegen +{{pe}}% = {{total}}",
+        "nocheSabado": "Een nachtuur op zaterdag"
       },
       "queUsa": "Wat uw bedrijf gebruikt",
       "usarSemanal": "Overuren per week tellen",
@@ -19294,9 +19309,69 @@
         "descanso": "Toeslag voor werken op de rustdag",
         "feriado": "Feestdagtoeslag",
         "extra": "Overurentoeslag",
-        "extraAyuda": "Uit: overuren worden tegen het normale tarief betaald."
+        "extraAyuda": "Uit: overuren worden tegen het normale tarief betaald.",
+        "sabado": "Zaterdagtoeslag",
+        "pluses": "Vaste toeslagen"
       },
-      "ausenciasAyudaV2": "Aangevinkt: betaald. Niet aangevinkt: blijft verantwoord (geen verzuim), maar wordt ingehouden. Een „persoonlijk” verlof wordt betaald of niet volgens het verlof zelf."
+      "ausenciasAyudaV2": "Aangevinkt: betaald. Niet aangevinkt: blijft verantwoord (geen verzuim), maar wordt ingehouden. Een „persoonlijk” verlof wordt betaald of niet volgens het verlof zelf.",
+      "plus": {
+        "horas": {
+          "todas": "Alle uren",
+          "nocturnas": "Nachturen",
+          "sabado": "Uren op zaterdag",
+          "domingo": "Uren op zondag",
+          "finDeSemana": "Uren in het weekend",
+          "feriado": "Uren op feestdagen",
+          "findeFeriado": "Uren in het weekend of op feestdagen",
+          "descanso": "Uren op de eigen rustdag",
+          "extra": "Overuren"
+        },
+        "nombre": "Naam op de loonstrook",
+        "importe": "Bedrag ({{moneda}})",
+        "por": "Betaald",
+        "porHora": "Per uur",
+        "porTurno": "Eén keer per gewerkte dag",
+        "sobre": "Over",
+        "minimo": "Minimum van die uren op de dag",
+        "minimoAyuda": "0 = elk aantal.",
+        "tope": "Maximaal uren per dag",
+        "topeAyuda": "0 = geen maximum.",
+        "pagaTodas": "Is het minimum gehaald, dan telt elk uur van de dag",
+        "cotiza": "Telt mee voor premies en loonheffing",
+        "nuevo": "Toeslag",
+        "anadir": "Toeslag toevoegen"
+      },
+      "semana": {
+        "usar": "Staffels per week",
+        "ayuda": "Elk overuur wordt betaald tegen de hoogste van de dagstaffel en de weekstaffel (Frankrijk: 36e t/m 43e uur +25 %, vanaf het 44e +50 %; Dominicaanse Republiek: boven 68 uur per week +100 %).",
+        "cuentan": "De staffels tellen",
+        "cuentanExtra": "De overuren van de week",
+        "cuentanTodas": "Alle in de week gewerkte uren",
+        "titulo": "Weekstaffels",
+        "ayudaTodas": "Vanaf hoeveel gewerkte uren in de week elke toeslag geldt.",
+        "ayudaExtra": "Vanaf hoeveel overuren in de week elke toeslag geldt.",
+        "desdeLaHora": "Vanaf uur van de week"
+      },
+      "periodo": {
+        "usar": "Overuren per periode",
+        "ayuda": "Gewone uren boven dit totaal zijn overuren, na de dag- en weekregels (Nederland: 152 uur per 4 weken tegen +50 %; Spanje: 162 uur per maand).",
+        "horas": "Gewone uren in de periode",
+        "contar": "Geteld per",
+        "elPeriodo": "De betaalperiode",
+        "ancla": "Eerste dag van een cyclus",
+        "anclaAyuda": "Leeg = vanaf de eerste dag van de werkweek vanaf 1 januari 2024.",
+        "semanas_one": "Cycli van {{count}} week",
+        "semanas_other": "Cycli van {{count}} weken"
+      },
+      "anio": {
+        "usar": "Andere staffels boven een totaal aan overuren in het jaar",
+        "ayuda": "De overuren van de eerdere urenkaarten van het jaar worden opgeteld. Boven het totaal wordt elk overuur betaald tegen de hoogste van de eigen staffel en deze (Portugal: boven 100 uur, +50 % het eerste uur van de dag en +75 % de volgende).",
+        "horas": "Overuren in het jaar",
+        "titulo": "Dagstaffels boven dat totaal"
+      },
+      "sabadoAyuda": "Op de uren die op zaterdag vallen (Nederland: +35 %). Combineert met feestdag en rustdag volgens de algemene regel en komt bovenop de nachttoeslag.",
+      "recargoSabadoPct": "Zaterdagtoeslag (%)",
+      "plusesAyuda": "Bedragen, geen percentages: per uur of één keer per gewerkte dag, over de uren die je kiest (Spanje: nachttoeslag € 1,26/u, weekend en feestdagen € 1,02/u). Ze tellen mee in het bedrag van de urenkaart en staan als eigen regel op de loonstrook."
     },
     "puede": {
       "sinPermiso": "Je rol heeft hier geen toestemming voor. Vraag het een beheerder.",

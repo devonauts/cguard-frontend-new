@@ -7045,7 +7045,8 @@
       "swapMinNoticeLabel": "Minimum notice",
       "swapMinNoticeHint": "Hours before the shift after which a swap can no longer be asked, accepted or approved.",
       "maxSeguidasLabel": "Maximum consecutive hours",
-      "maxSeguidasHint": "A shift plus its double. Leave 0 and you are warned from 16 hours in a row."
+      "maxSeguidasHint": "A shift plus its double. Leave 0 and you are warned from 16 hours in a row.",
+      "avisoEnRoles": "The minimum rest and the consecutive hours are also flagged on each payslip, for the person who did not meet them."
     },
     "rondas": {
       "loadError": "The settings could not be loaded",
@@ -17555,7 +17556,8 @@
         "rest_day": "Rest day hours",
         "sunday": "Sunday hours",
         "double_shift": "Double shift hours",
-        "night_overtime": "Night overtime hours"
+        "night_overtime": "Night overtime hours",
+        "saturday": "Saturday hours"
       },
       "frecuencia": {
         "weekly": "Weekly",
@@ -18706,7 +18708,19 @@
         "noSePaga": "not paid",
         "recargosV2": "Sunday {{domingo}} · Rest day worked {{descanso}} · Holiday {{feriado}}",
         "combinaciones": "When they fall together — holiday and rest day: {{fd}} · holiday and Sunday: {{fo}} · Sunday and rest day: {{od}} · night on those days: {{noche}} · overtime on those days: {{extra}}",
-        "segunElDia": "depends on the day"
+        "segunElDia": "depends on the day",
+        "semana": "Weekly tiers: {{tramos}}, {{cuenta}}",
+        "semanaTodas": "counting every hour of the week",
+        "semanaExtra": "counting the week's overtime",
+        "periodo": "Over {{h}} ordinary hours {{cuando}}: overtime at +{{pct}}%",
+        "enElPeriodo": "in the pay period",
+        "anio": "Past {{h}} overtime hours in the year: {{tramos}}",
+        "sabado": "Saturday: +{{pct}}%",
+        "pluses": "Flat allowances: {{lista}}",
+        "porHora": "/h",
+        "porTurno": " per day",
+        "cadaSemanas_one": "every week",
+        "cadaSemanas_other": "every {{count}} weeks"
       },
       "semanaLaboralEmpieza": "The workweek starts on",
       "semanalAyuda": "Anything over this in the week is overtime (US: 40). 0 = no weekly rule.",
@@ -18744,7 +18758,8 @@
         "extraFeriado": "An overtime hour (first tier) on a holiday",
         "titulo": "What these rules pay",
         "fila": "{{que}}: +{{pct}}%",
-        "turno": "A 12 h day shift on a holiday that is also their rest day, at {{tarifa}} an hour: {{ord}} h at +{{po}}% and {{extra}} h overtime at +{{pe}}% = {{total}}"
+        "turno": "A 12 h day shift on a holiday that is also their rest day, at {{tarifa}} an hour: {{ord}} h at +{{po}}% and {{extra}} h overtime at +{{pe}}% = {{total}}",
+        "nocheSabado": "A night hour on a Saturday"
       },
       "queUsa": "What your company uses",
       "usarSemanal": "Count overtime by the week",
@@ -18758,9 +18773,69 @@
         "descanso": "Surcharge for working on the rest day",
         "feriado": "Holiday surcharge",
         "extra": "Overtime surcharge",
-        "extraAyuda": "Off, overtime is paid at straight time."
+        "extraAyuda": "Off, overtime is paid at straight time.",
+        "sabado": "Saturday premium",
+        "pluses": "Flat allowances"
       },
-      "ausenciasAyudaV2": "Ticked: paid. Unticked: still excused (not a fault), but deducted. A “personal” leave is paid or not as the leave itself says."
+      "ausenciasAyudaV2": "Ticked: paid. Unticked: still excused (not a fault), but deducted. A “personal” leave is paid or not as the leave itself says.",
+      "plus": {
+        "horas": {
+          "todas": "All hours",
+          "nocturnas": "Night hours",
+          "sabado": "Saturday hours",
+          "domingo": "Sunday hours",
+          "finDeSemana": "Weekend hours",
+          "feriado": "Holiday hours",
+          "findeFeriado": "Weekend or holiday hours",
+          "descanso": "Hours on their rest day",
+          "extra": "Overtime hours"
+        },
+        "nombre": "Name on the payslip",
+        "importe": "Amount ({{moneda}})",
+        "por": "Paid",
+        "porHora": "Per hour",
+        "porTurno": "Once per day worked",
+        "sobre": "On",
+        "minimo": "Minimum of those hours in the day",
+        "minimoAyuda": "0 = any.",
+        "tope": "Maximum hours per day",
+        "topeAyuda": "0 = no cap.",
+        "pagaTodas": "Once the minimum is met, count every hour of the day",
+        "cotiza": "Counts for social security and income tax",
+        "nuevo": "Allowance",
+        "anadir": "Add allowance"
+      },
+      "semana": {
+        "usar": "Weekly tiers",
+        "ayuda": "Each overtime hour is paid at the higher of its daily tier and its weekly tier (France: 36th to 43rd hour +25%, from the 44th +50%; Dominican Republic: over 68 h a week +100%).",
+        "cuentan": "The tiers count",
+        "cuentanExtra": "The week's overtime hours",
+        "cuentanTodas": "Every hour worked in the week",
+        "titulo": "Weekly tiers",
+        "ayudaTodas": "From how many hours worked in the week each premium applies.",
+        "ayudaExtra": "From how many overtime hours in the week each premium applies.",
+        "desdeLaHora": "From hour of the week"
+      },
+      "periodo": {
+        "usar": "Overtime per period",
+        "ayuda": "Ordinary hours past this total are overtime, after the daily and weekly rules (Netherlands: 152 h every 4 weeks at +50%; Spain: 162 h a month).",
+        "horas": "Ordinary hours in the period",
+        "contar": "Counted by",
+        "elPeriodo": "The pay period",
+        "ancla": "First day of a cycle",
+        "anclaAyuda": "Empty = from the first day of the workweek on or after 1 January 2024.",
+        "semanas_one": "Cycles of {{count}} week",
+        "semanas_other": "Cycles of {{count}} weeks"
+      },
+      "anio": {
+        "usar": "Other tiers past a total of overtime hours in the year",
+        "ayuda": "The overtime of the year's earlier timecards is added up. Past the total, each overtime hour is paid at the higher of its tier and these (Portugal: over 100 h, +50% the first hour of the day and +75% the following ones).",
+        "horas": "Overtime hours in the year",
+        "titulo": "Daily tiers past that total"
+      },
+      "sabadoAyuda": "On the hours that fall on a Saturday (Netherlands: +35%). It combines with holiday and rest day by the general rule, and is added to the night premium.",
+      "recargoSabadoPct": "Saturday premium (%)",
+      "plusesAyuda": "Amounts, not percentages: per hour or once per day worked, on the hours you choose (Spain: night allowance €1.26/h, weekend and holidays €1.02/h). They go into the timecard amount and show as their own line on the payslip."
     },
     "puede": {
       "sinPermiso": "Your role doesn't have permission for this. Ask an administrator.",

@@ -236,6 +236,7 @@ export function useEtiquetas() {
     sunday: t("ui.RolesDePago.horas.sunday", "Horas en domingo"),
     double_shift: t("ui.RolesDePago.horas.double_shift", "Horas de doblada"),
     night_overtime: t("ui.RolesDePago.horas.night_overtime", "Horas extra nocturnas"),
+    saturday: t("ui.RolesDePago.horas.saturday", "Horas en sábado"),
   };
   const frequency: Record<PayFrequency, string> = {
     weekly: t("ui.RolesDePago.frecuencia.weekly", "Semanal"),

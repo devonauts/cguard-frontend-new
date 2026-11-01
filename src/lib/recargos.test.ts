@@ -31,4 +31,13 @@ describe("recargos · same rule as the server", () => {
 
     expect(r).toMatchObject({ ordinarias: 8, extra: 4, pctOrdinaria: 200, pctExtra: 250, total: 8 * 30 + 4 * 35 });
   });
+
+  it("Saturday: added to the night, with holiday by the general rule, off when switched off", () => {
+    const nl = { sabadoRecargoPct: 35, feriadoRecargoPct: 50, nocturno: { recargoPct: 20 }, acumulacionDeRecargos: "mayor" as const };
+
+    expect(horaCon(nl, ["nocturno", "sabado"])).toBe(55);
+    expect(horaCon(nl, ["feriado", "sabado"])).toBe(50);
+    expect(horaCon({ ...nl, acumulacionDeRecargos: "suma" }, ["feriado", "sabado"])).toBe(85);
+    expect(horaCon({ ...nl, recargosActivos: { sabado: false } }, ["sabado"])).toBe(0);
+  });
 });

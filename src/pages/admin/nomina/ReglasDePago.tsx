@@ -27,6 +27,25 @@ import {
 
 export type Tramo = { desdeHora: number; recargoPct: number };
 
+/** Which hours of a day a flat plus counts (server: `HorasDelPlus`). */
+export type HorasDelPlus =
+  | "todas" | "nocturnas" | "sabado" | "domingo" | "fin_de_semana" | "feriado" | "finde_feriado" | "descanso" | "extra";
+
+/** A flat plus: an amount (cents of the company currency), per hour or per worked day. */
+export interface PlusFijo {
+  id: string;
+  nombre: string;
+  importeCentavos: number;
+  por: "hora" | "turno";
+  horas: HorasDelPlus;
+  minimoHoras: number;
+  pagaTodas: boolean;
+  topeHoras: number;
+  cotiza: boolean;
+}
+
+const HORAS_DEL_PLUS: HorasDelPlus[] = ["todas", "nocturnas", "sabado", "domingo", "fin_de_semana", "feriado", "finde_feriado", "descanso", "extra"];
+
 export interface Politica {
   moneda?: string;
   horasOrdinariasDia?: number;
@@ -34,6 +53,15 @@ export interface Politica {
   semanaIniciaDia?: number;
   diaDelRecargo?: "horas_del_dia" | "dia_de_inicio";
   tramosExtra?: Tramo[];
+  /** Weekly overtime tiers; empty = off. `tramosSemanaCuentan` says what `desdeHora` counts. */
+  tramosExtraSemana?: Tramo[];
+  tramosSemanaCuentan?: "extra" | "semana";
+  /** Ordinary hours past `horas` in the period (or N-week cycle) become overtime; null = off. */
+  extraDelPeriodo?: { horas?: number; recargoPct?: number; semanas?: number; ancla?: string | null } | null;
+  /** Past `horas` overtime hours in the year, the daily tiers become `tramos`; null = off. */
+  extraDelAnio?: { horas?: number; tramos?: Tramo[] } | null;
+  sabadoRecargoPct?: number;
+  pluses?: PlusFijo[];
   nocturno?: { desdeHora?: number; hastaHora?: number; recargoPct?: number };
   domingoRecargoPct?: number;
   descansoRecargoPct?: number;
@@ -75,9 +103,16 @@ const DIAS = [0, 1, 2, 3, 4, 5, 6] as const;
 export function TramosExtra({
   tramos,
   onChange,
+  titulo,
+  ayuda,
+  etiquetaDesde,
 }: {
   tramos: Tramo[];
   onChange: (t: Tramo[]) => void;
+  /** Labels for another counter (week, year); default: the day's tiers. */
+  titulo?: string;
+  ayuda?: string;
+  etiquetaDesde?: string;
 }) {
   const { t } = useTranslation();
   const set = (i: number, campo: "desdeHora" | "recargoPct", v: number) =>
@@ -86,10 +121,10 @@ export function TramosExtra({
   return (
     <div className="sm:col-span-2">
       <span className="text-sm font-medium">
-        {t("ui.NominaSettings.escalonesDeHorasExtra", "Escalones de horas extra")}
+        {titulo ?? t("ui.NominaSettings.escalonesDeHorasExtra", "Escalones de horas extra")}
       </span>
       <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
-        {t(
+        {ayuda ?? t(
           "ui.NominaSettings.aPartirDeCuantasHorasExtra",
           "A partir de cuántas horas extra acumuladas en el día aplica cada recargo. Sin escalones, las extra se pagan a tarifa simple.",
         )}
@@ -98,7 +133,7 @@ export function TramosExtra({
         {tramos.map((tramo, i) => (
           <div key={i} className="flex flex-wrap items-end gap-2">
             <label className="block">
-              <span className="cg-eyebrow">{t("ui.NominaSettings.desdeLaHoraExtra", "Desde la hora extra")}</span>
+              <span className="cg-eyebrow">{etiquetaDesde ?? t("ui.NominaSettings.desdeLaHoraExtra", "Desde la hora extra")}</span>
               <input
                 className="cg-input cg-focus mt-1 w-32 px-3 py-2 text-sm tabular-nums"
                 type="number"
@@ -207,6 +242,156 @@ function FilaDeRecargo({
         </p>
       )}
       {activo && children && <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">{children}</div>}
+    </div>
+  );
+}
+
+/** A new plus id from its name: lowercase letters, digits and «_», unique in the list. */
+function idDePlus(nombre: string, usados: string[]): string {
+  const base = (nombre || "plus")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 18) || "plus";
+  let id = base;
+  let n = 2;
+
+  while (usados.includes(id)) id = `${base}_${n++}`;
+
+  return id;
+}
+
+/**
+ * FLAT PLUSES: amounts (not %) per hour or per worked day, on the hours the
+ * company picks. Spain's security convenio pays «nocturnidad» and «fin de
+ * semana y festivos» this way; many agreements pay a fixed amount per shift.
+ */
+function PlusesFijos({ pluses, moneda, onChange }: { pluses: PlusFijo[]; moneda: string; onChange: (p: PlusFijo[]) => void }) {
+  const { t } = useTranslation();
+  const set = (i: number, patch: Partial<PlusFijo>) => onChange(pluses.map((x, k) => (k === i ? { ...x, ...patch } : x)));
+  const nombreHoras = (h: HorasDelPlus) =>
+    ({
+      todas: t("ui.ReglasDePago.plus.horas.todas", "Todas las horas"),
+      nocturnas: t("ui.ReglasDePago.plus.horas.nocturnas", "Horas nocturnas"),
+      sabado: t("ui.ReglasDePago.plus.horas.sabado", "Horas en sábado"),
+      domingo: t("ui.ReglasDePago.plus.horas.domingo", "Horas en domingo"),
+      fin_de_semana: t("ui.ReglasDePago.plus.horas.finDeSemana", "Horas en fin de semana"),
+      feriado: t("ui.ReglasDePago.plus.horas.feriado", "Horas en feriado"),
+      finde_feriado: t("ui.ReglasDePago.plus.horas.findeFeriado", "Horas en fin de semana o feriado"),
+      descanso: t("ui.ReglasDePago.plus.horas.descanso", "Horas en su día de descanso"),
+      extra: t("ui.ReglasDePago.plus.horas.extra", "Horas extra"),
+    })[h];
+
+  return (
+    <div className="space-y-3 sm:col-span-3">
+      {pluses.map((x, i) => (
+        <div key={x.id} className="glass-flat grid grid-cols-1 gap-3 p-3 sm:grid-cols-3">
+          <label className="block sm:col-span-2">
+            <span className="cg-eyebrow">{t("ui.ReglasDePago.plus.nombre", "Nombre en el rol")}</span>
+            <input
+              className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+              maxLength={80}
+              value={x.nombre}
+              onChange={(e) => set(i, { nombre: e.target.value })}
+            />
+          </label>
+          <label className="block">
+            <span className="cg-eyebrow">{t("ui.ReglasDePago.plus.importe", { moneda, defaultValue: "Importe ({{moneda}})" })}</span>
+            <input
+              className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
+              type="number"
+              min={0}
+              step="0.01"
+              value={Math.round(x.importeCentavos) / 100}
+              onChange={(e) => set(i, { importeCentavos: Math.max(0, Math.round(Number(e.target.value) * 100)) })}
+            />
+          </label>
+          <label className="block">
+            <span className="cg-eyebrow">{t("ui.ReglasDePago.plus.por", "Se paga")}</span>
+            <select
+              className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+              value={x.por}
+              onChange={(e) => set(i, { por: e.target.value as PlusFijo["por"] })}
+            >
+              <option value="hora">{t("ui.ReglasDePago.plus.porHora", "Por hora")}</option>
+              <option value="turno">{t("ui.ReglasDePago.plus.porTurno", "Una vez por día trabajado")}</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className="cg-eyebrow">{t("ui.ReglasDePago.plus.sobre", "Sobre")}</span>
+            <select
+              className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+              value={x.horas}
+              onChange={(e) => set(i, { horas: e.target.value as HorasDelPlus })}
+            >
+              {HORAS_DEL_PLUS.map((h) => (
+                <option key={h} value={h}>{nombreHoras(h)}</option>
+              ))}
+            </select>
+          </label>
+          <NumeroField
+            label={t("ui.ReglasDePago.plus.minimo", "Mínimo de esas horas en el día")}
+            value={x.minimoHoras}
+            max={24}
+            hint={t("ui.ReglasDePago.plus.minimoAyuda", "0 = cualquiera.")}
+            onChange={(v) => set(i, { minimoHoras: v })}
+          />
+          {x.por === "hora" && (
+            <NumeroField
+              label={t("ui.ReglasDePago.plus.tope", "Máximo de horas al día")}
+              value={x.topeHoras}
+              max={24}
+              hint={t("ui.ReglasDePago.plus.topeAyuda", "0 = sin tope.")}
+              onChange={(v) => set(i, { topeHoras: v })}
+            />
+          )}
+          <div className="flex flex-col justify-end gap-2 sm:col-span-2">
+            {x.por === "hora" && x.horas !== "todas" && (
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="cg-focus size-4"
+                  style={{ accentColor: "var(--brand)" }}
+                  checked={x.pagaTodas}
+                  onChange={(e) => set(i, { pagaTodas: e.target.checked })}
+                />
+                {t("ui.ReglasDePago.plus.pagaTodas", "Con el mínimo cumplido, cuenta todas las horas del día")}
+              </label>
+            )}
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="cg-focus size-4"
+                style={{ accentColor: "var(--brand)" }}
+                checked={x.cotiza}
+                onChange={(e) => set(i, { cotiza: e.target.checked })}
+              />
+              {t("ui.ReglasDePago.plus.cotiza", "Cotiza a la seguridad social y a la renta")}
+            </label>
+          </div>
+          <div className="flex items-end justify-end">
+            <Button size="sm" variant="outline" onClick={() => onChange(pluses.filter((_, k) => k !== i))}>
+              {t("ui.NominaSettings.quitar", "Quitar")}
+            </Button>
+          </div>
+        </div>
+      ))}
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => {
+          const nombre = t("ui.ReglasDePago.plus.nuevo", "Plus");
+
+          onChange([
+            ...pluses,
+            { id: idDePlus(nombre, pluses.map((x) => x.id)), nombre, importeCentavos: 100, por: "hora", horas: "nocturnas", minimoHoras: 0, pagaTodas: false, topeHoras: 0, cotiza: true },
+          ]);
+        }}
+      >
+        {t("ui.ReglasDePago.plus.anadir", "Añadir plus")}
+      </Button>
     </div>
   );
 }
@@ -339,6 +524,9 @@ export default function ReglasDePago({
   };
 
   const tramos = pol.tramosExtra || [];
+  const tramosSemana = pol.tramosExtraSemana || [];
+  const periodo = pol.extraDelPeriodo || null;
+  const anio = pol.extraDelAnio || null;
   const resumen = useMemo(() => {
     const filas: string[] = [];
     const dia = Number(pol.horasOrdinariasDia || 0);
@@ -361,6 +549,38 @@ export default function ReglasDePago({
           })
         : t("ui.ReglasDePago.resumen.extraSimple", "Horas extra: a tarifa simple"),
     );
+    if (activos.extra && tramosSemana.length) {
+      filas.push(
+        t("ui.ReglasDePago.resumen.semana", {
+          tramos: tramosSemana.map((x) => `+${x.recargoPct} %${x.desdeHora > 0 ? ` (${t("ui.ReglasDePago.resumen.desdeLaHora", { n: x.desdeHora + 1, defaultValue: "desde la {{n}}.ª" })})` : ""}`).join(", "),
+          cuenta: pol.tramosSemanaCuentan === "semana"
+            ? t("ui.ReglasDePago.resumen.semanaTodas", "contando todas las horas de la semana")
+            : t("ui.ReglasDePago.resumen.semanaExtra", "contando las horas extra de la semana"),
+          defaultValue: "Escalones por semana: {{tramos}}, {{cuenta}}",
+        }),
+      );
+    }
+    if (periodo && Number(periodo.horas) > 0) {
+      filas.push(
+        t("ui.ReglasDePago.resumen.periodo", {
+          h: periodo.horas,
+          pct: activos.extra ? (periodo.recargoPct ?? 0) : 0,
+          cuando: Number(periodo.semanas) > 0
+            ? t("ui.ReglasDePago.resumen.cadaSemanas", { count: Number(periodo.semanas), defaultValue: "cada {{count}} semanas" })
+            : t("ui.ReglasDePago.resumen.enElPeriodo", "en el periodo de pago"),
+          defaultValue: "Más de {{h}} h ordinarias {{cuando}}: extra al +{{pct}} %",
+        }),
+      );
+    }
+    if (activos.extra && anio && (anio.tramos || []).length) {
+      filas.push(
+        t("ui.ReglasDePago.resumen.anio", {
+          h: anio.horas ?? 0,
+          tramos: (anio.tramos || []).map((x) => `+${x.recargoPct} %${x.desdeHora > 0 ? ` (${t("ui.ReglasDePago.resumen.desdeLaHora", { n: x.desdeHora + 1, defaultValue: "desde la {{n}}.ª" })})` : ""}`).join(", "),
+          defaultValue: "Pasadas {{h}} h extra en el año: {{tramos}}",
+        }),
+      );
+    }
     const n = pol.nocturno || {};
 
     filas.push(
@@ -394,6 +614,21 @@ export default function ReglasDePago({
         defaultValue: "Domingo {{domingo}} · Descanso trabajado {{descanso}} · Feriado {{feriado}}",
       }),
     );
+    if (activos.sabado && Number(pol.sabadoRecargoPct) > 0) {
+      filas.push(t("ui.ReglasDePago.resumen.sabado", { pct: pol.sabadoRecargoPct, defaultValue: "Sábado: +{{pct}} %" }));
+    }
+    const pluses = activos.pluses ? pol.pluses || [] : [];
+
+    if (pluses.length) {
+      filas.push(
+        t("ui.ReglasDePago.resumen.pluses", {
+          lista: pluses
+            .map((x) => `${x.nombre} ${(x.importeCentavos / 100).toFixed(2)} ${pol.moneda || ""}${x.por === "hora" ? t("ui.ReglasDePago.resumen.porHora", "/h") : t("ui.ReglasDePago.resumen.porTurno", " por día")}`)
+            .join(" · "),
+          defaultValue: "Pluses fijos: {{lista}}",
+        }),
+      );
+    }
     filas.push(
       t("ui.ReglasDePago.resumen.combinaciones", {
         fd: nombreRegla(comb.feriadoDescanso ?? pol.acumulacionDeRecargos),
@@ -448,6 +683,9 @@ export default function ReglasDePago({
     [t("ui.ReglasDePago.ej.nocheDomingo", "Una hora de noche en domingo"), horaCon(pol, ["nocturno", "domingo"])],
     [t("ui.ReglasDePago.ej.nocheFeriadoDescanso", "Una hora de noche en un feriado que es su día de descanso"), horaCon(pol, ["nocturno", "feriado", "descanso"])],
     [t("ui.ReglasDePago.ej.extraFeriado", "Una hora extra (primer escalón) en feriado"), horaCon(pol, ["extra", "feriado"])],
+    ...(activos.sabado && Number(pol.sabadoRecargoPct) > 0
+      ? [[t("ui.ReglasDePago.ej.nocheSabado", "Una hora de noche en sábado"), horaCon(pol, ["nocturno", "sabado"])] as [string, number]]
+      : []),
   ];
 
   const tipo = String(payroll.periodType || "biweekly");
@@ -748,6 +986,174 @@ export default function ReglasDePago({
               <div className="sm:col-span-3">
                 <TramosExtra tramos={tramos} onChange={(t2) => setPol({ tramosExtra: t2 })} />
               </div>
+              {/* The week: tiers by the hours of the workweek (France, Dominican Rep.). */}
+              <div className="glass-flat space-y-3 p-3 sm:col-span-3">
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    className="cg-focus size-4"
+                    style={{ accentColor: "var(--brand)" }}
+                    checked={tramosSemana.length > 0}
+                    onChange={(e) =>
+                      setPol({ tramosExtraSemana: e.target.checked ? [{ desdeHora: 0, recargoPct: tramos[0]?.recargoPct ?? 25 }, { desdeHora: 8, recargoPct: 50 }] : [] })
+                    }
+                  />
+                  <span className="text-sm font-medium">{t("ui.ReglasDePago.semana.usar", "Escalones por semana")}</span>
+                </label>
+                <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                  {t(
+                    "ui.ReglasDePago.semana.ayuda",
+                    "Cada hora extra se paga con el mayor entre su escalón del día y el de la semana (Francia: de la 36.ª a la 43.ª +25 %, desde la 44.ª +50 %; República Dominicana: más de 68 h a la semana +100 %).",
+                  )}
+                </p>
+                {tramosSemana.length > 0 && (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <label className="block sm:col-span-2">
+                      <span className="cg-eyebrow">{t("ui.ReglasDePago.semana.cuentan", "Los escalones cuentan")}</span>
+                      <select
+                        className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                        value={pol.tramosSemanaCuentan ?? "extra"}
+                        onChange={(e) => setPol({ tramosSemanaCuentan: e.target.value as Politica["tramosSemanaCuentan"] })}
+                      >
+                        <option value="extra">{t("ui.ReglasDePago.semana.cuentanExtra", "Las horas extra de la semana")}</option>
+                        <option value="semana">{t("ui.ReglasDePago.semana.cuentanTodas", "Todas las horas trabajadas en la semana")}</option>
+                      </select>
+                    </label>
+                    <TramosExtra
+                      tramos={tramosSemana}
+                      titulo={t("ui.ReglasDePago.semana.titulo", "Escalones de la semana")}
+                      ayuda={pol.tramosSemanaCuentan === "semana"
+                        ? t("ui.ReglasDePago.semana.ayudaTodas", "A partir de cuántas horas trabajadas en la semana aplica cada recargo.")
+                        : t("ui.ReglasDePago.semana.ayudaExtra", "A partir de cuántas horas extra acumuladas en la semana aplica cada recargo.")}
+                      etiquetaDesde={pol.tramosSemanaCuentan === "semana"
+                        ? t("ui.ReglasDePago.semana.desdeLaHora", "Desde la hora de la semana")
+                        : t("ui.NominaSettings.desdeLaHoraExtra", "Desde la hora extra")}
+                      onChange={(t2) => setPol({ tramosExtraSemana: t2 })}
+                    />
+                  </div>
+                )}
+              </div>
+              {/* The period or an N-week cycle (Netherlands 152 h / 4 weeks, Spain 162 h / month). */}
+              <div className="glass-flat space-y-3 p-3 sm:col-span-3">
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    className="cg-focus size-4"
+                    style={{ accentColor: "var(--brand)" }}
+                    checked={!!periodo}
+                    onChange={(e) => setPol({ extraDelPeriodo: e.target.checked ? { horas: 160, recargoPct: tramos[0]?.recargoPct ?? 0, semanas: 0, ancla: null } : null })}
+                  />
+                  <span className="text-sm font-medium">{t("ui.ReglasDePago.periodo.usar", "Horas extra por periodo")}</span>
+                </label>
+                <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                  {t(
+                    "ui.ReglasDePago.periodo.ayuda",
+                    "Las horas ordinarias que pasen de este total son extra, después de las reglas del día y de la semana (Países Bajos: 152 h cada 4 semanas al +50 %; España: 162 h al mes).",
+                  )}
+                </p>
+                {periodo && (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <NumeroField
+                      label={t("ui.ReglasDePago.periodo.horas", "Horas ordinarias del periodo")}
+                      value={periodo.horas}
+                      min={1}
+                      max={744}
+                      onChange={(v) => setPol({ extraDelPeriodo: { ...periodo, horas: v } })}
+                    />
+                    <NumeroField
+                      label={t("ui.NominaSettings.recargoPct", "Recargo (%)")}
+                      value={periodo.recargoPct}
+                      onChange={(v) => setPol({ extraDelPeriodo: { ...periodo, recargoPct: v } })}
+                    />
+                    <label className="block">
+                      <span className="cg-eyebrow">{t("ui.ReglasDePago.periodo.contar", "Se cuenta por")}</span>
+                      <select
+                        className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                        value={String(periodo.semanas ?? 0)}
+                        onChange={(e) => setPol({ extraDelPeriodo: { ...periodo, semanas: Number(e.target.value) } })}
+                      >
+                        <option value="0">{t("ui.ReglasDePago.periodo.elPeriodo", "El periodo de pago")}</option>
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                          <option key={n} value={String(n)}>
+                            {t("ui.ReglasDePago.periodo.semanas", { count: n, defaultValue: "Ciclos de {{count}} semanas" })}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {Number(periodo.semanas) > 0 && (
+                      <label className="block sm:col-span-3">
+                        <span className="cg-eyebrow">{t("ui.ReglasDePago.periodo.ancla", "Primer día de un ciclo")}</span>
+                        <input
+                          type="date"
+                          className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm sm:w-auto"
+                          value={periodo.ancla || ""}
+                          onChange={(e) => setPol({ extraDelPeriodo: { ...periodo, ancla: e.target.value || null } })}
+                        />
+                        <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
+                          {t("ui.ReglasDePago.periodo.anclaAyuda", "Vacío = desde el primer día de la semana laboral a partir del 1 de enero de 2024.")}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                )}
+              </div>
+              {/* The year (Portugal: past 100 h, +50 % / +75 %). */}
+              <div className="glass-flat space-y-3 p-3 sm:col-span-3">
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    className="cg-focus size-4"
+                    style={{ accentColor: "var(--brand)" }}
+                    checked={!!anio}
+                    onChange={(e) => setPol({ extraDelAnio: e.target.checked ? { horas: 100, tramos: tramos.length ? tramos.map((x) => ({ ...x, recargoPct: x.recargoPct * 2 })) : [{ desdeHora: 0, recargoPct: 50 }] } : null })}
+                  />
+                  <span className="text-sm font-medium">{t("ui.ReglasDePago.anio.usar", "Otros escalones al pasar un total de horas extra en el año")}</span>
+                </label>
+                <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                  {t(
+                    "ui.ReglasDePago.anio.ayuda",
+                    "Se suman las horas extra de las tarjetas anteriores del año. Pasado el total, cada hora extra se paga con el mayor entre su escalón y estos (Portugal: más de 100 h, +50 % la primera hora del día y +75 % las siguientes).",
+                  )}
+                </p>
+                {anio && (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <NumeroField
+                      label={t("ui.ReglasDePago.anio.horas", "Horas extra en el año")}
+                      value={anio.horas}
+                      max={2000}
+                      onChange={(v) => setPol({ extraDelAnio: { ...anio, horas: v } })}
+                    />
+                    <TramosExtra
+                      tramos={anio.tramos || []}
+                      titulo={t("ui.ReglasDePago.anio.titulo", "Escalones del día, pasado ese total")}
+                      onChange={(t2) => setPol({ extraDelAnio: { ...anio, tramos: t2 } })}
+                    />
+                  </div>
+                )}
+              </div>
+            </FilaDeRecargo>
+            <FilaDeRecargo
+              titulo={t("ui.ReglasDePago.rec.sabado", "Recargo de sábado")}
+              ayuda={t("ui.ReglasDePago.sabadoAyuda", "Sobre las horas que caen en sábado (Países Bajos: +35 %). Se combina con el feriado y el descanso como la regla general, y se suma a la noche.")}
+              activo={activos.sabado}
+              onActivo={(v) => setActivo("sabado", v)}
+            >
+              <NumeroField
+                label={t("ui.ReglasDePago.recargoSabadoPct", "Recargo de sábado (%)")}
+                value={pol.sabadoRecargoPct}
+                onChange={(v) => setPol({ sabadoRecargoPct: v })}
+              />
+            </FilaDeRecargo>
+            <FilaDeRecargo
+              titulo={t("ui.ReglasDePago.rec.pluses", "Pluses fijos")}
+              ayuda={t(
+                "ui.ReglasDePago.plusesAyuda",
+                "Importes, no porcentajes: por hora o una vez por día trabajado, sobre las horas que elijas (España: nocturnidad 1,26 €/h, fin de semana y festivos 1,02 €/h). Entran en el importe de la tarjeta y salen como línea propia en el rol.",
+              )}
+              activo={activos.pluses}
+              onActivo={(v) => setActivo("pluses", v)}
+            >
+              <PlusesFijos pluses={pol.pluses || []} moneda={pol.moneda || "USD"} onChange={(p) => setPol({ pluses: p })} />
             </FilaDeRecargo>
             <FilaDeRecargo
               titulo={t("ui.ReglasDePago.extraNocturna", "Hora extra nocturna con su propio recargo")}

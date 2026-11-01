@@ -22,7 +22,7 @@ import { PresentacionDelModulo, usePayrollAccess, nombreDeConcepto, dinero, aCen
 const KINDS: ConceptKind[] = ["earning", "deduction", "employer", "info"];
 const METHODS: ConceptMethod[] = ["fixed", "percent", "hours", "days", "table", "manual"];
 const BASES: ConceptBase[] = ["base_salary", "gross", "ss_base", "tax_base", "legal_minimum", "net"];
-const HOURS: HoursOf[] = ["ordinary", "overtime1", "overtime2", "night", "holiday", "rest_day", "sunday", "double_shift", "night_overtime"];
+const HOURS: HoursOf[] = ["ordinary", "overtime1", "overtime2", "night", "holiday", "rest_day", "sunday", "saturday", "double_shift", "night_overtime"];
 
 export default function CatalogoDeConceptos() {
   const { t, i18n } = useTranslation();

@@ -339,6 +339,12 @@ export default function JornadaPage() {
                     onChange={(v) => set("maxWeeklyHours", v)}
                   />
                 </div>
+                <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
+                  {t("settings.jornada.avisoEnRoles", {
+                    defaultValue:
+                      "El descanso mínimo y las horas seguidas también se avisan en cada rol de pago, en la persona que no los cumplió.",
+                  })}
+                </p>
               </Section>
 
               <Section

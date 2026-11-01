@@ -7562,7 +7562,8 @@
       "swapMinNoticeLabel": "Minimalne wyprzedzenie",
       "swapMinNoticeHint": "Godziny przed zmianą, po których nie można już prosić, akceptować ani zatwierdzać zamiany.",
       "maxSeguidasLabel": "Maksymalnie godzin z rzędu",
-      "maxSeguidasHint": "Zmiana plus jej podwojenie. Przy 0 ostrzeżenie pojawia się od 16 godzin z rzędu."
+      "maxSeguidasHint": "Zmiana plus jej podwojenie. Przy 0 ostrzeżenie pojawia się od 16 godzin z rzędu.",
+      "avisoEnRoles": "Minimalny odpoczynek i godziny bez przerwy są też zaznaczane na każdym pasku płacowym przy osobie, która ich nie dotrzymała."
     },
     "rondas": {
       "loadError": "Nie udało się wczytać ustawień",
@@ -18377,7 +18378,8 @@
         "rest_day": "Godziny w dniu wolnym",
         "sunday": "Godziny w niedzielę",
         "double_shift": "Godziny podwójnej zmiany",
-        "night_overtime": "Nadgodziny nocne"
+        "night_overtime": "Nadgodziny nocne",
+        "saturday": "Godziny w sobotę"
       },
       "frecuencia": {
         "weekly": "Tygodniowo",
@@ -19540,7 +19542,21 @@
         "noSePaga": "nie jest płacony",
         "recargosV2": "Niedziela {{domingo}} · Przepracowany dzień wolny {{descanso}} · Święto {{feriado}}",
         "combinaciones": "Gdy się pokrywają — święto i dzień wolny: {{fd}} · święto i niedziela: {{fo}} · niedziela i dzień wolny: {{od}} · noc w te dni: {{noche}} · nadgodzina w te dni: {{extra}}",
-        "segunElDia": "zależnie od dnia"
+        "segunElDia": "zależnie od dnia",
+        "semana": "Progi tygodniowe: {{tramos}}, {{cuenta}}",
+        "semanaTodas": "licząc wszystkie godziny tygodnia",
+        "semanaExtra": "licząc nadgodziny tygodnia",
+        "periodo": "Ponad {{h}} h zwykłych {{cuando}}: nadgodziny +{{pct}} %",
+        "enElPeriodo": "w okresie rozliczeniowym",
+        "anio": "Po {{h}} h nadgodzin w roku: {{tramos}}",
+        "sabado": "Sobota: +{{pct}} %",
+        "pluses": "Stałe dodatki: {{lista}}",
+        "porHora": "/h",
+        "porTurno": " za dzień",
+        "cadaSemanas_one": "co tydzień",
+        "cadaSemanas_few": "co {{count}} tygodnie",
+        "cadaSemanas_many": "co {{count}} tygodni",
+        "cadaSemanas_other": "co {{count}} tygodnia"
       },
       "semanaLaboralEmpieza": "Tydzień pracy zaczyna się w",
       "semanalAyuda": "Powyżej tego w tygodniu to nadgodziny (USA: 40). 0 = brak zasady tygodniowej.",
@@ -19578,7 +19594,8 @@
         "extraFeriado": "Nadgodzina (pierwszy próg) w święto",
         "titulo": "Tak płacą te reguły",
         "fila": "{{que}}: +{{pct}}%",
-        "turno": "Dzienna zmiana 12 h w święto, które jest też jego dniem wolnym, po {{tarifa}} za godzinę: {{ord}} h po +{{po}}% i {{extra}} nadgodzin po +{{pe}}% = {{total}}"
+        "turno": "Dzienna zmiana 12 h w święto, które jest też jego dniem wolnym, po {{tarifa}} za godzinę: {{ord}} h po +{{po}}% i {{extra}} nadgodzin po +{{pe}}% = {{total}}",
+        "nocheSabado": "Godzina nocna w sobotę"
       },
       "queUsa": "Czego używa Twoja firma",
       "usarSemanal": "Liczyć nadgodziny tygodniowo",
@@ -19592,9 +19609,71 @@
         "descanso": "Dodatek za pracę w dniu wolnym",
         "feriado": "Dodatek świąteczny",
         "extra": "Dodatek za nadgodziny",
-        "extraAyuda": "Wyłączony: nadgodziny płatne według zwykłej stawki."
+        "extraAyuda": "Wyłączony: nadgodziny płatne według zwykłej stawki.",
+        "sabado": "Dodatek sobotni",
+        "pluses": "Stałe dodatki"
       },
-      "ausenciasAyudaV2": "Zaznaczona: płatna. Niezaznaczona: nadal usprawiedliwiona (to nie nieobecność), ale potrącana. Urlop „osobisty” jest płatny lub nie zgodnie z samym wnioskiem."
+      "ausenciasAyudaV2": "Zaznaczona: płatna. Niezaznaczona: nadal usprawiedliwiona (to nie nieobecność), ale potrącana. Urlop „osobisty” jest płatny lub nie zgodnie z samym wnioskiem.",
+      "plus": {
+        "horas": {
+          "todas": "Wszystkie godziny",
+          "nocturnas": "Godziny nocne",
+          "sabado": "Godziny w sobotę",
+          "domingo": "Godziny w niedzielę",
+          "finDeSemana": "Godziny w weekend",
+          "feriado": "Godziny w święta",
+          "findeFeriado": "Godziny w weekend lub święta",
+          "descanso": "Godziny w dniu wolnym",
+          "extra": "Nadgodziny"
+        },
+        "nombre": "Nazwa na pasku płacowym",
+        "importe": "Kwota ({{moneda}})",
+        "por": "Płatne",
+        "porHora": "Za godzinę",
+        "porTurno": "Raz za przepracowany dzień",
+        "sobre": "Od",
+        "minimo": "Minimum tych godzin w ciągu dnia",
+        "minimoAyuda": "0 = dowolnie.",
+        "tope": "Maksymalnie godzin dziennie",
+        "topeAyuda": "0 = bez limitu.",
+        "pagaTodas": "Po osiągnięciu minimum liczą się wszystkie godziny dnia",
+        "cotiza": "Wliczane do składek i podatku",
+        "nuevo": "Dodatek",
+        "anadir": "Dodaj dodatek"
+      },
+      "semana": {
+        "usar": "Progi tygodniowe",
+        "ayuda": "Każda nadgodzina jest płatna według wyższego z progów dziennego i tygodniowego (Francja: od 36. do 43. godziny +25 %, od 44. +50 %; Dominikana: ponad 68 h tygodniowo +100 %).",
+        "cuentan": "Progi liczą",
+        "cuentanExtra": "Nadgodziny tygodnia",
+        "cuentanTodas": "Wszystkie godziny przepracowane w tygodniu",
+        "titulo": "Progi tygodnia",
+        "ayudaTodas": "Od ilu przepracowanych godzin w tygodniu obowiązuje każdy dodatek.",
+        "ayudaExtra": "Od ilu nadgodzin w tygodniu obowiązuje każdy dodatek.",
+        "desdeLaHora": "Od godziny tygodnia"
+      },
+      "periodo": {
+        "usar": "Nadgodziny w okresie",
+        "ayuda": "Godziny zwykłe ponad tę sumę są nadgodzinami, po regułach dziennych i tygodniowych (Holandia: 152 h na 4 tygodnie, +50 %; Hiszpania: 162 h w miesiącu).",
+        "horas": "Godziny zwykłe w okresie",
+        "contar": "Liczone według",
+        "elPeriodo": "Okres rozliczeniowy",
+        "ancla": "Pierwszy dzień cyklu",
+        "anclaAyuda": "Puste = od pierwszego dnia tygodnia pracy od 1 stycznia 2024.",
+        "semanas_one": "Cykle {{count}}-tygodniowe",
+        "semanas_few": "Cykle {{count}}-tygodniowe",
+        "semanas_many": "Cykle {{count}}-tygodniowe",
+        "semanas_other": "Cykle {{count}}-tygodniowe"
+      },
+      "anio": {
+        "usar": "Inne progi po przekroczeniu sumy nadgodzin w roku",
+        "ayuda": "Sumuje się nadgodziny z wcześniejszych kart z tego roku. Po przekroczeniu sumy każda nadgodzina jest płatna według wyższego z jej progu i tych (Portugalia: ponad 100 h, +50 % pierwsza godzina dnia i +75 % kolejne).",
+        "horas": "Nadgodziny w roku",
+        "titulo": "Progi dzienne po przekroczeniu tej sumy"
+      },
+      "sabadoAyuda": "Od godzin przypadających w sobotę (Holandia: +35 %). Łączy się ze świętem i dniem wolnym według reguły ogólnej i dodaje do dodatku nocnego.",
+      "recargoSabadoPct": "Dodatek sobotni (%)",
+      "plusesAyuda": "Kwoty, nie procenty: za godzinę lub raz za przepracowany dzień, od wybranych godzin (Hiszpania: dodatek nocny 1,26 €/h, weekend i święta 1,02 €/h). Wchodzą do kwoty karty i pojawiają się jako osobna pozycja na pasku płacowym."
     },
     "puede": {
       "sinPermiso": "Twoja rola nie ma do tego uprawnień. Poproś administratora.",

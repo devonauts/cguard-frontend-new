@@ -2663,7 +2663,8 @@
       "swapMinNoticeLabel": "Aviso mínimo",
       "swapMinNoticeHint": "Horas antes do turno a partir das quais não se pode mais pedir, aceitar nem aprovar uma troca.",
       "maxSeguidasLabel": "Máximo de horas seguidas",
-      "maxSeguidasHint": "Um turno mais a sua dobra. Com 0, avisa-se a partir de 16 horas seguidas."
+      "maxSeguidasHint": "Um turno mais a sua dobra. Com 0, avisa-se a partir de 16 horas seguidas.",
+      "avisoEnRoles": "O descanso mínimo e as horas seguidas também são assinalados em cada recibo, na pessoa que não os cumpriu."
     },
     "rondas": {
       "loadError": "Não foi possível carregar as configurações",
@@ -17555,7 +17556,8 @@
         "rest_day": "Horas em dia de descanso",
         "sunday": "Horas em domingo",
         "double_shift": "Horas de dobra de turno",
-        "night_overtime": "Horas extra noturnas"
+        "night_overtime": "Horas extra noturnas",
+        "saturday": "Horas no sábado"
       },
       "frecuencia": {
         "weekly": "Semanal",
@@ -18706,7 +18708,19 @@
         "noSePaga": "não é pago",
         "recargosV2": "Domingo {{domingo}} · Descanso trabalhado {{descanso}} · Feriado {{feriado}}",
         "combinaciones": "Quando coincidem — feriado e descanso: {{fd}} · feriado e domingo: {{fo}} · domingo e descanso: {{od}} · noite nesses dias: {{noche}} · hora extra nesses dias: {{extra}}",
-        "segunElDia": "conforme o dia"
+        "segunElDia": "conforme o dia",
+        "semana": "Escalões por semana: {{tramos}}, {{cuenta}}",
+        "semanaTodas": "contando todas as horas da semana",
+        "semanaExtra": "contando as horas extra da semana",
+        "periodo": "Mais de {{h}} h normais {{cuando}}: extra a +{{pct}} %",
+        "enElPeriodo": "no período de pagamento",
+        "anio": "Passadas {{h}} h extra no ano: {{tramos}}",
+        "sabado": "Sábado: +{{pct}} %",
+        "pluses": "Subsídios fixos: {{lista}}",
+        "porHora": "/h",
+        "porTurno": " por dia",
+        "cadaSemanas_one": "cada semana",
+        "cadaSemanas_other": "a cada {{count}} semanas"
       },
       "semanaLaboralEmpieza": "A semana de trabalho começa na",
       "semanalAyuda": "O que passar disto na semana é hora extra (EUA: 40). 0 = sem regra semanal.",
@@ -18744,7 +18758,8 @@
         "extraFeriado": "Uma hora extra (primeiro escalão) num feriado",
         "titulo": "Assim se paga com estas regras",
         "fila": "{{que}}: +{{pct}} %",
-        "turno": "Turno diurno de 12 h num feriado que também é o seu dia de descanso, a {{tarifa}} a hora: {{ord}} h a +{{po}} % e {{extra}} h extra a +{{pe}} % = {{total}}"
+        "turno": "Turno diurno de 12 h num feriado que também é o seu dia de descanso, a {{tarifa}} a hora: {{ord}} h a +{{po}} % e {{extra}} h extra a +{{pe}} % = {{total}}",
+        "nocheSabado": "Uma hora de noite ao sábado"
       },
       "queUsa": "O que a sua empresa usa",
       "usarSemanal": "Contar horas extra por semana",
@@ -18758,9 +18773,69 @@
         "descanso": "Adicional por trabalhar no dia de descanso",
         "feriado": "Adicional de feriado",
         "extra": "Adicional de horas extra",
-        "extraAyuda": "Desligado, as horas extra são pagas a valor simples."
+        "extraAyuda": "Desligado, as horas extra são pagas a valor simples.",
+        "sabado": "Adicional de sábado",
+        "pluses": "Subsídios fixos"
       },
-      "ausenciasAyudaV2": "Marcada: é paga. Desmarcada: continua justificada (não é falta), mas é descontada. Uma licença «pessoal» é paga ou não conforme a própria licença."
+      "ausenciasAyudaV2": "Marcada: é paga. Desmarcada: continua justificada (não é falta), mas é descontada. Uma licença «pessoal» é paga ou não conforme a própria licença.",
+      "plus": {
+        "horas": {
+          "todas": "Todas as horas",
+          "nocturnas": "Horas noturnas",
+          "sabado": "Horas no sábado",
+          "domingo": "Horas no domingo",
+          "finDeSemana": "Horas no fim de semana",
+          "feriado": "Horas em feriado",
+          "findeFeriado": "Horas no fim de semana ou feriado",
+          "descanso": "Horas no seu dia de descanso",
+          "extra": "Horas extra"
+        },
+        "nombre": "Nome no recibo",
+        "importe": "Valor ({{moneda}})",
+        "por": "Paga-se",
+        "porHora": "Por hora",
+        "porTurno": "Uma vez por dia trabalhado",
+        "sobre": "Sobre",
+        "minimo": "Mínimo dessas horas no dia",
+        "minimoAyuda": "0 = qualquer.",
+        "tope": "Máximo de horas por dia",
+        "topeAyuda": "0 = sem limite.",
+        "pagaTodas": "Cumprido o mínimo, conta todas as horas do dia",
+        "cotiza": "Conta para a segurança social e o IRS",
+        "nuevo": "Subsídio",
+        "anadir": "Adicionar subsídio"
+      },
+      "semana": {
+        "usar": "Escalões por semana",
+        "ayuda": "Cada hora extra paga-se com o maior entre o seu escalão do dia e o da semana (França: da 36.ª à 43.ª +25 %, a partir da 44.ª +50 %; República Dominicana: mais de 68 h por semana +100 %).",
+        "cuentan": "Os escalões contam",
+        "cuentanExtra": "As horas extra da semana",
+        "cuentanTodas": "Todas as horas trabalhadas na semana",
+        "titulo": "Escalões da semana",
+        "ayudaTodas": "A partir de quantas horas trabalhadas na semana se aplica cada adicional.",
+        "ayudaExtra": "A partir de quantas horas extra acumuladas na semana se aplica cada adicional.",
+        "desdeLaHora": "A partir da hora da semana"
+      },
+      "periodo": {
+        "usar": "Horas extra por período",
+        "ayuda": "As horas normais que passem deste total são extra, depois das regras do dia e da semana (Países Baixos: 152 h a cada 4 semanas a +50 %; Espanha: 162 h por mês).",
+        "horas": "Horas normais do período",
+        "contar": "Conta-se por",
+        "elPeriodo": "O período de pagamento",
+        "ancla": "Primeiro dia de um ciclo",
+        "anclaAyuda": "Vazio = a partir do primeiro dia da semana de trabalho desde 1 de janeiro de 2024.",
+        "semanas_one": "Ciclos de {{count}} semana",
+        "semanas_other": "Ciclos de {{count}} semanas"
+      },
+      "anio": {
+        "usar": "Outros escalões ao passar um total de horas extra no ano",
+        "ayuda": "Somam-se as horas extra dos cartões anteriores do ano. Passado o total, cada hora extra paga-se com o maior entre o seu escalão e estes (Portugal: mais de 100 h, +50 % a primeira hora do dia e +75 % as seguintes).",
+        "horas": "Horas extra no ano",
+        "titulo": "Escalões do dia, passado esse total"
+      },
+      "sabadoAyuda": "Sobre as horas que caem ao sábado (Países Baixos: +35 %). Combina-se com o feriado e o descanso pela regra geral e soma-se ao noturno.",
+      "recargoSabadoPct": "Adicional de sábado (%)",
+      "plusesAyuda": "Valores, não percentagens: por hora ou uma vez por dia trabalhado, sobre as horas que escolher (Espanha: noturno 1,26 €/h, fim de semana e feriados 1,02 €/h). Entram no valor do cartão e saem como linha própria no recibo."
     },
     "puede": {
       "sinPermiso": "Seu papel não tem permissão para isto. Peça a um administrador.",

@@ -7548,7 +7548,8 @@
       "swapMinNoticeLabel": "Préavis minimum",
       "swapMinNoticeHint": "Heures avant le service au-delà desquelles on ne peut plus demander, accepter ni approuver un échange.",
       "maxSeguidasLabel": "Heures consécutives maximum",
-      "maxSeguidasHint": "Un service plus son doublement. À 0, une alerte apparaît à partir de 16 heures d’affilée."
+      "maxSeguidasHint": "Un service plus son doublement. À 0, une alerte apparaît à partir de 16 heures d’affilée.",
+      "avisoEnRoles": "Le repos minimum et les heures d'affilée sont aussi signalés sur chaque bulletin, pour la personne qui ne les a pas respectés."
     },
     "rondas": {
       "loadError": "Impossible de charger les paramètres",
@@ -18091,7 +18092,8 @@
         "rest_day": "Heures de jour de repos",
         "sunday": "Heures du dimanche",
         "double_shift": "Heures de double poste",
-        "night_overtime": "Heures sup. de nuit"
+        "night_overtime": "Heures sup. de nuit",
+        "saturday": "Heures du samedi"
       },
       "frecuencia": {
         "weekly": "Hebdomadaire",
@@ -19242,7 +19244,19 @@
         "noSePaga": "non payé",
         "recargosV2": "Dimanche {{domingo}} · Repos travaillé {{descanso}} · Jour férié {{feriado}}",
         "combinaciones": "Quand ils coïncident — férié et repos : {{fd}} · férié et dimanche : {{fo}} · dimanche et repos : {{od}} · nuit ces jours-là : {{noche}} · heure sup. ces jours-là : {{extra}}",
-        "segunElDia": "selon le jour"
+        "segunElDia": "selon le jour",
+        "semana": "Paliers par semaine : {{tramos}}, {{cuenta}}",
+        "semanaTodas": "en comptant toutes les heures de la semaine",
+        "semanaExtra": "en comptant les heures supplémentaires de la semaine",
+        "periodo": "Plus de {{h}} h ordinaires {{cuando}} : heures sup. à +{{pct}} %",
+        "enElPeriodo": "dans la période de paie",
+        "anio": "Au-delà de {{h}} h sup. dans l'année : {{tramos}}",
+        "sabado": "Samedi : +{{pct}} %",
+        "pluses": "Primes fixes : {{lista}}",
+        "porHora": "/h",
+        "porTurno": " par jour",
+        "cadaSemanas_one": "chaque semaine",
+        "cadaSemanas_other": "toutes les {{count}} semaines"
       },
       "semanaLaboralEmpieza": "La semaine de travail commence le",
       "semanalAyuda": "Au-delà, dans la semaine, ce sont des heures supplémentaires (États-Unis : 40). 0 = pas de règle hebdomadaire.",
@@ -19280,7 +19294,8 @@
         "extraFeriado": "Une heure sup. (premier palier) un jour férié",
         "titulo": "Ce que paient ces règles",
         "fila": "{{que}} : +{{pct}} %",
-        "turno": "Poste de jour de 12 h un jour férié qui est aussi son jour de repos, à {{tarifa}} l'heure : {{ord}} h à +{{po}} % et {{extra}} h sup. à +{{pe}} % = {{total}}"
+        "turno": "Poste de jour de 12 h un jour férié qui est aussi son jour de repos, à {{tarifa}} l'heure : {{ord}} h à +{{po}} % et {{extra}} h sup. à +{{pe}} % = {{total}}",
+        "nocheSabado": "Une heure de nuit un samedi"
       },
       "queUsa": "Ce qu'utilise votre entreprise",
       "usarSemanal": "Compter les heures sup. par semaine",
@@ -19294,9 +19309,69 @@
         "descanso": "Majoration pour travail le jour de repos",
         "feriado": "Majoration jour férié",
         "extra": "Majoration des heures sup.",
-        "extraAyuda": "Désactivée, les heures sup. sont payées au taux normal."
+        "extraAyuda": "Désactivée, les heures sup. sont payées au taux normal.",
+        "sabado": "Majoration du samedi",
+        "pluses": "Primes fixes"
       },
-      "ausenciasAyudaV2": "Cochée : payée. Décochée : reste justifiée (pas une faute), mais déduite. Un congé « personnel » est payé ou non selon ce qu'indique le congé."
+      "ausenciasAyudaV2": "Cochée : payée. Décochée : reste justifiée (pas une faute), mais déduite. Un congé « personnel » est payé ou non selon ce qu'indique le congé.",
+      "plus": {
+        "horas": {
+          "todas": "Toutes les heures",
+          "nocturnas": "Heures de nuit",
+          "sabado": "Heures du samedi",
+          "domingo": "Heures du dimanche",
+          "finDeSemana": "Heures du week-end",
+          "feriado": "Heures de jour férié",
+          "findeFeriado": "Heures du week-end ou de jour férié",
+          "descanso": "Heures sur son jour de repos",
+          "extra": "Heures supplémentaires"
+        },
+        "nombre": "Nom sur le bulletin",
+        "importe": "Montant ({{moneda}})",
+        "por": "Payé",
+        "porHora": "Par heure",
+        "porTurno": "Une fois par jour travaillé",
+        "sobre": "Sur",
+        "minimo": "Minimum de ces heures dans la journée",
+        "minimoAyuda": "0 = n'importe combien.",
+        "tope": "Maximum d'heures par jour",
+        "topeAyuda": "0 = sans plafond.",
+        "pagaTodas": "Le minimum atteint, toutes les heures de la journée comptent",
+        "cotiza": "Soumis aux cotisations et à l'impôt",
+        "nuevo": "Prime",
+        "anadir": "Ajouter une prime"
+      },
+      "semana": {
+        "usar": "Paliers par semaine",
+        "ayuda": "Chaque heure supplémentaire est payée au plus élevé de son palier du jour et de celui de la semaine (France : de la 36e à la 43e +25 %, dès la 44e +50 % ; République dominicaine : au-delà de 68 h par semaine +100 %).",
+        "cuentan": "Les paliers comptent",
+        "cuentanExtra": "Les heures supplémentaires de la semaine",
+        "cuentanTodas": "Toutes les heures travaillées dans la semaine",
+        "titulo": "Paliers de la semaine",
+        "ayudaTodas": "À partir de combien d'heures travaillées dans la semaine s'applique chaque majoration.",
+        "ayudaExtra": "À partir de combien d'heures supplémentaires cumulées dans la semaine s'applique chaque majoration.",
+        "desdeLaHora": "À partir de l'heure de la semaine"
+      },
+      "periodo": {
+        "usar": "Heures supplémentaires par période",
+        "ayuda": "Les heures ordinaires au-delà de ce total sont des heures supplémentaires, après les règles du jour et de la semaine (Pays-Bas : 152 h toutes les 4 semaines à +50 % ; Espagne : 162 h par mois).",
+        "horas": "Heures ordinaires de la période",
+        "contar": "Compté par",
+        "elPeriodo": "La période de paie",
+        "ancla": "Premier jour d'un cycle",
+        "anclaAyuda": "Vide = à partir du premier jour de la semaine de travail depuis le 1er janvier 2024.",
+        "semanas_one": "Cycles de {{count}} semaine",
+        "semanas_other": "Cycles de {{count}} semaines"
+      },
+      "anio": {
+        "usar": "D'autres paliers au-delà d'un total d'heures supplémentaires dans l'année",
+        "ayuda": "Les heures supplémentaires des fiches antérieures de l'année s'additionnent. Au-delà du total, chaque heure supplémentaire est payée au plus élevé de son palier et de ceux-ci (Portugal : plus de 100 h, +50 % la première heure du jour et +75 % les suivantes).",
+        "horas": "Heures supplémentaires dans l'année",
+        "titulo": "Paliers du jour, au-delà de ce total"
+      },
+      "sabadoAyuda": "Sur les heures qui tombent un samedi (Pays-Bas : +35 %). Se combine avec le jour férié et le repos selon la règle générale, et s'ajoute à la nuit.",
+      "recargoSabadoPct": "Majoration du samedi (%)",
+      "plusesAyuda": "Des montants, pas des pourcentages : par heure ou une fois par jour travaillé, sur les heures choisies (Espagne : nuit 1,26 €/h, week-end et jours fériés 1,02 €/h). Ils entrent dans le montant de la fiche et apparaissent sur leur propre ligne du bulletin."
     },
     "puede": {
       "sinPermiso": "Votre rôle n'a pas la permission pour cela. Demandez à un administrateur.",

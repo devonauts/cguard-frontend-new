@@ -10,7 +10,7 @@
  * and overtime were always added, and still are unless the company says not.
  */
 export type Regla = "suma" | "mayor";
-export type ClaveDeRecargo = "domingo" | "descanso" | "feriado" | "nocturno" | "extra";
+export type ClaveDeRecargo = "domingo" | "descanso" | "feriado" | "nocturno" | "extra" | "sabado";
 
 export interface Combinaciones {
   feriadoDescanso: Regla | null;
@@ -29,6 +29,8 @@ export interface RecargosActivos {
   nocturno: boolean;
   extra: boolean;
   extraNocturna: boolean;
+  sabado: boolean;
+  pluses: boolean;
 }
 
 export const COMBINACIONES_POR_DEFECTO: Combinaciones = {
@@ -43,6 +45,7 @@ export const COMBINACIONES_POR_DEFECTO: Combinaciones = {
 
 export const ACTIVOS_POR_DEFECTO: RecargosActivos = {
   domingo: true, descanso: true, feriado: true, nocturno: true, extra: true, extraNocturna: true,
+  sabado: true, pluses: true,
 };
 
 /** What `combinarRecargos` needs from the policy. */
@@ -53,6 +56,7 @@ export interface PoliticaDeRecargos {
   domingoRecargoPct?: number;
   descansoRecargoPct?: number;
   feriadoRecargoPct?: number;
+  sabadoRecargoPct?: number;
   nocturno?: { recargoPct?: number };
   tramosExtra?: Array<{ desdeHora: number; recargoPct: number }>;
   horasOrdinariasDia?: number;
@@ -79,6 +83,8 @@ export function reglaDelPar(p: PoliticaDeRecargos, a: ClaveDeRecargo, b: ClaveDe
     case "descanso+nocturno": return c.nocheDescanso;
     case "descanso+extra": case "domingo+extra": case "extra+feriado": return c.extraDia;
     case "extra+nocturno": return "mayor";
+    case "feriado+sabado": case "descanso+sabado": return general;
+    case "extra+sabado": return c.extraDia;
     default: return "suma";
   }
 }
@@ -121,6 +127,7 @@ export function pctDe(p: PoliticaDeRecargos, clave: ClaveDeRecargo): number {
     case "feriado": return a.feriado ? Number(p.feriadoRecargoPct) || 0 : 0;
     case "nocturno": return a.nocturno ? Number(p.nocturno?.recargoPct) || 0 : 0;
     case "extra": return a.extra ? Number(p.tramosExtra?.[0]?.recargoPct) || 0 : 0;
+    case "sabado": return a.sabado ? Number(p.sabadoRecargoPct) || 0 : 0;
   }
 }
 

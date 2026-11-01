@@ -7548,7 +7548,8 @@
       "swapMinNoticeLabel": "Mindestfrist",
       "swapMinNoticeHint": "Stunden vor der Schicht, ab denen kein Tausch mehr angefragt, angenommen oder genehmigt werden kann.",
       "maxSeguidasLabel": "Höchstens Stunden am Stück",
-      "maxSeguidasHint": "Eine Schicht plus Verlängerung. Bei 0 kommt ab 16 Stunden am Stück eine Warnung."
+      "maxSeguidasHint": "Eine Schicht plus Verlängerung. Bei 0 kommt ab 16 Stunden am Stück eine Warnung.",
+      "avisoEnRoles": "Mindestruhe und Stunden am Stück werden auch auf jeder Abrechnung bei der Person markiert, die sie nicht eingehalten hat."
     },
     "rondas": {
       "loadError": "Die Einstellungen konnten nicht geladen werden",
@@ -18091,7 +18092,8 @@
         "rest_day": "Stunden am Ruhetag",
         "sunday": "Sonntagsstunden",
         "double_shift": "Doppelschichtstunden",
-        "night_overtime": "Nacht-Überstunden"
+        "night_overtime": "Nacht-Überstunden",
+        "saturday": "Stunden am Samstag"
       },
       "frecuencia": {
         "weekly": "Wöchentlich",
@@ -19242,7 +19244,19 @@
         "noSePaga": "wird nicht bezahlt",
         "recargosV2": "Sonntag {{domingo}} · Gearbeiteter Ruhetag {{descanso}} · Feiertag {{feriado}}",
         "combinaciones": "Wenn sie zusammenfallen — Feiertag und Ruhetag: {{fd}} · Feiertag und Sonntag: {{fo}} · Sonntag und Ruhetag: {{od}} · Nacht an diesen Tagen: {{noche}} · Überstunde an diesen Tagen: {{extra}}",
-        "segunElDia": "je nach Tag"
+        "segunElDia": "je nach Tag",
+        "semana": "Wochenstufen: {{tramos}}, {{cuenta}}",
+        "semanaTodas": "alle Stunden der Woche gezählt",
+        "semanaExtra": "die Überstunden der Woche gezählt",
+        "periodo": "Mehr als {{h}} Normalstunden {{cuando}}: Überstunden mit +{{pct}} %",
+        "enElPeriodo": "im Abrechnungszeitraum",
+        "anio": "Über {{h}} Überstunden im Jahr: {{tramos}}",
+        "sabado": "Samstag: +{{pct}} %",
+        "pluses": "Feste Zulagen: {{lista}}",
+        "porHora": "/h",
+        "porTurno": " pro Tag",
+        "cadaSemanas_one": "jede Woche",
+        "cadaSemanas_other": "alle {{count}} Wochen"
       },
       "semanaLaboralEmpieza": "Die Arbeitswoche beginnt am",
       "semanalAyuda": "Was darüber hinaus in der Woche geht, sind Überstunden (USA: 40). 0 = keine Wochenregel.",
@@ -19280,7 +19294,8 @@
         "extraFeriado": "Eine Überstunde (erste Stufe) an einem Feiertag",
         "titulo": "So wird mit diesen Regeln bezahlt",
         "fila": "{{que}}: +{{pct}} %",
-        "turno": "12-Stunden-Tagesschicht an einem Feiertag, der auch sein Ruhetag ist, zu {{tarifa}} pro Stunde: {{ord}} h zu +{{po}} % und {{extra}} Überstunden zu +{{pe}} % = {{total}}"
+        "turno": "12-Stunden-Tagesschicht an einem Feiertag, der auch sein Ruhetag ist, zu {{tarifa}} pro Stunde: {{ord}} h zu +{{po}} % und {{extra}} Überstunden zu +{{pe}} % = {{total}}",
+        "nocheSabado": "Eine Nachtstunde am Samstag"
       },
       "queUsa": "Was Ihr Unternehmen verwendet",
       "usarSemanal": "Überstunden pro Woche zählen",
@@ -19294,9 +19309,69 @@
         "descanso": "Zuschlag für Arbeit am Ruhetag",
         "feriado": "Feiertagszuschlag",
         "extra": "Überstundenzuschlag",
-        "extraAyuda": "Aus: Überstunden werden zum normalen Satz bezahlt."
+        "extraAyuda": "Aus: Überstunden werden zum normalen Satz bezahlt.",
+        "sabado": "Samstagszuschlag",
+        "pluses": "Feste Zulagen"
       },
-      "ausenciasAyudaV2": "Angehakt: bezahlt. Nicht angehakt: bleibt entschuldigt (kein Fehlen), wird aber abgezogen. Ein „persönlicher“ Urlaub wird bezahlt oder nicht, wie der Antrag selbst sagt."
+      "ausenciasAyudaV2": "Angehakt: bezahlt. Nicht angehakt: bleibt entschuldigt (kein Fehlen), wird aber abgezogen. Ein „persönlicher“ Urlaub wird bezahlt oder nicht, wie der Antrag selbst sagt.",
+      "plus": {
+        "horas": {
+          "todas": "Alle Stunden",
+          "nocturnas": "Nachtstunden",
+          "sabado": "Stunden am Samstag",
+          "domingo": "Stunden am Sonntag",
+          "finDeSemana": "Stunden am Wochenende",
+          "feriado": "Stunden an Feiertagen",
+          "findeFeriado": "Stunden am Wochenende oder Feiertag",
+          "descanso": "Stunden an seinem Ruhetag",
+          "extra": "Überstunden"
+        },
+        "nombre": "Name auf der Abrechnung",
+        "importe": "Betrag ({{moneda}})",
+        "por": "Bezahlt",
+        "porHora": "Pro Stunde",
+        "porTurno": "Einmal pro Arbeitstag",
+        "sobre": "Auf",
+        "minimo": "Mindestens so viele dieser Stunden am Tag",
+        "minimoAyuda": "0 = beliebig.",
+        "tope": "Höchstens Stunden pro Tag",
+        "topeAyuda": "0 = ohne Obergrenze.",
+        "pagaTodas": "Ist das Minimum erreicht, zählt jede Stunde des Tages",
+        "cotiza": "Sozialversicherungs- und steuerpflichtig",
+        "nuevo": "Zulage",
+        "anadir": "Zulage hinzufügen"
+      },
+      "semana": {
+        "usar": "Stufen pro Woche",
+        "ayuda": "Jede Überstunde wird mit der höheren Stufe aus Tag und Woche bezahlt (Frankreich: 36. bis 43. Stunde +25 %, ab der 44. +50 %; Dominikanische Republik: über 68 h pro Woche +100 %).",
+        "cuentan": "Die Stufen zählen",
+        "cuentanExtra": "Die Überstunden der Woche",
+        "cuentanTodas": "Alle in der Woche gearbeiteten Stunden",
+        "titulo": "Wochenstufen",
+        "ayudaTodas": "Ab wie vielen gearbeiteten Wochenstunden jeder Zuschlag gilt.",
+        "ayudaExtra": "Ab wie vielen Überstunden in der Woche jeder Zuschlag gilt.",
+        "desdeLaHora": "Ab Wochenstunde"
+      },
+      "periodo": {
+        "usar": "Überstunden pro Zeitraum",
+        "ayuda": "Normalstunden über dieser Summe sind Überstunden, nach den Tages- und Wochenregeln (Niederlande: 152 h alle 4 Wochen mit +50 %; Spanien: 162 h im Monat).",
+        "horas": "Normalstunden im Zeitraum",
+        "contar": "Gezählt nach",
+        "elPeriodo": "Den Abrechnungszeitraum",
+        "ancla": "Erster Tag eines Zyklus",
+        "anclaAyuda": "Leer = ab dem ersten Tag der Arbeitswoche ab dem 1. Januar 2024.",
+        "semanas_one": "Zyklen von {{count}} Woche",
+        "semanas_other": "Zyklen von {{count}} Wochen"
+      },
+      "anio": {
+        "usar": "Andere Stufen ab einer Summe von Überstunden im Jahr",
+        "ayuda": "Die Überstunden der früheren Zeitkarten des Jahres werden addiert. Über der Summe wird jede Überstunde mit der höheren aus ihrer Stufe und diesen bezahlt (Portugal: über 100 h, +50 % die erste Stunde des Tages, +75 % die weiteren).",
+        "horas": "Überstunden im Jahr",
+        "titulo": "Tagesstufen über dieser Summe"
+      },
+      "sabadoAyuda": "Auf die Stunden, die auf einen Samstag fallen (Niederlande: +35 %). Mit Feiertag und Ruhetag nach der allgemeinen Regel kombiniert, zum Nachtzuschlag addiert.",
+      "recargoSabadoPct": "Samstagszuschlag (%)",
+      "plusesAyuda": "Beträge, keine Prozente: pro Stunde oder einmal pro Arbeitstag, auf die gewählten Stunden (Spanien: Nachtzulage 1,26 €/h, Wochenende und Feiertage 1,02 €/h). Sie fließen in den Betrag der Zeitkarte und erscheinen als eigene Zeile auf der Abrechnung."
     },
     "puede": {
       "sinPermiso": "Deine Rolle hat dafür keine Berechtigung. Frag einen Administrator.",

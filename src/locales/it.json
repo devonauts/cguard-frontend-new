@@ -7548,7 +7548,8 @@
       "swapMinNoticeLabel": "Preavviso minimo",
       "swapMinNoticeHint": "Ore prima del turno oltre le quali non si può più chiedere, accettare né approvare un cambio.",
       "maxSeguidasLabel": "Ore consecutive massime",
-      "maxSeguidasHint": "Un turno più il raddoppio. Con 0, si avvisa da 16 ore di fila."
+      "maxSeguidasHint": "Un turno più il raddoppio. Con 0, si avvisa da 16 ore di fila.",
+      "avisoEnRoles": "Il riposo minimo e le ore consecutive vengono segnalati anche in ogni cedolino, sulla persona che non li ha rispettati."
     },
     "rondas": {
       "loadError": "Impossibile caricare le impostazioni",
@@ -18091,7 +18092,8 @@
         "rest_day": "Ore nel giorno di riposo",
         "sunday": "Ore domenicali",
         "double_shift": "Ore di doppio turno",
-        "night_overtime": "Ore di straordinario notturno"
+        "night_overtime": "Ore di straordinario notturno",
+        "saturday": "Ore di sabato"
       },
       "frecuencia": {
         "weekly": "Settimanale",
@@ -19242,7 +19244,19 @@
         "noSePaga": "non pagato",
         "recargosV2": "Domenica {{domingo}} · Riposo lavorato {{descanso}} · Festivo {{feriado}}",
         "combinaciones": "Se coincidono — festivo e riposo: {{fd}} · festivo e domenica: {{fo}} · domenica e riposo: {{od}} · notte in quei giorni: {{noche}} · straordinario in quei giorni: {{extra}}",
-        "segunElDia": "secondo il giorno"
+        "segunElDia": "secondo il giorno",
+        "semana": "Scaglioni per settimana: {{tramos}}, {{cuenta}}",
+        "semanaTodas": "contando tutte le ore della settimana",
+        "semanaExtra": "contando gli straordinari della settimana",
+        "periodo": "Oltre {{h}} h ordinarie {{cuando}}: straordinario al +{{pct}} %",
+        "enElPeriodo": "nel periodo di paga",
+        "anio": "Oltre {{h}} h di straordinario nell'anno: {{tramos}}",
+        "sabado": "Sabato: +{{pct}} %",
+        "pluses": "Indennità fisse: {{lista}}",
+        "porHora": "/h",
+        "porTurno": " al giorno",
+        "cadaSemanas_one": "ogni settimana",
+        "cadaSemanas_other": "ogni {{count}} settimane"
       },
       "semanaLaboralEmpieza": "La settimana lavorativa inizia il",
       "semanalAyuda": "Oltre questo, nella settimana, è straordinario (USA: 40). 0 = nessuna regola settimanale.",
@@ -19280,7 +19294,8 @@
         "extraFeriado": "Un'ora di straordinario (primo scaglione) in un festivo",
         "titulo": "Così si paga con queste regole",
         "fila": "{{que}}: +{{pct}} %",
-        "turno": "Turno diurno di 12 h in un festivo che è anche il suo giorno di riposo, a {{tarifa}} l'ora: {{ord}} h a +{{po}} % e {{extra}} h di straordinario a +{{pe}} % = {{total}}"
+        "turno": "Turno diurno di 12 h in un festivo che è anche il suo giorno di riposo, a {{tarifa}} l'ora: {{ord}} h a +{{po}} % e {{extra}} h di straordinario a +{{pe}} % = {{total}}",
+        "nocheSabado": "Un'ora di notte di sabato"
       },
       "queUsa": "Cosa usa la tua azienda",
       "usarSemanal": "Contare gli straordinari per settimana",
@@ -19294,9 +19309,69 @@
         "descanso": "Maggiorazione per lavoro nel giorno di riposo",
         "feriado": "Maggiorazione festiva",
         "extra": "Maggiorazione straordinari",
-        "extraAyuda": "Disattivata, gli straordinari si pagano a tariffa semplice."
+        "extraAyuda": "Disattivata, gli straordinari si pagano a tariffa semplice.",
+        "sabado": "Maggiorazione del sabato",
+        "pluses": "Indennità fisse"
       },
-      "ausenciasAyudaV2": "Spuntata: pagata. Non spuntata: resta giustificata (non è un'assenza ingiustificata), ma si detrae. Un permesso «personale» si paga o no secondo quanto indica il permesso."
+      "ausenciasAyudaV2": "Spuntata: pagata. Non spuntata: resta giustificata (non è un'assenza ingiustificata), ma si detrae. Un permesso «personale» si paga o no secondo quanto indica il permesso.",
+      "plus": {
+        "horas": {
+          "todas": "Tutte le ore",
+          "nocturnas": "Ore notturne",
+          "sabado": "Ore di sabato",
+          "domingo": "Ore di domenica",
+          "finDeSemana": "Ore nel fine settimana",
+          "feriado": "Ore nei giorni festivi",
+          "findeFeriado": "Ore nel fine settimana o nei festivi",
+          "descanso": "Ore nel suo giorno di riposo",
+          "extra": "Ore di straordinario"
+        },
+        "nombre": "Nome sul cedolino",
+        "importe": "Importo ({{moneda}})",
+        "por": "Si paga",
+        "porHora": "All'ora",
+        "porTurno": "Una volta per giorno lavorato",
+        "sobre": "Su",
+        "minimo": "Minimo di quelle ore nel giorno",
+        "minimoAyuda": "0 = qualsiasi.",
+        "tope": "Massimo di ore al giorno",
+        "topeAyuda": "0 = senza limite.",
+        "pagaTodas": "Raggiunto il minimo, contano tutte le ore del giorno",
+        "cotiza": "Soggetto a contributi e imposte",
+        "nuevo": "Indennità",
+        "anadir": "Aggiungi indennità"
+      },
+      "semana": {
+        "usar": "Scaglioni per settimana",
+        "ayuda": "Ogni ora di straordinario si paga al maggiore tra lo scaglione del giorno e quello della settimana (Francia: dalla 36ª alla 43ª +25 %, dalla 44ª +50 %; Repubblica Dominicana: oltre 68 h a settimana +100 %).",
+        "cuentan": "Gli scaglioni contano",
+        "cuentanExtra": "Le ore di straordinario della settimana",
+        "cuentanTodas": "Tutte le ore lavorate nella settimana",
+        "titulo": "Scaglioni della settimana",
+        "ayudaTodas": "Da quante ore lavorate nella settimana si applica ogni maggiorazione.",
+        "ayudaExtra": "Da quante ore di straordinario accumulate nella settimana si applica ogni maggiorazione.",
+        "desdeLaHora": "Dall'ora della settimana"
+      },
+      "periodo": {
+        "usar": "Straordinari per periodo",
+        "ayuda": "Le ore ordinarie oltre questo totale sono straordinario, dopo le regole del giorno e della settimana (Paesi Bassi: 152 h ogni 4 settimane al +50 %; Spagna: 162 h al mese).",
+        "horas": "Ore ordinarie del periodo",
+        "contar": "Si conta per",
+        "elPeriodo": "Il periodo di paga",
+        "ancla": "Primo giorno di un ciclo",
+        "anclaAyuda": "Vuoto = dal primo giorno della settimana lavorativa a partire dal 1° gennaio 2024.",
+        "semanas_one": "Cicli di {{count}} settimana",
+        "semanas_other": "Cicli di {{count}} settimane"
+      },
+      "anio": {
+        "usar": "Altri scaglioni oltre un totale di ore di straordinario nell'anno",
+        "ayuda": "Si sommano gli straordinari dei cartellini precedenti dell'anno. Oltre il totale, ogni ora di straordinario si paga al maggiore tra il suo scaglione e questi (Portogallo: oltre 100 h, +50 % la prima ora del giorno e +75 % le successive).",
+        "horas": "Ore di straordinario nell'anno",
+        "titulo": "Scaglioni del giorno, oltre quel totale"
+      },
+      "sabadoAyuda": "Sulle ore che cadono di sabato (Paesi Bassi: +35 %). Si combina con festivo e riposo secondo la regola generale e si somma al notturno.",
+      "recargoSabadoPct": "Maggiorazione del sabato (%)",
+      "plusesAyuda": "Importi, non percentuali: all'ora o una volta per giorno lavorato, sulle ore che scegli (Spagna: notturno 1,26 €/h, fine settimana e festivi 1,02 €/h). Entrano nell'importo del cartellino ed escono come riga propria nel cedolino."
     },
     "puede": {
       "sinPermiso": "Il tuo ruolo non ha il permesso per questo. Chiedilo a un amministratore.",
