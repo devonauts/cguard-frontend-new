@@ -40,6 +40,7 @@ import { localeActual } from "@/lib/localeActual";
 import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { nombreDelProducto } from "@/hooks/usePageTitle";
 import { SeccionConexion } from "@/components/conexion/SeccionConexion";
+import { listarTodo } from "@/lib/listarCompleto";
 const WEEKDAYS = [
   { n: 1, label: "Lun" },
   { n: 2, label: "Mar" },
@@ -144,7 +145,7 @@ function SedesAsignadas({ userId }: { userId: string }) {
     (async () => {
       try {
         const [sedes, usuario] = await Promise.all([
-          postSiteService.list({}, { limit: 500, offset: 0 }),
+          listarTodo(({ limit, offset }) => postSiteService.list({}, { limit, offset })),
           userService.fetchUser(userId),
         ]);
 

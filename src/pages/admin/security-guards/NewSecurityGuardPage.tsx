@@ -106,6 +106,7 @@ import { useTranslation } from "react-i18next";
 import AddressAutocomplete from "@/components/maps/AddressAutocomplete";
 import ProfilePhotoCapture from "./components/ProfilePhotoCapture";
 import DocumentUpload, { type DocumentFile } from "./components/DocumentUpload";
+import { listarTodo } from "@/lib/listarCompleto";
 
 // Lightweight station shape used to build select options and client-filter matching.
 interface StationLike {
@@ -183,7 +184,7 @@ export default function NewSecurityGuardPage() {
       try {
         const [clientsResp, stationsResp] = await Promise.all([
           clientService.getClients({}),
-          stationService.list({}, { limit: 1000, offset: 0 }),
+          listarTodo(({ limit, offset }) => stationService.list({}, { limit, offset })),
         ]);
 
         setClients(clientsResp.rows || []);

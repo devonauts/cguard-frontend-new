@@ -138,7 +138,7 @@ import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
 import i18n from "@/i18n";
-import { todosLosVigilantes } from "@/lib/listarCompleto";
+import { todosLosVigilantes, listarTodo } from "@/lib/listarCompleto";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -851,8 +851,7 @@ export default function Schedule() {
   useEffect(() => {
     if (view !== "organigrama" || sedesPedidas.current) return;
     sedesPedidas.current = true;
-    stationService
-      .list({}, { limit: 1000, offset: 0 })
+    listarTodo(({ limit, offset }) => stationService.list({}, { limit, offset }))
       .then((res) => {
         const m = new Map<string, SedeInfo>();
 
