@@ -33,14 +33,14 @@ import {
   Toolbar,
   StatusBadge as ToneBadge,
   EmptyState,
+  Pagination,
 } from "@/components/kit";
 import {
   ClipboardCheck,
   ClipboardList,
   Filter,
-  ChevronLeft,
-  ChevronRight,
   MapPin,
+  Building2,
   Send,
   Users,
 } from "lucide-react";
@@ -54,8 +54,15 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import ExportMenu from "@/components/reports/ExportMenu";
 import type { ExportFormat } from "@/lib/export/reportExport";
 
-import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { paginaDe, TAMANOS_DE_PAGINA } from "@/lib/filtrosDeAsistencia";
+import {
+  RangoDeAsistencia,
+  SelectorDeFiltro,
+  avisarLote,
+  etiquetaDeRango,
+  useFiltrosDeAsistencia,
+  useOpcionesDeFiltro,
+} from "./filtrosAsistencia";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
@@ -124,63 +131,6 @@ const STATUS_OPTIONS = [
   "absent",
 ];
 
-type Period = "day" | "week" | "month";
-
-/** [start, end] Date bounds for the period containing `anchor` (local time). */
-function rangeFor(period: Period, anchor: Date): [Date, Date] {
-  const y = anchor.getFullYear(),
-    m = anchor.getMonth(),
-    d = anchor.getDate();
-  if (period === "day") {
-    return [new Date(y, m, d, 0, 0, 0, 0), new Date(y, m, d, 23, 59, 59, 999)];
-  }
-  if (period === "week") {
-    const dow = (anchor.getDay() + 6) % 7; // Monday = 0
-    const start = new Date(y, m, d - dow, 0, 0, 0, 0);
-    const end = new Date(
-      start.getFullYear(),
-      start.getMonth(),
-      start.getDate() + 6,
-      23,
-      59,
-      59,
-      999,
-    );
-    return [start, end];
-  }
-  return [
-    new Date(y, m, 1, 0, 0, 0, 0),
-    new Date(y, m + 1, 0, 23, 59, 59, 999),
-  ];
-}
-
-/** Shift the anchor by ±1 of the period unit. */
-function shiftAnchor(period: Period, anchor: Date, dir: number): Date {
-  const d = new Date(anchor);
-  if (period === "day") d.setDate(d.getDate() + dir);
-  else if (period === "week") d.setDate(d.getDate() + dir * 7);
-  else d.setMonth(d.getMonth() + dir);
-  return d;
-}
-
-function rangeLabel(period: Period, anchor: Date): string {
-  const [s, e] = rangeFor(period, anchor);
-  if (period === "day")
-    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
-      weekday: "short",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  if (period === "month")
-    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
-      month: "long",
-      year: "numeric",
-    });
-  const sameMonth = s.getMonth() === e.getMonth();
-  return `${s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: "short", year: "numeric" })}`;
-}
-
 export default function NominaRecords() {
   const { t } = useTranslation();
   const gusto = useGusto();
@@ -191,36 +141,20 @@ export default function NominaRecords() {
   const [focusHandled, setFocusHandled] = useState(false);
 
   const [rows, setRows] = useState<AttendanceRecord[]>([]);
+  const [total, setTotal] = useState(0);
+  const [errorCarga, setErrorCarga] = useState<string | null>(null);
   // Entradas/salidas marcadas sin señal: una consulta por página.
   const marcasSinSenal = useMarcasSinSenal(rows.map((r: any) => r.id));
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState("");
+  /* Every filter lives in the URL (shareable: «los atrasos de Ana esta
+     semana» is a link) and the range is in COMPANY days — the device's own
+     zone used to decide where a week started. */
+  const [f, setF] = useFiltrosDeAsistencia();
+  const opciones = useOpcionesDeFiltro();
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [period, setPeriod] = useState<Period>("week");
-  // El aviso trae también `?date=<AAAA-MM-DD>`: el día del fichaje. Sin usarlo, la
-  // lista abría SIEMPRE la semana actual, y un enlace a una entrada de hace ocho
-  // días caía fuera del rango — la ficha no se abría nunca y el enlace parecía
-  // roto. Se ancla el periodo en ese día.
-  const [anchor, setAnchor] = useState<Date>(() => {
-    const d = searchParams.get("date");
-    if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
-      const [y, m, day] = d.split("-").map(Number);
-      const parsed = new Date(y, m - 1, day);
-      if (!isNaN(parsed.getTime())) return parsed;
-    }
-    return new Date();
-  });
   const [selected, setSelected] = useState<AttendanceRecord | null>(null);
   const [busy, setBusy] = useState(false);
-  /** Filtro por trabajador. La lista de opciones sale de lo cargado SIN filtro:
-   *  si saliera de las filas ya filtradas, elegir a alguien dejaría el
-   *  desplegable con una sola opción y no habría vuelta atrás. */
-  const [guardId, setGuardId] = useState("");
-  const [guardOptions, setGuardOptions] = useState<
-    { id: string; label: string }[]
-  >([]);
-  const [payrollStatus, setPayrollStatus] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkKey, setBulkKey] = useState(0);
   const { hasPermission } = usePermissions();
@@ -243,9 +177,19 @@ export default function NominaRecords() {
     });
   };
 
-  const [rangeStart, rangeEnd] = useMemo(
-    () => rangeFor(period, anchor),
-    [period, anchor],
+  /** The server filter of what is on screen (also what Export sends). */
+  const filtroDelServidor = useMemo(
+    () => ({
+      "filter[status]": f.status || undefined,
+      "filter[departmentId]": departmentId || undefined,
+      "filter[guardId]": f.guard || undefined,
+      "filter[stationId]": f.station || undefined,
+      "filter[branchId]": f.branch || undefined,
+      "filter[payrollStatus]": f.payroll || undefined,
+      "filter[dateFrom]": f.from,
+      "filter[dateTo]": f.to,
+    }),
+    [f.status, departmentId, f.guard, f.station, f.branch, f.payroll, f.from, f.to],
   );
   // Token-based selfie URL for the open record. punchInPhoto is a raw
   // privateUrl string (no companion downloadUrl), so resolve a token here at the
@@ -254,47 +198,32 @@ export default function NominaRecords() {
 
   const load = useCallback(() => {
     setLoading(true);
+    setErrorCarga(null);
     attendanceService
       .list({
-        "filter[status]": status || undefined,
-        "filter[departmentId]": departmentId || undefined,
-        "filter[guardName]": guardId || undefined,
-        // Day/week/month window — sent as the backend's punchInTimeRange [start, end].
-        "filter[punchInTimeRange][0]": rangeStart.toISOString(),
-        "filter[punchInTimeRange][1]": rangeEnd.toISOString(),
-        limit: 1000,
+        ...filtroDelServidor,
+        ...paginaDe(f),
         orderBy: "punchInTime_DESC",
       })
       .then((r) => {
-        const filas = r.rows || [];
-        setRows(filas);
-        // Se refresca el catálogo de trabajadores sólo cuando NO hay filtro:
-        // ver la nota en `guardOptions`.
-        if (!guardId) {
-          const m = new Map<string, string>();
-          for (const f of filas) {
-            const id = f.guardName?.id;
-            if (id) m.set(String(id), f.guardName?.fullName || t("ui.NominaRecords.trabajador", "Trabajador"));
-          }
-          setGuardOptions(
-            [...m.entries()]
-              .map(([id, label]) => ({ id, label }))
-              .sort((a, b) => a.label.localeCompare(b.label)),
-          );
-        }
+        setRows(r.rows || []);
+        setTotal(Number(r.count) || 0);
       })
-      .catch((e) => toast.error(
-          e?.message || t("ui.NominaRecords.errorAlCargarRegistros", "Error al cargar registros"),
-        ))
+      .catch((e) => {
+        // A failed load is said, never shown as an empty week.
+        setRows([]);
+        setTotal(0);
+        setErrorCarga(e?.message || t("ui.NominaRecords.errorAlCargarRegistros", "Error al cargar registros"));
+      })
       .finally(() => setLoading(false));
-  }, [status, departmentId, guardId, rangeStart, rangeEnd]);
+  }, [filtroDelServidor, f.page, f.size]);
   useEffect(load, [load]);
   // Una selección que sobrevive a un cambio de filtro actúa sobre filas que ya
   // no están en pantalla — exactamente lo que nadie espera de un botón «aplicar
   // a lo seleccionado».
   useEffect(() => {
     setSelectedIds([]);
-  }, [status, departmentId, guardId, rangeStart, rangeEnd]);
+  }, [filtroDelServidor, f.page, f.size]);
 
   useEffect(() => {
     departmentService
@@ -303,15 +232,7 @@ export default function NominaRecords() {
       .catch(() => {});
   }, []);
 
-  /** Filtro por estado de nómina. Va en el cliente porque la lista ya viene
-   *  entera del periodo y así no se paga otra ida al servidor por un desplegable. */
-  const visibles = useMemo(
-    () =>
-      payrollStatus
-        ? rows.filter((r) => String(r.payrollStatus || "") === payrollStatus)
-        : rows,
-    [rows, payrollStatus],
-  );
+  const visibles = rows;
 
   // Once rows are loaded, open the detail for the notification's record (once).
   useEffect(() => {
@@ -610,11 +531,46 @@ export default function NominaRecords() {
     },
   ];
 
+  /** Aprobar o rechazar la MARCACIÓN de lo seleccionado, una a una en el servidor. */
+  const decidirMarcaciones = async (accion: "approve" | "reject") => {
+    const ok = await confirmDialog({
+      title:
+        accion === "approve"
+          ? t("ui.Asistencia.aprobarMarcaciones", "Aprobar marcaciones")
+          : t("ui.Asistencia.rechazarMarcaciones", "Rechazar marcaciones"),
+      message: t("ui.Asistencia.confirmarLote", {
+        count: selectedIds.length,
+        defaultValue:
+          "Se decidirán {{count}} marcación(es), cada una por su cuenta. Las de días de pago cerrados o fuera de tus sedes se quedan como están y te digo cuáles.",
+      }),
+      confirmText: t("ui.Asistencia.decidir", "Decidir"),
+    });
+    if (!ok) return;
+    setBusy(true);
+    try {
+      const r = await attendanceService.decisions(
+        selectedIds.map((id) => ({ kind: "record" as const, id, action: accion })),
+      );
+      avisarLote(t, r);
+      setSelectedIds([]);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || t("ui.Asistencia.lote.error", "error"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   /** Mover en bloque lo seleccionado. */
   const bulk = async (destino: string) => {
     setBulkKey((k) => k + 1);
     if (!selectedIds.length) {
       toast.error(t("ui.NominaRecords.noHayTarjetasSeleccionadas", "No hay tarjetas seleccionadas"));
+      return;
+    }
+    if (destino === "marcacion:approve" || destino === "marcacion:reject") {
+      await decidirMarcaciones(destino === "marcacion:approve" ? "approve" : "reject");
+
       return;
     }
     const etiqueta = PAYROLL_FLOW_META[destino]?.label || destino;
@@ -666,11 +622,7 @@ export default function NominaRecords() {
     try {
       await attendanceService.exportRecords({
         format: formato,
-        "filter[status]": status || undefined,
-        "filter[departmentId]": departmentId || undefined,
-        "filter[guardName]": guardId || undefined,
-        "filter[punchInTimeRange][0]": rangeStart.toISOString(),
-        "filter[punchInTimeRange][1]": rangeEnd.toISOString(),
+        ...filtroDelServidor,
         ids: selectedIds.length ? selectedIds.join(",") : undefined,
       });
       toast.success(
@@ -740,29 +692,38 @@ export default function NominaRecords() {
           {/* Trabajador — la pregunta más frecuente de esta pantalla es «¿qué
               hizo esta persona este mes?», y hasta hoy había que buscarla a ojo
               entre mil filas. */}
-          <label className="inline-flex items-center gap-2">
-            <Users className="size-4" style={{ color: "var(--ink-soft)" }} />
-            <select
-              className="cg-input cg-focus max-w-[16rem] px-3 py-2 text-sm"
-              value={guardId}
-              onChange={(e) => setGuardId(e.target.value)}
-            >
-              <option value="">
-                {t("ui.NominaRecords.todosLosTrabajadores", "Todos los trabajadores")}
-              </option>
-              {guardOptions.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SelectorDeFiltro
+            ariaLabel={t("comun.vigilante", "Vigilante")}
+            icono={<Users className="size-4" style={{ color: "var(--ink-soft)" }} />}
+            options={opciones.guards}
+            todos={t("ui.NominaRecords.todosLosTrabajadores", "Todos los trabajadores")}
+            value={f.guard}
+            onChange={(v) => setF({ guard: v })}
+          />
+          <SelectorDeFiltro
+            ariaLabel={t("comun.puesto", "Puesto")}
+            icono={<MapPin className="size-4" style={{ color: "var(--ink-soft)" }} />}
+            options={opciones.stations}
+            todos={t("ui.Asistencia.todosLosPuestos", "Todos los puestos")}
+            value={f.station}
+            onChange={(v) => setF({ station: v })}
+          />
+          {opciones.branches.length > 1 && (
+            <SelectorDeFiltro
+              ariaLabel={t("ui.Asistencia.sucursal", "Sucursal")}
+              icono={<Building2 className="size-4" style={{ color: "var(--ink-soft)" }} />}
+              options={opciones.branches}
+              todos={t("ui.Asistencia.todasLasSucursales", "Todas las sucursales")}
+              value={f.branch}
+              onChange={(v) => setF({ branch: v })}
+            />
+          )}
 
           {/* Estado de nómina */}
           <select
             className="cg-input cg-focus px-3 py-2 text-sm"
-            value={payrollStatus}
-            onChange={(e) => setPayrollStatus(e.target.value)}
+            value={f.payroll}
+            onChange={(e) => setF({ payroll: e.target.value })}
           >
             <option value="">
               {t("ui.NominaRecords.cualquierEstadoDeNomina", "Cualquier estado de nómina")}
@@ -774,48 +735,15 @@ export default function NominaRecords() {
             ))}
           </select>
 
-          {/* Período: Día / Semana / Mes */}
-          <Segmented<Period>
-            value={period}
-            onChange={setPeriod}
-            options={[
-              { value: "day", label: t("comun.periodo.dia", "Día") },
-              { value: "week", label: t("ui.NominaRecords.semana", "Semana") },
-              { value: "month", label: t("ui.NominaRecords.mes", "Mes") },
-            ]}
-          />
-
-          {/* Navegación de fecha */}
-          <div className="glass-sunken inline-flex items-center gap-1 px-1.5 py-1">
-            <button
-              onClick={() => setAnchor((a) => shiftAnchor(period, a, -1))}
-              className="cg-focus cg-btn-ghost rounded-full p-1"
-              aria-label={t("kit.pagination.prev")}
-            >
-              <ChevronLeft className="size-4" />
-            </button>
-            <button
-              onClick={() => setAnchor(new Date())}
-              title={t("ui.NominaRecords.irAHoy", "Ir a hoy")}
-              className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium capitalize"
-            >
-              {rangeLabel(period, anchor)}
-            </button>
-            <button
-              onClick={() => setAnchor((a) => shiftAnchor(period, a, +1))}
-              className="cg-focus cg-btn-ghost rounded-full p-1"
-              aria-label={t("kit.pagination.next")}
-            >
-              <ChevronRight className="size-4" />
-            </button>
-          </div>
+          {/* Período en días de la empresa: Día / Semana / Mes */}
+          <RangoDeAsistencia f={f} onChange={setF} />
 
           {/* Filtro de estado */}
           <label className="glass-sunken flex items-center gap-2 px-3 py-1.5">
             <Filter className="size-4" style={{ color: "var(--ink-faint)" }} />
             <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              value={f.status}
+              onChange={(e) => setF({ status: e.target.value })}
               className="cg-focus bg-transparent text-sm outline-none"
               style={{ color: "var(--ink)" }}
             >
@@ -868,15 +796,17 @@ export default function NominaRecords() {
                   className="font-semibold tabular-nums"
                   style={{ color: "var(--ink)" }}
                 >
-                  {rows.length}
+                  {total}
                 </span>{" "}
                 {t("ui.NominaRecords.registrosSufijo", {
-                  count: rows.length,
+                  count: total,
                   defaultValue: "registro(s)",
                 })}
               </span>
               <span>
-                {t("ui.NominaRecords.horasNetasTotales", "Horas netas:")}{" "}
+                {total > rows.length
+                  ? t("ui.Asistencia.horasDeEstaPagina", "Horas netas de esta página:")
+                  : t("ui.NominaRecords.horasNetasTotales", "Horas netas:")}{" "}
                 <span
                   className="font-semibold tabular-nums"
                   style={{ color: "var(--ink)" }}
@@ -889,15 +819,40 @@ export default function NominaRecords() {
                   )}
                 </span>
               </span>
-              <span className="capitalize">{rangeLabel(period, anchor)}</span>
+              <span className="capitalize">{etiquetaDeRango(f.from, f.to)}</span>
+            </div>
+          )}
+          {errorCarga && (
+            <div
+              className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl px-4 py-3 text-sm font-medium"
+              role="alert"
+              style={{ background: "color-mix(in oklab, var(--bad) 12%, transparent)", color: "var(--bad-text)" }}
+            >
+              <span>{errorCarga}</span>
+              <Button size="sm" variant="outline" onClick={load}>
+                {t("ui.Asistencia.reintentar", "Reintentar")}
+              </Button>
             </div>
           )}
           {loading ? (
             <SkeletonCards count={4} />
-          ) : (
+          ) : errorCarga ? null : (
             <DataTable
               columns={columns}
               data={visibles}
+              footer={
+                total > f.size ? (
+                  <Pagination
+                    numbered
+                    page={f.page}
+                    pageSize={f.size}
+                    pageSizes={TAMANOS_DE_PAGINA}
+                    total={total}
+                    onPageChange={(p) => setF({ page: p })}
+                    onPageSizeChange={(n) => setF({ size: n })}
+                  />
+                ) : undefined
+              }
               selectedIds={selectedIds}
               onSelectOne={(id, checked) =>
                 setSelectedIds((p) =>
@@ -919,6 +874,14 @@ export default function NominaRecords() {
                     <BulkActionsSelect
                       key={bulkKey}
                       actions={[
+                        {
+                          value: "marcacion:approve",
+                          label: t("ui.Asistencia.aprobarMarcaciones", "Aprobar marcaciones"),
+                        },
+                        {
+                          value: "marcacion:reject",
+                          label: t("ui.Asistencia.rechazarMarcaciones", "Rechazar marcaciones"),
+                        },
                         {
                           value: "reviewed",
                           label: t("ui.NominaRecords.marcarRevisadas", "Marcar revisadas"),
