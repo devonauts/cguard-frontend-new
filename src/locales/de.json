@@ -11199,7 +11199,8 @@
       "deEnElPuesto": "von {{horas}} am Posten",
       "horasNetasTotales": "Nettostunden:",
       "sinResolver": "Ungeklärt",
-      "descansoCubreElTurnoAyuda": "Die Pause deckt die ganze Schicht ab: Korrigiere die Pause, damit sie bezahlt wird."
+      "descansoCubreElTurnoAyuda": "Die Pause deckt die ganze Schicht ab: Korrigiere die Pause, damit sie bezahlt wird.",
+      "aprobarEnHoras": "Zur Zahlung freigeben unter Stunden des Zeitraums"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",
@@ -15859,7 +15860,8 @@
       "reabrirPeriodo": "Periode wieder öffnen",
       "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
       "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?",
-      "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen."
+      "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen.",
+      "enviarAPago": "Zur Zahlung senden"
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",

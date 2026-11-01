@@ -10664,7 +10664,8 @@
       "deEnElPuesto": "de {{horas}} no posto",
       "horasNetasTotales": "Horas líquidas:",
       "sinResolver": "Sem resolver",
-      "descansoCubreElTurnoAyuda": "O intervalo cobre todo o turno: corrija o intervalo para que seja pago."
+      "descansoCubreElTurnoAyuda": "O intervalo cobre todo o turno: corrija o intervalo para que seja pago.",
+      "aprobarEnHoras": "Aprovar para pagamento em Horas do período"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar também estes e-mails",
@@ -15324,7 +15325,8 @@
       "reabrirPeriodo": "Reabrir período",
       "reabrirPeriodoMensaje": "Batidas, turnos e marcações a partir desse dia poderão ser alterados de novo. Cartões já aprovados ou exportados não são alterados. Escreva o motivo: fica no registro.",
       "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?",
-      "generarCerrado": "Este período está fechado. Reabra-o para recalcular."
+      "generarCerrado": "Este período está fechado. Reabra-o para recalcular.",
+      "enviarAPago": "Enviar para pagamento"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenças",

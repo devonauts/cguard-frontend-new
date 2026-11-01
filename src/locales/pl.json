@@ -11245,7 +11245,8 @@
       "deEnElPuesto": "z {{horas}} na posterunku",
       "horasNetasTotales": "Godziny netto:",
       "sinResolver": "Nierozstrzygnięte",
-      "descansoCubreElTurnoAyuda": "Przerwa obejmuje całą zmianę: popraw przerwę, aby zmiana została wypłacona."
+      "descansoCubreElTurnoAyuda": "Przerwa obejmuje całą zmianę: popraw przerwę, aby zmiana została wypłacona.",
+      "aprobarEnHoras": "Zatwierdź do wypłaty w Godzinach okresu"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Powiadamiaj dodatkowo te adresy e-mail",
@@ -16051,7 +16052,8 @@
       "reabrirPeriodo": "Otwórz okres ponownie",
       "reabrirPeriodoMensaje": "Odbicia, zmiany i oznaczenia od tego dnia będzie można znowu zmieniać. Karty już zatwierdzone lub wyeksportowane pozostają bez zmian. Podaj powód: zostanie zapisany w dzienniku.",
       "reabrirPeriodoTitulo": "Otworzyć ponownie płace od {{desde}}?",
-      "generarCerrado": "Ten okres jest zamknięty. Otwórz go ponownie, aby przeliczyć."
+      "generarCerrado": "Ten okres jest zamknięty. Otwórz go ponownie, aby przeliczyć.",
+      "enviarAPago": "Wyślij do wypłaty"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencje",

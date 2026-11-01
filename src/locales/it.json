@@ -11199,7 +11199,8 @@
       "deEnElPuesto": "su {{horas}} in postazione",
       "horasNetasTotales": "Ore nette:",
       "sinResolver": "Non risolto",
-      "descansoCubreElTurnoAyuda": "La pausa copre tutto il turno: correggi la pausa perché venga pagato."
+      "descansoCubreElTurnoAyuda": "La pausa copre tutto il turno: correggi la pausa perché venga pagato.",
+      "aprobarEnHoras": "Approva per la paga in Ore del periodo"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avvisa anche questi indirizzi email",
@@ -15859,7 +15860,8 @@
       "reabrirPeriodo": "Riapri periodo",
       "reabrirPeriodoMensaje": "Timbrature, turni e segni da quel giorno potranno essere di nuovo modificati. Le schede già approvate o esportate non vengono toccate. Scrivi il motivo: resta nel registro.",
       "reabrirPeriodoTitulo": "Riaprire le paghe dal {{desde}}?",
-      "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo."
+      "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo.",
+      "enviarAPago": "Invia al pagamento"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",

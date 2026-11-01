@@ -11199,7 +11199,8 @@
       "deEnElPuesto": "sur {{horas}} au poste",
       "horasNetasTotales": "Heures nettes :",
       "sinResolver": "Non résolu",
-      "descansoCubreElTurnoAyuda": "La pause couvre tout le service : corrigez la pause pour qu’il soit payé."
+      "descansoCubreElTurnoAyuda": "La pause couvre tout le service : corrigez la pause pour qu’il soit payé.",
+      "aprobarEnHoras": "Approuver pour la paie dans Heures de la période"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Prévenir aussi ces adresses e-mail",
@@ -15859,7 +15860,8 @@
       "reabrirPeriodo": "Rouvrir la période",
       "reabrirPeriodoMensaje": "Les pointages, postes et marques à partir de ce jour pourront être modifiés à nouveau. Les feuilles déjà approuvées ou exportées ne sont pas touchées. Indiquez le motif : il est consigné au journal.",
       "reabrirPeriodoTitulo": "Rouvrir la paie à partir du {{desde}} ?",
-      "generarCerrado": "Cette période est clôturée. Rouvrez-la pour la recalculer."
+      "generarCerrado": "Cette période est clôturée. Rouvrez-la pour la recalculer.",
+      "enviarAPago": "Envoyer en paie"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licences",

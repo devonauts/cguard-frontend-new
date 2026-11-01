@@ -77,12 +77,19 @@ export const PAYROLL_FLOW_META: Record<
   }),
 };
 
-/** A qué estados se puede pasar desde cada uno (espejo del servidor). */
+/**
+ * What a PUNCH can move to from Marcaciones (mirror of the server).
+ *
+ * ONE approval flow for pay (phase 3): approving for pay, paying and taking
+ * either back happen on the person's card in Asistencia › Horas del periodo,
+ * which moves its punches. Here a punch is only reviewed, rejected or sent
+ * back to review; «approved» and «paid» show as badges.
+ */
 export const PAYROLL_FLOW_NEXT: Record<string, string[]> = {
   pending_review: ["reviewed", "rejected"],
-  reviewed: ["approved", "rejected", "pending_review"],
-  approved: ["paid", "rejected", "reviewed"],
-  paid: ["approved"],
+  reviewed: ["rejected", "pending_review"],
+  approved: [],
+  paid: [],
   rejected: ["pending_review"],
 };
 

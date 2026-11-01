@@ -138,6 +138,9 @@ export default function NominaTimecards() {
   const cerrarP = usePuede("tarjetas.cerrarPeriodo");
   const reabrirP = usePuede("tarjetas.reabrirPeriodo");
   const tarifasT = usePuede("tarjetas.tarifas");
+  /* ONE approval flow (phase 3): with Roles de pago or Gusto, exporting the
+     approved cards IS sending them to pay — their punches become «paid». */
+  const conDinero = usePuede("asistencia.aprobarParaPago").motivo !== "modulo";
   const conDinero = tarifasT.motivo !== "modulo";
   const [desde, setDesde] = useState(isoDay(new Date(Date.now() - 14 * 864e5)));
   const [hasta, setHasta] = useState(isoDay(new Date()));
@@ -843,7 +846,10 @@ export default function NominaTimecards() {
           )}
           {exportarT.puede && (
             <Button variant="outline" onClick={exportar} disabled={trabajando || !sel.length}>
-              <Download size={15} /> {t("ui.NominaRecords.exportar", "Exportar")}
+              <Download size={15} />{" "}
+              {conDinero
+                ? t("ui.NominaTimecards.enviarAPago", "Enviar a pago")
+                : t("ui.NominaRecords.exportar", "Exportar")}
             </Button>
           )}
           {detalleT.puede && (

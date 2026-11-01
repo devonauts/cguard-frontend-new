@@ -10664,7 +10664,8 @@
       "deEnElPuesto": "de {{horas}} en el puesto",
       "horasNetasTotales": "Horas netas:",
       "sinResolver": "Sin resolver",
-      "descansoCubreElTurnoAyuda": "El descanso cubre todo el turno: corrige el descanso para que se pague."
+      "descansoCubreElTurnoAyuda": "El descanso cubre todo el turno: corrige el descanso para que se pague.",
+      "aprobarEnHoras": "Aprobar para pago en Horas del periodo"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar además a estos correos",
@@ -15324,7 +15325,8 @@
       "reabrirPeriodo": "Reabrir periodo",
       "reabrirPeriodoMensaje": "Los fichajes, turnos y marcas desde ese día se podrán volver a cambiar. Las tarjetas ya aprobadas o exportadas no se tocan. Escribe el motivo: queda en la bitácora.",
       "reabrirPeriodoTitulo": "¿Reabrir la nómina desde el {{desde}}?",
-      "generarCerrado": "Este periodo está cerrado. Reábrelo para volver a calcularlo."
+      "generarCerrado": "Este periodo está cerrado. Reábrelo para volver a calcularlo.",
+      "enviarAPago": "Enviar a pago"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencias",

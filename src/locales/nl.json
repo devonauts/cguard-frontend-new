@@ -11199,7 +11199,8 @@
       "deEnElPuesto": "van {{horas}} op de post",
       "horasNetasTotales": "Netto-uren:",
       "sinResolver": "Onopgelost",
-      "descansoCubreElTurnoAyuda": "De pauze beslaat de hele dienst: corrigeer de pauze zodat die betaald wordt."
+      "descansoCubreElTurnoAyuda": "De pauze beslaat de hele dienst: corrigeer de pauze zodat die betaald wordt.",
+      "aprobarEnHoras": "Goedkeuren voor betaling in Uren van de periode"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",
@@ -15859,7 +15860,8 @@
       "reabrirPeriodo": "Periode heropenen",
       "reabrirPeriodoMensaje": "Prikkingen, diensten en markeringen vanaf die dag kunnen weer worden gewijzigd. Al goedgekeurde of geëxporteerde tijdkaarten blijven ongewijzigd. Geef de reden op: die komt in het logboek.",
       "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?",
-      "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen."
+      "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen.",
+      "enviarAPago": "Naar betaling sturen"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",
