@@ -40,6 +40,7 @@ import dobletesService, {
 } from "@/lib/api/dobletesService";
 import { soloFecha } from "@/lib/horaDeLaEmpresa";
 import { getStoredTenantBranding } from "@/lib/tenantBranding";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 type Estado = EstadoDeCampana;
 
@@ -120,6 +121,8 @@ export default function TabCampanas({
 
       {campanas.isLoading ? (
         <SkeletonCards count={3} />
+      ) : campanas.isError && !filas.length ? (
+        <ErrorDeCarga onRetry={() => campanas.refetch()} />
       ) : !filas.length ? (
         <EmptyState
           action={

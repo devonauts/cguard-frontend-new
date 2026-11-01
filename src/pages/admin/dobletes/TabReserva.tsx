@@ -50,6 +50,7 @@ import dobletesService, {
   type ReserveMember,
 } from "@/lib/api/dobletesService";
 import { soloFecha } from "@/lib/horaDeLaEmpresa";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 export default function TabReserva({
   onCampanaSugerida,
@@ -64,6 +65,7 @@ export default function TabReserva({
   });
 
   if (banca.isLoading) return <SkeletonCards count={3} />;
+  if (banca.isError && !banca.data) return <ErrorDeCarga onRetry={() => banca.refetch()} />;
   if (!banca.data)
     return (
       <EmptyState
