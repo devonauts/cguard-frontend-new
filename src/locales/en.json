@@ -19104,6 +19104,25 @@
       "omitir": "Don't apply this change",
       "enVigorDesde": "The law sets {{valor}} since {{fecha}}: that is what is paid, even if a different figure shows here.",
       "cambiaEl": "Changes to {{valor}} on {{fecha}} (law)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "a shift",
+      "desde": "from {{dia}}",
+      "yMas_one": "{{lista}} and {{count}} more",
+      "yMas_other": "{{lista}} and {{count}} more",
+      "otraPersona": "Someone else",
+      "vivoEditando": "{{quien}} is editing a draft that also changes {{que}}. Your change is already in the live schedule; they will see it before publishing.",
+      "vivo": "The unpublished draft saved by {{quien}} also changes {{que}}. Your change is already in the live schedule; they will see it before publishing.",
+      "borrador": "{{quien}} just changed {{que}} in the live schedule, which this draft also changes. Check it before publishing.",
+      "marca": "Changed live by {{quien}}: {{que}}",
+      "franjaTitulo_one": "Something this draft also changes was changed live",
+      "franjaTitulo_other": "{{count}} things this draft also changes were changed live",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "and {{count}} more",
+      "franjaMas_other": "and {{count}} more",
+      "franjaAyuda": "Cells with a dot changed live. «See what's new» reads the live schedule again with your changes on top; publishing checks again.",
+      "releer": "See what's new",
+      "entendido": "Got it"
     }
   },
   "map": {

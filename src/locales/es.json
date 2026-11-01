@@ -19104,6 +19104,25 @@
       "omitir": "No aplicar este cambio",
       "enVigorDesde": "La ley fija {{valor}} desde el {{fecha}}: se paga así aunque aquí diga otra cifra.",
       "cambiaEl": "Cambia el {{fecha}} a {{valor}} (ley)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "un turno",
+      "desde": "desde {{dia}}",
+      "yMas_one": "{{lista}} y {{count}} más",
+      "yMas_other": "{{lista}} y {{count}} más",
+      "otraPersona": "Otra persona",
+      "vivoEditando": "{{quien}} está editando un borrador que también cambia {{que}}. Tu cambio ya está en el horario real; lo verá antes de publicar.",
+      "vivo": "El borrador sin publicar de {{quien}} también cambia {{que}}. Tu cambio ya está en el horario real; lo verá antes de publicar.",
+      "borrador": "{{quien}} acaba de cambiar en vivo {{que}}, que este borrador también cambia. Revisa antes de publicar.",
+      "marca": "Cambiado en vivo por {{quien}}: {{que}}",
+      "franjaTitulo_one": "Cambiaron en vivo algo que este borrador también cambia",
+      "franjaTitulo_other": "Cambiaron en vivo {{count}} cosas que este borrador también cambia",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "y {{count}} más",
+      "franjaMas_other": "y {{count}} más",
+      "franjaAyuda": "Las celdas con un punto cambiaron en vivo. «Ver lo nuevo» vuelve a leer el horario real con tus cambios encima; al publicar se revisa otra vez.",
+      "releer": "Ver lo nuevo",
+      "entendido": "Entendido"
     }
   },
   "map": {

@@ -19641,6 +19641,25 @@
       "omitir": "Diese Änderung nicht anwenden",
       "enVigorDesde": "Das Gesetz legt seit {{fecha}} {{valor}} fest: So wird bezahlt, auch wenn hier eine andere Zahl steht.",
       "cambiaEl": "Ändert sich am {{fecha}} auf {{valor}} (Gesetz)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "eine Schicht",
+      "desde": "ab {{dia}}",
+      "yMas_one": "{{lista}} und {{count}} weitere",
+      "yMas_other": "{{lista}} und {{count}} weitere",
+      "otraPersona": "Jemand anderes",
+      "vivoEditando": "{{quien}} bearbeitet einen Entwurf, der auch {{que}} ändert. Ihre Änderung ist schon im echten Dienstplan; sie wird vor dem Veröffentlichen sichtbar.",
+      "vivo": "Der unveröffentlichte Entwurf von {{quien}} ändert auch {{que}}. Ihre Änderung ist schon im echten Dienstplan; sie wird vor dem Veröffentlichen sichtbar.",
+      "borrador": "{{quien}} hat gerade live {{que}} geändert, was dieser Entwurf auch ändert. Bitte vor dem Veröffentlichen prüfen.",
+      "marca": "Live geändert von {{quien}}: {{que}}",
+      "franjaTitulo_one": "Etwas, das dieser Entwurf auch ändert, wurde live geändert",
+      "franjaTitulo_other": "{{count}} Dinge, die dieser Entwurf auch ändert, wurden live geändert",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "und {{count}} weitere",
+      "franjaMas_other": "und {{count}} weitere",
+      "franjaAyuda": "Zellen mit einem Punkt wurden live geändert. „Neues ansehen“ liest den echten Dienstplan neu, mit Ihren Änderungen darüber; beim Veröffentlichen wird erneut geprüft.",
+      "releer": "Neues ansehen",
+      "entendido": "Verstanden"
     }
   },
   "visitantes": {

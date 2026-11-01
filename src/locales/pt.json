@@ -19104,6 +19104,25 @@
       "omitir": "Não aplicar esta mudança",
       "enVigorDesde": "A lei fixa {{valor}} desde {{fecha}}: é isso que se paga, mesmo que aqui apareça outro número.",
       "cambiaEl": "Muda para {{valor}} em {{fecha}} (lei)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "um turno",
+      "desde": "a partir de {{dia}}",
+      "yMas_one": "{{lista}} e mais {{count}}",
+      "yMas_other": "{{lista}} e mais {{count}}",
+      "otraPersona": "Outra pessoa",
+      "vivoEditando": "{{quien}} está editando um rascunho que também muda {{que}}. Sua alteração já está na escala real; a pessoa verá antes de publicar.",
+      "vivo": "O rascunho não publicado de {{quien}} também muda {{que}}. Sua alteração já está na escala real; a pessoa verá antes de publicar.",
+      "borrador": "{{quien}} acabou de mudar na escala real {{que}}, que este rascunho também muda. Revise antes de publicar.",
+      "marca": "Alterado na escala real por {{quien}}: {{que}}",
+      "franjaTitulo_one": "Algo que este rascunho também muda foi alterado na escala real",
+      "franjaTitulo_other": "{{count}} itens que este rascunho também muda foram alterados na escala real",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "e mais {{count}}",
+      "franjaMas_other": "e mais {{count}}",
+      "franjaAyuda": "As células com um ponto mudaram na escala real. «Ver o novo» lê a escala real de novo com suas alterações por cima; ao publicar, tudo é verificado outra vez.",
+      "releer": "Ver o novo",
+      "entendido": "Entendi"
     }
   },
   "map": {

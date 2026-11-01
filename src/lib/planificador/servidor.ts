@@ -9,6 +9,7 @@
 import { ApiService } from "@/services/api/apiService";
 
 import type { Plan } from "./motor";
+import type { CambioEnVivo } from "./avisoEnVivo";
 
 export interface Editor {
   id: string;
@@ -25,6 +26,8 @@ export interface ServerDraft {
   baseAt: string | null;
   signature: string | null;
   touches: number;
+  /** Live edits on what this draft changes, made after its live read (phase 5). */
+  liveChanges?: CambioEnVivo[];
   updatedAt: string | null;
   updatedById: string | null;
   updatedBy?: string | null;
@@ -98,6 +101,8 @@ export interface DraftToSave {
   baseAt: string | null;
   signature: string;
   touches: number;
+  /** The guards and stations it changes: live edits on them are told to the draft. */
+  touched?: { guardIds: string[]; stationIds: string[] };
 }
 
 export async function guardarBorradorEnElServidor(

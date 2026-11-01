@@ -19641,6 +19641,25 @@
       "omitir": "Non applicare questa modifica",
       "enVigorDesde": "La legge fissa {{valor}} dal {{fecha}}: si paga così anche se qui appare un'altra cifra.",
       "cambiaEl": "Passa a {{valor}} il {{fecha}} (legge)."
+    },
+    "AvisoEnVivo": {
+      "alguien": "un turno",
+      "desde": "dal {{dia}}",
+      "yMas_one": "{{lista}} e altri {{count}}",
+      "yMas_other": "{{lista}} e altri {{count}}",
+      "otraPersona": "Un'altra persona",
+      "vivoEditando": "{{quien}} sta modificando una bozza che cambia anche {{que}}. La tua modifica è già nell'orario reale; la vedrà prima di pubblicare.",
+      "vivo": "La bozza non pubblicata di {{quien}} cambia anche {{que}}. La tua modifica è già nell'orario reale; la vedrà prima di pubblicare.",
+      "borrador": "{{quien}} ha appena cambiato dal vivo {{que}}, che anche questa bozza cambia. Controlla prima di pubblicare.",
+      "marca": "Cambiato dal vivo da {{quien}}: {{que}}",
+      "franjaTitulo_one": "Qualcosa che anche questa bozza cambia è stato cambiato dal vivo",
+      "franjaTitulo_other": "{{count}} elementi che anche questa bozza cambia sono stati cambiati dal vivo",
+      "franjaLinea": "{{que}} — {{quien}}",
+      "franjaMas_one": "e altri {{count}}",
+      "franjaMas_other": "e altri {{count}}",
+      "franjaAyuda": "Le celle con un punto sono cambiate dal vivo. «Vedi le novità» rilegge l'orario reale con le tue modifiche sopra; alla pubblicazione si controlla di nuovo.",
+      "releer": "Vedi le novità",
+      "entendido": "Capito"
     }
   },
   "visitantes": {
