@@ -22757,6 +22757,11 @@
     },
     "semana": {
       "almuerzo": "przerwa obiadowa {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "dzienny",
+      "deNoche": "nocny",
+      "veinticuatro": "24 h"
     }
   }
 }

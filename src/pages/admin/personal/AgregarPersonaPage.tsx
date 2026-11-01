@@ -66,6 +66,7 @@ import {
   puedeSeguir,
   rolesDeOficina,
   rolVeTodo,
+  plazaEnPalabras,
   rotacionDePlaza,
   rotacionEnPalabras,
   horasDe,
@@ -392,7 +393,7 @@ export default function AgregarPersonaPage() {
         ...p,
         sinRotacion: !rot,
         detalle: [
-          p.plaza,
+          plazaEnPalabras(p.plaza, plaza?.startTime, plaza?.endTime, t),
           turnoEnPalabras(rot, plaza?.startTime, plaza?.endTime, t),
         ]
           .filter(Boolean)

@@ -22447,6 +22447,11 @@
     },
     "semana": {
       "almuerzo": "lunch {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "overdag",
+      "deNoche": "'s nachts",
+      "veinticuatro": "24 u"
     }
   }
 }

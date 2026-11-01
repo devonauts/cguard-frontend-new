@@ -22447,6 +22447,11 @@
     },
     "semana": {
       "almuerzo": "almuerzo {{desde}}–{{hasta}}"
+    },
+    "plaza": {
+      "deDia": "de día",
+      "deNoche": "de noche",
+      "veinticuatro": "24 h"
     }
   }
 }

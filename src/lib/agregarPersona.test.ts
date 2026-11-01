@@ -15,7 +15,9 @@ import {
   fichaDe,
   horasDe,
   mensajeDeAcceso,
+  mitadDelDia,
   pendientes,
+  plazaEnPalabras,
   puedeSeguir,
   rolesDeOficina,
   rolVeTodo,
@@ -570,5 +572,33 @@ describe("agregarPersona · after «Crear»", () => {
       "Hola Ana. Tu usuario para entrar a la app es: aperez. Crea tu contraseña aquí: https://x/y",
     );
     expect(enlaceDeWhatsApp("a b")).toBe("https://wa.me/?text=a%20b");
+  });
+});
+
+describe("seat half of the day", () => {
+  it("day from 05:00 to 16:59, night otherwise, 24 h when start equals end", () => {
+    expect(mitadDelDia("07:00", "19:00")).toBe("dia");
+    expect(mitadDelDia("05:00:00", "13:00")).toBe("dia");
+    expect(mitadDelDia("16:59", "23:00")).toBe("dia");
+    expect(mitadDelDia("17:00", "05:00")).toBe("noche");
+    expect(mitadDelDia("19:00", "07:00")).toBe("noche");
+    expect(mitadDelDia("00:00", "08:00")).toBe("noche");
+    expect(mitadDelDia("07:00", "07:00:00")).toBe("24h");
+    expect(mitadDelDia(null, null)).toBeNull();
+    expect(mitadDelDia("", "19:00")).toBeNull();
+  });
+
+  it("keeps the clients' word «Fijo» and adds the half", () => {
+    expect(plazaEnPalabras("Fijo 1", "07:00", "19:00", t)).toBe(
+      "Fijo 1 · de día",
+    );
+    expect(plazaEnPalabras("Fijo 2", "19:00", "07:00", t)).toBe(
+      "Fijo 2 · de noche",
+    );
+    expect(plazaEnPalabras("Fijo 1", "07:00", "07:00", t)).toBe(
+      "Fijo 1 · 24 h",
+    );
+    expect(plazaEnPalabras("Fijo 1", null, null, t)).toBe("Fijo 1");
+    expect(plazaEnPalabras("", "07:00", "19:00", t)).toBe("de día");
   });
 });
