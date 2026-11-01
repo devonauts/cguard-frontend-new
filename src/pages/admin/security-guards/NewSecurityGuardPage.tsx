@@ -336,7 +336,14 @@ export default function NewSecurityGuardPage() {
       const res: any = await securityGuardService.create(payload);
       const enlace: string | null =
         res?.invitationLink || res?.data?.invitationLink || null;
-      const idCreado: string | null = res?.id || res?.data?.id || null;
+      // POST /security-guard answers { record, username, invitationLink, … }:
+      // the guard id is record.id (reading res.id left the imported CV unfiled).
+      const idCreado: string | null =
+        res?.record?.id ||
+        res?.data?.record?.id ||
+        res?.id ||
+        res?.data?.id ||
+        null;
 
       toast.success(
         t("agregarPersona.listo.titulo", {
