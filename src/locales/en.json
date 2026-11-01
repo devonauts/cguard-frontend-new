@@ -18832,7 +18832,8 @@
       "titulo": "Could not load",
       "descripcion": "What you see may be incomplete. Check your connection and try again.",
       "reintentar": "Try again",
-      "mostrandoDe": "Showing {{mostrados}} of {{total}}"
+      "mostrandoDe": "Showing {{mostrados}} of {{total}}",
+      "verMas": "Show more"
     }
   },
   "map": {

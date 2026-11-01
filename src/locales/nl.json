@@ -19367,7 +19367,8 @@
       "titulo": "Kon niet laden",
       "descripcion": "Wat je ziet is mogelijk onvolledig. Controleer de verbinding en probeer het opnieuw.",
       "reintentar": "Opnieuw proberen",
-      "mostrandoDe": "{{mostrados}} van {{total}} getoond"
+      "mostrandoDe": "{{mostrados}} van {{total}} getoond",
+      "verMas": "Meer tonen"
     }
   },
   "visitantes": {

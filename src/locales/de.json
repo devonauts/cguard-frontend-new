@@ -19367,7 +19367,8 @@
       "titulo": "Konnte nicht geladen werden",
       "descripcion": "Die Anzeige ist womöglich unvollständig. Prüfe die Verbindung und versuche es erneut.",
       "reintentar": "Erneut versuchen",
-      "mostrandoDe": "{{mostrados}} von {{total}} angezeigt"
+      "mostrandoDe": "{{mostrados}} von {{total}} angezeigt",
+      "verMas": "Mehr anzeigen"
     }
   },
   "visitantes": {

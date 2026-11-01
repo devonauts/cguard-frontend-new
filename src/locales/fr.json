@@ -19367,7 +19367,8 @@
       "titulo": "Chargement impossible",
       "descripcion": "Ce que vous voyez peut être incomplet. Vérifiez la connexion et réessayez.",
       "reintentar": "Réessayer",
-      "mostrandoDe": "{{mostrados}} sur {{total}} affichés"
+      "mostrandoDe": "{{mostrados}} sur {{total}} affichés",
+      "verMas": "Voir plus"
     }
   },
   "visitantes": {

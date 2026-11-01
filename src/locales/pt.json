@@ -18832,7 +18832,8 @@
       "titulo": "Não foi possível carregar",
       "descripcion": "O que você vê pode estar incompleto. Verifique a conexão e tente novamente.",
       "reintentar": "Tentar de novo",
-      "mostrandoDe": "Mostrando {{mostrados}} de {{total}}"
+      "mostrandoDe": "Mostrando {{mostrados}} de {{total}}",
+      "verMas": "Ver mais"
     }
   },
   "map": {

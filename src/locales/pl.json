@@ -19663,7 +19663,8 @@
       "titulo": "Nie udało się wczytać",
       "descripcion": "To, co widzisz, może być niepełne. Sprawdź połączenie i spróbuj ponownie.",
       "reintentar": "Spróbuj ponownie",
-      "mostrandoDe": "Wyświetlono {{mostrados}} z {{total}}"
+      "mostrandoDe": "Wyświetlono {{mostrados}} z {{total}}",
+      "verMas": "Pokaż więcej"
     }
   },
   "visitantes": {
