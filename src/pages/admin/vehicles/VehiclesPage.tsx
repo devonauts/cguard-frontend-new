@@ -64,7 +64,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -103,7 +103,21 @@ const fotoVehiculo = (v: any): string | null => {
 export default function VehiclesPage() {
   const { t } = useTranslation();
   const [openFilter, setOpenFilter] = useState(false);
-  const [filters, setFilters] = useState<VehicleFilters>(defaultVehicleFilters);
+  // `?q=` comes from the ⌘K search (people who may read but not edit).
+  const [searchParams] = useSearchParams();
+  const [filters, setFilters] = useState<VehicleFilters>(() => ({
+    ...defaultVehicleFilters,
+    search: (searchParams.get("q") || "").slice(0, 80),
+  }));
+  const qDeLaUrl = searchParams.get("q");
+
+  // Already on this page when ⌘K sends another plate: follow the URL.
+  useEffect(() => {
+    if (qDeLaUrl == null) return;
+    const q = qDeLaUrl.slice(0, 80);
+
+    setFilters((f) => (f.search === q ? f : { ...f, search: q }));
+  }, [qDeLaUrl]);
 
   const [rows, setRows] = useState<any[]>([]);
   const [count, setCount] = useState<number>(0);

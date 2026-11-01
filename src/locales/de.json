@@ -9638,7 +9638,24 @@
         "tipoSede": "Standort",
         "tipoCliente": "Kunde",
         "invitacionPendiente": "Einladung ausstehend",
-        "accion": "Aktion"
+        "accion": "Aktion",
+        "tipoVehiculo": "Fahrzeug",
+        "tipoIncidente": "Vorfall",
+        "vehiculos": "Fahrzeuge",
+        "incidentes": "Vorfälle",
+        "grupoPersonas": "Personen",
+        "grupoLugares": "Orte",
+        "grupoVehiculos": "Fahrzeuge",
+        "grupoIncidentes": "Vorfälle",
+        "cerrado": "geschlossen",
+        "inactivo": "inaktiv",
+        "sinPermiso": "Ihre Rolle durchsucht keine {{grupos}}.",
+        "sinPermisoNada": "Ihre Rolle durchsucht nur Seiten und Aktionen.",
+        "pista": "Versuchen Sie {{ejemplos}}.",
+        "pistaPersonas": "einen Namen",
+        "pistaLugares": "einen Standort",
+        "pistaVehiculos": "ein Kennzeichen",
+        "pistaIncidentes": "eine Vorfallsnummer (#…)"
       }
     },
     "registration": {

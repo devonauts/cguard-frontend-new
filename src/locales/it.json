@@ -9638,7 +9638,24 @@
         "tipoSede": "Sede",
         "tipoCliente": "Cliente",
         "invitacionPendiente": "invito in sospeso",
-        "accion": "Azione"
+        "accion": "Azione",
+        "tipoVehiculo": "Veicolo",
+        "tipoIncidente": "Incidente",
+        "vehiculos": "Veicoli",
+        "incidentes": "Incidenti",
+        "grupoPersonas": "persone",
+        "grupoLugares": "luoghi",
+        "grupoVehiculos": "veicoli",
+        "grupoIncidentes": "incidenti",
+        "cerrado": "chiuso",
+        "inactivo": "inattivo",
+        "sinPermiso": "Il tuo ruolo non cerca {{grupos}}.",
+        "sinPermisoNada": "Il tuo ruolo cerca solo pagine e azioni.",
+        "pista": "Prova con {{ejemplos}}.",
+        "pistaPersonas": "un nome",
+        "pistaLugares": "una sede",
+        "pistaVehiculos": "una targa",
+        "pistaIncidentes": "un numero di incidente (#…)"
       }
     },
     "registration": {

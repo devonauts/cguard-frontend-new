@@ -9101,7 +9101,24 @@
         "tipoSede": "Local",
         "tipoCliente": "Cliente",
         "invitacionPendiente": "convite pendente",
-        "accion": "Ação"
+        "accion": "Ação",
+        "tipoVehiculo": "Veículo",
+        "tipoIncidente": "Incidente",
+        "vehiculos": "Veículos",
+        "incidentes": "Incidentes",
+        "grupoPersonas": "pessoas",
+        "grupoLugares": "lugares",
+        "grupoVehiculos": "veículos",
+        "grupoIncidentes": "incidentes",
+        "cerrado": "fechado",
+        "inactivo": "inativo",
+        "sinPermiso": "Seu perfil não pesquisa {{grupos}}.",
+        "sinPermisoNada": "Seu perfil só pesquisa páginas e ações.",
+        "pista": "Tente {{ejemplos}}.",
+        "pistaPersonas": "um nome",
+        "pistaLugares": "um local",
+        "pistaVehiculos": "uma placa",
+        "pistaIncidentes": "um número de incidente (#…)"
       }
     },
     "registration": {

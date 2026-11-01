@@ -9638,7 +9638,24 @@
         "tipoSede": "Locatie",
         "tipoCliente": "Klant",
         "invitacionPendiente": "uitnodiging openstaand",
-        "accion": "Actie"
+        "accion": "Actie",
+        "tipoVehiculo": "Voertuig",
+        "tipoIncidente": "Incident",
+        "vehiculos": "Voertuigen",
+        "incidentes": "Incidenten",
+        "grupoPersonas": "personen",
+        "grupoLugares": "plaatsen",
+        "grupoVehiculos": "voertuigen",
+        "grupoIncidentes": "incidenten",
+        "cerrado": "gesloten",
+        "inactivo": "inactief",
+        "sinPermiso": "Je rol kan niet zoeken in {{grupos}}.",
+        "sinPermisoNada": "Je rol zoekt alleen in pagina’s en acties.",
+        "pista": "Probeer {{ejemplos}}.",
+        "pistaPersonas": "een naam",
+        "pistaLugares": "een locatie",
+        "pistaVehiculos": "een kenteken",
+        "pistaIncidentes": "een incidentnummer (#…)"
       }
     },
     "registration": {
