@@ -64,6 +64,7 @@ import {
   StatusBadge,
   EmptyState,
 } from "@/components/kit";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 /* El día de una tarjeta de tiempo es el de la EMPRESA. Con `toISOString` el
    rango por defecto se corría un día cada tarde: a las 18:00 de México ya era
@@ -146,6 +147,8 @@ export default function NominaTimecards() {
   /* La tarjeta abierta día por día —con su descanso de cada día—. */
   const [abierta, setAbierta] = useState<TarjetaDeNomina | null>(null);
   const [cargando, setCargando] = useState(false);
+  /** The period did not load: the table must not read «Sin tarjetas». */
+  const [fallo, setFallo] = useState(false);
   const [trabajando, setTrabajando] = useState(false);
   /* El cálculo del periodo corre en el servidor en segundo plano: aquí se
      guarda su id mientras se espera, y cuándo se pidió (para el tope). */
@@ -154,16 +157,22 @@ export default function NominaTimecards() {
 
   const cargar = useCallback(() => {
     setCargando(true);
+    setFallo(false);
     payrollService
       .listar({ desde, hasta })
       .then((d) => {
         setRows(d.rows || []);
         setSel([]);
       })
-      .catch((e) => toast.error(
+      .catch((e) => {
+        setRows([]);
+        setSel([]);
+        setFallo(true);
+        toast.error(
           e?.message ||
             t("ui.NominaTimecards.noSePudieronCargarLasTarjetas", "No se pudieron cargar las tarjetas"),
-        ))
+        );
+      })
       .finally(() => setCargando(false));
   }, [desde, hasta]);
 
@@ -930,6 +939,9 @@ export default function NominaTimecards() {
             }
             onSelectAll={(checked) => setSel(checked ? rows.map((r) => r.id) : [])}
             emptyState={
+              fallo ? (
+                <ErrorDeCarga onRetry={cargar} variant="inline" />
+              ) : (
               <EmptyState
                 title={t("ui.NominaTimecards.sinTarjetasEnEstePeriodo", "Sin tarjetas en este periodo")}
                 description={t(
@@ -938,6 +950,7 @@ export default function NominaTimecards() {
                 )}
                 icon={<Wallet />}
               />
+              )
             }
           />
         </Section>
