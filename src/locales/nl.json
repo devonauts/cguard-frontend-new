@@ -15244,7 +15244,10 @@
       "rangoRegistros_few": "Periode: {{range}} · {{count}} records",
       "rangoRegistros_many": "Periode: {{range}} · {{count}} records",
       "informeExportado": "Rapport geëxporteerd",
-      "sinFilasParaExportar": "Er zijn geen records om te exporteren"
+      "sinFilasParaExportar": "Er zijn geen records om te exporteren",
+      "seudonimoCliente": "Klant",
+      "seudonimoSede": "Locatie",
+      "seudonimoPuesto": "Post"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Dichtstbij met beveiliger",

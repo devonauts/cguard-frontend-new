@@ -71,6 +71,7 @@ const columns: ReportColumn<TaskRow>[] = [
     label: "Puesto",
     labelKey: "reports.col.task.station",
     value: (r) => r.taskBelongsToStation?.stationName || "—",
+    privacy: "stationName",
   },
   {
     key: "source",

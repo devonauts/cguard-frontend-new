@@ -15244,7 +15244,10 @@
       "rangoRegistros_few": "Période : {{range}} · {{count}} enregistrements",
       "rangoRegistros_many": "Période : {{range}} · {{count}} enregistrements",
       "informeExportado": "Rapport exporté",
-      "sinFilasParaExportar": "Aucun enregistrement à exporter"
+      "sinFilasParaExportar": "Aucun enregistrement à exporter",
+      "seudonimoCliente": "Client",
+      "seudonimoSede": "Site",
+      "seudonimoPuesto": "Poste"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Le plus proche avec agent",

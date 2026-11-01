@@ -14704,7 +14704,10 @@
       "rangoRegistros_few": "Período: {{range}} · {{count}} registros",
       "rangoRegistros_many": "Período: {{range}} · {{count}} registros",
       "informeExportado": "Relatório exportado",
-      "sinFilasParaExportar": "Não há registros para exportar"
+      "sinFilasParaExportar": "Não há registros para exportar",
+      "seudonimoCliente": "Cliente",
+      "seudonimoSede": "Local",
+      "seudonimoPuesto": "Posto"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Mais próximo com vigilante",

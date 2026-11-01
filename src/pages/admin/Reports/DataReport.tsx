@@ -15,6 +15,16 @@ import { exportColumns, pieDeInforme, type ExportFormat } from "@/lib/export/rep
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
+import {
+  createNameMask,
+  exportValue,
+  hiddenFromSettings,
+  NOTHING_HIDDEN,
+  visibleColumns,
+  type HiddenNames,
+  type NameMask,
+  type PrivacyMark,
+} from "./reportPrivacy";
 
 /** «13/09/2026, 10:50 a. m.», «2026-09-13 10:50», «10:50». Sólo marcas de
  *  tiempo: un valor que EMPIEZA por una fecha pero sigue con texto no lo es. */
@@ -29,8 +39,10 @@ export interface ReportColumn<T> {
    *  que ahí no se puede llamar a `t()`. El texto se resuelve aquí, al pintar
    *  —y también al exportar, porque el rótulo viaja al CSV y a la impresión. */
   labelKey?: string;
-  /** Cell value as a string (used for the table, CSV and print alike). */
-  value: (row: T) => string;
+  /** Cell value as a string (used for the table, CSV and print alike). A cell
+   *  that joins several names («Sede · Cliente») passes each one through
+   *  `mask`, which is the identity on screen and the privacy rule in files. */
+  value: (row: T, mask?: NameMask) => string;
   align?: "left" | "right" | "center";
   /**
    * Marca de privacidad. `guardName` = la columna identifica al vigilante y
@@ -39,8 +51,11 @@ export interface ReportColumn<T> {
    * (informes del cliente, PDF de KPIs) y en NINGUNA de las cuatro salidas que
    * este componente arma en el navegador — tabla, CSV, Excel/impresión y PDF
    * salían con nombre igual. Al filtrar AQUÍ, una sola regla cubre las cuatro.
+   *
+   * `clientName` / `siteName` / `stationName`: the whole cell is that name and
+   * is pseudonymized in exported and printed files (see reportPrivacy.ts).
    */
-  privacy?: "guardName";
+  privacy?: PrivacyMark;
 }
 
 interface DataReportProps<T> {
@@ -164,10 +179,10 @@ export default function DataReport<T>({
   const { t } = useTranslation();
   const rotulo = (c: ReportColumn<T>) =>
     c.labelKey ? t(c.labelKey, c.label) : c.label;
-  // «Ocultar nombre del vigilante» (Configuración › Informes) también rige lo
-  // que se arma en el navegador. Falla abierto: sin ajuste legible, se muestra
-  // todo — igual que siempre.
-  const [ocultarVigilante, setOcultarVigilante] = useState(false);
+  // Configuración › Informes (privacy switches) also rules what the browser
+  // builds. Fails open: with no readable setting, everything is shown — as
+  // always.
+  const [ocultos, setOcultos] = useState<HiddenNames>(NOTHING_HIDDEN);
 
   useEffect(() => {
     (async () => {
@@ -180,19 +195,23 @@ export default function DataReport<T>({
           toast: { silentError: true },
         } as any);
 
-        setOcultarVigilante(!!data?.reportSettings?.hideGuardName);
+        setOcultos(hiddenFromSettings(data?.reportSettings));
       } catch {
         /* sin ajuste → todo visible */
       }
     })();
   }, []);
   const columnasBase = useMemo(
-    () =>
-      ocultarVigilante
-        ? columnsProp.filter((c) => c.privacy !== "guardName")
-        : columnsProp,
-    [columnsProp, ocultarVigilante],
+    () => visibleColumns(columnsProp, ocultos),
+    [columnsProp, ocultos],
   );
+  /** A fresh mask per file, so each file numbers its pseudonyms from 1. */
+  const mascaraDeArchivo = () =>
+    createNameMask(ocultos, {
+      clientName: t("ui.DataReport.seudonimoCliente", "Cliente"),
+      siteName: t("ui.DataReport.seudonimoSede", "Sede"),
+      stationName: t("ui.DataReport.seudonimoPuesto", "Puesto"),
+    });
   const etiquetas = useEtiquetasDeSucursal();
   const columns = useMemo(
     () =>
@@ -320,11 +339,13 @@ export default function DataReport<T>({
     }
     setExportando(true);
     try {
+      const mask = mascaraDeArchivo();
+
       await exportColumns(
         format,
         columns.map((c) => ({
           label: rotulo(c),
-          value: c.value,
+          value: (row: T) => exportValue(c, row, mask),
           align: c.align,
         })),
         filtered,
@@ -352,13 +373,14 @@ export default function DataReport<T>({
   // así que sus neutros van escritos en oklch (los mismos valores acromáticos
   // del sistema) en vez de un azul marino a mano.
   const printableHtml = () => {
+    const mask = mascaraDeArchivo();
     const head = columns
       .map((c) => `<th>${escapeHtml(rotulo(c))}</th>`)
       .join("");
     const body = filtered
       .map(
         (row) =>
-          `<tr>${columns.map((c) => `<td>${escapeHtml(c.value(row))}</td>`).join("")}</tr>`,
+          `<tr>${columns.map((c) => `<td>${escapeHtml(exportValue(c, row, mask))}</td>`).join("")}</tr>`,
       )
       .join("");
 

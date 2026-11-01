@@ -14704,7 +14704,10 @@
       "rangoRegistros_few": "Rango: {{range}} · {{count}} registros",
       "rangoRegistros_many": "Rango: {{range}} · {{count}} registros",
       "informeExportado": "Informe exportado",
-      "sinFilasParaExportar": "No hay registros que exportar"
+      "sinFilasParaExportar": "No hay registros que exportar",
+      "seudonimoCliente": "Cliente",
+      "seudonimoSede": "Sede",
+      "seudonimoPuesto": "Puesto"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Más cercano con vigilante",

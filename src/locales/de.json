@@ -15244,7 +15244,10 @@
       "rangoRegistros_few": "Zeitraum: {{range}} · {{count}} Datensätze",
       "rangoRegistros_many": "Zeitraum: {{range}} · {{count}} Datensätze",
       "informeExportado": "Bericht exportiert",
-      "sinFilasParaExportar": "Keine Datensätze zum Exportieren"
+      "sinFilasParaExportar": "Keine Datensätze zum Exportieren",
+      "seudonimoCliente": "Kunde",
+      "seudonimoSede": "Standort",
+      "seudonimoPuesto": "Posten"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Nächstes Objekt mit Wachkraft",

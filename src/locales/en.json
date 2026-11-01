@@ -14704,7 +14704,10 @@
       "rangoRegistros_few": "Range: {{range}} · {{count}} records",
       "rangoRegistros_many": "Range: {{range}} · {{count}} records",
       "informeExportado": "Report exported",
-      "sinFilasParaExportar": "There are no records to export"
+      "sinFilasParaExportar": "There are no records to export",
+      "seudonimoCliente": "Client",
+      "seudonimoSede": "Site",
+      "seudonimoPuesto": "Post"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Nearest with a guard",

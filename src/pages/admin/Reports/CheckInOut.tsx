@@ -44,6 +44,7 @@ const columns: ReportColumn<Rec>[] = [
     label: "Puesto",
     labelKey: "reports.col.checkInOut.station",
     value: station,
+    privacy: "stationName",
   },
   {
     key: "in",

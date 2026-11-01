@@ -15408,7 +15408,10 @@
       "rangoRegistros_few": "Zakres: {{range}} · {{count}} rekordy",
       "rangoRegistros_many": "Zakres: {{range}} · {{count}} rekordów",
       "informeExportado": "Raport wyeksportowany",
-      "sinFilasParaExportar": "Brak rekordów do eksportu"
+      "sinFilasParaExportar": "Brak rekordów do eksportu",
+      "seudonimoCliente": "Klient",
+      "seudonimoSede": "Obiekt",
+      "seudonimoPuesto": "Posterunek"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Najbliższy z pracownikiem ochrony",

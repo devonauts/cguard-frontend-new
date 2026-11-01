@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { UserX } from "lucide-react";
 
 import DataReport, { type ReportColumn } from "./DataReport";
+import { showName } from "./reportPrivacy";
 import { formatDateTime, rangeBounds, warnIfCapped } from "./reportFormat";
 
 import { StatCard, StatsStrip } from "@/components/kit";
@@ -128,11 +129,16 @@ export default function CoverageAbsences() {
         key: "station",
         label: t("ui.CoverageAbsences.puesto", "Puesto"),
         value: (r) => r.puesto || "—",
+        privacy: "stationName",
       },
       {
         key: "site",
         label: t("ui.CoverageAbsences.sedeCliente", "Sede · Cliente"),
-        value: (r) => [r.sede, r.cliente].filter(Boolean).join(" · ") || "—",
+        // Two names in one cell: each obeys its own switch in exported files.
+        value: (r, mask = showName) =>
+          [mask("siteName", r.sede), mask("clientName", r.cliente)]
+            .filter(Boolean)
+            .join(" · ") || "—",
       },
       {
         key: "reason",

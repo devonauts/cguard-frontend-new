@@ -31,6 +31,7 @@ const columns: ReportColumn<Passdown>[] = [
     label: "Puesto",
     labelKey: "reports.col.passdown.station",
     value: (r) => r.stationName || "—",
+    privacy: "stationName",
   },
   {
     key: "outgoing",
@@ -78,6 +79,8 @@ const columns: ReportColumn<Passdown>[] = [
     label: "Recibido por",
     labelKey: "reports.col.passdown.received",
     value: (r) => r.receivedByName || "—",
+    // The incoming guard who took the handover.
+    privacy: "guardName",
   },
 ];
 

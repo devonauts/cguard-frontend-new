@@ -15244,7 +15244,10 @@
       "rangoRegistros_few": "Intervallo: {{range}} · {{count}} record",
       "rangoRegistros_many": "Intervallo: {{range}} · {{count}} record",
       "informeExportado": "Report esportato",
-      "sinFilasParaExportar": "Nessun record da esportare"
+      "sinFilasParaExportar": "Nessun record da esportare",
+      "seudonimoCliente": "Cliente",
+      "seudonimoSede": "Sede",
+      "seudonimoPuesto": "Postazione"
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Il più vicino con guardia",

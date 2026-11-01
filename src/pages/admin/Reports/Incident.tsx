@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import DataReport, { type ReportColumn } from "./DataReport";
+import { showName } from "./reportPrivacy";
 import {
   formatDateTime,
   rangeBounds,
@@ -71,8 +72,13 @@ const columns: ReportColumn<Incident>[] = [
     labelKey: "reports.col.incident.site",
     // El servidor manda la sede como `site.companyName`; `postSite.name` no
     // llegaba nunca y la celda caía siempre al nombre del puesto.
-    value: (r) =>
-      r.site?.companyName || r.postSite?.name || r.station?.stationName || "—",
+    value: (r, mask = showName) => {
+      const site = r.site?.companyName || r.postSite?.name;
+
+      if (site) return mask("siteName", site);
+
+      return mask("stationName", r.station?.stationName) || "—";
+    },
   },
   {
     key: "location",
