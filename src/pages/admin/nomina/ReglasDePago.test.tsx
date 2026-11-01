@@ -32,6 +32,38 @@ function html(payroll: PayrollDeAjustes): string {
   );
 }
 
+/** Same render, with the presets answer of a US company already in the cache. */
+function htmlEEUU(payroll: PayrollDeAjustes): string {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false, enabled: false } } });
+  const preset = { politica: {}, fuentes: ["FLSA"], confirmar: [] };
+
+  qc.setQueryData(["attendance", "pay-rule-presets"], {
+    pais: "US",
+    presets: { US: preset },
+    regiones: { US: { CA: { ...preset, fuentes: ["Lab. Code §510"] }, AK: preset } },
+  });
+
+  return renderToString(
+    <QueryClientProvider client={qc}>
+      <ReglasDePago payroll={payroll} onChange={() => {}} />
+    </QueryClientProvider>,
+  );
+}
+
+describe("ReglasDePago · estado de EE. UU.", () => {
+  it("the state saved in the settings is the one selected after a reload", () => {
+    const h = htmlEEUU({ regionDeReglas: "CA", politica: { horasOrdinariasDia: 8 } });
+
+    expect(h).toMatch(/<option value="CA" selected="">/);
+    expect(h).toContain("Lab. Code §510");
+  });
+
+  it("no saved state (or one the country does not have) shows the federal option", () => {
+    expect(htmlEEUU({ politica: {} })).toMatch(/<option value="" selected="">/);
+    expect(htmlEEUU({ regionDeReglas: "ZZ", politica: {} })).toMatch(/<option value="" selected="">/);
+  });
+});
+
 describe("ReglasDePago · fase 4", () => {
   it("with every new rule on, each one shows its fields and its line in the summary", () => {
     const h = html({

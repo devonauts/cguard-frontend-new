@@ -106,6 +106,8 @@ export interface PayrollDeAjustes {
   periodType?: string;
   startDayOfWeek?: number;
   periodAnchor?: string | null;
+  /** The US state preset last picked here (`nominaSettings.payroll.regionDeReglas`). */
+  regionDeReglas?: string | null;
   politica?: Politica;
   [k: string]: unknown;
 }
@@ -476,7 +478,9 @@ export default function ReglasDePago({
     queryFn: () => attendanceService.payRuleLegalChanges(),
     staleTime: 10 * 60_000,
   });
-  const [estadoElegido, setEstadoElegido] = useState("");
+  // Remembered in the settings, so the selector shows the state after a reload.
+  const estadoGuardado = String(payroll.regionDeReglas || "");
+  const setEstadoElegido = (v: string) => onChange({ ...payroll, regionDeReglas: v || null });
 
   const pol: Politica = payroll.politica || {};
   const setPol = (patch: Partial<Politica>) =>
@@ -531,6 +535,7 @@ export default function ReglasDePago({
 
   const pais = presets.data?.pais || null;
   const regiones = pais ? presets.data?.regiones?.[pais] : undefined;
+  const estadoElegido = regiones && regiones[estadoGuardado] ? estadoGuardado : "";
   const presetDelEstado = estadoElegido && regiones ? regiones[estadoElegido] : undefined;
   const preset = presetDelEstado || (pais ? presets.data?.presets?.[pais] : undefined);
   const nombreDelPreset = presetDelEstado ? NOMBRE_DE_ESTADO[estadoElegido] || estadoElegido : nombrePais(pais);
