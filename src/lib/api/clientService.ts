@@ -11,6 +11,7 @@ import type {
     ClientListResponse,
 } from "@/types/client";
 import { resolveApiBase } from "@/lib/apiBase";
+import { todosLosVigilantes } from "@/lib/listarCompleto";
 
 /**
  * Shape of a client row as it comes back RAW from the backend, before the
@@ -930,8 +931,11 @@ export const clientService = {
     },
     async guardAutocomplete(query = '', limit = 200) {
         const tenantId = getTenantId();
-        const { data } = await api.get<any>(`/tenant/${tenantId}/security-guard/autocomplete?query=${encodeURIComponent(query)}&limit=${limit}`, { toast: { silentError: true } });
-        const arr = (data?.data ?? data) || [];
+        // Without a query this is "every guard" (a picker): walk all pages
+        // instead of stopping at `limit` names.
+        const arr = query
+            ? await (async () => { const { data } = await api.get<any>(`/tenant/${tenantId}/security-guard/autocomplete?query=${encodeURIComponent(query)}&limit=${limit}`, { toast: { silentError: true } }); return (data?.data ?? data) || []; })()
+            : await todosLosVigilantes(tenantId);
         return Array.isArray(arr) ? arr.map((g: { id?: string | number; value?: string | number; label?: string; fullName?: string; name?: string }) => ({ id: String(g.id ?? g.value), label: g.label ?? g.fullName ?? g.name ?? '' })) : [];
     },
     async assignGuardToPosition(payload: { guardId: string; stationId: string; positionId: string; startDate?: string; isRelief?: boolean }) {

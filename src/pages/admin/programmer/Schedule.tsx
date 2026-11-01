@@ -138,6 +138,8 @@ import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
 import i18n from "@/i18n";
+import { todosLosVigilantes, listarTodo } from "@/lib/listarCompleto";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -594,6 +596,8 @@ export default function Schedule() {
   const [guardsPool, setGuardsPool] = useState<GuardOption[]>([]);
   const [staffing, setStaffing] = useState<StaffingInfo | null>(null);
   const [loading, setLoading] = useState(true); // initial load only
+  /** The last load failed: say it instead of «no stations yet». */
+  const [falloCarga, setFalloCarga] = useState(false);
   const [refreshing, setRefreshing] = useState(false); // silent refetches (grid stays mounted)
   const hasLoadedRef = useRef(false);
   /** Bumped after every load so «Todo el personal» reloads with the sheet. */
@@ -850,8 +854,7 @@ export default function Schedule() {
   useEffect(() => {
     if (view !== "organigrama" || sedesPedidas.current) return;
     sedesPedidas.current = true;
-    stationService
-      .list({}, { limit: 1000, offset: 0 })
+    listarTodo(({ limit, offset }) => stationService.list({}, { limit, offset }))
       .then((res) => {
         const m = new Map<string, SedeInfo>();
 
@@ -1162,9 +1165,7 @@ export default function Schedule() {
               `/tenant/${tenantId}/scheduler/overview?startDate=${startDateStr}&endDate=${endDateStr}`,
             ),
             ApiService.get(`/tenant/${tenantId}/rotation-styles?includeArchived=1`),
-            ApiService.get(
-              `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
-            ),
+            todosLosVigilantes(tenantId),
             ApiService.get(
               `/tenant/${tenantId}/scheduler/coverage?days=14`,
             ).catch(() => null),
@@ -1197,9 +1198,11 @@ export default function Schedule() {
         );
 
         hasLoadedRef.current = true;
+        setFalloCarga(false);
         setPersonalVersion((v) => v + 1);
       } catch (e: any) {
         console.error("[Scheduler] fetch error", e);
+        setFalloCarga(true);
         toast.error(t("ui.Schedule.errorAlCargarHorario"));
       } finally {
         if (silent) setRefreshing(false);
@@ -6426,6 +6429,10 @@ export default function Schedule() {
               size={32}
               style={{ color: "var(--brand-text)" }}
             />
+          </div>
+        ) : falloCarga && stations.length === 0 ? (
+          <div className="py-10">
+            <ErrorDeCarga onRetry={() => void fetchAll({ silent: false })} />
           </div>
         ) : stations.length === 0 ? (
           <div className="py-10">

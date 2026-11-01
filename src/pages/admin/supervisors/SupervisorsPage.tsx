@@ -54,6 +54,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 import { correoVisible } from "@/lib/correoVisible";
 import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
@@ -65,8 +66,10 @@ export default function SupervisorsPage() {
   // «Usuario: jmiranda · comparte este enlace» (cuentas sin correo).
   const compartir = useCompartirAcceso();
 
+  const [fallo, setFallo] = useState(false);
   const load = useCallback(() => {
     setLoading(true);
+    setFallo(false);
     supervisorService
       .list()
       // Un correo inventado (cuenta sin buzón) no se enseña: queda en null.
@@ -75,7 +78,7 @@ export default function SupervisorsPage() {
           (r.rows || []).map((s) => ({ ...s, email: correoVisible(s.email) })),
         ),
       )
-      .catch(() => {})
+      .catch(() => setFallo(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -528,6 +531,8 @@ export default function SupervisorsPage() {
           >
             {loading ? (
               <SkeletonCards count={4} />
+            ) : fallo && rows.length === 0 ? (
+              <ErrorDeCarga onRetry={load} />
             ) : filtered.length === 0 ? (
               <EmptyState
                 action={

@@ -78,6 +78,8 @@ import { rangoDelMes } from "./ausenciasCalendario";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
+import { listarTodo } from "@/lib/listarCompleto";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -107,6 +109,7 @@ export default function TimeOff() {
   const borrar = usePuede("permisos.borrar");
   const [records, setRecords] = useState<TimeOffRecord[]>([]);
   const [loading, setLoading] = useState(false);
+  const [fallo, setFallo] = useState(false);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
@@ -164,10 +167,10 @@ export default function TimeOff() {
   // ── fetch ─────────────────────────────────────────────────────────────────
   const fetchRecords = useCallback(async () => {
     setLoading(true);
+    setFallo(false);
     try {
-      const params: Record<string, string | number> = {
-        limit: view === "calendar" ? 1000 : 500,
-      };
+      // Every matching request, page by page (it stopped at 500 / 1000).
+      const params: Record<string, string | number> = {};
       if (statusFilter !== "all") params["filter[status]"] = statusFilter;
       if (typeFilter !== "all") params["filter[type]"] = typeFilter;
       if (stationFilter !== "all") params["filter[stationId]"] = stationFilter;
@@ -177,10 +180,11 @@ export default function TimeOff() {
         view === "calendar" ? rangoDelMes(month) : { from: dateFrom, to: dateTo };
       if (rango.from) params["filter[dateFrom]"] = rango.from;
       if (rango.to) params["filter[dateTo]"] = rango.to;
-      const { rows } = await timeOffRequestService.list(params);
+      const { rows } = await listarTodo(({ limit, offset }) => timeOffRequestService.list({ ...params, limit, offset }));
       setRecords(rows);
     } catch (err) {
       console.error("Failed to fetch time-off requests", err);
+      setFallo(true);
     } finally {
       setLoading(false);
     }
@@ -922,6 +926,7 @@ export default function TimeOff() {
           )}
         </Toolbar>
 
+        {fallo && !loading && <ErrorDeCarga className="mb-3" onRetry={() => void fetchRecords()} variant="inline" />}
         {view === "calendar" ? (
           <Section
             title={t("ui.TimeOff.calendario", "Calendario")}

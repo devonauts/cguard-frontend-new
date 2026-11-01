@@ -68,6 +68,7 @@ import shiftService from "@/lib/api/shiftService";
 import { stationService } from "@/lib/api/stationService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import { localeActual } from "@/lib/localeActual";
+import { listarTodo } from "@/lib/listarCompleto";
 
 /* ── formatting ─────────────────────────────────────────────────────────── */
 
@@ -256,14 +257,15 @@ export default function ShiftExchange() {
     setLoading(true);
     setError(false);
     try {
-      const params: Record<string, unknown> = { limit: 500 };
+      const params: Record<string, unknown> = {};
       const st = FILTRO_A_ESTADOS[filtro];
 
       if (st) params["filter[status]"] = st;
       if (estacion) params["filter[stationId]"] = estacion;
       if (desde) params["filter[dateFrom]"] = desde;
       if (hasta) params["filter[dateTo]"] = hasta;
-      const { rows } = await shiftExchangeRequestService.list(params);
+      // Every request that matches, page by page (it used to stop at 500).
+      const { rows } = await listarTodo(({ limit, offset }) => shiftExchangeRequestService.list({ ...params, limit, offset }));
 
       setRecords(rows || []);
     } catch {
@@ -280,7 +282,7 @@ export default function ShiftExchange() {
   useEffect(() => {
     (async () => {
       try {
-        const r: any = await stationService.list({} as any, { limit: 1000, offset: 0 } as any);
+        const r: any = await listarTodo(({ limit, offset }) => stationService.list({} as any, { limit, offset } as any));
         const filas: any[] = Array.isArray(r) ? r : r?.rows || [];
 
         setEstaciones(
@@ -796,7 +798,7 @@ function NuevaSolicitud({
     if (personas.length) return;
     (async () => {
       try {
-        const resp: any = await securityGuardService.list({ limit: 1000, offset: 0 });
+        const resp: any = await listarTodo(({ limit, offset }) => securityGuardService.list({ limit, offset }));
         const items: any[] = Array.isArray(resp) ? resp : resp.rows ?? [];
 
         setPersonas(

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -33,6 +33,7 @@ import {
   faltaElModulo,
   modoFacial,
 } from "@/lib/rostro";
+import { AvisoDeTope } from "@/components/kit/ErrorDeCarga";
 
 /**
  * CARAS REGISTRADAS (módulo «Reconocimiento facial»).
@@ -50,9 +51,13 @@ export default function CarasRegistradasPage() {
   const [estado, setEstado] = useState<EstadoListable>("pendiente");
   const tenant = typeof window !== "undefined" ? localStorage.getItem("tenantId") : null;
 
+  /** How many to show; «Ver más» asks for the next 200 (server max 1000). */
+  const [cuantos, setCuantos] = useState(200);
+  useEffect(() => setCuantos(200), [estado]);
   const lista = useQuery({
-    queryKey: ["rostros", "lista", estado, tenant],
-    queryFn: () => rostrosService.listar(estado),
+    queryKey: ["rostros", "lista", estado, tenant, cuantos],
+    queryFn: () => rostrosService.listar(estado, cuantos),
+    placeholderData: (prev) => prev,
     enabled: tiene && Boolean(tenant),
     retry: false,
   });
@@ -145,6 +150,16 @@ export default function CarasRegistradasPage() {
                   renderCard={(r) => <TarjetaDeCara rostro={r} />}
                   skeletonCount={3}
                 />
+              )}
+              {!lista.isError && (lista.data?.count ?? 0) > (lista.data?.rows?.length ?? 0) && (
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <AvisoDeTope mostrados={lista.data?.rows?.length ?? 0} total={lista.data?.count ?? 0} />
+                  {cuantos < 1000 && (
+                    <Button size="sm" variant="outline" onClick={() => setCuantos((n) => Math.min(n + 200, 1000))}>
+                      {t("ui.ErrorDeCarga.verMas", "Ver más")}
+                    </Button>
+                  )}
+                </div>
               )}
             </Section>
           </div>

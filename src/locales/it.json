@@ -19363,6 +19363,13 @@
     },
     "patrones": {
       "archivado": "archiviato"
+    },
+    "ErrorDeCarga": {
+      "titulo": "Impossibile caricare",
+      "descripcion": "Quello che vedi potrebbe essere incompleto. Controlla la connessione e riprova.",
+      "reintentar": "Riprova",
+      "mostrandoDe": "{{mostrados}} di {{total}} mostrati",
+      "verMas": "Mostra altri"
     }
   },
   "visitantes": {

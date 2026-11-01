@@ -104,6 +104,7 @@ import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { correoVisible } from "@/lib/correoVisible";
 import { useCompartirAcceso } from "@/components/usuarioDeAcceso/CompartirAcceso";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import { listarTodo } from "@/lib/listarCompleto";
 
 // Fallback local Breadcrumb component (avoid missing module error)
 interface BreadcrumbItem {
@@ -574,9 +575,10 @@ export default function SecurityGuardsPage() {
     if (!tenantId) return;
     import("@/lib/api").then(({ default: api }) => {
       api
-        .get(`/tenant/${tenantId}/stations?limit=200&offset=0`)
+      // Every station (it used to stop at 200).
+      listarTodo(({ limit, offset }) => api.get(`/tenant/${tenantId}/stations?limit=${limit}&offset=${offset}`).then((r: any) => r?.data ?? r))
         .then((resp: any) => {
-          const rows: any[] = resp?.data?.rows ?? resp?.rows ?? [];
+          const rows: any[] = resp?.rows ?? [];
 
           setAssignStations(
             rows.map((s: any) => ({
@@ -748,7 +750,7 @@ export default function SecurityGuardsPage() {
       setLoadingFilters(true);
       Promise.all([
         clientService.getClients(),
-        postSiteService.list({}, { limit: 100, offset: 0 }),
+        listarTodo(({ limit, offset }) => postSiteService.list({}, { limit, offset })),
       ])
         .then(([clientsRes, postSitesRes]) => {
           setAvailableClients(clientsRes.rows ?? []);

@@ -64,6 +64,7 @@ import coverageService, {
   type CoverageEvent,
   type CoverageReason,
 } from "@/lib/api/coverageService";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 /**
  * Cobertura en vivo — the office's operational view.
@@ -102,6 +103,8 @@ export default function Coverage() {
   const [live, setLive] = useState<LiveCoverage | null>(null);
   const [events, setEvents] = useState<CoverageEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  /** The board did not load: never read «no posts configured» then. */
+  const [fallo, setFallo] = useState(false);
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<"board" | "events">("board");
 
@@ -154,7 +157,9 @@ export default function Coverage() {
 
       setLive(l);
       setEvents(e?.rows || []);
+      setFallo(false);
     } catch {
+      setFallo(true);
       toast.error(t("comun.noSePudoCargarLa"));
     } finally {
       setLoading(false);
@@ -811,6 +816,8 @@ export default function Coverage() {
 
         {loading ? (
           <SkeletonCards />
+        ) : fallo && !live ? (
+          <ErrorDeCarga onRetry={() => void load()} />
         ) : tab === "board" ? (
           <Section title={t("ui.Coverage.estadoDeLosPuestos")}>
             {!live?.stations.length ? (

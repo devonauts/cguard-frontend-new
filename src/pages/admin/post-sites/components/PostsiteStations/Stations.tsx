@@ -35,6 +35,7 @@ import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
 import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import { todosLosVigilantes } from "@/lib/listarCompleto";
 
 interface SiteProp extends PostSite {
   latitude?: number | string | null;
@@ -328,9 +329,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
       // prefer security-guard autocomplete (more likely to include guard user info)
       try {
-        const res = await ApiService.get(
-          `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
-        );
+        const res = await todosLosVigilantes(tenantId);
         const rows = Array.isArray(res) ? res : res && res.rows ? res.rows : [];
         const normalized = rows.map((r: any) => ({
           id: r.guardId || r.id || r.value,

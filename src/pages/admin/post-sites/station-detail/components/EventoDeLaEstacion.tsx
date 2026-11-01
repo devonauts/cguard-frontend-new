@@ -41,6 +41,7 @@ import { fechaYHora, soloHora as soloHoraLarga } from "@/lib/horaDeLaEmpresa";
 import { ApiService } from "@/services/api/apiService";
 import { coverageService } from "@/lib/api/coverageService";
 import { EditorDeRelevos } from "@/components/stations/RelevosDelEvento";
+import { todosLosVigilantes } from "@/lib/listarCompleto";
 
 /* ════════════════════════════════════════════════════════════════════════════
    LA ESTACIÓN DE UN EVENTO: QUIÉN VA Y A QUÉ HORA. NADA MÁS.
@@ -525,7 +526,7 @@ function AsignarVarios({
     let vivo = true;
 
     Promise.all([
-      ApiService.get(`/tenant/${tenantId}/security-guard/autocomplete?limit=500`),
+      todosLosVigilantes(tenantId),
       ApiService.get(`/tenant/${tenantId}/eventos/vigilantes-archivados`)
         .then(filas)
         .catch(() => [] as any[]),

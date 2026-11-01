@@ -56,10 +56,13 @@ export interface ListaDeRostros {
 }
 
 export const rostrosService = {
-  listar(estado?: EstadoListable): Promise<ListaDeRostros> {
-    const q = estado ? `?estado=${encodeURIComponent(estado)}` : "";
+  /** The newest `limit` of that state; `count` is the real total. */
+  listar(estado?: EstadoListable, limit = 200): Promise<ListaDeRostros> {
+    const q = new URLSearchParams({ limit: String(limit) });
 
-    return ApiService.get(`${base()}${q}`);
+    if (estado) q.set("estado", estado);
+
+    return ApiService.get(`${base()}?${q.toString()}`);
   },
 
   leer(userId: string): Promise<RostroRegistrado> {

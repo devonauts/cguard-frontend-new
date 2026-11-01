@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import dobletesService, { decimalesDe } from "@/lib/api/dobletesService";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 export default function TabRanking() {
   const { t } = useTranslation();
@@ -159,6 +160,8 @@ export default function TabRanking() {
       >
         {ranking.isLoading ? (
           <SkeletonCards count={3} />
+        ) : ranking.isError && !filas.length ? (
+          <ErrorDeCarga onRetry={() => ranking.refetch()} />
         ) : !filas.length ? (
           <EmptyState
             description={t(

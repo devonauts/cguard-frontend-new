@@ -17,6 +17,7 @@ import { coverageService, coverageErrorCode } from "@/lib/api/coverageService";
 import { ApiService } from "@/services/api/apiService";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
+import { todosLosVigilantes } from "@/lib/listarCompleto";
 
 /**
  * «Extender turno» desde el Horario: el vigilante que ya cubrió el día se queda
@@ -134,9 +135,7 @@ export default function ExtendShiftDialog({
     if (!target) return;
     let vivo = true;
 
-    ApiService.get(
-      `/tenant/${localStorage.getItem("tenantId") || ""}/security-guard/autocomplete?limit=200`,
-    )
+    todosLosVigilantes(localStorage.getItem("tenantId") || "")
       .then((r: any) => {
         if (!vivo) return;
         const filas = Array.isArray(r) ? r : r?.rows || r?.data || [];

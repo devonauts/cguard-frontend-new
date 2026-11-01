@@ -51,6 +51,7 @@ import dobletesService, {
 } from "@/lib/api/dobletesService";
 import { fechaYHora, soloHora } from "@/lib/horaDeLaEmpresa";
 import { REASON_LABEL } from "@/lib/api/coverageService";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 type Filtro = "activas" | "todas";
 
@@ -173,6 +174,8 @@ export default function TabOfertas({
 
       {busquedas.isLoading ? (
         <SkeletonCards count={3} />
+      ) : busquedas.isError && !ordenadas.length ? (
+        <ErrorDeCarga onRetry={() => busquedas.refetch()} />
       ) : !ordenadas.length ? (
         <EmptyState
           description={t(

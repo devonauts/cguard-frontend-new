@@ -42,6 +42,7 @@ import {
 import { stationService } from "@/lib/api/stationService";
 import { conEtiqueta } from "@/lib/i18nLabel";
 import { hoyEnLaEmpresa, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 /** `label` es una propiedad de acceso (`conEtiqueta`): la lista se construye al
  *  importar el módulo, así que el texto tiene que resolverse al pintarlo. */
@@ -158,12 +159,14 @@ export default function SupervisorPositionsPage() {
   const stationName = (id: string) =>
     stations.find((s) => s.id === id)?.name || id;
 
+  const [fallo, setFallo] = useState(false);
   const load = useCallback(() => {
     setLoading(true);
+    setFallo(false);
     supervisorPositionService
       .list()
       .then((r) => setRows(r.rows || []))
-      .catch(() => {})
+      .catch(() => setFallo(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -417,6 +420,8 @@ export default function SupervisorPositionsPage() {
 
           {loading ? (
             <SkeletonCards count={3} />
+          ) : fallo && rows.length === 0 ? (
+            <ErrorDeCarga onRetry={load} />
           ) : rows.length === 0 ? (
             <Section icon={<MapPin />} title={t("ui.SupervisorPositionsPage.puestos", "Puestos")}>
               <EmptyState

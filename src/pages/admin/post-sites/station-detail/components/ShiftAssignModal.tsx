@@ -45,6 +45,7 @@ import {
   useSede,
   useVigilantesOrdenados,
 } from "@/components/post-sites/EventoDeLaSede";
+import { todosLosVigilantes } from "@/lib/listarCompleto";
 /** «19:00|07:00» a partir de dos horas («19:00:00»); vacío si falta alguna. */
 const claveVentana = (ini?: string | null, fin?: string | null) => {
   const a = String(ini || "").slice(0, 5);
@@ -553,9 +554,7 @@ export default function ShiftAssignModal({
     (async () => {
       setLoadingGuards(true);
       try {
-        const res: any = await ApiService.get(
-          `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
-        );
+        const res: any = await todosLosVigilantes(tenantId);
         const list = Array.isArray(res) ? res : (res?.rows ?? []);
 
         setGuardsOptions(

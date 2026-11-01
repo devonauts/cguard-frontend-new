@@ -14,6 +14,7 @@ import { PageContainer, PageHeader, Section, SkeletonCards, EmptyState, Modal, F
 import { usePermissions } from "@/hooks/usePermissions";
 import payrollSlipsService, { type PayrollAdjustment, type PayrollLoan, type AdjustmentKind, type PersonWithProfile, type PayrollConcept } from "@/lib/api/payrollSlipsService";
 import { PresentacionDelModulo, usePayrollAccess, dinero, nombreDeConcepto, MoneyInput } from "./comun";
+import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 
 type Pestana = "novedades" | "prestamos";
 const KINDS: AdjustmentKind[] = ["bonus", "fine", "advance", "deduction", "refund", "custom"];
@@ -107,7 +108,9 @@ export default function NovedadesDeNomina() {
                 { value: "prestamos", label: t("ui.RolesDePago.prestamos.pestana", "Préstamos"), badge: (prestamos.data?.rows ?? []).filter((l) => l.status === "active").length || null },
               ]}
             />
-            {pestana === "novedades" && (novedades.isLoading ? <SkeletonCards count={2} /> : !(novedades.data?.rows ?? []).length ? (
+            {pestana === "novedades" && (novedades.isLoading ? <SkeletonCards count={2} /> : novedades.isError && !(novedades.data?.rows ?? []).length ? (
+              <ErrorDeCarga onRetry={() => novedades.refetch()} />
+            ) : !(novedades.data?.rows ?? []).length ? (
               <EmptyState icon={<ListPlus />} title={t("ui.RolesDePago.novedades.vacio", "No hay novedades")} description={t("ui.RolesDePago.novedades.vacioDesc", "Carga aquí bonos, multas, anticipos o descuentos; entrarán en la próxima planilla.")} />
             ) : (
               <Section>
@@ -141,7 +144,9 @@ export default function NovedadesDeNomina() {
                 </div>
               </Section>
             ))}
-            {pestana === "prestamos" && (prestamos.isLoading ? <SkeletonCards count={2} /> : !(prestamos.data?.rows ?? []).length ? (
+            {pestana === "prestamos" && (prestamos.isLoading ? <SkeletonCards count={2} /> : prestamos.isError && !(prestamos.data?.rows ?? []).length ? (
+              <ErrorDeCarga onRetry={() => prestamos.refetch()} />
+            ) : !(prestamos.data?.rows ?? []).length ? (
               <EmptyState icon={<HandCoins />} title={t("ui.RolesDePago.prestamos.vacio", "No hay préstamos")} description={t("ui.RolesDePago.prestamos.vacioDesc", "Un préstamo descuenta una cuota en cada planilla publicada hasta saldarse.")} />
             ) : (
               <Section>

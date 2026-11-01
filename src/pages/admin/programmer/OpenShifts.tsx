@@ -59,6 +59,7 @@ import { useEntitlement } from "@/hooks/useEntitlement";
 import { usePermissions } from "@/hooks/usePermissions";
 import CubrirHuecoModal from "./sinCubrir/CubrirHuecoModal";
 import { useOfertaDobletes } from "./sinCubrir/useOfertaDobletes";
+import { listarTodo } from "@/lib/listarCompleto";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -190,8 +191,7 @@ export default function OpenShifts() {
   }, [cargar]);
 
   useEffect(() => {
-    stationService
-      .list({}, { limit: 1000, offset: 0 })
+    listarTodo(({ limit, offset }) => stationService.list({}, { limit, offset }))
       .then((r: any) =>
         setEstaciones(
           (r?.rows || [])

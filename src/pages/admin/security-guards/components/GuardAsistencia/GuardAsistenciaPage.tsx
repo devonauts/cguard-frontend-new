@@ -33,6 +33,7 @@ import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
+import { listarTodo } from "@/lib/listarCompleto";
 type Period = "week" | "month";
 
 /** [start, end] bounds for the period containing `anchor` (local time). */
@@ -113,15 +114,15 @@ export default function GuardAsistenciaPage() {
       return;
     }
     setLoading(true);
-    attendanceService
-      .list({
+    listarTodo(({ limit, offset }) => attendanceService.list({
         "filter[guardName]": id,
         "filter[punchInTimeRange][0]": rangeStart.toISOString(),
         "filter[punchInTimeRange][1]": rangeEnd.toISOString(),
-        limit: 500,
+        limit,
+        offset,
         orderBy: "punchInTime_DESC",
-      })
-      .then((r) => setRows(r.rows || []))
+      }))
+      .then((r: any) => setRows(r.rows || []))
       .catch((e) =>
         toast.error(
           e?.message ||

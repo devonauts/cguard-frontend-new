@@ -56,6 +56,7 @@ import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 
 import { localeActual } from "@/lib/localeActual";
 import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
+import { listarTodo } from "@/lib/listarCompleto";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -139,11 +140,12 @@ export default function ShiftStatus() {
           : limitesDelDia(appliedFilters.endDate).end
         : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-      const { rows } = await shiftService.list({
+      const { rows } = await listarTodo(({ limit, offset }) => shiftService.list({
         "filter[startTimeRange]": [fromDate, toDate],
-        limit: 500,
+        limit,
+        offset,
         orderBy: "startTime_ASC",
-      });
+      }));
       setRawShifts(rows);
     } catch (err) {
       console.error("Failed to fetch shifts", err);
