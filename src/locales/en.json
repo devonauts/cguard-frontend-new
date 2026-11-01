@@ -9100,7 +9100,24 @@
         "tipoSede": "Site",
         "tipoCliente": "Client",
         "invitacionPendiente": "invitation pending",
-        "accion": "Action"
+        "accion": "Action",
+        "tipoVehiculo": "Vehicle",
+        "tipoIncidente": "Incident",
+        "vehiculos": "Vehicles",
+        "incidentes": "Incidents",
+        "grupoPersonas": "people",
+        "grupoLugares": "places",
+        "grupoVehiculos": "vehicles",
+        "grupoIncidentes": "incidents",
+        "cerrado": "closed",
+        "inactivo": "inactive",
+        "sinPermiso": "Your role can't search {{grupos}}.",
+        "sinPermisoNada": "Your role can only search pages and actions.",
+        "pista": "Try {{ejemplos}}.",
+        "pistaPersonas": "a name",
+        "pistaLugares": "a site",
+        "pistaVehiculos": "a plate",
+        "pistaIncidentes": "an incident number (#…)"
       }
     },
     "registration": {

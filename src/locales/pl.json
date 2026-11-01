@@ -9662,7 +9662,24 @@
         "tipoSede": "Obiekt",
         "tipoCliente": "Klient",
         "invitacionPendiente": "zaproszenie oczekuje",
-        "accion": "Działanie"
+        "accion": "Działanie",
+        "tipoVehiculo": "Pojazd",
+        "tipoIncidente": "Incydent",
+        "vehiculos": "Pojazdy",
+        "incidentes": "Incydenty",
+        "grupoPersonas": "osoby",
+        "grupoLugares": "miejsca",
+        "grupoVehiculos": "pojazdy",
+        "grupoIncidentes": "incydenty",
+        "cerrado": "zamknięty",
+        "inactivo": "nieaktywny",
+        "sinPermiso": "Twoja rola nie przeszukuje: {{grupos}}.",
+        "sinPermisoNada": "Twoja rola przeszukuje tylko strony i akcje.",
+        "pista": "Spróbuj: {{ejemplos}}.",
+        "pistaPersonas": "imię i nazwisko",
+        "pistaLugares": "obiekt",
+        "pistaVehiculos": "tablica rejestracyjna",
+        "pistaIncidentes": "numer incydentu (#…)"
       }
     },
     "registration": {

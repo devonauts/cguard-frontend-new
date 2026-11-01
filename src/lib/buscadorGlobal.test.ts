@@ -6,6 +6,8 @@ import {
   deHallazgos,
   enOrden,
   filtrar,
+  gruposQueFaltan,
+  inicioDeSeccion,
   marca,
   moverCursor,
   secciones,
@@ -120,6 +122,62 @@ describe("buscador ⌘K · sources", () => {
 
     expect(s.hallazgos).toHaveLength(8);
     expect(enOrden(s).at(-1)!.id).toBe("p");
+  });
+});
+
+describe("buscador ⌘K · vehicles and incidents (phase 4)", () => {
+  const hit = (kind: any, i: number, extra: any = {}) => ({
+    kind,
+    id: String(i),
+    label: `${kind} ${i}`,
+    detail: null,
+    path: `/${kind}/${i}`,
+    ...extra,
+  });
+
+  it("each kind goes to its own section, capped, in the server's order", () => {
+    const hits = [
+      ...Array.from({ length: 3 }, (_, i) => hit("guard", i)),
+      ...Array.from({ length: 7 }, (_, i) => hit("vehicle", i)),
+      ...Array.from({ length: 9 }, (_, i) =>
+        hit("incident", i, {
+          at: `2026-10-${String(20 - i).padStart(2, "0")}T12:00:00.000Z`,
+        }),
+      ),
+    ];
+    const s = secciones("x", hits, [], [pagina("p", "x página")]);
+
+    expect(s.hallazgos.map((d) => d.tipo)).toEqual(["guard", "guard", "guard"]);
+    expect(s.vehiculos).toHaveLength(5);
+    expect(s.incidentes).toHaveLength(6);
+    expect(s.incidentes[0]).toMatchObject({
+      id: "incident:0",
+      cuando: "2026-10-20T12:00:00.000Z",
+    });
+    // Keyboard order = display order: people, vehicles, incidents, actions, pages.
+    const orden = enOrden(s).map((d) => d.tipo ?? d.grupo);
+
+    expect(orden.slice(0, 3)).toEqual(["guard", "guard", "guard"]);
+    expect(orden[3]).toBe("vehicle");
+    expect(orden[8]).toBe("incident");
+    expect(orden.at(-1)).toBe("menu");
+    expect(inicioDeSeccion(s, "hallazgos")).toBe(0);
+    expect(inicioDeSeccion(s, "vehiculos")).toBe(3);
+    expect(inicioDeSeccion(s, "incidentes")).toBe(8);
+    expect(inicioDeSeccion(s, "paginas")).toBe(14);
+  });
+
+  it("says which groups the role can't search; unknown says nothing", () => {
+    expect(gruposQueFaltan(["people", "places"])).toEqual([
+      "vehicles",
+      "incidents",
+    ]);
+    expect(gruposQueFaltan([])).toHaveLength(4);
+    expect(
+      gruposQueFaltan(["people", "places", "vehicles", "incidents"]),
+    ).toEqual([]);
+    expect(gruposQueFaltan(null)).toEqual([]);
+    expect(gruposQueFaltan(undefined)).toEqual([]);
   });
 });
 

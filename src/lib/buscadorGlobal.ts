@@ -2,9 +2,10 @@
  * ⌘K — what the header search offers, as pure functions (phase 3).
  *
  * Three sources, one list the keyboard walks:
- *   1. «Personas y lugares» — what the server found (`GET /search`): guards,
- *      supervisors, office staff, stations, post sites, clients. Already
- *      scoped to the company, the branch and what the user may read.
+ *   1. What the server found (`GET /search`), already scoped to the company,
+ *      the branch and what the user may read, in three groups: «Personas y
+ *      lugares» (guards, supervisors, office staff, stations, post sites,
+ *      clients), «Vehículos» and «Incidentes» (phase 4, newest first).
  *   2. «Acciones» — a few shortcuts («Nuevo vigilante», «Ir a Horario»,
  *      «Sin cubrir»…), only the ones the user's permissions allow.
  *   3. «Páginas» — the side menu and Configuración, as before.
@@ -13,7 +14,22 @@
  */
 
 export type TipoDeHallazgo =
-  "guard" | "supervisor" | "office" | "station" | "postSite" | "client";
+  | "guard"
+  | "supervisor"
+  | "office"
+  | "station"
+  | "postSite"
+  | "client"
+  | "vehicle"
+  | "incident";
+/** What a role may search on the server (the response's `groups`). */
+export type GrupoDeBusqueda = "people" | "places" | "vehicles" | "incidents";
+export const GRUPOS_DE_BUSQUEDA: GrupoDeBusqueda[] = [
+  "people",
+  "places",
+  "vehicles",
+  "incidents",
+];
 export type GrupoDeDestino = "menu" | "config" | "accion" | "hallazgo";
 
 export interface Destino {
@@ -27,6 +43,8 @@ export interface Destino {
   tipo?: TipoDeHallazgo;
   /** Extra words an action answers to («crear», «agregar», «turnos»…). */
   claves?: string[];
+  /** Incidents: when it happened (ISO). */
+  cuando?: string;
 }
 
 export interface Hallazgo {
@@ -36,6 +54,7 @@ export interface Hallazgo {
   detail: string | null;
   path: string;
   rank?: number;
+  at?: string | null;
 }
 
 /** No accents, lower case: «vigilancia» finds «Vigilância» and «RONDAS». */
@@ -84,6 +103,7 @@ export function deHallazgos(hits: Hallazgo[] | null | undefined): Destino[] {
       grupo: "hallazgo" as const,
       tipo: h.kind,
       contexto: h.detail || undefined,
+      cuando: h.at || undefined,
     }));
 }
 
@@ -113,14 +133,26 @@ export function accionesPermitidas(
 
 export interface Secciones {
   hallazgos: Destino[];
+  vehiculos: Destino[];
+  incidentes: Destino[];
   acciones: Destino[];
   paginas: Destino[];
 }
 
+/** Display order of the sections, which is also the keyboard's order. */
+export const ORDEN_DE_SECCIONES = [
+  "hallazgos",
+  "vehiculos",
+  "incidentes",
+  "acciones",
+  "paginas",
+] as const;
+export type ClaveDeSeccion = (typeof ORDEN_DE_SECCIONES)[number];
+
 /**
  * The panel, in display order: people and places first (what you most likely
- * typed a name for), then actions, then pages. Each section is capped so a
- * long list of pages never pushes people out.
+ * typed a name for), then vehicles and incidents, then actions, then pages.
+ * Each section is capped so a long list never pushes another out.
  */
 export function secciones(
   consulta: string,
@@ -128,18 +160,45 @@ export function secciones(
   acciones: Destino[],
   paginas: Destino[],
 ): Secciones {
+  const del = deHallazgos(hits);
+
   return {
-    hallazgos: deHallazgos(hits).slice(0, 8),
+    hallazgos: del
+      .filter((d) => d.tipo !== "vehicle" && d.tipo !== "incident")
+      .slice(0, 8),
+    vehiculos: del.filter((d) => d.tipo === "vehicle").slice(0, 5),
+    incidentes: del.filter((d) => d.tipo === "incident").slice(0, 6),
     acciones: filtrar(acciones, consulta, 3),
     paginas: filtrar(paginas, consulta, 6),
   };
 }
 
-export const enOrden = (s: Secciones): Destino[] => [
-  ...s.hallazgos,
-  ...s.acciones,
-  ...s.paginas,
-];
+export const enOrden = (s: Secciones): Destino[] =>
+  ORDEN_DE_SECCIONES.flatMap((k) => s[k]);
+
+/** Index in `enOrden(s)` of the first row of section `clave`. */
+export function inicioDeSeccion(s: Secciones, clave: ClaveDeSeccion): number {
+  let n = 0;
+
+  for (const k of ORDEN_DE_SECCIONES) {
+    if (k === clave) return n;
+    n += s[k].length;
+  }
+
+  return n;
+}
+
+/**
+ * The server groups this role may NOT search, for the «your role can't search
+ * …» note. Unknown (no answer yet, or an old server) → nothing to say.
+ */
+export function gruposQueFaltan(
+  grupos: GrupoDeBusqueda[] | null | undefined,
+): GrupoDeBusqueda[] {
+  if (!Array.isArray(grupos)) return [];
+
+  return GRUPOS_DE_BUSQUEDA.filter((g) => !grupos.includes(g));
+}
 
 /** Arrow keys wrap around; an empty list keeps the cursor at 0. */
 export function moverCursor(

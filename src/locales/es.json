@@ -9100,7 +9100,24 @@
         "tipoSede": "Sede",
         "tipoCliente": "Cliente",
         "invitacionPendiente": "invitación pendiente",
-        "accion": "Acción"
+        "accion": "Acción",
+        "tipoVehiculo": "Vehículo",
+        "tipoIncidente": "Incidente",
+        "vehiculos": "Vehículos",
+        "incidentes": "Incidentes",
+        "grupoPersonas": "personas",
+        "grupoLugares": "lugares",
+        "grupoVehiculos": "vehículos",
+        "grupoIncidentes": "incidentes",
+        "cerrado": "cerrado",
+        "inactivo": "inactivo",
+        "sinPermiso": "Tu rol no busca {{grupos}}.",
+        "sinPermisoNada": "Tu rol solo busca páginas y acciones.",
+        "pista": "Prueba con {{ejemplos}}.",
+        "pistaPersonas": "un nombre",
+        "pistaLugares": "una sede",
+        "pistaVehiculos": "una placa",
+        "pistaIncidentes": "un número de incidente (#…)"
       }
     },
     "registration": {

@@ -45,6 +45,9 @@ import {
   Check,
   Inbox,
   MonitorDown,
+  Car,
+  Siren,
+  Lock,
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
@@ -92,12 +95,18 @@ import {
   accionesPermitidas,
   debeBuscarEnServidor,
   enOrden,
+  gruposQueFaltan,
+  inicioDeSeccion,
   moverCursor,
+  ORDEN_DE_SECCIONES,
   secciones,
+  type ClaveDeSeccion,
   type Destino,
+  type GrupoDeBusqueda,
   type Hallazgo,
   type TipoDeHallazgo,
 } from "@/lib/buscadorGlobal";
+import { soloFecha } from "@/lib/horaDeLaEmpresa";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { useGusto } from "@/hooks/useGusto";
 import { seccionesDeConfiguracion } from "@/lib/navDeConfiguracion";
@@ -524,6 +533,10 @@ export default function Header({
 
   // People and places from the server (debounced; stale answers dropped).
   const [hallazgos, setHallazgos] = useState<Hallazgo[]>([]);
+  /** What this role may search on the server (null = unknown). */
+  const [gruposDelServidor, setGruposDelServidor] = useState<
+    GrupoDeBusqueda[] | null
+  >(null);
   const [buscandoEnServidor, setBuscandoEnServidor] = useState(false);
   const vueltaDeBusqueda = useRef(0);
 
@@ -547,8 +560,10 @@ export default function Header({
 
         if (mia !== vueltaDeBusqueda.current) return;
         const lista = r?.data?.results ?? r?.results;
+        const grupos = r?.data?.groups ?? r?.groups;
 
         setHallazgos(Array.isArray(lista) ? lista : []);
+        setGruposDelServidor(Array.isArray(grupos) ? grupos : null);
       } catch {
         // No access or offline: pages and actions still answer.
         if (mia === vueltaDeBusqueda.current) setHallazgos([]);
@@ -722,7 +737,34 @@ export default function Header({
     station: t("ui.header.cmdk.tipoEstacion", "Estación"),
     postSite: t("ui.header.cmdk.tipoSede", "Sede"),
     client: t("ui.header.cmdk.tipoCliente", "Cliente"),
+    vehicle: t("ui.header.cmdk.tipoVehiculo", "Vehículo"),
+    incident: t("ui.header.cmdk.tipoIncidente", "Incidente"),
   };
+
+  const TITULO_DE_SECCION: Record<ClaveDeSeccion, string> = {
+    hallazgos: t("ui.header.cmdk.personasYLugares", "Personas y lugares"),
+    vehiculos: t("ui.header.cmdk.vehiculos", "Vehículos"),
+    incidentes: t("ui.header.cmdk.incidentes", "Incidentes"),
+    acciones: t("ui.header.cmdk.acciones", "Acciones"),
+    paginas: t("ui.header.cmdk.paginas", "Páginas"),
+  };
+
+  const NOMBRE_DE_GRUPO: Record<GrupoDeBusqueda, string> = {
+    people: t("ui.header.cmdk.grupoPersonas", "personas"),
+    places: t("ui.header.cmdk.grupoLugares", "lugares"),
+    vehicles: t("ui.header.cmdk.grupoVehiculos", "vehículos"),
+    incidents: t("ui.header.cmdk.grupoIncidentes", "incidentes"),
+  };
+
+  /** Server words in `detail` («closed», «inactive», «pending») in the UI language. */
+  const palabraDelServidor = (p: string) =>
+    p === "closed"
+      ? t("ui.header.cmdk.cerrado", "cerrado")
+      : p === "inactive"
+        ? t("ui.header.cmdk.inactivo", "inactivo")
+        : p === "pending"
+          ? t("ui.header.cmdk.invitacionPendiente", "invitación pendiente")
+          : p;
 
   const iconoDeDestino = (d: Destino) => {
     if (d.grupo === "config") return <Settings2 />;
@@ -739,6 +781,10 @@ export default function Header({
         return <RadioTower />;
       case "postSite":
         return <Building2 />;
+      case "vehicle":
+        return <Car />;
+      case "incident":
+        return <Siren />;
       default:
         return <Briefcase />;
     }
@@ -747,17 +793,87 @@ export default function Header({
   const segundaLinea = (d: Destino) => {
     if (d.grupo === "hallazgo") {
       const tipo = d.tipo ? TIPO_DE_HALLAZGO[d.tipo] : "";
-      const extra =
-        d.contexto === "pending"
-          ? t("ui.header.cmdk.invitacionPendiente", "invitación pendiente")
-          : d.contexto;
+      const partes = (d.contexto ? d.contexto.split(" · ") : []).map(
+        palabraDelServidor,
+      );
 
-      return extra ? `${tipo} · ${extra}` : tipo;
+      // An incident's day, in the company's zone («20 oct»).
+      if (d.cuando) {
+        partes.push(
+          soloFecha(
+            d.cuando,
+            { day: "numeric", month: "short", year: undefined },
+            "",
+          ),
+        );
+      }
+
+      return [tipo, ...partes.filter(Boolean)].join(" · ");
     }
     if (d.grupo === "accion") return t("ui.header.cmdk.accion", "Acción");
 
     return `${d.grupo === "config" ? t("header.cmdk.settingsGroup") : t("header.cmdk.mainGroup")}${d.contexto ? ` · ${d.contexto}` : ""}`;
   };
+
+  /*
+   * What the server may search for this role. With nothing found from the
+   * server, say what it can't search («Tu rol no busca vehículos ni
+   * incidentes»), so an empty answer isn't mistaken for «it doesn't exist».
+   */
+  const faltan = gruposQueFaltan(gruposDelServidor);
+  const sinHallazgosDelServidor =
+    panel.hallazgos.length +
+      panel.vehiculos.length +
+      panel.incidentes.length ===
+    0;
+  /** «a, b y c» / «a, b o c» in the UI language (commas if the browser can't). */
+  const enLista = (xs: string[], type: "conjunction" | "disjunction") => {
+    const ListFormat = (Intl as any).ListFormat;
+
+    return ListFormat
+      ? new ListFormat(i18n.language || "es", { style: "long", type }).format(
+          xs,
+        )
+      : xs.join(", ");
+  };
+  const avisoSinPermiso =
+    debeBuscarEnServidor(consulta) &&
+    !buscandoEnServidor &&
+    sinHallazgosDelServidor &&
+    faltan.length > 0
+      ? faltan.length === 4
+        ? t(
+            "ui.header.cmdk.sinPermisoNada",
+            "Tu rol solo busca páginas y acciones.",
+          )
+        : t("ui.header.cmdk.sinPermiso", {
+            defaultValue: "Tu rol no busca {{grupos}}.",
+            grupos: enLista(
+              faltan.map((g) => NOMBRE_DE_GRUPO[g]),
+              "conjunction",
+            ),
+          })
+      : null;
+  /** Hint under «No hay nada»: what can be typed, for what this role may search. */
+  const pistaDeBusqueda = (() => {
+    const g = gruposDelServidor;
+
+    if (!g || !debeBuscarEnServidor(consulta)) return null;
+    const ejemplos = [
+      g.includes("people") && t("ui.header.cmdk.pistaPersonas", "un nombre"),
+      g.includes("places") && t("ui.header.cmdk.pistaLugares", "una sede"),
+      g.includes("vehicles") && t("ui.header.cmdk.pistaVehiculos", "una placa"),
+      g.includes("incidents") &&
+        t("ui.header.cmdk.pistaIncidentes", "un número de incidente (#…)"),
+    ].filter(Boolean) as string[];
+
+    if (!ejemplos.length) return null;
+
+    return t("ui.header.cmdk.pista", {
+      defaultValue: "Prueba con {{ejemplos}}.",
+      ejemplos: enLista(ejemplos, "disjunction"),
+    });
+  })();
 
   const esMac =
     typeof navigator !== "undefined" &&
@@ -987,36 +1103,32 @@ export default function Header({
                       className="px-3 py-6 text-center text-xs"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      {buscandoEnServidor
-                        ? t("ui.header.cmdk.buscando", "Buscando…")
-                        : t("ui.header.noHayNadaCon", {
-                            defaultValue: "No hay nada con «{{q}}»",
-                            q: consulta.trim(),
-                          })}
+                      {buscandoEnServidor ? (
+                        t("ui.header.cmdk.buscando", "Buscando…")
+                      ) : (
+                        <>
+                          <div
+                            className="text-sm font-semibold"
+                            style={{ color: "var(--ink-soft)" }}
+                          >
+                            {t("ui.header.noHayNadaCon", {
+                              defaultValue: "No hay nada con «{{q}}»",
+                              q: consulta.trim(),
+                            })}
+                          </div>
+                          {pistaDeBusqueda && (
+                            <div className="mt-1">{pistaDeBusqueda}</div>
+                          )}
+                        </>
+                      )}
                     </div>
                   ) : (
-                    (
-                      [
-                        [
-                          "hallazgos",
-                          t(
-                            "ui.header.cmdk.personasYLugares",
-                            "Personas y lugares",
-                          ),
-                        ],
-                        ["acciones", t("ui.header.cmdk.acciones", "Acciones")],
-                        ["paginas", t("ui.header.cmdk.paginas", "Páginas")],
-                      ] as const
-                    ).map(([clave, titulo]) => {
+                    ORDEN_DE_SECCIONES.map((clave) => {
+                      const titulo = TITULO_DE_SECCION[clave];
                       const lista = panel[clave];
 
                       if (!lista.length) return null;
-                      const base =
-                        clave === "hallazgos"
-                          ? 0
-                          : clave === "acciones"
-                            ? panel.hallazgos.length
-                            : panel.hallazgos.length + panel.acciones.length;
+                      const base = inicioDeSeccion(panel, clave);
 
                       return (
                         <div key={clave} aria-label={titulo} role="group">
@@ -1084,6 +1196,19 @@ export default function Header({
                         </div>
                       );
                     })
+                  )}
+                  {avisoSinPermiso && (
+                    <div
+                      className="mt-1 flex items-center gap-2 border-t px-3 pb-1.5 pt-2 text-[11px]"
+                      role="note"
+                      style={{
+                        borderColor: "var(--hairline)",
+                        color: "var(--ink-faint)",
+                      }}
+                    >
+                      <Lock className="h-3 w-3 shrink-0" />
+                      <span className="min-w-0">{avisoSinPermiso}</span>
+                    </div>
                   )}
                 </div>
               </div>
