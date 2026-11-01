@@ -1066,6 +1066,7 @@ export default function Visitors() {
               sizeInBytes: number;
               storageId: string;
               fileToken: string | null;
+              privateUrl: string | null;
               publicUrl: string | null;
               notableType: string;
               notableId: string;
@@ -1076,6 +1077,8 @@ export default function Visitors() {
               storageId: "notesImages",
               // prefer fileToken when present (encrypted privateUrl)
               fileToken: uploaded.fileToken || null,
+              // Without one of the two the server refuses the record (400).
+              privateUrl: uploaded.fileToken ? null : uploaded.privateUrl || null,
               publicUrl: uploaded.publicUrl || null,
               notableType: "visitorLog",
               notableId: created.id,
