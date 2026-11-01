@@ -315,7 +315,13 @@ export function desktopApiBase(): string | null {
   const b = puente();
   const u = b && typeof b.apiBase === "string" ? b.apiBase.trim() : "";
 
-  return /^https:\/\/[^/\s]+/i.test(u) ? u.replace(/\/+$/, "") : null;
+  // https always; plain http only for this computer (the shell's local test
+  // server — a packaged shell never offers anything but its https API).
+  const ok =
+    /^https:\/\/[^/\s]+/i.test(u) ||
+    /^http:\/\/(127\.0\.0\.1|localhost|\[::1\])(:\d+)?(\/|$)/i.test(u);
+
+  return ok ? u.replace(/\/+$/, "") : null;
 }
 
 /* ── Device problems (`desktop.*` codes) ────────────────────────────────── */
