@@ -722,14 +722,14 @@
     "confirmArchiveDescription": "¿Estás seguro de archivar {{count}} sitio(s)?",
     "confirmArchiveTitle": "¿Archivar {{count}} sitio(s)?",
     "newPostSite": "Nuevo sitio",
-    "searchPlaceholder": "Buscar sitios de servicio...",
+    "searchPlaceholder": "Buscar sedes...",
     "selectAtLeastOne": "Selecciona al menos un sitio",
     "viewDetails": "Ver detalles",
     "headers": {
       "client": "Cliente",
       "email": "Correo",
       "phoneNumber": "Teléfono",
-      "postSite": "Sitio de servicio",
+      "postSite": "Sede",
       "status": "Estado"
     },
     "noResult": {
@@ -2964,7 +2964,7 @@
       "incidentFrom": "Fecha del incidente desde",
       "incidentTo": "Fecha del incidente hasta",
       "showArchived": "Mostrar archivados",
-      "station": "Puesto de seguridad",
+      "station": "Estación",
       "status": "Estado",
       "stations": "Estaciones"
     },
@@ -3017,7 +3017,7 @@
     "postsitesttiledelete": "Eliminar sitio",
     "postsitesttiledeletePlural": "Eliminar sitios",
     "restore": "Restaurar",
-    "searchPlaceholder": "Buscar sitios de servicio",
+    "searchPlaceholder": "Buscar sedes",
     "selectAtLeastOne": "Selecciona al menos un sitio",
     "sitesArchived": "Puestos archivados",
     "viewDetails": "Ver Detalles",
@@ -3040,8 +3040,8 @@
       "PostSites": "Puestos de vigilancia",
       "Profile": "Perfil",
       "Settings": "Configuración",
-      "SiteTourTags": "Etiquetas de recorrido del puesto de seguridad",
-      "SiteTours": "Recorridos del puesto de seguridad",
+      "SiteTourTags": "Etiquetas de recorrido de la sede",
+      "SiteTours": "Recorridos de la sede",
       "Stations": "Estaciones",
       "Stats": "Estadísticas",
       "Tasks": "Tareas",
@@ -3213,7 +3213,7 @@
       "tolete": "Tolete",
       "transportation": "Transporte",
       "transportationDefault": "Ninguno",
-      "usePostsite": "Usar puesto de seguridad (por defecto)",
+      "usePostsite": "Usar la sede (por defecto)",
       "viewNotImplemented": "Vista no implementada",
       "vitacora": "Bitácora",
       "transportOptions": {
@@ -3274,7 +3274,7 @@
         "passdownReport": "Informe Passdown",
         "postOrder": "Orden del puesto",
         "shiftConfirmation": "Confirmación de turno",
-        "siteTour": "Recorrido del puesto de seguridad",
+        "siteTour": "Recorrido de la sede",
         "standardReport": "Informe estándar",
         "taskReport": "Informe de tarea",
         "timeOff": "Tiempo libre",
@@ -3615,7 +3615,7 @@
     "report-configuration": "Configuración de informes",
     "request-records": "Solicitar registros",
     "roles": "Roles de usuario",
-    "sitios-publicacion": "Sitios de Servicio",
+    "sitios-publicacion": "Sedes",
     "tipos-incidentes": "Tipos de incidentes",
     "tipos-licencias": "Tipos de licencias",
     "title": "Configuración",
@@ -3849,7 +3849,7 @@
       "login": "Iniciar sesión",
       "login_prompt": "Inicia sesión en tu cuenta",
       "register_prompt": "Crea tu cuenta",
-      "sitios-publicacion": "Sitios de Servicio"
+      "sitios-publicacion": "Sedes"
     },
     "app": {
       "title": "App"
@@ -4265,7 +4265,7 @@
       "contactEmail": "Correo electrónico",
       "contactName": "Nombre",
       "contactPhone": "Número de celular",
-      "contactPostSites": "Sitios de servicio",
+      "contactPostSites": "Sedes",
       "contactUpdated": "Contacto actualizado correctamente",
       "deleteContactButton": "Eliminar",
       "editcontact": "Editar contacto",
@@ -4278,7 +4278,7 @@
       "form": {
         "AddClientContact": "Agregar contacto del cliente",
         "Addcontact": "AGREGAR",
-        "AssignPostSite": "Asignar sitio de servicio",
+        "AssignPostSite": "Asignar sede",
         "Description": "Descripción",
         "Email": "Correo electrónico *",
         "Mobile Number": "Número de celular *",
@@ -4388,11 +4388,11 @@
       "no_permission_create": "No tienes permiso para crear incidentes",
       "no_results_subtitle": "No pudimos encontrar elementos que coincidan con tu búsqueda.",
       "no_results_title": "No se encontraron resultados",
-      "no_sites": "No hay puestos de seguridad",
+      "no_sites": "No hay sedes",
       "open_new_tab": "Abrir en nueva pestaña",
       "pdf_generate_failed": "No se pudo generar el PDF",
       "pdf_invalid_response": "Respuesta inválida del servidor al generar el PDF",
-      "post_site": "Puesto de seguridad",
+      "post_site": "Sede",
       "prev": "Anterior",
       "print": "Imprimir",
       "print_error": "Error al imprimir el PDF",
@@ -4402,7 +4402,7 @@
       "select_at_least_one_print": "Selecciona al menos un incidente para imprimir",
       "select_at_least_one_send": "Selecciona al menos un incidente para enviar",
       "select_client": "Seleccionar cliente",
-      "select_site": "Seleccionar puesto de seguridad",
+      "select_site": "Seleccionar sede",
       "send_report_desc": "Rellena los campos para enviar el informe por correo.",
       "send_report_email": "Enviar informe por correo",
       "send_report_title": "Enviar informe por correo",
@@ -4427,7 +4427,7 @@
       "label": "Facturación"
     },
     "guards": {
-      "assignSites_no_postsites": "No se encontraron sitios de servicio",
+      "assignSites_no_postsites": "No se encontraron sedes",
       "KPI": {
         "emailNotImplemented": "Reporte por correo no implementado",
         "menu": {
@@ -4467,8 +4467,8 @@
         "assignButton": "Asignar estación",
         "loadError": "No se pudo cargar el vigilante",
         "loading": "Cargando...",
-        "noPostSites": "No se encontraron puestos de seguridad",
-        "searchPlaceholder": "Buscar puestos de seguridad",
+        "noPostSites": "No se encontraron sedes",
+        "searchPlaceholder": "Buscar sedes",
         "action": {
           "default": "Acción"
         },
@@ -4477,9 +4477,9 @@
         },
         "form": {
           "client": "Cliente",
-          "postSite": "Puesto de seguridad",
+          "postSite": "Sede",
           "selectClient": "Seleccionar cliente",
-          "selectPostSite": "Seleccionar puesto de seguridad"
+          "selectPostSite": "Seleccionar sede"
         },
         "modal": {
           "assign": "Asignar",
@@ -4488,7 +4488,7 @@
         },
         "table": {
           "client": "Cliente",
-          "postSites": "Puestos de seguridad"
+          "postSites": "Sedes"
         }
       },
       "availability": {
@@ -4648,7 +4648,7 @@
           "clientAll": "Todos",
           "department": "Departamento",
           "departmentAll": "Todos",
-          "site": "Puesto de seguridad",
+          "site": "Sede",
           "siteAll": "Todos",
           "skills": "Habilidades",
           "skillsAll": "Todos",
@@ -5161,7 +5161,7 @@
         "incidentFrom": "Fecha del incidente desde",
         "incidentTo": "Fecha del incidente hasta",
         "showArchived": "Mostrar archivados",
-        "station": "Puesto de seguridad",
+        "station": "Estación",
         "status": "Estado"
       },
       "labels": {
@@ -5210,7 +5210,7 @@
       "clients": "Cliente",
       "contactDetails": "Detalles de contacto",
       "delete": "Eliminar",
-      "editPostSite": "Editar sitio de servicio",
+      "editPostSite": "Editar sede",
       "email": "Correo electrónico",
       "emails": "Email",
       "excelDownloaded": "Excel descargado",
@@ -5223,7 +5223,7 @@
       "import": "Importar",
       "manageCategories": "Gestionar Sectores",
       "move": "Mover",
-      "newPostSite": "Nuevo sitio de servicio",
+      "newPostSite": "Nueva sede",
       "notsearch": "No se encontraron resultados que coincidan con tu búsqueda",
       "pdfDownloaded": "PDF descargado",
       "pdfexport": "Exportar a PDF",
@@ -5231,7 +5231,7 @@
       "phones": "Teléfono",
       "postesitedeleteconfirm": "¿Estás seguro de que deseas eliminar {{count}} sitio(s)? Esta acción no se puede deshacer.",
       "postsitdash": "Panel de control",
-      "postsite": "Sitio de servicio",
+      "postsite": "Sede",
       "postsitedeleted": "Sitio Eliminado",
       "postsitedeletedPlural": "Sitios eliminados",
       "postsitedeleteerror": "Error al eliminar el sitio",
@@ -5240,7 +5240,7 @@
       "postsitesttiledelete": "Eliminar sitio",
       "postsitesttiledeletePlural": "Eliminar sitios",
       "restore": "Restaurar",
-      "searchPlaceholder": "Buscar sitios de servicio",
+      "searchPlaceholder": "Buscar sedes",
       "selectAtLeastOne": "Selecciona al menos un sitio",
       "siteName": "Nombre del sitio",
       "sitesArchived": "Puestos archivados",
@@ -5263,8 +5263,8 @@
         "PostSites": "Puestos de vigilancia",
         "Profile": "Perfil",
         "Settings": "Configuración",
-        "SiteTourTags": "Etiquetas de recorrido del puesto de seguridad",
-        "SiteTours": "Recorridos del puesto de seguridad",
+        "SiteTourTags": "Etiquetas de recorrido de la sede",
+        "SiteTours": "Recorridos de la sede",
         "Stations": "Estaciones",
         "Tasks": "Tareas",
         "categories": "Sectores",
@@ -5432,7 +5432,7 @@
         "tolete": "Tolete",
         "transportation": "Transporte",
         "transportationDefault": "Ninguno",
-        "usePostsite": "Usar puesto de seguridad (por defecto)",
+        "usePostsite": "Usar la sede (por defecto)",
         "viewNotImplemented": "Vista no implementada",
         "vitacora": "Bitácora",
         "transportOptions": {
@@ -5491,7 +5491,7 @@
           "passdownReport": "Informe Passdown",
           "postOrder": "Orden del puesto",
           "shiftConfirmation": "Confirmación de turno",
-          "siteTour": "Recorrido del puesto de seguridad",
+          "siteTour": "Recorrido de la sede",
           "standardReport": "Informe estándar",
           "taskReport": "Informe de tarea",
           "timeOff": "Tiempo libre",
@@ -5608,7 +5608,7 @@
         "loading": "Cargando...",
         "loadingGuards": "Cargando vigilantes...",
         "newTagButton": "Nueva etiqueta",
-        "noGuardsForStation": "No se encontraron vigilantes para este sitio de servicio",
+        "noGuardsForStation": "No se encontraron vigilantes para esta sede",
         "noGuardsFound": "No se encontraron vigilantes",
         "noTags": "Sin etiquetas",
         "qrButton": "QR",
@@ -5623,7 +5623,7 @@
           "submit": "Enviar"
         },
         "empty": {
-          "message": "No se encontraron etiquetas para este sitio de servicio.",
+          "message": "No se encontraron etiquetas para esta sede.",
           "title": "Sin etiquetas"
         },
         "form": {
@@ -8758,7 +8758,7 @@
       "noHayInformadores": "No hay informadores",
       "noHayTipos": "No hay tipos",
       "linkCopiado": "Link copiado al portapapeles",
-      "faltaElSitio": "Falta el sitio de servicio",
+      "faltaElSitio": "Falta la sede",
       "indicaAsuntoODescripcion": "Indica un asunto o una descripción",
       "faltaLaEmpresa": "No se encontró la empresa",
       "despachoCreado": "Despacho creado",
@@ -11076,7 +11076,7 @@
       "telefonoFijo": "Teléfono fijo",
       "detallesDelSitio": "Detalles del Sitio",
       "clienteAsociado": "Cliente Asociado",
-      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Información detallada del Puesto de seguridad seleccionada.",
+      "informacionDetalladaDelPuestoDeSeguridadSeleccionada": "Información detallada de la sede seleccionada.",
       "errorAlCargarDetallesDelSitio": "Error al cargar detalles del sitio",
       "mostrar": "Mostrar",
       "ocultar": "Ocultar"
@@ -11482,7 +11482,7 @@
       "sinActividadRegistradaEnEl": "Sin actividad registrada en el período.",
       "indicadoresClaveDelServicioDe": "Indicadores clave del servicio de vigilante para tu operación.",
       "incidentesPorPrioridad": "Incidentes por prioridad",
-      "resumenPorSitioDeServicio": "Resumen por sitio de servicio",
+      "resumenPorSitioDeServicio": "Resumen por sede",
       "coberturaDeTurnos": "Cobertura de turnos",
       "vigilantesEnServicio": "Vigilantes en servicio",
       "cubiertos": "{{covered}}/{{total}} cubiertos",
@@ -14755,8 +14755,8 @@
       "abrirTodo": "Abrir todo",
       "cerrarTodo": "Cerrar todo",
       "resumen": "{{sedes}} sedes · {{estaciones}} estaciones",
-      "plazasSinCubrir_one": "{{count}} plaza sin cubrir",
-      "plazasSinCubrir_other": "{{count}} plazas sin cubrir",
+      "plazasSinCubrir_one": "{{count}} puesto sin cubrir",
+      "plazasSinCubrir_other": "{{count}} puestos sin cubrir",
       "nEstaciones_one": "{{count}} estación",
       "nEstaciones_other": "{{count}} estaciones",
       "sinSede": "Sin sede",
@@ -17054,8 +17054,8 @@
       "rotuloEvento": "Evento · {{ventana}}",
       "nRelevos_one": "{{count}} relevo",
       "nRelevos_other": "{{count}} relevos",
-      "nPlazas_one": "{{count}} plaza",
-      "nPlazas_other": "{{count}} plazas",
+      "nPlazas_one": "{{count}} puesto",
+      "nPlazas_other": "{{count}} puestos",
       "nVigilantes_one": "{{count}} vigilante",
       "nVigilantes_other": "{{count}} vigilantes",
       "plazas": "Puestos",
@@ -17076,12 +17076,12 @@
       "asignar": "Asignar vigilantes",
       "relevoN": "Relevo {{n}} · {{inicio}}–{{fin}}",
       "horarioUnico": "De {{inicio}} a {{fin}}",
-      "plazasLibres_one": "{{count}} plaza libre",
-      "plazasLibres_other": "{{count}} plazas libres",
+      "plazasLibres_one": "{{count}} puesto libre",
+      "plazasLibres_other": "{{count}} puestos libres",
       "asignados_one": "{{count}} vigilante asignado",
       "asignados_other": "{{count}} vigilantes asignados",
-      "asignarTexto_one": "{{tramo}} · queda {{count}} plaza. Salen primero los libres a esas horas.",
-      "asignarTexto_other": "{{tramo}} · quedan {{count}} plazas. Salen primero los libres a esas horas.",
+      "asignarTexto_one": "{{tramo}} · queda {{count}} puesto. Salen primero los libres a esas horas.",
+      "asignarTexto_other": "{{tramo}} · quedan {{count}} puestos. Salen primero los libres a esas horas.",
       "rellenar_one": "Elegir el primero libre",
       "rellenar_other": "Elegir los {{count}} primeros libres",
       "asignarN": "Asignar {{count}}",
@@ -20120,12 +20120,12 @@
         "title": "Horas Trabajadas por Departamento"
       },
       "payrollPost": {
-        "desc": "Ver horas trabajadas por puesto de seguridad",
-        "title": "Horas Trabajadas por Puesto de seguridad"
+        "desc": "Ver horas trabajadas por sede",
+        "title": "Horas trabajadas por sede"
       },
       "postKpi": {
-        "desc": "Ver informe de KPI del puesto de seguridad",
-        "title": "Informe de KPI del Puesto de seguridad"
+        "desc": "Ver informe de KPI de la sede",
+        "title": "Informe de KPI de la sede"
       },
       "siteTours": {
         "desc": "Ver recorridos completados y perdidos por vigilantes de seguridad"
@@ -20142,8 +20142,8 @@
         "title": "Horas de Tarjeta de Tiempo por Vigilante"
       },
       "timecardPost": {
-        "desc": "Ver horas de tarjeta de tiempo por puesto de seguridad",
-        "title": "Horas de Tarjeta de Tiempo por Puesto de seguridad"
+        "desc": "Ver horas de tarjeta de tiempo por sede",
+        "title": "Horas de tarjeta de tiempo por sede"
       },
       "vehiclePatrol": {
         "desc": "Ver actividad de patrulla vehicular"

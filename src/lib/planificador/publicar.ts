@@ -339,13 +339,13 @@ export function planificarPublicacion(
       // and the server refuses it. Its days change in the post, not here.
       else if (en.semanal || p.semanal)
         no.push(
-          `${nombreDe(p)}: trabaja por días de la semana; su horario no se corre. Cambia sus días en la configuración del puesto.`,
+          `${nombreDe(p)}: trabaja por días de la semana; su horario no se corre. Cambia sus días en la configuración de la estación.`,
         );
       // Sin plaza el generador real no rota: le escribiría un ciclo que nunca
       // usa y lo dejaría con un turno suelto (pasó en local). Mejor decirlo.
       else if (en.conPlaza === false)
         no.push(
-          `${nombreDe(p)}: está en el puesto sin plaza (horario fijo de ${pu.nombre}). Para darle una rotación hay que asignarlo a una plaza desde Horario.`,
+          `${nombreDe(p)}: está en la estación sin puesto (horario fijo de ${pu.nombre}). Para darle una rotación hay que asignarlo a un puesto desde Horario.`,
         );
       else {
         const f = formaDeCiclo(p.patron);

@@ -131,7 +131,7 @@ describe("Publicar · del borrador a llamadas", () => {
     const pub = planificarPublicacion(plan, b, enlace, ctx);
 
     expect(pub.cambios.filter((c) => c.tipo === "rotacion")).toEqual([]);
-    expect(pub.noPublicables.join("\n")).toMatch(/sin plaza/);
+    expect(pub.noPublicables.join("\n")).toMatch(/sin puesto/);
   });
 
   it("un ciclo con dos bloques de trabajo (1-2-2-2) se publica como secuencia libre", () => {
