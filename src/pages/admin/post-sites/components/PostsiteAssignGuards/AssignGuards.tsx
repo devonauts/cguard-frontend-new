@@ -236,7 +236,7 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
       <p className="mb-4 text-xs text-muted-foreground">
         {t(
           "clients.assignGuards.siteRosterHint",
-          "Los vigilantes pertenecen a las estaciones de este sitio. Aquí ves el resumen; para asignar, quitar o cambiar un vigilante, entra a su estación.",
+          "Los vigilantes pertenecen a las estaciones de esta sede. Aquí ves el resumen; para asignar, quitar o cambiar un vigilante, entra a su estación.",
         )}
       </p>
       <div className="mb-4 flex items-center gap-2">
@@ -267,7 +267,7 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
           description={
             t(
               "clients.assignGuards.emptyHint",
-              "Entra a una estación de este sitio para asignar vigilantes.",
+              "Entra a una estación de esta sede para asignar vigilantes.",
             ) as string
           }
           icon={<Users />}

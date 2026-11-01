@@ -184,7 +184,7 @@ function deriveScheduleType(
 
 const STEP_LABELS: { key: string; label: string }[] = [
   { key: "ui.PostSiteWizard.step.tipo", label: "Tipo" },
-  { key: "ui.PostSiteWizard.step.sitio", label: "Sitio" },
+  { key: "ui.PostSiteWizard.step.sitio", label: "Sede" },
   { key: "ui.PostSiteWizard.step.estaciones", label: "Estaciones" },
   { key: "ui.PostSiteWizard.step.listo", label: "Listo" },
 ];
@@ -806,7 +806,7 @@ function StationRow({
           className="text-sm text-muted-foreground"
           placeholder={t(
             "ui.PostSiteWizard.descripcionDelPuestoOpcional",
-            "Descripción del puesto (opcional)",
+            "Descripción de la estación (opcional)",
           )}
           value={draft.description}
           onChange={(e) => onChange({ description: e.target.value })}
@@ -969,7 +969,7 @@ function StationRow({
           <p className="pt-1 text-[10px]" style={{ color: "var(--ink-faint)" }}>
             {t(
               "ui.PostSiteWizard.cadaJornadaSeGuarda",
-              "Cada jornada se guarda como un registro independiente en el puesto.",
+              "Cada jornada se guarda como un registro independiente en la estación.",
             )}
           </p>
         )}
@@ -1678,7 +1678,7 @@ export default function PostSiteWizard({
         ),
         message: t(
           "ui.PostSiteWizard.evento.historialConfirmarTexto",
-          "Con estas fechas el evento ya terminó. No se crean turnos ni nómina hacia atrás: sus asignaciones se cierran y los vigilantes sin otro puesto se archivan, como en cualquier evento terminado. Lo que ya se fichó se conserva.",
+          "Con estas fechas el evento ya terminó. No se crean turnos ni nómina hacia atrás: sus asignaciones se cierran y los vigilantes sin otra estación se archivan, como en cualquier evento terminado. Lo que ya se fichó se conserva.",
         ),
         confirmText: t(
           "ui.PostSiteWizard.evento.historialConfirmar",
@@ -1744,7 +1744,7 @@ export default function PostSiteWizard({
       toast.error(
         e?.response?.data?.message ??
           e?.message ??
-          t("ui.PostSiteWizard.errorAlCrearElSitio", "Error al crear el sitio"),
+          t("ui.PostSiteWizard.errorAlCrearElSitio", "Error al crear la sede"),
       );
     } finally {
       setSubmitting(false);
@@ -1760,7 +1760,7 @@ export default function PostSiteWizard({
             <h2 className="font-display text-xl font-bold">
               {t(
                 "ui.PostSiteWizard.queTipoDeServicioEs",
-                "¿Qué tipo de servicio es este sitio?",
+                "¿Qué tipo de servicio es esta sede?",
               )}
             </h2>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
@@ -1814,7 +1814,7 @@ export default function PostSiteWizard({
         <div className="space-y-5">
           <div>
             <h2 className="font-display mb-0.5 text-xl font-bold">
-              {t("ui.PostSiteWizard.ubicacionDelSitio", "Ubicación del sitio")}
+              {t("ui.PostSiteWizard.ubicacionDelSitio", "Ubicación de la sede")}
             </h2>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
               {clientLocked
@@ -1824,7 +1824,7 @@ export default function PostSiteWizard({
                   )
                 : t(
                     "ui.PostSiteWizard.buscaDireccionAsignaCliente",
-                    "Busca la dirección en el mapa y asigna el sitio a un cliente.",
+                    "Busca la dirección en el mapa y asigna la sede a un cliente.",
                   )}
             </p>
           </div>
@@ -2000,7 +2000,7 @@ export default function PostSiteWizard({
                     {cfgGet("archivarAlTerminar", true) !== false
                       ? t(
                           "ui.PostSiteWizard.evento.historialAviso",
-                          "Al guardar no se crean turnos ni nómina hacia atrás. Sus asignaciones se cierran y los vigilantes sin otro puesto se archivan. Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
+                          "Al guardar no se crean turnos ni nómina hacia atrás. Sus asignaciones se cierran y los vigilantes sin otra estación se archivan. Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
                         )
                       : t(
                           "ui.PostSiteWizard.evento.historialAvisoSinArchivar",
@@ -2040,7 +2040,7 @@ export default function PostSiteWizard({
                     <span className="text-xs font-medium">
                       {t(
                         "ui.PostSiteWizard.evento.archivarAlTerminar",
-                        "Al terminar, archivar a los vigilantes que no tengan otro puesto — liberan su asiento",
+                        "Al terminar, archivar a los vigilantes que no tengan otra estación — liberan su asiento",
                       )}
                     </span>
                     <span

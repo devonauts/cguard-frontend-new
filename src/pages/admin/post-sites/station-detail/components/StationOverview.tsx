@@ -417,7 +417,7 @@ export default function StationOverview({
       <div className="text-muted-foreground text-sm">
         {t(
           "ui.StationOverview.noHayInformacionDelPuesto",
-          "No hay información del puesto",
+          "No hay información de la estación",
         )}
       </div>
     );
@@ -756,7 +756,7 @@ export default function StationOverview({
                   : undefined
               }
               icon={<Users />}
-              label={t("ui.eventos.plazas", "Plazas")}
+              label={t("ui.eventos.plazas", "Puestos")}
               value={
                 relevos.reduce((n, r) => n + r.plazas, 0) ||
                 Number(estAny?.numberOfGuardsInStation) ||
@@ -827,7 +827,7 @@ export default function StationOverview({
                 )}
                 onClick={() => setEditing(true)}
               >
-                <Pencil size={14} /> {t("ui.StationOverview.editarPuesto", "Editar puesto")}
+                <Pencil size={14} /> {t("ui.StationOverview.editarPuesto", "Editar estación")}
               </button>
             }
             icon={<Activity />}
@@ -847,7 +847,7 @@ export default function StationOverview({
               >
                 {t(
                   "ui.StationOverview.aunNoHayMarcacionesEnEstePuesto",
-                  "Aún no hay marcaciones en este puesto.",
+                  "Aún no hay marcaciones en esta estación.",
                 )}
               </div>
             ) : (
@@ -1101,7 +1101,7 @@ export default function StationOverview({
                       ? relevos
                           .map((r) => `${r.inicio}–${r.fin} ×${r.plazas}`)
                           .join(" · ")
-                      : t("ui.EventoDeLaEstacion.sinPlazas", "Sin plazas")}
+                      : t("ui.EventoDeLaEstacion.sinPlazas", "Sin puestos")}
                   </p>
                 </div>
                 {!eventoTerminado(estAny?.postSite) && (
@@ -1182,7 +1182,7 @@ export default function StationOverview({
                     {estilosPorPlaza
                       ? t(
                           "ui.StationOverview.cadaPlazaConSuCiclo",
-                          "Cada plaza con su ciclo",
+                          "Cada puesto con su ciclo",
                         )
                       : (nombreDelCiclo ?? rotStyle?.name)
                         ? t(
@@ -1246,7 +1246,7 @@ export default function StationOverview({
             <p className="text-[11px]" style={{ color: "var(--warn-text)" }}>
               {t(
                 "ui.StationOverview.cambiarElCicloRehace",
-                "Cambiar el ciclo rehace los turnos futuros; nadie pierde su plaza.",
+                "Cambiar el ciclo rehace los turnos futuros; nadie pierde su puesto.",
               )}
             </p>
             <button
@@ -1315,7 +1315,7 @@ export default function StationOverview({
                 })
               : t(
                   "ui.StationOverview.sinCoordenadasBusca",
-                  "Sin coordenadas — busca la dirección o usa la del sitio.",
+                  "Sin coordenadas — busca la dirección o usa la de la sede.",
                 )}
           </p>
         </div>

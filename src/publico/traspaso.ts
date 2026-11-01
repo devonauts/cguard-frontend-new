@@ -1,3 +1,5 @@
+import { handOffToDesktop } from "@/lib/desktop";
+
 /**
  * El TRASPASO de la mini-aplicación pública al CRM de verdad (ver
  * `lib/sesionDeCodigo.ts`): con sesión, se pide la cookie y se recarga en el
@@ -86,4 +88,43 @@ export function puedoTraspasar(almacen: Almacen, ahora = Date.now()): boolean {
   }
 
   return true;
+}
+
+const CLAVES_DE_SESION = ["authToken", "authUserCache"];
+
+/** Takes the session keys out of this page's storage. */
+export function olvidarSesionLocal(almacen: Pick<Almacen, "removeItem">): void {
+  for (const k of CLAVES_DE_SESION) {
+    try {
+      almacen.removeItem(k);
+    } catch {
+      /* sin almacenamiento */
+    }
+  }
+}
+
+/**
+ * DESKTOP APP: the hand-off is `window.cguardDesktop.signedIn(token)` instead
+ * of `POST /__sesion` + reload. Once the shell has the token it is the only
+ * holder: the copy in this page's storage goes (a later visit to the sign-in
+ * must not hand off a stale token again). `false` = no token, or the shell
+ * refused it (the screen offers «try again / sign in again»).
+ */
+export async function entregarAlEscritorio(
+  almacen: Pick<Almacen, "getItem" | "removeItem">,
+  entregar: (token: string) => Promise<boolean> = handOffToDesktop,
+): Promise<boolean> {
+  let token: string | null = null;
+
+  try {
+    token = almacen.getItem("authToken");
+  } catch {
+    token = null;
+  }
+  if (!token) return false;
+  const ok = await entregar(token);
+
+  if (ok) olvidarSesionLocal(almacen);
+
+  return ok;
 }

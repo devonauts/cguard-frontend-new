@@ -269,7 +269,7 @@ export function EditorDeRelevos({
     s.motivo === "cupoReducido"
       ? t(
           "ui.RelevosDelEvento.motivo.cupoReducido",
-          "su relevo se queda con menos plazas",
+          "su relevo se queda con menos puestos",
         )
       : s.motivo === "fueraDelEvento"
         ? t(

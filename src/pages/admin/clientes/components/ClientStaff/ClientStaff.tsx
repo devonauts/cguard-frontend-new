@@ -468,7 +468,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                 <Th>{t("ui.ClientStaff.personal", "Personal")}</Th>
                 <Th>{t("ui.ClientStaff.rol", "Rol")}</Th>
                 <Th>{t("ui.ClientStaff.estacion", "Estación")}</Th>
-                <Th>{t("ui.ClientCoverage.sedeSitio", "Sede / Sitio")}</Th>
+                <Th>{t("ui.ClientCoverage.sedeSitio", "Sede")}</Th>
                 <Th>{t("comun.turno")}</Th>
                 <Th>{t("comun.estado")}</Th>
                 <Th>{t("ui.ClientProjects.inicio", "Inicio")}</Th>

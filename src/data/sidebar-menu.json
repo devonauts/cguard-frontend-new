@@ -663,5 +663,12 @@
     "icon": "Puzzle",
     "path": "/modulos-adicionales",
     "tienda": true
+  },
+  {
+    "id": "app-escritorio",
+    "name": "App de escritorio",
+    "icon": "MonitorDown",
+    "path": "/escritorio",
+    "plataforma": true
   }
 ]

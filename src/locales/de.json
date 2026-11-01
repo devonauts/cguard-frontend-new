@@ -5596,7 +5596,8 @@
       "configuracion": "Einstellungen",
       "coberturaEnVivo": "Besetzung live",
       "atrasos": "Verspätungen der Woche"
-    }
+    },
+    "app-escritorio": "Desktop-App"
   },
   "siteTour": {
     "newTour": "Neuer Rundgang",
@@ -7482,7 +7483,11 @@
       "dobletes": "Doppelschichten",
       "dobletes.desc": "Wellen, Boni, Punkte, Stufen und Rangliste der Reserve.",
       "patrones-rotacion": "Rotationsmuster",
-      "patrones-rotacion.desc": "Arbeits- und Ruhezyklen: umbenennen, archivieren und sehen, wo jedes verwendet wird."
+      "patrones-rotacion.desc": "Arbeits- und Ruhezyklen: umbenennen, archivieren und sehen, wo jedes verwendet wird.",
+      "computadoras": "Desktop-Computer",
+      "computadoras.desc": "Geben Sie jeden Computer frei, der die Desktop-App nutzt, oder widerrufen Sie ihn.",
+      "app-escritorio": "Desktop-App",
+      "app-escritorio.desc": "Laden Sie das Dashboard für Mac oder Windows herunter, im eigenen Fenster."
     },
     "section": {
       "mi_cuenta": "Mein Konto",
@@ -22114,6 +22119,34 @@
       "error": "Das Dashboard konnte nicht geöffnet werden. Bitte melden Sie sich erneut an.",
       "reintentar": "Erneut versuchen",
       "volverAEntrar": "Erneut anmelden"
+    },
+    "accesoNegado": {
+      "revisar": "Erneut prüfen",
+      "salir": "Abmelden",
+      "review": {
+        "titulo": "Ihr Unternehmen wird geprüft",
+        "texto": "Wir prüfen die Registrierung Ihres Unternehmens. Nach der Freigabe können Sie das Panel mit diesem Benutzer öffnen."
+      },
+      "rejected": {
+        "titulo": "Wir konnten Ihr Unternehmen nicht freigeben",
+        "texto": "Die Anfrage Ihres Unternehmens wurde nicht freigegeben. Wenn Sie das für einen Fehler halten, schreiben Sie dem Support."
+      },
+      "suspended": {
+        "titulo": "Ihr Unternehmen ist gesperrt",
+        "texto": "Der Zugang zum Panel ist für Ihr Unternehmen pausiert. Schreiben Sie dem Support, um es zu reaktivieren."
+      },
+      "field": {
+        "titulo": "Ihr Konto ist für die mobile App",
+        "texto": "Wachleute und Außendienst-Supervisoren arbeiten mit der App auf ihrem Telefon. Melden Sie sich dort mit diesem Benutzer an."
+      },
+      "customer": {
+        "titulo": "Ihr Konto ist für das Kundenportal",
+        "texto": "Dieses Konto ist für das Kundenportal. Öffnen Sie es über den Link, den Ihnen Ihr Sicherheitsunternehmen geschickt hat."
+      },
+      "noCompany": {
+        "titulo": "Ihr Konto hat kein aktives Unternehmen",
+        "texto": "Ihr Benutzer gehört zu keinem aktiven Unternehmen. Bitten Sie einen Administrator Ihres Unternehmens, Sie einzuladen oder Ihren Zugang zu reaktivieren."
+      }
     }
   },
   "dobletes": {
@@ -22747,6 +22780,141 @@
       "correoEnviado": "E-Mail an {{c}} gesendet",
       "reintentar": "Erneut versuchen",
       "reintentarHorario": "Dienstplan erneut versuchen"
+    }
+  },
+  "desktopApp": {
+    "devices": {
+      "title": "Desktop-Computer",
+      "subtitle": "Jeder Computer, der die Desktop-App nutzt, muss von einem Administrator freigegeben werden, bevor er das Dashboard öffnen kann.",
+      "downloadCta": "App herunterladen",
+      "pendingTitle": "Offene Anfragen",
+      "pendingHint": "Geben Sie nur frei, wenn der Code mit dem übereinstimmt, den die Person auf ihrem Bildschirm sieht. Fragen Sie im Zweifel vorher nach.",
+      "pendingEmpty": "Keine Computer warten auf Freigabe.",
+      "approvedTitle": "Freigegebene Computer",
+      "approvedEmpty": "Noch keine Computer freigegeben.",
+      "closedTitle": "Abgelehnt und widerrufen",
+      "mineTitle": "Meine Computer",
+      "mineEmpty": "Sie nutzen die Desktop-App noch nicht",
+      "mineEmptyText": "Sobald Sie sich auf einem Computer in der App anmelden, erscheint er hier mit seinem Status.",
+      "notAdmin": "Nur die Administratoren Ihres Unternehmens geben Computer frei. Ihre eigenen sehen Sie unten.",
+      "code": "Code",
+      "codeAria": "Kopplungscode {{codigo}}",
+      "requestedAt": "Angefragt am {{fecha}}",
+      "lastSeen": "Letzte Verbindung: {{fecha}}",
+      "neverSeen": "Noch keine Verbindungen",
+      "revokedAt": "Widerrufen am {{fecha}}",
+      "rejectedAt": "Abgelehnt am {{fecha}}",
+      "version": "Version {{version}}",
+      "ip": "IP {{ip}}",
+      "unknownComputer": "Unbenannter Computer",
+      "unknownUser": "Unbenannte Person",
+      "approve": "Freigeben",
+      "reject": "Ablehnen",
+      "revoke": "Widerrufen",
+      "status": {
+        "pending": "Ausstehend",
+        "approved": "Freigegeben",
+        "rejected": "Abgelehnt",
+        "revoked": "Widerrufen"
+      },
+      "confirmApproveTitle": "Diesen Computer freigeben?",
+      "confirmApprove": "{{persona}} kann das Dashboard dann auf „{{equipo}}“ öffnen. Prüfen Sie, ob auf dem Bildschirm der Person der Code {{codigo}} angezeigt wird.",
+      "confirmRejectTitle": "Anfrage ablehnen?",
+      "confirmReject": "Die App öffnet das Dashboard für {{persona}} auf „{{equipo}}“ nicht. Die Person kann erneut Zugriff anfragen, mit einem neuen Code.",
+      "confirmRevokeTitle": "Diesen Computer widerrufen?",
+      "confirmRevoke": "Die App wird auf „{{equipo}}“ innerhalb einer Minute geschlossen und löscht, was sie gespeichert hat. Für eine erneute Nutzung ist eine neue Freigabe nötig.",
+      "approvedOk": "Computer freigegeben.",
+      "rejectedOk": "Anfrage abgelehnt.",
+      "revokedOk": "Computer widerrufen.",
+      "actionError": "Das hat nicht geklappt. Bitte versuchen Sie es erneut.",
+      "loadError": "Die Liste der Computer konnte nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "refresh": "Aktualisieren",
+      "changedCompare": "Diese Anfrage hat sich geändert, während Sie sie angesehen haben. Vergleichen Sie den Code erneut mit dem auf dem Bildschirm der Person, bevor Sie entscheiden."
+    },
+    "download": {
+      "menuItem": "Desktop-App",
+      "eyebrow": "Für Mac und Windows",
+      "title": "Desktop-App",
+      "valueProp": "Das Dashboard im eigenen Fenster: Systembenachrichtigungen auch im minimierten Zustand, immer aktuell und ohne Browser.",
+      "windows": "Windows",
+      "macAppleSilicon": "Mac mit Apple silicon",
+      "macIntel": "Mac mit Intel",
+      "version": "Version {{version}}",
+      "downloadFor": "Für {{sistema}} herunterladen",
+      "comingSoonFor": "{{sistema}}: demnächst",
+      "comingSoon": "Demnächst",
+      "comingSoonHint": "Sehr bald verfügbar",
+      "download": "Herunterladen",
+      "started": "Der Download hat begonnen. Öffnen Sie die Datei, sobald er fertig ist.",
+      "linkError": "Der Download konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
+      "suspendedTitle": "Das Konto Ihres Unternehmens ist nicht aktiv",
+      "suspendedText": "Die Desktop-App kann heruntergeladen werden, solange das Abonnement Ihres Unternehmens bezahlt ist.",
+      "notEligibleTitle": "Ihr Konto kann die Desktop-App nicht nutzen",
+      "notEligibleText": "Die App ist für Büromitarbeitende gedacht. Wenn Sie meinen, dass Sie Zugriff haben sollten, fragen Sie einen Administrator Ihres Unternehmens.",
+      "loadError": "Downloads konnten nicht geladen werden",
+      "loadErrorText": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+      "goToBilling": "Tarif und Abrechnung ansehen",
+      "soonTitle": "Bald verfügbar",
+      "soonText": "Wir bereiten die Installationsprogramme vor. Schauen Sie in ein paar Tagen wieder auf dieser Seite vorbei.",
+      "otherSystem": "Auf diesem Gerät lässt sich die App nicht installieren. Öffnen Sie diese Seite auf einem Mac oder Windows-Computer.",
+      "detectedMac": "Empfohlen für Ihren Computer · {{chip}}",
+      "detectedMacUnknownChip": "Für Ihren Mac · Chip auswählen",
+      "detectedWindows": "Empfohlen für Ihren Computer · Windows",
+      "chipHelp": "Nicht sicher? Apple-Menü › Über diesen Mac. „Chip Apple M…“ bedeutet Apple silicon, „Prozessor Intel“ bedeutet Intel.",
+      "otherOptions": "Weitere Optionen",
+      "inDesktopTitle": "Sie sind bereits in der Desktop-App",
+      "inDesktop": "Dieses Fenster ist die App. Sie aktualisiert sich selbst, wenn eine neue Version erscheint.",
+      "inDesktopVersion": "Dieses Fenster ist die App (Version {{version}}). Sie aktualisiert sich selbst, wenn eine neue Version erscheint.",
+      "partnerHost": "Die Desktop-App ist auf dieser Website nicht verfügbar.",
+      "adminPendingTitle": "Computer, die auf Ihre Freigabe warten: {{n}}",
+      "adminPendingText": "Vergleichen Sie vor der Freigabe den Code jeder Anfrage mit dem, den die Person sieht.",
+      "reviewRequests": "Anfragen prüfen",
+      "mockAlert": "Neuer Live-Alarm"
+    },
+    "steps": {
+      "title": "Erste Schritte",
+      "installTitle": "Herunterladen und installieren",
+      "installText": "Öffnen Sie die heruntergeladene Datei. Auf dem Mac ziehen Sie die App in den Ordner „Programme“; unter Windows folgen Sie dem Installationsprogramm.",
+      "signInTitle": "Anmelden und Code notieren",
+      "signInText": "Melden Sie sich mit Ihrer gewohnten E-Mail-Adresse und Ihrem Passwort an. Die App zeigt Ihnen einen 8-stelligen Code.",
+      "approveTitle": "Ihr Administrator gibt den Computer frei",
+      "approveText": "Ein Administrator Ihres Unternehmens gibt diesen Code unter Einstellungen › Desktop-Computer frei. Die App öffnet sich dann von selbst.",
+      "waitingText": "„{{equipo}}“ wartet auf Freigabe. Geben Sie diesen Code an Ihren Administrator weiter:",
+      "approvedText": "Fertig: Ihr Computer ist freigegeben. Öffnen Sie die App und legen Sie los.",
+      "approveNow": "Jetzt freigeben",
+      "state": {
+        "hecho": "Erledigt",
+        "actual": "Aktueller Schritt",
+        "pendiente": "Ausstehend"
+      }
+    },
+    "requirements": {
+      "title": "Voraussetzungen",
+      "mac": "macOS 11 (Big Sur) oder neuer, mit Apple silicon oder Intel",
+      "windows": "Windows 10 oder 11, 64 Bit",
+      "internet": "Eine Internetverbindung und ein aktives Konto Ihres Unternehmens"
+    },
+    "security": {
+      "title": "Warum es sicher ist",
+      "approval": "Jeder Computer braucht die Freigabe eines Administrators: Ein gestohlenes Passwort reicht nicht, um das Dashboard auf einem anderen Computer zu öffnen.",
+      "encrypted": "Das Dashboard wird erst nach der Anmeldung heruntergeladen und verschlüsselt auf Ihrem Computer gespeichert. Es liegt nie unverschlüsselt vor.",
+      "revoke": "Wenn Sie einen Computer widerrufen, schließt sich die App dort innerhalb einer Minute und löscht, was sie gespeichert hat."
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "whyQ": "Warum muss jeder Computer freigegeben werden?",
+      "whyA": "Damit nur Computer, die Ihr Unternehmen kennt, das Dashboard öffnen können. Selbst wenn jemand Ihr Passwort hat, öffnet die App ohne Freigabe nichts.",
+      "codeQ": "Wo sehe ich den Code?",
+      "codeA": "Die App zeigt ihn bei der Anmeldung an, in einem Format wie K7QM-2XPA. Ihr Administrator sieht denselben Code in seiner Liste: Stimmen beide überein, ist es Ihr Computer.",
+      "updatesQ": "Aktualisiert sie sich selbst?",
+      "updatesA": "Ja. Wenn eine neue Version des Dashboards erscheint, lädt die App sie herunter und sagt Ihnen vor dem Neuladen Bescheid.",
+      "lostQ": "Mein Computer ist verloren gegangen oder wurde gestohlen. Was tun?",
+      "lostA": "Widerrufen Sie ihn unter „Meine Computer“ oder bitten Sie einen Administrator darum. Die App funktioniert auf diesem Computer innerhalb einer Minute nicht mehr und löscht, was sie gespeichert hat.",
+      "severalQ": "Kann ich sie auf mehreren Computern nutzen?",
+      "severalA": "Ja. Jeder Computer wird einzeln freigegeben und kann widerrufen werden, ohne die anderen zu beeinflussen.",
+      "windowsQ": "Wann kommt die Windows-Version?",
+      "windowsA": "Sehr bald. Wir veröffentlichen nur digital signierte Installationsprogramme; sobald das für Windows fertig ist, erscheint es auf dieser Seite."
     }
   }
 }

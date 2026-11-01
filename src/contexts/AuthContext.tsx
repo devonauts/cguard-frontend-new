@@ -38,7 +38,12 @@ import { queryClient } from "@/lib/queryClient";
 import { clearPersistedCache } from "@/lib/offline/persistCache";
 import { clearQueue } from "@/lib/offline/offlineQueue";
 import { isNetworkFailure } from "@/lib/offline/networkStatus";
-import { setAppBadge } from "@/lib/desktop";
+import {
+  desktopErrorCode,
+  notifyDesktopSessionUpdated,
+  notifyDesktopSignedOut,
+  setAppBadge,
+} from "@/lib/desktop";
 import { resolveActiveTenantId, clearTenants } from "@/lib/activeTenant";
 import { olvidarAgente } from "@/lib/agenteDeMarca";
 import { registrarCierreDeSesion } from "@/lib/accesoBloqueado";
@@ -588,7 +593,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (e instanceof ApiError) {
         console.warn("getProfile falló:", e.status, e.message);
         // Solo eliminamos token si estamos seguros que no sirve (401/invalid)
-        if (e.status === 401) {
+        // A desktop device problem (`desktop.*`) is not a dead session: the
+        // shell already got it and shows its own screen.
+        if (e.status === 401 && !desktopErrorCode(e.status, e.data)) {
           localStorage.removeItem("authToken");
           void cerrarSesionDeCodigo();
           setUser(null);
@@ -944,13 +951,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch {
         /* best-effort: la recarga de abajo sigue */
       }
-      // Sin sesión, el código del CRM deja de servirse: la recarga trae la
-      // mini-app pública (lib/sesionDeCodigo).
-      await cerrarSesionDeCodigoConTope();
-      try {
-        window.location.replace(destino);
-      } catch {
-        /* sin window (pruebas): el estado ya quedó limpio */
+      // Desktop app: the shell owns the session and the sign-in screen. It
+      // forgets the token and takes the window back to its own sign-in, so
+      // the CRM does not navigate by itself.
+      if (!notifyDesktopSignedOut(destino)) {
+        // Sin sesión, el código del CRM deja de servirse: la recarga trae la
+        // mini-app pública (lib/sesionDeCodigo).
+        await cerrarSesionDeCodigoConTope();
+        try {
+          window.location.replace(destino);
+        } catch {
+          /* sin window (pruebas): el estado ya quedó limpio */
+        }
       }
     }
   };
@@ -973,6 +985,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       localStorage.setItem("authToken", token);
       void abrirSesionDeCodigo(token);
+      // Desktop app: the shell keeps the session across launches.
+      notifyDesktopSessionUpdated(token);
       marcarQueHayQuePreguntarElEspacio();
       try {
         setAuthToken(token);

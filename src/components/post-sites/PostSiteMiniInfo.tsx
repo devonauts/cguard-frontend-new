@@ -29,7 +29,7 @@ export default function PostSiteMiniInfo({
         if (mounted)
           setError(
             t("guards.assignSites.postSiteLoadError", {
-              defaultValue: "No se pudo cargar el puesto",
+              defaultValue: "No se pudo cargar la sede",
             }),
           );
       })
@@ -46,7 +46,7 @@ export default function PostSiteMiniInfo({
     return (
       <div className="text-xs text-muted-foreground">
         {t("guards.assignSites.postSiteLoading", {
-          defaultValue: "Cargando puesto...",
+          defaultValue: "Cargando información de la sede...",
         })}
       </div>
     );

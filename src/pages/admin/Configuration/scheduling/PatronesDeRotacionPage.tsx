@@ -181,7 +181,7 @@ export default function PatronesDeRotacionPage() {
           {usado
             ? t("ui.Patrones.enUso", {
                 defaultValue:
-                  "{{estaciones}} estaciones · {{plazas}} plazas · {{personas}} personas",
+                  "{{estaciones}} estaciones · {{plazas}} puestos · {{personas}} personas",
                 estaciones: p.usage?.stations ?? 0,
                 plazas: p.usage?.positions ?? 0,
                 personas: p.usage?.assignments ?? 0,
@@ -387,7 +387,7 @@ export default function PatronesDeRotacionPage() {
               {uso.uso.positions.length > 0 && (
                 <div>
                   <p className="font-semibold">
-                    {t("ui.Patrones.plazas", "Plazas con este ciclo")}
+                    {t("ui.Patrones.plazas", "Puestos con este ciclo")}
                   </p>
                   <p style={{ color: "var(--ink-soft)" }}>
                     {uso.uso.positions

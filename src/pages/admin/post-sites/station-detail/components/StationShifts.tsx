@@ -792,7 +792,7 @@ export default function StationShifts({
             <p className="text-sm font-semibold">
               {t(
                 "ui.StationShifts.puestoSinVigilantes",
-                "Este puesto todavía no tiene vigilantes",
+                "Esta estación todavía no tiene vigilantes",
               )}
             </p>
             <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
@@ -830,12 +830,12 @@ export default function StationShifts({
             <p className="text-sm font-semibold">
               {sinCiclo.length === 1
                 ? t("ui.StationShifts.unoTrabajaTodosLosDias", {
-                    defaultValue: "{{nombre}} trabaja todos los días en este puesto",
+                    defaultValue: "{{nombre}} trabaja todos los días en esta estación",
                     nombre: sinCiclo[0],
                   })
                 : t("ui.StationShifts.nTrabajanTodosLosDias", {
                     defaultValue:
-                      "{{n}} vigilantes trabajan todos los días en este puesto",
+                      "{{n}} vigilantes trabajan todos los días en esta estación",
                     n: sinCiclo.length,
                   })}
             </p>
@@ -1304,7 +1304,7 @@ export default function StationShifts({
                                       <Trash2 size={10} />{" "}
                                       {t(
                                         "guards.assignSites.actions.removeFromPost",
-                                        "Quitar del puesto",
+                                        "Quitar de la estación",
                                       )}
                                     </div>
                                   </div>

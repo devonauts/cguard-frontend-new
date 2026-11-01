@@ -44,6 +44,7 @@ import {
   X,
   Check,
   Inbox,
+  MonitorDown,
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
@@ -237,7 +238,8 @@ export default function Header({
   useAddonChangesLive();
   /* El nombre del anfitrión. En el de la plataforma es «C-Guard Pro»; en el de
      un socio, el suyo — y por eso estos textos no lo llevan escrito. */
-  const { platformName: nombreDeMarca } = useWhiteLabel();
+  const { platformName: nombreDeMarca, puedeUsarArteDePlataforma } =
+    useWhiteLabel();
   // Y cómo se llama el asistente, que es otra decisión del socio y otra fuente.
   const agente = useAgente();
   const { t } = useTranslation();
@@ -1302,6 +1304,20 @@ export default function Header({
                       />
                       {t("settings.configuracion.apariencia", "Apariencia")}
                     </NavLink>
+                    {/* The desktop program (platform hosts only: it carries our name). */}
+                    {puedeUsarArteDePlataforma ? (
+                      <NavLink
+                        className={enlaceMenu}
+                        style={{ color: "var(--ink)" }}
+                        to="/escritorio"
+                      >
+                        <MonitorDown
+                          className="h-4 w-4"
+                          style={{ color: "var(--ink-faint)" }}
+                        />
+                        {t("desktopApp.download.menuItem")}
+                      </NavLink>
+                    ) : null}
                     <NavLink
                       className={enlaceMenu}
                       style={{ color: "var(--ink)" }}

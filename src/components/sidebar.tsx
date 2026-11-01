@@ -70,6 +70,7 @@ import {
   Puzzle,
   type LucideIcon,
   Sparkles,
+  MonitorDown,
 } from "lucide-react";
 
 import sidebarMenuData from "../data/sidebar-menu.json";
@@ -120,6 +121,8 @@ type MenuItem = {
   modulo?: string;
   /** Backend permission ids the page needs (any one). See lib/menuPermissions. */
   permission?: string[];
+  /** Only on the platform's own hosts (the desktop program carries its name). */
+  plataforma?: boolean;
 };
 
 // Mapa de nombres de iconos a componentes de iconos
@@ -151,6 +154,7 @@ const iconMap: Record<string, LucideIcon> = {
   ClipboardSignature,
   Puzzle,
   Sparkles,
+  MonitorDown,
 };
 
 /* ── GRUPOS DEL MENÚ ──────────────────────────────────────────────────────────
@@ -233,7 +237,7 @@ const GROUPS: GroupDef[] = [
     /* «superadmin» salió del menú: apuntaba a `/superadmin/tenants`, que vive
        en OTRA app. Quien lo pulsaba —cualquiera cuyo rol normalice a «admin»,
        no sólo un superadmin de plataforma— caía en el 404 de este CRM. */
-    ids: ["seguridad-auditoria", "modulos-adicionales"],
+    ids: ["seguridad-auditoria", "modulos-adicionales", "app-escritorio"],
   },
 ];
 
@@ -596,7 +600,8 @@ export default function Sidebar({
   onNavigate,
 }: SidebarProps) {
   // Without a company name, the HOST's brand (the partner's on their subdomain), never ours.
-  const { platformName: nombreDeMarca } = useWhiteLabel();
+  const { platformName: nombreDeMarca, puedeUsarArteDePlataforma } =
+    useWhiteLabel();
   const { t } = useTranslation();
   const { user, hasAny } = useAuth();
   const { theme, toggleTheme } = useThemeContext();
@@ -747,6 +752,7 @@ export default function Sidebar({
         if ((item as any).disabled) return false;
         if (!allowed(item)) return false;
         if (item.tienda && !hayTienda) return false;
+        if (item.plataforma && !puedeUsarArteDePlataforma) return false;
         if (item.modulo && !hasFeature(user, item.modulo)) return false;
         if (!item.allowedRoles || item.allowedRoles.length === 0) return true;
         if (item.allowedRoles.includes("superadmin")) return isGlobalAdmin;
@@ -783,7 +789,16 @@ export default function Sidebar({
       )
       // A group whose every page was filtered out is not offered empty.
       .filter((item) => !item.expandable || (item.subItems?.length ?? 0) > 0);
-  }, [menuItems, user, isGlobalAdmin, hayTienda, hayGusto, hasAny, pausedOwned]);
+  }, [
+    menuItems,
+    user,
+    isGlobalAdmin,
+    hayTienda,
+    hayGusto,
+    hasAny,
+    pausedOwned,
+    puedeUsarArteDePlataforma,
+  ]);
 
   // Etiquetas i18n — mismo orden de resolución que la versión anterior.
   // `agente`: el nombre del asistente de ESTA empresa («VigIA» o el del socio);

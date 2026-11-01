@@ -289,7 +289,7 @@ export default function RotacionDeLaEstacion({
               <span className="mt-0.5 block text-[10px] font-normal opacity-75">
                 {t(
                   "ui.RotacionDeLaEstacion.unSoloCicloParaTodoElPuesto",
-                  "Un solo ciclo para todo el puesto. El motor escalona a los vigilantes entre sí.",
+                  "Un solo ciclo para toda la estación. El motor escalona a los vigilantes entre sí.",
                 )}
               </span>
             </button>
@@ -312,7 +312,7 @@ export default function RotacionDeLaEstacion({
               <span className="mt-0.5 block text-[10px] font-normal opacity-75">
                 {t(
                   "ui.RotacionDeLaEstacion.cadaPlazaConSuCiclo",
-                  "Cada plaza con su ciclo — uno hace 2 mañanas y 3 tardes, otro 3 y 2.",
+                  "Cada puesto con su ciclo — uno hace 2 mañanas y 3 tardes, otro 3 y 2.",
                 )}
               </span>
             </button>
@@ -340,7 +340,7 @@ export default function RotacionDeLaEstacion({
           >
             {t(
               "ui.RotacionDeLaEstacion.elCicloDeCadaPlaza",
-              "El ciclo de cada plaza",
+              "El ciclo de cada puesto",
             )}
           </div>
           {cargando ? (

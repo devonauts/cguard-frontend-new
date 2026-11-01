@@ -750,7 +750,7 @@ export default function AgregarVariasPage() {
                 <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
                   {t(
                     "agregarVarias.lista.ayuda",
-                    "Una fila por persona. Columnas: Tipo (vigilante, supervisor u oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (solo oficina), Puesto (estación o puesto de supervisión) y Empieza. Con la primera fila de títulos, el orden no importa.",
+                    "Una fila por persona. Columnas: Tipo (vigilante, supervisor u oficina), Nombres, Apellidos, Documento, Celular, Correo, Rol (solo oficina), Puesto (la estación y su puesto, o el puesto de supervisión) y Empieza. Con la primera fila de títulos, el orden no importa.",
                   )}
                 </p>
                 <textarea

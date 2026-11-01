@@ -187,7 +187,7 @@ export default function StationIncidents({ stationId, postSiteId }: Props) {
             icon={<AlertTriangle />}
             title={t(
               "station.incidents.empty",
-              "No hay incidencias para este puesto.",
+              "No hay incidencias para esta estación.",
             )}
           />
         </div>

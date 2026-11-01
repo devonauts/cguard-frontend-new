@@ -376,7 +376,7 @@ export default function StationGuards({
       throw new Error(
         t(
           "station.guards.stationFull",
-          "Todas las plazas de este puesto ya tienen vigilante. Si el cliente pide uno más, agrega una plaza en el horario del puesto y vuelve a asignar.",
+          "Todos los puestos de esta estación ya tienen vigilante. Si el cliente pide uno más, agrega un puesto en el horario de la estación y vuelve a asignar.",
         ),
       );
     }
@@ -477,7 +477,7 @@ export default function StationGuards({
           toast.error(
             t(
               "eventos.eligeOtroVigilante",
-              "Elige a otro vigilante: ese ya está en esta plaza.",
+              "Elige a otro vigilante: ese ya está en este puesto.",
             ),
           );
 
@@ -621,7 +621,7 @@ export default function StationGuards({
       toast.success(
         t(
           "station.guards.removed",
-          "Vigilante quitado del puesto — su historial se conserva",
+          "Vigilante quitado de la estación y de sus turnos",
         ),
       );
     } catch (e: any) {
@@ -849,7 +849,7 @@ export default function StationGuards({
                     className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted/40"
                     title={t(
                       "ui.StationGuards.editarElTurnoTitle",
-                      "Editar el turno (plaza, secuencia, fechas)",
+                      "Editar el turno (puesto, secuencia, fechas)",
                     )}
                     onClick={() => setEditando(a.assignmentId)}
                   >
@@ -894,7 +894,7 @@ export default function StationGuards({
                 )
               : t(
                   "station.guards.assignSub",
-                  "Vigilante fijo de la rotación del puesto",
+                  "Vigilante fijo de la rotación de la estación",
                 )
         }
         footer={

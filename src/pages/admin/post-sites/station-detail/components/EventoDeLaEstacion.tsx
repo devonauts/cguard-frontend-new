@@ -256,7 +256,7 @@ export function EventoVigilantes({ station, stationId, postSiteId }: Props) {
         }),
         message: t(
           "ui.EventoDeLaEstacion.quitarTexto",
-          "Su plaza queda libre y su turno del evento se borra.",
+          "Su puesto queda libre y su turno del evento se borra.",
         ),
         confirmText: t("station.guards.remove", "Quitar"),
         tone: "danger",
@@ -314,10 +314,10 @@ export function EventoVigilantes({ station, stationId, postSiteId }: Props) {
           action={botonRelevos || undefined}
           description={t(
             "ui.EventoDeLaEstacion.sinPlazasTexto",
-            "Esta estación no tiene plazas. Usa «Cambiar relevos» para decir su horario y cuántos vigilantes van a la vez.",
+            "Esta estación no tiene puestos. Usa «Cambiar relevos» para decir su horario y cuántos vigilantes van a la vez.",
           )}
           icon={<Users />}
-          title={t("ui.EventoDeLaEstacion.sinPlazas", "Sin plazas")}
+          title={t("ui.EventoDeLaEstacion.sinPlazas", "Sin puestos")}
         />
       )
     );
@@ -333,7 +333,7 @@ export function EventoVigilantes({ station, stationId, postSiteId }: Props) {
         </span>
         {" · "}
         {t("ui.EventoDeLaEstacion.cubiertas", {
-          defaultValue: "{{cubiertas}} de {{plazas}} plazas cubiertas",
+          defaultValue: "{{cubiertas}} de {{plazas}} puestos cubiertos",
           cubiertas,
           plazas: plazasTotales,
         })}

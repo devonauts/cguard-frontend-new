@@ -150,7 +150,7 @@ export function AvisoFechasDelEvento({
     >
       {t(
         "eventos.fechasLasPoneElEvento",
-        "El vigilante trabaja las horas de su plaza dentro de esas fechas. No hace falta elegir inicio, fin ni ciclo.",
+        "El vigilante trabaja las horas de su puesto dentro de esas fechas. No hace falta elegir inicio, fin ni ciclo.",
       )}
     </InfoNote>
   );

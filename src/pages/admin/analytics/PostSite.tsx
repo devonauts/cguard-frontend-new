@@ -30,7 +30,7 @@ export default function PostSite() {
       subtitle={t("ui.PostSite.desempenoOperativoDeCadaSitio")}
       title={t(
         "ui.PostSite.analiticasPorSitioDeServicio",
-        "Analíticas por Sitio de Servicio",
+        "Analíticas por sede",
       )}
     >
       {data && k && (
@@ -82,7 +82,7 @@ export default function PostSite() {
             icon={<AlertTriangle size={16} />}
             title={t(
               "ui.PostSite.sitiosConMasIncidentes",
-              "Sitios con más incidentes",
+              "Sedes con más incidentes",
             )}
           >
             <HBars
@@ -102,7 +102,7 @@ export default function PostSite() {
             icon={<Building2 size={16} />}
             title={t(
               "ui.PostSite.desempenoPorSitioDeServicio",
-              "Desempeño por sitio de servicio",
+              "Desempeño por sede",
             )}
           >
             {data.perSite.length === 0 ? (

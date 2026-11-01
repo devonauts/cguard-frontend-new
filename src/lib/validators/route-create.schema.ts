@@ -43,7 +43,7 @@ export const routeCreateSchema = z
     siteIds: z.array(z.string()).min(1, {
       error: msj(
         "validation.route.sitesRequired",
-        "Selecciona al menos un puesto de seguridad",
+        "Selecciona al menos una sede",
       ),
     }),
     vehicleId: z.string().min(1, {

@@ -5596,7 +5596,8 @@
       "configuracion": "Instellingen",
       "coberturaEnVivo": "Live dekking",
       "atrasos": "Te laat deze week"
-    }
+    },
+    "app-escritorio": "Desktop-app"
   },
   "siteTour": {
     "newTour": "Nieuwe ronde",
@@ -7482,7 +7483,11 @@
       "dobletes": "Dubbele diensten",
       "dobletes.desc": "Rondes, bonussen, punten, niveaus en ranglijst van de reserve.",
       "patrones-rotacion": "Rotatiepatronen",
-      "patrones-rotacion.desc": "De werk- en rustcycli: hernoemen, archiveren en zien waar elk wordt gebruikt."
+      "patrones-rotacion.desc": "De werk- en rustcycli: hernoemen, archiveren en zien waar elk wordt gebruikt.",
+      "computadoras": "Desktopcomputers",
+      "computadoras.desc": "Keur elke computer goed die de desktop-app gebruikt, of trek hem in.",
+      "app-escritorio": "Desktop-app",
+      "app-escritorio.desc": "Download het dashboard voor Mac of Windows, in een eigen venster."
     },
     "section": {
       "mi_cuenta": "Mijn account",
@@ -22114,6 +22119,34 @@
       "error": "Het dashboard kon niet worden geopend. Log opnieuw in.",
       "reintentar": "Opnieuw proberen",
       "volverAEntrar": "Opnieuw inloggen"
+    },
+    "accesoNegado": {
+      "revisar": "Opnieuw controleren",
+      "salir": "Afmelden",
+      "review": {
+        "titulo": "Je bedrijf wordt beoordeeld",
+        "texto": "We beoordelen de aanmelding van je bedrijf. Zodra die is goedgekeurd, kun je het paneel openen met deze gebruiker."
+      },
+      "rejected": {
+        "titulo": "We konden je bedrijf niet goedkeuren",
+        "texto": "De aanvraag van je bedrijf is niet goedgekeurd. Denk je dat dit een vergissing is, schrijf dan naar support."
+      },
+      "suspended": {
+        "titulo": "Je bedrijf is opgeschort",
+        "texto": "De toegang tot het paneel is gepauzeerd voor je bedrijf. Schrijf naar support om het te heractiveren."
+      },
+      "field": {
+        "titulo": "Je account is voor de mobiele app",
+        "texto": "Bewakers en veldsupervisors werken met de app op hun telefoon. Meld je daar aan met deze gebruiker."
+      },
+      "customer": {
+        "titulo": "Je account is voor het klantenportaal",
+        "texto": "Dit account is voor het klantenportaal. Open het via de link die je beveiligingsbedrijf je stuurde."
+      },
+      "noCompany": {
+        "titulo": "Je account heeft geen actief bedrijf",
+        "texto": "Je gebruiker hoort bij geen enkel actief bedrijf. Vraag een beheerder van je bedrijf om je uit te nodigen of je toegang te heractiveren."
+      }
     }
   },
   "dobletes": {
@@ -22747,6 +22780,141 @@
       "correoEnviado": "E-mail verstuurd naar {{c}}",
       "reintentar": "Opnieuw proberen",
       "reintentarHorario": "Rooster opnieuw proberen"
+    }
+  },
+  "desktopApp": {
+    "devices": {
+      "title": "Desktopcomputers",
+      "subtitle": "Elke computer die de desktop-app gebruikt, moet eerst door een beheerder worden goedgekeurd voordat het dashboard opent.",
+      "downloadCta": "App downloaden",
+      "pendingTitle": "Openstaande verzoeken",
+      "pendingHint": "Keur alleen goed als de code overeenkomt met wat de persoon op het eigen scherm ziet. Twijfel je? Vraag het dan eerst na.",
+      "pendingEmpty": "Er wachten geen computers op goedkeuring.",
+      "approvedTitle": "Goedgekeurde computers",
+      "approvedEmpty": "Nog geen computers goedgekeurd.",
+      "closedTitle": "Afgewezen en ingetrokken",
+      "mineTitle": "Mijn computers",
+      "mineEmpty": "Je gebruikt de desktop-app nog niet",
+      "mineEmptyText": "Zodra je op een computer inlogt in de app, verschijnt die hier met de status.",
+      "notAdmin": "Alleen de beheerders van je bedrijf keuren computers goed. Hieronder zie je die van jou.",
+      "code": "Code",
+      "codeAria": "Koppelcode {{codigo}}",
+      "requestedAt": "Aangevraagd op {{fecha}}",
+      "lastSeen": "Laatste verbinding: {{fecha}}",
+      "neverSeen": "Nog geen verbindingen",
+      "revokedAt": "Ingetrokken op {{fecha}}",
+      "rejectedAt": "Afgewezen op {{fecha}}",
+      "version": "Versie {{version}}",
+      "ip": "IP {{ip}}",
+      "unknownComputer": "Naamloze computer",
+      "unknownUser": "Naamloze persoon",
+      "approve": "Goedkeuren",
+      "reject": "Afwijzen",
+      "revoke": "Intrekken",
+      "status": {
+        "pending": "In afwachting",
+        "approved": "Goedgekeurd",
+        "rejected": "Afgewezen",
+        "revoked": "Ingetrokken"
+      },
+      "confirmApproveTitle": "Deze computer goedkeuren?",
+      "confirmApprove": "{{persona}} kan dan het dashboard openen vanaf “{{equipo}}”. Controleer of de code {{codigo}} op het scherm van die persoon staat.",
+      "confirmRejectTitle": "Verzoek afwijzen?",
+      "confirmReject": "De app opent het dashboard niet voor {{persona}} op “{{equipo}}”. Die persoon kan opnieuw toegang vragen, met een nieuwe code.",
+      "confirmRevokeTitle": "Deze computer intrekken?",
+      "confirmRevoke": "De app sluit binnen een minuut op “{{equipo}}” en wist wat er was opgeslagen. Om de app weer te gebruiken is opnieuw goedkeuring nodig.",
+      "approvedOk": "Computer goedgekeurd.",
+      "rejectedOk": "Verzoek afgewezen.",
+      "revokedOk": "Computer ingetrokken.",
+      "actionError": "Dat is niet gelukt. Probeer het opnieuw.",
+      "loadError": "De lijst met computers kon niet worden geladen.",
+      "retry": "Opnieuw proberen",
+      "refresh": "Vernieuwen",
+      "changedCompare": "Dit verzoek is gewijzigd terwijl je het bekeek. Vergelijk de code opnieuw met die op het scherm van de persoon voordat je beslist."
+    },
+    "download": {
+      "menuItem": "Desktop-app",
+      "eyebrow": "Voor Mac en Windows",
+      "title": "Desktop-app",
+      "valueProp": "Het dashboard in een eigen venster: systeemmeldingen ook als het geminimaliseerd is, altijd up-to-date en zonder browser.",
+      "windows": "Windows",
+      "macAppleSilicon": "Mac met Apple silicon",
+      "macIntel": "Mac met Intel",
+      "version": "Versie {{version}}",
+      "downloadFor": "Downloaden voor {{sistema}}",
+      "comingSoonFor": "{{sistema}}: binnenkort",
+      "comingSoon": "Binnenkort",
+      "comingSoonHint": "Zeer binnenkort beschikbaar",
+      "download": "Downloaden",
+      "started": "De download is gestart. Open het bestand zodra hij klaar is.",
+      "linkError": "De download kon niet worden voorbereid. Probeer het opnieuw.",
+      "suspendedTitle": "Het account van je bedrijf is niet actief",
+      "suspendedText": "De desktop-app is te downloaden zolang het abonnement van je bedrijf in orde is.",
+      "notEligibleTitle": "Je account kan de desktop-app niet gebruiken",
+      "notEligibleText": "De app is bedoeld voor kantoormedewerkers. Denk je dat je toegang zou moeten hebben? Vraag het dan aan een beheerder van je bedrijf.",
+      "loadError": "De downloads konden niet worden geladen",
+      "loadErrorText": "Controleer je verbinding en probeer het opnieuw.",
+      "goToBilling": "Abonnement en facturering bekijken",
+      "soonTitle": "Binnenkort beschikbaar",
+      "soonText": "We zijn de installatieprogramma’s aan het voorbereiden. Kom over een paar dagen terug op deze pagina.",
+      "otherSystem": "Op dit apparaat kun je de app niet installeren. Open deze pagina op een Mac- of Windows-computer.",
+      "detectedMac": "Aanbevolen voor je computer · {{chip}}",
+      "detectedMacUnknownChip": "Voor je Mac · kies de chip",
+      "detectedWindows": "Aanbevolen voor je computer · Windows",
+      "chipHelp": "Weet je het niet zeker? Apple-menu › Over deze Mac. “Chip Apple M…” betekent Apple silicon; “Processor Intel” betekent Intel.",
+      "otherOptions": "Andere opties",
+      "inDesktopTitle": "Je zit al in de desktop-app",
+      "inDesktop": "Dit venster is de app. Die werkt zichzelf bij zodra er een nieuwe versie is.",
+      "inDesktopVersion": "Dit venster is de app (versie {{version}}). Die werkt zichzelf bij zodra er een nieuwe versie is.",
+      "partnerHost": "De desktop-app is niet beschikbaar op deze site.",
+      "adminPendingTitle": "Computers die op je goedkeuring wachten: {{n}}",
+      "adminPendingText": "Vergelijk vóór het goedkeuren de code van elk verzoek met de code die de persoon ziet.",
+      "reviewRequests": "Verzoeken bekijken",
+      "mockAlert": "Nieuwe live-melding"
+    },
+    "steps": {
+      "title": "Zo begin je",
+      "installTitle": "Downloaden en installeren",
+      "installText": "Open het gedownloade bestand. Op een Mac sleep je de app naar Programma’s; op Windows volg je het installatieprogramma.",
+      "signInTitle": "Log in en noteer de code",
+      "signInText": "Log in met je gewone e-mailadres en wachtwoord. De app toont je een code van 8 tekens.",
+      "approveTitle": "Je beheerder keurt de computer goed",
+      "approveText": "Een beheerder van je bedrijf keurt die code goed via Instellingen › Desktopcomputers. De app opent daarna vanzelf.",
+      "waitingText": "“{{equipo}}” wacht op goedkeuring. Geef deze code aan je beheerder:",
+      "approvedText": "Klaar: je computer is goedgekeurd. Open de app en ga aan de slag.",
+      "approveNow": "Nu goedkeuren",
+      "state": {
+        "hecho": "Klaar",
+        "actual": "Huidige stap",
+        "pendiente": "In afwachting"
+      }
+    },
+    "requirements": {
+      "title": "Vereisten",
+      "mac": "macOS 11 (Big Sur) of nieuwer, met Apple silicon of Intel",
+      "windows": "Windows 10 of 11, 64-bit",
+      "internet": "Een internetverbinding en een actief account van je bedrijf"
+    },
+    "security": {
+      "title": "Waarom het veilig is",
+      "approval": "Elke computer heeft goedkeuring van een beheerder nodig: met alleen een gestolen wachtwoord open je het dashboard niet op een andere computer.",
+      "encrypted": "Het dashboard wordt pas gedownload nadat je bent ingelogd en wordt versleuteld opgeslagen op je computer. Het staat nooit onversleuteld op je computer.",
+      "revoke": "Als je een computer intrekt, sluit de app daarop binnen een minuut en wist die wat er was opgeslagen."
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "whyQ": "Waarom moet elke computer worden goedgekeurd?",
+      "whyA": "Zodat alleen computers die je bedrijf kent het dashboard kunnen openen. Ook als iemand je wachtwoord heeft, opent de app zonder goedkeuring niets.",
+      "codeQ": "Waar zie ik de code?",
+      "codeA": "De app toont de code als je inlogt, in een vorm als K7QM-2XPA. Je beheerder ziet dezelfde code in de lijst: als ze overeenkomen, is het jouw computer.",
+      "updatesQ": "Werkt de app zichzelf bij?",
+      "updatesA": "Ja. Zodra er een nieuwe versie van het dashboard is, downloadt de app die en laat je dat weten voordat hij herlaadt.",
+      "lostQ": "Mijn computer is kwijt of gestolen. Wat nu?",
+      "lostA": "Trek hem in via “Mijn computers” of vraag een beheerder dat te doen. De app werkt binnen een minuut niet meer op die computer en wist wat er was opgeslagen.",
+      "severalQ": "Kan ik de app op meerdere computers gebruiken?",
+      "severalA": "Ja. Elke computer wordt apart goedgekeurd en kan worden ingetrokken zonder dat de andere daar last van hebben.",
+      "windowsQ": "Wanneer komt de Windows-versie?",
+      "windowsA": "Heel binnenkort. We publiceren alleen digitaal ondertekende installatieprogramma’s; zodra die voor Windows klaar is, verschijnt hij op deze pagina."
     }
   }
 }

@@ -98,7 +98,7 @@ export default function StationHero({
   const [savingNick, setSavingNick] = useState(false);
 
   const name =
-    station?.stationName || station?.name || t("ui.StationHero.puesto", "Puesto");
+    station?.stationName || station?.name || t("ui.StationHero.puesto", "Estación");
   const guards: { id: string; name: string }[] = useMemo(
     () =>
       (station?.assignedGuards || []).map((u: any) => ({
@@ -360,7 +360,7 @@ export default function StationHero({
                   )}
                   {station?.isMobile && (
                     <StatusBadge tone="warn">
-                      {t("ui.StationHero.puestoMovil", "Puesto móvil")}
+                      {t("ui.StationHero.puestoMovil", "Estación móvil")}
                     </StatusBadge>
                   )}
                 </div>

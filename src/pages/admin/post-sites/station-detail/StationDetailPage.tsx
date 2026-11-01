@@ -78,7 +78,7 @@ export default function StationDetailPage() {
         if (mounted)
           setError(
             e?.message ||
-              t("station.details.loadError", "Error al cargar puesto"),
+              t("station.details.loadError", "Error al cargar la estación"),
           );
       } finally {
         if (mounted) setLoading(false);

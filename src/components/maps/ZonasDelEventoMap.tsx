@@ -364,7 +364,7 @@ export default function ZonasDelEventoMap({
       ],
       metrics: [
         {
-          label: t("ui.ZonasDelEventoMap.h.plazas", "Plazas"),
+          label: t("ui.ZonasDelEventoMap.h.plazas", "Puestos"),
           value: z.cupo,
         },
         {
@@ -549,7 +549,7 @@ export default function ZonasDelEventoMap({
         ) : (
           <span style={{ color: "var(--ink-soft)" }}>
             {t("ui.ZonasDelEventoMap.resumen", {
-              defaultValue: "{{cubiertas}} de {{cupo}} plazas cubiertas",
+              defaultValue: "{{cubiertas}} de {{cupo}} puestos cubiertos",
               cubiertas,
               cupo,
             })}

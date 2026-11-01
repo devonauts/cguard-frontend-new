@@ -4,12 +4,18 @@ import { useTranslation } from "react-i18next";
 
 import {
   destinoSeguro,
+  entregarAlEscritorio,
   guardarDestino,
   puedoTraspasar,
   tomarDestino,
 } from "./traspaso";
+import { AccesoNegado } from "./AccesoNegado";
 
-import { abrirSesionDeCodigo } from "@/lib/sesionDeCodigo";
+import {
+  abrirSesionDeCodigoConMotivo,
+  type MotivoSinCodigo,
+} from "@/lib/sesionDeCodigo";
+import { isDesktop } from "@/lib/desktop";
 
 /**
  * Cualquier ruta que la mini-app pública NO tiene (todo el CRM).
@@ -51,19 +57,36 @@ export function CualquierOtraRuta() {
 function Traspaso({ destino }: { destino: string }) {
   const { t } = useTranslation();
   const [fallo, setFallo] = useState(false);
+  const [motivo, setMotivo] = useState<MotivoSinCodigo | null>(null);
 
   useEffect(() => {
     let vivo = true;
 
     (async () => {
+      /* Desktop app: no cookie and no reload. The shell takes the token,
+         enrolls this computer and opens the CRM once the company approves it. */
+      if (isDesktop()) {
+        const r = await entregarAlEscritorio(localStorage);
+
+        if (vivo && !r) setFallo(true);
+
+        return;
+      }
       if (!puedoTraspasar(sessionStorage)) {
         setFallo(true);
 
         return;
       }
-      const r = await abrirSesionDeCodigo();
+      const { resultado: r, motivo: porQue } =
+        await abrirSesionDeCodigoConMotivo();
 
       if (!vivo) return;
+      if (porQue) {
+        // A valid session, but this company may not use the panel: say why.
+        setMotivo(porQue);
+
+        return;
+      }
       if (r === "ok") {
         window.location.replace(destino);
 
@@ -108,6 +131,16 @@ function Traspaso({ destino }: { destino: string }) {
     }
     window.location.reload();
   };
+
+  if (motivo) {
+    return (
+      <AccesoNegado
+        motivo={motivo}
+        onRevisar={reintentar}
+        onSalir={volverAEntrar}
+      />
+    );
+  }
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-5 bg-[#F8F7F4] px-6 text-center dark:bg-[#0A0A0A]">

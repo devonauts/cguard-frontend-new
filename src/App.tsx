@@ -144,6 +144,11 @@ const PatronesDeRotacionPage = lazy(
 const JornadaPage = lazy(
   () => import("./pages/admin/Configuration/scheduling/JornadaPage"),
 );
+// The desktop program: download page (everyone) and computer approvals (Settings).
+const EscritorioPage = lazy(() => import("./pages/escritorio/EscritorioPage"));
+const ComputadorasPage = lazy(
+  () => import("./pages/admin/Configuration/desktop/ComputadorasPage"),
+);
 const ActivityLogHubPage = lazy(
   () => import("./pages/admin/Configuration/activity-log/ActivityLogHubPage"),
 );
@@ -2706,6 +2711,22 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/setting/seguridad"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <ComputadorasPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/setting/computadoras"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <EscritorioPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/escritorio"
                               />
                               <Route
                                 element={

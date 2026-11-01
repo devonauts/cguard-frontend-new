@@ -14,6 +14,13 @@ import { mantenerSesionDeCodigo } from "./lib/sesionDeCodigo";
 // Antes de pintar nada: un traductor del navegador no debe poder tumbar la app.
 instalarBlindajeDom();
 
+/* ── DESKTOP APP: THE SESSION COMES FROM THE SHELL ─────────────────────────
+   Before anything talks to the API. `null` (web, or a shell without
+   `getSession`) keeps the usual path untouched: the token in localStorage. */
+const sesionDeEscritorio: Promise<boolean> | null = isDesktop()
+  ? bootDesktopSession((token) => setAuthToken(token))
+  : null;
+
 // La atribución del sitio (?cg=&lp=&lang=) se guarda al llegar, por la ruta
 // que sea (la raíz, /login, /register): navegar dentro de la app la perdía.
 guardarAtribucionWeb();
@@ -63,7 +70,13 @@ import { registerSW } from "virtual:pwa-register";
 
 // Puente escritorio/SO (efecto secundario: registra el manejador de deep links
 // cguardpro:// cuando corremos dentro de la app de escritorio).
-import "@/lib/desktop";
+import {
+  applyDesktopUpdate,
+  bootDesktopSession,
+  isDesktop,
+  onDesktopUpdateReady,
+} from "@/lib/desktop";
+import { setAuthToken } from "@/lib/api";
 import { WhiteLabelProvider } from "@/contexts/WhiteLabelContext";
 import { ConfirmHost } from "@/components/ui/confirmDialog";
 import { PromptHost } from "@/components/ui/promptDialog";
@@ -122,11 +135,29 @@ mantenerSesionDeCodigo();
 startCachePersistence();
 /* La identidad sale YA, en paralelo con la marca del anfitrión, en vez de
    encolarse detrás de ella. El porqué medido está en `perfilDeLaCuenta.ts`. */
-adelantarPerfil();
-/* Y las listas del tablero también, si es ahí adonde se va: salían a los 2,1 s
-   (detrás de la identidad y del trozo del dashboard) y ahora salen con ella.
-   Ver `control-center/consultas.ts`. */
-if (/^\/(dashboard\/?)?$/.test(window.location.pathname)) precargarDashboard();
+const adelantarLecturas = () => {
+  adelantarPerfil();
+  /* Y las listas del tablero también, si es ahí adonde se va: salían a los 2,1 s
+     (detrás de la identidad y del trozo del dashboard) y ahora salen con ella.
+     Ver `control-center/consultas.ts`. */
+  if (/^\/(dashboard\/?)?$/.test(window.location.pathname)) precargarDashboard();
+};
+
+// Desktop: only once the shell's session is in place.
+if (sesionDeEscritorio) {
+  void sesionDeEscritorio.then((ok) => {
+    if (ok) adelantarLecturas();
+  });
+  /* A new CRM build downloaded by the shell: the same «new version» notice
+     with countdown as the web's service worker (`lib/recarga`); its reload
+     loads the new build. A `required` build is reloaded by the shell itself. */
+  registrarActualizador(() => applyDesktopUpdate());
+  onDesktopUpdateReady((info) => {
+    if (!info.required) marcarVersionNueva();
+  });
+} else {
+  adelantarLecturas();
+}
 
 window.addEventListener("vite:preloadError", (event) => {
   const last = Number(sessionStorage.getItem("chunkReloadAt") || 0);
@@ -211,5 +242,17 @@ const montarUnaVez = () => {
   }
 };
 
-setTimeout(montarUnaVez, ESPERA_IDIOMA_MS);
-idiomaListo.then(montarUnaVez, montarUnaVez);
+const arrancarMontaje = () => {
+  setTimeout(montarUnaVez, ESPERA_IDIOMA_MS);
+  idiomaListo.then(montarUnaVez, montarUnaVez);
+};
+
+/* Desktop: nothing mounts without the shell's session (no session = the shell
+   already took the window back to its sign-in). */
+if (sesionDeEscritorio) {
+  void sesionDeEscritorio.then((ok) => {
+    if (ok) arrancarMontaje();
+  });
+} else {
+  arrancarMontaje();
+}

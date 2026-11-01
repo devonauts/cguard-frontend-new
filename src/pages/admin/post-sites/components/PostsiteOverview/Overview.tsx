@@ -458,7 +458,7 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
             icon={<MapPin />}
             title={t(
               "postSites.overview.Map.noCoords",
-              "Este sitio no tiene coordenadas configuradas.",
+              "Esta sede no tiene coordenadas configuradas.",
             )}
             action={
               address ? (

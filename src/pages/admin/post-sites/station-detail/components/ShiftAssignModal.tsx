@@ -1087,7 +1087,7 @@ export default function ShiftAssignModal({
 
         {evento ? (
           positionOptions.length > 0 ? (
-            <LabeledField label={t("eventos.plaza", "Plaza")}>
+            <LabeledField label={t("eventos.plaza", "Puesto")}>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {positionOptions
                   .filter((p) => p.type === "fijo")
@@ -1164,10 +1164,10 @@ export default function ShiftAssignModal({
                     {cubiertas >= fijas.length
                       ? t(
                           "eventos.todasLasPlazasCubiertas",
-                          "Todas las plazas de este puesto ya están cubiertas. Para cambiar a alguien, usa «Cambiar» en su fila.",
+                          "Todos los puestos de esta estación ya están cubiertos. Para cambiar a alguien, usa «Cambiar» en su fila.",
                         )
                       : t("eventos.plazasCubiertas", {
-                          defaultValue: "{{n}} de {{total}} plazas cubiertas",
+                          defaultValue: "{{n}} de {{total}} puestos cubiertos",
                           n: cubiertas,
                           total: fijas.length,
                         })}
