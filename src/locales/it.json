@@ -14260,7 +14260,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invito reinviato a {{email}}.",
       "invitacionYaEnviada": "L'invito è già stato inviato a {{email}} pochi minuti fa. Chiedigli di controllare la posta in arrivo e lo spam. Potrai reinviarlo tra {{faltan}} min.",
-      "invitacionNoSalio": "Non siamo riusciti a inviare l'e-mail a {{email}}. Riprova tra qualche minuto."
+      "invitacionNoSalio": "Non siamo riusciti a inviare l'e-mail a {{email}}. Riprova tra qualche minuto.",
+      "correoDeRestablecimientoNoEnviado": "Non è stato possibile inviare l’e-mail di reimpostazione a {{email}}. Riprova tra qualche minuto."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Modifica la ricerca o registra un nuovo visitatore.",
@@ -14373,7 +14374,8 @@
       "asignarAEstacionNombre": "Assegna {{name}} a una stazione",
       "seAsignaraAlPrimerPuesto": "Verrà assegnato alla prima postazione disponibile della stazione e comparirà nell'Orario.",
       "asignando": "Assegnazione...",
-      "asignar": "Assegna"
+      "asignar": "Assegna",
+      "correoDeRestablecimientoNoEnviado": "Non è stato possibile inviare l’e-mail di reimpostazione a {{email}}. Riprova tra qualche minuto."
     },
     "GuardHorarioPage": {
       "sinHorario": "Nessun orario",

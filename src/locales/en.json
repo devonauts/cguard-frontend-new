@@ -13720,7 +13720,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invitation resent to {{email}}.",
       "invitacionYaEnviada": "The invitation was already sent to {{email}} a few minutes ago. Ask them to check their inbox and spam folder. You can resend it in {{faltan}} min.",
-      "invitacionNoSalio": "We couldn't send the email to {{email}}. Please try again in a few minutes."
+      "invitacionNoSalio": "We couldn't send the email to {{email}}. Please try again in a few minutes.",
+      "correoDeRestablecimientoNoEnviado": "The password reset email to {{email}} could not be sent. Please try again in a few minutes."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Adjust your search, or register a new visitor.",
@@ -13833,7 +13834,8 @@
       "asignarAEstacionNombre": "Assign {{name}} to a station",
       "seAsignaraAlPrimerPuesto": "They'll be assigned to the station's first available post and will appear in the Schedule.",
       "asignando": "Assigning...",
-      "asignar": "Assign"
+      "asignar": "Assign",
+      "correoDeRestablecimientoNoEnviado": "The password reset email to {{email}} could not be sent. Please try again in a few minutes."
     },
     "GuardHorarioPage": {
       "sinHorario": "No schedule",

@@ -1050,16 +1050,24 @@ export default function SecurityGuardsPage() {
           .filter(Boolean)
           .join(" + ");
 
-        toast.success(
-          via
-            ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
-                defaultValue: "Enlace de restablecimiento enviado por {{via}}",
-                via,
-              })
-            : t(
-                "ui.SecurityGuardsPage.enlaceCopiado",
-                "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
-              ),
+        if (via) {
+          toast.success(
+            t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
+              defaultValue: "Enlace de restablecimiento enviado por {{via}}",
+              via,
+            }),
+          );
+
+          return;
+        }
+        // Without a mailbox the server answers with the link (handled above),
+        // so here the guard HAS an e-mail and sending it failed.
+        toast.error(
+          t("ui.SecurityGuardsPage.correoDeRestablecimientoNoEnviado", {
+            email: r?.email || guard.email || "",
+            defaultValue:
+              "No se pudo enviar el correo de restablecimiento a {{email}}. Inténtalo de nuevo en unos minutos.",
+          }),
         );
       } catch (err: any) {
         toast.error(

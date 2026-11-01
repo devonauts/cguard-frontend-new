@@ -13720,7 +13720,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invitación reenviada a {{email}}.",
       "invitacionYaEnviada": "La invitación ya se envió a {{email}} hace unos minutos. Pídele que revise su bandeja de entrada y la carpeta de spam. Podrás reenviarla en {{faltan}} min.",
-      "invitacionNoSalio": "No pudimos enviar el correo a {{email}}. Inténtalo de nuevo en unos minutos."
+      "invitacionNoSalio": "No pudimos enviar el correo a {{email}}. Inténtalo de nuevo en unos minutos.",
+      "correoDeRestablecimientoNoEnviado": "No se pudo enviar el correo de restablecimiento a {{email}}. Inténtalo de nuevo en unos minutos."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajusta la búsqueda o registra un visitante nuevo.",
@@ -13833,7 +13834,8 @@
       "asignarAEstacionNombre": "Asignar a {{name}} a una estación",
       "seAsignaraAlPrimerPuesto": "Se asignará al primer puesto disponible de la estación y aparecerá en el Horario.",
       "asignando": "Asignando...",
-      "asignar": "Asignar"
+      "asignar": "Asignar",
+      "correoDeRestablecimientoNoEnviado": "No se pudo enviar el correo de restablecimiento a {{email}}. Inténtalo de nuevo en unos minutos."
     },
     "GuardHorarioPage": {
       "sinHorario": "Sin horario",

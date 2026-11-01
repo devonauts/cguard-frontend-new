@@ -14260,7 +14260,8 @@
       "viaPush": "Push",
       "invitacionReenviadaA": "Einladung erneut an {{email}} gesendet.",
       "invitacionYaEnviada": "Die Einladung wurde vor wenigen Minuten bereits an {{email}} gesendet. Bitten Sie die Person, Posteingang und Spam-Ordner zu prüfen. Sie können sie in {{faltan}} Min. erneut senden.",
-      "invitacionNoSalio": "Die E-Mail an {{email}} konnte nicht gesendet werden. Bitte versuchen Sie es in ein paar Minuten erneut."
+      "invitacionNoSalio": "Die E-Mail an {{email}} konnte nicht gesendet werden. Bitte versuchen Sie es in ein paar Minuten erneut.",
+      "correoDeRestablecimientoNoEnviado": "Die E-Mail zum Zurücksetzen an {{email}} konnte nicht gesendet werden. Bitte versuche es in einigen Minuten erneut."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Passen Sie die Suche an oder erfassen Sie einen neuen Besucher.",
@@ -14373,7 +14374,8 @@
       "asignarAEstacionNombre": "{{name}} einer Station zuweisen",
       "seAsignaraAlPrimerPuesto": "Wird dem ersten freien Posten der Station zugewiesen und erscheint im Dienstplan.",
       "asignando": "Wird zugewiesen...",
-      "asignar": "Zuweisen"
+      "asignar": "Zuweisen",
+      "correoDeRestablecimientoNoEnviado": "Die E-Mail zum Zurücksetzen an {{email}} konnte nicht gesendet werden. Bitte versuche es in einigen Minuten erneut."
     },
     "GuardHorarioPage": {
       "sinHorario": "Kein Dienstplan",

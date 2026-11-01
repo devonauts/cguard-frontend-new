@@ -14260,7 +14260,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invitation renvoyée à {{email}}.",
       "invitacionYaEnviada": "L'invitation a déjà été envoyée à {{email}} il y a quelques minutes. Demandez-lui de vérifier sa boîte de réception et ses spams. Vous pourrez la renvoyer dans {{faltan}} min.",
-      "invitacionNoSalio": "Nous n'avons pas pu envoyer l'e-mail à {{email}}. Réessayez dans quelques minutes."
+      "invitacionNoSalio": "Nous n'avons pas pu envoyer l'e-mail à {{email}}. Réessayez dans quelques minutes.",
+      "correoDeRestablecimientoNoEnviado": "L’e-mail de réinitialisation à {{email}} n’a pas pu être envoyé. Réessayez dans quelques minutes."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajustez la recherche ou enregistrez un nouveau visiteur.",
@@ -14373,7 +14374,8 @@
       "asignarAEstacionNombre": "Affecter {{name}} à une station",
       "seAsignaraAlPrimerPuesto": "L'agent sera affecté au premier poste disponible de la station et apparaîtra dans le Planning.",
       "asignando": "Affectation...",
-      "asignar": "Affecter"
+      "asignar": "Affecter",
+      "correoDeRestablecimientoNoEnviado": "L’e-mail de réinitialisation à {{email}} n’a pas pu être envoyé. Réessayez dans quelques minutes."
     },
     "GuardHorarioPage": {
       "sinHorario": "Aucun planning",

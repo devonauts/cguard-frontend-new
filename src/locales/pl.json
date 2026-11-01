@@ -14400,7 +14400,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Zaproszenie wysłane ponownie na {{email}}.",
       "invitacionYaEnviada": "Zaproszenie zostało już wysłane na {{email}} kilka minut temu. Poproś o sprawdzenie skrzynki odbiorczej i folderu spam. Ponownie wyślesz je za {{faltan}} min.",
-      "invitacionNoSalio": "Nie udało się wysłać e-maila na {{email}}. Spróbuj ponownie za kilka minut."
+      "invitacionNoSalio": "Nie udało się wysłać e-maila na {{email}}. Spróbuj ponownie za kilka minut.",
+      "correoDeRestablecimientoNoEnviado": "Nie udało się wysłać e-maila resetującego do {{email}}. Spróbuj ponownie za kilka minut."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Prosimy zmienić wyszukiwanie lub zarejestrować nowego gościa.",
@@ -14515,7 +14516,8 @@
       "asignarAEstacionNombre": "Przypisz {{name}} do stacji",
       "seAsignaraAlPrimerPuesto": "Zostanie przypisany do pierwszego wolnego posterunku stacji i pojawi się w Grafiku.",
       "asignando": "Przypisywanie...",
-      "asignar": "Przypisz"
+      "asignar": "Przypisz",
+      "correoDeRestablecimientoNoEnviado": "Nie udało się wysłać e-maila resetującego do {{email}}. Spróbuj ponownie za kilka minut."
     },
     "GuardHorarioPage": {
       "sinHorario": "Brak grafiku",

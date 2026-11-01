@@ -13720,7 +13720,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Convite reenviado para {{email}}.",
       "invitacionYaEnviada": "O convite já foi enviado para {{email}} há poucos minutos. Peça que verifique a caixa de entrada e a pasta de spam. Você poderá reenviá-lo em {{faltan}} min.",
-      "invitacionNoSalio": "Não conseguimos enviar o e-mail para {{email}}. Tente de novo em alguns minutos."
+      "invitacionNoSalio": "Não conseguimos enviar o e-mail para {{email}}. Tente de novo em alguns minutos.",
+      "correoDeRestablecimientoNoEnviado": "Não foi possível enviar o e-mail de redefinição para {{email}}. Tente novamente em alguns minutos."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajuste a busca ou registre um novo visitante.",
@@ -13833,7 +13834,8 @@
       "asignarAEstacionNombre": "Atribuir {{name}} a uma estação",
       "seAsignaraAlPrimerPuesto": "Será atribuído ao primeiro posto disponível da estação e aparecerá na Escala.",
       "asignando": "Atribuindo...",
-      "asignar": "Atribuir"
+      "asignar": "Atribuir",
+      "correoDeRestablecimientoNoEnviado": "Não foi possível enviar o e-mail de redefinição para {{email}}. Tente novamente em alguns minutos."
     },
     "GuardHorarioPage": {
       "sinHorario": "Sem horário",
