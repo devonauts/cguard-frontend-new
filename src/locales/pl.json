@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Utworzono",
+      "read": "Odczytano",
+      "signal_runaway_suppressed": "Pominięto powtórzony sygnał",
+      "video_verification": "Weryfikacja wideo",
+      "escalate": "Eskalowano",
+      "close": "Zamknięto",
+      "resolve": "Rozwiązano",
+      "incident": "Utworzono incydent",
+      "dispatch": "Wysłanie",
+      "step": "Krok planu",
+      "ecv_call": "Połączenie",
+      "note": "Notatka",
+      "acknowledge": "Przyjęto",
+      "event_appended": "Dodano zdarzenie",
+      "case_opened": "Sprawa otwarta"
+    },
     "status": {
       "queued": "W kolejce",
       "acknowledged": "Przyjęty",
@@ -9818,6 +9835,9 @@
       "reconocProm": "Śr. potw."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "System",
+      "porActor": "wykonał(a): {{nombre}}",
       "descripcion": "Opis",
       "disposicion": "Rozstrzygnięcie",
       "sinEntradasDeAuditoria": "Brak wpisów audytowych",
@@ -9891,6 +9911,7 @@
       "guardarNota": "Zapisz notatkę"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Numer strefy jest wymagany",
       "agenciaPsapPolicia": "Służba / PSAP (policja)",
       "camara": "Aparat",
       "comunicacion": "Łączność",

@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Aangemaakt",
+      "read": "Gelezen",
+      "signal_runaway_suppressed": "Herhaald signaal onderdrukt",
+      "video_verification": "Videoverificatie",
+      "escalate": "Geëscaleerd",
+      "close": "Gesloten",
+      "resolve": "Opgelost",
+      "incident": "Incident aangemaakt",
+      "dispatch": "Uitruk",
+      "step": "Planstap",
+      "ecv_call": "Oproep",
+      "note": "Notitie",
+      "acknowledge": "Aangenomen",
+      "event_appended": "Gebeurtenis toegevoegd",
+      "case_opened": "Melding geopend"
+    },
     "status": {
       "queued": "In wachtrij",
       "acknowledged": "Aangenomen",
@@ -9786,6 +9803,9 @@
       "reconocProm": "Gem. bevest."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "Systeem",
+      "porActor": "door {{nombre}}",
       "descripcion": "Omschrijving",
       "disposicion": "Afhandeling",
       "sinEntradasDeAuditoria": "Geen auditregels",
@@ -9859,6 +9879,7 @@
       "guardarNota": "Notitie opslaan"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Het zonenummer is verplicht",
       "agenciaPsapPolicia": "Instantie / meldkamer (politie)",
       "camara": "Camera",
       "comunicacion": "Communicatie",

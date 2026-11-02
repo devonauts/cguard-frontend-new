@@ -9246,6 +9246,9 @@
       "reconocProm": "Avg. ack."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "System",
+      "porActor": "by {{nombre}}",
       "descripcion": "Description",
       "disposicion": "Layout",
       "sinEntradasDeAuditoria": "No audit entries",
@@ -9319,6 +9322,7 @@
       "guardarNota": "Save note"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "The zone number is required",
       "agenciaPsapPolicia": "Agency / PSAP (police)",
       "camara": "Camera",
       "comunicacion": "Communication",
@@ -19160,6 +19164,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Created",
+      "read": "Read",
+      "signal_runaway_suppressed": "Repeated signal suppressed",
+      "video_verification": "Video verification",
+      "escalate": "Escalated",
+      "close": "Closed",
+      "resolve": "Resolved",
+      "incident": "Incident created",
+      "dispatch": "Dispatch",
+      "step": "Plan step",
+      "ecv_call": "Call",
+      "note": "Note",
+      "acknowledge": "Acknowledged",
+      "event_appended": "Event added",
+      "case_opened": "Case opened"
+    },
     "status": {
       "queued": "Queued",
       "acknowledged": "Acknowledged",

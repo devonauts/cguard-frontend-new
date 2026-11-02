@@ -304,7 +304,10 @@ export function formatWhenFull(iso?: string | null): string {
 
   if (Number.isNaN(d.getTime())) return "—";
 
+  // In the company's zone, like formatWhen: without it the case detail said
+  // 10:04 p. m. (UTC) for the alarm the queue listed at 05:04 p. m.
   return d.toLocaleString(localeActual(), {
+    timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",

@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Erstellt",
+      "read": "Gelesen",
+      "signal_runaway_suppressed": "Wiederholtes Signal unterdrückt",
+      "video_verification": "Videoverifizierung",
+      "escalate": "Eskaliert",
+      "close": "Geschlossen",
+      "resolve": "Gelöst",
+      "incident": "Vorfall erstellt",
+      "dispatch": "Einsatz",
+      "step": "Planschritt",
+      "ecv_call": "Anruf",
+      "note": "Notiz",
+      "acknowledge": "Bestätigt",
+      "event_appended": "Ereignis hinzugefügt",
+      "case_opened": "Fall eröffnet"
+    },
     "status": {
       "queued": "In Warteschlange",
       "acknowledged": "Bestätigt",
@@ -9786,6 +9803,9 @@
       "reconocProm": "Ø Quitt."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "System",
+      "porActor": "von {{nombre}}",
       "descripcion": "Beschreibung",
       "disposicion": "Abschlussgrund",
       "sinEntradasDeAuditoria": "Keine Protokolleinträge",
@@ -9859,6 +9879,7 @@
       "guardarNota": "Notiz speichern"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Die Zonennummer ist erforderlich",
       "agenciaPsapPolicia": "Behörde / PSAP (Polizei)",
       "camara": "Kamera",
       "comunicacion": "Kommunikation",

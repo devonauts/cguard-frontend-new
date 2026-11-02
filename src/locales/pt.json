@@ -9246,6 +9246,9 @@
       "reconocProm": "Reconh. méd."
     },
     "AlarmCaseDetail": {
+      "operador": "Operador",
+      "sistema": "Sistema",
+      "porActor": "por {{nombre}}",
       "descripcion": "Descrição",
       "disposicion": "Disposição",
       "sinEntradasDeAuditoria": "Sem entradas de auditoria",
@@ -9319,6 +9322,7 @@
       "guardarNota": "Salvar nota"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "O número da zona é obrigatório",
       "agenciaPsapPolicia": "Agência / PSAP (polícia)",
       "camara": "Câmera",
       "comunicacion": "Comunicação",
@@ -19160,6 +19164,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Criado",
+      "read": "Lido",
+      "signal_runaway_suppressed": "Sinal repetido suprimido",
+      "video_verification": "Verificação por vídeo",
+      "escalate": "Escalonado",
+      "close": "Fechado",
+      "resolve": "Resolvido",
+      "incident": "Incidente criado",
+      "dispatch": "Despacho",
+      "step": "Etapa do plano",
+      "ecv_call": "Chamada",
+      "note": "Nota",
+      "acknowledge": "Reconhecido",
+      "event_appended": "Evento adicionado",
+      "case_opened": "Caso aberto"
+    },
     "status": {
       "queued": "Na fila",
       "acknowledged": "Reconhecida",

@@ -853,6 +853,12 @@ function ZonesManager({ panelId }: { panelId: string }) {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // A zone is matched to its signals by number: without one it is useless.
+    if (!form.zoneNumber.trim()) {
+      toast.error(t("ui.AlarmPanels.elNumeroDeZonaEs", "El número de zona es obligatorio"));
+
+      return;
+    }
     const payload: Partial<AlarmZone> = {
       zoneNumber: form.zoneNumber.trim() || null,
       name: form.name.trim() || null,

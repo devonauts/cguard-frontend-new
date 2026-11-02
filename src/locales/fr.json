@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Créé",
+      "read": "Lu",
+      "signal_runaway_suppressed": "Signal répété supprimé",
+      "video_verification": "Vérification vidéo",
+      "escalate": "Escaladé",
+      "close": "Clôturé",
+      "resolve": "Résolu",
+      "incident": "Incident créé",
+      "dispatch": "Intervention",
+      "step": "Étape du plan",
+      "ecv_call": "Appel",
+      "note": "Note",
+      "acknowledge": "Pris en compte",
+      "event_appended": "Événement ajouté",
+      "case_opened": "Dossier ouvert"
+    },
     "status": {
       "queued": "En file",
       "acknowledged": "Prise en compte",
@@ -9786,6 +9803,9 @@
       "reconocProm": "Prise en c. moy."
     },
     "AlarmCaseDetail": {
+      "operador": "Opérateur",
+      "sistema": "Système",
+      "porActor": "par {{nombre}}",
       "descripcion": "Description",
       "disposicion": "Issue",
       "sinEntradasDeAuditoria": "Aucune entrée de journal",
@@ -9859,6 +9879,7 @@
       "guardarNota": "Enregistrer la note"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Le numéro de zone est obligatoire",
       "agenciaPsapPolicia": "Service / PSAP (police)",
       "camara": "Appareil photo",
       "comunicacion": "Communication",

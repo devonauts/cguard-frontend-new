@@ -288,6 +288,8 @@ export interface AlarmAuditLog {
   action?: string | null;
   detail?: string | null;
   actorId?: string | null;
+  /** Display name of the operator (null for system rows). */
+  actorName?: string | null;
   at: string;
   tenantId?: string;
   createdAt?: string;

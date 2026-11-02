@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Creato",
+      "read": "Letto",
+      "signal_runaway_suppressed": "Segnale ripetuto soppresso",
+      "video_verification": "Verifica video",
+      "escalate": "Escalato",
+      "close": "Chiuso",
+      "resolve": "Risolto",
+      "incident": "Incidente creato",
+      "dispatch": "Intervento",
+      "step": "Passo del piano",
+      "ecv_call": "Chiamata",
+      "note": "Nota",
+      "acknowledge": "Preso in carico",
+      "event_appended": "Evento aggiunto",
+      "case_opened": "Caso aperto"
+    },
     "status": {
       "queued": "In coda",
       "acknowledged": "Presa in carico",
@@ -9786,6 +9803,9 @@
       "reconocProm": "Presa in c. media"
     },
     "AlarmCaseDetail": {
+      "operador": "Operatore",
+      "sistema": "Sistema",
+      "porActor": "da {{nombre}}",
       "descripcion": "Descrizione",
       "disposicion": "Esito",
       "sinEntradasDeAuditoria": "Nessuna voce di verifica",
@@ -9859,6 +9879,7 @@
       "guardarNota": "Salva nota"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Il numero di zona è obbligatorio",
       "agenciaPsapPolicia": "Ente / PSAP (forze dell'ordine)",
       "camara": "Fotocamera",
       "comunicacion": "Comunicazione",
