@@ -44,6 +44,8 @@ export function collectDispatchFiles(payload: any): DispatchFile[] {
     Array.isArray(payload.attachments) ? payload.attachments : [],
     Array.isArray(payload.imageUrl) ? payload.imageUrl : [],
     Array.isArray(payload.requestDocumentPDF) ? payload.requestDocumentPDF : [],
+    // The public share sends them already merged and signed: { name, mimeType, url }.
+    Array.isArray(payload.files) ? payload.files : [],
   ];
   const out: DispatchFile[] = [];
   const seen = new Set<string>();
