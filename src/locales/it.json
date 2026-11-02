@@ -12136,6 +12136,7 @@
       "sinDescansoElSupervisorTrabaja": "Senza riposo: il supervisore lavora tutti i giorni."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Nessun giorno selezionato",
       "asignacion": "Assegnazione",
       "descripcion": "Descrizione",
       "descripcionDeLaRuta": "Descrizione del percorso",

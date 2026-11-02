@@ -11596,6 +11596,7 @@
       "sinDescansoElSupervisorTrabaja": "Sin descanso: el supervisor trabaja todos los días."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Ningún día elegido",
       "asignacion": "Asignación",
       "descripcion": "Descripción",
       "descripcionDeLaRuta": "Descripción de la ruta",

@@ -12136,6 +12136,7 @@
       "sinDescansoElSupervisorTrabaja": "Ohne Ruhetag: Die Einsatzleitung arbeitet jeden Tag."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Keine Tage ausgewählt",
       "asignacion": "Zuweisung",
       "descripcion": "Beschreibung",
       "descripcionDeLaRuta": "Beschreibung der Route",

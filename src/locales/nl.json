@@ -12136,6 +12136,7 @@
       "sinDescansoElSupervisorTrabaja": "Zonder rustdag: de supervisor werkt elke dag."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Geen dagen geselecteerd",
       "asignacion": "Toewijzing",
       "descripcion": "Omschrijving",
       "descripcionDeLaRuta": "Omschrijving van de route",

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Route as RouteIcon, AlertCircle } from "lucide-react";
 
 import RouteForm from "./RouteForm";
+import { routeWindowForForm } from "./routeWindow";
 
 import AppLayout from "@/layouts/app-layout";
 import routeService from "@/lib/api/routeService";
@@ -13,19 +14,6 @@ import {
   SkeletonCards,
   EmptyState,
 } from "@/components/kit";
-
-const _lpad = (n: number) => String(n).padStart(2, "0");
-
-function localDatePart(iso: string) {
-  const d = new Date(iso);
-
-  return `${d.getFullYear()}-${_lpad(d.getMonth() + 1)}-${_lpad(d.getDate())}`;
-}
-function localTimePart(iso: string) {
-  const d = new Date(iso);
-
-  return `${_lpad(d.getHours())}:${_lpad(d.getMinutes())}`;
-}
 
 export default function EditRoutePage() {
   const { t } = useTranslation();
@@ -95,15 +83,8 @@ export default function EditRoutePage() {
           name: route.name || "",
           description: route.description || "",
           continuous: route.continuous !== undefined ? route.continuous : true,
-          // Prefill from LOCAL wall-clock (the create path builds windowStart from
-          // `${date}T${time}` local → UTC); using toISOString() here shifted the
-          // window by the tz offset on every save.
-          dateFrom: route.windowStart ? localDatePart(route.windowStart) : "",
-          startTime: route.windowStart
-            ? localTimePart(route.windowStart)
-            : "00:00",
-          dateTo: route.windowEnd ? localDatePart(route.windowEnd) : "",
-          endTime: route.windowEnd ? localTimePart(route.windowEnd) : "23:59",
+          // Same zone the form saves in (the company's), see routeWindow.ts.
+          ...routeWindowForForm(route.windowStart, route.windowEnd),
           days: route.days || [],
           supervisorId,
           supervisorName,

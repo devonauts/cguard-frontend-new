@@ -12212,6 +12212,7 @@
       "sinDescansoElSupervisorTrabaja": "Bez dnia wolnego: nadzorca pracuje codziennie."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Nie wybrano dni",
       "asignacion": "Przypisanie",
       "descripcion": "Opis",
       "descripcionDeLaRuta": "Opis trasy",
