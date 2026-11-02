@@ -13575,7 +13575,13 @@
       "calendario": "Calendrier",
       "vacioAyuda": "Congés, absences et absences justifiées de tout le personnel, saisis ici, dans le Planning ou depuis l’application de l’agent.",
       "registrarElPrimero": "Enregistrer une absence",
-      "vacioTitulo": "Pas encore d’absences ni de congés"
+      "vacioTitulo": "Pas encore d’absences ni de congés",
+      "aprobarTitulo": "Approuver l’absence",
+      "aprobarMensaje": "L’absence de {{nombre}} est approuvée : ses services de ces jours deviennent des trous dans Couverture et la personne est prévenue.",
+      "rechazarTitulo": "Refuser l’absence",
+      "rechazarMensaje": "L’absence de {{nombre}} est refusée et la personne est prévenue. Vous pouvez indiquer pourquoi (facultatif).",
+      "rechazarMotivo": "Motif (facultatif)",
+      "solicitudEliminada": "Demande supprimée"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",

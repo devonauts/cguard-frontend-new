@@ -13575,7 +13575,13 @@
       "calendario": "Kalender",
       "vacioAyuda": "Urlaub, Abwesenheiten und entschuldigte Fehlzeiten des ganzen Personals, ob hier, im Dienstplan oder in der App der Wache erfasst.",
       "registrarElPrimero": "Abwesenheit erfassen",
-      "vacioTitulo": "Noch keine Abwesenheiten oder Urlaube"
+      "vacioTitulo": "Noch keine Abwesenheiten oder Urlaube",
+      "aprobarTitulo": "Abwesenheit genehmigen",
+      "aprobarMensaje": "Die Abwesenheit von {{nombre}} wird genehmigt: Die Schichten an diesen Tagen werden zu Lücken in der Abdeckung, und die Person wird benachrichtigt.",
+      "rechazarTitulo": "Abwesenheit ablehnen",
+      "rechazarMensaje": "Die Abwesenheit von {{nombre}} wird abgelehnt, und die Person wird benachrichtigt. Du kannst den Grund angeben (optional).",
+      "rechazarMotivo": "Grund (optional)",
+      "solicitudEliminada": "Antrag gelöscht"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",

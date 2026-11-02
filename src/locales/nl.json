@@ -13575,7 +13575,13 @@
       "calendario": "Kalender",
       "vacioAyuda": "Vakantie, verlof en gemelde afwezigheid van al het personeel, ingevoerd hier, in het Rooster of in de app van de beveiliger.",
       "registrarElPrimero": "Verlof registreren",
-      "vacioTitulo": "Nog geen verlof of vakantie"
+      "vacioTitulo": "Nog geen verlof of vakantie",
+      "aprobarTitulo": "Verlof goedkeuren",
+      "aprobarMensaje": "Het verlof van {{nombre}} wordt goedgekeurd: de diensten op die dagen worden gaten in Dekking en de persoon krijgt bericht.",
+      "rechazarTitulo": "Verlof afwijzen",
+      "rechazarMensaje": "Het verlof van {{nombre}} wordt afgewezen en de persoon krijgt bericht. Je kunt de reden opgeven (optioneel).",
+      "rechazarMotivo": "Reden (optioneel)",
+      "solicitudEliminada": "Aanvraag verwijderd"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",

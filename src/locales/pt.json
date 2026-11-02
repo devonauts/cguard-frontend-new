@@ -13035,7 +13035,13 @@
       "calendario": "Calendário",
       "vacioAyuda": "Férias, licenças e faltas justificadas de todo o pessoal, venham daqui, da Escala ou do app do vigilante.",
       "registrarElPrimero": "Registrar uma licença",
-      "vacioTitulo": "Ainda não há licenças nem férias"
+      "vacioTitulo": "Ainda não há licenças nem férias",
+      "aprobarTitulo": "Aprovar a ausência",
+      "aprobarMensaje": "A ausência de {{nombre}} é aprovada: os turnos desses dias ficam como vaga em Cobertura e a pessoa é avisada.",
+      "rechazarTitulo": "Recusar a ausência",
+      "rechazarMensaje": "A ausência de {{nombre}} é recusada e a pessoa é avisada. Você pode dizer o motivo (opcional).",
+      "rechazarMotivo": "Motivo (opcional)",
+      "solicitudEliminada": "Solicitação excluída"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",

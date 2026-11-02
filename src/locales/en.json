@@ -13035,7 +13035,13 @@
       "calendario": "Calendar",
       "vacioAyuda": "Vacation, leave and excused absences for all staff, whether entered here, in the Schedule or from the guard app.",
       "registrarElPrimero": "Record a leave",
-      "vacioTitulo": "No leave or vacation yet"
+      "vacioTitulo": "No leave or vacation yet",
+      "aprobarTitulo": "Approve the leave",
+      "aprobarMensaje": "The leave of {{nombre}} is approved: their shifts on those days become gaps in Coverage and they are notified.",
+      "rechazarTitulo": "Reject the leave",
+      "rechazarMensaje": "The leave of {{nombre}} is rejected and they are notified. You can tell them why (optional).",
+      "rechazarMotivo": "Reason (optional)",
+      "solicitudEliminada": "Request deleted"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",

@@ -13035,7 +13035,13 @@
       "calendario": "Calendario",
       "vacioAyuda": "Vacaciones, permisos y faltas justificadas de todo el personal, vengan de aquí, del Horario o de la app del vigilante.",
       "registrarElPrimero": "Registrar un permiso",
-      "vacioTitulo": "Todavía no hay permisos ni vacaciones"
+      "vacioTitulo": "Todavía no hay permisos ni vacaciones",
+      "aprobarTitulo": "Aprobar el permiso",
+      "aprobarMensaje": "Se aprueba el permiso de {{nombre}}: sus turnos de esos días quedan como hueco en Cobertura y se le avisa.",
+      "rechazarTitulo": "Rechazar el permiso",
+      "rechazarMensaje": "Se rechaza el permiso de {{nombre}} y se le avisa. Puedes decirle por qué (opcional).",
+      "rechazarMotivo": "Motivo (opcional)",
+      "solicitudEliminada": "Solicitud eliminada"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",

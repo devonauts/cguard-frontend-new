@@ -13575,7 +13575,13 @@
       "calendario": "Calendario",
       "vacioAyuda": "Ferie, permessi e assenze giustificate di tutto il personale, da qui, dall’Orario o dall’app della guardia.",
       "registrarElPrimero": "Registra un permesso",
-      "vacioTitulo": "Ancora nessun permesso né ferie"
+      "vacioTitulo": "Ancora nessun permesso né ferie",
+      "aprobarTitulo": "Approva il permesso",
+      "aprobarMensaje": "Il permesso di {{nombre}} viene approvato: i suoi turni di quei giorni diventano buchi in Copertura e la persona viene avvisata.",
+      "rechazarTitulo": "Rifiuta il permesso",
+      "rechazarMensaje": "Il permesso di {{nombre}} viene rifiutato e la persona viene avvisata. Puoi indicare il motivo (facoltativo).",
+      "rechazarMotivo": "Motivo (facoltativo)",
+      "solicitudEliminada": "Richiesta eliminata"
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",

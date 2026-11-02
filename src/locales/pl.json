@@ -13693,7 +13693,13 @@
       "calendario": "Kalendarz",
       "vacioAyuda": "Urlopy, nieobecności i usprawiedliwione absencje całego personelu – wpisane tutaj, w Grafiku lub w aplikacji ochroniarza.",
       "registrarElPrimero": "Zarejestruj nieobecność",
-      "vacioTitulo": "Brak nieobecności i urlopów"
+      "vacioTitulo": "Brak nieobecności i urlopów",
+      "aprobarTitulo": "Zatwierdź nieobecność",
+      "aprobarMensaje": "Nieobecność osoby {{nombre}} zostaje zatwierdzona: jej zmiany w te dni stają się lukami w Obsadzie, a osoba dostaje powiadomienie.",
+      "rechazarTitulo": "Odrzuć nieobecność",
+      "rechazarMensaje": "Nieobecność osoby {{nombre}} zostaje odrzucona, a osoba dostaje powiadomienie. Możesz podać powód (opcjonalnie).",
+      "rechazarMotivo": "Powód (opcjonalnie)",
+      "solicitudEliminada": "Wniosek usunięty"
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",

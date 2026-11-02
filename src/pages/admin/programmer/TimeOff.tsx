@@ -5,6 +5,7 @@ import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { promptDialog } from "@/components/ui/promptDialog";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -361,9 +362,14 @@ export default function TimeOff() {
   const cambiarEstado = async (
     id: string,
     status: "approved" | "rejected" | "cancelled",
+    comment?: string,
   ) => {
     try {
-      const updated = await timeOffRequestService.updateStatus(id, status);
+      const updated = await timeOffRequestService.updateStatus(
+        id,
+        status,
+        comment,
+      );
 
       setRecords((prev) =>
         prev.map((r) => (r.id === id ? { ...r, ...updated, stations: r.stations } : r)),
@@ -374,8 +380,46 @@ export default function TimeOff() {
       console.error(`Failed to set ${status}`, err);
     }
   };
-  const handleApprove = (id: string) => cambiarEstado(id, "approved");
-  const handleReject = (id: string) => cambiarEstado(id, "rejected");
+  const nombreDeSolicitud = (id: string) => {
+    const r: any = records.find((x) => x.id === id);
+
+    return r?.guard?.fullName ?? r?.guardName ?? "";
+  };
+  // Approving changes the schedule (shifts become gaps in Coverage) and the
+  // person is notified: both ask first, like Cancelar and Eliminar.
+  const handleApprove = async (id: string) => {
+    if (
+      !(await confirmDialog({
+        title: t("ui.TimeOff.aprobarTitulo", "Aprobar el permiso"),
+        message: t("ui.TimeOff.aprobarMensaje", {
+          nombre: nombreDeSolicitud(id),
+          defaultValue:
+            "Se aprueba el permiso de {{nombre}}: sus turnos de esos días quedan como hueco en Cobertura y se le avisa.",
+        }),
+        confirmText: t("ui.TimeOff.aprobar", "Aprobar"),
+        cancelText: t("common.back", "Atrás"),
+      }))
+    )
+      return;
+    await cambiarEstado(id, "approved");
+  };
+  const handleReject = async (id: string) => {
+    // The reason is optional; it reaches the person with the notice.
+    const motivo = await promptDialog({
+      title: t("ui.TimeOff.rechazarTitulo", "Rechazar el permiso"),
+      message: t("ui.TimeOff.rechazarMensaje", {
+        nombre: nombreDeSolicitud(id),
+        defaultValue:
+          "Se rechaza el permiso de {{nombre}} y se le avisa. Puedes decirle por qué (opcional).",
+      }),
+      placeholder: t("ui.TimeOff.rechazarMotivo", "Motivo (opcional)"),
+      confirmText: t("ui.TimeOff.rechazar", "Rechazar"),
+      cancelText: t("common.back", "Atrás"),
+    });
+
+    if (motivo === null) return;
+    await cambiarEstado(id, "rejected", motivo.trim() || undefined);
+  };
   const handleCancel = async (id: string) => {
     if (
       !(await confirmDialog({
@@ -415,6 +459,8 @@ export default function TimeOff() {
 
       setRecords((prev) => prev.filter((x) => x.id !== id));
       setPicked(null);
+      if (!r?.scheduleEffect || r.scheduleEffect.action === "none")
+        toast.success(t("ui.TimeOff.solicitudEliminada", "Solicitud eliminada"));
       avisarEfecto(r?.scheduleEffect);
     } catch (err) {
       console.error("Failed to delete", err);
@@ -521,7 +567,9 @@ export default function TimeOff() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide">
+      {/* pb-28: room under the last rows so the floating VigIA bubble never
+          sits on their actions (same as the other long admin pages). */}
+      <PageContainer className="pb-28" width="wide">
         <PageHeader
           icon={<CalendarOff />}
           title={t("sidebar.personal.ausencias", "Ausencias y permisos")}
@@ -987,7 +1035,7 @@ export default function TimeOff() {
                 header: t("comun.desde"),
                 render: (_v: any, row: any) =>
                   row.startDate
-                    ? `${row.startDate}${row.startTime ? " " + row.startTime : ""}`
+                    ? `${formatDate(row.startDate)}${row.startTime ? " " + row.startTime : ""}`
                     : "—",
               },
               {
@@ -995,7 +1043,7 @@ export default function TimeOff() {
                 header: t("comun.hasta"),
                 render: (_v: any, row: any) =>
                   row.endDate
-                    ? `${row.endDate}${row.endTime ? " " + row.endTime : ""}`
+                    ? `${formatDate(row.endDate)}${row.endTime ? " " + row.endTime : ""}`
                     : "—",
               },
               {
