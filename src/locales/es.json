@@ -18,7 +18,7 @@
     "import": "Importar",
     "manageCategories": "Gestionar Sectores",
     "more": "Acciones",
-    "move": "Mover Categoría",
+    "move": "Mover de sector",
     "restore": "Restaurar",
     "save": "Guardar",
     "view": "Ver",
@@ -690,10 +690,10 @@
     "cancel": "Cancelar",
     "cannotDelete": "No se puede eliminar",
     "cannotDeleteMessage": "La categoría \"{{name}}\" no puede ser eliminada porque está en uso por {{count}} clientes.",
-    "categoriesnotloaded": "No se pudieron cargar las Sectores.",
-    "categoryCreated": "Categoría creada con éxito",
-    "categoryDeleted": "Categoría eliminada con éxito",
-    "categoryEdited": "Categoría editada con éxito",
+    "categoriesnotloaded": "No se pudieron cargar los sectores.",
+    "categoryCreated": "Sector creado con éxito",
+    "categoryDeleted": "Sector eliminado con éxito",
+    "categoryEdited": "Sector editado con éxito",
     "confirmDeleteId": "¿Desea eliminar esta categoría?",
     "couldNotVerifyUsage": "No se pudo verificar si la categoría está en uso. Proceda con precaución.",
     "create": "Crear",
@@ -707,7 +707,7 @@
     "name": "Nombre*",
     "nameHint": "Ej. General",
     "nameRequired": "El nombre de la categoría es obligatorio",
-    "namecategory": "Nombre de la categoría",
+    "namecategory": "Nombre del sector",
     "noPermissionCreate": "No tienes permiso para Crear sector de seguridads",
     "noPermissionDelete": "No tienes permiso para eliminar Sectores",
     "noPermissionEdit": "No tienes permiso para editar Sectores",
@@ -715,7 +715,7 @@
     "notfoundcategory": "No se encontraron Sectores",
     "searchPlaceholder": "Buscar...",
     "title": "Administrador de Sectores",
-    "titleDescription": "Gestiona las Sectores para el módulo seleccionado. Las Sectores en uso no pueden ser eliminadas.",
+    "titleDescription": "Gestiona los sectores del módulo seleccionado. Los sectores en uso no se pueden eliminar.",
     "categoryCreateFailed": "Error al crear el sector",
     "searchOrCreate": "Buscar o crear sector…",
     "createNamed": "Crear",
@@ -756,7 +756,7 @@
     "actionNotImplemented": "Acción \"{{action}}\" aún no implementada",
     "applyFilters": "Aplicar filtros",
     "cancel": "Cancelar",
-    "categoriesUpdated": "Sectores actualizadas",
+    "categoriesUpdated": "Sectores actualizados",
     "clearFilters": "Limpiar filtros",
     "client": "Cliente",
     "clientArchived": "Cliente archivado",
@@ -773,9 +773,9 @@
     "errorDelete": "Error al eliminar",
     "errorExportExcel": "Error al exportar Excel",
     "errorExportPDF": "Error al exportar PDF",
-    "errorMoveCategories": "Error al mover Sectores",
+    "errorMoveCategories": "Error al mover de sector",
     "errorRestore": "Error al restaurar",
-    "errorUpdateCategories": "Error al actualizar Sectores",
+    "errorUpdateCategories": "Error al actualizar los sectores",
     "excelDownloaded": "Excel descargado",
     "generatingExcel": "Generando Excel...",
     "generatingPDF": "Generando PDF...",
@@ -789,7 +789,7 @@
     "saving": "Guardando...",
     "searchPlaceholder": "Buscar cliente",
     "selectAtLeastOne": "Selecciona al menos un cliente",
-    "selectAtLeastOneCategory": "Selecciona al menos una categoría",
+    "selectAtLeastOneCategory": "Selecciona al menos un sector",
     "selectCategories": "Selecciona Sectores",
     "selectOnlyActiveToArchive": "Selecciona solo clientes activos para archivar",
     "selectOnlyArchivedToDelete": "Selecciona solo clientes archivados para eliminar",
@@ -1066,7 +1066,8 @@
         "Titleinput": "Ingresa el título de la nota",
         "Titlenote": "Título *",
         "NoFilesSelected": "No se seleccionaron archivos",
-        "selectDate": "Selecciona"
+        "selectDate": "Selecciona",
+        "editTitle": "Editar nota"
       },
       "addedBy": "Agregado por",
       "detailsTitle": "Detalle de la nota",
@@ -1161,7 +1162,7 @@
       },
       "changeCategories": {
         "desc": "Aplica a {{count}} cliente(s) seleccionados.",
-        "newCategories": "Nuevas Sectores",
+        "newCategories": "Nuevos sectores",
         "title": "Cambiar Sectores"
       }
     },
@@ -2192,7 +2193,7 @@
         "statusPending": "Pendientes"
       },
       "importDialog": {
-        "browsePlaceholder": "Explorar tu archivo Excel aquí....",
+        "browsePlaceholder": "Selecciona tu archivo aquí…",
         "clickToSelect": "Click para seleccionar",
         "completed": "Importación completada",
         "description": "Sube un archivo .xlsx/.xls/.csv para importar vigilantes.",
@@ -3694,7 +3695,7 @@
       "exportPdf": "Exportar como PDF",
       "import": "Importar",
       "manageCategories": "Gestionar Sectores",
-      "move": "Mover Categoría",
+      "move": "Mover de sector",
       "restore": "Restaurar",
       "save": "Guardar",
       "viewDetails": "Ver detalles"
@@ -3981,7 +3982,7 @@
       "actionNotImplemented": "Acción \"{{action}}\" aún no implementada",
       "applyFilters": "Aplicar filtros",
       "cancel": "Cancelar",
-      "categoriesUpdated": "Sectores actualizadas",
+      "categoriesUpdated": "Sectores actualizados",
       "clearFilters": "Limpiar filtros",
       "client": "Cliente",
       "clientArchived": "Cliente archivado",
@@ -4014,7 +4015,7 @@
       "saving": "Guardando...",
       "searchPlaceholder": "Buscar cliente",
       "selectAtLeastOne": "Selecciona al menos un cliente",
-      "selectAtLeastOneCategory": "Selecciona al menos una categoría",
+      "selectAtLeastOneCategory": "Selecciona al menos un sector",
       "selectCategories": "Selecciona Sectores",
       "selectOnlyActiveToArchive": "Selecciona solo clientes activos para archivar",
       "selectOnlyArchivedToDelete": "Selecciona solo clientes archivados para eliminar",
@@ -4307,7 +4308,7 @@
         },
         "changeCategories": {
           "desc": "Aplica a {{count}} cliente(s) seleccionados.",
-          "newCategories": "Nuevas Sectores",
+          "newCategories": "Nuevos sectores",
           "title": "Cambiar Sectores"
         }
       }
@@ -8617,7 +8618,7 @@
   "admin": {
     "registration_title": "Registro de Administrador"
   },
-  "categoriesnotloaded": "No se pudieron cargar las Sectores",
+  "categoriesnotloaded": "No se pudieron cargar los sectores",
   "client": {
     "invite_not_found": "Invitación no encontrada o inválida.",
     "registration_title": "Registro de cliente",
@@ -9585,7 +9586,7 @@
       "categoria": "Categoría",
       "seleccionaLaCategoriaDestinoPara": "Selecciona la categoría destino para los sitios seleccionados.",
       "seleccionaUnaCategoria": "Selecciona una categoría",
-      "noSePudieronCargarLas": "No se pudieron cargar las Sectores",
+      "noSePudieronCargarLas": "No se pudieron cargar los sectores",
       "errorAlAsignarCategoria": "Error al asignar categoría",
       "moverSitiosACategoria": "Mover Sitios a Categoría",
       "sectorizarSitio": "Sectorizar Sitio",
@@ -9805,7 +9806,7 @@
       "sinActividadReciente": "Sin actividad reciente.",
       "bibliotecaDeDocumentos": "Biblioteca de documentos",
       "cat": {
-        "postOrders": "Post Orders",
+        "postOrders": "Consignas del puesto",
         "manuales": "Manuales",
         "procedimientos": "Procedimientos",
         "reportes": "Reportes",
@@ -9862,7 +9863,16 @@
       "nDocumentosSubidos_one": "{{count}} documento subido",
       "nDocumentosSubidos_other": "{{count}} documentos subidos",
       "nDocumentosSubidos_few": "{{count}} documentos subidos",
-      "nDocumentosSubidos_many": "{{count}} documentos subidos"
+      "nDocumentosSubidos_many": "{{count}} documentos subidos",
+      "agrupar": {
+        "creando": "Creando…",
+        "crear": "Crear carpeta",
+        "resumen": "{{count}} documento(s) marcados. La carpeta aparece en «Entregas al cliente», desde donde se comparte en la app o por un enlace privado.",
+        "nombre": "Nombre de la carpeta",
+        "desde": "Periodo desde",
+        "hasta": "Periodo hasta",
+        "nota": "Nota para el cliente (opcional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Buscar por ID, título o ubicación",
@@ -10034,7 +10044,7 @@
       "reporteDeRondas": "Reporte de rondas",
       "reporteDeVisitas": "Reporte de visitas",
       "reporteDeAsistencia": "Reporte de asistencia",
-      "actividadPorGuardia": "Actividad por guardia",
+      "actividadPorGuardia": "Actividad por vigilante",
       "semanalLunes0800": "Semanal (lunes 08:00)",
       "cumplimientoDeEstaciones": "Cumplimiento de estaciones",
       "nActividades": "{{n}} actividades",
@@ -10110,7 +10120,8 @@
       "invitarAcceso": "Invitar acceso",
       "revocarAcceso": "Revocar acceso",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Portal web"
+      "portalWeb": "Portal web",
+      "nombreDeLaPersona": "Nombre de la persona (opcional)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Datos de demostración",
@@ -11435,7 +11446,8 @@
       "notasPrivadasInstruccionesEspeciales": "Notas privadas, instrucciones especiales…",
       "centroDeConvencionesQuito": "Centro de convenciones, Quito",
       "clienteRequerido": "Cliente requerido",
-      "fechasYLugar": "Fechas y lugar"
+      "fechasYLugar": "Fechas y lugar",
+      "finAntesDeInicio": "La fecha de fin no puede ser anterior a la de inicio"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Aún no hay radios IP",
@@ -16350,9 +16362,11 @@
       "filasNoImportadas_few": "{{count}} filas no se pudieron importar. Revisa los detalles.",
       "filasNoImportadas_many": "{{count}} filas no se pudieron importar. Revisa los detalles.",
       "errorAlImportar": "Error al importar",
-      "camposObligatoriosVacios": "Algunos campos obligatorios están vacíos. Verifica: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Algunos campos obligatorios están vacíos. Verifica: name, address.",
       "importarClientesDesdeExcel": "Importar Clientes desde Excel",
-      "columnasOpcionales": "Columnas opcionales:"
+      "columnasOpcionales": "Columnas opcionales:",
+      "columnasPorNombre": "La primera fila lleva los nombres de las columnas; el orden no importa.",
+      "avisoInvitacion": "Cada cliente importado con correo recibe en ese momento la invitación de bienvenida a la app."
     },
     "CoBrowseAgent": {
       "soporte": "Soporte",

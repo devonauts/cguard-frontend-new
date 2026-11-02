@@ -665,7 +665,8 @@
         "Titleinput": "Titel der Notiz eingeben",
         "Titlenote": "Titel *",
         "NoFilesSelected": "Keine Dateien ausgewählt",
-        "selectDate": "Auswählen"
+        "selectDate": "Auswählen",
+        "editTitle": "Notiz bearbeiten"
       },
       "addedBy": "Hinzugefügt von",
       "detailsTitle": "Details der Notiz",
@@ -10404,7 +10405,16 @@
       "nDocumentosSubidos_one": "{{count}} Dokument hochgeladen",
       "nDocumentosSubidos_other": "{{count}} Dokumente hochgeladen",
       "nDocumentosSubidos_few": "{{count}} Dokumente hochgeladen",
-      "nDocumentosSubidos_many": "{{count}} Dokumente hochgeladen"
+      "nDocumentosSubidos_many": "{{count}} Dokumente hochgeladen",
+      "agrupar": {
+        "creando": "Wird erstellt…",
+        "crear": "Ordner erstellen",
+        "resumen": "{{count}} Dokument(e) markiert. Der Ordner erscheint unter „Übergaben an den Auftraggeber“ und wird von dort in der App oder über einen privaten Link geteilt.",
+        "nombre": "Ordnername",
+        "desde": "Zeitraum von",
+        "hasta": "Zeitraum bis",
+        "nota": "Hinweis für den Auftraggeber (optional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Nach ID, Titel oder Standort suchen",
@@ -10652,7 +10662,8 @@
       "invitarAcceso": "Zugang einladen",
       "revocarAcceso": "Zugang widerrufen",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Webportal"
+      "portalWeb": "Webportal",
+      "nombreDeLaPersona": "Name der Person (optional)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Demodaten",
@@ -11977,7 +11988,8 @@
       "notasPrivadasInstruccionesEspeciales": "Private Notizen, besondere Anweisungen…",
       "centroDeConvencionesQuito": "Kongresszentrum, Quito",
       "clienteRequerido": "Kunde erforderlich",
-      "fechasYLugar": "Daten und Ort"
+      "fechasYLugar": "Daten und Ort",
+      "finAntesDeInicio": "Das Enddatum darf nicht vor dem Startdatum liegen"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Noch keine IP-Funkgeräte",
@@ -16892,9 +16904,11 @@
       "filasNoImportadas_few": "{{count}} Zeilen konnten nicht importiert werden. Prüfe die Details.",
       "filasNoImportadas_many": "{{count}} Zeilen konnten nicht importiert werden. Prüfe die Details.",
       "errorAlImportar": "Import fehlgeschlagen",
-      "camposObligatoriosVacios": "Einige Pflichtfelder sind leer. Prüfe: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Einige Pflichtfelder sind leer. Prüfe: name, address.",
       "importarClientesDesdeExcel": "Kunden aus Excel importieren",
-      "columnasOpcionales": "Optionale Spalten:"
+      "columnasOpcionales": "Optionale Spalten:",
+      "columnasPorNombre": "Die erste Zeile enthält die Spaltennamen; die Reihenfolge spielt keine Rolle.",
+      "avisoInvitacion": "Jeder importierte Kunde mit E-Mail-Adresse erhält sofort die Willkommenseinladung zur App."
     },
     "CoBrowseAgent": {
       "soporte": "Support",

@@ -665,7 +665,8 @@
         "Titleinput": "Proszę wpisać tytuł notatki",
         "Titlenote": "Tytuł *",
         "NoFilesSelected": "Nie wybrano plików",
-        "selectDate": "Wybierz"
+        "selectDate": "Wybierz",
+        "editTitle": "Edytuj notatkę"
       },
       "addedBy": "Dodane przez",
       "detailsTitle": "Szczegóły notatki",
@@ -1963,7 +1964,7 @@
         "statusPending": "Oczekujący"
       },
       "importDialog": {
-        "browsePlaceholder": "Wskaż tutaj swój plik Excel....",
+        "browsePlaceholder": "Wskaż tutaj swój plik Excel…",
         "clickToSelect": "Kliknij, aby wybrać",
         "completed": "Import zakończony",
         "description": "Proszę wgrać plik .xlsx/.xls/.csv, aby zaimportować pracowników ochrony.",
@@ -10448,7 +10449,16 @@
       "nDocumentosSubidos_one": "Przesłano {{count}} dokument",
       "nDocumentosSubidos_other": "Przesłano {{count}} dokumentów",
       "nDocumentosSubidos_few": "Przesłano {{count}} dokumenty",
-      "nDocumentosSubidos_many": "Przesłano {{count}} dokumentów"
+      "nDocumentosSubidos_many": "Przesłano {{count}} dokumentów",
+      "agrupar": {
+        "creando": "Tworzenie…",
+        "crear": "Utwórz folder",
+        "resumen": "Zaznaczone dokumenty: {{count}}. Folder pojawi się w „Przekazania dla zleceniodawcy”, skąd można go udostępnić w aplikacji lub przez prywatny link.",
+        "nombre": "Nazwa folderu",
+        "desde": "Okres od",
+        "hasta": "Okres do",
+        "nota": "Notatka dla zleceniodawcy (opcjonalnie)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Szukaj po ID, tytule lub lokalizacji",
@@ -10696,7 +10706,8 @@
       "invitarAcceso": "Zaproś do dostępu",
       "revocarAcceso": "Cofnij dostęp",
       "appMiSeguridad": "Aplikacja {{app}}",
-      "portalWeb": "Portal internetowy"
+      "portalWeb": "Portal internetowy",
+      "nombreDeLaPersona": "Imię i nazwisko osoby (opcjonalnie)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Dane demonstracyjne",
@@ -12051,7 +12062,8 @@
       "notasPrivadasInstruccionesEspeciales": "Notatki wewnętrzne, instrukcje szczególne…",
       "centroDeConvencionesQuito": "Centrum konferencyjne, Warszawa",
       "clienteRequerido": "Klient jest wymagany",
-      "fechasYLugar": "Daty i miejsce"
+      "fechasYLugar": "Daty i miejsce",
+      "finAntesDeInicio": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Nie ma jeszcze radiotelefonów IP",
@@ -17120,9 +17132,11 @@
       "filasNoImportadas_few": "Nie udało się zaimportować {{count}} wierszy. Sprawdź szczegóły.",
       "filasNoImportadas_many": "Nie udało się zaimportować {{count}} wierszy. Sprawdź szczegóły.",
       "errorAlImportar": "Błąd importu",
-      "camposObligatoriosVacios": "Niektóre wymagane pola są puste. Sprawdź: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Niektóre wymagane pola są puste. Sprawdź: name, address.",
       "importarClientesDesdeExcel": "Importuj klientów z Excela",
-      "columnasOpcionales": "Kolumny opcjonalne:"
+      "columnasOpcionales": "Kolumny opcjonalne:",
+      "columnasPorNombre": "Pierwszy wiersz zawiera nazwy kolumn; ich kolejność nie ma znaczenia.",
+      "avisoInvitacion": "Każdy zaimportowany klient z adresem e-mail od razu otrzymuje powitalne zaproszenie do aplikacji."
     },
     "CoBrowseAgent": {
       "soporte": "Wsparcie",

@@ -665,7 +665,8 @@
         "Titleinput": "Inserisci il titolo della nota",
         "Titlenote": "Titolo *",
         "NoFilesSelected": "Nessun file selezionato",
-        "selectDate": "Seleziona"
+        "selectDate": "Seleziona",
+        "editTitle": "Modifica nota"
       },
       "addedBy": "Aggiunto da",
       "detailsTitle": "Dettaglio della nota",
@@ -1963,7 +1964,7 @@
         "statusPending": "In attesa"
       },
       "importDialog": {
-        "browsePlaceholder": "Sfoglia qui il tuo file Excel....",
+        "browsePlaceholder": "Sfoglia qui il tuo file Excel…",
         "clickToSelect": "Clicca per selezionare",
         "completed": "Importazione completata",
         "description": "Carica un file .xlsx/.xls/.csv per importare le guardie.",
@@ -10404,7 +10405,16 @@
       "nDocumentosSubidos_one": "{{count}} documento caricato",
       "nDocumentosSubidos_other": "{{count}} documenti caricati",
       "nDocumentosSubidos_few": "{{count}} documenti caricati",
-      "nDocumentosSubidos_many": "{{count}} documenti caricati"
+      "nDocumentosSubidos_many": "{{count}} documenti caricati",
+      "agrupar": {
+        "creando": "Creazione…",
+        "crear": "Crea cartella",
+        "resumen": "{{count}} documento/i selezionato/i. La cartella compare in «Consegne al committente», da dove si condivide nell’app o con un link privato.",
+        "nombre": "Nome della cartella",
+        "desde": "Periodo dal",
+        "hasta": "Periodo al",
+        "nota": "Nota per il committente (facoltativa)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Cerca per ID, titolo o posizione",
@@ -10652,7 +10662,8 @@
       "invitarAcceso": "Invita accesso",
       "revocarAcceso": "Revoca accesso",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Portale web"
+      "portalWeb": "Portale web",
+      "nombreDeLaPersona": "Nome della persona (facoltativo)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Dati dimostrativi",
@@ -11977,7 +11988,8 @@
       "notasPrivadasInstruccionesEspeciales": "Note riservate, istruzioni particolari…",
       "centroDeConvencionesQuito": "Centro congressi, Milano",
       "clienteRequerido": "Cliente obbligatorio",
-      "fechasYLugar": "Date e luogo"
+      "fechasYLugar": "Date e luogo",
+      "finAntesDeInicio": "La data di fine non può essere precedente a quella di inizio"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Ancora nessuna radio IP",
@@ -16892,9 +16904,11 @@
       "filasNoImportadas_few": "{{count}} righe non sono state importate. Controlla i dettagli.",
       "filasNoImportadas_many": "{{count}} righe non sono state importate. Controlla i dettagli.",
       "errorAlImportar": "Errore durante l'importazione",
-      "camposObligatoriosVacios": "Alcuni campi obbligatori sono vuoti. Verifica: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Alcuni campi obbligatori sono vuoti. Verifica: name, address.",
       "importarClientesDesdeExcel": "Importa clienti da Excel",
-      "columnasOpcionales": "Colonne facoltative:"
+      "columnasOpcionales": "Colonne facoltative:",
+      "columnasPorNombre": "La prima riga contiene i nomi delle colonne; l’ordine non conta.",
+      "avisoInvitacion": "Ogni cliente importato con un’e-mail riceve subito l’invito di benvenuto all’app."
     },
     "CoBrowseAgent": {
       "soporte": "Supporto",

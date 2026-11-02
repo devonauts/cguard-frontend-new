@@ -11,6 +11,7 @@ import {
   Trash,
   Eye,
   FileText,
+  Paperclip,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -33,10 +34,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import MobileCardList from "@/components/responsive/MobileCardList";
-import { localeActual } from "@/lib/localeActual";
 import { Button } from "@/components/ui/button";
 import { Section, EmptyState, Modal, SearchInput } from "@/components/kit";
-import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  diaCivilDe,
+  hoyEnLaEmpresa,
+  soloFechaCivil,
+} from "@/lib/horaDeLaEmpresa";
+import { useFileUrl } from "@/lib/fileUrl";
 
 type Props = {
   client?: Client & { firstName?: string };
@@ -49,6 +54,14 @@ interface NoteAuthor {
   firstName?: string;
   lastName?: string;
 }
+interface NoteAttachment {
+  id?: string;
+  name?: string;
+  mimeType?: string;
+  privateUrl?: string | null;
+  publicUrl?: string | null;
+  downloadUrl?: string | null;
+}
 interface ClientNote {
   id: string;
   title: string;
@@ -57,6 +70,37 @@ interface ClientNote {
   createdAt?: string;
   createdBy?: NoteAuthor | null;
   createdById?: string | null;
+  attachments?: NoteAttachment[];
+}
+
+/** Notes keep PDFs and images (storage `notesPdf` / `notesImages`, 3 MB). */
+const NOTE_FILE_MAX = 3 * 1024 * 1024;
+const noteStorageFor = (f: File): string | null =>
+  f.type === "application/pdf"
+    ? "notesPdf"
+    : (f.type || "").startsWith("image/")
+      ? "notesImages"
+      : null;
+
+/** The day of a note, as written: a civil day, never shifted by the zone. */
+const noteDay = (n: ClientNote) =>
+  soloFechaCivil(n.noteDate || n.createdAt || null, {}, "-");
+
+function NoteFileLink({ file }: { file: NoteAttachment }) {
+  const href = useFileUrl(file.publicUrl || file);
+
+  return (
+    <a
+      className="inline-flex max-w-full items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium [background:var(--glass-sunken)]"
+      href={href || undefined}
+      rel="noreferrer"
+      target="_blank"
+      title={file.name || ""}
+    >
+      <Paperclip size={12} />
+      <span className="max-w-[220px] truncate">{file.name}</span>
+    </a>
+  );
 }
 
 export default function ClientNotes({ client }: Props) {
@@ -76,6 +120,7 @@ export default function ClientNotes({ client }: Props) {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [confirmDeleteIds, setConfirmDeleteIds] = useState<string[]>([]);
   const [detailsNote, setDetailsNote] = useState<ClientNote | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // selection state for checkboxes (master + per-row)
   const [selectedNoteIds, setSelectedNoteIds] = useState<string[]>([]);
@@ -242,13 +287,47 @@ export default function ClientNotes({ client }: Props) {
       title: string;
       description: string;
       noteDate: string | null;
-      attachment: null;
+      attachment?: Record<string, unknown>[];
     } = {
       title: formData.title,
       description: formData.description,
       noteDate: formData.date || null,
-      attachment: null, // files not yet uploaded; placeholder for future
     };
+
+    /* The chosen files are uploaded and sent with the note. They used to be
+       dropped: the payload carried `attachment: null` and nothing was
+       uploaded, while the toast said the note was saved (QA G6). A failed
+       upload stops the save and keeps the form open with what was typed. */
+    if (client?.id && formData.attachments.length) {
+      setSaving(true);
+      try {
+        const subidos: Record<string, unknown>[] = [];
+
+        for (const f of formData.attachments) {
+          const storageId = noteStorageFor(f);
+
+          if (!storageId) continue;
+          const up = await clientService.uploadFile(f, storageId);
+
+          subidos.push({
+            ...up,
+            mimeType: f.type || "application/octet-stream",
+            storageId,
+          });
+        }
+        if (subidos.length) payload.attachment = subidos;
+      } catch (err) {
+        console.warn("[ClientNotes] upload failed", err);
+        toast.error(
+          t("guards.notes.form.attachments.uploadFailed", {
+            defaultValue: "Fallo al subir archivo",
+          }),
+        );
+        setSaving(false);
+
+        return;
+      }
+    }
 
     if (!client || !client.id) {
       // local-only
@@ -282,27 +361,15 @@ export default function ClientNotes({ client }: Props) {
         setNotesData((prev) =>
           prev.map((n) => (n.id === updated.id ? updated : n)),
         );
-        const msg =
-          resp && resp.messageCode
-            ? t(resp.messageCode)
-            : resp && resp.message
-              ? resp.message
-              : t("clients.notes.noteUpdated");
-
-        toast.success(msg);
+        // The server's `messageCode` («notes.noteUpdated») is a SERVER key;
+        // passed to t() it showed raw (QA M8).
+        toast.success(t("clients.notes.noteUpdated"));
       } else {
         const resp = await clientService.createClientNote(client.id, payload);
         const created = resp && resp.data ? resp.data : resp;
 
         setNotesData((prev) => [created, ...prev]);
-        const msg =
-          resp && resp.messageCode
-            ? t(resp.messageCode)
-            : resp && resp.message
-              ? resp.message
-              : t("clients.notes.noteCreated");
-
-        toast.success(msg);
+        toast.success(t("clients.notes.noteCreated"));
       }
 
       setShowModal(false);
@@ -314,6 +381,7 @@ export default function ClientNotes({ client }: Props) {
       });
       setIsEditing(false);
       setEditingNoteId(null);
+      setSaving(false);
     } catch (err) {
       console.warn("[ClientNotes] failed to save note", err);
       const errorMsg = isEditing
@@ -321,6 +389,7 @@ export default function ClientNotes({ client }: Props) {
         : t("clients.notes.noteCreateFailed", "Could not create note");
 
       toast.error(errorMsg);
+      setSaving(false);
       /* NO se inventa una nota local.
          Aquí había un «fallback to local»: si el guardado fallaba, se avisaba
          del error Y ADEMÁS se metía en la lista una nota fabricada en el
@@ -448,9 +517,7 @@ export default function ClientNotes({ client }: Props) {
                       </td>
                       <td className="px-2 py-2.5 font-medium">{note.title}</td>
                       <td className="px-2 py-2.5 tabular-nums">
-                        {note.noteDate || note.noteDate === null
-                          ? note.noteDate
-                          : note.createdAt?.split("T")?.[0]}
+                        {noteDay(note)}
                       </td>
                       <td className="px-2 py-2.5">
                         {(() => {
@@ -547,7 +614,7 @@ export default function ClientNotes({ client }: Props) {
                         {note.title}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {note.noteDate || note.createdAt?.split("T")?.[0]}
+                        {noteDay(note)}
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
@@ -573,7 +640,7 @@ export default function ClientNotes({ client }: Props) {
       <Modal
         footer={
           <Button
-            disabled={!isFormValid}
+            disabled={!isFormValid || saving}
             variant="brand"
             onClick={handleSubmitNote}
           >
@@ -584,7 +651,11 @@ export default function ClientNotes({ client }: Props) {
         }
         icon={<FileText className="h-5 w-5" />}
         open={showModal}
-        title={t("clients.notes.form.Title", "Add New Note")}
+        title={
+          isEditing
+            ? t("clients.notes.form.editTitle", "Editar nota")
+            : t("clients.notes.form.Title", "Agregar nueva nota")
+        }
         onOpenChange={(o) => {
           if (!o) handleCloseModal();
         }}
@@ -630,7 +701,7 @@ export default function ClientNotes({ client }: Props) {
                   variant="outline"
                 >
                   {formData.date ? (
-                    new Date(formData.date).toLocaleDateString(localeActual(), {
+                    soloFechaCivil(formData.date, {
                       month: "short",
                       day: "2-digit",
                       year: "numeric",
@@ -644,12 +715,18 @@ export default function ClientNotes({ client }: Props) {
               <PopoverContent className="w-[320px] p-3 rounded-lg shadow-lg">
                 <Calendar
                   mode="single"
-                  selected={formData.date ? new Date(formData.date) : undefined}
+                  selected={
+                    formData.date
+                      ? new Date(`${formData.date.slice(0, 10)}T00:00:00`)
+                      : undefined
+                  }
                   onSelect={(d) => {
                     if (d) {
+                      // Local parts of the picked day; toISOString moved it a
+                      // day back east of Greenwich.
                       setFormData((prev) => ({
                         ...prev,
-                        date: d.toISOString().slice(0, 10),
+                        date: diaCivilDe(d),
                       }));
                     }
                   }}
@@ -709,14 +786,38 @@ export default function ClientNotes({ client }: Props) {
               </div>
               <input
                 multiple
+                accept="application/pdf,image/*"
                 className="sr-only"
                 type="file"
                 onChange={(e) => {
-                  const files = e.target.files
+                  const picked = e.target.files
                     ? Array.from(e.target.files)
                     : [];
+                  const files = picked.filter((f) => {
+                    if (!noteStorageFor(f)) {
+                      toast.error(
+                        `${t("guards.notes.form.attachments.invalidType", {
+                          defaultValue: "Tipo de archivo no permitido",
+                        })}: ${f.name}`,
+                      );
+
+                      return false;
+                    }
+                    if (f.size > NOTE_FILE_MAX) {
+                      toast.error(
+                        `${t("guards.notes.form.attachments.tooLarge", {
+                          defaultValue: "Archivo mayor a 3MB",
+                        })}: ${f.name}`,
+                      );
+
+                      return false;
+                    }
+
+                    return true;
+                  });
 
                   setFormData({ ...formData, attachments: files });
+                  e.target.value = "";
                 }}
               />
             </label>
@@ -750,7 +851,7 @@ export default function ClientNotes({ client }: Props) {
         }
         icon={<FileText className="h-5 w-5" />}
         open={!!detailsNote}
-        title={t("clients.notes.Details.detailsTitle", "Detalle de la nota")}
+        title={t("clients.notes.detailsTitle", "Detalle de la nota")}
         onOpenChange={(o) => {
           if (!o) setDetailsNote(null);
         }}
@@ -763,7 +864,7 @@ export default function ClientNotes({ client }: Props) {
             </div>
             <div className="text-sm text-foreground">
               <strong>{t("clients.notes.Details.Date", "Fecha")}: </strong>
-              {detailsNote.noteDate || detailsNote.createdAt?.split("T")?.[0]}
+              {noteDay(detailsNote)}
             </div>
             <div className="text-sm text-foreground">
               <strong>
@@ -781,6 +882,19 @@ export default function ClientNotes({ client }: Props) {
                 detailsNote.createdById ||
                 "-"}
             </div>
+            {Array.isArray(detailsNote.attachments) &&
+              detailsNote.attachments.length > 0 && (
+                <div className="text-sm text-foreground">
+                  <strong>
+                    {t("clients.notes.form.AttachFile", "Archivos adjuntos")}:
+                  </strong>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {detailsNote.attachments.map((a, i) => (
+                      <NoteFileLink key={a.id ?? i} file={a} />
+                    ))}
+                  </div>
+                </div>
+              )}
           </div>
         )}
       </Modal>

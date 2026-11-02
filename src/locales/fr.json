@@ -665,7 +665,8 @@
         "Titleinput": "Saisissez le titre de la note",
         "Titlenote": "Titre *",
         "NoFilesSelected": "Aucun fichier sélectionné",
-        "selectDate": "Sélectionner"
+        "selectDate": "Sélectionner",
+        "editTitle": "Modifier la note"
       },
       "addedBy": "Ajouté par",
       "detailsTitle": "Détail de la note",
@@ -1963,7 +1964,7 @@
         "statusPending": "En attente"
       },
       "importDialog": {
-        "browsePlaceholder": "Parcourez votre fichier Excel ici....",
+        "browsePlaceholder": "Parcourez votre fichier Excel ici…",
         "clickToSelect": "Cliquez pour sélectionner",
         "completed": "Importation terminée",
         "description": "Envoyez un fichier .xlsx/.xls/.csv pour importer des agents.",
@@ -10404,7 +10405,16 @@
       "nDocumentosSubidos_one": "{{count}} document envoyé",
       "nDocumentosSubidos_other": "{{count}} documents envoyés",
       "nDocumentosSubidos_few": "{{count}} documents envoyés",
-      "nDocumentosSubidos_many": "{{count}} documents envoyés"
+      "nDocumentosSubidos_many": "{{count}} documents envoyés",
+      "agrupar": {
+        "creando": "Création…",
+        "crear": "Créer le dossier",
+        "resumen": "{{count}} document(s) sélectionné(s). Le dossier apparaît dans « Remises au client », d’où il se partage dans l’application ou par un lien privé.",
+        "nombre": "Nom du dossier",
+        "desde": "Période du",
+        "hasta": "Période au",
+        "nota": "Note pour le client (facultatif)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Rechercher par ID, titre ou lieu",
@@ -10652,7 +10662,8 @@
       "invitarAcceso": "Inviter un accès",
       "revocarAcceso": "Révoquer l'accès",
       "appMiSeguridad": "Application {{app}}",
-      "portalWeb": "Portail web"
+      "portalWeb": "Portail web",
+      "nombreDeLaPersona": "Nom de la personne (facultatif)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Données de démonstration",
@@ -11977,7 +11988,8 @@
       "notasPrivadasInstruccionesEspeciales": "Notes privées, consignes particulières…",
       "centroDeConvencionesQuito": "Centre de congrès, Quito",
       "clienteRequerido": "Client requis",
-      "fechasYLugar": "Dates et lieu"
+      "fechasYLugar": "Dates et lieu",
+      "finAntesDeInicio": "La date de fin ne peut pas être antérieure à la date de début"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Aucune radio IP pour le moment",
@@ -16892,9 +16904,11 @@
       "filasNoImportadas_few": "{{count}} lignes n'ont pas pu être importées. Consultez les détails.",
       "filasNoImportadas_many": "{{count}} lignes n'ont pas pu être importées. Consultez les détails.",
       "errorAlImportar": "Échec de l'importation",
-      "camposObligatoriosVacios": "Certains champs obligatoires sont vides. Vérifiez : name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Certains champs obligatoires sont vides. Vérifiez : name, address.",
       "importarClientesDesdeExcel": "Importer des clients depuis Excel",
-      "columnasOpcionales": "Colonnes facultatives :"
+      "columnasOpcionales": "Colonnes facultatives :",
+      "columnasPorNombre": "La première ligne contient les noms des colonnes ; leur ordre n’a pas d’importance.",
+      "avisoInvitacion": "Chaque client importé avec une adresse e-mail reçoit aussitôt l’invitation de bienvenue à l’application."
     },
     "CoBrowseAgent": {
       "soporte": "Support",
