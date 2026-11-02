@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cuantosTextos, datosDeTextos, textosDe, tieneMetodosPropios } from "./textosDeMarca";
+import { cuantosTextos, datosDeTextos, terminosDeCotizacion, textosDe, tieneMetodosPropios } from "./textosDeMarca";
 
 import { seccionesConMultimarca } from "../../../config/reportesDeMultimarca";
 
@@ -55,5 +55,17 @@ describe("phase 5 · the reports center card", () => {
 
     expect(con[1].reports.map((r) => r.href)).toEqual(["/reports/horas-entre-marcas", "/x"]);
     expect(con[0].reports).toEqual([]);
+  });
+});
+
+describe("phase 5 · the terms a new quote starts with", () => {
+  const bt = (quoteTerms: string | null) => ({ billingTexts: { quoteTerms } as any });
+
+  it("a brand's own, else none; the principal's own, else the company's", () => {
+    expect(terminosDeCotizacion({ isPrincipal: false, ...bt("Beta condiciones") }, "Empresa")).toBe("Beta condiciones");
+    expect(terminosDeCotizacion({ isPrincipal: false, ...bt(null) }, "Empresa")).toBe("");
+    expect(terminosDeCotizacion({ isPrincipal: true, ...bt(null) }, "Empresa")).toBe("Empresa");
+    expect(terminosDeCotizacion({ isPrincipal: true, ...bt("Propios") }, "Empresa")).toBe("Propios");
+    expect(terminosDeCotizacion(null, "Empresa")).toBe("Empresa");
   });
 });

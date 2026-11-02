@@ -112,3 +112,20 @@ export function datosDeTextos(b: TextosBorrador): Partial<DatosDeMarca> {
 export function cuantosTextos(b: TextosBorrador): number {
   return CLAVES_DE_TEXTO.filter((k) => b[k].trim()).length + (tieneMetodosPropios(b.metodos) ? 1 : 0);
 }
+
+/**
+ * The terms a NEW quote starts with (the server does the same when the form
+ * sends none): a non-principal brand's own, else none; the principal's own,
+ * else the company's. Without the module (`marca` null): the company's.
+ */
+export function terminosDeCotizacion(
+  marca: Pick<Marca, "isPrincipal" | "billingTexts"> | null | undefined,
+  deLaEmpresa: string | null | undefined,
+): string {
+  const propios = String(marca?.billingTexts?.quoteTerms ?? "");
+
+  if (!marca) return String(deLaEmpresa ?? "");
+  if (!marca.isPrincipal) return propios;
+
+  return propios.trim() ? propios : String(deLaEmpresa ?? "");
+}
