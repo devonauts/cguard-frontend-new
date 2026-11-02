@@ -210,7 +210,11 @@ export default function UserRolesTable({
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="icon" variant="ghost">
+                          <Button
+                            aria-label={`${t("kit.table.rowActions")}: ${r.name}`}
+                            size="icon"
+                            variant="ghost"
+                          >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
