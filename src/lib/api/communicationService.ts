@@ -89,6 +89,8 @@ export interface CommunicationLog {
   tenantId: string;
   userId: string | null;
   recipient: string;
+  /** Added by the API when `recipient` is a user id (push). */
+  recipientName?: string;
   channel: Channel;
   provider: string;
   messageType: MessageType;
