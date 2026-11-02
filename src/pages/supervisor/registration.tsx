@@ -67,6 +67,10 @@ export default function SupervisorRegistration() {
   const [isLoading, setIsLoading] = useState(false);
   const [fetched, setFetched] = useState<any>(null);
   const [inviteNotFound, setInviteNotFound] = useState(false);
+  /* The link came with a token that cannot be opened (used, expired or
+     invalid): the form cannot be submitted without it, so it is not shown —
+     the page says what happened and what to do, like the guard page. */
+  const enlaceCaido = inviteNotFound && !!inviteToken;
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const shownToastRef = useRef<string | null>(null);
 
@@ -298,10 +302,12 @@ export default function SupervisorRegistration() {
       subtitle={
         done
           ? t("invite.accessReady", "Tu acceso quedó listo.")
-          : t(
-              "ui.SupervisorRegistration.creaUnaContrasenaParaTuCuenta",
-              "Crea una contraseña para tu cuenta. Supervisarás tus recorridos y tu equipo desde la app de supervisor.",
-            )
+          : enlaceCaido
+            ? undefined
+            : t(
+                "ui.SupervisorRegistration.creaUnaContrasenaParaTuCuenta",
+                "Crea una contraseña para tu cuenta. Supervisarás tus recorridos y tu equipo desde la app de supervisor.",
+              )
       }
       title={done ? t("ui.registration.cuentaActivada", "¡Cuenta activada!") : t('supervisor.registration_title', { defaultValue: 'Registro de supervisor' })}
       width="lg"
@@ -372,16 +378,25 @@ export default function SupervisorRegistration() {
             {t("ui.registration.yaPuedesCerrarEstaVentana")}
           </p>
         </FadeIn>
+      ) : enlaceCaido ? (
+        <div className="space-y-3">
+          <InfoNote icon={<AlertTriangle />} tone="warn">
+            {t("supervisor.invite_not_found", {
+              defaultValue: "Invitación no encontrada o inválida.",
+            })}
+          </InfoNote>
+          <p
+            className="text-sm leading-relaxed"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            {t("ui.SupervisorRegistration.pideInvitacionNueva", {
+              defaultValue:
+                "Si ya activaste tu cuenta, entra en la app de supervisor con tu correo y contraseña. Si no, pide a tu empresa que te envíe una invitación nueva.",
+            })}
+          </p>
+        </div>
       ) : (
         <form className="space-y-5" onSubmit={handleSubmit}>
-          {inviteNotFound && (
-            <InfoNote icon={<AlertTriangle />} tone="warn">
-              {t("supervisor.invite_not_found", {
-                defaultValue: "Invitaci\u00f3n no encontrada o inv\u00e1lida.",
-              })}
-            </InfoNote>
-          )}
-
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <Etiqueta htmlFor="sup-nombre">{t("comun.nombre")}</Etiqueta>

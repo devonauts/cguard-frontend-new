@@ -14728,6 +14728,7 @@
       "indicadoresDelSupervisor": "Supervisor indicators"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "If you already activated your account, sign in to the supervisor app with your email and password. If not, ask your company to send you a new invitation.",
       "tuCuentaCon": "Your account with",
       "creaUnaContrasenaParaTuCuenta": "Create a password for your account. You'll supervise your tours and your team from the supervisor app.",
       "tuCuentaConEstaListaDescarga": "Your account with <b>{{empresa}}</b> is ready. Download the <b>supervisor app</b> to manage your tours, your team, and incident reports from your phone.",

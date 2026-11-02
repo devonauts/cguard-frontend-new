@@ -14728,6 +14728,7 @@
       "indicadoresDelSupervisor": "Indicadores do supervisor"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Se você já ativou sua conta, entre no app de supervisor com seu e-mail e senha. Se não, peça à sua empresa que envie um novo convite.",
       "tuCuentaCon": "Sua conta com",
       "creaUnaContrasenaParaTuCuenta": "Crie uma senha para sua conta. Você vai supervisionar suas rondas e sua equipe pelo app de supervisor.",
       "tuCuentaConEstaListaDescarga": "Sua conta com <b>{{empresa}}</b> está pronta. Baixe o <b>app de supervisor</b> para gerenciar suas rondas, sua equipe e as ocorrências pelo celular.",

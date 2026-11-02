@@ -8690,7 +8690,7 @@
     "registration_title": "Registro de usuario"
   },
   "supervisor": {
-    "invite_not_found": "Invitaci\\u00f3n no encontrada o inv\\u00e1lida.",
+    "invite_not_found": "Invitación no encontrada o inválida.",
     "registration_title": "Registro de Supervisor"
   },
   "tenantValidations": {
@@ -14833,6 +14833,7 @@
       "descripcion": "Sesiones de modo vigilancia iniciadas desde la aplicación del vigilante."
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Si ya activaste tu cuenta, entra en la app de supervisor con tu correo y contraseña. Si no, pide a tu empresa que te envíe una invitación nueva.",
       "tuCuentaCon": "Tu cuenta con",
       "creaUnaContrasenaParaTuCuenta": "Crea una contraseña para tu cuenta. Supervisarás tus recorridos y tu equipo desde la app de supervisor.",
       "tuCuentaConEstaListaDescarga": "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la <b>app de supervisor</b> para gestionar tus recorridos, tu equipo y las novedades desde tu teléfono.",

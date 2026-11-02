@@ -15286,6 +15286,7 @@
       "indicadoresDelSupervisor": "Kennzahlen des Einsatzleiters"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Wenn Sie Ihr Konto bereits aktiviert haben, melden Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort in der Supervisor-App an. Andernfalls bitten Sie Ihr Unternehmen, Ihnen eine neue Einladung zu senden.",
       "tuCuentaCon": "Ihr Konto bei",
       "creaUnaContrasenaParaTuCuenta": "Erstellen Sie ein Passwort für Ihr Konto. Ihre Rundgänge und Ihr Team überwachen Sie über die Supervisor-App.",
       "tuCuentaConEstaListaDescarga": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die <b>Supervisor-App</b> herunter, um Rundgänge, Team und Vorfallberichte vom Telefon aus zu verwalten.",
