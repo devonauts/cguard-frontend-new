@@ -15327,6 +15327,7 @@
       "indicadoresDelSupervisor": "Indicatoren van de supervisor"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Als u uw account al hebt geactiveerd, meld u dan aan in de supervisor-app met uw e-mailadres en wachtwoord. Zo niet, vraag uw bedrijf dan om u een nieuwe uitnodiging te sturen.",
       "tuCuentaCon": "Je account bij",
       "creaUnaContrasenaParaTuCuenta": "Maak een wachtwoord voor je account. Je houdt toezicht op je rondes en je team via de supervisor-app.",
       "tuCuentaConEstaListaDescarga": "Je account bij <b>{{empresa}}</b> is klaar. Download de <b>supervisor-app</b> om je rondes, je team en incidentmeldingen vanaf je telefoon te beheren.",

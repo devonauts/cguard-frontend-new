@@ -15327,6 +15327,7 @@
       "indicadoresDelSupervisor": "Indicatori del supervisore"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Se hai già attivato il tuo account, accedi all'app supervisore con la tua e-mail e la tua password. Altrimenti, chiedi alla tua azienda di inviarti un nuovo invito.",
       "tuCuentaCon": "Il tuo account con",
       "creaUnaContrasenaParaTuCuenta": "Crea una password per il tuo account. Supervisionerai le tue ronde e la tua squadra dall'app del supervisore.",
       "tuCuentaConEstaListaDescarga": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'<b>app del supervisore</b> per gestire ronde, squadra e segnalazioni dal telefono.",

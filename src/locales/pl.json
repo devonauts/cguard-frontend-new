@@ -15497,6 +15497,7 @@
       "indicadoresDelSupervisor": "Wskaźniki nadzorcy"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Jeśli Twoje konto jest już aktywne, zaloguj się w aplikacji supervisora za pomocą adresu e-mail i hasła. Jeśli nie, poproś firmę o wysłanie nowego zaproszenia.",
       "tuCuentaCon": "Twoje konto w",
       "creaUnaContrasenaParaTuCuenta": "Utwórz hasło do konta. Obchody i zespół będziesz nadzorować w aplikacji nadzorcy.",
       "tuCuentaConEstaListaDescarga": "Twoje konto w <b>{{empresa}}</b> jest gotowe. Pobierz <b>aplikację nadzorcy</b>, aby zarządzać obchodami, zespołem i raportami zdarzeń z telefonu.",
