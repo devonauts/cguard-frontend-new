@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
+import { rowMenuOpenChange } from '@/lib/rowMenu';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
 import { DAY_CODES, leerDias } from '@/lib/diasDeRonda';
 
@@ -1264,7 +1265,7 @@ export default function PostSiteTours({
                               table's scroll box (same fix as Contacts). */}
                           <DropdownMenu
                             open={rowActionOpenId === tid}
-                            onOpenChange={(o) => setRowActionOpenId(o ? tid : null)}
+                            onOpenChange={(o) => setRowActionOpenId(rowMenuOpenChange(tid, o))}
                           >
                             <DropdownMenuTrigger asChild>
                               <button

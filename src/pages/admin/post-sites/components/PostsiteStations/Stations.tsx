@@ -4,6 +4,7 @@ import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
 import { ApiService } from "@/services/api/apiService";
 import { toast } from "sonner";
+import { rowMenuOpenChange } from "@/lib/rowMenu";
 import {
   Plus,
   Trash,
@@ -1282,7 +1283,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                     <DropdownMenu
                                       open={openRowMenuId === id}
                                       onOpenChange={(o) =>
-                                        setOpenRowMenuId(o ? id : null)
+                                        setOpenRowMenuId(rowMenuOpenChange(id, o))
                                       }
                                     >
                                       <DropdownMenuTrigger asChild>

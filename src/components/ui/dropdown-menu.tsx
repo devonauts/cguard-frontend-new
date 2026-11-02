@@ -4,7 +4,17 @@ import { Check, ChevronRight, Circle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const DropdownMenu = DropdownMenuPrimitive.Root;
+/* Non-modal by default. A modal menu sets `pointer-events: none` on the body
+   while open, so pressing another row's ⋮ only closed the open menu and a
+   second press was needed to open the new one. Non-modal, one press switches
+   menus, an outside click closes the menu and reaches the page, and a menu
+   never leaves the page locked. Pass `modal` to opt back in. */
+function DropdownMenu({
+  modal = false,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return <DropdownMenuPrimitive.Root modal={modal} {...props} />;
+}
 
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
