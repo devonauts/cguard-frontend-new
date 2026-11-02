@@ -15602,11 +15602,11 @@
       "noCodeHint": "Deze link opent direct, zonder code. Wie hem ontvangt —of doorgestuurd krijgt— komt binnen.",
       "expiresHint": "Verloopt over {{horas}} uur. U kunt hem eerder intrekken via de lijst.",
       "recipientsLabel": "E-mailontvangers",
-      "noRecipientsHint": "Deze opdrachtgever heeft geen contacten met een e-mailadres. Geef hieronder aan naar wie het moet worden verstuurd.",
+      "noRecipientsHint": "Deze opdrachtgever heeft geen contacten met een e-mailadres. Voeg er een toe onder „Contacten” om het te versturen, of maak de link zonder te versturen en deel hem zelf.",
       "sourcePortal": "portaal",
       "sourceContact": "contact",
-      "otherEmailsLabel": "Andere e-mails (door komma's gescheiden)",
-      "otherEmailsPlaceholder": "boekhouder@bedrijf.com",
+      "otherEmailsLabel": "Andere ontvangers (door komma's gescheiden)",
+      "otherEmailsPlaceholder": "gebruiker@jouwbedrijf.com",
       "messageLabel": "Bericht (optioneel)",
       "messagePlaceholder": "Bijgevoegd vindt u de documenten van deze maand ter beoordeling.",
       "requireCodeLabel": "Toegangscode vereisen",
@@ -15616,7 +15616,8 @@
       "expiry72h": "72 uur",
       "expiry7d": "7 dagen",
       "historyTitle": "Geschiedenis · {{nombre}}",
-      "historyEmpty": "Nog geen activiteit vastgelegd."
+      "historyEmpty": "Nog geen activiteit vastgelegd.",
+      "otherEmailsHint": "Alleen contacten van deze opdrachtgever of gebruikers van je bedrijf. Voeg iemand anders eerst toe als contact van de opdrachtgever, of maak de link zonder te versturen en deel hem zelf."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Deze link is verlopen",

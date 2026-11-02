@@ -15043,11 +15043,11 @@
       "noCodeHint": "This link opens directly, with no code. Anyone who receives it —or has it forwarded to them— gets in.",
       "expiresHint": "Expires in {{horas}} hours. You can revoke it earlier from the list.",
       "recipientsLabel": "Email recipients",
-      "noRecipientsHint": "This client has no contacts with an email address. Enter below who to send it to.",
+      "noRecipientsHint": "This client has no contacts with an e-mail address. Add one under «Contacts» to send it, or generate the link without sending it and share it yourself.",
       "sourcePortal": "portal",
       "sourceContact": "contact",
-      "otherEmailsLabel": "Other emails (comma-separated)",
-      "otherEmailsPlaceholder": "accountant@company.com",
+      "otherEmailsLabel": "Other recipients (comma-separated)",
+      "otherEmailsPlaceholder": "user@yourcompany.com",
       "messageLabel": "Message (optional)",
       "messagePlaceholder": "Please find attached this month's documents for your review.",
       "requireCodeLabel": "Require an access code",
@@ -15057,7 +15057,8 @@
       "expiry72h": "72 hours",
       "expiry7d": "7 days",
       "historyTitle": "History · {{nombre}}",
-      "historyEmpty": "No activity recorded yet."
+      "historyEmpty": "No activity recorded yet.",
+      "otherEmailsHint": "Only this client's contacts or users of your company. For anyone else, add them as a client contact first, or generate the link without sending it and share it yourself."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "This link has expired",

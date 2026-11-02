@@ -353,8 +353,12 @@ export default function DocumentPackets({
           : t("ui.DocumentPackets.toastLinkGenerated"),
       );
       await cargar();
-    } catch {
-      toast.error(t("ui.DocumentPackets.toastLinkFailed"));
+    } catch (e: any) {
+      // The server names the addresses it refuses (only client contacts and
+      // company users may receive client documents); say that, not just «failed».
+      toast.error(
+        e?.response?.data?.message || t("ui.DocumentPackets.toastLinkFailed"),
+      );
     } finally {
       setEnviando(false);
     }
@@ -861,6 +865,15 @@ export default function DocumentPackets({
                 value={correoSuelto}
                 onChange={(e) => setCorreoSuelto(e.target.value)}
               />
+              {/* What the server accepts (clientRecipientsService): the screen
+                  used to suggest any address, e.g. an outside accountant, and
+                  the server then refused it (QA re-test N4). */}
+              <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>
+                {t(
+                  "ui.DocumentPackets.otherEmailsHint",
+                  "Solo contactos de este cliente o usuarios de tu empresa. Para otra persona, agrégala antes como contacto del cliente, o genera el enlace sin enviarlo y compártelo tú.",
+                )}
+              </p>
             </LabeledField>
 
             <LabeledField label={t("ui.DocumentPackets.messageLabel")}>

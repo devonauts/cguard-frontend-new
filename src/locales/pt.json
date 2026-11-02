@@ -15043,11 +15043,11 @@
       "noCodeHint": "Este link abre direto, sem código. Quem o receber —ou para quem for encaminhado— entra.",
       "expiresHint": "Expira em {{horas}} horas. Você pode revogá-lo antes pela lista.",
       "recipientsLabel": "Destinatários do e-mail",
-      "noRecipientsHint": "Este cliente não tem contatos com e-mail. Escreva abaixo para quem enviar.",
+      "noRecipientsHint": "Este cliente não tem contatos com e-mail. Adicione um em «Contatos» para enviar, ou gere o link sem enviar e compartilhe você mesmo.",
       "sourcePortal": "portal",
       "sourceContact": "contato",
-      "otherEmailsLabel": "Outros e-mails (separados por vírgula)",
-      "otherEmailsPlaceholder": "contador@empresa.com",
+      "otherEmailsLabel": "Outros destinatários (separados por vírgula)",
+      "otherEmailsPlaceholder": "usuario@suaempresa.com",
       "messageLabel": "Mensagem (opcional)",
       "messagePlaceholder": "Segue em anexo a documentação do mês para sua análise.",
       "requireCodeLabel": "Exigir código de acesso",
@@ -15057,7 +15057,8 @@
       "expiry72h": "72 horas",
       "expiry7d": "7 dias",
       "historyTitle": "Histórico · {{nombre}}",
-      "historyEmpty": "Nenhuma atividade registrada ainda."
+      "historyEmpty": "Nenhuma atividade registrada ainda.",
+      "otherEmailsHint": "Apenas contatos deste cliente ou usuários da sua empresa. Para outra pessoa, adicione-a antes como contato do cliente, ou gere o link sem enviar e compartilhe você mesmo."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Este link expirou",

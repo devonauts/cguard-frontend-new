@@ -15602,11 +15602,11 @@
       "noCodeHint": "Ce lien s'ouvre directement, sans code. Toute personne qui le reçoit — ou à qui on le transfère — entre.",
       "expiresHint": "Expire dans {{horas}} heures. Vous pouvez le révoquer plus tôt depuis la liste.",
       "recipientsLabel": "Destinataires de l'e-mail",
-      "noRecipientsHint": "Ce client n'a aucun contact avec une adresse e-mail. Indiquez ci-dessous à qui l'envoyer.",
+      "noRecipientsHint": "Ce client n’a aucun contact avec une adresse e-mail. Ajoutez-en un dans « Contacts » pour l’envoyer, ou générez le lien sans l’envoyer et partagez-le vous-même.",
       "sourcePortal": "portail",
       "sourceContact": "contact",
-      "otherEmailsLabel": "Autres e-mails (séparés par des virgules)",
-      "otherEmailsPlaceholder": "comptable@entreprise.com",
+      "otherEmailsLabel": "Autres destinataires (séparés par des virgules)",
+      "otherEmailsPlaceholder": "utilisateur@votreentreprise.com",
       "messageLabel": "Message (facultatif)",
       "messagePlaceholder": "Veuillez trouver ci-joint les documents du mois pour examen.",
       "requireCodeLabel": "Exiger un code d'accès",
@@ -15616,7 +15616,8 @@
       "expiry72h": "72 heures",
       "expiry7d": "7 jours",
       "historyTitle": "Historique · {{nombre}}",
-      "historyEmpty": "Aucune activité enregistrée pour l'instant."
+      "historyEmpty": "Aucune activité enregistrée pour l'instant.",
+      "otherEmailsHint": "Uniquement les contacts de ce client ou les utilisateurs de votre entreprise. Pour quelqu’un d’autre, ajoutez-le d’abord comme contact du client, ou générez le lien sans l’envoyer et partagez-le vous-même."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Ce lien a expiré",
