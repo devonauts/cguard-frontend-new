@@ -14615,7 +14615,8 @@
       "losPermisosYLicenciasQue": "I permessi e le licenze che il tuo personale può richiedere o presentare.",
       "tipoSDeLicenciaEliminado": "Tipo/i di licenza eliminato/i",
       "tipoDeLicenciaActualizado": "Tipo di licenza aggiornato",
-      "tipoDeLicenciaCreado": "Tipo di licenza creato"
+      "tipoDeLicenciaCreado": "Tipo di licenza creato",
+      "confirmarEliminacionTexto": "Eliminare {{count}} tipo/i di licenza? L'azione non può essere annullata."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Impossibile caricare l'utilizzo dell'assistente.",
@@ -19471,7 +19472,12 @@
       "estaciones": "Postazioni",
       "plazas": "Posti con questo ciclo",
       "personas": "Persone",
-      "historial": "E {{count}} assegnazioni concluse che lo conservano nello storico."
+      "historial": "E {{count}} assegnazioni concluse che lo conservano nello storico.",
+      "enUsoConteo": "Postazioni: {{estaciones}} · Posti: {{plazas}} · Persone: {{personas}}",
+      "confirmarBorrarTitulo": "Eliminare «{{name}}»?",
+      "confirmarArchivarTitulo": "Archiviare «{{name}}»?",
+      "confirmarBorrarTexto": "Nessuno lo usa. Viene eliminato definitivamente e non si può annullare.",
+      "confirmarArchivarTexto": "Non viene più proposto quando si creano i turni. Chi lo usa già lo mantiene, e puoi riproporlo quando vuoi."
     },
     "HorarioDeOficina": {
       "pestana": "Orario",

@@ -14763,7 +14763,8 @@
       "losPermisosYLicenciasQue": "Uprawnienia i licencje, o które personel może wnioskować lub które może wykazać.",
       "tipoSDeLicenciaEliminado": "Typy licencji usunięte",
       "tipoDeLicenciaActualizado": "Typ licencji zaktualizowany",
-      "tipoDeLicenciaCreado": "Typ licencji utworzony"
+      "tipoDeLicenciaCreado": "Typ licencji utworzony",
+      "confirmarEliminacionTexto": "Usunąć typy licencji ({{count}})? Tej operacji nie można cofnąć."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Nie udało się wczytać danych o użyciu asystenta.",
@@ -19773,7 +19774,12 @@
       "estaciones": "Posterunki",
       "plazas": "Miejsca z tym cyklem",
       "personas": "Osoby",
-      "historial": "I {{count}} zakończone przydziały, które zachowują go w historii."
+      "historial": "I {{count}} zakończone przydziały, które zachowują go w historii.",
+      "enUsoConteo": "Posterunki: {{estaciones}} · Miejsca: {{plazas}} · Osoby: {{personas}}",
+      "confirmarBorrarTitulo": "Usunąć „{{name}}”?",
+      "confirmarArchivarTitulo": "Zarchiwizować „{{name}}”?",
+      "confirmarBorrarTexto": "Nikt go nie używa. Zostanie usunięty na stałe i nie można tego cofnąć.",
+      "confirmarArchivarTexto": "Przestanie być proponowany przy tworzeniu grafików. Kto już go używa, zachowa go, a w każdej chwili możesz go znowu udostępnić."
     },
     "HorarioDeOficina": {
       "pestana": "Grafik",

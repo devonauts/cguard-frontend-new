@@ -14075,7 +14075,8 @@
       "losPermisosYLicenciasQue": "The leave types and licences your staff can request or hold.",
       "tipoSDeLicenciaEliminado": "Licence type(s) deleted",
       "tipoDeLicenciaActualizado": "Licence type updated",
-      "tipoDeLicenciaCreado": "Licence type created"
+      "tipoDeLicenciaCreado": "Licence type created",
+      "confirmarEliminacionTexto": "Delete {{count}} license type(s)? This cannot be undone."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "The assistant's usage could not be loaded.",
@@ -18931,7 +18932,12 @@
       "estaciones": "Stations",
       "plazas": "Positions with this cycle",
       "personas": "People",
-      "historial": "And {{count}} ended assignments that keep it in their history."
+      "historial": "And {{count}} ended assignments that keep it in their history.",
+      "enUsoConteo": "Stations: {{estaciones}} · Positions: {{plazas}} · People: {{personas}}",
+      "confirmarBorrarTitulo": "Delete «{{name}}»?",
+      "confirmarArchivarTitulo": "Archive «{{name}}»?",
+      "confirmarBorrarTexto": "Nobody uses it. It is deleted for good and cannot be undone.",
+      "confirmarArchivarTexto": "It stops being offered when building schedules. Whoever already uses it keeps it, and you can offer it again at any time."
     },
     "HorarioDeOficina": {
       "pestana": "Schedule",

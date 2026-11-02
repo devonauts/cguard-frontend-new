@@ -14075,7 +14075,8 @@
       "losPermisosYLicenciasQue": "Los permisos y licencias que tu personal puede solicitar o acreditar.",
       "tipoSDeLicenciaEliminado": "Tipo(s) de licencia eliminado(s)",
       "tipoDeLicenciaActualizado": "Tipo de licencia actualizado",
-      "tipoDeLicenciaCreado": "Tipo de licencia creado"
+      "tipoDeLicenciaCreado": "Tipo de licencia creado",
+      "confirmarEliminacionTexto": "¿Eliminar {{count}} tipo(s) de licencia? Esta acción no se puede deshacer."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "No se pudo cargar el uso del asistente.",
@@ -18931,7 +18932,12 @@
       "estaciones": "Estaciones",
       "plazas": "Puestos con este ciclo",
       "personas": "Personas",
-      "historial": "Y {{count}} asignaciones terminadas que lo conservan en su historial."
+      "historial": "Y {{count}} asignaciones terminadas que lo conservan en su historial.",
+      "enUsoConteo": "Estaciones: {{estaciones}} · Puestos: {{plazas}} · Personas: {{personas}}",
+      "confirmarBorrarTitulo": "¿Borrar «{{name}}»?",
+      "confirmarArchivarTitulo": "¿Archivar «{{name}}»?",
+      "confirmarBorrarTexto": "Nadie lo usa. Se borra del todo y no se puede deshacer.",
+      "confirmarArchivarTexto": "Deja de ofrecerse al crear horarios. Quien ya lo usa lo conserva, y puedes volver a ofrecerlo cuando quieras."
     },
     "HorarioDeOficina": {
       "pestana": "Horario",

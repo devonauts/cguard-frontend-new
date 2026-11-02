@@ -14615,7 +14615,8 @@
       "losPermisosYLicenciasQue": "Het verlof en de vergunningen die uw personeel kan aanvragen of moet aantonen.",
       "tipoSDeLicenciaEliminado": "Vergunningssoort(en) verwijderd",
       "tipoDeLicenciaActualizado": "Vergunningssoort bijgewerkt",
-      "tipoDeLicenciaCreado": "Vergunningssoort aangemaakt"
+      "tipoDeLicenciaCreado": "Vergunningssoort aangemaakt",
+      "confirmarEliminacionTexto": "{{count}} licentietype(s) verwijderen? Dit kan niet ongedaan worden gemaakt."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Het gebruik van de assistent kon niet worden geladen.",
@@ -19471,7 +19472,12 @@
       "estaciones": "Posten",
       "plazas": "Plaatsen met deze cyclus",
       "personas": "Personen",
-      "historial": "En {{count}} beëindigde toewijzingen die het in hun geschiedenis houden."
+      "historial": "En {{count}} beëindigde toewijzingen die het in hun geschiedenis houden.",
+      "enUsoConteo": "Posten: {{estaciones}} · Plaatsen: {{plazas}} · Personen: {{personas}}",
+      "confirmarBorrarTitulo": "«{{name}}» verwijderen?",
+      "confirmarArchivarTitulo": "«{{name}}» archiveren?",
+      "confirmarBorrarTexto": "Niemand gebruikt het. Het wordt definitief verwijderd en dat kan niet ongedaan worden gemaakt.",
+      "confirmarArchivarTexto": "Het wordt niet meer aangeboden bij het maken van roosters. Wie het al gebruikt, houdt het, en je kunt het altijd opnieuw aanbieden."
     },
     "HorarioDeOficina": {
       "pestana": "Rooster",

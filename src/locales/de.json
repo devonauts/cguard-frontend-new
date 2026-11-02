@@ -14615,7 +14615,8 @@
       "losPermisosYLicenciasQue": "Die Abwesenheiten und Zertifikate, die Ihr Personal beantragen oder nachweisen kann.",
       "tipoSDeLicenciaEliminado": "Ausweisart(en) gelöscht",
       "tipoDeLicenciaActualizado": "Ausweisart aktualisiert",
-      "tipoDeLicenciaCreado": "Ausweisart erstellt"
+      "tipoDeLicenciaCreado": "Ausweisart erstellt",
+      "confirmarEliminacionTexto": "{{count}} Lizenztyp(en) löschen? Das lässt sich nicht rückgängig machen."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Die Nutzung des Assistenten konnte nicht geladen werden.",
@@ -19471,7 +19472,12 @@
       "estaciones": "Posten",
       "plazas": "Plätze mit diesem Zyklus",
       "personas": "Personen",
-      "historial": "Und {{count}} beendete Zuweisungen, die es in ihrem Verlauf behalten."
+      "historial": "Und {{count}} beendete Zuweisungen, die es in ihrem Verlauf behalten.",
+      "enUsoConteo": "Posten: {{estaciones}} · Plätze: {{plazas}} · Personen: {{personas}}",
+      "confirmarBorrarTitulo": "„{{name}}“ löschen?",
+      "confirmarArchivarTitulo": "„{{name}}“ archivieren?",
+      "confirmarBorrarTexto": "Niemand nutzt es. Es wird endgültig gelöscht und lässt sich nicht wiederherstellen.",
+      "confirmarArchivarTexto": "Es wird beim Erstellen von Dienstplänen nicht mehr angeboten. Wer es bereits nutzt, behält es, und du kannst es jederzeit wieder anbieten."
     },
     "HorarioDeOficina": {
       "pestana": "Arbeitszeit",

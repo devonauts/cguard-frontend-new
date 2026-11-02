@@ -14075,7 +14075,8 @@
       "losPermisosYLicenciasQue": "As licenças e permissões que sua equipe pode solicitar ou comprovar.",
       "tipoSDeLicenciaEliminado": "Tipo(s) de licença excluído(s)",
       "tipoDeLicenciaActualizado": "Tipo de licença atualizado",
-      "tipoDeLicenciaCreado": "Tipo de licença criado"
+      "tipoDeLicenciaCreado": "Tipo de licença criado",
+      "confirmarEliminacionTexto": "Excluir {{count}} tipo(s) de licença? Esta ação não pode ser desfeita."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Não foi possível carregar o uso do assistente.",
@@ -18931,7 +18932,12 @@
       "estaciones": "Estações",
       "plazas": "Vagas com este ciclo",
       "personas": "Pessoas",
-      "historial": "E {{count}} atribuições encerradas que o mantêm no histórico."
+      "historial": "E {{count}} atribuições encerradas que o mantêm no histórico.",
+      "enUsoConteo": "Estações: {{estaciones}} · Vagas: {{plazas}} · Pessoas: {{personas}}",
+      "confirmarBorrarTitulo": "Excluir «{{name}}»?",
+      "confirmarArchivarTitulo": "Arquivar «{{name}}»?",
+      "confirmarBorrarTexto": "Ninguém o usa. Ele é excluído de vez e não pode ser desfeito.",
+      "confirmarArchivarTexto": "Deixa de ser oferecido ao montar escalas. Quem já o usa continua com ele, e você pode voltar a oferecê-lo quando quiser."
     },
     "HorarioDeOficina": {
       "pestana": "Horário",

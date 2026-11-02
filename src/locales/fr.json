@@ -14615,7 +14615,8 @@
       "losPermisosYLicenciasQue": "Les congés et absences que votre personnel peut demander ou justifier.",
       "tipoSDeLicenciaEliminado": "Type(s) de congé supprimé(s)",
       "tipoDeLicenciaActualizado": "Type de congé mis à jour",
-      "tipoDeLicenciaCreado": "Type de congé créé"
+      "tipoDeLicenciaCreado": "Type de congé créé",
+      "confirmarEliminacionTexto": "Supprimer {{count}} type(s) de licence ? Cette action est irréversible."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Impossible de charger l'utilisation de l'assistant.",
@@ -19471,7 +19472,12 @@
       "estaciones": "Postes",
       "plazas": "Places avec ce cycle",
       "personas": "Personnes",
-      "historial": "Et {{count}} affectations terminées qui le gardent dans leur historique."
+      "historial": "Et {{count}} affectations terminées qui le gardent dans leur historique.",
+      "enUsoConteo": "Postes : {{estaciones}} · Places : {{plazas}} · Personnes : {{personas}}",
+      "confirmarBorrarTitulo": "Supprimer « {{name}} » ?",
+      "confirmarArchivarTitulo": "Archiver « {{name}} » ?",
+      "confirmarBorrarTexto": "Personne ne l'utilise. Il est supprimé définitivement, sans retour possible.",
+      "confirmarArchivarTexto": "Il n'est plus proposé lors de la création des plannings. Ceux qui l'utilisent déjà le conservent, et vous pouvez le proposer de nouveau à tout moment."
     },
     "HorarioDeOficina": {
       "pestana": "Horaires",
