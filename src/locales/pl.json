@@ -10869,7 +10869,8 @@
       "noSeEncontroElVigilante": "Nie znaleziono wskazanego pracownika ochrony.",
       "errorGuardandoCambios": "Błąd zapisywania zmian: {{msg}}",
       "datosPersonales": "Dane osobowe",
-      "guardarCambios": "Zapisz zmiany"
+      "guardarCambios": "Zapisz zmiany",
+      "cambiosGuardados": "Zmiany zapisane"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adres firmy*",

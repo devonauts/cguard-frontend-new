@@ -10823,7 +10823,8 @@
       "noSeEncontroElVigilante": "Der angeforderte Wachmann wurde nicht gefunden.",
       "errorGuardandoCambios": "Fehler beim Speichern der Änderungen: {{msg}}",
       "datosPersonales": "Persönliche Daten",
-      "guardarCambios": "Änderungen speichern"
+      "guardarCambios": "Änderungen speichern",
+      "cambiosGuardados": "Änderungen gespeichert"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adresse der Firma*",

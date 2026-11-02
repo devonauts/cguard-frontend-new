@@ -10283,7 +10283,8 @@
       "noSeEncontroElVigilante": "O vigilante solicitado não foi encontrado.",
       "errorGuardandoCambios": "Erro ao salvar alterações: {{msg}}",
       "datosPersonales": "Dados pessoais",
-      "guardarCambios": "Salvar alterações"
+      "guardarCambios": "Salvar alterações",
+      "cambiosGuardados": "Alterações salvas"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Endereço da empresa*",

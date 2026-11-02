@@ -10283,7 +10283,8 @@
       "noSeEncontroElVigilante": "The requested guard wasn't found.",
       "errorGuardandoCambios": "Error saving changes: {{msg}}",
       "datosPersonales": "Personal details",
-      "guardarCambios": "Save changes"
+      "guardarCambios": "Save changes",
+      "cambiosGuardados": "Changes saved"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Company address*",

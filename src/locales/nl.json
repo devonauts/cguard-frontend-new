@@ -10823,7 +10823,8 @@
       "noSeEncontroElVigilante": "De gevraagde bewaker is niet gevonden.",
       "errorGuardandoCambios": "Fout bij opslaan van wijzigingen: {{msg}}",
       "datosPersonales": "Persoonsgegevens",
-      "guardarCambios": "Wijzigingen opslaan"
+      "guardarCambios": "Wijzigingen opslaan",
+      "cambiosGuardados": "Wijzigingen opgeslagen"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adres van het bedrijf*",

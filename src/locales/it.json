@@ -10823,7 +10823,8 @@
       "noSeEncontroElVigilante": "La guardia richiesta non è stata trovata.",
       "errorGuardandoCambios": "Errore nel salvataggio delle modifiche: {{msg}}",
       "datosPersonales": "Dati personali",
-      "guardarCambios": "Salva modifiche"
+      "guardarCambios": "Salva modifiche",
+      "cambiosGuardados": "Modifiche salvate"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Indirizzo dell'azienda*",

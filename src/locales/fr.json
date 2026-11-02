@@ -10823,7 +10823,8 @@
       "noSeEncontroElVigilante": "L'agent demandé est introuvable.",
       "errorGuardandoCambios": "Erreur lors de l'enregistrement : {{msg}}",
       "datosPersonales": "Informations personnelles",
-      "guardarCambios": "Enregistrer les modifications"
+      "guardarCambios": "Enregistrer les modifications",
+      "cambiosGuardados": "Modifications enregistrées"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adresse de l'entreprise*",
