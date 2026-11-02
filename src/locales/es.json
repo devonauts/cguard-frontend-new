@@ -2434,7 +2434,12 @@
       "loadError": "Error al cargar notas",
       "noteCreated": "Nota creada correctamente",
       "noteDeleted": "Nota eliminada",
-      "sectionTitle": "Notas"
+      "sectionTitle": "Notas",
+      "errors": {
+        "titleRequired": "Escribe el título de la nota.",
+        "descriptionRequired": "Escribe la descripción de la nota.",
+        "dateRequired": "Elige la fecha de la nota."
+      }
     },
     "profile": {
       "noLicense": "No se encontró ninguna licencia",

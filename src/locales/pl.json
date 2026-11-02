@@ -2224,7 +2224,12 @@
       "loadError": "Błąd podczas wczytywania notatek",
       "noteCreated": "Notatka utworzona",
       "noteDeleted": "Notatka usunięta",
-      "sectionTitle": "Notatki"
+      "sectionTitle": "Notatki",
+      "errors": {
+        "titleRequired": "Wpisz tytuł notatki.",
+        "descriptionRequired": "Wpisz opis notatki.",
+        "dateRequired": "Wybierz datę notatki."
+      }
     },
     "profile": {
       "noLicense": "Nie znaleziono żadnego uprawnienia",

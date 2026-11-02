@@ -2434,7 +2434,12 @@
       "loadError": "The notes could not be loaded",
       "noteCreated": "Note created successfully",
       "noteDeleted": "Note deleted",
-      "sectionTitle": "Notes"
+      "sectionTitle": "Notes",
+      "errors": {
+        "titleRequired": "Enter the note title.",
+        "descriptionRequired": "Enter the note description.",
+        "dateRequired": "Choose the note date."
+      }
     },
     "profile": {
       "noLicense": "No license found",

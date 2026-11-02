@@ -2216,7 +2216,12 @@
       "loadError": "Errore durante il caricamento delle note",
       "noteCreated": "Nota creata correttamente",
       "noteDeleted": "Nota eliminata",
-      "sectionTitle": "Note"
+      "sectionTitle": "Note",
+      "errors": {
+        "titleRequired": "Inserisci il titolo della nota.",
+        "descriptionRequired": "Inserisci la descrizione della nota.",
+        "dateRequired": "Scegli la data della nota."
+      }
     },
     "profile": {
       "noLicense": "Nessuna licenza trovata",

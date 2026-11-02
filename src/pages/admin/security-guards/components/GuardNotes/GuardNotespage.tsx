@@ -15,8 +15,9 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 
 
-import { localeActual } from "@/lib/localeActual";
-import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { fileUrlFromFile } from "@/lib/fileUrl";
+import { fechaDeNota, notaIncompleta } from "./notas";
 // Notes API shape the page consumes. Defaults to the guard endpoints; a
 // supervisor route injects `notesApi` + `entityId` (+navKey/title) to reuse this
 // exact page against the supervisor's user-keyed notes. Guard usage passes none
@@ -61,19 +62,6 @@ function renderWithLineBreaks(text: string): React.ReactNode {
       {idx < arr.length - 1 && <br />}
     </React.Fragment>
   ));
-}
-
-function fmtDate(v: string | number | Date | null | undefined): string {
-  if (!v) return "";
-  const d = new Date(v);
-
-  if (isNaN(d.getTime())) return String(v);
-
-  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 function initials(name: string): string {
@@ -133,6 +121,25 @@ export default function GuardNotes({
   };
 
   const handleSubmitNote = () => {
+    const falta = notaIncompleta(formData);
+
+    if (falta) {
+      toast.error(
+        falta === "title"
+          ? t("guards.notes.errors.titleRequired", {
+              defaultValue: "Escribe el título de la nota.",
+            })
+          : falta === "description"
+            ? t("guards.notes.errors.descriptionRequired", {
+                defaultValue: "Escribe la descripción de la nota.",
+              })
+            : t("guards.notes.errors.dateRequired", {
+                defaultValue: "Elige la fecha de la nota.",
+              }),
+      );
+
+      return;
+    }
     // Save note to backend
     (async () => {
       try {
@@ -425,9 +432,7 @@ export default function GuardNotes({
                 {filteredNotes.map((note: GuardNote, idx: number) => {
                   const author =
                     note?.addedBy || note?.createdBy?.fullName || "";
-                  const when = fmtDate(
-                    note?.noteDate ?? note?.date ?? note?.createdAt,
-                  );
+                  const when = fechaDeNota(note);
                   const attachments: NoteAttachment[] = Array.isArray(
                     note?.attachments,
                   )
@@ -484,10 +489,10 @@ export default function GuardNotes({
                             <div className="mt-3 flex flex-wrap gap-2">
                               {attachments.map(
                                 (att: NoteAttachment, ai: number) => {
+                                  // `privateUrl` is a storage path, not a link.
                                   const href =
-                                    att?.publicUrl ??
-                                    att?.privateUrl ??
-                                    att?.downloadUrl ??
+                                    att?.publicUrl ||
+                                    fileUrlFromFile(att) ||
                                     "";
                                   const mime = att?.mimeType || "";
                                   const isImg =

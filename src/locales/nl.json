@@ -2216,7 +2216,12 @@
       "loadError": "De notities konden niet worden geladen",
       "noteCreated": "Notitie aangemaakt",
       "noteDeleted": "Notitie verwijderd",
-      "sectionTitle": "Notities"
+      "sectionTitle": "Notities",
+      "errors": {
+        "titleRequired": "Vul de titel van de notitie in.",
+        "descriptionRequired": "Vul de omschrijving van de notitie in.",
+        "dateRequired": "Kies de datum van de notitie."
+      }
     },
     "profile": {
       "noLicense": "Geen pas gevonden",

@@ -2216,7 +2216,12 @@
       "loadError": "Die Notizen konnten nicht geladen werden",
       "noteCreated": "Notiz erfolgreich angelegt",
       "noteDeleted": "Notiz gelöscht",
-      "sectionTitle": "Notizen"
+      "sectionTitle": "Notizen",
+      "errors": {
+        "titleRequired": "Geben Sie den Titel der Notiz ein.",
+        "descriptionRequired": "Geben Sie die Beschreibung der Notiz ein.",
+        "dateRequired": "Wählen Sie das Datum der Notiz."
+      }
     },
     "profile": {
       "noLicense": "Es wurde keine Lizenz gefunden",

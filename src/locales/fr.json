@@ -2216,7 +2216,12 @@
       "loadError": "Impossible de charger les notes",
       "noteCreated": "Note créée",
       "noteDeleted": "Note supprimée",
-      "sectionTitle": "Notes"
+      "sectionTitle": "Notes",
+      "errors": {
+        "titleRequired": "Saisissez le titre de la note.",
+        "descriptionRequired": "Saisissez la description de la note.",
+        "dateRequired": "Choisissez la date de la note."
+      }
     },
     "profile": {
       "noLicense": "Aucune licence trouvée",

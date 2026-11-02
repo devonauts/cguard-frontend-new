@@ -4670,7 +4670,12 @@
       "loadError": "Erro ao carregar as notas",
       "noteCreated": "Nota criada com sucesso",
       "noteDeleted": "Nota excluída",
-      "sectionTitle": "Notas"
+      "sectionTitle": "Notas",
+      "errors": {
+        "titleRequired": "Digite o título da nota.",
+        "descriptionRequired": "Digite a descrição da nota.",
+        "dateRequired": "Escolha a data da nota."
+      }
     },
     "pdfError": "Não foi possível gerar/obter o PDF",
     "pdfGenerated": "PDF gerado",
