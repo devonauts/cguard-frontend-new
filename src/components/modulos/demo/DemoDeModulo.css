@@ -564,3 +564,133 @@
   .dm-vid-tel-pie { padding: 5px 6px 7px; gap: 4px; font-size: 8.5px; }
   .dm-vid-tel-boton { height: 20px; }
 }
+
+/* ── MULTIMARCA (2026-11-02) ─────────────────────────────────────────── */
+/* Two brands of one company. Each brand paints with ITS own color (`--mm`,
+   set inline): that is the brand's identity, the same in both themes. The
+   CRM chrome around it keeps the CRM tokens. */
+.dm-mm { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; height: 100%; padding: 16px; }
+.dm-mm-conmapa { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 0; padding: 0; }
+.dm-mm-conmapa .dm-mm-panel { padding: 14px; background: color-mix(in oklab, var(--float) 70%, transparent); }
+.dm-mm-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.dm-mm-panel { min-height: 0; }
+
+.dm-mm-logo {
+  width: 40px; height: 40px; flex: none; border-radius: 11px; display: grid; place-items: center;
+  color: #fff; background: var(--mm); transition: background 0.5s;
+}
+.dm-mm-logo[data-m="b"] { border-radius: 50%; }
+.dm-mm-logo svg { width: 68%; height: 68%; }
+.dm-mm-logo[data-chico] { width: 18px; height: 18px; border-radius: 5px; }
+.dm-mm-logo[data-chico][data-m="b"] { border-radius: 50%; }
+
+.dm-mm-marca {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  border: 1px solid var(--hairline); border-left: 4px solid var(--hairline); border-radius: 16px;
+  background: var(--float); box-shadow: var(--dm-shadow);
+  opacity: 0; transform: translateY(12px); transition: opacity 0.5s, transform 0.5s var(--dm-ease), border-color 0.5s;
+}
+.dm-mm-marca[data-ve] { opacity: 1; transform: none; }
+.dm-mm-marca .dm-mm-logo { background: var(--ink-faint); }
+.dm-mm-marca[data-logo] { border-left-color: var(--mm); }
+.dm-mm-marca[data-logo] .dm-mm-logo { background: var(--mm); }
+.dm-mm-marca-n { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13.5px; font-weight: 700; }
+.dm-mm-marca-l { font-size: 11.5px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dm-mm-marca-d { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 3px; font-size: 10.5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.dm-mm-cupos {
+  display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; min-width: 0;
+  border: 1px dashed var(--hairline); border-radius: 10px; font-size: 11.5px; color: var(--ink-soft);
+  opacity: 0; transition: opacity 0.4s;
+}
+.dm-mm-cupos[data-ve] { opacity: 1; }
+.dm-mm-cupos-barra { margin-left: auto; width: 60px; flex: none; height: 6px; border-radius: 999px; background: var(--dm-block); overflow: hidden; }
+.dm-mm-cupos-barra > span { display: block; height: 100%; border-radius: inherit; background: var(--brand); transition: width 0.6s var(--dm-ease); }
+.dm-mm-fila { transition: opacity 0.4s, filter 0.4s; }
+.dm-mm-fila[data-apagada] { opacity: 0.28; filter: saturate(0.3); }
+.dm-mm-chip {
+  display: inline-flex; align-items: center; gap: 5px; flex: none; padding: 2px 8px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 600; background: color-mix(in oklab, var(--mm) 15%, transparent); color: var(--ink);
+}
+
+/* The map (scenes 2 and 4) */
+.dm-mm-mapa { position: relative; overflow: hidden; border-right: 1px solid var(--hairline); }
+.dm-mm-mapa .dm-pin { z-index: 3; }
+.dm-mm-ruta { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; animation: dm-entra 0.4s both; }
+.dm-mm-guardia {
+  position: absolute; z-index: 4; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--ink); color: var(--canvas);
+  border: 2px solid var(--float); box-shadow: var(--dm-shadow);
+  transform: translate(13px, -17px); transition: left 1.2s var(--dm-ease), top 1.2s var(--dm-ease);
+  animation: dm-entra 0.35s both;
+}
+.dm-mm-guardia[data-marcado]::after {
+  content: ""; position: absolute; inset: -4px; border-radius: 50%;
+  border: 2px solid var(--brand); animation: dm-latido 1.4s ease-out infinite;
+}
+
+/* Diego's week */
+.dm-mm-semana { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.dm-mm-dia {
+  display: grid; justify-items: center; gap: 1px; padding: 5px 0; border: 1px dashed var(--hairline); border-radius: 10px;
+  font-size: 10.5px; transition: background 0.35s, color 0.35s, border-color 0.35s;
+}
+.dm-mm-dia .l { font-weight: 700; color: var(--ink-faint); text-transform: uppercase; }
+.dm-mm-dia .v { height: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dm-mm-dia[data-ve] { border-style: solid; border-color: transparent; background: var(--mm); color: #fff; animation: dm-pulsa 0.35s; }
+.dm-mm-dia[data-ve] .l { color: rgb(255 255 255 / 0.8); }
+.dm-mm-dia[data-libre] { background: var(--dm-block); color: var(--ink-faint); }
+.dm-mm-dia[data-libre] .l { color: var(--ink-faint); }
+.dm-mm-horas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dm-mm-horas .dm-kpi { border-left: 3px solid var(--mm); }
+.dm-mm-horas .dm-kpi .l { display: flex; align-items: center; gap: 5px; }
+
+/* Costa's invoice */
+.dm-mm-doc {
+  align-self: start; min-width: 0; padding: 0 14px 12px; border: 1px solid var(--hairline); border-top: 5px solid var(--mm);
+  border-radius: 16px; background: var(--float); box-shadow: var(--dm-shadow); font-size: 12px; overflow: hidden;
+  opacity: 0; transform: translateY(14px) scale(0.98); transition: opacity 0.5s, transform 0.5s var(--dm-ease);
+}
+.dm-mm-doc[data-ve] { opacity: 1; transform: none; }
+.dm-mm-doc-cab { display: flex; align-items: center; gap: 10px; padding: 12px 0 10px; margin-bottom: 6px; border-bottom: 1px dashed var(--hairline); }
+.dm-mm-doc-num { display: grid; flex: none; text-align: right; font-size: 10.5px; color: var(--ink-faint); }
+.dm-mm-doc-num b { font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dm-mm-doc-para { margin-bottom: 4px; font-size: 11.5px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Hours between brands */
+.dm-mm-tabla { min-width: 0; }
+.dm-mm-hfila > * { transition: opacity 0.35s; }
+.dm-mm-hfila[data-oculta] > * { opacity: 0; }
+.dm-mm-quien { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.dm-mm-par { display: inline-flex; align-items: center; gap: 2px; flex: none; color: var(--ink-faint); }
+.dm-mm-filtro {
+  display: inline-flex; align-items: center; gap: 5px; flex: none; padding: 3px 9px; border: 1px solid var(--hairline); border-radius: 999px;
+  font-size: 11px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; transition: border-color 0.3s, background 0.3s, color 0.3s;
+}
+.dm-mm-filtro[data-on] { border-color: var(--brand); background: color-mix(in oklab, var(--brand) 12%, transparent); color: var(--ink); }
+.dm-mm-parfila { opacity: 0; transition: opacity 0.4s; }
+.dm-mm-parfila[data-ve] { opacity: 1; }
+.dm-mm-parfila[data-ve][data-apagada] { opacity: 0.3; }
+.dm-mm-neto {
+  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px 12px; border-radius: 14px;
+  background: var(--dm-frame); color: #f3f4f6; box-shadow: var(--dm-shadow);
+  opacity: 0; transform: translateY(8px); transition: opacity 0.45s, transform 0.45s var(--dm-ease);
+}
+.dm-mm-neto[data-ve] { opacity: 1; transform: none; }
+.dm-mm-neto b { font-size: 12.5px; }
+.dm-mm-neto-t { display: block; font-size: 10.5px; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dm-mm-neto .dm-mm-neto-v { flex: none; font-size: 18px; font-variant-numeric: tabular-nums; }
+.dm-mm-neto .dm-mm-par { color: rgb(255 255 255 / 0.6); }
+
+@media (max-width: 760px) {
+  .dm-mm { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-content: start; padding: 12px; gap: 12px; }
+  .dm-mm-conmapa { grid-template-rows: 230px minmax(0, 1fr); padding: 0; gap: 0; }
+  .dm-mm-mapa { border-right: 0; border-bottom: 1px solid var(--hairline); }
+  .dm-mm-conmapa .dm-mm-panel { padding: 12px; gap: 8px; }
+  .dm-mm-col { gap: 8px; }
+  .dm-mm-marca { padding: 9px 12px; gap: 10px; }
+  .dm-mm-marca .dm-mm-logo { width: 34px; height: 34px; }
+  .dm-mm-panel { gap: 8px; }
+  .dm-mm-doc-cab { padding: 10px 0 8px; }
+  .dm-mm-doc .dm-mm-logo { width: 32px; height: 32px; }
+  .dm-mm-neto .dm-mm-neto-v { font-size: 16px; }
+}

@@ -21803,6 +21803,122 @@
           "evento": "Zie wat er gebeurt en bewaar het bewijs in twee klikken",
           "despacho": "Zien, verifiëren en handelen vanuit hetzelfde CRM"
         }
+      },
+      "multimarca": {
+        "marcas": {
+          "a": {
+            "nombre": "Andes Seguridad",
+            "corto": "Andes",
+            "legal": "Andes Seguridad Cía. Ltda."
+          },
+          "b": {
+            "nombre": "Costa Vigilancia",
+            "corto": "Costa",
+            "legal": "Costa Vigilancia S.A."
+          }
+        },
+        "clientesN": {
+          "altamira": "Grupo Altamira",
+          "naviera": "Naviera Pacífico",
+          "clinica": "Clínica San Rafael",
+          "bodega": "Bodega Sur Logística"
+        },
+        "personas": {
+          "diego": "Diego Paredes",
+          "carla": "Carla Ríos",
+          "luis": "Luis Vera"
+        },
+        "escenas": {
+          "marcas": "Twee merken",
+          "guardia": "Eén beveiliger",
+          "factura": "De factuur",
+          "admin": "Merkbeheerder",
+          "horas": "Uren tussen merken"
+        },
+        "principal": "Hoofdmerk",
+        "idFiscal": "Fiscaal nr.",
+        "serie": "Reeks",
+        "cupos": "2 merken inbegrepen in de module",
+        "todas": "Alle merken",
+        "todasCorto": "Alle",
+        "clientes": "Klanten",
+        "selector": "Met welk merk werk je?",
+        "registradoEn": "In dienst bij {{marca}}",
+        "semana": "Zijn week",
+        "enSitiosDe": "Op locaties van {{marca}}",
+        "rolDe": "Loonstrook: {{marca}}",
+        "aCobrar": "Uren te factureren aan {{marca}}",
+        "factura": "Factuur",
+        "para": "Aan",
+        "lineas": {
+          "puesto": "Post 24 u · Puerto Norte",
+          "ronda": "Gemotoriseerde rondes"
+        },
+        "impuesto": "Belasting 15 %",
+        "total": "Totaal",
+        "series": "Elk merk zijn eigen reeks",
+        "asunto": "Factuur {{n}} · november",
+        "sinRastro": "Geen naam of logo van {{marca}}",
+        "adminDeMarca": "Merkbeheerder",
+        "enSusSitios": "Personeel op haar locaties",
+        "editaSuMarca": "Bewerkt logo en teksten van haar merk",
+        "compraIntento": "Nog een merk kopen…",
+        "compraBloqueada": "Dat doet de beheerder van het bedrijf",
+        "informe": "Uren tussen merken · oktober",
+        "filtroPone": "Personeel van:",
+        "cols": {
+          "persona": "Persoon",
+          "horas": "Uren",
+          "tarifa": "Tarief",
+          "importe": "Bedrag",
+          "corto": {
+            "horas": "U",
+            "tarifa": "$/u",
+            "importe": "Bedr."
+          }
+        },
+        "porPar": "Per merkenpaar",
+        "par": "{{de}} op locaties van {{en}}",
+        "netoT": "Saldo oktober",
+        "neto": "{{de}} betaalt {{a}}",
+        "archivo": "uren-tussen-merken.xlsx",
+        "pasos": {
+          "principal": "Je zet Multimarca aan: je bedrijf is het hoofdmerk",
+          "segunda": "Je maakt Costa Vigilancia aan: eigen bedrijfsnaam, fiscaal nr. en reeks",
+          "logos": "Elk merk met eigen logo en kleuren",
+          "clientes": "Elke klant hoort bij precies één merk",
+          "elige": "Je kiest Costa: het hele CRM toont alleen dat merk",
+          "registrado": "Diego is in dienst bij Andes",
+          "semanaA": "Maandag tot woensdag: Torre Altamira, een Andes-locatie",
+          "semanaB": "Donderdag en vrijdag: Puerto Norte, een Costa-locatie",
+          "unMapa": "Eén rooster, één kaart, één meldkamer",
+          "nomina": "Andes betaalt zijn loon: daar is hij in dienst",
+          "cruce": "Zijn uren bij Costa gaan naar het rapport tussen merken",
+          "factura": "Je factureert Naviera Pacífico, klant van Costa",
+          "identidad": "Met het logo, de bedrijfsnaam en het fiscaal nr. van Costa",
+          "serie": "Genummerd in Costa's eigen reeks",
+          "correo": "De e-mail komt op naam van Costa",
+          "limpio": "Geen spoor van Andes op het document",
+          "entraAdmin": "Lucía, beheerder van Costa, logt in",
+          "susClientes": "Ze ziet alleen de klanten van Costa",
+          "suPersonal": "En al het personeel op haar locaties, ook dat van Andes",
+          "noCompra": "Merken kopen of aan Andes komen: alleen de bedrijfsbeheerder",
+          "suLogo": "Ze mag logo, kleuren en teksten van Costa bewerken",
+          "abre": "Je opent Uren tussen merken: oktober, alleen goedgekeurde uren",
+          "horas": "Wie op locaties van het andere merk werkte, en hoeveel uur",
+          "tarifa": "Elk merkenpaar met zijn uurtarief",
+          "importe": "Uren maal tarief: het bedrag per paar",
+          "filtro": "Je filtert op het merk dat het personeel levert",
+          "neto": "En het nettosaldo tussen de twee merken",
+          "excel": "Je exporteert naar Excel om te verrekenen"
+        },
+        "resultado": {
+          "marcas": "Twee bedrijven met eigen identiteit, één CRM",
+          "guardia": "Dezelfde beveiliger dekt beide merken",
+          "factura": "Elk merk factureert met zijn eigen identiteit",
+          "admin": "Eén kantoor per merk, één operatie",
+          "horas": "Wat het ene merk het andere schuldig is, verrekend"
+        }
       }
     },
     "pausa": {

@@ -21803,6 +21803,122 @@
           "evento": "See what's happening and save the proof in two clicks",
           "despacho": "See, verify and act from the same CRM"
         }
+      },
+      "multimarca": {
+        "marcas": {
+          "a": {
+            "nombre": "Andes Seguridad",
+            "corto": "Andes",
+            "legal": "Andes Seguridad Cía. Ltda."
+          },
+          "b": {
+            "nombre": "Costa Vigilancia",
+            "corto": "Costa",
+            "legal": "Costa Vigilancia S.A."
+          }
+        },
+        "clientesN": {
+          "altamira": "Grupo Altamira",
+          "naviera": "Naviera Pacífico",
+          "clinica": "Clínica San Rafael",
+          "bodega": "Bodega Sur Logística"
+        },
+        "personas": {
+          "diego": "Diego Paredes",
+          "carla": "Carla Ríos",
+          "luis": "Luis Vera"
+        },
+        "escenas": {
+          "marcas": "Two brands",
+          "guardia": "One guard",
+          "factura": "The invoice",
+          "admin": "Brand admin",
+          "horas": "Hours between brands"
+        },
+        "principal": "Principal",
+        "idFiscal": "Tax ID",
+        "serie": "Series",
+        "cupos": "2 brands included with the module",
+        "todas": "All brands",
+        "todasCorto": "All",
+        "clientes": "Clients",
+        "selector": "Which brand are you working with?",
+        "registradoEn": "Registered in {{marca}}",
+        "semana": "His week",
+        "enSitiosDe": "At {{marca}} sites",
+        "rolDe": "Payslip: {{marca}}",
+        "aCobrar": "Hours to bill {{marca}}",
+        "factura": "Invoice",
+        "para": "To",
+        "lineas": {
+          "puesto": "24 h post · Puerto Norte",
+          "ronda": "Mobile patrols"
+        },
+        "impuesto": "Tax 15 %",
+        "total": "Total",
+        "series": "Each brand, its own series",
+        "asunto": "Invoice {{n}} · November",
+        "sinRastro": "No {{marca}} name or logo",
+        "adminDeMarca": "Brand admin",
+        "enSusSitios": "Staff at her sites",
+        "editaSuMarca": "Edits her brand's logo and texts",
+        "compraIntento": "Buy another brand…",
+        "compraBloqueada": "The company admin does that",
+        "informe": "Hours between brands · October",
+        "filtroPone": "Staff from:",
+        "cols": {
+          "persona": "Person",
+          "horas": "Hours",
+          "tarifa": "Rate",
+          "importe": "Amount",
+          "corto": {
+            "horas": "H",
+            "tarifa": "$/h",
+            "importe": "Amt."
+          }
+        },
+        "porPar": "By brand pair",
+        "par": "{{de}} at {{en}} sites",
+        "netoT": "October balance",
+        "neto": "{{de}} pays {{a}}",
+        "archivo": "hours-between-brands.xlsx",
+        "pasos": {
+          "principal": "You turn on Multimarca: your company is the principal brand",
+          "segunda": "You create Costa Vigilancia: its legal name, tax ID and series",
+          "logos": "Each brand with its own logo and colors",
+          "clientes": "Every client belongs to exactly one brand",
+          "elige": "You pick Costa: the whole CRM narrows to it",
+          "registrado": "Diego is registered in Andes",
+          "semanaA": "Monday to Wednesday: Torre Altamira, an Andes site",
+          "semanaB": "Thursday and Friday: Puerto Norte, a Costa site",
+          "unMapa": "One schedule, one map, one dispatch",
+          "nomina": "Andes pays his payslip: it is where he registered",
+          "cruce": "His hours at Costa go to the cross-brand report",
+          "factura": "You invoice Naviera Pacífico, a Costa client",
+          "identidad": "It carries Costa's logo, legal name and tax ID",
+          "serie": "Numbered in Costa's own series",
+          "correo": "The e-mail arrives in Costa's name",
+          "limpio": "Not a trace of Andes on the document",
+          "entraAdmin": "Lucía, Costa's administrator, signs in",
+          "susClientes": "She only sees Costa's clients",
+          "suPersonal": "And all the staff at her sites, Andes staff included",
+          "noCompra": "Buying brands or touching Andes: company admin only",
+          "suLogo": "She can edit Costa's logo, colors and texts",
+          "abre": "You open Hours between brands: October, approved hours only",
+          "horas": "Who worked at the other brand's sites, and how many hours",
+          "tarifa": "Each brand pair with its hourly rate",
+          "importe": "Hours times rate: the amount for each pair",
+          "filtro": "You filter by the brand that supplies the staff",
+          "neto": "And the net balance between the two brands",
+          "excel": "You export it to Excel to settle it"
+        },
+        "resultado": {
+          "marcas": "Two companies, each with its identity, one CRM",
+          "guardia": "The same guard covers both brands",
+          "factura": "Each brand invoices with its own identity",
+          "admin": "One office per brand, one operation",
+          "horas": "What one brand owes the other, squared up"
+        }
       }
     },
     "pausa": {
