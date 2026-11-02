@@ -1888,7 +1888,8 @@
       },
       "status": {
         "achieved": "Cumplido",
-        "notAchieved": "No cumplido"
+        "notAchieved": "No cumplido",
+        "notMeasured": "Sin medición todavía"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1898,7 +1899,9 @@
       "errors": {
         "frequencyRequired": "Elige la frecuencia.",
         "descriptionRequired": "Escribe la descripción."
-      }
+      },
+      "emptyNone": "Sin indicadores todavía",
+      "emptyHint": "Añade el primer KPI para medir el trabajo de este mes."
     },
     "assignSites": {
       "assignButton": "Asignar estación",

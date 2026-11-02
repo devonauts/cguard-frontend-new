@@ -1676,7 +1676,8 @@
       },
       "status": {
         "achieved": "Erreicht",
-        "notAchieved": "Nicht erreicht"
+        "notAchieved": "Nicht erreicht",
+        "notMeasured": "Noch nicht gemessen"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1686,7 +1687,9 @@
       "errors": {
         "frequencyRequired": "Wählen Sie die Häufigkeit.",
         "descriptionRequired": "Geben Sie die Beschreibung ein."
-      }
+      },
+      "emptyNone": "Noch keine Kennzahlen",
+      "emptyHint": "Fügen Sie die erste Kennzahl hinzu, um die Arbeit dieses Monats zu messen."
     },
     "assignSites": {
       "assignButton": "Objekt zuweisen",

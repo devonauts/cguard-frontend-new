@@ -1676,7 +1676,8 @@
       },
       "status": {
         "achieved": "Behaald",
-        "notAchieved": "Niet behaald"
+        "notAchieved": "Niet behaald",
+        "notMeasured": "Nog niet gemeten"
       },
       "totalKpis": "KPI's",
       "scope": {
@@ -1686,7 +1687,9 @@
       "errors": {
         "frequencyRequired": "Kies de frequentie.",
         "descriptionRequired": "Vul de omschrijving in."
-      }
+      },
+      "emptyNone": "Nog geen KPI's",
+      "emptyHint": "Voeg de eerste KPI toe om het werk van deze maand te meten."
     },
     "assignSites": {
       "assignButton": "Post toewijzen",

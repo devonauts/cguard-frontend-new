@@ -1676,7 +1676,8 @@
       },
       "status": {
         "achieved": "Osiągnięty",
-        "notAchieved": "Nieosiągnięty"
+        "notAchieved": "Nieosiągnięty",
+        "notMeasured": "Jeszcze nie zmierzono"
       },
       "totalKpis": "KPI",
       "scope": {
@@ -1686,7 +1687,9 @@
       "errors": {
         "frequencyRequired": "Wybierz częstotliwość.",
         "descriptionRequired": "Wpisz opis."
-      }
+      },
+      "emptyNone": "Brak wskaźników",
+      "emptyHint": "Dodaj pierwszy KPI, aby mierzyć pracę w tym miesiącu."
     },
     "assignSites": {
       "assignButton": "Przypisz posterunek",

@@ -4328,7 +4328,8 @@
       },
       "status": {
         "achieved": "Atingido",
-        "notAchieved": "Não atingido"
+        "notAchieved": "Não atingido",
+        "notMeasured": "Ainda sem medição"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -4338,7 +4339,9 @@
       "errors": {
         "frequencyRequired": "Escolha a frequência.",
         "descriptionRequired": "Digite a descrição."
-      }
+      },
+      "emptyNone": "Ainda sem indicadores",
+      "emptyHint": "Adicione o primeiro KPI para medir o trabalho deste mês."
     },
     "created": "KPI criado com sucesso",
     "deleteError": "Erro ao excluir KPI(s)",

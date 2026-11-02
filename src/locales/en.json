@@ -1888,7 +1888,8 @@
       },
       "status": {
         "achieved": "Achieved",
-        "notAchieved": "Not Achieved"
+        "notAchieved": "Not Achieved",
+        "notMeasured": "Not measured yet"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1898,7 +1899,9 @@
       "errors": {
         "frequencyRequired": "Choose the frequency.",
         "descriptionRequired": "Enter the description."
-      }
+      },
+      "emptyNone": "No KPIs yet",
+      "emptyHint": "Add the first KPI to measure this month's work."
     },
     "assignSites": {
       "assignButton": "Assign Post Sites",
