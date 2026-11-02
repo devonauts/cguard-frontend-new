@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import DepartmentsTable, { DepartmentRow } from "./DepartmentTable";
 import DepartmentDialog, { DepartmentDialogValues } from "./DepartmentDialog";
+import { managerOptions } from "./managerOptions";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
@@ -73,18 +74,7 @@ export default function DepartmentPage() {
     userService
       .listUsers({ limit: 300, offset: 0 })
       .then((users) => {
-        setManagers(
-          users
-            .map((u) => ({
-              id: u.id ?? "",
-              name:
-                u.fullName ||
-                [u.firstName, u.lastName].filter(Boolean).join(" ") ||
-                u.email ||
-                "—",
-            }))
-            .sort((a, b) => a.name.localeCompare(b.name)),
-        );
+        setManagers(managerOptions(users as any[]));
       })
       .catch(() => {});
   }, []);
