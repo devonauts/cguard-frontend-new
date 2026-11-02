@@ -15,6 +15,7 @@ import {
 } from "@/pages/admin/vehicle-patrol/runLabels";
 import routeService from "@/lib/api/routeService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -74,6 +75,39 @@ interface Ejecucion {
   completedAt?: string | null;
   progress?: { completed: number; total: number } | null;
   summary?: ResumenEjecucion | null;
+}
+
+/**
+ * A time of the run; with its day when it is not the run's day. A 45-hour
+ * run that started on 19/10 showed «Fin 10:11 p. m.» with no date at all.
+ */
+function horaConDia(
+  iso: string | null | undefined,
+  diaDeLaRuta: string | null | undefined,
+  locale: string,
+): string {
+  if (!iso) return fmtHora(iso, locale);
+  const d = new Date(iso);
+
+  if (Number.isNaN(d.getTime())) return fmtHora(iso, locale);
+  const zona = zonaDeLaEmpresa();
+  const dia = new Intl.DateTimeFormat("en-CA", {
+    timeZone: zona,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
+
+  if (!diaDeLaRuta || dia === String(diaDeLaRuta).slice(0, 10))
+    return fmtHora(iso, locale);
+
+  return d.toLocaleString(locale, {
+    timeZone: zona,
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 /** Un número del resumen, o raya si el recorrido aún no ha cerrado. */
@@ -136,13 +170,13 @@ export default function VehiclePatrol() {
       {
         key: "start",
         label: t("ui.VehiclePatrol.inicio", "Inicio"),
-        value: (r) => fmtHora(r.startedAt, locale),
+        value: (r) => horaConDia(r.startedAt, r.date, locale),
         align: "right",
       },
       {
         key: "end",
         label: t("ui.VehiclePatrol.fin", "Fin"),
-        value: (r) => fmtHora(r.completedAt, locale),
+        value: (r) => horaConDia(r.completedAt, r.date, locale),
         align: "right",
       },
       {
@@ -155,8 +189,15 @@ export default function VehiclePatrol() {
         key: "stops",
         label: t("ui.VehiclePatrol.paradas", "Paradas"),
         // «hechas / planificadas»: el numerador solo no dice si faltó algo.
+        // `progress.completed` counts every CLOSED stop — missed and skipped
+        // too — so a run read «2/2» next to «No visitadas 2». Once the run
+        // has its summary, the numerator is the stops actually visited.
         value: (r) =>
-          r.progress ? `${r.progress.completed}/${r.progress.total}` : "—",
+          r.summary?.stopsCompleted != null && r.summary?.stopsPlanned != null
+            ? `${r.summary.stopsCompleted}/${r.summary.stopsPlanned}`
+            : r.progress
+              ? `${r.progress.completed}/${r.progress.total}`
+              : "—",
         align: "center",
       },
       {
