@@ -362,39 +362,46 @@ export default function PortalDeClientesDeMarca({ brandId }: { brandId: string }
                 <div className="mb-1 text-xs font-medium">
                   {t("ui.PortalDeMarca.dnsTitulo", "Crea este registro en el DNS de la marca")}
                 </div>
-                <div className="overflow-x-auto rounded-lg border" style={{ borderColor: "var(--hairline)" }}>
-                  <table className="w-full text-left text-xs">
-                    <thead style={{ color: "var(--ink-faint)" }}>
-                      <tr>
-                        <th className="px-2 py-1.5 font-medium">{t("ui.PortalDeMarca.tipo", "Tipo")}</th>
-                        <th className="px-2 py-1.5 font-medium">{t("ui.PortalDeMarca.nombreDns", "Nombre")}</th>
-                        <th className="px-2 py-1.5 font-medium">{t("ui.PortalDeMarca.valor", "Valor")}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(datos?.instructions?.length ? datos.instructions : [{ type: "CNAME", name: d.hostname, value: destino, purpose: "enrutado" }]).map((r, i) => {
-                        const corto = r.type === "CNAME" && r.name === d.hostname ? host : r.name;
+                {/* Stacked on a phone (label + value), three columns from sm up. */}
+                <div className="rounded-lg border text-xs" style={{ borderColor: "var(--hairline)" }}>
+                  <div className="hidden grid-cols-[5rem_1fr_1fr] gap-2 px-2 py-1.5 sm:grid" style={{ color: "var(--ink-faint)" }}>
+                    <span className="font-medium">{t("ui.PortalDeMarca.tipo", "Tipo")}</span>
+                    <span className="font-medium">{t("ui.PortalDeMarca.nombreDns", "Nombre")}</span>
+                    <span className="font-medium">{t("ui.PortalDeMarca.valor", "Valor")}</span>
+                  </div>
+                  {(datos?.instructions?.length ? datos.instructions : [{ type: "CNAME", name: d.hostname, value: destino, purpose: "enrutado" }]).map((r, i) => {
+                    const corto = r.type === "CNAME" && r.name === d.hostname ? host : r.name;
+                    const etiqueta = (texto: string) => (
+                      <span className="sm:hidden" style={{ color: "var(--ink-faint)" }}>{texto}</span>
+                    );
+                    const valor = (v: string) => (
+                      <button
+                        className="cg-focus inline-flex min-w-0 items-center gap-1 text-left font-mono"
+                        title={t("ui.PortalDeMarca.copiar", "Copiar")}
+                        type="button"
+                        onClick={() => copiar(v)}
+                      >
+                        <span className="break-all">{v}</span>
+                        <Copy className="size-3 shrink-0 opacity-60" />
+                      </button>
+                    );
 
-                        return (
-                          <tr key={i} className="border-t" style={{ borderColor: "var(--hairline)" }}>
-                            <td className="px-2 py-1.5 font-mono">{r.type}</td>
-                            <td className="px-2 py-1.5">
-                              <button className="cg-focus inline-flex max-w-full items-center gap-1 font-mono" title={t("ui.PortalDeMarca.copiar", "Copiar")} type="button" onClick={() => copiar(corto)}>
-                                <span className="truncate">{corto}</span>
-                                <Copy className="size-3 shrink-0 opacity-60" />
-                              </button>
-                            </td>
-                            <td className="px-2 py-1.5">
-                              <button className="cg-focus inline-flex max-w-full items-center gap-1 font-mono" title={t("ui.PortalDeMarca.copiar", "Copiar")} type="button" onClick={() => copiar(r.value)}>
-                                <span className="truncate">{r.value}</span>
-                                <Copy className="size-3 shrink-0 opacity-60" />
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                    return (
+                      <div
+                        key={i}
+                        className="grid grid-cols-[4.5rem_1fr] items-center gap-x-2 gap-y-1.5 border-t px-2 py-2 sm:grid-cols-[5rem_1fr_1fr] sm:gap-y-0"
+                        data-registro-dns={r.type}
+                        style={{ borderColor: "var(--hairline)" }}
+                      >
+                        {etiqueta(t("ui.PortalDeMarca.tipo", "Tipo"))}
+                        <span className="font-mono">{r.type}</span>
+                        {etiqueta(t("ui.PortalDeMarca.nombreDns", "Nombre"))}
+                        {valor(corto)}
+                        {etiqueta(t("ui.PortalDeMarca.valor", "Valor"))}
+                        {valor(r.value)}
+                      </div>
+                    );
+                  })}
                 </div>
                 <p className="mt-1 text-[11px]" style={{ color: "var(--ink-faint)" }}>
                   {t("ui.PortalDeMarca.nombreCompleto", "Si tu proveedor pide el nombre completo, escribe {{completo}}.", { completo: d.hostname })}
