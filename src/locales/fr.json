@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Créé",
+      "read": "Lu",
+      "signal_runaway_suppressed": "Signal répété supprimé",
+      "video_verification": "Vérification vidéo",
+      "escalate": "Escaladé",
+      "close": "Clôturé",
+      "resolve": "Résolu",
+      "incident": "Incident créé",
+      "dispatch": "Intervention",
+      "step": "Étape du plan",
+      "ecv_call": "Appel",
+      "note": "Note",
+      "acknowledge": "Pris en compte",
+      "event_appended": "Événement ajouté",
+      "case_opened": "Dossier ouvert"
+    },
     "status": {
       "queued": "En file",
       "acknowledged": "Prise en compte",
@@ -1449,6 +1466,7 @@
     "ticket_summary": "Résumé du ticket",
     "view_details": "Voir les détails",
     "comment": {
+      "file_upload_failed_not_sent": "Le fichier n'a pas pu être téléversé ; le commentaire n'a pas été envoyé.",
       "add": "Ajouter",
       "add_failed": "Impossible d'ajouter le commentaire",
       "added": "Commentaire ajouté",
@@ -9869,6 +9887,9 @@
       "reconocProm": "Prise en c. moy."
     },
     "AlarmCaseDetail": {
+      "operador": "Opérateur",
+      "sistema": "Système",
+      "porActor": "par {{nombre}}",
       "descripcion": "Description",
       "disposicion": "Issue",
       "sinEntradasDeAuditoria": "Aucune entrée de journal",
@@ -9942,6 +9963,7 @@
       "guardarNota": "Enregistrer la note"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Le numéro de zone est obligatoire",
       "agenciaPsapPolicia": "Service / PSAP (police)",
       "camara": "Appareil photo",
       "comunicacion": "Communication",
@@ -12231,6 +12253,7 @@
       "sinDescansoElSupervisorTrabaja": "Sans repos : le superviseur travaille tous les jours."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Aucun jour sélectionné",
       "asignacion": "Affectation",
       "descripcion": "Description",
       "descripcionDeLaRuta": "Description de la tournée",
@@ -13957,6 +13980,7 @@
       "reintentar": "Réessayer"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "La clé actuelle cesse de fonctionner immédiatement : le relais de ce site se déconnecte jusqu’à l’installation du nouveau lien.",
       "aunNoHaySitiosRemotos": "Aucun site distant pour l'instant",
       "direccionDeRecepcion": "Adresse de réception :",
       "seGeneraraUnaClaveDe": "Une clé de site et un jeton de publication (chiffré) seront générés.",
@@ -14341,6 +14365,8 @@
       "enCurso": "En cours"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "L'incident n'existe pas ou n'est plus disponible.",
+      "incidenteNoEncontrado": "Incident introuvable",
       "escribeUnComentario": "Écrivez un commentaire",
       "noSePudoAgregarComentario": "Impossible d'ajouter le commentaire",
       "noSePudieronCargarDetalles": "Impossible de charger les détails de l'incident",
@@ -14368,6 +14394,7 @@
       "generarYCopiar": "Générer et copier"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Les modifications ont été enregistrées, mais ces fichiers n'ont pas pu être téléversés : {{archivos}}.",
       "incidenteActualizado": "Incident mis à jour",
       "errorAlActualizarIncidente": "Impossible de mettre à jour l'incident",
       "editarIncidente": "Modifier l'incident",
@@ -14375,6 +14402,7 @@
       "asignarVigilante": "Assigner un agent"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "L'incident a été créé, mais ces fichiers n'ont pas pu être téléversés : {{archivos}}. Ajoutez-les depuis Modifier.",
       "errorAlCrearIncidente": "Impossible de créer l'incident",
       "nuevoIncidente": "Nouvel incident",
       "registraUnNuevoIncidenteY": "Enregistrez un nouvel incident et prévenez l'agent concerné.",
@@ -20642,7 +20670,7 @@
       "mileageRequired": "Le kilométrage initial est obligatoire",
       "modelRequired": "Le modèle est obligatoire",
       "plateRequired": "La plaque d'immatriculation est obligatoire",
-      "vinAlphanumeric": "VIN non valide (il doit comporter exactement 17 caractères alphanumériques)",
+      "vinAlphanumeric": "VIN non valide (il doit comporter exactement 17 lettres ou chiffres ; les lettres I, O et Q ne sont pas utilisées)",
       "vinLength": "VIN non valide (il doit comporter exactement 17 caractères)",
       "yearInvalid": "Année non valide"
     }
@@ -21937,6 +21965,7 @@
       "cerrado_por_persona": "clos par une personne"
     },
     "ajustes": {
+      "topeAjustado": "Le plafond va de {{min}} à {{max}} messages : {{valor}} a été enregistré.",
       "titulo": "Réglages du suivi",
       "activo": "{{agente}} assure le suivi",
       "activoHint": "Écrit à l’agent dès que quelque chose cloche et poursuit la conversation jusqu’à la clore.",

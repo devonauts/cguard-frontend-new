@@ -891,7 +891,7 @@ export default function RouteForm({
   const daysText = useMemo(() => {
     const d = watchedDays ?? [];
 
-    if (!d.length) return ", , , , , ,";
+    if (!d.length) return t("ui.RouteForm.ningunDiaElegido", "Ningún día elegido");
 
     return d.map((k: any) => t(DAY_LABEL_KEY[k], DAY_LABEL[k])).join(", ");
   }, [watchedDays, t]);

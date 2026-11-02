@@ -41,22 +41,12 @@ export default function DispatchPublicView() {
     const load = async () => {
       if (!token) return;
       try {
-        const configured = resolveApiBase() as
-          | string
-          | undefined;
-        let backendOrigin = "http://localhost:3001";
-
-        try {
-          if (configured) {
-            const u = new URL(configured);
-
-            backendOrigin = u.origin;
-          }
-        } catch (e) {
-          // ignore
-        }
-
-        const url = `${backendOrigin}/public/dispatch/${token}`;
+        // Through the API base, `/api` included, like every other call. Taking
+        // only its origin dropped `/api` (and a relative base fell back to
+        // localhost:3001), so the fetch got the SPA's HTML and every shared
+        // link said «no existe o ha expirado».
+        const apiBase = (resolveApiBase() ?? "/api").replace(/\/+$/, "");
+        const url = `${apiBase}/public/dispatch/${encodeURIComponent(token)}`;
         const resp = await fetch(url, { method: "GET" });
 
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);

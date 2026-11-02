@@ -5701,6 +5701,7 @@
     "close": "Fechar",
     "close_ticket": "Fechar ticket",
     "comment": {
+      "file_upload_failed_not_sent": "Não foi possível enviar o arquivo; o comentário não foi enviado.",
       "add": "Adicionar",
       "add_failed": "Não foi possível adicionar o comentário",
       "added": "Comentário adicionado",
@@ -9327,6 +9328,9 @@
       "reconocProm": "Reconh. méd."
     },
     "AlarmCaseDetail": {
+      "operador": "Operador",
+      "sistema": "Sistema",
+      "porActor": "por {{nombre}}",
       "descripcion": "Descrição",
       "disposicion": "Disposição",
       "sinEntradasDeAuditoria": "Sem entradas de auditoria",
@@ -9400,6 +9404,7 @@
       "guardarNota": "Salvar nota"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "O número da zona é obrigatório",
       "agenciaPsapPolicia": "Agência / PSAP (polícia)",
       "camara": "Câmera",
       "comunicacion": "Comunicação",
@@ -11689,6 +11694,7 @@
       "sinDescansoElSupervisorTrabaja": "Sem folga: o supervisor trabalha todos os dias."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Nenhum dia selecionado",
       "asignacion": "Atribuição",
       "descripcion": "Descrição",
       "descripcionDeLaRuta": "Descrição da rota",
@@ -13415,6 +13421,7 @@
       "reintentar": "Tentar novamente"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "A chave atual deixa de funcionar na hora: o relay deste local se desconecta até você instalar o novo link.",
       "aunNoHaySitiosRemotos": "Ainda não há sites remotos",
       "direccionDeRecepcion": "Endereço de recepção:",
       "seGeneraraUnaClaveDe": "Serão gerados uma chave de site e um token de publicação (criptografado).",
@@ -13799,6 +13806,8 @@
       "enCurso": "Em andamento"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "O incidente não existe ou não está mais disponível.",
+      "incidenteNoEncontrado": "Incidente não encontrado",
       "escribeUnComentario": "Escreva um comentário",
       "noSePudoAgregarComentario": "Não foi possível adicionar o comentário",
       "noSePudieronCargarDetalles": "Não foi possível carregar os detalhes do incidente",
@@ -13826,6 +13835,7 @@
       "generarYCopiar": "Gerar e copiar"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "As alterações foram salvas, mas não foi possível enviar estes arquivos: {{archivos}}.",
       "incidenteActualizado": "Incidente atualizado",
       "errorAlActualizarIncidente": "Não foi possível atualizar o incidente",
       "editarIncidente": "Editar incidente",
@@ -13833,6 +13843,7 @@
       "asignarVigilante": "Designar vigilante"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "O incidente foi criado, mas não foi possível enviar estes arquivos: {{archivos}}. Adicione-os em Editar.",
       "errorAlCrearIncidente": "Não foi possível criar o incidente",
       "nuevoIncidente": "Novo incidente",
       "registraUnNuevoIncidenteY": "Registre um novo incidente e avise o vigilante correspondente.",
@@ -19328,6 +19339,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Criado",
+      "read": "Lido",
+      "signal_runaway_suppressed": "Sinal repetido suprimido",
+      "video_verification": "Verificação por vídeo",
+      "escalate": "Escalonado",
+      "close": "Fechado",
+      "resolve": "Resolvido",
+      "incident": "Incidente criado",
+      "dispatch": "Despacho",
+      "step": "Etapa do plano",
+      "ecv_call": "Chamada",
+      "note": "Nota",
+      "acknowledge": "Reconhecido",
+      "event_appended": "Evento adicionado",
+      "case_opened": "Caso aberto"
+    },
     "status": {
       "queued": "Na fila",
       "acknowledged": "Reconhecida",
@@ -20642,7 +20670,7 @@
       "mileageRequired": "Quilometragem inicial obrigatória",
       "modelRequired": "Modelo obrigatório",
       "plateRequired": "Placa obrigatória",
-      "vinAlphanumeric": "VIN inválido (deve ter exatamente 17 caracteres alfanuméricos)",
+      "vinAlphanumeric": "VIN inválido (deve ter exatamente 17 letras ou números; as letras I, O e Q não são usadas)",
       "vinLength": "VIN inválido (deve ter exatamente 17 caracteres)",
       "yearInvalid": "Ano inválido"
     }
@@ -21937,6 +21965,7 @@
       "cerrado_por_persona": "encerrado por uma pessoa"
     },
     "ajustes": {
+      "topeAjustado": "O limite vai de {{min}} a {{max}} mensagens: foi salvo {{valor}}.",
       "titulo": "Ajustes do acompanhamento",
       "activo": "{{agente}} faz o acompanhamento",
       "activoHint": "Escreve ao vigilante assim que algo não bate e segue a conversa até fechá-la.",

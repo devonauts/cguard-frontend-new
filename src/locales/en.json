@@ -1695,6 +1695,7 @@
     "ticket_summary": "Ticket Summary",
     "view_details": "View details",
     "comment": {
+      "file_upload_failed_not_sent": "The file could not be uploaded; the comment was not sent.",
       "add": "Add",
       "add_failed": "Could not add comment",
       "added": "Comment added",
@@ -9327,6 +9328,9 @@
       "reconocProm": "Avg. ack."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "System",
+      "porActor": "by {{nombre}}",
       "descripcion": "Description",
       "disposicion": "Layout",
       "sinEntradasDeAuditoria": "No audit entries",
@@ -9400,6 +9404,7 @@
       "guardarNota": "Save note"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "The zone number is required",
       "agenciaPsapPolicia": "Agency / PSAP (police)",
       "camara": "Camera",
       "comunicacion": "Communication",
@@ -11689,6 +11694,7 @@
       "sinDescansoElSupervisorTrabaja": "No days off: the supervisor works every day."
     },
     "RouteForm": {
+      "ningunDiaElegido": "No days selected",
       "asignacion": "Assignment",
       "descripcion": "Description",
       "descripcionDeLaRuta": "Route description",
@@ -13415,6 +13421,7 @@
       "reintentar": "Retry"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "The current key stops working at once: this site’s relay disconnects until you install the new link.",
       "aunNoHaySitiosRemotos": "No remote sites yet",
       "direccionDeRecepcion": "Receiving address:",
       "seGeneraraUnaClaveDe": "A site key and a publish token will be generated (encrypted).",
@@ -13799,6 +13806,8 @@
       "enCurso": "In progress"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "The incident does not exist or is no longer available.",
+      "incidenteNoEncontrado": "Incident not found",
       "escribeUnComentario": "Please write a comment",
       "noSePudoAgregarComentario": "Could not add comment",
       "noSePudieronCargarDetalles": "The incident details could not be loaded",
@@ -13826,6 +13835,7 @@
       "generarYCopiar": "Generate and copy"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "The changes were saved, but these files could not be uploaded: {{archivos}}.",
       "incidenteActualizado": "Incident updated",
       "errorAlActualizarIncidente": "The incident could not be updated",
       "editarIncidente": "Edit incident",
@@ -13833,6 +13843,7 @@
       "asignarVigilante": "Assign guard"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "The incident was created, but these files could not be uploaded: {{archivos}}. Add them from Edit.",
       "errorAlCrearIncidente": "The incident could not be created",
       "nuevoIncidente": "New incident",
       "registraUnNuevoIncidenteY": "Log a new incident and notify the guard concerned.",
@@ -19328,6 +19339,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Created",
+      "read": "Read",
+      "signal_runaway_suppressed": "Repeated signal suppressed",
+      "video_verification": "Video verification",
+      "escalate": "Escalated",
+      "close": "Closed",
+      "resolve": "Resolved",
+      "incident": "Incident created",
+      "dispatch": "Dispatch",
+      "step": "Plan step",
+      "ecv_call": "Call",
+      "note": "Note",
+      "acknowledge": "Acknowledged",
+      "event_appended": "Event added",
+      "case_opened": "Case opened"
+    },
     "status": {
       "queued": "Queued",
       "acknowledged": "Acknowledged",
@@ -20642,7 +20670,7 @@
       "mileageRequired": "Starting mileage is required",
       "modelRequired": "Model is required",
       "plateRequired": "Plate is required",
-      "vinAlphanumeric": "Invalid VIN (must be exactly 17 alphanumeric characters)",
+      "vinAlphanumeric": "Invalid VIN (must be exactly 17 letters or digits; the letters I, O and Q are not used)",
       "vinLength": "Invalid VIN (must be exactly 17 characters)",
       "yearInvalid": "Invalid year"
     }
@@ -21937,6 +21965,7 @@
       "cerrado_por_persona": "closed by a person"
     },
     "ajustes": {
+      "topeAjustado": "The cap goes from {{min}} to {{max}} messages: {{valor}} was saved.",
       "titulo": "Follow-up settings",
       "activo": "{{agente}} follows up",
       "activoHint": "Messages the officer as soon as something is off and keeps the conversation going until it is closed.",

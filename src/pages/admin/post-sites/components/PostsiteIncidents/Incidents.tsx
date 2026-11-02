@@ -153,8 +153,19 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   };
 
   const handleGenerateShareableLink = async (it: any) => {
-    const url = `${window.location.origin}/dispatch-tickets/${it.id}?resource=incident`;
     try {
+      // A shareable link is the PUBLIC one (/public/dispatch/:token, expires);
+      // this copied the CRM's own URL, which only opens with a session.
+      const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
+      const share: any = await ApiService.post(
+        `/tenant/${tenantId}/request/${it.id}/share`,
+        {},
+      );
+      const url = share?.token
+        ? `${window.location.origin}/public/dispatch/${share.token}`
+        : share?.url;
+
+      if (!url) throw new Error("share");
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
       } else {
@@ -1455,31 +1466,8 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    navigate(`/dispatch-tickets/${it.id}`, {
-                                      state: { resource: "incident" },
-                                    })
-                                  }
-                                >
-                                  <div className="flex items-center w-full">
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    {t("incidents.actions.view") || "View"}
-                                  </div>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    window.open(
-                                      `${window.location.origin}/dispatch-tickets/${it.id}?resource=incident`,
-                                      "_blank",
-                                    )
-                                  }
-                                >
-                                  <div className="flex items-center">
-                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                    {t("incidents.actions.open") || "Open"}
-                                  </div>
-                                </DropdownMenuItem>
+                                {/* «Ver»/«Abrir» repeated «Ver detalles»/«Abrir en
+                                    nueva pestaña» below, same targets. */}
                                 <DropdownMenuItem
                                   onClick={() =>
                                     handleCreateDispatchFromIncident(it)
@@ -1605,9 +1593,13 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               </div>
 
               <div>
-                {/* «page / pages», as in the other lists: «1 – 1» read as a
-                    range of rows on an empty list. */}
-                {page} / {Math.max(1, Math.ceil(totalCount / limit))}
+                {/* Rows shown out of the total; «page – pages» read «1 – 1» for 9 rows. */}
+              {t("ui.CatalogTable.rangoDeTotal", {
+                defaultValue: "{{from}} – {{to}} de {{total}}",
+                from: totalCount ? (page - 1) * limit + 1 : 0,
+                to: Math.min(page * limit, totalCount),
+                total: totalCount,
+              })}
               </div>
 
               <div className="flex gap-2">

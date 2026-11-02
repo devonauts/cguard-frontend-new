@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Erstellt",
+      "read": "Gelesen",
+      "signal_runaway_suppressed": "Wiederholtes Signal unterdrückt",
+      "video_verification": "Videoverifizierung",
+      "escalate": "Eskaliert",
+      "close": "Geschlossen",
+      "resolve": "Gelöst",
+      "incident": "Vorfall erstellt",
+      "dispatch": "Einsatz",
+      "step": "Planschritt",
+      "ecv_call": "Anruf",
+      "note": "Notiz",
+      "acknowledge": "Bestätigt",
+      "event_appended": "Ereignis hinzugefügt",
+      "case_opened": "Fall eröffnet"
+    },
     "status": {
       "queued": "In Warteschlange",
       "acknowledged": "Bestätigt",
@@ -1449,6 +1466,7 @@
     "ticket_summary": "Ticket-Übersicht",
     "view_details": "Details ansehen",
     "comment": {
+      "file_upload_failed_not_sent": "Die Datei konnte nicht hochgeladen werden; der Kommentar wurde nicht gesendet.",
       "add": "Hinzufügen",
       "add_failed": "Der Kommentar konnte nicht hinzugefügt werden",
       "added": "Kommentar hinzugefügt",
@@ -9869,6 +9887,9 @@
       "reconocProm": "Ø Quitt."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "System",
+      "porActor": "von {{nombre}}",
       "descripcion": "Beschreibung",
       "disposicion": "Abschlussgrund",
       "sinEntradasDeAuditoria": "Keine Protokolleinträge",
@@ -9942,6 +9963,7 @@
       "guardarNota": "Notiz speichern"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Die Zonennummer ist erforderlich",
       "agenciaPsapPolicia": "Behörde / PSAP (Polizei)",
       "camara": "Kamera",
       "comunicacion": "Kommunikation",
@@ -12231,6 +12253,7 @@
       "sinDescansoElSupervisorTrabaja": "Ohne Ruhetag: Die Einsatzleitung arbeitet jeden Tag."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Keine Tage ausgewählt",
       "asignacion": "Zuweisung",
       "descripcion": "Beschreibung",
       "descripcionDeLaRuta": "Beschreibung der Route",
@@ -13957,6 +13980,7 @@
       "reintentar": "Erneut versuchen"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "Der aktuelle Schlüssel funktioniert sofort nicht mehr: Das Relay dieses Standorts trennt sich, bis Sie den neuen Link installieren.",
       "aunNoHaySitiosRemotos": "Noch keine externen Standorte",
       "direccionDeRecepcion": "Empfangsadresse:",
       "seGeneraraUnaClaveDe": "Es werden ein Standortschlüssel und ein Veröffentlichungs-Token (verschlüsselt) erzeugt.",
@@ -14341,6 +14365,8 @@
       "enCurso": "Laufend"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "Der Vorfall existiert nicht oder ist nicht mehr verfügbar.",
+      "incidenteNoEncontrado": "Vorfall nicht gefunden",
       "escribeUnComentario": "Bitte schreiben Sie einen Kommentar",
       "noSePudoAgregarComentario": "Der Kommentar konnte nicht hinzugefügt werden",
       "noSePudieronCargarDetalles": "Die Details des Vorfalls konnten nicht geladen werden",
@@ -14368,6 +14394,7 @@
       "generarYCopiar": "Erstellen und kopieren"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Die Änderungen wurden gespeichert, aber diese Dateien konnten nicht hochgeladen werden: {{archivos}}.",
       "incidenteActualizado": "Vorfall aktualisiert",
       "errorAlActualizarIncidente": "Der Vorfall konnte nicht aktualisiert werden",
       "editarIncidente": "Vorfall bearbeiten",
@@ -14375,6 +14402,7 @@
       "asignarVigilante": "Wachkraft zuweisen"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Der Vorfall wurde erstellt, aber diese Dateien konnten nicht hochgeladen werden: {{archivos}}. Fügen Sie sie über Bearbeiten hinzu.",
       "errorAlCrearIncidente": "Der Vorfall konnte nicht erstellt werden",
       "nuevoIncidente": "Neuer Vorfall",
       "registraUnNuevoIncidenteY": "Erfassen Sie einen neuen Vorfall und benachrichtigen Sie die zuständige Wachkraft.",
@@ -20642,7 +20670,7 @@
       "mileageRequired": "Anfangskilometerstand erforderlich",
       "modelRequired": "Modell erforderlich",
       "plateRequired": "Kennzeichen erforderlich",
-      "vinAlphanumeric": "Ungültige VIN (muss genau 17 alphanumerische Zeichen haben)",
+      "vinAlphanumeric": "Ungültige VIN (muss genau 17 Buchstaben oder Ziffern haben; die Buchstaben I, O und Q kommen nicht vor)",
       "vinLength": "Ungültige VIN (muss genau 17 Zeichen haben)",
       "yearInvalid": "Ungültiges Jahr"
     }
@@ -21937,6 +21965,7 @@
       "cerrado_por_persona": "von einem Menschen geschlossen"
     },
     "ajustes": {
+      "topeAjustado": "Das Limit liegt zwischen {{min}} und {{max}} Nachrichten: gespeichert wurde {{valor}}.",
       "titulo": "Einstellungen der Nachverfolgung",
       "activo": "{{agente}} verfolgt nach",
       "activoHint": "Schreibt der Sicherheitskraft, sobald etwas nicht stimmt, und führt das Gespräch bis zum Abschluss.",

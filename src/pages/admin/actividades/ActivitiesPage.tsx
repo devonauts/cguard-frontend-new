@@ -156,6 +156,7 @@ export default function ActivitiesPage() {
   const {
     notifications: live,
     markRead: persistRead,
+    markAllRead: persistAllRead,
     connected,
     seeding: loading,
     seedError: error,
@@ -222,8 +223,9 @@ export default function ActivitiesPage() {
 
       return n;
     });
-    unread.forEach((id) => persistRead(id));
-  }, [events, isRead, persistRead]);
+    // One POST /events/read-all, not one request per row (49 in a row).
+    persistAllRead();
+  }, [events, isRead, persistAllRead]);
 
   /**
    * Una fila NO es un checkbox de «leído»: es el evento. Antes el clic sólo lo

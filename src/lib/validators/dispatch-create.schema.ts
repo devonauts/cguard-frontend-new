@@ -6,8 +6,7 @@ import i18n from "@/i18n";
 // llama en cada validación), nunca al cargar, para que siga el idioma vivo.
 const msj = (clave: string, texto: string) => () => i18n.t(clave, texto);
 
-export const dispatchCreateSchema = z
-  .object({
+const dispatchBaseSchema = z.object({
     // clientId/siteId may be omitted when creating from a post-site context
     clientId: z.string().optional(),
     siteId: z.string().optional(),
@@ -50,15 +49,26 @@ export const dispatchCreateSchema = z
     actionsTaken: z.string().optional(),
     internalNotes: z.string().optional(),
     attachment: z.instanceof(File).optional().or(z.undefined()),
-  })
-  // require date/time and basic presence of mandatory fields
-  .refine((v) => Boolean(v.incidentDate) && Boolean(v.incidentTime), {
+});
+
+// require date/time and basic presence of mandatory fields
+const dateTimeRequired: [
+  (v: { incidentDate?: string; incidentTime?: string }) => boolean,
+  { error: () => string; path: string[] },
+] = [
+  (v: { incidentDate?: string; incidentTime?: string }) =>
+    Boolean(v.incidentDate) && Boolean(v.incidentTime),
+  {
     error: msj(
       "dispatch.validation.incidentDateTimeRequired",
       "Fecha y hora del incidente son requeridas",
     ),
     path: ["incidentDate"],
-  })
+  },
+];
+
+export const dispatchCreateSchema = dispatchBaseSchema
+  .refine(...dateTimeRequired)
   .refine(
     (v) => {
       // Ensure we have enough location context: stationId must be provided
@@ -71,3 +81,15 @@ export const dispatchCreateSchema = z
   );
 
 export type DispatchCreateSchema = z.infer<typeof dispatchCreateSchema>;
+
+/**
+ * Editing an incident. The edit form has no station field (the incident keeps
+ * the one it was filed at; the PUT does not send it), but it validated with the
+ * create schema, whose `stationId` is required: «Enviar» failed validation on a
+ * field nobody could see, so no change could ever be saved.
+ */
+export const dispatchEditSchema = dispatchBaseSchema
+  .extend({ stationId: z.string().optional() })
+  .refine(...dateTimeRequired);
+
+export type DispatchEditSchema = z.infer<typeof dispatchEditSchema>;

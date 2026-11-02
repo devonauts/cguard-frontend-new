@@ -1,4 +1,4 @@
-import type { DirectoryOption, NamedEntity, DispatchComment, CommentAttachment } from './types';
+import type { DirectoryOption, NamedEntity, DispatchComment, CommentAttachment, DispatchApiError } from './types';
 import TraducirParte from "@/components/vigia/partes/TraducirParte";
 import { Avatar } from "@/components/kit";
 import React, { useEffect, useState } from 'react';
@@ -22,8 +22,11 @@ import { clientService } from '@/lib/api/clientService';
 import { postSiteService } from '@/lib/api/postSiteService';
 import IncidentTypesService from '@/services/incident-types.service';
 import DispatchIncidentMap, { coordDeSitio } from './DispatchIncidentMap';
+import DispatchFiles from './DispatchFiles';
+import { callerTypeLabel, personName } from './dispatchLabels';
+import { uploadCommentAttachment, uploadErrorText } from './commentAttachment';
 import { toast } from 'sonner';
-import { PageContainer, PageHeader, Modal, StatusBadge } from '@/components/kit';
+import { PageContainer, PageHeader, Modal, StatusBadge, EmptyState } from '@/components/kit';
 import { FileSearch, MessageSquarePlus } from 'lucide-react';
 
 import { useLocation } from 'react-router-dom';
@@ -56,6 +59,8 @@ export function DispatchDetailsContent({
   );
   const [includeArchived, setIncludeArchived] = useState<boolean>(false);
   const [requestPayload, setRequestPayload] = useState<any | null>(null);
+  // A 404 used to render the whole sheet with dashes and «Agregar comentario».
+  const [notFound, setNotFound] = useState(false);
   // ¿Se registró sin señal y llegó después? Una consulta, por el id del incidente.
   const marcasDetalle = useMarcasSinSenal([requestPayload?.id || requestId]);
   const marcaDetalle = marcasDetalle[String(requestPayload?.id || requestId || "")];
@@ -104,50 +109,18 @@ export function DispatchDetailsContent({
       if (selectedFile) {
         try {
           setFileUploading(true);
-          const credsResp = await api.get(
-            `/tenant/${tenantId}/file/credentials?filename=${encodeURIComponent(selectedFile.name)}&storageId=localhost`,
-          );
-          const creds =
-            credsResp && (credsResp.data || credsResp)
-              ? credsResp.data || credsResp
-              : credsResp;
-          const uploadUrl =
-            creds?.uploadCredentials?.url ||
-            creds?.url ||
-            (creds?.uploadCredentials && creds.uploadCredentials.url);
-
-          if (!uploadUrl) throw new Error("No upload URL");
-
-          const form = new FormData();
-
-          form.append("filename", selectedFile.name);
-          form.append("file", selectedFile);
-
-          const uploadResp = await fetch(uploadUrl, {
-            method: "POST",
-            body: form,
-          });
-          let downloadUrl: unknown = null;
-
-          try {
-            const json = await uploadResp.json();
-
-            downloadUrl = json?.downloadUrl || json?.url || json;
-          } catch (e) {
-            downloadUrl = await uploadResp.text();
-          }
-          if (typeof downloadUrl === "object" && downloadUrl !== null)
-            downloadUrl = JSON.stringify(downloadUrl);
-          attachment = {
-            url: downloadUrl == null ? undefined : String(downloadUrl),
-            name: selectedFile.name,
-          };
+          attachment = await uploadCommentAttachment(tenantId, selectedFile);
         } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
+          // Not sent: the comment keeps its text and its file, so the person
+          // can retry. It used to go out without the file, with «Comentario
+          // agregado» and the error toast at the same time.
+          const msg = uploadErrorText(err);
 
           toast.error(
-            `${t("ui.MessengerPage.noSePudoSubirElArchivo", "No se pudo subir el archivo")}${msg ? `: ${msg}` : ""}`,
+            `${t("dispatcher.comment.file_upload_failed_not_sent", "No se pudo subir el archivo; el comentario no se envió.")}${msg ? ` ${msg}` : ""}`,
           );
+
+          return;
         } finally {
           setFileUploading(false);
         }
@@ -299,6 +272,7 @@ export function DispatchDetailsContent({
   useEffect(() => {
     const loadDetails = async () => {
       if (!requestId) return;
+      setNotFound(false);
       try {
         const tenantId = localStorage.getItem("tenantId");
 
@@ -337,6 +311,14 @@ export function DispatchDetailsContent({
           setComments([]);
         }
       } catch (e) {
+        const err = e as DispatchApiError | null;
+        const httpStatus =
+          err?.status ?? err?.statusCode ?? err?.response?.status ?? err?.data?.status;
+
+        if (httpStatus === 404) {
+          setNotFound(true);
+          return;
+        }
         // sonner toast does not have `warn`; use `error` and keep console warning for diagnostics
         // eslint-disable-next-line no-console
         console.warn("Failed to load dispatch details", e);
@@ -351,6 +333,23 @@ export function DispatchDetailsContent({
   const guardRows: React.JSX.Element[] = [];
 
   if (requestPayload) {
+    // «Despachar a supervisor» assigns the incident to that supervisor; the
+    // card only knew the guard, so the dispatch never showed here.
+    if (requestPayload.assignedTo && personName(requestPayload.assignedTo)) {
+      guardRows.push(
+        <tr key="supervisor-dispatch" className="border-t">
+          <td className="py-2 px-3">
+            {personName(requestPayload.assignedTo)} ·{" "}
+            {t("adminOfficeUsers.roleNames.supervisor", "Supervisor")}
+          </td>
+          <td className="py-2 px-3">
+            {requestPayload.dispatchedAt
+              ? new Date(requestPayload.dispatchedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+              : "-"}
+          </td>
+        </tr>,
+      );
+    }
     if (requestPayload.guardName) {
       guardRows.push(
         <tr key="guard-main" className="border-t">
@@ -580,6 +579,25 @@ export function DispatchDetailsContent({
     );
   })();
 
+  if (notFound) {
+    return (
+      <EmptyState
+        action={
+          <Button asChild variant="outline">
+            <Link to="/dispatch-tickets">{t("dispatcher.breadcrumbList")}</Link>
+          </Button>
+        }
+        className="mt-6"
+        description={t(
+          "ui.DispatchDetailsPage.elIncidenteNoExiste",
+          "El incidente no existe o ya no está disponible.",
+        )}
+        icon={<FileSearch />}
+        title={t("ui.DispatchDetailsPage.incidenteNoEncontrado", "Incidente no encontrado")}
+      />
+    );
+  }
+
   return (
     <div className="mt-6 space-y-5">
       {/* Basic Details card */}
@@ -677,7 +695,7 @@ export function DispatchDetailsContent({
                       {t("dispatcher.caller_type")}
                     </td>
                     <td className="py-3 px-4 text-sm text-foreground">
-                      {requestPayload.callerType || "-"}
+                      {callerTypeLabel(requestPayload.callerType) || "-"}
                     </td>
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
                       {t("dispatcher.caller_name")}
@@ -728,10 +746,8 @@ export function DispatchDetailsContent({
                       {t("dispatcher.dispatcher")}
                     </td>
                     <td className="py-3 px-4 text-sm text-foreground">
-                      {(typeof requestPayload.guardName === "string"
-                        ? requestPayload.guardName
-                        : requestPayload.guardName?.fullName ||
-                          requestPayload.guardName?.name) || "-"}
+                      {/* Who filed the dispatch (this cell showed the guard). */}
+                      {personName(requestPayload.createdBy) || "-"}
                     </td>
                   </tr>
                 </tbody>
@@ -843,18 +859,7 @@ export function DispatchDetailsContent({
             {t("dispatcher.files")}
           </div>
           <div className="p-4 text-sm">
-            {requestPayload?.requestDocumentPDF &&
-            requestPayload.requestDocumentPDF.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {requestPayload.requestDocumentPDF.map((f: any, i: number) => (
-                  <li key={i} className="truncate">
-                    {f.name || f.fileName || f}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="text-sm text-muted-foreground">-</div>
-            )}
+            <DispatchFiles payload={requestPayload} />
             {/* Debug: show raw payload when ?debugPayload=1 is present */}
             {typeof window !== "undefined" &&
               new URLSearchParams(window.location.search).has("debugPayload") &&

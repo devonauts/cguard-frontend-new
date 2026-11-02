@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Creato",
+      "read": "Letto",
+      "signal_runaway_suppressed": "Segnale ripetuto soppresso",
+      "video_verification": "Verifica video",
+      "escalate": "Escalato",
+      "close": "Chiuso",
+      "resolve": "Risolto",
+      "incident": "Incidente creato",
+      "dispatch": "Intervento",
+      "step": "Passo del piano",
+      "ecv_call": "Chiamata",
+      "note": "Nota",
+      "acknowledge": "Preso in carico",
+      "event_appended": "Evento aggiunto",
+      "case_opened": "Caso aperto"
+    },
     "status": {
       "queued": "In coda",
       "acknowledged": "Presa in carico",
@@ -1449,6 +1466,7 @@
     "ticket_summary": "Riepilogo del ticket",
     "view_details": "Vedi dettagli",
     "comment": {
+      "file_upload_failed_not_sent": "Impossibile caricare il file; il commento non è stato inviato.",
       "add": "Aggiungi",
       "add_failed": "Impossibile aggiungere il commento",
       "added": "Commento aggiunto",
@@ -9869,6 +9887,9 @@
       "reconocProm": "Presa in c. media"
     },
     "AlarmCaseDetail": {
+      "operador": "Operatore",
+      "sistema": "Sistema",
+      "porActor": "da {{nombre}}",
       "descripcion": "Descrizione",
       "disposicion": "Esito",
       "sinEntradasDeAuditoria": "Nessuna voce di verifica",
@@ -9942,6 +9963,7 @@
       "guardarNota": "Salva nota"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Il numero di zona è obbligatorio",
       "agenciaPsapPolicia": "Ente / PSAP (forze dell'ordine)",
       "camara": "Fotocamera",
       "comunicacion": "Comunicazione",
@@ -12231,6 +12253,7 @@
       "sinDescansoElSupervisorTrabaja": "Senza riposo: il supervisore lavora tutti i giorni."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Nessun giorno selezionato",
       "asignacion": "Assegnazione",
       "descripcion": "Descrizione",
       "descripcionDeLaRuta": "Descrizione del percorso",
@@ -13957,6 +13980,7 @@
       "reintentar": "Riprova"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "La chiave attuale smette subito di funzionare: il relay di questo sito si disconnette finché non installi il nuovo link.",
       "aunNoHaySitiosRemotos": "Ancora nessun sito remoto",
       "direccionDeRecepcion": "Indirizzo di ricezione:",
       "seGeneraraUnaClaveDe": "Verranno generati una chiave di sito e un token di pubblicazione (cifrato).",
@@ -14341,6 +14365,8 @@
       "enCurso": "In corso"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "L'incidente non esiste o non è più disponibile.",
+      "incidenteNoEncontrado": "Incidente non trovato",
       "escribeUnComentario": "Scrivi un commento",
       "noSePudoAgregarComentario": "Impossibile aggiungere il commento",
       "noSePudieronCargarDetalles": "Impossibile caricare i dettagli dell'incidente",
@@ -14368,6 +14394,7 @@
       "generarYCopiar": "Genera e copia"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Le modifiche sono state salvate, ma non è stato possibile caricare questi file: {{archivos}}.",
       "incidenteActualizado": "Incidente aggiornato",
       "errorAlActualizarIncidente": "Errore durante l'aggiornamento dell'incidente",
       "editarIncidente": "Modifica incidente",
@@ -14375,6 +14402,7 @@
       "asignarVigilante": "Assegna guardia"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "L'incidente è stato creato, ma non è stato possibile caricare questi file: {{archivos}}. Aggiungili da Modifica.",
       "errorAlCrearIncidente": "Errore durante la creazione dell'incidente",
       "nuevoIncidente": "Nuovo incidente",
       "registraUnNuevoIncidenteY": "Registra un nuovo incidente e avvisa la guardia interessata.",
@@ -20642,7 +20670,7 @@
       "mileageRequired": "Chilometraggio iniziale obbligatorio",
       "modelRequired": "Modello obbligatorio",
       "plateRequired": "Targa obbligatoria",
-      "vinAlphanumeric": "Numero di telaio non valido (deve avere esattamente 17 caratteri alfanumerici)",
+      "vinAlphanumeric": "Numero di telaio non valido (deve avere esattamente 17 lettere o cifre; le lettere I, O e Q non si usano)",
       "vinLength": "Numero di telaio non valido (deve avere esattamente 17 caratteri)",
       "yearInvalid": "Anno non valido"
     }
@@ -21937,6 +21965,7 @@
       "cerrado_por_persona": "chiuso da una persona"
     },
     "ajustes": {
+      "topeAjustado": "Il limite va da {{min}} a {{max}} messaggi: è stato salvato {{valor}}.",
       "titulo": "Impostazioni del monitoraggio",
       "activo": "{{agente}} fa il monitoraggio",
       "activoHint": "Scrive alla guardia appena qualcosa non va e porta avanti la conversazione fino a chiuderla.",

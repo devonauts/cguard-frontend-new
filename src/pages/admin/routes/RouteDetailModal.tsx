@@ -434,7 +434,7 @@ export default function RouteDetailModal({
               label={t("comun.horaDeInicio")}
               value={
                 (route.windowStart
-                  ? new Date(route.windowStart).toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(),
+                  ? new Date(route.windowStart).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
                       hour: "2-digit",
                       minute: "2-digit",
                     })
@@ -445,7 +445,7 @@ export default function RouteDetailModal({
               label={t("comun.horaDeFin")}
               value={
                 (route.windowEnd
-                  ? new Date(route.windowEnd).toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(),
+                  ? new Date(route.windowEnd).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
                       hour: "2-digit",
                       minute: "2-digit",
                     })

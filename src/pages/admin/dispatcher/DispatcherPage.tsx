@@ -102,6 +102,7 @@ import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, limitesDelDia, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 import { resolveApiBase } from "@/lib/apiBase";
 import i18n from "@/i18n";
+import { callerTypeLabel } from "./dispatchLabels";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -1018,7 +1019,7 @@ export default function DispatcherPage() {
           r.site?.companyName ||
           (typeof r.site === "string" ? r.site : "") ||
           "",
-        [t("dispatcher.caller_type", "Tipo de informador")]: r.callerType || "",
+        [t("dispatcher.caller_type", "Tipo de informador")]: callerTypeLabel(r.callerType),
         [t("dispatcher.caller_name", "Nombre del informante")]:
           r.callerName ||
           (r.guardName && (r.guardName.fullName || r.guardName.name)) ||
@@ -1942,9 +1943,7 @@ export default function DispatcherPage() {
                           : r.site || r.siteId || "-"}
                       </td>
                       <td className="px-4 py-3" data-rotulo={t("dispatcher.header_caller_type")}>
-                        {r.callerType && typeof r.callerType === "object"
-                          ? r.callerType.name || r.callerType.id || "-"
-                          : r.callerType ||
+                        {callerTypeLabel(r.callerType) ||
                             r.guardName?.fullName ||
                             r.guardName?.name ||
                             "-"}
@@ -2137,7 +2136,13 @@ export default function DispatcherPage() {
             </div>
 
             <div>
-              {page} – {Math.max(1, Math.ceil(totalCount / limit))}
+              {/* Rows shown out of the total; «page – pages» read «1 – 1» for 9 rows. */}
+              {t("ui.CatalogTable.rangoDeTotal", {
+                defaultValue: "{{from}} – {{to}} de {{total}}",
+                from: totalCount ? (page - 1) * limit + 1 : 0,
+                to: Math.min(page * limit, totalCount),
+                total: totalCount,
+              })}
             </div>
 
             <div className="flex gap-2">

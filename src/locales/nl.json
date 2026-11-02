@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Aangemaakt",
+      "read": "Gelezen",
+      "signal_runaway_suppressed": "Herhaald signaal onderdrukt",
+      "video_verification": "Videoverificatie",
+      "escalate": "Geëscaleerd",
+      "close": "Gesloten",
+      "resolve": "Opgelost",
+      "incident": "Incident aangemaakt",
+      "dispatch": "Uitruk",
+      "step": "Planstap",
+      "ecv_call": "Oproep",
+      "note": "Notitie",
+      "acknowledge": "Aangenomen",
+      "event_appended": "Gebeurtenis toegevoegd",
+      "case_opened": "Melding geopend"
+    },
     "status": {
       "queued": "In wachtrij",
       "acknowledged": "Aangenomen",
@@ -1449,6 +1466,7 @@
     "ticket_summary": "Samenvatting van het ticket",
     "view_details": "Details bekijken",
     "comment": {
+      "file_upload_failed_not_sent": "Het bestand kon niet worden geüpload; de opmerking is niet verzonden.",
       "add": "Toevoegen",
       "add_failed": "Opmerking toevoegen mislukt",
       "added": "Opmerking toegevoegd",
@@ -9869,6 +9887,9 @@
       "reconocProm": "Gem. bevest."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "Systeem",
+      "porActor": "door {{nombre}}",
       "descripcion": "Omschrijving",
       "disposicion": "Afhandeling",
       "sinEntradasDeAuditoria": "Geen auditregels",
@@ -9942,6 +9963,7 @@
       "guardarNota": "Notitie opslaan"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Het zonenummer is verplicht",
       "agenciaPsapPolicia": "Instantie / meldkamer (politie)",
       "camara": "Camera",
       "comunicacion": "Communicatie",
@@ -12231,6 +12253,7 @@
       "sinDescansoElSupervisorTrabaja": "Zonder rustdag: de supervisor werkt elke dag."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Geen dagen geselecteerd",
       "asignacion": "Toewijzing",
       "descripcion": "Omschrijving",
       "descripcionDeLaRuta": "Omschrijving van de route",
@@ -13957,6 +13980,7 @@
       "reintentar": "Opnieuw proberen"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "De huidige sleutel werkt meteen niet meer: de relay van deze locatie verbreekt de verbinding tot je de nieuwe link installeert.",
       "aunNoHaySitiosRemotos": "Nog geen locaties op afstand",
       "direccionDeRecepcion": "Ontvangstadres:",
       "seGeneraraUnaClaveDe": "Er worden een locatiesleutel en een publicatietoken (versleuteld) aangemaakt.",
@@ -14341,6 +14365,8 @@
       "enCurso": "Bezig"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "Het incident bestaat niet of is niet meer beschikbaar.",
+      "incidenteNoEncontrado": "Incident niet gevonden",
       "escribeUnComentario": "Schrijf een opmerking",
       "noSePudoAgregarComentario": "De opmerking kon niet worden toegevoegd",
       "noSePudieronCargarDetalles": "De gegevens van het incident konden niet worden geladen",
@@ -14368,6 +14394,7 @@
       "generarYCopiar": "Genereren en kopiëren"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "De wijzigingen zijn opgeslagen, maar deze bestanden konden niet worden geüpload: {{archivos}}.",
       "incidenteActualizado": "Incident bijgewerkt",
       "errorAlActualizarIncidente": "Het incident kon niet worden bijgewerkt",
       "editarIncidente": "Incident bewerken",
@@ -14375,6 +14402,7 @@
       "asignarVigilante": "Beveiliger toewijzen"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Het incident is aangemaakt, maar deze bestanden konden niet worden geüpload: {{archivos}}. Voeg ze toe via Bewerken.",
       "errorAlCrearIncidente": "Het incident kon niet worden aangemaakt",
       "nuevoIncidente": "Nieuw incident",
       "registraUnNuevoIncidenteY": "Leg een nieuw incident vast en informeer de betrokken beveiliger.",
@@ -20642,7 +20670,7 @@
       "mileageRequired": "Beginstand van de kilometerteller is verplicht",
       "modelRequired": "Model is verplicht",
       "plateRequired": "Kenteken is verplicht",
-      "vinAlphanumeric": "Ongeldig VIN (moet precies 17 alfanumerieke tekens hebben)",
+      "vinAlphanumeric": "Ongeldig VIN (moet precies 17 letters of cijfers hebben; de letters I, O en Q worden niet gebruikt)",
       "vinLength": "Ongeldig VIN (moet precies 17 tekens hebben)",
       "yearInvalid": "Ongeldig bouwjaar"
     }
@@ -21937,6 +21965,7 @@
       "cerrado_por_persona": "gesloten door een mens"
     },
     "ajustes": {
+      "topeAjustado": "Het maximum ligt tussen {{min}} en {{max}} berichten: {{valor}} is opgeslagen.",
       "titulo": "Instellingen van de opvolging",
       "activo": "{{agente}} volgt op",
       "activoHint": "Schrijft de beveiliger zodra er iets niet klopt en voert het gesprek tot het is afgesloten.",

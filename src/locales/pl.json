@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Utworzono",
+      "read": "Odczytano",
+      "signal_runaway_suppressed": "Pominięto powtórzony sygnał",
+      "video_verification": "Weryfikacja wideo",
+      "escalate": "Eskalowano",
+      "close": "Zamknięto",
+      "resolve": "Rozwiązano",
+      "incident": "Utworzono incydent",
+      "dispatch": "Wysłanie",
+      "step": "Krok planu",
+      "ecv_call": "Połączenie",
+      "note": "Notatka",
+      "acknowledge": "Przyjęto",
+      "event_appended": "Dodano zdarzenie",
+      "case_opened": "Sprawa otwarta"
+    },
     "status": {
       "queued": "W kolejce",
       "acknowledged": "Przyjęty",
@@ -1449,6 +1466,7 @@
     "ticket_summary": "Podsumowanie zgłoszenia",
     "view_details": "Zobacz szczegóły",
     "comment": {
+      "file_upload_failed_not_sent": "Nie udało się przesłać pliku; komentarz nie został wysłany.",
       "add": "Dodaj",
       "add_failed": "Nie udało się dodać komentarza",
       "added": "Komentarz dodany",
@@ -9907,6 +9925,9 @@
       "reconocProm": "Śr. potw."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "System",
+      "porActor": "wykonał(a): {{nombre}}",
       "descripcion": "Opis",
       "disposicion": "Rozstrzygnięcie",
       "sinEntradasDeAuditoria": "Brak wpisów audytowych",
@@ -9980,6 +10001,7 @@
       "guardarNota": "Zapisz notatkę"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Numer strefy jest wymagany",
       "agenciaPsapPolicia": "Służba / PSAP (policja)",
       "camara": "Aparat",
       "comunicacion": "Łączność",
@@ -12313,6 +12335,7 @@
       "sinDescansoElSupervisorTrabaja": "Bez dnia wolnego: nadzorca pracuje codziennie."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Nie wybrano dni",
       "asignacion": "Przypisanie",
       "descripcion": "Opis",
       "descripcionDeLaRuta": "Opis trasy",
@@ -14085,6 +14108,7 @@
       "reintentar": "Ponów"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "Obecny klucz od razu przestaje działać: przekaźnik tej lokalizacji rozłączy się, dopóki nie zainstalujesz nowego łącza.",
       "aunNoHaySitiosRemotos": "Nie ma jeszcze obiektów zdalnych",
       "direccionDeRecepcion": "Adres odbioru:",
       "seGeneraraUnaClaveDe": "Zostanie wygenerowany klucz obiektu oraz token publikacji (zaszyfrowany).",
@@ -14483,6 +14507,8 @@
       "enCurso": "W toku"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "Incydent nie istnieje lub nie jest już dostępny.",
+      "incidenteNoEncontrado": "Nie znaleziono incydentu",
       "escribeUnComentario": "Proszę wpisać komentarz",
       "noSePudoAgregarComentario": "Nie udało się dodać komentarza",
       "noSePudieronCargarDetalles": "Nie udało się wczytać szczegółów zdarzenia",
@@ -14510,6 +14536,7 @@
       "generarYCopiar": "Wygeneruj i skopiuj"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Zmiany zostały zapisane, ale nie udało się przesłać tych plików: {{archivos}}.",
       "incidenteActualizado": "Zdarzenie zaktualizowane",
       "errorAlActualizarIncidente": "Błąd podczas aktualizacji zdarzenia",
       "editarIncidente": "Edytuj zdarzenie",
@@ -14517,6 +14544,7 @@
       "asignarVigilante": "Przypisz ochroniarza"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Incydent został utworzony, ale nie udało się przesłać tych plików: {{archivos}}. Dodaj je w Edytuj.",
       "errorAlCrearIncidente": "Błąd podczas tworzenia zdarzenia",
       "nuevoIncidente": "Nowe zdarzenie",
       "registraUnNuevoIncidenteY": "Rejestracja nowego zdarzenia i powiadomienie właściwego pracownika ochrony.",
@@ -20962,7 +20990,7 @@
       "mileageRequired": "Początkowy przebieg jest wymagany",
       "modelRequired": "Model jest wymagany",
       "plateRequired": "Numer rejestracyjny jest wymagany",
-      "vinAlphanumeric": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 znaków alfanumerycznych)",
+      "vinAlphanumeric": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 liter lub cyfr; litery I, O i Q nie są używane)",
       "vinLength": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 znaków)",
       "yearInvalid": "Nieprawidłowy rok"
     }
@@ -22259,6 +22287,7 @@
       "cerrado_por_persona": "zamknięta przez człowieka"
     },
     "ajustes": {
+      "topeAjustado": "Limit wynosi od {{min}} do {{max}} wiadomości: zapisano {{valor}}.",
       "titulo": "Ustawienia monitorowania",
       "activo": "{{agente}} monitoruje",
       "activoHint": "Pisze do pracownika, gdy tylko coś się nie zgadza, i prowadzi rozmowę do jej zamknięcia.",
