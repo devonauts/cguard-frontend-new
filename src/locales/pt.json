@@ -22975,7 +22975,7 @@
     "errores": {
       "requerido": "Falta este dado",
       "correoInvalido": "Revise o e-mail: deve ser como nome@empresa.com",
-      "celularInvalido": "Revise o celular: precisa ter pelo menos 7 números",
+      "celularInvalido": "Revise o celular: digite um único número, com ou sem «+» e o código do país (de 7 a 15 dígitos)",
       "sedesVacias": "Escolha pelo menos uma sede, ou «Toda a operação»",
       "fecha": "Revise a data",
       "fechaPasada": "Escolha hoje ou uma data futura: antes de hoje ele teria turnos que não trabalhou",

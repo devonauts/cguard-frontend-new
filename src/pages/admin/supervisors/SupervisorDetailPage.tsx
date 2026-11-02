@@ -41,6 +41,7 @@ import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { nombreDelProducto } from "@/hooks/usePageTitle";
 import { SeccionConexion } from "@/components/conexion/SeccionConexion";
 import { listarTodo } from "@/lib/listarCompleto";
+import { celularValido } from "@/lib/agregarPersona";
 const WEEKDAYS = [
   { n: 1, label: "Lun" },
   { n: 2, label: "Mar" },
@@ -413,8 +414,14 @@ export default function SupervisorDetailPage() {
       // account shared with another company refuses the change).
       const telefono = String(form.phoneNumber || "").trim();
 
-      if (sup && telefono !== String(sup.phoneNumber || "").trim())
+      if (sup && telefono !== String(sup.phoneNumber || "").trim()) {
+        if (telefono && !celularValido(telefono)) {
+          toast.error(t("agregarPersona.errores.celularInvalido"));
+
+          return;
+        }
         body.phoneNumber = telefono || null;
+      }
 
       /* EL NOMBRE, APARTE (nombres y apellidos separados): vive en la cuenta y
          antes no se podía cambiar desde aquí. */

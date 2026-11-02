@@ -22975,7 +22975,7 @@
     "errores": {
       "requerido": "Pflichtfeld",
       "correoInvalido": "E-Mail prüfen: sie sollte wie name@firma.de aussehen",
-      "celularInvalido": "Handynummer prüfen: mindestens 7 Ziffern",
+      "celularInvalido": "Handynummer prüfen: eine einzige Nummer, mit oder ohne «+» und Ländervorwahl (7 bis 15 Ziffern)",
       "sedesVacias": "Wähle mindestens ein Objekt oder „Gesamter Betrieb“",
       "fecha": "Datum prüfen",
       "fechaPasada": "Wähle heute oder ein späteres Datum: ein früherer Beginn erzeugt Schichten, die nie gearbeitet wurden",

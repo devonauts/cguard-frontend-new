@@ -22975,7 +22975,7 @@
     "errores": {
       "requerido": "Ce champ est requis",
       "correoInvalido": "Vérifiez l’e-mail : il doit ressembler à nom@entreprise.com",
-      "celularInvalido": "Vérifiez le portable : au moins 7 chiffres",
+      "celularInvalido": "Vérifiez le portable : saisissez un seul numéro, avec ou sans «+» et l'indicatif du pays (7 à 15 chiffres)",
       "sedesVacias": "Choisissez au moins un site, ou « Toute l’activité »",
       "fecha": "Vérifiez la date",
       "fechaPasada": "Choisissez aujourd'hui ou une date future : avant, il aurait des services qu'il n'a jamais faits",

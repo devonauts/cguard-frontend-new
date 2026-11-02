@@ -22975,7 +22975,7 @@
     "errores": {
       "requerido": "Verplicht veld",
       "correoInvalido": "Controleer het e-mailadres: zoals naam@bedrijf.nl",
-      "celularInvalido": "Controleer het mobiele nummer: minstens 7 cijfers",
+      "celularInvalido": "Controleer het mobiele nummer: typ één nummer, met of zonder «+» en de landcode (7 tot 15 cijfers)",
       "sedesVacias": "Kies minstens één locatie, of „Hele operatie”",
       "fecha": "Controleer de datum",
       "fechaPasada": "Kies vandaag of een latere datum: eerder geeft diensten die nooit gewerkt zijn",

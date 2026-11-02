@@ -23299,7 +23299,7 @@
     "errores": {
       "requerido": "To pole jest wymagane",
       "correoInvalido": "Sprawdź e-mail: powinien wyglądać jak imie@firma.pl",
-      "celularInvalido": "Sprawdź numer: co najmniej 7 cyfr",
+      "celularInvalido": "Sprawdź numer: wpisz jeden numer, z «+» lub bez, z kodem kraju (od 7 do 15 cyfr)",
       "sedesVacias": "Wybierz co najmniej jeden obiekt albo „Cała działalność”",
       "fecha": "Sprawdź datę",
       "fechaPasada": "Wybierz dzisiaj lub późniejszą datę: wcześniejszy start da zmiany, których nie przepracował",

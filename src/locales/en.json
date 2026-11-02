@@ -22975,7 +22975,7 @@
     "errores": {
       "requerido": "This is required",
       "correoInvalido": "Check the e-mail: it should look like name@company.com",
-      "celularInvalido": "Check the mobile number: it needs at least 7 digits",
+      "celularInvalido": "Check the mobile number: type a single number, with or without «+» and the country code (7 to 15 digits)",
       "sedesVacias": "Choose at least one site, or «Whole operation»",
       "fecha": "Check the date",
       "fechaPasada": "Pick today or a later date: an earlier start would give them shifts they never worked",

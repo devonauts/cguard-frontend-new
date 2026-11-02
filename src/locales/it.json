@@ -22975,7 +22975,7 @@
     "errores": {
       "requerido": "Campo obbligatorio",
       "correoInvalido": "Controlla l’e-mail: deve essere come nome@azienda.it",
-      "celularInvalido": "Controlla il cellulare: almeno 7 cifre",
+      "celularInvalido": "Controlla il cellulare: scrivi un solo numero, con o senza «+» e il prefisso internazionale (da 7 a 15 cifre)",
       "sedesVacias": "Scegli almeno una sede, o «Tutta l’operatività»",
       "fecha": "Controlla la data",
       "fechaPasada": "Scegli oggi o una data futura: prima di oggi avrebbe turni mai lavorati",

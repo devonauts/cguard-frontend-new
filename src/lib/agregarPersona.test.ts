@@ -95,6 +95,13 @@ describe("agregarPersona · step 2 (who)", () => {
     expect(
       validarDatos("vigilante", ana({ celular: "+593 99 123 4567" })),
     ).toEqual({});
+    // One phone only: two pasted together were cut at 24 characters (QA N3).
+    for (const malo of ["+593 99 000 0611+593 99 000 0612", "099 abc 1234", "1234567890123456"])
+      expect(validarDatos("vigilante", ana({ celular: malo })).celular).toBe(
+        "celularInvalido",
+      );
+    for (const bueno of ["(02) 245-6789", "0991234567", "+1 512.555.0100"])
+      expect(validarDatos("vigilante", ana({ celular: bueno }))).toEqual({});
   });
 
   it("office: the role has no default, and «only some sites» needs a site", () => {
