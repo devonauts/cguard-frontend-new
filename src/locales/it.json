@@ -1871,7 +1871,8 @@
       "errors": {
         "typeRequired": "Scegli il tipo di licenza.",
         "numberRequired": "Inserisci il numero della licenza."
-      }
+      },
+      "confirmDelete": "Eliminare {{count}} licenza/e? Questa azione non può essere annullata."
     },
     "list": {
       "applyFilters": "Applica filtri",
@@ -5995,6 +5996,16 @@
         "error": "Errore durante il ripristino dell'utente",
         "success": "Utente ripristinato",
         "title": "Ripristina utente"
+      },
+      "suspend": {
+        "title": "Sospendi utente",
+        "description": "{{user}} non potrà più accedere e passerà in Archiviati. Potrai ripristinarlo in seguito.",
+        "confirm": "Sospendi"
+      },
+      "closeSessions": {
+        "title": "Chiudi le sessioni",
+        "description": "{{user}} verrà disconnesso dal web e dalle app su tutti i dispositivi e dovrà accedere di nuovo.",
+        "confirm": "Chiudi le sessioni"
       }
     },
     "editUser": {

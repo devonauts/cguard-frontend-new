@@ -1871,7 +1871,8 @@
       "errors": {
         "typeRequired": "Wybierz rodzaj koncesji.",
         "numberRequired": "Wpisz numer koncesji."
-      }
+      },
+      "confirmDelete": "Usunąć licencje ({{count}})? Tej operacji nie można cofnąć."
     },
     "list": {
       "applyFilters": "Zastosuj filtry",
@@ -6007,6 +6008,16 @@
         "error": "Błąd podczas przywracania użytkownika",
         "success": "Użytkownik przywrócony",
         "title": "Przywróć użytkownika"
+      },
+      "suspend": {
+        "title": "Zawieś użytkownika",
+        "description": "{{user}} nie będzie mógł się zalogować i trafi do Zarchiwizowanych. Możesz go później przywrócić.",
+        "confirm": "Zawieś"
+      },
+      "closeSessions": {
+        "title": "Zamknij sesje",
+        "description": "{{user}} zostanie wylogowany z internetu i aplikacji na wszystkich urządzeniach i będzie musiał zalogować się ponownie.",
+        "confirm": "Zamknij sesje"
       }
     },
     "editUser": {

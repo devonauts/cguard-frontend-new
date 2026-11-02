@@ -1871,7 +1871,8 @@
       "errors": {
         "typeRequired": "Kies het soort vergunning.",
         "numberRequired": "Vul het vergunningsnummer in."
-      }
+      },
+      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt."
     },
     "list": {
       "applyFilters": "Filters toepassen",
@@ -5995,6 +5996,16 @@
         "error": "Fout bij het herstellen van de gebruiker",
         "success": "Gebruiker hersteld",
         "title": "Gebruiker herstellen"
+      },
+      "suspend": {
+        "title": "Gebruiker schorsen",
+        "description": "{{user}} kan niet meer inloggen en gaat naar Gearchiveerd. Je kunt deze persoon later herstellen.",
+        "confirm": "Schorsen"
+      },
+      "closeSessions": {
+        "title": "Sessies afsluiten",
+        "description": "{{user}} wordt op alle apparaten uitgelogd van het web en de apps en moet opnieuw inloggen.",
+        "confirm": "Sessies afsluiten"
       }
     },
     "editUser": {

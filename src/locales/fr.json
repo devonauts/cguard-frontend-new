@@ -1871,7 +1871,8 @@
       "errors": {
         "typeRequired": "Choisissez le type de licence.",
         "numberRequired": "Saisissez le numéro de la licence."
-      }
+      },
+      "confirmDelete": "Supprimer {{count}} licence(s) ? Cette action est irréversible."
     },
     "list": {
       "applyFilters": "Appliquer les filtres",
@@ -5995,6 +5996,16 @@
         "error": "Erreur lors de la restauration de l'utilisateur",
         "success": "Utilisateur restauré",
         "title": "Restaurer l'utilisateur"
+      },
+      "suspend": {
+        "title": "Suspendre l'utilisateur",
+        "description": "{{user}} ne pourra plus se connecter et passera dans Archivés. Vous pourrez le restaurer plus tard.",
+        "confirm": "Suspendre"
+      },
+      "closeSessions": {
+        "title": "Fermer les sessions",
+        "description": "{{user}} sera déconnecté du web et des applications sur tous ses appareils et devra se reconnecter.",
+        "confirm": "Fermer les sessions"
       }
     },
     "editUser": {

@@ -4417,7 +4417,8 @@
       "errors": {
         "typeRequired": "Escolha o tipo de licença.",
         "numberRequired": "Digite o número da licença."
-      }
+      },
+      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita."
     },
     "list": {
       "actions": {
@@ -6643,6 +6644,16 @@
         "error": "Erro ao restaurar usuário",
         "success": "Usuário restaurado",
         "title": "Restaurar usuário"
+      },
+      "suspend": {
+        "title": "Suspender usuário",
+        "description": "{{user}} não poderá mais entrar e passará para Arquivados. Você pode restaurá-lo depois.",
+        "confirm": "Suspender"
+      },
+      "closeSessions": {
+        "title": "Encerrar sessões",
+        "description": "{{user}} sairá da web e dos apps em todos os dispositivos e terá que entrar novamente.",
+        "confirm": "Encerrar sessões"
       }
     },
     "editUser": {

@@ -48,6 +48,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import { enlaceDeImagen, licenciaIncompleta } from "./licencias";
 
 /** Payload for creating/updating a guard license. */
@@ -387,7 +388,19 @@ export default function GuardLicenses({
     }
   };
 
+  const confirmarBorrado = (count: number) =>
+    confirmDialog({
+      message: t("guards.licenses.confirmDelete", {
+        count,
+        defaultValue:
+          "¿Eliminar {{count}} licencia(s)? Esta acción no se puede deshacer.",
+      }),
+      confirmText: t("actions.delete", { defaultValue: "Eliminar" }),
+      tone: "danger",
+    });
+
   const deleteRow = async (row: GuardLicense) => {
+    if (!(await confirmarBorrado(1))) return;
     try {
       await api.remove([row.id]);
       toast.success(
@@ -405,6 +418,7 @@ export default function GuardLicenses({
 
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
+    if (!(await confirmarBorrado(selectedIds.length))) return;
     try {
       await api.remove(selectedIds);
       toast.success(

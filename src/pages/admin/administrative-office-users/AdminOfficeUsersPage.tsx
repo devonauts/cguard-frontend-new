@@ -82,6 +82,7 @@ import MobileCardList from "@/components/responsive/MobileCardList";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 /* Debounce helper */
 /** Lower-case role slug (as the list normalizes them) → its key in `adminOfficeUsers.roleNames`. */
 const ROLES_CONOCIDOS: Record<string, string> = {
@@ -405,6 +406,26 @@ export default function AdminOfficeUsersPage() {
       return;
     }
     if (!user.id) return;
+    const seguro = await confirmDialog({
+      title: t("adminOfficeUsers.dialogs.suspend.title", {
+        defaultValue: "Suspender usuario",
+      }),
+      message: t("adminOfficeUsers.dialogs.suspend.description", {
+        defaultValue:
+          "{{user}} dejará de poder entrar y pasará a Archivados. Puedes restaurarlo después.",
+        user: formatUserDisplay(user),
+      }),
+      confirmText: t("adminOfficeUsers.dialogs.suspend.confirm", {
+        defaultValue: "Suspender",
+      }),
+      tone: "danger",
+    });
+
+    if (!seguro) {
+      setSelectedUserToAct(null);
+
+      return;
+    }
     try {
       setActionLoading(true);
       await userService.suspendUser(user.id);
@@ -1607,6 +1628,33 @@ export default function AdminOfficeUsersPage() {
                                             !u.id
                                           )
                                             return;
+                                          const seguro = await confirmDialog({
+                                            title: t(
+                                              "adminOfficeUsers.dialogs.closeSessions.title",
+                                              {
+                                                defaultValue:
+                                                  "Cerrar sesiones",
+                                              },
+                                            ),
+                                            message: t(
+                                              "adminOfficeUsers.dialogs.closeSessions.description",
+                                              {
+                                                defaultValue:
+                                                  "{{user}} saldrá de la web y de las apps en todos sus dispositivos y tendrá que volver a iniciar sesión.",
+                                                user: formatUserDisplay(u),
+                                              },
+                                            ),
+                                            confirmText: t(
+                                              "adminOfficeUsers.dialogs.closeSessions.confirm",
+                                              {
+                                                defaultValue:
+                                                  "Cerrar sesiones",
+                                              },
+                                            ),
+                                            tone: "danger",
+                                          });
+
+                                          if (!seguro) return;
                                           try {
                                             await userService.closeSessions(
                                               u.id,

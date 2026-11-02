@@ -180,6 +180,16 @@
         "error": "Error restoring user",
         "success": "User restored",
         "title": "Restore user"
+      },
+      "suspend": {
+        "title": "Suspend user",
+        "description": "{{user}} will no longer be able to sign in and will move to Archived. You can restore them later.",
+        "confirm": "Suspend"
+      },
+      "closeSessions": {
+        "title": "Sign out sessions",
+        "description": "{{user}} will be signed out of the web and the apps on every device and will have to sign in again.",
+        "confirm": "Sign out sessions"
       }
     },
     "editUser": {
@@ -2089,7 +2099,8 @@
       "errors": {
         "typeRequired": "Choose the license type.",
         "numberRequired": "Enter the license number."
-      }
+      },
+      "confirmDelete": "Delete {{count}} license(s)? This cannot be undone."
     },
     "list": {
       "applyFilters": "Apply filters",

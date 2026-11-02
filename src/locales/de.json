@@ -1871,7 +1871,8 @@
       "errors": {
         "typeRequired": "Wählen Sie die Art der Lizenz.",
         "numberRequired": "Geben Sie die Lizenznummer ein."
-      }
+      },
+      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden."
     },
     "list": {
       "applyFilters": "Filter anwenden",
@@ -5995,6 +5996,16 @@
         "error": "Fehler beim Wiederherstellen des Benutzers",
         "success": "Benutzer wiederhergestellt",
         "title": "Benutzer wiederherstellen"
+      },
+      "suspend": {
+        "title": "Benutzer sperren",
+        "description": "{{user}} kann sich nicht mehr anmelden und wird unter Archiviert geführt. Du kannst die Person später wiederherstellen.",
+        "confirm": "Sperren"
+      },
+      "closeSessions": {
+        "title": "Sitzungen beenden",
+        "description": "{{user}} wird im Web und in den Apps auf allen Geräten abgemeldet und muss sich erneut anmelden.",
+        "confirm": "Sitzungen beenden"
       }
     },
     "editUser": {

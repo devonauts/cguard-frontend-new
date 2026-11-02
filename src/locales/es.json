@@ -180,6 +180,16 @@
         "error": "Error restaurando usuario",
         "success": "Usuario restaurado",
         "title": "Restaurar usuario"
+      },
+      "suspend": {
+        "title": "Suspender usuario",
+        "description": "{{user}} dejará de poder entrar y pasará a Archivados. Puedes restaurarlo después.",
+        "confirm": "Suspender"
+      },
+      "closeSessions": {
+        "title": "Cerrar sesiones",
+        "description": "{{user}} saldrá de la web y de las apps en todos sus dispositivos y tendrá que volver a iniciar sesión.",
+        "confirm": "Cerrar sesiones"
       }
     },
     "editUser": {
@@ -2089,7 +2099,8 @@
       "errors": {
         "typeRequired": "Elige el tipo de licencia.",
         "numberRequired": "Escribe el número de la licencia."
-      }
+      },
+      "confirmDelete": "¿Eliminar {{count}} licencia(s)? Esta acción no se puede deshacer."
     },
     "list": {
       "applyFilters": "Aplicar filtros",
