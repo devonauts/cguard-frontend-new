@@ -2248,7 +2248,8 @@
         "statusNoAccess": "Kein Zugang eingerichtet",
         "statusPending": "Einladung ausstehend",
         "tokenExpired": "Der Einladungslink ist abgelaufen",
-        "tokenExpires": "Einladung gültig bis"
+        "tokenExpires": "Einladung gültig bis",
+        "alreadyActive": "Das Konto ist bereits aktiv: Keine Einladung nötig. Falls das Passwort vergessen wurde, verwenden Sie „Passwort zurücksetzen“ in der Liste der Sicherheitskräfte."
       },
       "actions": {
         "cancel": "Abbrechen",
@@ -2774,7 +2775,8 @@
       "blood_required": "Die Blutgruppe ist erforderlich",
       "credentials_required": "Die Nachweise sind erforderlich",
       "address_required": "Die Adresse ist erforderlich",
-      "phone_required": "Die Telefonnummer ist erforderlich"
+      "phone_required": "Die Telefonnummer ist erforderlich",
+      "revisaEstosDatos": "Bitte prüfen Sie: {{campos}}"
     },
     "password": "Passwort",
     "password_min": "Mindestens 8 Zeichen",
@@ -2801,7 +2803,8 @@
         "university": "Hochschulabschluss",
         "universityStudies": "Hochschulstudium"
       },
-      "freeUnion": "Lebensgemeinschaft"
+      "freeUnion": "Lebensgemeinschaft",
+      "credentialsHint": "Nummer Ihres Dienstausweises oder Ihrer Lizenz"
     },
     "select": "Auswählen",
     "eyebrow_guard": "Einladung · Sicherheitsteam",
@@ -9763,7 +9766,10 @@
       "yaPuedesEntrar": "Sie können sich jetzt anmelden",
       "tuEmpresaTeAsignaraAUnPuesto": "Ihr Unternehmen weist Sie einem Posten zu.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Melden Sie sich mit Ihrem Benutzernamen und Passwort an.",
-      "cuentaListaDescargaLaApp": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die App herunter, um Ihren Sicherheitsdienst vom Telefon aus zu überwachen und zu verwalten."
+      "cuentaListaDescargaLaApp": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die App herunter, um Ihren Sicherheitsdienst vom Telefon aus zu überwachen und zu verwalten.",
+      "tuPuestoYTurnosEnLaApp": "Ihr Posten und Ihre Schichten erscheinen in der App.",
+      "iniciaConTuUsuario": "Melden Sie sich mit Ihrem Benutzernamen und Passwort an.",
+      "iniciaCuandoEsteActiva": "Melden Sie sich an, sobald Ihr Konto aktiv ist."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mein Standort",
@@ -16952,7 +16958,10 @@
       "tuEmpresa": "Ihr Unternehmen",
       "volver": "Zurück",
       "registrarse": "Registrieren",
-      "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv."
+      "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv.",
+      "invitacionYaUsada": "Diese Einladung wurde bereits verwendet: Ihr Konto ist aktiv.",
+      "entraEnLaApp": "Melden Sie sich in der App der Sicherheitskraft mit Benutzername und Passwort an. Wenn Sie das Passwort nicht mehr wissen, bitten Sie Ihr Unternehmen, es zurückzusetzen.",
+      "tuCuentaEstaLista": "Ihr Konto ist bereit."
     },
     "InspectionPreview": {
       "alerta": "Warnung",

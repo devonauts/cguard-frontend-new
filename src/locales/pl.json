@@ -2256,7 +2256,8 @@
         "statusNoAccess": "Dostęp nieskonfigurowany",
         "statusPending": "Zaproszenie oczekuje",
         "tokenExpired": "Link zaproszenia wygasł",
-        "tokenExpires": "Zaproszenie ważne do"
+        "tokenExpires": "Zaproszenie ważne do",
+        "alreadyActive": "Konto jest już aktywne: zaproszenie nie jest potrzebne. Jeśli hasło zostało zapomniane, użyj „Zresetuj hasło” na liście pracowników ochrony."
       },
       "actions": {
         "cancel": "Anuluj",
@@ -2786,7 +2787,8 @@
       "blood_required": "Grupa krwi jest wymagana",
       "credentials_required": "Legitymacja jest wymagana",
       "address_required": "Adres jest wymagany",
-      "phone_required": "Telefon jest wymagany"
+      "phone_required": "Telefon jest wymagany",
+      "revisaEstosDatos": "Sprawdź te dane: {{campos}}"
     },
     "password": "Hasło",
     "password_min": "Minimum 8 znaków",
@@ -2813,7 +2815,8 @@
         "university": "Studia wyższe",
         "universityStudies": "Wyższe"
       },
-      "freeUnion": "Konkubinat"
+      "freeUnion": "Konkubinat",
+      "credentialsHint": "Numer legitymacji lub licencji pracownika ochrony"
     },
     "select": "Wybierz",
     "eyebrow_guard": "Zaproszenie · Zespół ochrony",
@@ -9795,7 +9798,10 @@
       "yaPuedesEntrar": "Możesz już się zalogować",
       "tuEmpresaTeAsignaraAUnPuesto": "Twoja firma przydzieli cię do stanowiska.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Zaloguj się swoją nazwą użytkownika i hasłem.",
-      "cuentaListaDescargaLaApp": "Twoje konto w <b>{{empresa}}</b> jest gotowe. Pobierz aplikację, aby monitorować usługę ochrony i zarządzać nią z telefonu."
+      "cuentaListaDescargaLaApp": "Twoje konto w <b>{{empresa}}</b> jest gotowe. Pobierz aplikację, aby monitorować usługę ochrony i zarządzać nią z telefonu.",
+      "tuPuestoYTurnosEnLaApp": "Twoje stanowisko i zmiany pojawią się w aplikacji.",
+      "iniciaConTuUsuario": "Zaloguj się swoją nazwą użytkownika i hasłem.",
+      "iniciaCuandoEsteActiva": "Zaloguj się, gdy konto będzie aktywne."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Moja lokalizacja",
@@ -17182,7 +17188,10 @@
       "tuEmpresa": "Twojej firmy",
       "volver": "Wstecz",
       "registrarse": "Zarejestruj się",
-      "tuCuentaYaEstaActiva": "Twoje konto w <b>{{empresa}}</b> jest już aktywne."
+      "tuCuentaYaEstaActiva": "Twoje konto w <b>{{empresa}}</b> jest już aktywne.",
+      "invitacionYaUsada": "To zaproszenie zostało już użyte: Twoje konto jest aktywne.",
+      "entraEnLaApp": "Zaloguj się do aplikacji pracownika ochrony swoją nazwą użytkownika i hasłem. Jeśli nie pamiętasz hasła, poproś firmę o jego zresetowanie.",
+      "tuCuentaEstaLista": "Twoje konto jest gotowe."
     },
     "InspectionPreview": {
       "alerta": "Alert",

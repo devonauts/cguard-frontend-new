@@ -2248,7 +2248,8 @@
         "statusNoAccess": "Nessun accesso configurato",
         "statusPending": "Invito in attesa",
         "tokenExpired": "Il link dell'invito è scaduto",
-        "tokenExpires": "Invito valido fino al"
+        "tokenExpires": "Invito valido fino al",
+        "alreadyActive": "L'account è già attivo: non serve un invito. Se ha dimenticato la password, usa «Reimposta password» nell'elenco delle guardie."
       },
       "actions": {
         "cancel": "Annulla",
@@ -2774,7 +2775,8 @@
       "blood_required": "Il gruppo sanguigno è obbligatorio",
       "credentials_required": "Le credenziali sono obbligatorie",
       "address_required": "L'indirizzo è obbligatorio",
-      "phone_required": "Il telefono è obbligatorio"
+      "phone_required": "Il telefono è obbligatorio",
+      "revisaEstosDatos": "Controlla questi dati: {{campos}}"
     },
     "password": "Password",
     "password_min": "Minimo 8 caratteri",
@@ -2801,7 +2803,8 @@
         "university": "Laurea",
         "universityStudies": "Studi universitari"
       },
-      "freeUnion": "Convivenza"
+      "freeUnion": "Convivenza",
+      "credentialsHint": "N. del tuo tesserino o della tua licenza di guardia"
     },
     "select": "Seleziona",
     "eyebrow_guard": "Invito · Squadra di sicurezza",
@@ -9763,7 +9766,10 @@
       "yaPuedesEntrar": "Puoi già accedere",
       "tuEmpresaTeAsignaraAUnPuesto": "La tua azienda ti assegnerà a una postazione.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password.",
-      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono."
+      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono.",
+      "tuPuestoYTurnosEnLaApp": "La tua postazione e i tuoi turni compariranno nell'app.",
+      "iniciaConTuUsuario": "Accedi con il tuo nome utente e la tua password.",
+      "iniciaCuandoEsteActiva": "Accedi quando il tuo account sarà attivo."
     },
     "AddressAutocomplete": {
       "miUbicacion": "La mia posizione",
@@ -16952,7 +16958,10 @@
       "tuEmpresa": "la tua azienda",
       "volver": "Indietro",
       "registrarse": "Registrati",
-      "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo."
+      "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo.",
+      "invitacionYaUsada": "Questo invito è già stato usato: il tuo account è attivo.",
+      "entraEnLaApp": "Accedi all'app della guardia con il tuo nome utente e la tua password. Se non ricordi la password, chiedi alla tua azienda di reimpostarla.",
+      "tuCuentaEstaLista": "Il tuo account è pronto."
     },
     "InspectionPreview": {
       "alerta": "Allerta",

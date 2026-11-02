@@ -2248,7 +2248,8 @@
         "statusNoAccess": "Aucun accès configuré",
         "statusPending": "Invitation en attente",
         "tokenExpired": "Le lien d'invitation a expiré",
-        "tokenExpires": "Invitation valable jusqu'au"
+        "tokenExpires": "Invitation valable jusqu'au",
+        "alreadyActive": "Son compte est déjà actif : aucune invitation nécessaire. En cas d'oubli du mot de passe, utilisez « Réinitialiser le mot de passe » dans la liste des agents."
       },
       "actions": {
         "cancel": "Annuler",
@@ -2774,7 +2775,8 @@
       "blood_required": "Le groupe sanguin est obligatoire",
       "credentials_required": "Les habilitations sont obligatoires",
       "address_required": "L'adresse est obligatoire",
-      "phone_required": "Le téléphone est obligatoire"
+      "phone_required": "Le téléphone est obligatoire",
+      "revisaEstosDatos": "Vérifiez ces informations : {{campos}}"
     },
     "password": "Mot de passe",
     "password_min": "8 caractères minimum",
@@ -2801,7 +2803,8 @@
         "university": "Université",
         "universityStudies": "Universitaire"
       },
-      "freeUnion": "Union libre"
+      "freeUnion": "Union libre",
+      "credentialsHint": "N° de votre carte professionnelle ou licence d'agent"
     },
     "select": "Sélectionnez",
     "eyebrow_guard": "Invitation · Équipe de sécurité",
@@ -9763,7 +9766,10 @@
       "yaPuedesEntrar": "Vous pouvez déjà vous connecter",
       "tuEmpresaTeAsignaraAUnPuesto": "Votre entreprise vous affectera à un poste.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Connectez-vous avec votre identifiant et votre mot de passe.",
-      "cuentaListaDescargaLaApp": "Votre compte avec <b>{{empresa}}</b> est prêt. Téléchargez l'application pour suivre et gérer votre service de sécurité depuis votre téléphone."
+      "cuentaListaDescargaLaApp": "Votre compte avec <b>{{empresa}}</b> est prêt. Téléchargez l'application pour suivre et gérer votre service de sécurité depuis votre téléphone.",
+      "tuPuestoYTurnosEnLaApp": "Votre poste et vos services apparaîtront dans l'application.",
+      "iniciaConTuUsuario": "Connectez-vous avec votre identifiant et votre mot de passe.",
+      "iniciaCuandoEsteActiva": "Connectez-vous une fois votre compte activé."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Ma position",
@@ -16952,7 +16958,10 @@
       "tuEmpresa": "votre entreprise",
       "volver": "Retour",
       "registrarse": "S'inscrire",
-      "tuCuentaYaEstaActiva": "Votre compte chez <b>{{empresa}}</b> est déjà actif."
+      "tuCuentaYaEstaActiva": "Votre compte chez <b>{{empresa}}</b> est déjà actif.",
+      "invitacionYaUsada": "Cette invitation a déjà été utilisée : votre compte est actif.",
+      "entraEnLaApp": "Connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Si vous ne vous souvenez plus du mot de passe, demandez à votre entreprise de le réinitialiser.",
+      "tuCuentaEstaLista": "Votre compte est prêt."
     },
     "InspectionPreview": {
       "alerta": "Alerte",

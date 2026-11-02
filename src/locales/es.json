@@ -2476,7 +2476,8 @@
         "statusNoAccess": "Sin acceso configurado",
         "statusPending": "Invitación pendiente",
         "tokenExpired": "El enlace de invitación ha expirado",
-        "tokenExpires": "Invitación válida hasta"
+        "tokenExpires": "Invitación válida hasta",
+        "alreadyActive": "Ya activó su cuenta: no necesita invitación. Si olvidó la contraseña, usa «Restablecer contraseña» en la lista de vigilantes."
       },
       "actions": {
         "cancel": "Cancelar",
@@ -9223,7 +9224,10 @@
       "yaPuedesEntrar": "Ya puedes entrar",
       "tuEmpresaTeAsignaraAUnPuesto": "Tu empresa te asignará a un puesto.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Inicia sesión con tu usuario y contraseña.",
-      "cuentaListaDescargaLaApp": "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la app para monitorear y gestionar tu servicio de seguridad desde tu teléfono."
+      "cuentaListaDescargaLaApp": "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la app para monitorear y gestionar tu servicio de seguridad desde tu teléfono.",
+      "tuPuestoYTurnosEnLaApp": "Tu puesto y tus turnos aparecerán en la app.",
+      "iniciaConTuUsuario": "Inicia sesión con tu usuario y contraseña.",
+      "iniciaCuandoEsteActiva": "Inicia sesión cuando tu cuenta esté activa."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mi ubicación",
@@ -16412,7 +16416,10 @@
       "tuEmpresa": "tu empresa",
       "volver": "Volver",
       "registrarse": "Registrarse",
-      "tuCuentaYaEstaActiva": "Tu cuenta en <b>{{empresa}}</b> ya está activa."
+      "tuCuentaYaEstaActiva": "Tu cuenta en <b>{{empresa}}</b> ya está activa.",
+      "invitacionYaUsada": "Esta invitación ya se usó: tu cuenta ya está activa.",
+      "entraEnLaApp": "Entra en la app del vigilante con tu usuario y contraseña. Si no recuerdas la contraseña, pide a tu empresa que te la restablezca.",
+      "tuCuentaEstaLista": "Tu cuenta está lista."
     },
     "InspectionPreview": {
       "alerta": "Alerta",
@@ -19730,7 +19737,8 @@
       "blood_required": "El grupo sanguíneo es obligatorio",
       "credentials_required": "Las credenciales son obligatorias",
       "address_required": "La dirección es obligatoria",
-      "phone_required": "El teléfono es obligatorio"
+      "phone_required": "El teléfono es obligatorio",
+      "revisaEstosDatos": "Revisa estos datos: {{campos}}"
     },
     "password": "Contraseña",
     "password_min": "Mínimo 8 caracteres",
@@ -19757,7 +19765,8 @@
         "university": "Universidad",
         "universityStudies": "Universitaria"
       },
-      "freeUnion": "Unión libre"
+      "freeUnion": "Unión libre",
+      "credentialsHint": "N.º de tu credencial o licencia de guardia"
     },
     "select": "Seleccione",
     "eyebrow_guard": "Invitación · Equipo de seguridad",

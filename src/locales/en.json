@@ -2476,7 +2476,8 @@
         "statusNoAccess": "No access configured",
         "statusPending": "Invitation pending",
         "tokenExpired": "The invitation link has expired",
-        "tokenExpires": "Invitation valid until"
+        "tokenExpires": "Invitation valid until",
+        "alreadyActive": "Their account is already active: no invitation needed. If they forgot the password, use «Reset password» in the guards list."
       },
       "actions": {
         "cancel": "Cancel",
@@ -9223,7 +9224,10 @@
       "yaPuedesEntrar": "You can sign in now",
       "tuEmpresaTeAsignaraAUnPuesto": "Your company will assign you to a post.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Sign in with your username and password.",
-      "cuentaListaDescargaLaApp": "Your account with <b>{{empresa}}</b> is ready. Download the app to monitor and manage your security service from your phone."
+      "cuentaListaDescargaLaApp": "Your account with <b>{{empresa}}</b> is ready. Download the app to monitor and manage your security service from your phone.",
+      "tuPuestoYTurnosEnLaApp": "Your post and your shifts will show up in the app.",
+      "iniciaConTuUsuario": "Sign in with your username and password.",
+      "iniciaCuandoEsteActiva": "Sign in once your account is active."
     },
     "AddressAutocomplete": {
       "miUbicacion": "My location",
@@ -16412,7 +16416,10 @@
       "tuEmpresa": "your company",
       "volver": "Back",
       "registrarse": "Sign up",
-      "tuCuentaYaEstaActiva": "Your account at <b>{{empresa}}</b> is now active."
+      "tuCuentaYaEstaActiva": "Your account at <b>{{empresa}}</b> is now active.",
+      "invitacionYaUsada": "This invitation has already been used: your account is active.",
+      "entraEnLaApp": "Sign in to the guard app with your username and password. If you don't remember the password, ask your company to reset it.",
+      "tuCuentaEstaLista": "Your account is ready."
     },
     "InspectionPreview": {
       "alerta": "Alert",
@@ -19730,7 +19737,8 @@
       "blood_required": "Blood type is required",
       "credentials_required": "Credentials are required",
       "address_required": "Address is required",
-      "phone_required": "Phone is required"
+      "phone_required": "Phone is required",
+      "revisaEstosDatos": "Please check: {{campos}}"
     },
     "password": "Password",
     "password_min": "At least 8 characters",
@@ -19757,7 +19765,8 @@
         "university": "University",
         "universityStudies": "University studies"
       },
-      "freeUnion": "Common-law union"
+      "freeUnion": "Common-law union",
+      "credentialsHint": "Your guard credential or licence number"
     },
     "select": "Select",
     "eyebrow_guard": "Invitation · Security team",

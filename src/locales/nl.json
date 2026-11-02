@@ -2248,7 +2248,8 @@
         "statusNoAccess": "Geen toegang ingesteld",
         "statusPending": "Uitnodiging in behandeling",
         "tokenExpired": "De uitnodigingslink is verlopen",
-        "tokenExpires": "Uitnodiging geldig tot"
+        "tokenExpires": "Uitnodiging geldig tot",
+        "alreadyActive": "Het account is al actief: geen uitnodiging nodig. Is het wachtwoord vergeten, gebruik dan „Wachtwoord resetten” in de lijst met beveiligers."
       },
       "actions": {
         "cancel": "Annuleren",
@@ -2774,7 +2775,8 @@
       "blood_required": "De bloedgroep is verplicht",
       "credentials_required": "De pasgegevens zijn verplicht",
       "address_required": "Het adres is verplicht",
-      "phone_required": "Het telefoonnummer is verplicht"
+      "phone_required": "Het telefoonnummer is verplicht",
+      "revisaEstosDatos": "Controleer deze gegevens: {{campos}}"
     },
     "password": "Wachtwoord",
     "password_min": "Minimaal 8 tekens",
@@ -2801,7 +2803,8 @@
         "university": "Universiteit",
         "universityStudies": "Universitair"
       },
-      "freeUnion": "Samenwonend"
+      "freeUnion": "Samenwonend",
+      "credentialsHint": "Nummer van je beveiligerspas of -vergunning"
     },
     "select": "Selecteer",
     "eyebrow_guard": "Uitnodiging · Beveiligingsteam",
@@ -9763,7 +9766,10 @@
       "yaPuedesEntrar": "Je kunt nu inloggen",
       "tuEmpresaTeAsignaraAUnPuesto": "Je bedrijf wijst je een post toe.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Log in met je gebruikersnaam en wachtwoord.",
-      "cuentaListaDescargaLaApp": "Je account bij <b>{{empresa}}</b> is klaar. Download de app om je beveiligingsdienst vanaf je telefoon te volgen en te beheren."
+      "cuentaListaDescargaLaApp": "Je account bij <b>{{empresa}}</b> is klaar. Download de app om je beveiligingsdienst vanaf je telefoon te volgen en te beheren.",
+      "tuPuestoYTurnosEnLaApp": "Je post en je diensten verschijnen in de app.",
+      "iniciaConTuUsuario": "Log in met je gebruikersnaam en wachtwoord.",
+      "iniciaCuandoEsteActiva": "Log in zodra je account actief is."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mijn positie",
@@ -16952,7 +16958,10 @@
       "tuEmpresa": "je bedrijf",
       "volver": "Terug",
       "registrarse": "Registreren",
-      "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief."
+      "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief.",
+      "invitacionYaUsada": "Deze uitnodiging is al gebruikt: je account is actief.",
+      "entraEnLaApp": "Log in op de beveiligersapp met je gebruikersnaam en wachtwoord. Weet je het wachtwoord niet meer, vraag je bedrijf dan om het te resetten.",
+      "tuCuentaEstaLista": "Je account is klaar."
     },
     "InspectionPreview": {
       "alerta": "Waarschuwing",

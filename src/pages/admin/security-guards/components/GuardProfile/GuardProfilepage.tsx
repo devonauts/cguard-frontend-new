@@ -1034,24 +1034,35 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                       </div>
                     )
                   )}
-                  {(correoGuardia || data?.guard?.id) && (
-                    <Button
-                      className="mt-1 w-full"
-                      disabled={sendingInvite}
-                      variant="brand"
-                      onClick={handleSendAppAccess}
+                  {/* An active account needs no invitation: its link only
+                      says «ya aceptó la invitación» (the server refuses it too). */}
+                  {isActivated ? (
+                    <div
+                      className="text-xs"
+                      style={{ color: "var(--ink-soft)" }}
                     >
-                      {sendingInvite ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Mail className="h-4 w-4" />
+                      {t(
+                        "guards.profile.access.alreadyActive",
+                        "Ya activó su cuenta: no necesita invitación. Si olvidó la contraseña, usa «Restablecer contraseña» en la lista de vigilantes.",
                       )}
-                      {isActivated
-                        ? t("guards.profile.access.resendInvite") ||
-                          "Reenviar invitación"
-                        : t("guards.profile.access.sendInvite") ||
+                    </div>
+                  ) : (
+                    (correoGuardia || data?.guard?.id) && (
+                      <Button
+                        className="mt-1 w-full"
+                        disabled={sendingInvite}
+                        variant="brand"
+                        onClick={handleSendAppAccess}
+                      >
+                        {sendingInvite ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Mail className="h-4 w-4" />
+                        )}
+                        {t("guards.profile.access.sendInvite") ||
                           "Enviar acceso"}
-                    </Button>
+                      </Button>
+                    )
                   )}
                 </div>
               </Section>
