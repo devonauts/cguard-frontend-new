@@ -73,6 +73,12 @@ export interface Persona {
   desfase: number;
   /** Cambios de un día suelto, por encima de la rotación. */
   manual: Record<number, Codigo>;
+  /**
+   * Days that already happened, as they happened (the live shifts): above the
+   * rotation AND above the edits. Moving a rotation in the draft redraws the
+   * future only; a worked day never turns into «Franco» (QA 2026-11-02, N7).
+   */
+  pasado?: Record<number, Codigo>;
   /** Sacafranco: los puestos cuyos huecos cubre solo. */
   fijos?: string[];
   /** Sin asignación en ningún puesto: la bolsa de disponibles. Nunca se coloca sola. */
@@ -316,6 +322,9 @@ function conDomingo(p: Persona, d: number): Codigo {
 
 /** Lo que dice su rotación ese día (o el cambio suelto que la pisa). */
 export function propio(p: Persona, d: number): Codigo {
+  const h = p.pasado?.[d];
+
+  if (h) return h;
   const m = p.manual[d];
 
   if (m) return m;
@@ -794,6 +803,14 @@ export function sanear(plan: Plan): void {
     for (const k of Object.keys(manual))
       if (Number.isInteger(Number(k)) && vale(manual[k]))
         p.manual[Number(k)] = manual[k];
+    if (p.pasado !== undefined) {
+      const pasado = obj(p.pasado);
+
+      p.pasado = {};
+      for (const k of Object.keys(pasado))
+        if (Number.isInteger(Number(k)) && vale(pasado[k]))
+          p.pasado[Number(k)] = pasado[k];
+    }
     p.fijos =
       p.puesto === null
         ? [

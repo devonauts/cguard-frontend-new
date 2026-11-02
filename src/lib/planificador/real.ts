@@ -83,6 +83,8 @@ export interface Enlace {
   cargadas: Record<string, string>;
   /** Shifts someone already clocked into (`clockedIn` in the overview): never withdrawn. */
   marcados?: Record<string, 1>;
+  /** End (ms) of every live shift by id: a shift that already ended is never changed. */
+  finDeTurno?: Record<string, number>;
   /** Novedades reales por persona y día. */
   novedades: Record<string, Record<number, { id: string; type: string }>>;
 }
@@ -274,6 +276,8 @@ export function planDesdeHorarioReal(
   base: string,
   tz: string,
   dias = 28,
+  /** Now (ms). With it, the days that already happened are drawn as they did. */
+  ahora?: number,
 ): PlanReal {
   // Lo que llega del servidor se toma con pinzas: una lista que no es lista, o
   // un elemento nulo dentro, no puede tumbar la pantalla.
@@ -466,6 +470,7 @@ export function planDesdeHorarioReal(
     turnos: {},
     cargadas: {},
     marcados: {},
+    finDeTurno: {},
     novedades: {},
     eventos: {},
     turnosTodos: {},
@@ -494,6 +499,11 @@ export function planDesdeHorarioReal(
       };
 
       if (s.clockedIn) enlace.marcados![t.id] = 1;
+      {
+        const fin = Date.parse(String(s.endTime || ""));
+
+        if (Number.isFinite(fin)) enlace.finDeTurno![t.id] = fin;
+      }
 
       enlace.turnos[pid][dm.d] = { id: t.id, stationId: t.stationId };
       (enlace.turnosTodos[pid][dm.d] =
@@ -841,6 +851,40 @@ export function planDesdeHorarioReal(
     for (const [d] of faltas.get(guardId) || [])
       persona.ausencias!.push({ desde: d, hasta: d, tipo: "falta" });
     personas.push(persona);
+  }
+
+  /* ── WHAT ALREADY HAPPENED STAYS AS IT HAPPENED (QA 2026-11-02, N7) ────
+     A day before today, or today once that person's shifts are over, is
+     drawn from the live shifts: the post they worked, or «Franco» if they
+     worked nothing there. Moving a rotation in the draft then changes the
+     future only: Uno's worked 1 Nov no longer turned into «Franco», and the
+     sacafranco was no longer proposed to cover a day shift that had ended. */
+  if (ahora !== undefined && Number.isFinite(ahora)) {
+    const hoyD = diaYMinuto(new Date(ahora).toISOString(), base, tz)?.d;
+
+    if (hoyD !== undefined)
+      for (const persona of personas) {
+        const todos = enlace.turnosTodos[persona.id] || {};
+        const pu = persona.puesto ? puestoPorId.get(persona.puesto) : undefined;
+        const pasado: Record<number, string> = {};
+
+        for (let d = Math.min(-31, hoyD); d <= hoyD; d++) {
+          const lista = todos[d] || [];
+          const termino = (x: { id: string }) =>
+            (enlace.finDeTurno![x.id] ?? Infinity) <= ahora;
+
+          if (d === hoyD && !(lista.length && lista.every(termino))) continue;
+          if (persona.ausencias!.some((x) => d >= x.desde && d <= x.hasta))
+            continue;
+          if (persona.puesto !== null) {
+            if (!pu) continue;
+            const suyo = lista.find((x) => x.stationId === persona.puesto);
+
+            pasado[d] = suyo ? franjaMasCercana(pu, suyo.min) : FRANCO;
+          } else if (!lista.length) pasado[d] = FRANCO;
+        }
+        if (Object.keys(pasado).length) persona.pasado = pasado;
+      }
   }
 
   // Novedades de cobertura abiertas: cubrir ese hueco cierra la novedad.
