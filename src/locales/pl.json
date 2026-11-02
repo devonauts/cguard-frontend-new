@@ -14396,6 +14396,7 @@
       "generarYCopiar": "Wygeneruj i skopiuj"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Zmiany zostały zapisane, ale nie udało się przesłać tych plików: {{archivos}}.",
       "incidenteActualizado": "Zdarzenie zaktualizowane",
       "errorAlActualizarIncidente": "Błąd podczas aktualizacji zdarzenia",
       "editarIncidente": "Edytuj zdarzenie",

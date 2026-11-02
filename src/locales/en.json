@@ -13720,6 +13720,7 @@
       "generarYCopiar": "Generate and copy"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "The changes were saved, but these files could not be uploaded: {{archivos}}.",
       "incidenteActualizado": "Incident updated",
       "errorAlActualizarIncidente": "The incident could not be updated",
       "editarIncidente": "Edit incident",

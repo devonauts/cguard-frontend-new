@@ -14260,6 +14260,7 @@
       "generarYCopiar": "Genera e copia"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Le modifiche sono state salvate, ma non è stato possibile caricare questi file: {{archivos}}.",
       "incidenteActualizado": "Incidente aggiornato",
       "errorAlActualizarIncidente": "Errore durante l'aggiornamento dell'incidente",
       "editarIncidente": "Modifica incidente",

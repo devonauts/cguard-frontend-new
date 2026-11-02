@@ -14260,6 +14260,7 @@
       "generarYCopiar": "Genereren en kopiëren"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "De wijzigingen zijn opgeslagen, maar deze bestanden konden niet worden geüpload: {{archivos}}.",
       "incidenteActualizado": "Incident bijgewerkt",
       "errorAlActualizarIncidente": "Het incident kon niet worden bijgewerkt",
       "editarIncidente": "Incident bewerken",

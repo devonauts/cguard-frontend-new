@@ -14260,6 +14260,7 @@
       "generarYCopiar": "Générer et copier"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Les modifications ont été enregistrées, mais ces fichiers n'ont pas pu être téléversés : {{archivos}}.",
       "incidenteActualizado": "Incident mis à jour",
       "errorAlActualizarIncidente": "Impossible de mettre à jour l'incident",
       "editarIncidente": "Modifier l'incident",

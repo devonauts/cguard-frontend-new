@@ -13720,6 +13720,7 @@
       "generarYCopiar": "Gerar e copiar"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "As alterações foram salvas, mas não foi possível enviar estes arquivos: {{archivos}}.",
       "incidenteActualizado": "Incidente atualizado",
       "errorAlActualizarIncidente": "Não foi possível atualizar o incidente",
       "editarIncidente": "Editar incidente",

@@ -14260,6 +14260,7 @@
       "generarYCopiar": "Erstellen und kopieren"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Die Änderungen wurden gespeichert, aber diese Dateien konnten nicht hochgeladen werden: {{archivos}}.",
       "incidenteActualizado": "Vorfall aktualisiert",
       "errorAlActualizarIncidente": "Der Vorfall konnte nicht aktualisiert werden",
       "editarIncidente": "Vorfall bearbeiten",
