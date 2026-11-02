@@ -46,14 +46,66 @@ export const showName: NameMask = (_kind, name) => (name == null ? "" : String(n
 /** The mask of one file: names → aliases, plus the same aliases inside text. */
 export type FileNameMask = NameMask & {
   /**
-   * Replaces, inside free text, every hidden name this file already knows
-   * (whole-word, case-insensitive, exact) by its alias. The guard app fills
-   * an incident's «Ubicación» — and so its «Título» — with the post name.
+   * Replaces, inside free text, every hidden name this file knows by its
+   * alias. The guard app fills an incident's «Ubicación» — and so its
+   * «Título» — with the post name. Whole words only; case, accents and
+   * repeated spaces do not matter («Condominio Los Alamos», «GARITA
+   * PRINCIPAL», «Garita  Principal»); the original span is what is replaced.
    */
   inText: (text: string) => string;
+  /** Gives `name` the alias of `sameAs` (a station's call-sign «Alfa 1» is
+   *  hidden as the same «Puesto 3» as the station). */
+  alias: (kind: MaskedKind, name: string | null | undefined, sameAs: string) => void;
 };
 
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const MARCAS = /[\u0300-\u036f]/g;
+const LETRA = /[\p{L}\p{N}]/u;
+
+/** Lower case, no accents, one space for any run of white space. */
+export const plegar = (s: string) =>
+  String(s ?? "")
+    .normalize("NFD")
+    .replace(MARCAS, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+
+/**
+ * The folded text plus, for each folded character, the span of the original
+ * it came from — so a match found accent-blind replaces the ORIGINAL text.
+ */
+function plegarConMapa(text: string) {
+  let plain = "";
+  const desde: number[] = [];
+  const hasta: number[] = [];
+  let i = 0;
+
+  for (const ch of text) {
+    const fin = i + ch.length;
+
+    if (/\s/.test(ch)) {
+      if (plain.endsWith(" ")) hasta[hasta.length - 1] = fin;
+      else {
+        plain += " ";
+        desde.push(i);
+        hasta.push(fin);
+      }
+    } else {
+      for (const c of ch.normalize("NFD").replace(MARCAS, "").toLowerCase()) {
+        plain += c;
+        desde.push(i);
+        hasta.push(fin);
+      }
+    }
+    i = fin;
+  }
+
+  return { plain, desde, hasta };
+}
+
+/** Cuts a cell AFTER masking, so a name split by the cut is never half shown. */
+export const recortar = (s: string, max?: number) =>
+  max && s.length > max ? `${s.slice(0, max)}…` : s;
 
 /**
  * A mask for ONE file: the numbering starts at 1 per kind and follows the
@@ -87,30 +139,66 @@ export function createNameMask(
   };
 
   const inText = (text: string) => {
-    let out = text == null ? "" : String(text);
+    const original = text == null ? "" : String(text);
     // Longest first, so «Garita Principal Norte» wins over «Garita Principal».
     const pairs = (Object.keys(aliases) as MaskedKind[])
-      .flatMap((k) => Array.from(aliases[k], ([name, alias]) => [name.trim(), alias]))
+      .filter((k) => hidden[k])
+      .flatMap((k) => Array.from(aliases[k], ([name, alias]) => [plegar(name), alias]))
       .filter(([name]) => name.length > 1)
       .sort((a, b) => b[0].length - a[0].length);
 
+    if (!pairs.length || !original) return original;
+    const { plain, desde, hasta } = plegarConMapa(original);
+    const tomado = new Array<boolean>(plain.length).fill(false);
+    const cambios: Array<{ a: number; b: number; alias: string }> = [];
+
     for (const [name, alias] of pairs) {
-      out = out.replace(
-        new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(name)}(?![\\p{L}\\p{N}])`, "giu"),
-        alias,
-      );
+      let at = plain.indexOf(name);
+
+      while (at >= 0) {
+        const end = at + name.length;
+        const borde =
+          (at === 0 || !LETRA.test(plain[at - 1])) &&
+          (end >= plain.length || !LETRA.test(plain[end]));
+        let libre = borde;
+
+        for (let k = at; libre && k < end; k++) libre = !tomado[k];
+        if (libre) {
+          for (let k = at; k < end; k++) tomado[k] = true;
+          cambios.push({ a: desde[at], b: hasta[end - 1], alias });
+        }
+        at = plain.indexOf(name, at + 1);
+      }
+    }
+    if (!cambios.length) return original;
+    cambios.sort((x, y) => x.a - y.a);
+    let out = "";
+    let cursor = 0;
+
+    for (const c of cambios) {
+      out += original.slice(cursor, c.a) + c.alias;
+      cursor = c.b;
     }
 
-    return out;
+    return out + original.slice(cursor);
   };
 
-  return Object.assign(mask, { inText });
+  const alias = (kind: MaskedKind, name: string | null | undefined, sameAs: string) => {
+    const raw = name == null ? "" : String(name);
+
+    if (!hidden[kind] || !raw.trim() || aliases[kind].has(raw)) return;
+    aliases[kind].set(raw, mask(kind, sameAs));
+  };
+
+  return Object.assign(mask, { inText, alias });
 }
 
 interface MarkedColumn<T> {
   privacy?: PrivacyMark;
   /** Free text that may contain the row's names (see FileNameMask.inText). */
   freeText?: boolean;
+  /** Characters shown before «…» — applied AFTER masking. */
+  maxChars?: number;
   value: (row: T, mask?: NameMask) => string;
 }
 
@@ -131,9 +219,9 @@ export function exportValue<T>(column: MarkedColumn<T>, row: T, mask: FileNameMa
   const kind = column.privacy;
 
   if (kind && kind !== "guardName") return mask(kind, column.value(row, showName));
-  if (column.freeText) return mask.inText(column.value(row, showName));
+  if (column.freeText) return recortar(mask.inText(column.value(row, showName)), column.maxChars);
 
-  return column.value(row, mask);
+  return recortar(column.value(row, mask), column.maxChars);
 }
 
 /**
@@ -144,8 +232,41 @@ export function exportValue<T>(column: MarkedColumn<T>, row: T, mask: FileNameMa
 export function learnNames<T>(
   mask: FileNameMask,
   rows: T[],
-  namesOf?: (row: T) => Array<[MaskedKind, string | null | undefined]>,
+  namesOf?: (row: T) => Array<[MaskedKind, string | null | undefined, string?]>,
 ): void {
   if (!namesOf) return;
-  for (const row of rows) for (const [kind, name] of namesOf(row)) mask(kind, name);
+  for (const row of rows)
+    for (const [kind, name, sameAs] of namesOf(row)) {
+      if (sameAs) mask.alias(kind, name, sameAs);
+      else mask(kind, name);
+    }
+}
+
+/** Every client / site / station name of the company (GET report/private-names). */
+export interface CompanyNames {
+  clients?: Array<{ name?: string | null; lastName?: string | null; commercialName?: string | null }>;
+  sites?: Array<{ name?: string | null }>;
+  stations?: Array<{ name?: string | null; nickname?: string | null }>;
+}
+
+/**
+ * Teaches the mask the company's whole list — names that have no row in the
+ * file still appear in free text («Otro puesto: Puerta Norte (Charlie 3)») —
+ * and each station's call-sign with the station's own alias.
+ */
+export function learnCompanyNames(mask: FileNameMask, names?: CompanyNames | null): void {
+  if (!names) return;
+  for (const c of names.clients || []) {
+    const full = [c.name, c.lastName].filter(Boolean).join(" ");
+
+    if (full) mask("clientName", full);
+    if (c.name && c.name !== full) mask.alias("clientName", c.name, full);
+    if (c.commercialName) mask.alias("clientName", c.commercialName, full || c.commercialName);
+  }
+  for (const s of names.sites || []) if (s.name) mask("siteName", s.name);
+  for (const s of names.stations || []) {
+    if (!s.name) continue;
+    mask("stationName", s.name);
+    if (s.nickname) mask.alias("stationName", s.nickname, s.name);
+  }
 }
