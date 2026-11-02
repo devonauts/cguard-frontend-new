@@ -10,6 +10,7 @@ import { ApiService } from "@/services/api/apiService";
 import { FadeIn } from "@/components/kit";
 import { resolveApiBase } from "@/lib/apiBase";
 import { useAuth } from "@/contexts/AuthContext";
+import { olvidarPerfil } from "@/lib/perfilDeLaCuenta";
 
 export default function VerifyEmail() {
   const navigate = useNavigate();
@@ -104,7 +105,9 @@ export default function VerifyEmail() {
           );
           // Opened in the tab that is already signed in: refresh the session
           // now, or «Verifica tu correo» stayed on top until its 15 s poll.
+          // The profile read at boot (still «unverified») is dropped too.
           if (localStorage.getItem("authToken")) {
+            olvidarPerfil();
             try {
               await refreshProfile();
             } catch {
