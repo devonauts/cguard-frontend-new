@@ -52,6 +52,8 @@ import {
   LogsResult,
 } from "@/lib/api/communicationService";
 import { localeActual } from "@/lib/localeActual";
+import { useMarcas } from "@/hooks/useMarcas";
+import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
 import { useAgente } from "@/lib/agenteDeMarca";
 import { prefijoDeLaEmpresa } from "@/lib/telefonoDeLaEmpresa";
 const RECHARGE_PRESETS = [10, 25, 50, 100];
@@ -275,6 +277,15 @@ export default function CommunicationsPage() {
   const [logsResult, setLogsResult] = useState<LogsResult | null>(null);
   const [logsLoading, setLogsLoading] = useState(false);
   const [filters, setFilters] = useState<LogsFilters>({ page: 1, limit: 25 });
+  // Multimarca (phase 5): which brand each message spoke for, with 2+ brands.
+  const { activo: conMarcas, marcas } = useMarcas();
+  const verMarca = conMarcas && marcas.length >= 2;
+  const origenDelRemitente = (s?: string | null) =>
+    s === "brand"
+      ? t("comms.senderBrand", { defaultValue: "Número propio" })
+      : s === "platform"
+        ? t("comms.senderPlatform", { defaultValue: "Número de la plataforma" })
+        : t("comms.senderCompany", { defaultValue: "Número de la empresa" });
 
   const loadConfig = async () => {
     setLoading(true);
@@ -983,6 +994,30 @@ export default function CommunicationsPage() {
 
                     {/* Filters */}
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                      {verMarca && (
+                        <div>
+                          <Label className="text-xs">
+                            {t("comms.fBrand", { defaultValue: "Marca" })}
+                          </Label>
+                          <select
+                            className="cg-input cg-focus mt-1 h-9 w-full px-2 text-sm"
+                            data-testid="filtro-marca-registros"
+                            value={filters.brandId || ""}
+                            onChange={(e) =>
+                              setFilter("brandId", e.target.value)
+                            }
+                          >
+                            <option value="">
+                              {t("comms.all", { defaultValue: "Todos" })}
+                            </option>
+                            {marcas.map((m) => (
+                              <option key={m.id} value={m.id}>
+                                {m.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                       <div>
                         <Label className="text-xs">
                           {t("comms.fChannel", { defaultValue: "Canal" })}
@@ -1145,6 +1180,13 @@ export default function CommunicationsPage() {
                                   defaultValue: "Destinatario",
                                 })}
                               </TableHead>
+                              {verMarca && (
+                                <TableHead>
+                                  {t("comms.colBrand", {
+                                    defaultValue: "Marca",
+                                  })}
+                                </TableHead>
+                              )}
                               <TableHead>
                                 {t("comms.colStatus", {
                                   defaultValue: "Estado",
@@ -1182,6 +1224,49 @@ export default function CommunicationsPage() {
                                 >
                                   {row.recipientName || row.recipient}
                                 </TableCell>
+                                {verMarca && (
+                                  <TableCell
+                                    className="text-xs"
+                                    data-testid="celda-marca"
+                                  >
+                                    {row.brandId ? (
+                                      <span className="inline-flex max-w-[180px] items-center gap-1.5">
+                                        <LogoDeMarca
+                                          className="!rounded-full"
+                                          color={row.brandColor || null}
+                                          logoUrl={null}
+                                          nombre={row.brandName || "?"}
+                                          size={16}
+                                        />
+                                        <span className="truncate">
+                                          {row.brandName || "—"}
+                                        </span>
+                                      </span>
+                                    ) : (
+                                      <span
+                                        style={{ color: "var(--ink-faint)" }}
+                                      >
+                                        {t("comms.brandCompany", {
+                                          defaultValue: "Empresa",
+                                        })}
+                                      </span>
+                                    )}
+                                    {row.sender &&
+                                      (row.channel === "sms" ||
+                                        row.channel === "whatsapp") && (
+                                        <span
+                                          className="block truncate text-[11px]"
+                                          style={{ color: "var(--ink-faint)" }}
+                                          title={row.sender}
+                                        >
+                                          {origenDelRemitente(row.senderSource)}
+                                          {row.channel === "sms"
+                                            ? ` · ${row.sender}`
+                                            : ""}
+                                        </span>
+                                      )}
+                                  </TableCell>
+                                )}
                                 <TableCell>
                                   <span title={row.errorMessage || undefined}>
                                     <StatusBadge

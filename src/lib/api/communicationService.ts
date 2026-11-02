@@ -107,6 +107,13 @@ export interface CommunicationLog {
   deliveredAt: string | null;
   readAt: string | null;
   failedAt: string | null;
+  /** Module Multimarca (phase 5): the brand the message spoke for. */
+  brandId?: string | null;
+  brandName?: string;
+  brandColor?: string | null;
+  /** The From it went out with (SMS number / WhatsApp phone number id). */
+  sender?: string | null;
+  senderSource?: "brand" | "tenant" | "platform" | null;
 }
 
 export interface LogsResult {
@@ -177,6 +184,8 @@ export interface LogsFilters {
   provider?: string;
   status?: string;
   type?: string; // maps to messageType server-side
+  /** Module Multimarca: only this brand's messages. */
+  brandId?: string;
   from?: string; // ISO date
   to?: string; // ISO date
   page?: number;

@@ -14,6 +14,10 @@
  * brand route), accent colour, PDF layout, the sender name of its mails, its
  * own invoice prefix and website, with a live preview «Así ve esta marca su
  * cliente».
+ *
+ * Phase 5 — «WhatsApp y SMS»: the brand's own SMS number and WhatsApp sender
+ * (`RemitentesDeMarca`), managed by the company admin or by the brand admin
+ * of this brand; buying a number stays with the company admin.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,6 +37,7 @@ import { revisarMarca } from "./reglasDeMarca";
 import { useComprarCupoDeMarca } from "./comprarCupoDeMarca";
 import { prefijoValido, webValida } from "./identidadDeMarca";
 import VistaDeMarcaParaElCliente from "./VistaDeMarcaParaElCliente";
+import RemitentesDeMarca from "./RemitentesDeMarca";
 
 import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
 import { Button } from "@/components/ui/button";
@@ -47,6 +52,7 @@ import {
   type Marca,
 } from "@/lib/api/marcasService";
 import { listaDePaises, terminosFiscales } from "@/lib/paisDeLaEmpresa";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
 import { getTenantCountry } from "@/utils/tenantLocation";
 
 export const COLORES_DE_MARCA = [
@@ -122,6 +128,12 @@ export function EditorDeMarca({
   const [subiendo, setSubiendo] = useState(false);
   const archivo = useRef<HTMLInputElement>(null);
   const paises = useMemo(() => listaDePaises(i18n.language), [i18n.language]);
+  const acceso = useAccesoDeMarca();
+  // Phase 5: the brand admin manages THIS brand's senders; the company admin all.
+  const gestionaRemitentes =
+    !!marca &&
+    (puedeEditar ||
+      (acceso.esAdminDeMarca && !!acceso.brandAccess?.includes(marca.id)));
   const terminos = terminosFiscales(b.country, i18n.language, {
     razonSocial: t("ui.EditorDeMarca.razonSocial", "Razón social"),
     idFiscal: t("ui.EditorDeMarca.identificador", "Identificador fiscal"),
@@ -808,6 +820,18 @@ export function EditorDeMarca({
           idioma={i18n.language}
         />
       </fieldset>
+      {/* Phase 5 — its own SMS number and WhatsApp sender (saved on its own). */}
+      {marca && !marca.archivedAt && (
+        <div className="mt-5">
+          <RemitentesDeMarca
+            esPrincipal={!!marca.isPrincipal}
+            marcaId={marca.id}
+            nombre={marca.name}
+            puedeComprar={puedeEditar}
+            puedeGestionar={gestionaRemitentes}
+          />
+        </div>
+      )}
     </Modal>
   );
 }
