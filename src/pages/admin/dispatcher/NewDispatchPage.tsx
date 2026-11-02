@@ -330,7 +330,7 @@ export default function NewDispatchPage() {
       // Preferred endpoint (singular 'station' with postSiteId filter)
       try {
         const res = await api.get(
-          `/tenant/${tenantId}/station?postSiteId=${encodeURIComponent(String(siteToLoad))}&limit=999`,
+          `/tenant/${tenantId}/station?filter[postSite]=${encodeURIComponent(String(siteToLoad))}&limit=999`,
           { toast: { silentError: true } },
         );
         const body = res && (res.data ?? res);

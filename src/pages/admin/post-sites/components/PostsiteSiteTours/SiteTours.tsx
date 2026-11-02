@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
+import { DAY_CODES, leerDias } from '@/lib/diasDeRonda';
 
 interface SiteProp extends PostSite {
   tenantId?: string;
@@ -356,7 +357,7 @@ export default function PostSiteTours({
 
           if (!tenantId || !postSiteId) return;
           const res: any = await ApiService.get(
-            `/tenant/${tenantId}/station?postSiteId=${encodeURIComponent(postSiteId)}&limit=999`,
+            `/tenant/${tenantId}/station?filter[postSite]=${encodeURIComponent(postSiteId)}&limit=999`,
           );
           const rows = Array.isArray(res)
             ? res
@@ -391,7 +392,7 @@ export default function PostSiteTours({
       try {
         setLoadingStations(true);
         const res: any = await ApiService.get(
-          `/tenant/${tenantId}/station?postSiteId=${encodeURIComponent(postSiteId)}&limit=999`,
+          `/tenant/${tenantId}/station?filter[postSite]=${encodeURIComponent(postSiteId)}&limit=999`,
         );
         const rows = Array.isArray(res) ? res : res && res.rows ? res.rows : [];
 
@@ -1397,16 +1398,12 @@ export default function PostSiteTours({
                                     // populate fields from tour
                                     setTourName(tour.name || "");
                                     setTourDesc(tour.description || "");
+                                    // Rounds made on the station tab store
+                                    // numbers; the picker works with codes.
                                     setScheduledDays(
-                                      Array.isArray(tour.scheduledDays)
-                                        ? tour.scheduledDays
-                                        : typeof tour.scheduledDays ===
-                                              "string" && tour.scheduledDays
-                                          ? tour.scheduledDays
-                                              .split(",")
-                                              .map((s: string) => s.trim())
-                                              .filter(Boolean)
-                                          : [],
+                                      leerDias(tour.scheduledDays).map(
+                                        (n) => DAY_CODES[n],
+                                      ),
                                     );
                                     setContinuous(Boolean(tour.continuous));
                                     setTimeMode(tour.timeMode || "specific");
@@ -1579,7 +1576,14 @@ export default function PostSiteTours({
                       detailTour.scheduledDays ||
                       detailTour.scheduled_days ||
                       detailTour.schedule;
-                    return Array.isArray(d) ? d.join(", ") || "-" : d || "-";
+                    const days = leerDias(d);
+                    return days.length
+                      ? days
+                          .map((n) =>
+                            t(`siteTour.options.${DAY_CODES[n]}`, DAY_CODES[n]),
+                          )
+                          .join(", ")
+                      : "-";
                   })()}
                 </div>
               </div>
@@ -2006,7 +2010,9 @@ export default function PostSiteTours({
                           description: tourDesc,
                           postSiteId: site?.id || null,
                           stationId: stationId || null,
-                          scheduledDays: scheduledDays,
+                          // Same shape as the station wizard (0-6, Sunday = 0)
+                          // so both tabs read the same days.
+                          scheduledDays: leerDias(scheduledDays),
                           continuous,
                           timeMode,
                           selectTime,

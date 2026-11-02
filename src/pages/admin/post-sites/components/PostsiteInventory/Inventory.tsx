@@ -513,7 +513,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
       try {
         const stRes: any = await import("@/services/api/apiService").then((m) =>
           m.ApiService.get(
-            `/tenant/${tenantId}/station?postSiteId=${encodeURIComponent(postSiteId)}&limit=999`,
+            `/tenant/${tenantId}/station?filter[postSite]=${encodeURIComponent(postSiteId)}&limit=999`,
           ),
         );
         const stations: {
