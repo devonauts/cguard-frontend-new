@@ -7874,7 +7874,10 @@
       "guardVisSaved": "Preferenza salvata.",
       "guardVisTitle": "Dati della guardia visibili al committente",
       "tabContent": "Contenuti",
-      "tabGuard": "Privacy della guardia"
+      "tabGuard": "Privacy della guardia",
+      "serviceDescriptionRequired": "Scrivi una descrizione del servizio.",
+      "certDatesRequired": "Indica la data di conseguimento e quella di scadenza.",
+      "certDatesOrder": "La data di scadenza non può essere precedente a quella di conseguimento."
     },
     "mobileHub": {
       "loadError": "Impossibile caricare le impostazioni.",

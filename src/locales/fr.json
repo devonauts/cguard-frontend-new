@@ -7874,7 +7874,10 @@
       "guardVisSaved": "Préférence enregistrée.",
       "guardVisTitle": "Informations sur l'agent visibles par le client",
       "tabContent": "Contenu",
-      "tabGuard": "Confidentialité de l'agent"
+      "tabGuard": "Confidentialité de l'agent",
+      "serviceDescriptionRequired": "Rédigez une description du service.",
+      "certDatesRequired": "Indiquez la date d'obtention et la date d'expiration.",
+      "certDatesOrder": "La date d'expiration ne peut pas être antérieure à la date d'obtention."
     },
     "mobileHub": {
       "loadError": "Impossible de charger les paramètres.",

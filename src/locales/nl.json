@@ -7874,7 +7874,10 @@
       "guardVisSaved": "Voorkeur opgeslagen.",
       "guardVisTitle": "Gegevens van de beveiliger zichtbaar voor de opdrachtgever",
       "tabContent": "Inhoud",
-      "tabGuard": "Privacy van de beveiliger"
+      "tabGuard": "Privacy van de beveiliger",
+      "serviceDescriptionRequired": "Schrijf een beschrijving van de dienst.",
+      "certDatesRequired": "Vul de verkrijgingsdatum en de vervaldatum in.",
+      "certDatesOrder": "De vervaldatum kan niet vóór de verkrijgingsdatum liggen."
     },
     "mobileHub": {
       "loadError": "De instellingen konden niet worden geladen.",

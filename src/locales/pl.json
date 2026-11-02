@@ -7888,7 +7888,10 @@
       "guardVisSaved": "Ustawienie zapisane.",
       "guardVisTitle": "Dane ochroniarza widoczne dla zleceniodawcy",
       "tabContent": "Treść",
-      "tabGuard": "Prywatność ochroniarza"
+      "tabGuard": "Prywatność ochroniarza",
+      "serviceDescriptionRequired": "Wpisz opis usługi.",
+      "certDatesRequired": "Podaj datę uzyskania i datę wygaśnięcia.",
+      "certDatesOrder": "Data wygaśnięcia nie może być wcześniejsza niż data uzyskania."
     },
     "mobileHub": {
       "loadError": "Nie udało się wczytać ustawień.",

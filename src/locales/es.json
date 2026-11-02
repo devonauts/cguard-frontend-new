@@ -7367,7 +7367,10 @@
       "guardVisSaved": "Preferencia guardada.",
       "guardVisTitle": "Datos del vigilante visibles para el cliente",
       "tabContent": "Contenido",
-      "tabGuard": "Privacidad del vigilante"
+      "tabGuard": "Privacidad del vigilante",
+      "serviceDescriptionRequired": "Escribe una descripción del servicio.",
+      "certDatesRequired": "Indica la fecha de adquisición y la de vencimiento.",
+      "certDatesOrder": "La fecha de vencimiento no puede ser anterior a la de adquisición."
     },
     "mobileHub": {
       "loadError": "No se pudo cargar la configuración.",

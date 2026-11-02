@@ -7874,7 +7874,10 @@
       "guardVisSaved": "Einstellung gespeichert.",
       "guardVisTitle": "Für den Auftraggeber sichtbare Daten der Sicherheitskraft",
       "tabContent": "Inhalt",
-      "tabGuard": "Datenschutz der Sicherheitskraft"
+      "tabGuard": "Datenschutz der Sicherheitskraft",
+      "serviceDescriptionRequired": "Gib eine Beschreibung des Dienstes ein.",
+      "certDatesRequired": "Gib das Erwerbsdatum und das Ablaufdatum an.",
+      "certDatesOrder": "Das Ablaufdatum darf nicht vor dem Erwerbsdatum liegen."
     },
     "mobileHub": {
       "loadError": "Die Einstellungen konnten nicht geladen werden.",

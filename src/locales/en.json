@@ -7367,7 +7367,10 @@
       "guardVisSaved": "Preference saved.",
       "guardVisTitle": "Guard details visible to the client",
       "tabContent": "Content",
-      "tabGuard": "Guard privacy"
+      "tabGuard": "Guard privacy",
+      "serviceDescriptionRequired": "Write a description of the service.",
+      "certDatesRequired": "Enter the acquisition date and the expiration date.",
+      "certDatesOrder": "The expiration date cannot be earlier than the acquisition date."
     },
     "mobileHub": {
       "loadError": "The settings could not be loaded.",
