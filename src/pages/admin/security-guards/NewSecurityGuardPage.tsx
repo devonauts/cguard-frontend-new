@@ -403,16 +403,20 @@ export default function NewSecurityGuardPage() {
         const { applyValidationErrorsToForm } =
           await import("@/lib/utils/formErrorMapper");
         const result = applyValidationErrorsToForm(e, setCreateError as any);
-        const msgs = Array.isArray(result) ? result : result.messages;
+        // The API layer already toasted the server's message (`toastShown`):
+        // only what it did not say goes out, or one refusal showed twice.
+        const msgs = (Array.isArray(result) ? result : result.messages || []).filter(
+          (m: string) => !(e?.toastShown && m === e?.message),
+        );
 
-        if (msgs && msgs.length > 0)
-          msgs.forEach((m: string) => toast.error(m));
-        else
+        if (msgs.length > 0) msgs.forEach((m: string) => toast.error(m));
+        else if (!e?.toastShown)
           toast.error(
             e?.message ?? t("guards.new.errors.error_create_profile"),
           );
       } catch {
-        toast.error(e?.message ?? t("guards.new.errors.error_create_profile"));
+        if (!e?.toastShown)
+          toast.error(e?.message ?? t("guards.new.errors.error_create_profile"));
       }
     } finally {
       setUploading(false);
