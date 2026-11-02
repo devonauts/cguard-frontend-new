@@ -12910,7 +12910,17 @@
       "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…",
       "irAEstaciones": "Zu den Objekten",
       "moverCoberturaDel": "Abdeckung vom {{dia}} verschieben",
-      "moverDePuesto": "Wachmann auf anderen Posten versetzen"
+      "moverDePuesto": "Wachmann auf anderen Posten versetzen",
+      "estadoTurno": {
+        "planned": "Geplant",
+        "covered": "Vertretung",
+        "extension": "Verlängerung",
+        "reinforcement": "Verstärkung",
+        "absent": "Abwesend",
+        "cancelled": "Storniert",
+        "transferred_out": "Verlegt",
+        "training": "Begleitung"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
@@ -13192,7 +13202,8 @@
       "sinEstacion": "Keine Station",
       "sucediendoAhoraMismo": "Findet gerade statt",
       "turnos": "Schichten",
-      "falta": "Fehlzeit"
+      "falta": "Fehlzeit",
+      "ausente": "Abwesend"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -17731,7 +17742,9 @@
       "cerrar": "Schließen",
       "recargarConLoNuevo": "Mit dem Neuesten neu laden und prüfen",
       "publicandoDeUnaVez": "Alles wird auf einmal veröffentlicht…",
-      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht."
+      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht.",
+      "seQuedaronConMarcaje": "Nicht übernommen, weil die Schicht bereits eine Stempelung hat und bleibt: {{lista}}",
+      "volverAlBorrador": "Zurück zum Entwurf"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",

@@ -12351,7 +12351,17 @@
       "menuCorrerCiclo": "Shift {{nombre}}'s cycle…",
       "irAEstaciones": "Go to Stations",
       "moverCoberturaDel": "Move the coverage of {{dia}}",
-      "moverDePuesto": "Move the guard to another post"
+      "moverDePuesto": "Move the guard to another post",
+      "estadoTurno": {
+        "planned": "Scheduled",
+        "covered": "Cover",
+        "extension": "Extension",
+        "reinforcement": "Reinforcement",
+        "absent": "Absent",
+        "cancelled": "Cancelled",
+        "transferred_out": "Moved",
+        "training": "Shadowing"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",
@@ -12633,7 +12643,8 @@
       "sinEstacion": "No station",
       "sucediendoAhoraMismo": "Happening right now",
       "turnos": "Shifts",
-      "falta": "Absence"
+      "falta": "Absence",
+      "ausente": "Absent"
     },
     "ShiftTemplates": {
       "basico": "Basic",
@@ -17172,7 +17183,9 @@
       "cerrar": "Close",
       "recargarConLoNuevo": "Reload with the latest and review",
       "publicandoDeUnaVez": "Publishing everything at once…",
-      "publicarDetalleTodo": "This writes to the live schedule: the control room, the Schedule and the guards in their app will see it. It goes all at once: if one change fails, nothing is published."
+      "publicarDetalleTodo": "This writes to the live schedule: the control room, the Schedule and the guards in their app will see it. It goes all at once: if one change fails, nothing is published.",
+      "seQuedaronConMarcaje": "Not applied because the shift already has a clock-in and stays: {{lista}}",
+      "volverAlBorrador": "Back to the draft"
     },
     "AvisoRetiradaHorario": {
       "titulo": "This screen is going away: the Planner is the new one",

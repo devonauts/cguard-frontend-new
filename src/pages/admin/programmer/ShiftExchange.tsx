@@ -246,6 +246,10 @@ export default function ShiftExchange() {
   const decidir = usePuede("intercambio.decidir");
 
   const [records, setRecords] = useState<ShiftExchangeRecord[]>([]);
+  /* Every state, same station and dates: the counters above the tabs. Counted
+     from the loaded tab, «Aprobadas» and «Cerradas» read 0 on «Abiertas»
+     (QA 2026-11-02, N4). */
+  const [todas, setTodas] = useState<ShiftExchangeRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [filtro, setFiltro] = useState<Filtro>("open");
@@ -267,14 +271,20 @@ export default function ShiftExchange() {
       const params: Record<string, unknown> = {};
       const st = FILTRO_A_ESTADOS[filtro];
 
-      if (st) params["filter[status]"] = st;
       if (estacion) params["filter[stationId]"] = estacion;
       if (desde) params["filter[dateFrom]"] = desde;
       if (hasta) params["filter[dateTo]"] = hasta;
       // Every request that matches, page by page (it used to stop at 500).
-      const { rows } = await listarTodo(({ limit, offset }) => shiftExchangeRequestService.list({ ...params, limit, offset }));
+      const leer = (extra: Record<string, unknown>) =>
+        listarTodo(({ limit, offset }) =>
+          shiftExchangeRequestService.list({ ...params, ...extra, limit, offset }),
+        ).then((r) => r.rows || []);
+      const [delFiltro, conTodas] = st
+        ? await Promise.all([leer({ "filter[status]": st }), leer({})])
+        : await leer({}).then((rows) => [rows, rows]);
 
-      setRecords(rows || []);
+      setRecords(delFiltro);
+      setTodas(conTodas);
     } catch {
       setError(true);
     } finally {
@@ -317,10 +327,11 @@ export default function ShiftExchange() {
   );
   const pagina = filtradas.slice((page - 1) * pageSize, page * pageSize);
 
-  const cuenta = (s: SwapStatus) => records.filter((r) => r.status === s).length;
+  const cuenta = (s: SwapStatus) => todas.filter((r) => r.status === s).length;
 
   const actualizar = (r: ShiftExchangeRecord) => {
     setRecords((prev) => prev.map((x) => (x.id === r.id ? r : x)));
+    setTodas((prev) => prev.map((x) => (x.id === r.id ? r : x)));
     setAbierta((a) => (a && a.id === r.id ? r : a));
   };
 

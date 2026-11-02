@@ -12910,7 +12910,17 @@
       "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…",
       "irAEstaciones": "Aller aux postes",
       "moverCoberturaDel": "Déplacer la couverture du {{dia}}",
-      "moverDePuesto": "Changer l’agent de poste"
+      "moverDePuesto": "Changer l’agent de poste",
+      "estadoTurno": {
+        "planned": "Planifié",
+        "covered": "Remplacement",
+        "extension": "Prolongation",
+        "reinforcement": "Renfort",
+        "absent": "Absent",
+        "cancelled": "Annulé",
+        "transferred_out": "Transféré",
+        "training": "Accompagnement"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Durée :",
@@ -13192,7 +13202,8 @@
       "sinEstacion": "Sans station",
       "sucediendoAhoraMismo": "En cours en ce moment",
       "turnos": "Postes",
-      "falta": "Absence"
+      "falta": "Absence",
+      "ausente": "Absent"
     },
     "ShiftTemplates": {
       "basico": "Basique",
@@ -17731,7 +17742,9 @@
       "cerrar": "Fermer",
       "recargarConLoNuevo": "Recharger avec le plus récent et vérifier",
       "publicandoDeUnaVez": "Publication de tout en une fois…",
-      "publicarDetalleTodo": "Ceci écrit dans le planning réel : la centrale, le Planning et les agents dans leur application le verront. Tout part en une fois : si une modification échoue, rien n’est publié."
+      "publicarDetalleTodo": "Ceci écrit dans le planning réel : la centrale, le Planning et les agents dans leur application le verront. Tout part en une fois : si une modification échoue, rien n’est publié.",
+      "seQuedaronConMarcaje": "Non appliqué : le quart a déjà un pointage et reste en place : {{lista}}",
+      "volverAlBorrador": "Retour au brouillon"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Cet écran va disparaître : le Planificateur est le nouveau",

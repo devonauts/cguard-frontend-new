@@ -58,6 +58,9 @@ import { localeActual } from "@/lib/localeActual";
 import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
 import { listarTodo } from "@/lib/listarCompleto";
 import { ESTADOS_ANULADOS, ESTADO_NOVEDAD } from "@/lib/shiftStatus";
+import { ApiService } from "@/services/api/apiService";
+import { diaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { etiquetaDeAusencia, marcasPorDia } from "./ausenciaDelTurno";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -106,6 +109,8 @@ function computeStatus(row: ShiftRecord): ShiftStatusValue {
 export default function ShiftStatus() {
   const { t } = useTranslation();
   const [rawShifts, setRawShifts] = useState<ShiftRecord[]>([]);
+  /** The Horario marks (V / PM / F / L) of the range: why a shift is absent. */
+  const [marcas, setMarcas] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ShiftStatusValue | "all">(
@@ -153,6 +158,16 @@ export default function ShiftStatus() {
         orderBy: "startTime_ASC",
       }));
       setRawShifts(rows);
+      const tid = localStorage.getItem("tenantId") || "";
+
+      if (tid && rows.some((r: any) => r.status === ESTADO_NOVEDAD)) {
+        const ov: any = await ApiService.get(
+          `/tenant/${tid}/schedule-overrides?startDate=${diaDeLaEmpresa(fromDate)}&endDate=${diaDeLaEmpresa(toDate)}`,
+        ).catch(() => null);
+        const filas = ov?.rows || ov?.data?.rows || [];
+
+        setMarcas(marcasPorDia(Array.isArray(filas) ? filas : []));
+      } else setMarcas(new Map());
     } catch (err) {
       console.error("Failed to fetch shifts", err);
     } finally {
@@ -204,11 +219,14 @@ export default function ShiftStatus() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   // ── status badge ──────────────────────────────────────────────────────────
-  const getStatusBadge = (status: ShiftStatusValue, shiftStatus?: string) => {
-    if (shiftStatus === ESTADO_NOVEDAD)
-      return (
-        <StatusBadge tone="bad">{t("ui.ShiftStatus.falta", "Falta")}</StatusBadge>
+  const getStatusBadge = (status: ShiftStatusValue, row?: any) => {
+    if (row?.status === ESTADO_NOVEDAD) {
+      const e = etiquetaDeAusencia(
+        marcas.get(`${row.guardId}|${diaDeLaEmpresa(row.startTime)}`),
       );
+
+      return <StatusBadge tone={e.tone}>{t(e.key, e.defaultValue)}</StatusBadge>;
+    }
     switch (status) {
       case "pending":
         return <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>;
@@ -487,7 +505,7 @@ export default function ShiftStatus() {
               {
                 key: "_status",
                 header: t("comun.estado"),
-                render: (_v: any, row: any) => getStatusBadge(row._status, row.status),
+                render: (_v: any, row: any) => getStatusBadge(row._status, row),
               },
             ]}
             containerless

@@ -12910,7 +12910,17 @@
       "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…",
       "irAEstaciones": "Naar posten",
       "moverCoberturaDel": "De dekking van {{dia}} verplaatsen",
-      "moverDePuesto": "De beveiliger naar een andere post verplaatsen"
+      "moverDePuesto": "De beveiliger naar een andere post verplaatsen",
+      "estadoTurno": {
+        "planned": "Gepland",
+        "covered": "Vervanging",
+        "extension": "Verlenging",
+        "reinforcement": "Versterking",
+        "absent": "Afwezig",
+        "cancelled": "Geannuleerd",
+        "transferred_out": "Overgeplaatst",
+        "training": "Meelopen"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",
@@ -13192,7 +13202,8 @@
       "sinEstacion": "Geen station",
       "sucediendoAhoraMismo": "Nu bezig",
       "turnos": "Diensten",
-      "falta": "Afwezig"
+      "falta": "Afwezig",
+      "ausente": "Afwezig"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -17731,7 +17742,9 @@
       "cerrar": "Sluiten",
       "recargarConLoNuevo": "Opnieuw laden met het nieuwste en controleren",
       "publicandoDeUnaVez": "Alles in één keer publiceren…",
-      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd."
+      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd.",
+      "seQuedaronConMarcaje": "Niet toegepast omdat de dienst al een klokregistratie heeft en blijft: {{lista}}",
+      "volverAlBorrador": "Terug naar het concept"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",

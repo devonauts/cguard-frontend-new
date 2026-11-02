@@ -12910,7 +12910,17 @@
       "menuCorrerCiclo": "Sposta il ciclo di {{nombre}}…",
       "irAEstaciones": "Vai alle postazioni",
       "moverCoberturaDel": "Spostare la copertura del {{dia}}",
-      "moverDePuesto": "Spostare la guardia di postazione"
+      "moverDePuesto": "Spostare la guardia di postazione",
+      "estadoTurno": {
+        "planned": "Programmato",
+        "covered": "Copertura",
+        "extension": "Estensione",
+        "reinforcement": "Rinforzo",
+        "absent": "Assente",
+        "cancelled": "Annullato",
+        "transferred_out": "Trasferito",
+        "training": "Affiancamento"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Durata:",
@@ -13192,7 +13202,8 @@
       "sinEstacion": "Senza stazione",
       "sucediendoAhoraMismo": "In corso proprio ora",
       "turnos": "Turni",
-      "falta": "Assenza"
+      "falta": "Assenza",
+      "ausente": "Assente"
     },
     "ShiftTemplates": {
       "basico": "Base",
@@ -17731,7 +17742,9 @@
       "cerrar": "Chiudi",
       "recargarConLoNuevo": "Ricarica con le novità e rivedi",
       "publicandoDeUnaVez": "Pubblicazione di tutto in una volta…",
-      "publicarDetalleTodo": "Questo scrive nel turnario reale: lo vedranno la centrale, il Turnario e le guardie nella loro app. Va tutto in una volta: se una modifica fallisce, non si pubblica nulla."
+      "publicarDetalleTodo": "Questo scrive nel turnario reale: lo vedranno la centrale, il Turnario e le guardie nella loro app. Va tutto in una volta: se una modifica fallisce, non si pubblica nulla.",
+      "seQuedaronConMarcaje": "Non applicato perché il turno ha già una timbratura e resta: {{lista}}",
+      "volverAlBorrador": "Torna alla bozza"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Questa schermata sarà rimossa: il Pianificatore è la nuova",

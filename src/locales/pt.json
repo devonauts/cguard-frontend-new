@@ -12351,7 +12351,17 @@
       "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…",
       "irAEstaciones": "Ir para Estações",
       "moverCoberturaDel": "Mover a cobertura de {{dia}}",
-      "moverDePuesto": "Mover o vigilante de posto"
+      "moverDePuesto": "Mover o vigilante de posto",
+      "estadoTurno": {
+        "planned": "Programado",
+        "covered": "Cobertura",
+        "extension": "Extensão",
+        "reinforcement": "Reforço",
+        "absent": "Ausente",
+        "cancelled": "Cancelado",
+        "transferred_out": "Transferido",
+        "training": "Acompanhamento"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duração:",
@@ -12633,7 +12643,8 @@
       "sinEstacion": "Sem estação",
       "sucediendoAhoraMismo": "Acontecendo agora mesmo",
       "turnos": "Turnos",
-      "falta": "Falta"
+      "falta": "Falta",
+      "ausente": "Ausente"
     },
     "ShiftTemplates": {
       "basico": "Básico",
@@ -17172,7 +17183,9 @@
       "cerrar": "Fechar",
       "recargarConLoNuevo": "Recarregar com o mais recente e revisar",
       "publicandoDeUnaVez": "Publicando tudo de uma vez…",
-      "publicarDetalleTodo": "Isto grava na escala real: a central, a Escala e os vigilantes no app verão. Vai tudo de uma vez: se uma alteração falhar, nada é publicado."
+      "publicarDetalleTodo": "Isto grava na escala real: a central, a Escala e os vigilantes no app verão. Vai tudo de uma vez: se uma alteração falhar, nada é publicado.",
+      "seQuedaronConMarcaje": "Não aplicado porque o turno já tem marcação e permanece: {{lista}}",
+      "volverAlBorrador": "Voltar ao rascunho"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta tela vai sair: o Planejador é a nova",

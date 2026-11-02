@@ -113,8 +113,10 @@ export interface Plan {
    * `puesto|franja|día|persona`: that cover is a shift that already exists in
    * the live schedule (an extension, a cover made in Horario or «Sin cubrir»).
    * It is a fact, not a proposal: only the person editing removes it.
+   * `2`: someone already clocked into that shift — it stays even when the
+   * post ends up with more people than it asks for.
    */
-  real?: Record<string, 1>;
+  real?: Record<string, 1 | 2>;
   /** `puesto|franja|día`: la central dejó ese hueco sin cubrir a propósito. */
   no: Record<string, 1>;
   reglas: Reglas;
@@ -892,7 +894,7 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
         !pu ||
         !p ||
         !pu.franjas.includes(franja) ||
-        falta(plan, pu, franja, d) < 0
+        (falta(plan, pu, franja, d) < 0 && plan.real?.[`${k}|${id}`] !== 2)
       ) {
         quitar(plan, k, id);
         continue;

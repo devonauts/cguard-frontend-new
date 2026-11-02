@@ -81,6 +81,8 @@ export interface Enlace {
   >;
   /** Coberturas del plan que vienen de un turno real (`persona|día`): sólo ésas se pueden retirar. */
   cargadas: Record<string, string>;
+  /** Shifts someone already clocked into (`clockedIn` in the overview): never withdrawn. */
+  marcados?: Record<string, 1>;
   /** Novedades reales por persona y día. */
   novedades: Record<string, Record<number, { id: string; type: string }>>;
 }
@@ -463,6 +465,7 @@ export function planDesdeHorarioReal(
     puestos: {},
     turnos: {},
     cargadas: {},
+    marcados: {},
     novedades: {},
     eventos: {},
     turnosTodos: {},
@@ -489,6 +492,8 @@ export function planDesdeHorarioReal(
         stationId: idLimpio(s.stationId),
         min: dm.min,
       };
+
+      if (s.clockedIn) enlace.marcados![t.id] = 1;
 
       enlace.turnos[pid][dm.d] = { id: t.id, stationId: t.stationId };
       (enlace.turnosTodos[pid][dm.d] =
@@ -884,7 +889,8 @@ export function planDesdeHorarioReal(
 
         if (fr && falta(plan, pu, fr, d) > 0) {
           poner(plan, clave(pu.id, fr, d), p.id, false);
-          (plan.real = plan.real || {})[`${clave(pu.id, fr, d)}|${p.id}`] = 1;
+          (plan.real = plan.real || {})[`${clave(pu.id, fr, d)}|${p.id}`] =
+            enlace.marcados?.[t.id] ? 2 : 1;
           enlace.cargadas[`${p.id}|${d}`] = t.id;
         }
       }
