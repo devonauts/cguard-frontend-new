@@ -1,7 +1,5 @@
 import type { ResultadoDeCompra } from "@/lib/api/modulosAdicionalesService";
 
-import api from "../api";
-
 import { ApiService } from "@/services/api/apiService";
 
 /**
@@ -177,6 +175,8 @@ export const marcasService = {
    * own brand admin.
    */
   vistaPrevia: async (id: string, tipo: "invoice" | "quote", d: DatosDeMarca): Promise<Blob> => {
+    // Lazy: `lib/api` reads the session token at import (keeps this module testable).
+    const { default: api } = await import("../api");
     const resp = await api.post<Blob>(`${base()}/${id}/preview/${tipo}`, d, {
       responseType: "blob",
       toast: { silentError: true },
