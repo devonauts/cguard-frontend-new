@@ -12344,7 +12344,17 @@
       "menuCorrerCiclo": "Correr ciclo de {{nombre}}…",
       "irAEstaciones": "Ir a Estaciones",
       "moverCoberturaDel": "Mover la cobertura del {{dia}}",
-      "moverDePuesto": "Mover al vigilante de puesto"
+      "moverDePuesto": "Mover al vigilante de puesto",
+      "estadoTurno": {
+        "planned": "Programado",
+        "covered": "Cobertura",
+        "extension": "Extensión",
+        "reinforcement": "Refuerzo",
+        "absent": "Ausente",
+        "cancelled": "Anulado",
+        "transferred_out": "Trasladado",
+        "training": "Acompañamiento"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duración:",

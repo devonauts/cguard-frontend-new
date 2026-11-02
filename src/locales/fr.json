@@ -12903,7 +12903,17 @@
       "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…",
       "irAEstaciones": "Aller aux postes",
       "moverCoberturaDel": "Déplacer la couverture du {{dia}}",
-      "moverDePuesto": "Changer l’agent de poste"
+      "moverDePuesto": "Changer l’agent de poste",
+      "estadoTurno": {
+        "planned": "Planifié",
+        "covered": "Remplacement",
+        "extension": "Prolongation",
+        "reinforcement": "Renfort",
+        "absent": "Absent",
+        "cancelled": "Annulé",
+        "transferred_out": "Transféré",
+        "training": "Accompagnement"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Durée :",

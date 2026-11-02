@@ -12903,7 +12903,17 @@
       "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…",
       "irAEstaciones": "Naar posten",
       "moverCoberturaDel": "De dekking van {{dia}} verplaatsen",
-      "moverDePuesto": "De beveiliger naar een andere post verplaatsen"
+      "moverDePuesto": "De beveiliger naar een andere post verplaatsen",
+      "estadoTurno": {
+        "planned": "Gepland",
+        "covered": "Vervanging",
+        "extension": "Verlenging",
+        "reinforcement": "Versterking",
+        "absent": "Afwezig",
+        "cancelled": "Geannuleerd",
+        "transferred_out": "Overgeplaatst",
+        "training": "Meelopen"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",

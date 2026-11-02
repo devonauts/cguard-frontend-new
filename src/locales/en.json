@@ -12344,7 +12344,17 @@
       "menuCorrerCiclo": "Shift {{nombre}}'s cycle…",
       "irAEstaciones": "Go to Stations",
       "moverCoberturaDel": "Move the coverage of {{dia}}",
-      "moverDePuesto": "Move the guard to another post"
+      "moverDePuesto": "Move the guard to another post",
+      "estadoTurno": {
+        "planned": "Scheduled",
+        "covered": "Cover",
+        "extension": "Extension",
+        "reinforcement": "Reinforcement",
+        "absent": "Absent",
+        "cancelled": "Cancelled",
+        "transferred_out": "Moved",
+        "training": "Shadowing"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",

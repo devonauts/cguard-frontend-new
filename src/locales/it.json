@@ -12903,7 +12903,17 @@
       "menuCorrerCiclo": "Sposta il ciclo di {{nombre}}…",
       "irAEstaciones": "Vai alle postazioni",
       "moverCoberturaDel": "Spostare la copertura del {{dia}}",
-      "moverDePuesto": "Spostare la guardia di postazione"
+      "moverDePuesto": "Spostare la guardia di postazione",
+      "estadoTurno": {
+        "planned": "Programmato",
+        "covered": "Copertura",
+        "extension": "Estensione",
+        "reinforcement": "Rinforzo",
+        "absent": "Assente",
+        "cancelled": "Annullato",
+        "transferred_out": "Trasferito",
+        "training": "Affiancamento"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Durata:",

@@ -12903,7 +12903,17 @@
       "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…",
       "irAEstaciones": "Zu den Objekten",
       "moverCoberturaDel": "Abdeckung vom {{dia}} verschieben",
-      "moverDePuesto": "Wachmann auf anderen Posten versetzen"
+      "moverDePuesto": "Wachmann auf anderen Posten versetzen",
+      "estadoTurno": {
+        "planned": "Geplant",
+        "covered": "Vertretung",
+        "extension": "Verlängerung",
+        "reinforcement": "Verstärkung",
+        "absent": "Abwesend",
+        "cancelled": "Storniert",
+        "transferred_out": "Verlegt",
+        "training": "Begleitung"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",

@@ -134,7 +134,7 @@ import {
   cambioLocalReciente,
 } from "@/lib/appearanceSync";
 import { enLotes } from "@/lib/enLotes";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { zonaDeLaEmpresa, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
 import i18n from "@/i18n";
@@ -11775,7 +11775,13 @@ export default function Schedule() {
                     className="mt-0.5 text-[11px]"
                     style={{ color: "var(--ink-soft)" }}
                   >
-                    {overrideTarget.guardName} — {overrideTarget.date}
+                    {/* The day as a person reads it, not `2026-11-27`. */}
+                    {overrideTarget.guardName} —{" "}
+                    {soloFechaCivil(overrideTarget.date, {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                    })}
                   </p>
                 </div>
 
@@ -11795,7 +11801,11 @@ export default function Schedule() {
                     </div>
                     <div className="text-[10px] tabular-nums opacity-80">
                       {hm(turnoDelDia.startTime)} – {hm(turnoDelDia.endTime)}
-                      {turnoDelDia.status ? ` · ${turnoDelDia.status}` : ""}
+                      {turnoDelDia.status
+                        ? ` · ${t(`ui.Schedule.estadoTurno.${turnoDelDia.status}`, {
+                            defaultValue: turnoDelDia.status,
+                          })}`
+                        : ""}
                     </div>
                   </div>
                 )}
