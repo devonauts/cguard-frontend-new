@@ -379,9 +379,6 @@ export default function VigiaWidget() {
 
   useEffect(() => {
     if (open) return;
-    const lienzo = document.querySelector("main");
-
-    if (!lienzo) return;
     let temporizador: ReturnType<typeof setTimeout> | undefined;
     const alDesplazar = () => {
       setDesplazando(true);
@@ -391,10 +388,13 @@ export default function VigiaWidget() {
       temporizador = setTimeout(() => setDesplazando(false), 420);
     };
 
-    lienzo.addEventListener("scroll", alDesplazar, { passive: true });
+    // Any scroller, not only <main>: settings pages scroll their own panel, so
+    // after scrolling to «Guardar configuración» the bubble never re-checked and
+    // sat over the button (QA re-test 2026-11-02, /nomina/settings at 1440×900).
+    document.addEventListener("scroll", alDesplazar, { passive: true, capture: true });
 
     return () => {
-      lienzo.removeEventListener("scroll", alDesplazar);
+      document.removeEventListener("scroll", alDesplazar, { capture: true });
       if (temporizador) clearTimeout(temporizador);
     };
   }, [open]);
