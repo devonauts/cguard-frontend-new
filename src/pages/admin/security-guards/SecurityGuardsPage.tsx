@@ -3689,7 +3689,7 @@ export default function SecurityGuardsPage() {
             <DialogDescription>
               {assignGuard
                 ? t("ui.SecurityGuardsPage.asignarAEstacionNombre", {
-                    defaultValue: "Asignar a {{name}} a una estación",
+                    defaultValue: "Elige la estación de {{name}}",
                     name: assignGuard.name,
                   })
                 : ""}

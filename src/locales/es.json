@@ -13837,7 +13837,7 @@
       "ningunVigilanteCoincide": "Ningún vigilante coincide con tu búsqueda.",
       "agregaTuPrimerVigilante": "Agrega tu primer vigilante para comenzar.",
       "errorAlImportar": "Error al importar",
-      "asignarAEstacionNombre": "Asignar a {{name}} a una estación",
+      "asignarAEstacionNombre": "Elige la estación de {{name}}",
       "seAsignaraAlPrimerPuesto": "Se asignará al primer puesto disponible de la estación y aparecerá en el Horario.",
       "asignando": "Asignando...",
       "asignar": "Asignar",
