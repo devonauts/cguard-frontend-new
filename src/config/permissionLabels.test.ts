@@ -45,6 +45,11 @@ describe("permission labels", () => {
     expect(getResourceLabel("billing")).toBe("Facturación de la cuenta");
   });
 
+  it("dispatch tickets are not a second «Incidentes» group", () => {
+    expect(getResourceLabel("dispatch")).not.toBe(getResourceLabel("incident"));
+    expect(formatPermissionLabel("dispatchRead")).not.toBe(formatPermissionLabel("incidentRead"));
+  });
+
   it("odd permissions join their resource's group", () => {
     const g = groupPermissions(["estimateConvert", "estimateRead", "coverageTransfer", "assistantUse", "routeDispatch"]);
 
