@@ -4,6 +4,7 @@ import { MapPinOff } from "lucide-react";
 
 import { InfoNote } from "@/components/kit";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEntitlement } from "@/hooks/useEntitlement";
 import { rolesEnLaEmpresa } from "@/hooks/useGerenteDeSucursal";
 import { accesoService } from "@/lib/api/sucursalesService";
 
@@ -16,10 +17,13 @@ import { accesoService } from "@/lib/api/sucursalesService";
 export default function AvisoSinSucursal() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  // Without the Sucursales module there is nothing to ask (the API answers 402).
+  const conSucursales = useEntitlement("sucursales");
   const roles = rolesEnLaEmpresa(user);
   const tenant =
     typeof window !== "undefined" ? localStorage.getItem("tenantId") : null;
   const preguntar =
+    conSucursales &&
     Boolean(user) &&
     Boolean(tenant) &&
     roles.length > 0 &&

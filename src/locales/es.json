@@ -19534,16 +19534,18 @@
       "turnos": "Turnos",
       "matriz": "Quién trabajó dónde",
       "matrizAyuda": "Filas: la marca que paga a la persona. Columnas: la marca del cliente donde trabajó. Periodo {{desde}} – {{hasta}}.",
-      "personasYTurnos": "{{personas}} pers. · {{turnos}} turnos",
       "pagaTrabajaEn": "Paga / Trabajó en",
       "total": "Total",
       "buscar": "Buscar persona, cliente o sitio",
       "detalle": "Detalle",
       "sinCoincidencias": "Nada coincide con la búsqueda.",
-      "nTurnos": "{{n}} turnos",
       "persona": "Persona",
       "cliente": "Cliente",
-      "sitio": "Sitio"
+      "sitio": "Sitio",
+      "personasYTurnos_one": "{{personas}} pers. · {{count}} turno",
+      "nTurnos_one": "{{count}} turno",
+      "personasYTurnos_other": "{{personas}} pers. · {{count}} turnos",
+      "nTurnos_other": "{{count}} turnos"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",

@@ -20093,16 +20093,18 @@
       "turnos": "Schichten",
       "matriz": "Wer wo gearbeitet hat",
       "matrizAyuda": "Zeilen: die Marke, die die Person bezahlt. Spalten: die Marke des Kunden, bei dem sie gearbeitet hat. Zeitraum {{desde}} – {{hasta}}.",
-      "personasYTurnos": "{{personas}} Pers. · {{turnos}} Schichten",
       "pagaTrabajaEn": "Zahlt / Gearbeitet bei",
       "total": "Gesamt",
       "buscar": "Person, Kunde oder Standort suchen",
       "detalle": "Details",
       "sinCoincidencias": "Nichts entspricht der Suche.",
-      "nTurnos": "{{n}} Schichten",
       "persona": "Person",
       "cliente": "Kunde",
-      "sitio": "Standort"
+      "sitio": "Standort",
+      "personasYTurnos_one": "{{personas}} Pers. · {{count}} Schicht",
+      "nTurnos_one": "{{count}} Schicht",
+      "personasYTurnos_other": "{{personas}} Pers. · {{count}} Schichten",
+      "nTurnos_other": "{{count}} Schichten"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "RE",

@@ -19534,16 +19534,18 @@
       "turnos": "Turnos",
       "matriz": "Quem trabalhou onde",
       "matrizAyuda": "Linhas: a marca que paga a pessoa. Colunas: a marca do cliente onde trabalhou. Período {{desde}} – {{hasta}}.",
-      "personasYTurnos": "{{personas}} pess. · {{turnos}} turnos",
       "pagaTrabajaEn": "Paga / Trabalhou em",
       "total": "Total",
       "buscar": "Buscar pessoa, cliente ou local",
       "detalle": "Detalhe",
       "sinCoincidencias": "Nada corresponde à busca.",
-      "nTurnos": "{{n}} turnos",
       "persona": "Pessoa",
       "cliente": "Cliente",
-      "sitio": "Local"
+      "sitio": "Local",
+      "personasYTurnos_one": "{{personas}} pess. · {{count}} turno",
+      "nTurnos_one": "{{count}} turno",
+      "personasYTurnos_other": "{{personas}} pess. · {{count}} turnos",
+      "nTurnos_other": "{{count}} turnos"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAT",

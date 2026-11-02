@@ -20093,16 +20093,18 @@
       "turnos": "Turni",
       "matriz": "Chi ha lavorato dove",
       "matrizAyuda": "Righe: il marchio che paga la persona. Colonne: il marchio del cliente dove ha lavorato. Periodo {{desde}} – {{hasta}}.",
-      "personasYTurnos": "{{personas}} pers. · {{turnos}} turni",
       "pagaTrabajaEn": "Paga / Ha lavorato in",
       "total": "Totale",
       "buscar": "Cerca persona, cliente o sito",
       "detalle": "Dettaglio",
       "sinCoincidencias": "Nessun risultato per la ricerca.",
-      "nTurnos": "{{n}} turni",
       "persona": "Persona",
       "cliente": "Cliente",
-      "sitio": "Sito"
+      "sitio": "Sito",
+      "personasYTurnos_one": "{{personas}} pers. · {{count}} turno",
+      "nTurnos_one": "{{count}} turno",
+      "personasYTurnos_other": "{{personas}} pers. · {{count}} turni",
+      "nTurnos_other": "{{count}} turni"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAT",

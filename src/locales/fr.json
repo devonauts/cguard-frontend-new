@@ -20093,16 +20093,18 @@
       "turnos": "Services",
       "matriz": "Qui a travaillé où",
       "matrizAyuda": "Lignes : la marque qui paie la personne. Colonnes : la marque du client où elle a travaillé. Période {{desde}} – {{hasta}}.",
-      "personasYTurnos": "{{personas}} pers. · {{turnos}} services",
       "pagaTrabajaEn": "Paie / A travaillé chez",
       "total": "Total",
       "buscar": "Rechercher une personne, un client ou un site",
       "detalle": "Détail",
       "sinCoincidencias": "Rien ne correspond à la recherche.",
-      "nTurnos": "{{n}} services",
       "persona": "Personne",
       "cliente": "Client",
-      "sitio": "Site"
+      "sitio": "Site",
+      "personasYTurnos_one": "{{personas}} pers. · {{count}} service",
+      "nTurnos_one": "{{count}} service",
+      "personasYTurnos_other": "{{personas}} pers. · {{count}} services",
+      "nTurnos_other": "{{count}} services"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",

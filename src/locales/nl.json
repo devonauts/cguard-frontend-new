@@ -20093,16 +20093,18 @@
       "turnos": "Diensten",
       "matriz": "Wie werkte waar",
       "matrizAyuda": "Rijen: het merk dat de persoon betaalt. Kolommen: het merk van de klant waar gewerkt is. Periode {{desde}} – {{hasta}}.",
-      "personasYTurnos": "{{personas}} pers. · {{turnos}} diensten",
       "pagaTrabajaEn": "Betaalt / Werkte bij",
       "total": "Totaal",
       "buscar": "Zoek persoon, klant of locatie",
       "detalle": "Details",
       "sinCoincidencias": "Niets komt overeen met de zoekopdracht.",
-      "nTurnos": "{{n}} diensten",
       "persona": "Persoon",
       "cliente": "Klant",
-      "sitio": "Locatie"
+      "sitio": "Locatie",
+      "personasYTurnos_one": "{{personas}} pers. · {{count}} dienst",
+      "nTurnos_one": "{{count}} dienst",
+      "personasYTurnos_other": "{{personas}} pers. · {{count}} diensten",
+      "nTurnos_other": "{{count}} diensten"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",

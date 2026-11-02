@@ -19534,16 +19534,18 @@
       "turnos": "Shifts",
       "matriz": "Who worked where",
       "matrizAyuda": "Rows: the brand that pays the person. Columns: the brand of the client where they worked. Period {{desde}} – {{hasta}}.",
-      "personasYTurnos": "{{personas}} people · {{turnos}} shifts",
       "pagaTrabajaEn": "Pays / Worked at",
       "total": "Total",
       "buscar": "Search person, client or site",
       "detalle": "Detail",
       "sinCoincidencias": "Nothing matches the search.",
-      "nTurnos": "{{n}} shifts",
       "persona": "Person",
       "cliente": "Client",
-      "sitio": "Site"
+      "sitio": "Site",
+      "personasYTurnos_one": "{{personas}} people · {{count}} shift",
+      "nTurnos_one": "{{count}} shift",
+      "personasYTurnos_other": "{{personas}} people · {{count}} shifts",
+      "nTurnos_other": "{{count}} shifts"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "INV",

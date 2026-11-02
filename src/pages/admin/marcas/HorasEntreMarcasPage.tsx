@@ -431,9 +431,9 @@ export default function HorasEntreMarcasPage() {
                               <div className="text-right">
                                 <div className="font-semibold tabular-nums">{horas(c!.hours)}</div>
                                 <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-                                  {t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{turnos}} turnos", {
+                                  {t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{count}} turnos", {
                                     personas: c!.people,
-                                    turnos: c!.shifts,
+                                    count: c!.shifts,
                                   })}
                                 </div>
                               </div>
@@ -482,9 +482,9 @@ export default function HorasEntreMarcasPage() {
                                     }}
                                     title={
                                       c
-                                        ? t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{turnos}} turnos", {
+                                        ? t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{count}} turnos", {
                                             personas: c.people,
-                                            turnos: c.shifts,
+                                            count: c.shifts,
                                           })
                                         : undefined
                                     }
@@ -492,9 +492,9 @@ export default function HorasEntreMarcasPage() {
                                     <div className="font-semibold">{horas(c?.hours)}</div>
                                     {c && (
                                       <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-                                        {t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{turnos}} turnos", {
+                                        {t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{count}} turnos", {
                                           personas: c.people,
-                                          turnos: c.shifts,
+                                          count: c.shifts,
                                         })}
                                       </div>
                                     )}
@@ -557,7 +557,7 @@ export default function HorasEntreMarcasPage() {
                             </span>
                           </div>
                           <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-                            {t("ui.HorasEntreMarcas.nTurnos", "{{n}} turnos", { n: r.shifts })}
+                            {t("ui.HorasEntreMarcas.nTurnos", "{{count}} turnos", { count: r.shifts })}
                           </div>
                         </div>
                       )}
