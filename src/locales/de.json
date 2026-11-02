@@ -20150,6 +20150,53 @@
       "pago": "Zahlung",
       "condiciones": "Bedingungen"
     },
+    "PortalDeMarca": {
+      "titulo": "Kundenportal",
+      "ayuda": "Ihre Kunden öffnen das Portal unter einer Adresse dieser Marke. Links zu Rechnungen, Angeboten und Passwörtern führen dorthin.",
+      "cargando": "Wird geladen…",
+      "noDisponible": "Eigene Domains sind auf dieser Installation noch nicht verfügbar.",
+      "activoAyuda": "Läuft mit HTTPS. Ihre Kunden erhalten ihre Links bereits an diese Adresse.",
+      "nombre": "Portaladresse",
+      "nombreAyuda": "Eine Subdomain der Marke, zum Beispiel portal.ihremarke.com.",
+      "conectar": "Domain verbinden",
+      "comprobar": "Prüfen",
+      "cambiar": "Ändern",
+      "quitar": "Domain entfernen",
+      "quitarTitulo": "{{host}} entfernen?",
+      "quitarMensaje": "Ihre Kunden erhalten wieder die Links des Firmenportals. Sie können die Domain jederzeit erneut verbinden.",
+      "guardado": "Domain gespeichert. Legen Sie jetzt den Eintrag in Ihrem DNS an.",
+      "listo": "Das Portal dieser Marke läuft jetzt unter ihrer Domain.",
+      "todaviaNo": "Noch nicht bereit. DNS kann ein paar Minuten brauchen.",
+      "copiado": "Kopiert",
+      "copiar": "Kopieren",
+      "dnsTitulo": "Legen Sie diesen Eintrag im DNS der Marke an",
+      "tipo": "Typ",
+      "nombreDns": "Name",
+      "valor": "Wert",
+      "nombreCompleto": "Verlangt Ihr Anbieter den vollständigen Namen, geben Sie {{completo}} ein.",
+      "guiaTitulo": "Wo verwalten Sie das DNS?",
+      "guiaDespues": "Klicken Sie danach auf „Prüfen“. DNS dauert meist ein paar Minuten; das HTTPS-Zertifikat wird automatisch ausgestellt.",
+      "ultimaComprobacion": "Letzte Prüfung: {{fecha}}",
+      "estado": {
+        "activo": "Aktiv",
+        "verificando": "Wird geprüft",
+        "pendienteTls": "HTTPS wird vorbereitet",
+        "malConfigurado": "DNS prüfen",
+        "desactivado": "Deaktiviert",
+        "pendienteDns": "Wartet auf DNS"
+      },
+      "errores": {
+        "apex": "Verwenden Sie eine Subdomain, zum Beispiel „portal.ihremarke.com“. Die Website funktioniert weiter wie bisher.",
+        "reservado": "Dieser Name kann nicht verwendet werden. Geben Sie eine Domain der Marke ein.",
+        "invalido": "Diese Domain ist ungültig. Prüfen Sie die Schreibweise.",
+        "ocupado": "Diese Domain wird bereits verwendet.",
+        "apagado": "Eigene Domains sind noch nicht verfügbar.",
+        "borde": "Der Domain-Dienst hat nicht geantwortet. Prüfen Sie es in ein paar Minuten erneut."
+      },
+      "fallo": {
+        "dns": "Wir sehen den Eintrag noch nicht. Antwort des Domain-Dienstes: {{detalle}}"
+      }
+    },
     "TarifasEntreMarcas": {
       "titulo": "Stundensätze zwischen Marken",
       "ayuda": "Das Unternehmen des Kunden zahlt dem Unternehmen, das das Personal stellt, diesen Satz pro genehmigter Stunde. Jeder Satz gilt ab seinem Datum; frühere Stunden behalten ihren.",

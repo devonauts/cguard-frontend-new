@@ -20150,6 +20150,53 @@
       "pago": "Pagamento",
       "condiciones": "Condizioni"
     },
+    "PortalDeMarca": {
+      "titulo": "Portale clienti",
+      "ayuda": "I suoi clienti aprono il portale a un indirizzo di questo marchio. I link di fatture, preventivi e password portano lì.",
+      "cargando": "Caricamento…",
+      "noDisponible": "I domini personalizzati non sono ancora disponibili in questa installazione.",
+      "activoAyuda": "Attivo con HTTPS. I suoi clienti ricevono già i link a questo indirizzo.",
+      "nombre": "Indirizzo del portale",
+      "nombreAyuda": "Un sottodominio del marchio, per esempio portale.tuomarchio.com.",
+      "conectar": "Collega dominio",
+      "comprobar": "Verifica",
+      "cambiar": "Cambia",
+      "quitar": "Rimuovi dominio",
+      "quitarTitulo": "Rimuovere {{host}}?",
+      "quitarMensaje": "I suoi clienti riceveranno di nuovo i link del portale dell’azienda. Puoi ricollegarlo quando vuoi.",
+      "guardado": "Dominio salvato. Ora crea il record nel tuo DNS.",
+      "listo": "Il portale di questo marchio funziona ora sul suo dominio.",
+      "todaviaNo": "Non è ancora pronto. Il DNS può richiedere alcuni minuti per propagarsi.",
+      "copiado": "Copiato",
+      "copiar": "Copia",
+      "dnsTitulo": "Crea questo record nel DNS del marchio",
+      "tipo": "Tipo",
+      "nombreDns": "Nome",
+      "valor": "Valore",
+      "nombreCompleto": "Se il tuo provider chiede il nome completo, scrivi {{completo}}.",
+      "guiaTitulo": "Dove gestisci il DNS?",
+      "guiaDespues": "Poi premi «Verifica». Il DNS di solito richiede alcuni minuti; il certificato HTTPS viene emesso da solo.",
+      "ultimaComprobacion": "Ultima verifica: {{fecha}}",
+      "estado": {
+        "activo": "Attivo",
+        "verificando": "In verifica",
+        "pendienteTls": "Preparazione HTTPS",
+        "malConfigurado": "Controlla il DNS",
+        "desactivado": "Disattivato",
+        "pendienteDns": "In attesa del DNS"
+      },
+      "errores": {
+        "apex": "Usa un sottodominio, per esempio «portale.tuomarchio.com». Così il suo sito continua a funzionare come oggi.",
+        "reservado": "Questo nome non si può usare. Scrivi un dominio del marchio.",
+        "invalido": "Questo dominio non è valido. Controlla che sia scritto bene.",
+        "ocupado": "Questo dominio è già in uso.",
+        "apagado": "I domini personalizzati non sono ancora disponibili.",
+        "borde": "Il servizio domini non ha risposto. Verifica di nuovo tra qualche minuto."
+      },
+      "fallo": {
+        "dns": "Non vediamo ancora il record. Risposta del servizio domini: {{detalle}}"
+      }
+    },
     "TarifasEntreMarcas": {
       "titulo": "Tariffe orarie tra marchi",
       "ayuda": "L'azienda del cliente paga all'azienda che fornisce il personale questa tariffa per ogni ora approvata. Ogni tariffa vale dalla sua data; le ore precedenti mantengono la loro.",

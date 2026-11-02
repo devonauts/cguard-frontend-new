@@ -20470,6 +20470,53 @@
       "pago": "Płatność",
       "condiciones": "Warunki"
     },
+    "PortalDeMarca": {
+      "titulo": "Portal klienta",
+      "ayuda": "Jej klienci otwierają portal pod adresem tej marki. Linki do faktur, ofert i haseł prowadzą tam.",
+      "cargando": "Ładowanie…",
+      "noDisponible": "Własne domeny nie są jeszcze dostępne w tej instalacji.",
+      "activoAyuda": "Działa z HTTPS. Jej klienci już dostają linki do tego adresu.",
+      "nombre": "Adres portalu",
+      "nombreAyuda": "Subdomena marki, na przykład portal.twojamarka.com.",
+      "conectar": "Połącz domenę",
+      "comprobar": "Sprawdź",
+      "cambiar": "Zmień",
+      "quitar": "Usuń domenę",
+      "quitarTitulo": "Usunąć {{host}}?",
+      "quitarMensaje": "Jej klienci znowu będą dostawać linki do portalu firmy. Możesz ją połączyć ponownie w każdej chwili.",
+      "guardado": "Domena zapisana. Teraz utwórz rekord w swoim DNS.",
+      "listo": "Portal tej marki działa już w jej domenie.",
+      "todaviaNo": "Jeszcze nie gotowe. Propagacja DNS może potrwać kilka minut.",
+      "copiado": "Skopiowano",
+      "copiar": "Kopiuj",
+      "dnsTitulo": "Utwórz ten rekord w DNS marki",
+      "tipo": "Typ",
+      "nombreDns": "Nazwa",
+      "valor": "Wartość",
+      "nombreCompleto": "Jeśli dostawca wymaga pełnej nazwy, wpisz {{completo}}.",
+      "guiaTitulo": "Gdzie zarządzasz DNS?",
+      "guiaDespues": "Potem kliknij „Sprawdź”. DNS zwykle trwa kilka minut; certyfikat HTTPS zostanie wydany automatycznie.",
+      "ultimaComprobacion": "Ostatnie sprawdzenie: {{fecha}}",
+      "estado": {
+        "activo": "Aktywna",
+        "verificando": "Weryfikacja",
+        "pendienteTls": "Przygotowanie HTTPS",
+        "malConfigurado": "Sprawdź DNS",
+        "desactivado": "Wyłączona",
+        "pendienteDns": "Czeka na DNS"
+      },
+      "errores": {
+        "apex": "Użyj subdomeny, na przykład „portal.twojamarka.com”. Jej strona działa dalej jak dotąd.",
+        "reservado": "Tej nazwy nie można użyć. Wpisz domenę marki.",
+        "invalido": "Ta domena jest nieprawidłowa. Sprawdź pisownię.",
+        "ocupado": "Ta domena jest już używana.",
+        "apagado": "Własne domeny nie są jeszcze dostępne.",
+        "borde": "Usługa domen nie odpowiedziała. Sprawdź ponownie za kilka minut."
+      },
+      "fallo": {
+        "dns": "Nie widzimy jeszcze rekordu. Odpowiedź usługi domen: {{detalle}}"
+      }
+    },
     "TarifasEntreMarcas": {
       "titulo": "Stawki godzinowe między markami",
       "ayuda": "Firma klienta płaci firmie zapewniającej personel tę stawkę za każdą zatwierdzoną godzinę. Każda stawka obowiązuje od swojej daty; wcześniejsze godziny zachowują swoją.",

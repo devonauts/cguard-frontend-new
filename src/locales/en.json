@@ -19591,6 +19591,53 @@
       "pago": "Payment",
       "condiciones": "Terms"
     },
+    "PortalDeMarca": {
+      "titulo": "Client portal",
+      "ayuda": "Its clients open the portal on an address of this brand. Invoice, quote and password links lead there.",
+      "cargando": "Loading…",
+      "noDisponible": "Custom domains are not available on this installation yet.",
+      "activoAyuda": "Live with HTTPS. Its clients already get their links to this address.",
+      "nombre": "Portal address",
+      "nombreAyuda": "A subdomain of the brand, for example portal.yourbrand.com.",
+      "conectar": "Connect domain",
+      "comprobar": "Check",
+      "cambiar": "Change",
+      "quitar": "Remove domain",
+      "quitarTitulo": "Remove {{host}}?",
+      "quitarMensaje": "Its clients will get the company portal links again. You can connect it again at any time.",
+      "guardado": "Domain saved. Now create the record in your DNS.",
+      "listo": "This brand's portal now works on its domain.",
+      "todaviaNo": "Not ready yet. DNS can take a few minutes to propagate.",
+      "copiado": "Copied",
+      "copiar": "Copy",
+      "dnsTitulo": "Create this record in the brand's DNS",
+      "tipo": "Type",
+      "nombreDns": "Name",
+      "valor": "Value",
+      "nombreCompleto": "If your provider asks for the full name, type {{completo}}.",
+      "guiaTitulo": "Where do you manage the DNS?",
+      "guiaDespues": "Then press “Check”. DNS usually takes a few minutes; the HTTPS certificate is issued automatically.",
+      "ultimaComprobacion": "Last check: {{fecha}}",
+      "estado": {
+        "activo": "Active",
+        "verificando": "Verifying",
+        "pendienteTls": "Preparing HTTPS",
+        "malConfigurado": "Check the DNS",
+        "desactivado": "Disabled",
+        "pendienteDns": "Waiting for DNS"
+      },
+      "errores": {
+        "apex": "Use a subdomain, for example “portal.yourbrand.com”. Its website keeps working as it does today.",
+        "reservado": "That name cannot be used. Type a domain of the brand.",
+        "invalido": "That domain is not valid. Check the spelling.",
+        "ocupado": "That domain is already in use.",
+        "apagado": "Custom domains are not available yet.",
+        "borde": "The domain service did not answer. Check again in a few minutes."
+      },
+      "fallo": {
+        "dns": "We cannot see the record yet. Domain service reply: {{detalle}}"
+      }
+    },
     "TarifasEntreMarcas": {
       "titulo": "Hourly rates between brands",
       "ayuda": "The client's company pays the company providing the staff this rate for each approved hour. Each rate applies from its date; earlier hours keep theirs.",

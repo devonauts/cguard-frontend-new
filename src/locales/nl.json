@@ -20150,6 +20150,53 @@
       "pago": "Betaling",
       "condiciones": "Voorwaarden"
     },
+    "PortalDeMarca": {
+      "titulo": "Klantenportaal",
+      "ayuda": "De klanten openen het portaal op een adres van dit merk. Links naar facturen, offertes en wachtwoorden gaan daarheen.",
+      "cargando": "Laden…",
+      "noDisponible": "Eigen domeinen zijn op deze installatie nog niet beschikbaar.",
+      "activoAyuda": "Live met HTTPS. De klanten krijgen hun links al naar dit adres.",
+      "nombre": "Portaaladres",
+      "nombreAyuda": "Een subdomein van het merk, bijvoorbeeld portaal.jouwmerk.com.",
+      "conectar": "Domein koppelen",
+      "comprobar": "Controleren",
+      "cambiar": "Wijzigen",
+      "quitar": "Domein verwijderen",
+      "quitarTitulo": "{{host}} verwijderen?",
+      "quitarMensaje": "De klanten krijgen weer de links van het bedrijfsportaal. Je kunt het altijd opnieuw koppelen.",
+      "guardado": "Domein opgeslagen. Maak nu het record aan in je DNS.",
+      "listo": "Het portaal van dit merk werkt nu op zijn domein.",
+      "todaviaNo": "Nog niet klaar. DNS kan een paar minuten nodig hebben.",
+      "copiado": "Gekopieerd",
+      "copiar": "Kopiëren",
+      "dnsTitulo": "Maak dit record aan in de DNS van het merk",
+      "tipo": "Type",
+      "nombreDns": "Naam",
+      "valor": "Waarde",
+      "nombreCompleto": "Vraagt je provider om de volledige naam, typ dan {{completo}}.",
+      "guiaTitulo": "Waar beheer je de DNS?",
+      "guiaDespues": "Klik daarna op “Controleren”. DNS duurt meestal een paar minuten; het HTTPS-certificaat wordt automatisch uitgegeven.",
+      "ultimaComprobacion": "Laatste controle: {{fecha}}",
+      "estado": {
+        "activo": "Actief",
+        "verificando": "Wordt gecontroleerd",
+        "pendienteTls": "HTTPS wordt voorbereid",
+        "malConfigurado": "Controleer de DNS",
+        "desactivado": "Uitgeschakeld",
+        "pendienteDns": "Wacht op DNS"
+      },
+      "errores": {
+        "apex": "Gebruik een subdomein, bijvoorbeeld “portaal.jouwmerk.com”. De website blijft werken zoals nu.",
+        "reservado": "Die naam kan niet worden gebruikt. Typ een domein van het merk.",
+        "invalido": "Dat domein is ongeldig. Controleer de spelling.",
+        "ocupado": "Dat domein is al in gebruik.",
+        "apagado": "Eigen domeinen zijn nog niet beschikbaar.",
+        "borde": "De domeindienst antwoordde niet. Controleer het over een paar minuten opnieuw."
+      },
+      "fallo": {
+        "dns": "We zien het record nog niet. Antwoord van de domeindienst: {{detalle}}"
+      }
+    },
     "TarifasEntreMarcas": {
       "titulo": "Uurtarieven tussen merken",
       "ayuda": "Het bedrijf van de klant betaalt het bedrijf dat het personeel levert dit tarief per goedgekeurd uur. Elk tarief geldt vanaf zijn datum; eerdere uren houden het hunne.",

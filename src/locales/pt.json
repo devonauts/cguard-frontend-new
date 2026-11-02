@@ -19591,6 +19591,53 @@
       "pago": "Pagamento",
       "condiciones": "Condições"
     },
+    "PortalDeMarca": {
+      "titulo": "Portal de clientes",
+      "ayuda": "Os clientes dela abrem o portal em um endereço desta marca. Os links de faturas, propostas e senhas levam para lá.",
+      "cargando": "Carregando…",
+      "noDisponible": "Os domínios próprios ainda não estão disponíveis nesta instalação.",
+      "activoAyuda": "Funciona com HTTPS. Os clientes dela já recebem os links para este endereço.",
+      "nombre": "Endereço do portal",
+      "nombreAyuda": "Um subdomínio da marca, por exemplo portal.suamarca.com.",
+      "conectar": "Conectar domínio",
+      "comprobar": "Verificar",
+      "cambiar": "Alterar",
+      "quitar": "Remover domínio",
+      "quitarTitulo": "Remover {{host}}?",
+      "quitarMensaje": "Os clientes dela voltarão a receber os links do portal da empresa. Você pode conectá-lo de novo quando quiser.",
+      "guardado": "Domínio salvo. Agora crie o registro no seu DNS.",
+      "listo": "O portal desta marca já funciona no domínio dela.",
+      "todaviaNo": "Ainda não está pronto. O DNS pode levar alguns minutos para propagar.",
+      "copiado": "Copiado",
+      "copiar": "Copiar",
+      "dnsTitulo": "Crie este registro no DNS da marca",
+      "tipo": "Tipo",
+      "nombreDns": "Nome",
+      "valor": "Valor",
+      "nombreCompleto": "Se o seu provedor pedir o nome completo, digite {{completo}}.",
+      "guiaTitulo": "Onde você administra o DNS?",
+      "guiaDespues": "Depois clique em “Verificar”. O DNS costuma levar alguns minutos; o certificado HTTPS é emitido sozinho.",
+      "ultimaComprobacion": "Última verificação: {{fecha}}",
+      "estado": {
+        "activo": "Ativo",
+        "verificando": "Verificando",
+        "pendienteTls": "Preparando HTTPS",
+        "malConfigurado": "Revise o DNS",
+        "desactivado": "Desativado",
+        "pendienteDns": "Aguardando o DNS"
+      },
+      "errores": {
+        "apex": "Use um subdomínio, por exemplo “portal.suamarca.com”. Assim o site dela continua funcionando como hoje.",
+        "reservado": "Esse nome não pode ser usado. Digite um domínio da marca.",
+        "invalido": "Esse domínio não é válido. Confira se está bem escrito.",
+        "ocupado": "Esse domínio já está em uso.",
+        "apagado": "Os domínios próprios ainda não estão disponíveis.",
+        "borde": "O serviço de domínios não respondeu. Verifique de novo em alguns minutos."
+      },
+      "fallo": {
+        "dns": "Ainda não vemos o registro. Resposta do serviço de domínios: {{detalle}}"
+      }
+    },
     "TarifasEntreMarcas": {
       "titulo": "Tarifas por hora entre marcas",
       "ayuda": "A empresa do cliente paga à empresa que fornece o pessoal esta tarifa por hora aprovada. Cada tarifa vale a partir da sua data; as horas anteriores mantêm a sua.",

@@ -21,6 +21,10 @@
  * BRAND ADMIN may edit their own brand's identity and texts here
  * (`puedeEditarIdentidad`), but not the principal's legal data, and they do
  * not archive. A sample PDF drawn by the server shows the real document.
+ *
+ * Phase 5 — «Portal de clientes»: the brand's own client-portal domain
+ * (`PortalDeClientesDeMarca`), outside the form's fieldset because a brand
+ * admin may manage it for their own brand even where the rest is read-only.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -44,6 +48,7 @@ import { prefijoValido, webValida } from "./identidadDeMarca";
 import VistaDeMarcaParaElCliente from "./VistaDeMarcaParaElCliente";
 import TextosDeFacturaDeMarca from "./TextosDeFacturaDeMarca";
 import { datosDeTextos, textosDe, type TextosBorrador } from "./textosDeMarca";
+import PortalDeClientesDeMarca from "./PortalDeClientesDeMarca";
 
 import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
 import { Button } from "@/components/ui/button";
@@ -907,6 +912,13 @@ export function EditorDeMarca({
           </div>
         )}
       </fieldset>
+
+      {/* ── Phase 5: the brand's client-portal domain (saved on its own) ── */}
+      {marca && !marca.archivedAt && (
+        <div className="mt-5">
+          <PortalDeClientesDeMarca brandId={marca.id} />
+        </div>
+      )}
     </Modal>
   );
 }
