@@ -19,6 +19,7 @@ import {
 import { BarChart, MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, sumaDias } from "@/lib/horaDeLaEmpresa";
 
 /**
  * `hover:text-[var(--brand-text)]` y NO `hover:text-primary`.
@@ -103,9 +104,6 @@ const INK_OF: Record<string, string> = {
  *  comporta exactamente como antes. */
 export const toneInk = (fill: string) => INK_OF[fill] ?? fill;
 
-const fmtDate = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
 /** Constante de módulo: guarda la CLAVE, no el texto traducido. Llamar a `t()`
  *  aquí lo congelaría en el idioma de arranque. Se traduce en AnalyticsShell. */
 const PRESETS: { label: string; labelKey: string; days: number }[] = [
@@ -123,10 +121,11 @@ export function useOpsAnalytics(initialDays = 30) {
   const [error, setError] = useState<string | null>(null);
 
   const range = useMemo(() => {
-    const end = new Date();
-    const start = new Date(end.getTime() - (days - 1) * 86400000);
+    // The company's today, not the computer's: from a browser in UTC,
+    // «Hoy» asked for tomorrow every evening in Ecuador.
+    const endDate = hoyEnLaEmpresa();
 
-    return { startDate: fmtDate(start), endDate: fmtDate(end) };
+    return { startDate: sumaDias(endDate, -(days - 1)), endDate };
   }, [days]);
 
   const load = async () => {

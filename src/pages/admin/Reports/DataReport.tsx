@@ -17,6 +17,7 @@ import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 import { plano } from "@/lib/buscadorGlobal";
+import { hoyEnLaEmpresa, soloFechaCivil, sumaDias } from "@/lib/horaDeLaEmpresa";
 import {
   createNameMask,
   exportValue,
@@ -140,16 +141,12 @@ function EtiquetaSinSenal({ fila, marca }: { fila: any; marca?: any }) {
   );
 }
 
-function ymd(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
+/** Today and «N days ago» are the COMPANY's days, not the computer's: a
+ *  browser in UTC asked for tomorrow every evening in Ecuador. */
+const hoy = () => hoyEnLaEmpresa();
 
 function daysAgo(n: number): string {
-  const d = new Date();
-
-  d.setDate(d.getDate() - n);
-
-  return ymd(d);
+  return sumaDias(hoy(), -n);
 }
 
 /** Presets del conmutador de rango. El cajón de filtros sigue permitiendo
@@ -239,9 +236,8 @@ export default function DataReport<T>({
         : columnasBase,
     [columnasBase, sedeDe, etiquetas],
   );
-  const today = useMemo(() => new Date(), []);
   const [from, setFrom] = useState(() => daysAgo(defaultDays));
-  const [to, setTo] = useState(() => ymd(today));
+  const [to, setTo] = useState(() => hoy());
   const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -352,7 +348,7 @@ export default function DataReport<T>({
   // mano en el cajón de filtros, ninguno queda marcado y no hay estado que se
   // pueda desincronizar.
   const activePreset = useMemo(() => {
-    if (to !== ymd(new Date())) return "";
+    if (to !== hoy()) return "";
     const hit = PRESETS.find((d) => daysAgo(d) === from);
 
     return hit ? String(hit) : "";
@@ -360,10 +356,14 @@ export default function DataReport<T>({
 
   const applyPreset = (v: string) => {
     setFrom(daysAgo(Number(v)));
-    setTo(ymd(new Date()));
+    setTo(hoy());
   };
 
-  const rangeLabel = t("ui.DataReport.rangoDeA", { defaultValue: "{{from}} a {{to}}", from, to });
+  const rangeLabel = t("ui.DataReport.rangoDeA", {
+    defaultValue: "{{from}} a {{to}}",
+    from: soloFechaCivil(from),
+    to: soloFechaCivil(to),
+  });
   const fileBase = title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
