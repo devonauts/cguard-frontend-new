@@ -606,7 +606,10 @@
 .dm-mm-cupos-barra { margin-left: auto; width: 60px; flex: none; height: 6px; border-radius: 999px; background: var(--dm-block); overflow: hidden; }
 .dm-mm-cupos-barra > span { display: block; height: 100%; border-radius: inherit; background: var(--brand); transition: width 0.6s var(--dm-ease); }
 .dm-mm-fila { transition: opacity 0.4s, filter 0.4s; }
-.dm-mm-fila[data-apagada] { opacity: 0.28; filter: saturate(0.3); }
+/* `animation: none`: the entrance animation's fill would otherwise keep opacity at 1. */
+.dm-mm-fila[data-apagada] { animation: none; opacity: 0.28; filter: saturate(0.3); }
+.dm-mm .dm-item[data-tono="bad"] { color: var(--bad); }
+.dm-mm .dm-item[data-tono="ok"] { color: var(--ok); }
 .dm-mm-chip {
   display: inline-flex; align-items: center; gap: 5px; flex: none; padding: 2px 8px; border-radius: 999px;
   font-size: 10.5px; font-weight: 600; background: color-mix(in oklab, var(--mm) 15%, transparent); color: var(--ink);
@@ -659,7 +662,7 @@
 /* Hours between brands */
 .dm-mm-tabla { min-width: 0; }
 .dm-mm-hfila > * { transition: opacity 0.35s; }
-.dm-mm-hfila[data-oculta] > * { opacity: 0; }
+.dm-mm-hfila[data-oculta] > * { opacity: 0; animation: none; }
 .dm-mm-quien { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .dm-mm-par { display: inline-flex; align-items: center; gap: 2px; flex: none; color: var(--ink-faint); }
 .dm-mm-filtro {

@@ -1027,9 +1027,7 @@ function Admin({
             key={s.compra}
             className="dm-item"
             data-nuevo=""
-            style={{
-              color: s.compra === "bloqueada" ? "var(--bad)" : undefined,
-            }}
+            data-tono={s.compra === "bloqueada" ? "bad" : undefined}
           >
             {s.compra === "bloqueada" ? (
               <Lock className="h-3.5 w-3.5" />
