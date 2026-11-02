@@ -78,27 +78,25 @@ import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 import AusenciasCalendario from "./AusenciasCalendario";
 import { rangoDelMes } from "./ausenciasCalendario";
 
-import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { soloFecha, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 import { listarTodo } from "@/lib/listarCompleto";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
+const FORMATO_DE_DIA: Intl.DateTimeFormatOptions = {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+};
+
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-  // startDate/endDate are DATEONLY strings: `new Date("2026-07-20")` is UTC
-  // midnight, which rendered vacations one day EARLY for anyone west of UTC.
-  // Anchor the calendar date locally instead.
-  const s = String(iso).slice(0, 10);
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-  const d = m
-    ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
-    : new Date(iso);
-  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  // startDate/endDate are DATEONLY strings: a calendar day, printed as written
+  // (a local-midnight Date shown in the company zone moved it a day for anyone
+  // whose browser is east of the company). requestDate is an instant.
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(iso))
+    ? soloFechaCivil(iso, FORMATO_DE_DIA)
+    : soloFecha(iso, FORMATO_DE_DIA);
 }
 
 // ── component ────────────────────────────────────────────────────────────────

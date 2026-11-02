@@ -44,7 +44,7 @@ import {
 } from "@/lib/api/supervisorPositionService";
 import { crearPersona, filasDe, mensajeDeError } from "@/lib/crearPersona";
 import { presetLunesAViernes } from "@/lib/jornadaSemanal";
-import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { hoyEnLaEmpresa, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { claveDeDocumento } from "@/lib/agregarVarias";
 import { plazasElegibles } from "@/pages/admin/programmer/AsignarAPuestoModal";
@@ -1462,7 +1462,7 @@ export default function AgregarPersonaPage() {
                       >
                         {t("agregarPersona.resumen.desde", {
                           defaultValue: "Desde el {{fecha}}",
-                          fecha: horarioEfectivo.desde,
+                          fecha: soloFechaCivil(horarioEfectivo.desde),
                         })}
                       </div>
                     )}
