@@ -57,6 +57,12 @@ import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeA
 import CampoMarcaDeRegistro, {
   useMarcaDeRegistro,
 } from "@/components/multimarca/CampoMarcaDeRegistro";
+import CampoAccesoDeMarca, {
+  useAccesoDeMarcaDe,
+} from "@/components/multimarca/CampoAccesoDeMarca";
+import { useMarcas } from "@/hooks/useMarcas";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
+import { errorDeAcceso, rolesConMarca } from "@/lib/multimarca/accesoDeMarca";
 
 const CLIENT_OPTIONS_PLACEHOLDER: Array<{ id: string; name: string }> = [];
 
@@ -66,6 +72,9 @@ export default function EditAdminUserPage() {
   const id = params.id;
   // Multimarca: the brand whose payroll pays this person.
   const marcaDeRegistro = useMarcaDeRegistro(id ?? null);
+  // Multimarca phase 2: which brands this person sees.
+  const accesoDeMarca = useAccesoDeMarcaDe(id ?? null);
+  const [intentoMarca, setIntentoMarca] = useState(false);
 
   const form = useForm<NewAdminUserValues>({
     resolver: zodResolver(newAdminUserSchema),
@@ -94,6 +103,16 @@ export default function EditAdminUserPage() {
     Array<{ id: string; name?: string; label?: string; slug?: string }>
   >([]);
   const [fetchedRoleCandidate, setFetchedRoleCandidate] = useState<any>(null);
+  /* Multimarca (phase 2): «Administrador de marca» is a built-in role. With
+     the module it is in the list even when the company's role rows do not
+     carry it — also for RESOLVING a person's stored role: without it the
+     loose match below read «brandAdmin» as «admin». */
+  const { activo: moduloMarca } = useMarcas();
+  const { restringido: limitadoAMarcas } = useAccesoDeMarca();
+  const rolesBase = useMemo(
+    () => rolesConMarca(roleOptions, { modulo: moduloMarca, restringido: false }),
+    [roleOptions, moduloMarca],
+  );
 
   // Per-user permission overrides (PR-4). Only editable by admins (settingsEdit).
   const { hasPermission } = usePermissions();
@@ -125,23 +144,35 @@ export default function EditAdminUserPage() {
     String(watchedAccessLevel || "").toLowerCase(),
   );
   const selectedRoleSlug = (
-    roleOptions.find((r) => String(r.id) === String(watchedAccessLevel))
+    rolesBase.find((r) => String(r.id) === String(watchedAccessLevel))
       ?.slug || ""
   ).toLowerCase();
+  /** The role as the brand rules read it (rows without a slug carry it as their name). */
+  const rolParaMarca = (() => {
+    const r = rolesBase.find((x) => String(x.id) === String(watchedAccessLevel));
+
+    return String(r?.slug || r?.name || watchedAccessLevel || "");
+  })();
   /* Office roles only, as in «Agregar persona»: guard, customer, security
      supervisor and central operator have their own flows (they showed here
      with their raw keys). The person's current role stays listed so the form
      never loses it. */
   const opcionesDeRol = useMemo(() => {
-    const deOficina = rolesDeOficina(roleOptions);
-    const actual = roleOptions.find(
+    const deOficina = rolesDeOficina(rolesBase);
+    const actual = rolesBase.find(
       (r) => String(r.id) === String(watchedAccessLevel),
     );
 
-    return actual && !deOficina.includes(actual)
-      ? [actual, ...deOficina]
-      : deOficina;
-  }, [roleOptions, watchedAccessLevel]);
+    const lista =
+      actual && !deOficina.includes(actual) ? [actual, ...deOficina] : deOficina;
+
+    // Someone limited to brands never offers admin-level roles.
+    return rolesConMarca(lista, {
+      modulo: moduloMarca,
+      restringido: limitadoAMarcas,
+      actual: watchedAccessLevel,
+    });
+  }, [rolesBase, watchedAccessLevel, moduloMarca, limitadoAMarcas]);
 
   // Load the inherited permissions of the selected role so the override panel can
   // show what is granted by the role vs by an explicit override.
@@ -223,6 +254,8 @@ export default function EditAdminUserPage() {
         });
       if (id === "branchmanager" || slug === "branchmanager")
         return roleDisplayName("branchManager");
+      if (id === "brandadmin" || slug === "brandadmin")
+        return roleDisplayName("brandAdmin");
       if (id === "operationsmanager" || slug === "operationsmanager")
         return t("adminOfficeUsers.roleNames.operationsManager", {
           defaultValue: "Gerente de Operaciones",
@@ -295,9 +328,9 @@ export default function EditAdminUserPage() {
     })();
   }, []);
 
-  // try to resolve a fetched simple role candidate once roleOptions are available
+  // try to resolve a fetched simple role candidate once rolesBase are available
   useEffect(() => {
-    if (!fetchedRoleCandidate || roleOptions.length === 0) return;
+    if (!fetchedRoleCandidate || rolesBase.length === 0) return;
     const candidate = fetchedRoleCandidate;
 
     const normalize = (s: any) => {
@@ -325,7 +358,7 @@ export default function EditAdminUserPage() {
        Administrador for an assistant. Partial matching is now only a last
        resort, and the longest (most specific) partial match wins. */
     const nombreDe = (o: any) => normalize(o?.name ?? o?.label ?? o?.id);
-    const exacta = roleOptions.find(
+    const exacta = rolesBase.find(
       (o) =>
         !!o &&
         (o.id === candidate ||
@@ -333,7 +366,7 @@ export default function EditAdminUserPage() {
     );
     const parciales = exacta
       ? []
-      : roleOptions
+      : rolesBase
           .filter((o) => {
             if (!o || !candNorm) return false;
             const n = nombreDe(o);
@@ -345,7 +378,7 @@ export default function EditAdminUserPage() {
 
     if (found) setValue("accessLevel", String(found.id));
     setFetchedRoleCandidate(null);
-  }, [fetchedRoleCandidate, roleOptions, setValue]);
+  }, [fetchedRoleCandidate, rolesBase, setValue]);
 
   useEffect(() => {
     if (!id) return;
@@ -706,6 +739,19 @@ export default function EditAdminUserPage() {
           ),
         );
 
+      // Multimarca: a brand admin needs at least one brand.
+      if (accesoDeMarca.puede && errorDeAcceso(rolParaMarca, accesoDeMarca.valor)) {
+        setIntentoMarca(true);
+        toast.error(
+          t(
+            "ui.CampoAccesoDeMarca.sinMarcas",
+            "Marca al menos una marca: sin ninguna, no vería nada.",
+          ),
+        );
+
+        return;
+      }
+
       const payload = {
         name: values.name,
         email: values.email,
@@ -749,6 +795,7 @@ export default function EditAdminUserPage() {
           setNombreOriginal({ first: nombres.trim(), last: apellidos.trim() });
         }
         await marcaDeRegistro.guardar();
+        await accesoDeMarca.guardar(rolParaMarca);
         toast.success(
           t("adminOfficeUsers.editUser.toasts.updated", {
             defaultValue: "Usuario actualizado correctamente",
@@ -977,7 +1024,7 @@ export default function EditAdminUserPage() {
                             className="text-xs"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            {roleDisplayDescription(field.value)}
+                            {roleDisplayDescription(rolParaMarca || field.value)}
                           </p>
                         )}
                         <FormMessage />
@@ -992,6 +1039,16 @@ export default function EditAdminUserPage() {
                 <p className="cg-eyebrow mb-2">
                   {t("ui.EditAdminUser.quePuedeVer", "Qué puede ver")}
                 </p>
+                {/* Multimarca: the brands first, then the sites inside them. */}
+                {accesoDeMarca.listo && (
+                  <CampoAccesoDeMarca
+                    className="mb-4"
+                    mostrarError={intentoMarca}
+                    rol={rolParaMarca}
+                    valor={accesoDeMarca.valor}
+                    onChange={accesoDeMarca.setValor}
+                  />
+                )}
                 {veTodoPorRol ? (
                   <div
                     className="rounded-xl border px-4 py-3 text-sm"

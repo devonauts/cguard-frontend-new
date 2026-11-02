@@ -10,6 +10,7 @@ const ROLES_CONOCIDOS: Record<string, string> = {
   administrativeassistant: "administrativeAssistant",
   administrativesupervisor: "administrativeSupervisor",
   branchmanager: "branchManager",
+  brandadmin: "brandAdmin",
   clientaccountmanager: "clientAccountManager",
   dispatcher: "dispatcher",
   hrmanager: "hrManager",

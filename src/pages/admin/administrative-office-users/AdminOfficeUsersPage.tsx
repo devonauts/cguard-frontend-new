@@ -85,6 +85,10 @@ import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
 import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
+import AccesoDeMarcaDePersona, {
+  rolesDeFila,
+  useAccesosDeMarca,
+} from "@/components/multimarca/AccesoDeMarcaDePersona";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 /* Debounce helper */
 
@@ -104,6 +108,8 @@ export default function AdminOfficeUsersPage() {
   const { t } = useTranslation();
   // Multimarca («Todas las marcas»): the brand each person is registered in.
   const marcas = useEtiquetasDeMarca({ personas: true });
+  // Multimarca phase 2: which brands each person sees (admins only).
+  const accesosDeMarca = useAccesosDeMarca();
   /** A role slug in the reader's language («dispatcher» → «Despachador»); custom roles keep their name. */
   const nombreDeRol = (slug: string) => nombreDeRolBase(slug, t);
   const [openFilter, setOpenFilter] = useState(false);
@@ -1276,6 +1282,11 @@ export default function AdminOfficeUsersPage() {
                           defaultValue: "Nivel de Acceso",
                         })}
                       </th>
+                      {accesosDeMarca.activo && (
+                        <th className="px-4 py-3 font-semibold">
+                          {t("ui.CampoAccesoDeMarca.titulo", "Acceso por marca")}
+                        </th>
+                      )}
                       <th className="px-4 py-3 font-semibold">
                         {t("adminOfficeUsers.table.headers.lastLogin", {
                           defaultValue: "Último Inicio de Sesión",
@@ -1293,7 +1304,10 @@ export default function AdminOfficeUsersPage() {
                   <tbody>
                     {filteredRows.length === 0 ? (
                       <tr>
-                        <td className="py-12" colSpan={7}>
+                        <td
+                          className="py-12"
+                          colSpan={accesosDeMarca.activo ? 8 : 7}
+                        >
                           <EstadoVacio
                             className="border-0"
                             description={t(
@@ -1411,6 +1425,15 @@ export default function AdminOfficeUsersPage() {
                               return "-";
                             })()}
                           </td>
+                          {accesosDeMarca.activo && (
+                            <td className="px-4 py-3">
+                              <AccesoDeMarcaDePersona
+                                accesos={accesosDeMarca}
+                                roles={rolesDeFila(u)}
+                                userId={u.id || u._id || u.raw?.id}
+                              />
+                            </td>
+                          )}
                           <td className="px-4 py-3">
                             {u.lastLoginAt
                               ? new Date(
@@ -1744,6 +1767,14 @@ export default function AdminOfficeUsersPage() {
                             </span>
                           )}
                         </div>
+                        {accesosDeMarca.activo && (
+                          <AccesoDeMarcaDePersona
+                            accesos={accesosDeMarca}
+                            className="mt-1"
+                            roles={rolesDeFila(u)}
+                            userId={u.id || u._id || u.raw?.id}
+                          />
+                        )}
                         <div
                           className="mt-1 text-xs"
                           style={{ color: "var(--ink-soft)" }}

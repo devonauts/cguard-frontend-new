@@ -4,7 +4,7 @@ import type { AdminUser, TenantUser } from "./adminUserTypes";
 
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -50,6 +50,16 @@ import {
 import { PageContainer, PageHeader, Section } from "@/components/kit";
 import { fechaYHora } from "@/lib/horaDeLaEmpresa";
 import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
+import CampoAccesoDeMarca, {
+  usePuedeDarAccesoDeMarca,
+} from "@/components/multimarca/CampoAccesoDeMarca";
+import { useMarcas } from "@/hooks/useMarcas";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
+import {
+  accesoParaGuardar,
+  errorDeAcceso,
+  rolesConMarca,
+} from "@/lib/multimarca/accesoDeMarca";
 
 /* dynamic options loaded from API */
 const CLIENT_OPTIONS_PLACEHOLDER: Array<{ id: string; name: string }> = [];
@@ -145,6 +155,8 @@ export default function NewAdminUserPage() {
         });
       if (id === "branchmanager" || slug === "branchmanager")
         return roleDisplayName("branchManager");
+      if (id === "brandadmin" || slug === "brandadmin")
+        return roleDisplayName("brandAdmin");
       if (id === "operationsmanager" || slug === "operationsmanager")
         return t("adminOfficeUsers.roleNames.operationsManager", {
           defaultValue: "Gerente de Operaciones",
@@ -244,6 +256,29 @@ export default function NewAdminUserPage() {
   const veTodoPorRol = ["admin", "operationsmanager"].includes(
     String(accessLevelValue || "").toLowerCase(),
   );
+
+  /* Multimarca (phase 2): «Administrador de marca» is offered with the module,
+     and which brands the person sees is chosen here (admins only). */
+  const { activo: moduloMarca } = useMarcas();
+  const { restringido: limitadoAMarcas } = useAccesoDeMarca();
+  const puedeDarMarca = usePuedeDarAccesoDeMarca();
+  const rolesVisibles = useMemo(
+    () =>
+      rolesConMarca(roleOptions, {
+        modulo: moduloMarca,
+        restringido: limitadoAMarcas,
+        actual: accessLevelValue,
+      }),
+    [roleOptions, moduloMarca, limitadoAMarcas, accessLevelValue],
+  );
+  const rolElegido = rolesVisibles.find(
+    (r) => String(r.id) === String(accessLevelValue),
+  );
+  const slugElegido = String(
+    rolElegido?.slug || rolElegido?.name || accessLevelValue || "",
+  );
+  const [accesoMarca, setAccesoMarca] = useState<string[] | null>(null);
+  const [intentoMarca, setIntentoMarca] = useState(false);
 
   // Si la persona ya venía acotada (edición), la pantalla abre en ese modo.
   useEffect(() => {
@@ -806,6 +841,22 @@ export default function NewAdminUserPage() {
         return;
       }
 
+      // Multimarca: a brand admin needs at least one brand.
+      if (puedeDarMarca && errorDeAcceso(slugElegido, accesoMarca)) {
+        setIntentoMarca(true);
+        toast.error(
+          t(
+            "ui.CampoAccesoDeMarca.sinMarcas",
+            "Marca al menos una marca: sin ninguna, no vería nada.",
+          ),
+        );
+
+        return;
+      }
+      const accesoDeMarca = puedeDarMarca
+        ? accesoParaGuardar(slugElegido, accesoMarca)
+        : undefined;
+
       const invitedPending = true; // user hasn't signed in yet
       const payload = {
         name: values.name,
@@ -819,6 +870,8 @@ export default function NewAdminUserPage() {
         // creer lo contrario. El alcance real son las SEDES.
         invited: invitedPending,
         pending: invitedPending,
+        // Multimarca phase 2: the brands this person sees (with the role).
+        ...(accesoDeMarca !== undefined ? { brandAccess: accesoDeMarca } : {}),
       } as any;
 
       let resp: any;
@@ -1085,7 +1138,7 @@ export default function NewAdminUserPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {roleOptions.map((r) => (
+                            {rolesVisibles.map((r) => (
                               <SelectItem key={r.id} value={r.id}>
                                 {getRoleDisplayName(r)}
                               </SelectItem>
@@ -1101,7 +1154,7 @@ export default function NewAdminUserPage() {
                             style={{ color: "var(--ink-soft)" }}
                           >
                             {(() => {
-                              const elegido = roleOptions.find(
+                              const elegido = rolesVisibles.find(
                                 (r) => r.id === field.value,
                               );
 
@@ -1123,6 +1176,15 @@ export default function NewAdminUserPage() {
                 <p className="cg-eyebrow mb-2">
                   {t("ui.NewAdminUser.3QuePuedeVer", "3 · Qué puede ver")}
                 </p>
+
+                {/* Multimarca: the brands first, then the sites inside them. */}
+                <CampoAccesoDeMarca
+                  className="mb-4"
+                  mostrarError={intentoMarca}
+                  rol={slugElegido}
+                  valor={accesoMarca}
+                  onChange={setAccesoMarca}
+                />
 
                 {veTodoPorRol ? (
                   /* Admin y Gerente de Operaciones ignoran el alcance por diseño

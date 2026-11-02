@@ -11,6 +11,16 @@ type Localized = { es: string; en: string; pt: string } & Partial<
 >;
 
 const ROLE_NAMES: Record<string, Localized> = {
+  brandadmin: {
+    es: "Administrador de marca",
+    en: "Brand Administrator",
+    pt: "Administrador de marca",
+    de: "Markenadministrator",
+    fr: "Administrateur de marque",
+    it: "Amministratore di marchio",
+    pl: "Administrator marki",
+    nl: "Merkbeheerder",
+  },
   branchmanager: {
     es: "Gerente de sucursal",
     en: "Branch Manager",
@@ -159,6 +169,16 @@ const ROLE_NAMES: Record<string, Localized> = {
 };
 
 const ROLE_DESCRIPTIONS: Record<string, Localized> = {
+  brandadmin: {
+    es: "Administra sus marcas con poderes de administrador: sus clientes, cotizaciones, facturas y el personal que trabaja en ellas, con su nómina. No paga, no crea marcas ni reparte roles, y todo lo que hace queda en la bitácora.",
+    en: "Runs their brands with administrator powers: their clients, quotes, invoices and the staff who work there, payroll included. Can’t pay, create brands or hand out roles, and everything they do is logged.",
+    pt: "Administra suas marcas com poderes de administrador: seus clientes, orçamentos, faturas e o pessoal que trabalha nelas, com a folha. Não paga, não cria marcas nem distribui funções, e tudo o que faz fica registrado.",
+    de: "Leitet die eigenen Marken mit Administratorrechten: deren Kunden, Angebote, Rechnungen und das dort tätige Personal samt Lohnabrechnung. Kann nicht bezahlen, keine Marken anlegen und keine Rollen vergeben; alles wird protokolliert.",
+    fr: "Gère ses marques avec des droits d’administrateur : leurs clients, devis, factures et le personnel qui y travaille, paie comprise. Ne peut ni payer, ni créer de marques, ni attribuer de rôles, et tout est journalisé.",
+    it: "Gestisce i suoi marchi con poteri di amministratore: clienti, preventivi, fatture e il personale che vi lavora, buste paga incluse. Non paga, non crea marchi né assegna ruoli; tutto viene registrato.",
+    pl: "Zarządza swoimi markami z uprawnieniami administratora: ich klientami, ofertami, fakturami i pracującym tam personelem wraz z płacami. Nie płaci, nie tworzy marek ani nie nadaje ról, a wszystko jest rejestrowane.",
+    nl: "Beheert de eigen merken met beheerdersrechten: hun klanten, offertes, facturen en het personeel dat er werkt, inclusief loon. Kan niet betalen, geen merken aanmaken en geen rollen toekennen; alles wordt gelogd.",
+  },
   branchmanager: {
     es: "Administra sus sucursales con poderes de administrador. No paga, no contrata módulos ni cierra la cuenta, y todo lo que hace queda en la bitácora.",
     en: "Runs their branches with administrator powers. Can’t pay, buy modules or close the account, and everything they do is logged.",

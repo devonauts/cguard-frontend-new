@@ -20,6 +20,7 @@ import PartnerBillingView from "./PartnerBillingView";
 
 import AvisoSoloPrincipal from "@/components/sucursales/AvisoSoloPrincipal";
 import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
+import { useEsAdminDeMarca } from "@/hooks/useAccesoDeMarca";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import PartnerSeatLimit from "@/components/PartnerSeatLimit";
@@ -122,8 +123,14 @@ function Aviso({
 /** Un gerente de sucursal no paga: lo hace la principal (el servidor también lo cierra). */
 export default function BillingPage() {
   const gerente = useEsGerenteDeSucursal();
+  // Multimarca phase 2: a brand admin does not pay either.
+  const adminDeMarca = useEsAdminDeMarca();
 
-  return gerente ? <AvisoSoloPrincipal /> : <BillingPageDeLaPrincipal />;
+  return gerente || adminDeMarca ? (
+    <AvisoSoloPrincipal />
+  ) : (
+    <BillingPageDeLaPrincipal />
+  );
 }
 
 function BillingPageDeLaPrincipal() {

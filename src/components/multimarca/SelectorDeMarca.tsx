@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useEspacio } from "@/hooks/useEspacio";
 import { useEspacioDeMarca } from "@/hooks/useMarcas";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
 import { abrirSelectorDeMarca } from "@/lib/marcaElegida";
 
 /**
@@ -25,6 +26,8 @@ import { abrirSelectorDeMarca } from "@/lib/marcaElegida";
  * opens the big chooser.
  *
  * With a single brand nothing is chosen: the pill only says where you are.
+ * Someone limited to some brands (phase 2: brand admin) sees only theirs,
+ * and «all» reads «Todas mis marcas».
  */
 export default function SelectorDeMarca({
   compacto = false,
@@ -33,12 +36,14 @@ export default function SelectorDeMarca({
 }) {
   const { t } = useTranslation();
   const { activo, opciones, actual, entrar } = useEspacioDeMarca();
+  const { restringido } = useAccesoDeMarca();
 
   if (!activo || !actual) return null;
 
-  const etiqueta = actual.todas
-    ? t("ui.SelectorDeMarca.todas", "Todas las marcas")
-    : actual.nombre;
+  const todasLas = restringido
+    ? t("ui.SelectorDeMarca.todasMias", "Todas mis marcas")
+    : t("ui.SelectorDeMarca.todas", "Todas las marcas");
+  const etiqueta = actual.todas ? todasLas : actual.nombre;
   const color = actual.todas
     ? "var(--brand)"
     : actual.color || "var(--ink-faint)";
@@ -72,7 +77,9 @@ export default function SelectorDeMarca({
         )}
         <span className="truncate">
           {actual.todas
-            ? t("ui.SelectorDeMarca.todasCorto", "Marcas")
+            ? restringido
+              ? t("ui.SelectorDeMarca.todasMiasCorto", "Mis marcas")
+              : t("ui.SelectorDeMarca.todasCorto", "Marcas")
             : actual.codigo || actual.nombre}
         </span>
       </button>
@@ -97,9 +104,7 @@ export default function SelectorDeMarca({
         )}
         <SelectValue>
           <span className="truncate">
-            {actual.todas
-              ? t("ui.SelectorDeMarca.todas", "Todas las marcas")
-              : actual.nombre}
+            {actual.todas ? todasLas : actual.nombre}
           </span>
         </SelectValue>
       </SelectTrigger>
@@ -116,9 +121,7 @@ export default function SelectorDeMarca({
                   style={{ background: o.color || "var(--ink-faint)" }}
                 />
               )}
-              {o.todas
-                ? t("ui.SelectorDeMarca.todas", "Todas las marcas")
-                : o.nombre}
+              {o.todas ? todasLas : o.nombre}
               {o.principal && (
                 <span
                   className="text-[10px] font-semibold"

@@ -9,14 +9,23 @@
  * is a one-time payment («2 de 2 marcas en uso · Agregar otra marca (50 USD)»).
  *
  * Without the module the page shows nothing to manage and points to the store.
+ *
+ * Phase 2: someone limited to some brands (brand admin) sees only theirs and
+ * cannot create, edit, archive or buy (`marca_estructura` / `marca_pago`):
+ * the page says so instead of offering buttons the server would refuse.
+ * Phase 4: after a refunded slot the company may use more brands than it
+ * paid for (`slots.overLimit`): a banner says what that blocks and offers
+ * the slot.
  */
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
+  AlertTriangle,
   Archive,
   Building2,
   Layers,
+  Lock,
   Plus,
   ShoppingCart,
   Users,
@@ -33,6 +42,7 @@ import {
   EmptyState,
   FadeIn,
   GlassPanel,
+  InfoNote,
   PageContainer,
   PageHeader,
   Section,
@@ -42,13 +52,17 @@ import {
 import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useMarcas } from "@/hooks/useMarcas";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
+import { mensajeDeAccesoDeMarca } from "@/lib/multimarca/accesoDeMarca";
 import { type Marca } from "@/lib/api/marcasService";
 import { nombreDePais, terminosFiscales } from "@/lib/paisDeLaEmpresa";
 
 export default function MarcasPage() {
   const { t, i18n } = useTranslation();
   const { hasPermission } = usePermissions();
-  const puedeEditar = hasPermission("tenantEdit");
+  // Phase 2: only the company's administration changes the brands.
+  const { restringido } = useAccesoDeMarca();
+  const puedeEditar = hasPermission("tenantEdit") && !restringido;
   const [verArchivadas, setVerArchivadas] = useState(false);
   const { activo, lista, todas, marcas, cupos } = useMarcas({
     archivadas: verArchivadas,
@@ -58,6 +72,8 @@ export default function MarcasPage() {
   const [creando, setCreando] = useState(false);
   const visibles = verArchivadas ? todas : marcas;
   const llenos = !!cupos && cupos.used >= cupos.paid;
+  // Phase 4: a refund left more brands in use than paid for.
+  const excedido = !!cupos && (!!cupos.overLimit || cupos.used > cupos.paid);
 
   const nueva = () => {
     setEditando(null);
@@ -106,8 +122,75 @@ export default function MarcasPage() {
           <ErrorDeCarga onRetry={() => lista.refetch()} />
         ) : (
           <div className="space-y-4">
+            {restringido && (
+              <InfoNote
+                icon={<Lock />}
+                title={t(
+                  "ui.MarcasPage.soloLecturaTitulo",
+                  "Ves tus marcas, no las cambias",
+                )}
+                tone="neutral"
+              >
+                {mensajeDeAccesoDeMarca("marca_estructura")}
+              </InfoNote>
+            )}
+
+            {/* ── Phase 4: more brands in use than paid (a refund) ───── */}
+            {excedido && !restringido && (
+              <FadeIn>
+                <div
+                  className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border p-4"
+                  role="alert"
+                  style={{
+                    background: "color-mix(in oklab, var(--warn) 10%, transparent)",
+                    borderColor: "color-mix(in oklab, var(--warn) 32%, transparent)",
+                  }}
+                >
+                  <div className="flex min-w-0 items-start gap-3">
+                    <AlertTriangle
+                      className="mt-0.5 size-5 shrink-0"
+                      style={{ color: "var(--warn-text)" }}
+                    />
+                    <div className="min-w-0">
+                      <div
+                        className="text-sm font-semibold"
+                        style={{ color: "var(--warn-text)" }}
+                      >
+                        {t(
+                          "ui.MarcasPage.excedidoTitulo",
+                          "Usas {{usadas}} marcas y tienes {{pagadas}} pagadas",
+                          { usadas: cupos!.used, pagadas: cupos!.paid },
+                        )}
+                      </div>
+                      <p className="mt-0.5 text-sm" style={{ color: "var(--ink-soft)" }}>
+                        {t(
+                          "ui.MarcasPage.excedidoDesc",
+                          "Se devolvió el pago de una marca adicional. Tus marcas y sus datos siguen igual, pero no puedes crear ni volver a activar otra hasta agregar una marca o archivar una que no uses.",
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  {puedeEditar && cupo.puede && (
+                    <Button
+                      disabled={cupo.comprando}
+                      type="button"
+                      variant="brand"
+                      onClick={() => void cupo.comprar()}
+                    >
+                      <ShoppingCart className="mr-1.5 size-4" />
+                      {cupo.precio
+                        ? t("ui.MarcasPage.agregarOtra", "Agregar otra marca ({{precio}})", {
+                            precio: cupo.precio,
+                          })
+                        : t("ui.MarcasPage.agregarOtraSinPrecio", "Agregar otra marca")}
+                    </Button>
+                  )}
+                </div>
+              </FadeIn>
+            )}
+
             {/* ── Slots: how many brands are paid and in use ────────── */}
-            {cupos && (
+            {cupos && !restringido && (
               <FadeIn>
                 <Section>
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -120,7 +203,12 @@ export default function MarcasPage() {
                         )}
                       </div>
                       <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                        {llenos
+                        {excedido
+                          ? t(
+                              "ui.MarcasPage.cuposExcedidos",
+                              "Agrega una marca o archiva una para volver a crear.",
+                            )
+                          : llenos
                           ? t(
                               "ui.MarcasPage.cuposLlenos",
                               "Para crear otra marca, agrega una más.",

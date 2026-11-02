@@ -30,6 +30,10 @@ import {
 } from "@/components/kit";
 import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
 import { useEtiquetasDeMarca } from "@/hooks/useMarcas";
+import AccesoDeMarcaDePersona, {
+  rolesDeFila,
+  useAccesosDeMarca,
+} from "@/components/multimarca/AccesoDeMarcaDePersona";
 
 export type AdminUserCardAction = {
   label: string;
@@ -152,6 +156,8 @@ export default function AdminUserCardsGrid({
   const { t } = useTranslation();
   // Multimarca («Todas las marcas»): the brand each person is registered in.
   const marcas = useEtiquetasDeMarca({ personas: true });
+  // Multimarca phase 2: which brands each person sees (admins only).
+  const accesosDeMarca = useAccesosDeMarca();
 
   if (loading)
     return (
@@ -238,6 +244,14 @@ export default function AdminUserCardsGrid({
                     {t(st.labelKey, st.label)}
                   </StatusBadge>
                 </div>
+                {accesosDeMarca.activo && (
+                  <AccesoDeMarcaDePersona
+                    accesos={accesosDeMarca}
+                    className="mt-1.5"
+                    roles={rolesDeFila(u)}
+                    userId={id}
+                  />
+                )}
               </div>
               {acts.length > 0 && (
                 <div onClick={(e) => e.stopPropagation()}>

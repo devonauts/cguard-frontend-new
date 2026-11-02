@@ -57,6 +57,7 @@ import {
 } from "@/lib/freeTier";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
+import { useEsAdminDeMarca } from "@/hooks/useAccesoDeMarca";
 import { announceAddonsChanged } from "@/lib/addonRequired";
 import { soloFecha } from "@/lib/horaDeLaEmpresa";
 import {
@@ -245,8 +246,11 @@ export default function ModulosAdicionalesPage() {
   };
 
   const gerente = useEsGerenteDeSucursal();
+  // Multimarca phase 2: a brand admin sees the store but does not buy either.
+  const adminDeMarca = useEsAdminDeMarca();
   // Un gerente de sucursal ve la tienda pero no contrata: eso es de la principal.
-  const esDeSocio = data?.reason === "la_factura_el_socio" || gerente;
+  const esDeSocio =
+    data?.reason === "la_factura_el_socio" || gerente || adminDeMarca;
   /* Los mensuales primero; luego los de pago único. */
   const modulos = data
     ? [...data.modules].sort(
@@ -278,18 +282,26 @@ export default function ModulosAdicionalesPage() {
             {esDeSocio && (
               <FadeIn>
                 <Section
-                  title={t(
+                  title={
                     gerente
-                      ? "sucursales.gerente.soloPrincipalTitulo"
-                      : "modulosAdicionales.socio.titulo",
-                  )}
+                      ? t("sucursales.gerente.soloPrincipalTitulo")
+                      : adminDeMarca
+                        ? t(
+                            "ui.AccesoDeMarca.soloEmpresaTitulo",
+                            "Esto lo hace la administración de la empresa",
+                          )
+                        : t("modulosAdicionales.socio.titulo")
+                  }
                 >
                   <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                    {t(
-                      gerente
-                        ? "sucursales.gerente.soloPrincipalDesc"
-                        : "modulosAdicionales.socio.desc",
-                    )}
+                    {gerente
+                      ? t("sucursales.gerente.soloPrincipalDesc")
+                      : adminDeMarca
+                        ? t(
+                            "ui.AccesoDeMarca.soloEmpresaDesc",
+                            "Como administrador de marca gestionas tus marcas, pero los pagos, los módulos y la cuenta los gestiona un administrador de la empresa.",
+                          )
+                        : t("modulosAdicionales.socio.desc")}
                   </p>
                 </Section>
               </FadeIn>
@@ -376,7 +388,7 @@ export default function ModulosAdicionalesPage() {
                     interruptor={{
                       checked: loTiene ? encendido : tiene,
                       disabled: loTiene
-                        ? ocupado || gerente
+                        ? ocupado || gerente || adminDeMarca
                         : ocupado || tiene || !puedeComprar,
                       onChange: (on) => {
                         if (loTiene) void (on ? encender(m) : apagar(m));
@@ -392,7 +404,7 @@ export default function ModulosAdicionalesPage() {
                       <>
                         <span />
                         {apagado ? (
-                          gerente ? null : (
+                          gerente || adminDeMarca ? null : (
                             <Button
                               disabled={ocupado}
                               type="button"

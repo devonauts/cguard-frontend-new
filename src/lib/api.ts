@@ -16,6 +16,10 @@ import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 import { CABECERA_DE_MARCA, cabeceraDeMarca } from "@/lib/marcaElegida";
+import {
+  corregirMarcaFueraDeAlcance,
+  textoDeError,
+} from "@/lib/multimarca/accesoDeMarca";
 import { resolveApiBase } from "@/lib/apiBase";
 import { handleDesktopApiError } from "@/lib/desktop";
 
@@ -176,6 +180,20 @@ function normalizeError(error: AxiosError): ApiError {
   }
 
   const code = (data?.code as string | undefined) ?? error.code;
+
+  // Multimarca: a refusal of the brand access (`marca_*`) in the reader's
+  // language; a top-bar brand outside access is corrected once.
+  try {
+    message = textoDeError(data, message);
+    corregirMarcaFueraDeAlcance(
+      status,
+      data,
+      String(error.config?.method || "GET"),
+      !!(error.config?.headers as any)?.[CABECERA_DE_MARCA],
+    );
+  } catch {
+    /* keep the server's text */
+  }
 
   return {
     status,

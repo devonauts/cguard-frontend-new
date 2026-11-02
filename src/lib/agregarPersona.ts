@@ -29,6 +29,7 @@ import {
   secuenciaLimpia,
   type Traductor,
 } from "@/lib/secuenciaDeRotacion";
+import { accesoParaGuardar } from "@/lib/multimarca/accesoDeMarca";
 
 export type TipoDePersona = "vigilante" | "supervisor" | "oficina";
 export const TIPOS: readonly TipoDePersona[] = [
@@ -75,6 +76,13 @@ export interface Datos {
    * the top bar, else the principal).
    */
   marca?: string;
+  /**
+   * Multimarca phase 2, office only: the brands this person sees, as ticked
+   * in «Acceso por marca» (`null` = every brand). `undefined` = the field was
+   * not offered (no module, or the creator is not an administrator): nothing
+   * is sent and the server keeps its default.
+   */
+  accesoDeMarca?: string[] | null;
 }
 
 export const datosVacios = (): Datos => ({
@@ -463,6 +471,13 @@ const opcional = (s: string) => (s.trim() ? s.trim() : undefined);
 /** POST /security-guard/invite → `entries[0]`. */
 /** Multimarca: the registration brand, only when one was chosen. */
 const conMarca = (d: Datos) => (d.marca ? { homeBrandId: d.marca } : {});
+/** Multimarca phase 2: the brands an office person sees, with their role. */
+const conAccesoDeMarca = (d: Datos, rol?: RolDeOficina | null) => {
+  if (d.accesoDeMarca === undefined) return {};
+  const v = accesoParaGuardar(rol ? claveDeRol(rol) : d.rol, d.accesoDeMarca);
+
+  return v === undefined ? {} : { brandAccess: v };
+};
 
 export function cuerpoDeVigilante(d: Datos) {
   const base = {
@@ -545,6 +560,7 @@ export function cuerpoDeOficina(
     invited: true,
     pending: true,
     ...conMarca(d),
+    ...conAccesoDeMarca(d, rol),
   };
 }
 

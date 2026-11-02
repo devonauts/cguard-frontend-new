@@ -7,6 +7,7 @@ import LogoDeMarca from "./LogoDeMarca";
 
 import { useEspacio } from "@/hooks/useEspacio";
 import { useEspacioDeMarca, type OpcionDeMarca } from "@/hooks/useMarcas";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
 import {
   EVENTO_ELEGIR_MARCA,
   hayQuePreguntarLaMarca,
@@ -33,6 +34,8 @@ export default function ElegirMarca() {
   const { activo, cargado, opciones, actual, guardado, entrar } =
     useEspacioDeMarca();
   const espacio = useEspacio();
+  // Phase 2: someone limited to some brands chooses among theirs only.
+  const { restringido } = useAccesoDeMarca();
   const [abierto, setAbierto] = useState(false);
   const [entrando, setEntrando] = useState<string | null>(null);
   // Bumped when the branch question is answered, to look again.
@@ -89,13 +92,22 @@ export default function ElegirMarca() {
   };
 
   const nombre = (o: OpcionDeMarca) =>
-    o.todas ? t("ui.SelectorDeMarca.todas", "Todas las marcas") : o.nombre;
+    o.todas
+      ? restringido
+        ? t("ui.SelectorDeMarca.todasMias", "Todas mis marcas")
+        : t("ui.SelectorDeMarca.todas", "Todas las marcas")
+      : o.nombre;
   const detalle = (o: OpcionDeMarca) =>
     o.todas
-      ? t(
-          "ui.ElegirMarca.todasDesc",
-          "Los clientes y el personal de todas las marcas.",
-        )
+      ? restringido
+        ? t(
+            "ui.ElegirMarca.todasMiasDesc",
+            "Los clientes y el personal de las marcas que tienes asignadas.",
+          )
+        : t(
+            "ui.ElegirMarca.todasDesc",
+            "Los clientes y el personal de todas las marcas.",
+          )
       : o.principal
         ? t(
             "ui.ElegirMarca.principalDesc",

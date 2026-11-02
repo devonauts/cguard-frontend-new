@@ -12,7 +12,11 @@ import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { announceAddonRequired } from "@/lib/addonRequired";
 import { isFreeTierSession } from "@/lib/freeTier";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
-import { cabeceraDeMarca } from "@/lib/marcaElegida";
+import { CABECERA_DE_MARCA, cabeceraDeMarca } from "@/lib/marcaElegida";
+import {
+  corregirMarcaFueraDeAlcance,
+  textoDeError,
+} from "@/lib/multimarca/accesoDeMarca";
 import { resolveApiBase } from "@/lib/apiBase";
 import { handleDesktopApiError } from "@/lib/desktop";
 import {
@@ -297,6 +301,19 @@ export class ApiService {
           }
         }
       }
+      // Multimarca: a refusal of the brand access (`marca_*`) in the reader's
+      // language, and a top-bar brand outside access corrected once.
+      try {
+        corregirMarcaFueraDeAlcance(
+          response.status,
+          data,
+          method,
+          !!headers[CABECERA_DE_MARCA],
+        );
+        msg = textoDeError(data, msg);
+      } catch {
+        /* keep the server's text */
+      }
       // Lanzar ApiError para que la UI decida mostrar toast
       throw new ApiError(msg, response.status, fullResponse);
     }
@@ -393,6 +410,11 @@ export class ApiService {
         `Error: ${response.status} ${response.statusText}`;
       if (typeof text === "string" && /<\s*!?doctype|<html/i.test(text)) {
         msg = `Error: ${response.status} ${response.statusText}`;
+      }
+      try {
+        msg = textoDeError(data, msg);
+      } catch {
+        /* keep the server's text */
       }
       throw new ApiError(msg, response.status, data);
     }

@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
+import { useEsAdminDeMarca } from "@/hooks/useAccesoDeMarca";
+import { mensajeDeAccesoDeMarca } from "@/lib/multimarca/accesoDeMarca";
 import { useMarcas } from "@/hooks/useMarcas";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { marcasService } from "@/lib/api/marcasService";
@@ -31,6 +33,8 @@ export function useComprarCupoDeMarca() {
   const { precioExtra } = useMarcas();
   const tienda = useTiendaDeModulos();
   const gerente = useEsGerenteDeSucursal();
+  // Phase 2: a brand admin never buys slots (403 `marca_pago`).
+  const adminDeMarca = useEsAdminDeMarca();
   const gratis = isFreeTierUser(user);
   const [comprando, setComprando] = useState(false);
 
@@ -39,6 +43,7 @@ export function useComprarCupoDeMarca() {
      partner resale, so the button stays. A branch manager never pays. */
   const puede =
     !gerente &&
+    !adminDeMarca &&
     (!!tienda.data?.canPurchase || tienda.data?.reason === "la_factura_el_socio");
   const precio = precioExtra
     ? precioDeModulo(precioExtra.amount, precioExtra.currency)
@@ -83,6 +88,18 @@ export function useComprarCupoDeMarca() {
 
         return false;
       }
+      // A partner company whose partner bills by hand: the slot is a request
+      // the partner approves (the store path for such a company).
+      if (r.estado !== "active" && r.estado !== "comp") {
+        toast.info(
+          t(
+            "ui.ComprarCupoDeMarca.solicitada",
+            "Pedido enviado a tu proveedor. La marca queda disponible en cuanto lo apruebe.",
+          ),
+        );
+
+        return false;
+      }
       toast.success(
         t("ui.ComprarCupoDeMarca.exito", "Listo: ya puedes agregar otra marca."),
       );
@@ -104,6 +121,14 @@ export function useComprarCupoDeMarca() {
     puede,
     precio,
     /** Why buying is not possible now (plain words), when it is not. */
-    motivo: puede ? null : gerente ? null : motivo ? textoDeMotivo(motivo) : null,
+    motivo: puede
+      ? null
+      : adminDeMarca
+        ? mensajeDeAccesoDeMarca("marca_pago")
+        : gerente
+          ? null
+          : motivo
+            ? textoDeMotivo(motivo)
+            : null,
   };
 }

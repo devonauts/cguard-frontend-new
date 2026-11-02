@@ -32,6 +32,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { esRutaDeReglaDeEmpresa } from "@/components/sucursales/reglasDeEmpresa";
 import { useEsGerenteDeSucursal } from "@/hooks/useGerenteDeSucursal";
+import { useEsAdminDeMarca } from "@/hooks/useAccesoDeMarca";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { IconTile } from "@/components/kit";
@@ -219,7 +220,10 @@ export function SaveBar({
 }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const gerente = useEsGerenteDeSucursal();
+  // Multimarca phase 2: a brand admin reads the company-wide rules too.
+  const gerenteDeSucursal = useEsGerenteDeSucursal();
+  const adminDeMarca = useEsAdminDeMarca();
+  const gerente = gerenteDeSucursal || adminDeMarca;
 
   // Company-wide rules: a branch manager reads them, headquarters saves them
   // (the server refuses it anyway). The notice above the page says why.

@@ -37,6 +37,12 @@ import { Button } from "@/components/ui/button";
 import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 import JornadaEnLinea from "@/components/alta/JornadaEnLinea";
 import CampoDeMarca from "@/components/multimarca/CampoDeMarca";
+import CampoAccesoDeMarca, {
+  usePuedeDarAccesoDeMarca,
+} from "@/components/multimarca/CampoAccesoDeMarca";
+import { useMarcas } from "@/hooks/useMarcas";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
+import { errorDeAcceso, rolesConMarca } from "@/lib/multimarca/accesoDeMarca";
 import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
 import { ApiService } from "@/services/api/apiService";
 import {
@@ -257,7 +263,25 @@ export default function AgregarPersonaPage() {
     () => (tipo ? validarDatos(tipo, datos) : {}),
     [tipo, datos],
   );
-  const rolElegido = roles.find((r) => r.id === datos.rol) || null;
+  /* Multimarca (phase 2): «Administrador de marca» is offered with the module;
+     someone limited to brands does not hand out admin-level roles. */
+  const { activo: moduloMarca } = useMarcas();
+  const { restringido: limitadoAMarcas } = useAccesoDeMarca();
+  const puedeDarMarca = usePuedeDarAccesoDeMarca();
+  const [intentoMarca, setIntentoMarca] = useState(false);
+  const rolesVisibles = useMemo(
+    () =>
+      rolesConMarca(roles, {
+        modulo: moduloMarca,
+        restringido: limitadoAMarcas,
+        actual: datos.rol,
+      }),
+    [roles, moduloMarca, limitadoAMarcas, datos.rol],
+  );
+  const rolElegido = rolesVisibles.find((r) => r.id === datos.rol) || null;
+  const rolParaMarca = String(
+    rolElegido?.slug || rolElegido?.name || datos.rol || "",
+  );
 
   // ── Loading ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -587,6 +611,22 @@ export default function AgregarPersonaPage() {
   // The calls live in lib/crearPersona (shared with «Agregar varias personas»).
   const crear = async () => {
     if (!tipo || creando) return;
+    // Multimarca: a brand admin needs at least one brand.
+    if (
+      tipo === "oficina" &&
+      puedeDarMarca &&
+      errorDeAcceso(rolParaMarca, datos.accesoDeMarca ?? null)
+    ) {
+      setIntentoMarca(true);
+      toast.error(
+        t(
+          "ui.CampoAccesoDeMarca.sinMarcas",
+          "Marca al menos una marca: sin ninguna, no vería nada.",
+        ),
+      );
+
+      return;
+    }
     setCreando(true);
     try {
       const r = await crearPersona(tipo, datos, horarioEfectivo, {
@@ -1034,7 +1074,7 @@ export default function AgregarPersonaPage() {
                               "Elige su rol",
                             )}
                           </option>
-                          {roles.map((r) => (
+                          {rolesVisibles.map((r) => (
                             <option key={r.id} value={r.id}>
                               {roleDisplayName(
                                 String(r.slug || r.name || r.id),
@@ -1043,6 +1083,13 @@ export default function AgregarPersonaPage() {
                           ))}
                         </select>
                       </FormField>
+                      {/* Multimarca: the brands first, then the sites inside them. */}
+                      <CampoAccesoDeMarca
+                        mostrarError={intentoMarca}
+                        rol={rolParaMarca}
+                        valor={datos.accesoDeMarca ?? null}
+                        onChange={(v) => cambiar({ accesoDeMarca: v })}
+                      />
                       <div className="space-y-2">
                         <p className="text-sm font-medium">
                           {t("agregarPersona.campos.queVe", "¿Qué puede ver?")}
