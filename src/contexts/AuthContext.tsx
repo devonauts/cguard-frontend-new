@@ -80,7 +80,13 @@ export function borrarAlmacenamientoDeSesion(): void {
     /* modo privado / cuota: no hay nada que limpiar */
   }
   try {
+    // The one note for the login screen («why you were signed out», e.g. after
+    // a password change) survives: it is a sentence, not a credential, and
+    // login.tsx reads and removes it once.
+    const exitReason = sessionStorage.getItem("authExitReason");
+
     sessionStorage.clear();
+    if (exitReason) sessionStorage.setItem("authExitReason", exitReason);
   } catch {
     /* ignore */
   }
