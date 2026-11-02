@@ -20120,6 +20120,53 @@
       "correoDe": "Les e-mails viennent de",
       "portal": "Portail et appli client",
       "direccionDelCorreo": "L’adresse d’envoi est celle de la plateforme ; le client voit le nom de la marque."
+    },
+    "PortalDeMarca": {
+      "titulo": "Portail clients",
+      "ayuda": "Ses clients ouvrent le portail à une adresse de cette marque. Les liens des factures, devis et mots de passe y mènent.",
+      "cargando": "Chargement…",
+      "noDisponible": "Les domaines personnalisés ne sont pas encore disponibles sur cette installation.",
+      "activoAyuda": "En ligne avec HTTPS. Ses clients reçoivent déjà leurs liens vers cette adresse.",
+      "nombre": "Adresse du portail",
+      "nombreAyuda": "Un sous-domaine de la marque, par exemple portail.votremarque.com.",
+      "conectar": "Connecter le domaine",
+      "comprobar": "Vérifier",
+      "cambiar": "Modifier",
+      "quitar": "Retirer le domaine",
+      "quitarTitulo": "Retirer {{host}} ?",
+      "quitarMensaje": "Ses clients recevront à nouveau les liens du portail de l’entreprise. Vous pourrez le reconnecter quand vous voudrez.",
+      "guardado": "Domaine enregistré. Créez maintenant l’enregistrement dans votre DNS.",
+      "listo": "Le portail de cette marque fonctionne maintenant sur son domaine.",
+      "todaviaNo": "Pas encore prêt. Le DNS peut mettre quelques minutes à se propager.",
+      "copiado": "Copié",
+      "copiar": "Copier",
+      "dnsTitulo": "Créez cet enregistrement dans le DNS de la marque",
+      "tipo": "Type",
+      "nombreDns": "Nom",
+      "valor": "Valeur",
+      "nombreCompleto": "Si votre fournisseur demande le nom complet, saisissez {{completo}}.",
+      "guiaTitulo": "Où gérez-vous le DNS ?",
+      "guiaDespues": "Cliquez ensuite sur « Vérifier ». Le DNS prend en général quelques minutes ; le certificat HTTPS est émis automatiquement.",
+      "ultimaComprobacion": "Dernière vérification : {{fecha}}",
+      "estado": {
+        "activo": "Actif",
+        "verificando": "Vérification",
+        "pendienteTls": "Préparation HTTPS",
+        "malConfigurado": "Vérifiez le DNS",
+        "desactivado": "Désactivé",
+        "pendienteDns": "En attente du DNS"
+      },
+      "errores": {
+        "apex": "Utilisez un sous-domaine, par exemple « portail.votremarque.com ». Son site web continue de fonctionner comme aujourd’hui.",
+        "reservado": "Ce nom ne peut pas être utilisé. Saisissez un domaine de la marque.",
+        "invalido": "Ce domaine n’est pas valide. Vérifiez l’orthographe.",
+        "ocupado": "Ce domaine est déjà utilisé.",
+        "apagado": "Les domaines personnalisés ne sont pas encore disponibles.",
+        "borde": "Le service de domaines n’a pas répondu. Vérifiez à nouveau dans quelques minutes."
+      },
+      "fallo": {
+        "dns": "Nous ne voyons pas encore l’enregistrement. Réponse du service de domaines : {{detalle}}"
+      }
     }
   },
   "visitantes": {

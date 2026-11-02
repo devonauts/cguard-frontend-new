@@ -19561,6 +19561,53 @@
       "correoDe": "Los correos llegan de",
       "portal": "Portal y app del cliente",
       "direccionDelCorreo": "La dirección de envío es la de la plataforma; el cliente ve el nombre de la marca."
+    },
+    "PortalDeMarca": {
+      "titulo": "Portal de clientes",
+      "ayuda": "Sus clientes abren el portal en una dirección de esta marca. Los enlaces de facturas, cotizaciones y contraseñas llevan a esa dirección.",
+      "cargando": "Cargando…",
+      "noDisponible": "Los dominios propios todavía no están disponibles en esta instalación.",
+      "activoAyuda": "Funciona con HTTPS. Sus clientes ya reciben los enlaces a esta dirección.",
+      "nombre": "Dirección del portal",
+      "nombreAyuda": "Un subdominio de la marca, por ejemplo portal.sumarca.com.",
+      "conectar": "Conectar dominio",
+      "comprobar": "Comprobar",
+      "cambiar": "Cambiar",
+      "quitar": "Quitar dominio",
+      "quitarTitulo": "¿Quitar {{host}}?",
+      "quitarMensaje": "Sus clientes volverán a recibir los enlaces del portal de la empresa. Puedes volver a conectarlo cuando quieras.",
+      "guardado": "Dominio guardado. Ahora crea el registro en tu DNS.",
+      "listo": "El portal de esta marca ya funciona en su dominio.",
+      "todaviaNo": "Todavía no está listo. El DNS puede tardar unos minutos en propagarse.",
+      "copiado": "Copiado",
+      "copiar": "Copiar",
+      "dnsTitulo": "Crea este registro en el DNS de la marca",
+      "tipo": "Tipo",
+      "nombreDns": "Nombre",
+      "valor": "Valor",
+      "nombreCompleto": "Si tu proveedor pide el nombre completo, escribe {{completo}}.",
+      "guiaTitulo": "¿Dónde administras el DNS?",
+      "guiaDespues": "Después pulsa «Comprobar». El DNS suele tardar unos minutos; el certificado HTTPS se emite solo.",
+      "ultimaComprobacion": "Última comprobación: {{fecha}}",
+      "estado": {
+        "activo": "Activo",
+        "verificando": "Verificando",
+        "pendienteTls": "Preparando HTTPS",
+        "malConfigurado": "Revisa el DNS",
+        "desactivado": "Desactivado",
+        "pendienteDns": "Esperando el DNS"
+      },
+      "errores": {
+        "apex": "Usa un subdominio, por ejemplo «portal.sumarca.com». Así su sitio web sigue funcionando como hasta ahora.",
+        "reservado": "Ese nombre no se puede usar. Escribe un dominio de la marca.",
+        "invalido": "Ese dominio no es válido. Revisa que esté bien escrito.",
+        "ocupado": "Ese dominio ya está en uso.",
+        "apagado": "Los dominios propios todavía no están disponibles.",
+        "borde": "El servicio de dominios no respondió. Vuelve a comprobarlo en unos minutos."
+      },
+      "fallo": {
+        "dns": "Todavía no vemos el registro. Respuesta del servicio de dominios: {{detalle}}"
+      }
     }
   },
   "map": {

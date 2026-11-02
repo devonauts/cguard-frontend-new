@@ -139,6 +139,61 @@ export const marcasService = {
     ApiService.post(`${base()}/slots/purchase`, { quantity }),
 };
 
+/* ── Phase 5: the brand's own client-portal domain ─────────────────────── */
+
+/** The status word the server derives (never stored). */
+export type EstadoDeDominioDeMarca =
+  | "pendiente_dns"
+  | "verificando"
+  | "pendiente_tls"
+  | "activo"
+  | "mal_configurado"
+  | "desactivado";
+
+export interface DominioDeMarca {
+  id: string;
+  brandId: string;
+  hostname: string;
+  status: EstadoDeDominioDeMarca;
+  isActive: boolean;
+  verificationStatus: string;
+  sslStatus: string;
+  onEdge: boolean;
+  verifiedAt: string | null;
+  activatedAt: string | null;
+  lastCheckedAt: string | null;
+  failureCount: number;
+  /** `code` = an edge failure (`proveedor_caido`…) or `verification` with the edge's DNS text in `detail`. */
+  failure: { code: string; detail: string | null } | null;
+  createdAt: string | null;
+}
+
+export interface PortalDeMarca {
+  domain: DominioDeMarca | null;
+  instructions: Array<{ type: "CNAME" | "TXT"; name: string; value: string; purpose: string }>;
+  /** What goes in the DNS «name» field (relative) and the registered domain. */
+  dns: { host: string; domain: string } | null;
+  cnameTarget: string;
+  /** The edge (certificates) is configured on this installation. */
+  edgeReady: boolean;
+  /** Custom domains are switched on for this installation. */
+  enabled: boolean;
+}
+
+/**
+ * GET/PUT/DELETE `/brands/:id/portal-domain` (+ POST `/verify`). A company
+ * admin manages any brand; a brand admin only their own (403 `marca_estructura`).
+ */
+export const dominioDeMarcaService = {
+  ver: (id: string): Promise<PortalDeMarca> => ApiService.get(`${base()}/${id}/portal-domain`),
+  fijar: (id: string, hostname: string): Promise<PortalDeMarca> =>
+    ApiService.put(`${base()}/${id}/portal-domain`, { hostname }),
+  comprobar: (id: string): Promise<PortalDeMarca> =>
+    ApiService.post(`${base()}/${id}/portal-domain/verify`, {}),
+  quitar: (id: string): Promise<{ hostname: string; edgeCleaned: boolean }> =>
+    ApiService.delete(`${base()}/${id}/portal-domain`),
+};
+
 /**
  * PHASE 2 — which brands each office person sees (`tenantUsers.brandAccess`).
  * `null` = every brand; an array narrows the whole CRM to those brands. A

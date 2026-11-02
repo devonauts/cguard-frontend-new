@@ -14,6 +14,10 @@
  * brand route), accent colour, PDF layout, the sender name of its mails, its
  * own invoice prefix and website, with a live preview «Así ve esta marca su
  * cliente».
+ *
+ * Phase 5 — «Portal de clientes»: the brand's own client-portal domain
+ * (`PortalDeClientesDeMarca`), outside the form's fieldset because a brand
+ * admin may manage it for their own brand even where the rest is read-only.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,6 +37,7 @@ import { revisarMarca } from "./reglasDeMarca";
 import { useComprarCupoDeMarca } from "./comprarCupoDeMarca";
 import { prefijoValido, webValida } from "./identidadDeMarca";
 import VistaDeMarcaParaElCliente from "./VistaDeMarcaParaElCliente";
+import PortalDeClientesDeMarca from "./PortalDeClientesDeMarca";
 
 import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
 import { Button } from "@/components/ui/button";
@@ -808,6 +813,13 @@ export function EditorDeMarca({
           idioma={i18n.language}
         />
       </fieldset>
+
+      {/* ── Phase 5: the brand's client-portal domain (saved on its own) ── */}
+      {marca && !marca.archivedAt && (
+        <div className="mt-5">
+          <PortalDeClientesDeMarca brandId={marca.id} />
+        </div>
+      )}
     </Modal>
   );
 }
