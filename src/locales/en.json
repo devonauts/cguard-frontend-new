@@ -1052,7 +1052,8 @@
         "Titleinput": "Enter note title",
         "Titlenote": "Title *",
         "NoFilesSelected": "No files selected",
-        "selectDate": "Select"
+        "selectDate": "Select",
+        "editTitle": "Edit note"
       },
       "addedBy": "Added by",
       "detailsTitle": "Note details",

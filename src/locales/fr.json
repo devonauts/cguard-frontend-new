@@ -662,7 +662,8 @@
         "Titleinput": "Saisissez le titre de la note",
         "Titlenote": "Titre *",
         "NoFilesSelected": "Aucun fichier sélectionné",
-        "selectDate": "Sélectionner"
+        "selectDate": "Sélectionner",
+        "editTitle": "Modifier la note"
       },
       "addedBy": "Ajouté par",
       "detailsTitle": "Détail de la note",

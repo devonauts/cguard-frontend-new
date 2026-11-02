@@ -5327,7 +5327,8 @@
         "Titleinput": "Insira o título da nota",
         "Titlenote": "Título *",
         "NoFilesSelected": "Nenhum arquivo selecionado",
-        "selectDate": "Selecionar"
+        "selectDate": "Selecionar",
+        "editTitle": "Editar nota"
       },
       "noteCreateFailed": "Não foi possível criar a nota",
       "noteCreated": "Nota criada com sucesso",

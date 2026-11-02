@@ -662,7 +662,8 @@
         "Titleinput": "Voer de titel van de notitie in",
         "Titlenote": "Titel *",
         "NoFilesSelected": "Geen bestanden gekozen",
-        "selectDate": "Selecteren"
+        "selectDate": "Selecteren",
+        "editTitle": "Notitie bewerken"
       },
       "addedBy": "Toegevoegd door",
       "detailsTitle": "Details van de notitie",

@@ -662,7 +662,8 @@
         "Titleinput": "Proszę wpisać tytuł notatki",
         "Titlenote": "Tytuł *",
         "NoFilesSelected": "Nie wybrano plików",
-        "selectDate": "Wybierz"
+        "selectDate": "Wybierz",
+        "editTitle": "Edytuj notatkę"
       },
       "addedBy": "Dodane przez",
       "detailsTitle": "Szczegóły notatki",

@@ -662,7 +662,8 @@
         "Titleinput": "Titel der Notiz eingeben",
         "Titlenote": "Titel *",
         "NoFilesSelected": "Keine Dateien ausgewählt",
-        "selectDate": "Auswählen"
+        "selectDate": "Auswählen",
+        "editTitle": "Notiz bearbeiten"
       },
       "addedBy": "Hinzugefügt von",
       "detailsTitle": "Details der Notiz",
