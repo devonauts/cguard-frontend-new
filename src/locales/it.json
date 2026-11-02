@@ -1965,7 +1965,12 @@
           "excelValidationFailed": "Impossibile validare il file Excel prima del caricamento. Verifica il formato.",
           "missingColumns": "Mancano colonne obbligatorie: {{columns}}",
           "selectFile": "Seleziona un file"
-        }
+        },
+        "summaryOk_one": "{{count}} guardia importata",
+        "summaryOk_other": "{{count}} guardie importate",
+        "summaryWithErrors": "Importate: {{ok}} · Non importate: {{fallidas}}",
+        "rowError": "Riga {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Non è stato inviato nessun invito: inviali dall'elenco quando vuoi."
       },
       "labels": {
         "name": "Nome",

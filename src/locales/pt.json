@@ -4542,7 +4542,12 @@
         "requiredColumns": "Nome, E-mail, Telefone, Status, Documento, Data Contrato, Gênero, Tipo Sanguíneo, Credenciais, Data Nasc., Local Nasc., Est. Civil, Escolaridade, Endereço",
         "requiredColumnsLabel": "Colunas obrigatórias:",
         "templateDownloaded": "Modelo baixado",
-        "title": "Importar Vigilantes do Excel"
+        "title": "Importar Vigilantes do Excel",
+        "summaryOk_one": "{{count}} vigilante importado",
+        "summaryOk_other": "{{count}} vigilantes importados",
+        "summaryWithErrors": "Importados: {{ok}} · Não importados: {{fallidas}}",
+        "rowError": "Linha {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Nenhum convite foi enviado: envie pela lista quando quiser."
       },
       "labels": {
         "name": "Nome",

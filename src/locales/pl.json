@@ -1965,7 +1965,14 @@
           "excelValidationFailed": "Nie udało się sprawdzić pliku Excel przed wgraniem. Proszę zweryfikować format.",
           "missingColumns": "Brakuje wymaganych kolumn: {{columns}}",
           "selectFile": "Proszę wybrać plik"
-        }
+        },
+        "summaryOk_one": "Zaimportowano {{count}} ochroniarza",
+        "summaryOk_few": "Zaimportowano {{count}} ochroniarzy",
+        "summaryOk_many": "Zaimportowano {{count}} ochroniarzy",
+        "summaryOk_other": "Zaimportowano {{count}} ochroniarzy",
+        "summaryWithErrors": "Zaimportowano: {{ok}} · Nie zaimportowano: {{fallidas}}",
+        "rowError": "Wiersz {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Nie wysłano żadnych zaproszeń: wyślij je z listy, kiedy zechcesz."
       },
       "labels": {
         "name": "Nazwa",

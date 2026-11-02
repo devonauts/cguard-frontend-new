@@ -1965,7 +1965,12 @@
           "excelValidationFailed": "Die Excel-Datei konnte vor dem Hochladen nicht geprüft werden. Bitte prüfen Sie das Format.",
           "missingColumns": "Es fehlen Pflichtspalten: {{columns}}",
           "selectFile": "Bitte wählen Sie eine Datei aus"
-        }
+        },
+        "summaryOk_one": "{{count}} Wachmann importiert",
+        "summaryOk_other": "{{count}} Wachleute importiert",
+        "summaryWithErrors": "Importiert: {{ok}} · Nicht importiert: {{fallidas}}",
+        "rowError": "Zeile {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Es wurden keine Einladungen verschickt: Senden Sie sie bei Bedarf aus der Liste."
       },
       "labels": {
         "name": "Name",

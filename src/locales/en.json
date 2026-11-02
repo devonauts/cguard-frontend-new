@@ -2183,7 +2183,12 @@
           "excelValidationFailed": "Could not validate Excel before upload",
           "missingColumns": "Missing required columns: {{columns}}",
           "selectFile": "Select a file"
-        }
+        },
+        "summaryOk_one": "{{count}} guard imported",
+        "summaryOk_other": "{{count}} guards imported",
+        "summaryWithErrors": "Imported: {{ok}} · Not imported: {{fallidas}}",
+        "rowError": "Row {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "No invitations were sent: send them from the list whenever you like."
       },
       "labels": {
         "name": "Name",

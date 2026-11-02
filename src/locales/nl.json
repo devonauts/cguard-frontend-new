@@ -1965,7 +1965,12 @@
           "excelValidationFailed": "Het Excel-bestand kon niet worden gecontroleerd vóór het uploaden. Controleer de opmaak.",
           "missingColumns": "Verplichte kolommen ontbreken: {{columns}}",
           "selectFile": "Selecteer een bestand"
-        }
+        },
+        "summaryOk_one": "{{count}} bewaker geïmporteerd",
+        "summaryOk_other": "{{count}} bewakers geïmporteerd",
+        "summaryWithErrors": "Geïmporteerd: {{ok}} · Niet geïmporteerd: {{fallidas}}",
+        "rowError": "Rij {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Er zijn geen uitnodigingen verstuurd: verstuur ze vanuit de lijst wanneer je wilt."
       },
       "labels": {
         "name": "Naam",

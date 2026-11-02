@@ -2183,7 +2183,12 @@
           "excelValidationFailed": "No se pudo validar el archivo Excel antes de subir. Asegúrate del formato.",
           "missingColumns": "Faltan columnas obligatorias: {{columns}}",
           "selectFile": "Selecciona un archivo"
-        }
+        },
+        "summaryOk_one": "{{count}} vigilante importado",
+        "summaryOk_other": "{{count}} vigilantes importados",
+        "summaryWithErrors": "Importados: {{ok}} · Sin importar: {{fallidas}}",
+        "rowError": "Fila {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "No se envió ninguna invitación: envíalas desde la lista cuando quieras."
       },
       "labels": {
         "name": "Nombre",

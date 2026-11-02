@@ -1965,7 +1965,12 @@
           "excelValidationFailed": "Impossible de valider le fichier Excel avant l'envoi. Vérifiez le format.",
           "missingColumns": "Colonnes obligatoires manquantes : {{columns}}",
           "selectFile": "Sélectionnez un fichier"
-        }
+        },
+        "summaryOk_one": "{{count}} agent importé",
+        "summaryOk_other": "{{count}} agents importés",
+        "summaryWithErrors": "Importés : {{ok}} · Non importés : {{fallidas}}",
+        "rowError": "Ligne {{fila}} ({{nombre}}) : {{error}}",
+        "invitationsNotSent": "Aucune invitation n'a été envoyée : envoyez-les depuis la liste quand vous voulez."
       },
       "labels": {
         "name": "Nom",
