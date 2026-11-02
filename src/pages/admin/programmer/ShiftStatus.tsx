@@ -58,6 +58,9 @@ import { localeActual } from "@/lib/localeActual";
 import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
 import { listarTodo } from "@/lib/listarCompleto";
 import { ESTADOS_ANULADOS, ESTADO_NOVEDAD } from "@/lib/shiftStatus";
+import { ApiService } from "@/services/api/apiService";
+import { diaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { etiquetaDeAusencia, marcasPorDia } from "./ausenciaDelTurno";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -82,12 +85,22 @@ function formatTime(iso: string | null) {
   });
 }
 
-type ShiftStatusValue = "completed" | "in-progress" | "pending" | "cancelled";
+type ShiftStatusValue =
+  | "completed"
+  | "in-progress"
+  | "pending"
+  | "cancelled"
+  /** Handed to a colleague (approved swap) or moved: someone else works it. */
+  | "transferred";
 
 function computeStatus(row: ShiftRecord): ShiftStatusValue {
   /* A voided shift (absent, cancelled, moved to another station) leaves the
      post without that guard whatever the clock says: it was «Pendiente» and
      later «Completado» (QA 2026-11-01). */
+  /* A swapped or moved shift did not leave the post empty: the colleague's
+     row covers it. It counted as «Cancelado — quedaron sin vigilante»
+     (QA 2026-11-02, N8). */
+  if (String((row as any).status || "") === "transferred_out") return "transferred";
   if ((ESTADOS_ANULADOS as readonly string[]).includes(String((row as any).status || "")))
     return "cancelled";
   const now = new Date();
@@ -106,6 +119,8 @@ function computeStatus(row: ShiftRecord): ShiftStatusValue {
 export default function ShiftStatus() {
   const { t } = useTranslation();
   const [rawShifts, setRawShifts] = useState<ShiftRecord[]>([]);
+  /** The Horario marks (V / PM / F / L) of the range: why a shift is absent. */
+  const [marcas, setMarcas] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ShiftStatusValue | "all">(
@@ -153,6 +168,16 @@ export default function ShiftStatus() {
         orderBy: "startTime_ASC",
       }));
       setRawShifts(rows);
+      const tid = localStorage.getItem("tenantId") || "";
+
+      if (tid && rows.some((r: any) => r.status === ESTADO_NOVEDAD)) {
+        const ov: any = await ApiService.get(
+          `/tenant/${tid}/schedule-overrides?startDate=${diaDeLaEmpresa(fromDate)}&endDate=${diaDeLaEmpresa(toDate)}`,
+        ).catch(() => null);
+        const filas = ov?.rows || ov?.data?.rows || [];
+
+        setMarcas(marcasPorDia(Array.isArray(filas) ? filas : []));
+      } else setMarcas(new Map());
     } catch (err) {
       console.error("Failed to fetch shifts", err);
     } finally {
@@ -204,12 +229,21 @@ export default function ShiftStatus() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   // ── status badge ──────────────────────────────────────────────────────────
-  const getStatusBadge = (status: ShiftStatusValue, shiftStatus?: string) => {
-    if (shiftStatus === ESTADO_NOVEDAD)
-      return (
-        <StatusBadge tone="bad">{t("ui.ShiftStatus.falta", "Falta")}</StatusBadge>
+  const getStatusBadge = (status: ShiftStatusValue, row?: any) => {
+    if (row?.status === ESTADO_NOVEDAD) {
+      const e = etiquetaDeAusencia(
+        marcas.get(`${row.guardId}|${diaDeLaEmpresa(row.startTime)}`),
       );
+
+      return <StatusBadge tone={e.tone}>{t(e.key, e.defaultValue)}</StatusBadge>;
+    }
     switch (status) {
+      case "transferred":
+        return (
+          <StatusBadge tone="neutral">
+            {t("ui.Schedule.estadoTurno.transferred_out", "Trasladado")}
+          </StatusBadge>
+        );
       case "pending":
         return <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>;
       case "in-progress":
@@ -487,7 +521,7 @@ export default function ShiftStatus() {
               {
                 key: "_status",
                 header: t("comun.estado"),
-                render: (_v: any, row: any) => getStatusBadge(row._status, row.status),
+                render: (_v: any, row: any) => getStatusBadge(row._status, row),
               },
             ]}
             containerless

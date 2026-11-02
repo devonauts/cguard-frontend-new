@@ -75,6 +75,12 @@ export interface Contexto {
   /** `YYYY-MM-DD` de un día, y el instante ISO de una hora de ese día en la zona de la empresa. */
   fechaDe(d: number): string;
   instanteDe(d: number, minuto: number): string;
+  /**
+   * Now (ms). With it, nothing is published for a shift or a day that is
+   * already over (QA 2026-11-02, N7): it would double-cover — and maybe
+   * double-pay — a day that has happened.
+   */
+  ahora?: number;
 }
 
 /** `YYYY-MM-DD` + n days, calendar arithmetic (no zone involved). */
@@ -96,12 +102,14 @@ export function contextoEnLaEmpresa(
   hoy: number,
   dias: number,
   instante: (dia: string, hora: number, minuto: number) => Date,
+  ahora?: number,
 ): Contexto {
   return {
     tenantId,
     base,
     hoy,
     dias,
+    ...(ahora !== undefined ? { ahora } : {}),
     fechaDe: (d) => masDias(base, d),
     instanteDe: (d, min) =>
       instante(
@@ -223,6 +231,21 @@ export function planificarPublicacion(
       }
     },
   });
+  /** Has this instant passed? Never, without `ctx.ahora`. */
+  const yaPaso = (iso: string | number | undefined) => {
+    if (ctx.ahora === undefined || iso === undefined) return false;
+    const t = typeof iso === "number" ? iso : Date.parse(iso);
+
+    return Number.isFinite(t) && t <= ctx.ahora;
+  };
+  /** That person's day `d` is over: the day ended, or every live shift of it did. */
+  const diaTerminado = (pid: string, d: number) => {
+    if (ctx.ahora === undefined) return false;
+    if (yaPaso(ctx.instanteDe(d + 1, 0))) return true;
+    const lista = enlace.turnosTodos?.[pid]?.[d] || [];
+
+    return lista.length > 0 && lista.every((x) => yaPaso(enlace.finDeTurno?.[x.id]));
+  };
   /* Coberturas que ya viajan DENTRO de otra llamada (la ausencia con su
      reemplazo): `puesto|franja|día|persona`, para no crearlas dos veces. */
   const encadenadas = new Set<string>();
@@ -508,6 +531,18 @@ export function planificarPublicacion(
       const aAntes = (antes.ausencias || []).find(
         (a) => d >= a.desde && d <= a.hasta,
       );
+
+      // A day that is over is not changed: it says so if the draft differs.
+      if (diaTerminado(p.id, d)) {
+        if (
+          aAhora?.tipo !== aAntes?.tipo ||
+          (p.manual[d] ?? null) !== (antes.manual[d] ?? null)
+        )
+          no.push(
+            `${nombreDe(p)}: el ${ctx.fechaDe(d)} ya pasó; se queda como fue.`,
+          );
+        continue;
+      }
       const novedad = enlace.novedades[p.id]?.[d];
 
       if (aAhora && !aAntes) {
@@ -746,6 +781,21 @@ export function planificarPublicacion(
       ).some((x) => x.stationId === pu.id);
 
       if (yaReal || encadenadas.has(`${pu.id}|${franja}|${d}|${id}`)) continue;
+      // A shift that already ended is not covered after the fact.
+      if (yaPaso(ctx.instanteDe(d, fr.ini + duracion(fr)))) {
+        no.push(
+          `${nombreDe(p)} cubriendo ${pu.nombre} el ${ctx.fechaDe(d)}: ese turno ya terminó.`,
+        );
+        continue;
+      }
+      // Covering elsewhere would delete their own shift that day, but they
+      // already clocked into it: it is the proof of pay and stays.
+      if (real && enlace.marcados?.[real.id]) {
+        no.push(
+          `${nombreDe(p)} cubriendo ${pu.nombre} el ${ctx.fechaDe(d)}: ya marcó entrada en su turno de ese día; ese turno se queda.`,
+        );
+        continue;
+      }
       /* Si el hueco viene de una FALTA con novedad abierta, cubrirlo por la
          novedad (como en Cobertura en vivo): crea el turno de cobertura y
          cierra la novedad a la vez, en vez de dejar la alerta viva. Quien lo
@@ -806,6 +856,20 @@ export function planificarPublicacion(
     const p = plan.personas.find((x) => x.id === id);
 
     if (!p) continue;
+    /* A shift someone clocked into is never withdrawn: the server refuses it
+       and the whole publish used to fail on that one row (QA 2026-11-02). */
+    if (yaPaso(enlace.finDeTurno?.[shiftId])) {
+      no.push(
+        `${nombreDe(p)}: el turno del ${ctx.fechaDe(d)} ya terminó; se queda en el horario.`,
+      );
+      continue;
+    }
+    if (enlace.marcados?.[shiftId]) {
+      no.push(
+        `${nombreDe(p)}: el turno del ${ctx.fechaDe(d)} ya tiene marcaje; se queda en el horario.`,
+      );
+      continue;
+    }
     cambios.push(
       llamada(
         "quitarTurno",

@@ -13,6 +13,7 @@ import {
   Send,
 } from "lucide-react";
 import { toast } from "sonner";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
@@ -169,7 +170,23 @@ export default function GuardMemosPage() {
     }
   };
 
-  const handleDelete = async (memoId: string) => {
+  const handleDelete = async (memo: { id: string; subject?: string | null }) => {
+    // Deleting is permanent: ask first, like every other delete in Personal
+    // (QA r3 N-R2-6). Same wording as the Memos page.
+    if (
+      !(await confirmDialog({
+        title: t("ui.MemosPage.eliminarMemo", "Eliminar memo"),
+        message: t("ui.MemosPage.estasSeguroDeEliminarElMemo", {
+          defaultValue: '¿Estás seguro de que deseas eliminar el memo "{{subject}}"?',
+          subject: memo.subject || "—",
+        }),
+        confirmText: t("actions.delete", "Eliminar"),
+        tone: "danger",
+      }))
+    )
+      return;
+    const memoId = memo.id;
+
     try {
       await api.delete(
         `/tenant/${tenantId}/memos?ids[]=${encodeURIComponent(memoId)}`,
@@ -363,7 +380,7 @@ export default function GuardMemosPage() {
                         aria-label={t("ui.GuardMemosPage.eliminarMemo", "Eliminar memo")}
                         className="cg-focus shrink-0 rounded-lg p-1.5 opacity-60 transition hover:[color:var(--bad-text)] group-hover:opacity-100"
                         style={{ color: "var(--ink-faint)" }}
-                        onClick={() => handleDelete(m.id)}
+                        onClick={() => handleDelete(m)}
                       >
                         <Trash2 size={16} />
                       </button>

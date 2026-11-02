@@ -26,6 +26,8 @@ export interface Supervisor {
   firstName?: string | null;
   lastName?: string | null;
   phoneNumber?: string | null;
+  /** The account already has a password: no invitation to resend. */
+  accountActive?: boolean;
   governmentId?: string | null;
   gender?: string | null;
   bloodType?: string | null;

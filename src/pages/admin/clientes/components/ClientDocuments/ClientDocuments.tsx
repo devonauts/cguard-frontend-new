@@ -204,6 +204,10 @@ const fmtDT = (iso: string) => {
   return Number.isNaN(d.getTime())
     ? "—"
     : d.toLocaleString(localeActual(), {
+        // The company's clock, not the viewer's browser: a browser in UTC
+        // showed «02/11/2026, 01:31» for an upload at 20:31 in Guayaquil
+        // (QA re-test N9).
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         year: "numeric",

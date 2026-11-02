@@ -5,6 +5,8 @@ import { FileText, ShieldAlert } from "lucide-react";
 
 import { clientDisplayName } from "@/lib/clientName";
 import BrandLockup from "@/components/BrandLockup";
+import DispatchFiles from "@/components/despacho/DispatchFiles";
+import { callerTypeLabel } from "@/components/despacho/dispatchLabels";
 import IncidentMap from "@/components/IncidentMap/IncidentMap";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
@@ -193,6 +195,10 @@ export default function DispatchPublicView() {
     return null;
   })();
 
+  // The company's zone travels with the share: an anonymous viewer has no
+  // session to read it from, and the times came in the viewer's own zone.
+  const zona = (payload && payload.timezone) || zonaDeLaEmpresa();
+
   if (!payload)
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-6">
@@ -218,9 +224,9 @@ export default function DispatchPublicView() {
           <td className="py-2 px-3">-</td>
           <td className="py-2 px-3">
             {payload.dateTime
-              ? new Date(payload.dateTime).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+              ? new Date(payload.dateTime).toLocaleString(localeActual(), { timeZone: zona })
               : payload.createdAt
-                ? new Date(payload.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+                ? new Date(payload.createdAt).toLocaleString(localeActual(), { timeZone: zona })
                 : "-"}
           </td>
         </tr>,
@@ -243,7 +249,7 @@ export default function DispatchPublicView() {
             <td className="py-2 px-3">
               {g && (g.dateTime || g.assignedAt)
                 ? new Date(g.dateTime || g.assignedAt).toLocaleString(
-                    localeActual(), { timeZone: zonaDeLaEmpresa() })
+                    localeActual(), { timeZone: zona })
                 : "-"}
             </td>
           </tr>,
@@ -295,7 +301,15 @@ export default function DispatchPublicView() {
               calculaba 741 px de ancho: en un móvil eso no es un logo grande, es
               la página entera desplazándose de lado. Se manda el ANCHO y la
               altura se deduce. */}
-          <BrandLockup className="mb-4 w-full max-w-[260px] sm:max-w-md" />
+          {/* The sheet is the company's: its name heads it. The platform
+              lockup («Seguridad Inteligente») only when the share has none. */}
+          {payload.company?.name ? (
+            <h1 className="mb-4 text-center text-2xl font-bold text-foreground">
+              {payload.company.name}
+            </h1>
+          ) : (
+            <BrandLockup className="mb-4 w-full max-w-[260px] sm:max-w-md" />
+          )}
           {coords && (
             <div className="w-full overflow-hidden rounded-2xl border shadow-sm">
               <IncidentMap
@@ -307,27 +321,23 @@ export default function DispatchPublicView() {
           )}
         </div>
 
-        {/* `overflow-hidden` RECORTABA: son cuatro columnas de etiqueta+valor y
-            en un móvil no caben, así que la fecha y el nombre del puesto
-            desaparecían por el borde derecho sin forma de llegar a ellos. Con
-            desplazamiento horizontal —y un ancho mínimo para que las celdas no
-            se estrujen a una letra por línea— la tabla se lee entera y el
-            desplazamiento se queda DENTRO de la tarjeta, sin arrastrar la
-            página. */}
+        {/* Label/value pairs: ONE column on a phone, two from `sm`. The old
+            640 px table inside a 322 px card cut off its right half on a
+            390 px phone (sede, dates, caller, dispatcher), with no way to
+            scroll to it — and a shared link usually opens on the client's
+            phone. */}
         <Section
-          contentClassName="overflow-x-auto rounded-xl border"
+          contentClassName="overflow-hidden rounded-xl border"
           icon={<FileText />}
           title={t("ui.DispatchPublicView.datosDelDespacho")}
         >
-          <div className="text-sm">
-            <table className="w-full min-w-[640px] text-sm border-collapse">
-              <tbody>
-                <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("ui.DispatchPublicView.nDeTicket", "N.º de ticket")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {ticketShort}{" "}
+          <dl className="grid grid-cols-1 text-sm sm:grid-cols-2">
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("ui.DispatchPublicView.nDeTicket", "N.º de ticket")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {ticketShort}{" "}
                     <StatusBadge
                       className="ml-2"
                       tone={
@@ -344,95 +354,100 @@ export default function DispatchPublicView() {
                           ? t("dispatcher.status_closed", "Cerrado")
                           : (payload.status ?? "")}
                     </StatusBadge>
-                  </td>
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("dispatcher.date_time", "Fecha/Hora")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {payload.createdAt
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("dispatcher.date_time", "Fecha/Hora")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {payload.createdAt
                       ? new Date(payload.createdAt).toLocaleString(
-                          localeActual(), { timeZone: zonaDeLaEmpresa() })
+                          localeActual(), { timeZone: zona })
                       : "-"}
-                  </td>
-                </tr>
-
-                <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("clients.overview.generalInfo.clientName", "Nombre del cliente")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {clientDisplayName(payload.client, "") ||
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("clients.overview.generalInfo.clientName", "Nombre del cliente")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {/* The share sends client and site as plain names. */}
+                    {(typeof payload.client === "string" && payload.client) ||
+                      clientDisplayName(payload.client, "") ||
                       clientDisplayName(
                         clients.find((c) => c.id === payload.clientId),
                         "",
                       ) ||
                       "-"}
-                  </td>
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("dispatcher.post_site_label", "Sede")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {(payload.site &&
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("dispatcher.post_site_label", "Sede")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {(typeof payload.site === "string" && payload.site) ||
+                      (payload.site &&
                       (payload.site.name || payload.site.companyName)) ||
                       postSites.find((s) => s.id === payload.siteId)?.name ||
                       "-"}
-                  </td>
-                </tr>
-
-                <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("ui.DispatchPublicView.tipoDeLlamador", "Tipo de llamador")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {payload.callerType || "-"}
-                  </td>
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("ui.DispatchPublicView.nombreDelLlamador", "Nombre del llamador")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {payload.callerName || "-"}
-                  </td>
-                </tr>
-
-                <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("dispatcher.incident_type_label", "Tipo de incidente")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {incidentTypeDisplay}
-                  </td>
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("dispatcher.incident_datetime", "Fecha y hora del incidente")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {payload.incidentAt || payload.dateTime
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("ui.DispatchPublicView.tipoDeLlamador", "Tipo de llamador")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {callerTypeLabel(payload.callerType) || "-"}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("ui.DispatchPublicView.nombreDelLlamador", "Nombre del llamador")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {payload.callerName || "-"}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("dispatcher.incident_type_label", "Tipo de incidente")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {incidentTypeDisplay}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("dispatcher.incident_datetime", "Fecha y hora del incidente")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {payload.incidentAt || payload.dateTime
                       ? new Date(
                           payload.incidentAt || payload.dateTime,
-                        ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+                        ).toLocaleString(localeActual(), { timeZone: zona })
                       : "-"}
-                  </td>
-                </tr>
-
-                <tr className="border-b">
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("ui.DispatchPublicView.ubicacionDelIncidente")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {payload.location || payload.incidentLocation || "-"}
-                  </td>
-                  <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    {t("dispatcher.dispatcher_label", "Despachador")}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-foreground">
-                    {(typeof payload.guardName === "string"
-                      ? payload.guardName
-                      : payload.guardName?.fullName ||
-                        payload.guardName?.name) || "-"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("ui.DispatchPublicView.ubicacionDelIncidente")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {payload.location || payload.incidentLocation || "-"}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5 border-b px-4 py-3 sm:even:border-l">
+                <dt className="text-xs font-medium text-muted-foreground">
+                  {t("dispatcher.dispatcher_label", "Despachador")}
+                </dt>
+                <dd className="break-words text-sm text-foreground">
+                  {/* Who filed the dispatch, as in the CRM (this showed the guard). */}
+                  {payload.dispatcher?.name || "-"}
+                </dd>
+              </div>
+          </dl>
         </Section>
 
         <div className="space-y-4">
@@ -457,18 +472,7 @@ export default function DispatchPublicView() {
           {/* Internal notes never go out on a public link (the API no longer sends them). */}
           <Section icon={<FileText />} title={t("dispatcher.files", "Archivos")}>
             <div className="text-sm">
-              {payload?.requestDocumentPDF &&
-              payload.requestDocumentPDF.length > 0 ? (
-                <ul className="list-disc pl-5">
-                  {payload.requestDocumentPDF.map((f: any, i: number) => (
-                    <li key={i} className="truncate">
-                      {f.name || f.fileName || f}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-sm text-muted-foreground">-</div>
-              )}
+              <DispatchFiles payload={payload} />
               {typeof window !== "undefined" &&
                 new URLSearchParams(window.location.search).has(
                   "debugPayload",
@@ -570,7 +574,7 @@ export default function DispatchPublicView() {
                             ·{" "}
                             {c.createdAt
                               ? new Date(c.createdAt).toLocaleString(
-                                  localeActual(), { timeZone: zonaDeLaEmpresa() })
+                                  localeActual(), { timeZone: zona })
                               : ""}
                           </div>
                           <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">

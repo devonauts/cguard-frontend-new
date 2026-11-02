@@ -323,8 +323,12 @@ export function bubblePlacement(bubble: HTMLElement, currentLift: number): numbe
   const now = bubble.getBoundingClientRect();
 
   if (!now.width || !now.height) return 0;
-  // Where the bubble sits with no lift at all.
-  const base = { left: now.left, right: now.right, top: now.top + currentLift, bottom: now.bottom + currentLift };
+  // Where the bubble sits with no lift at all. A fixed element's offsetTop is its
+  // layout position, before `translate`; reading it instead of adding
+  // `currentLift` keeps the answer right while the lift is still animating
+  // (the bubble bounced up and down for ~3 s over «Guardar configuración»).
+  const shift = bubble.offsetParent === null ? now.top - bubble.offsetTop : -currentLift;
+  const base = { left: now.left, right: now.right, top: now.top - shift, bottom: now.bottom - shift };
   let lift = 0;
 
   for (let i = 0; i < 6; i++) {
@@ -379,9 +383,6 @@ export default function VigiaWidget() {
 
   useEffect(() => {
     if (open) return;
-    const lienzo = document.querySelector("main");
-
-    if (!lienzo) return;
     let temporizador: ReturnType<typeof setTimeout> | undefined;
     const alDesplazar = () => {
       setDesplazando(true);
@@ -391,10 +392,13 @@ export default function VigiaWidget() {
       temporizador = setTimeout(() => setDesplazando(false), 420);
     };
 
-    lienzo.addEventListener("scroll", alDesplazar, { passive: true });
+    // Any scroller, not only <main>: settings pages scroll their own panel, so
+    // after scrolling to «Guardar configuración» the bubble never re-checked and
+    // sat over the button (QA re-test 2026-11-02, /nomina/settings at 1440×900).
+    document.addEventListener("scroll", alDesplazar, { passive: true, capture: true });
 
     return () => {
-      lienzo.removeEventListener("scroll", alDesplazar);
+      document.removeEventListener("scroll", alDesplazar, { capture: true });
       if (temporizador) clearTimeout(temporizador);
     };
   }, [open]);

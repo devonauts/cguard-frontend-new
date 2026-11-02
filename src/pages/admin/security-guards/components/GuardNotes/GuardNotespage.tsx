@@ -472,7 +472,7 @@ export default function GuardNotes({
                                       defaultValue: "Eliminar",
                                     }) as string
                                   }
-                                  className="cg-focus rounded-lg p-1.5 opacity-0 transition hover:[color:var(--bad-text)] group-hover:opacity-100"
+                                  className="cg-focus rounded-lg p-1.5 opacity-0 transition hover:[color:var(--bad-text)] group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100"
                                   style={{ color: "var(--ink-faint)" }}
                                 >
                                   <Trash2 size={14} />
@@ -491,8 +491,12 @@ export default function GuardNotes({
                             <div className="mt-3 flex flex-wrap gap-2">
                               {attachments.map(
                                 (att: NoteAttachment, ai: number) => {
-                                  // `privateUrl` is a storage path, not a link.
+                                  // Never the bare `privateUrl`: it is a storage
+                                  // path, not a link (it opened the CRM). The
+                                  // signed downloadUrl first; older rows go
+                                  // through /file/download (fileUrlFromFile).
                                   const href =
+                                    att?.downloadUrl ||
                                     att?.publicUrl ||
                                     fileUrlFromFile(att) ||
                                     "";

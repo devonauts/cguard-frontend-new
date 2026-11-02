@@ -533,7 +533,8 @@
         "checkbox": "Autoriser l'agent à voir ce contact",
         "descriptioninput": "Saisissez la description du contact",
         "addContact": "Ajouter un contact",
-        "mobilePlaceholder": "ex. : +593987654321"
+        "mobilePlaceholder": "ex. : +593987654321",
+        "editContact": "Modifier le contact"
       },
       "loadError": "Impossible de charger les contacts"
     },
@@ -1676,7 +1677,8 @@
       },
       "status": {
         "achieved": "Atteint",
-        "notAchieved": "Non atteint"
+        "notAchieved": "Non atteint",
+        "notMeasured": "Pas encore mesuré"
       },
       "totalKpis": "KPI",
       "scope": {
@@ -1686,7 +1688,9 @@
       "errors": {
         "frequencyRequired": "Choisissez la fréquence.",
         "descriptionRequired": "Saisissez la description."
-      }
+      },
+      "emptyNone": "Aucun indicateur pour l'instant",
+      "emptyHint": "Ajoutez le premier KPI pour mesurer le travail de ce mois."
     },
     "assignSites": {
       "assignButton": "Attribuer un poste",
@@ -1895,8 +1899,9 @@
         "typeRequired": "Choisissez le type de licence.",
         "numberRequired": "Saisissez le numéro de la licence."
       },
-      "confirmDelete": "Supprimer {{count}} licence(s) ? Cette action est irréversible.",
-      "subtitleSupervisor": "Documents et habilitations du superviseur"
+      "subtitleSupervisor": "Documents et habilitations du superviseur",
+      "confirmDelete_one": "Supprimer cette licence ? Cette action est irréversible.",
+      "confirmDelete_other": "Supprimer {{count}} licences ? Cette action est irréversible."
     },
     "list": {
       "applyFilters": "Appliquer les filtres",
@@ -8303,7 +8308,9 @@
       "platformHint": "{{marca}} les gère pour toutes les entreprises. Vous pouvez voir ici si elles sont actives.",
       "statusActive": "Active",
       "statusInactive": "Inactive",
-      "minLengthOutOfRange": "La longueur minimale doit être un nombre entre {{min}} et {{max}}."
+      "minLengthOutOfRange": "La longueur minimale doit être un nombre entre {{min}} et {{max}}.",
+      "savedCorrected": "Politique enregistrée, mais ce que la plateforme exige est resté inchangé. Vérifiez les valeurs à l'écran.",
+      "requiredByPlatform": "Exigé par la plateforme : impossible de le désactiver."
     },
     "central": {
       "loadError": "Impossible de charger les paramètres.",
@@ -9073,7 +9080,7 @@
       "popupBlocked": "Le navigateur a bloqué la fenêtre d’impression.",
       "printFailed": "Impossible de préparer la feuille",
       "qrFailed": "Impossible de générer le code",
-      "radiusPerPoint": "le rayon de chaque point (indiqué sur chacun)"
+      "verifyNotePerPoint": "Vérification de la position : à chaque scan, le GPS de l'agent est comparé à la position du point. Le scan n'est valide que dans le rayon de chaque point (indiqué sur chacun)."
     },
     "rondaHistory": {
       "empty": "Aucune ronde enregistrée à ce poste.",
@@ -9524,7 +9531,8 @@
       "codigoDePrueba": "Aucun fournisseur SMS dans cet environnement. Code de test : {{code}}",
       "escribeTuNumeroAntes": "Saisissez votre numéro de mobile avant de le confirmer.",
       "correoNoValido": "Cette adresse e-mail n'est pas valide.",
-      "esTuCorreoActual": "C'est déjà votre adresse e-mail."
+      "esTuCorreoActual": "C'est déjà votre adresse e-mail.",
+      "telefonoNoValido": "Ce numéro ne semble pas valide. Vérifiez le pays et le numéro."
     },
     "Routes": {
       "turnoDia": "Vacation de jour",
@@ -10685,7 +10693,11 @@
       "revocarAcceso": "Révoquer l'accès",
       "appMiSeguridad": "Application {{app}}",
       "portalWeb": "Portail web",
-      "nombreDeLaPersona": "Nom de la personne (facultatif)"
+      "nombreDeLaPersona": "Nom de la personne (facultatif)",
+      "correoDeInvitacion": "E-mail reçu",
+      "opcionDescargaApp": "Télécharger l’application {{app}}",
+      "opcionBienvenida": "Bienvenue et activation",
+      "mismaCuenta": "C’est le même compte dans les deux cas (application et portail) : seul l’e-mail change."
     },
     "CommandBar": {
       "datosDeDemostracion": "Données de démonstration",
@@ -10817,7 +10829,8 @@
       "tipo": "Type",
       "tipoVigilanteAdicional": "Agent supplémentaire",
       "tipoCotizacion": "Devis",
-      "tipoServicio": "Service"
+      "tipoServicio": "Service",
+      "fechaPedida": "Date demandée"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Couleur de l'application",
@@ -11478,7 +11491,8 @@
       "nocheSegunReglas": "La nuit et sa majoration viennent des règles de paie ci-dessus : l’estimation utilise ce qui est payé.",
       "descansoEnJornada": "Le repos entre services et les heures consécutives se règlent dans Temps de travail et repos.",
       "irAJornada": "Temps de travail et repos",
-      "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des bulletins."
+      "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des bulletins.",
+      "campoVacio": "« {{campo}} » est vide : saisissez un nombre avant d'enregistrer."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
@@ -12903,7 +12917,17 @@
       "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…",
       "irAEstaciones": "Aller aux postes",
       "moverCoberturaDel": "Déplacer la couverture du {{dia}}",
-      "moverDePuesto": "Changer l’agent de poste"
+      "moverDePuesto": "Changer l’agent de poste",
+      "estadoTurno": {
+        "planned": "Planifié",
+        "covered": "Remplacement",
+        "extension": "Prolongation",
+        "reinforcement": "Renfort",
+        "absent": "Absent",
+        "cancelled": "Annulé",
+        "transferred_out": "Transféré",
+        "training": "Accompagnement"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Durée :",
@@ -13185,7 +13209,8 @@
       "sinEstacion": "Sans station",
       "sucediendoAhoraMismo": "En cours en ce moment",
       "turnos": "Postes",
-      "falta": "Absence"
+      "falta": "Absence",
+      "ausente": "Absent"
     },
     "ShiftTemplates": {
       "basico": "Basique",
@@ -13668,7 +13693,8 @@
       "agregarSolicitud": "Ajouter une demande",
       "opcional": "facultatif",
       "horaOpcional": "L'heure est facultative : sans heure, la journée entière compte.",
-      "formIntro": "Congés, maladie ou permission. Une fois la demande approuvée, ses services à ces dates deviennent des trous à couvrir."
+      "formIntro": "Congés, maladie ou permission. Une fois la demande approuvée, ses services à ces dates deviennent des trous à couvrir.",
+      "rechazadoOk": "Absence refusée. {{nombre}} a été prévenu."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -15608,11 +15634,11 @@
       "noCodeHint": "Ce lien s'ouvre directement, sans code. Toute personne qui le reçoit — ou à qui on le transfère — entre.",
       "expiresHint": "Expire dans {{horas}} heures. Vous pouvez le révoquer plus tôt depuis la liste.",
       "recipientsLabel": "Destinataires de l'e-mail",
-      "noRecipientsHint": "Ce client n'a aucun contact avec une adresse e-mail. Indiquez ci-dessous à qui l'envoyer.",
+      "noRecipientsHint": "Ce client n’a aucun contact avec une adresse e-mail. Ajoutez-en un dans « Contacts » pour l’envoyer, ou générez le lien sans l’envoyer et partagez-le vous-même.",
       "sourcePortal": "portail",
       "sourceContact": "contact",
-      "otherEmailsLabel": "Autres e-mails (séparés par des virgules)",
-      "otherEmailsPlaceholder": "comptable@entreprise.com",
+      "otherEmailsLabel": "Autres destinataires (séparés par des virgules)",
+      "otherEmailsPlaceholder": "utilisateur@votreentreprise.com",
       "messageLabel": "Message (facultatif)",
       "messagePlaceholder": "Veuillez trouver ci-joint les documents du mois pour examen.",
       "requireCodeLabel": "Exiger un code d'accès",
@@ -15622,7 +15648,8 @@
       "expiry72h": "72 heures",
       "expiry7d": "7 jours",
       "historyTitle": "Historique · {{nombre}}",
-      "historyEmpty": "Aucune activité enregistrée pour l'instant."
+      "historyEmpty": "Aucune activité enregistrée pour l'instant.",
+      "otherEmailsHint": "Uniquement les contacts de ce client ou les utilisateurs de votre entreprise. Pour quelqu’un d’autre, ajoutez-le d’abord comme contact du client, ou générez le lien sans l’envoyer et partagez-le vous-même."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Ce lien a expiré",
@@ -16100,7 +16127,8 @@
       "exportadaConRechazos_many": "Paie exportée sans {{count}} fiches, qui ne sont pas payées :",
       "exportadaConRechazos_other": "Paie exportée sans {{count}} fiches, qui ne sont pas payées :",
       "tarifaInvalida": "Le taux doit être supérieur à zéro. Pour le retirer, laissez le champ vide.",
-      "tarifaQuitada": "Taux de {{nombre}} retiré. Régénérez la période pour l'appliquer."
+      "tarifaQuitada": "Taux de {{nombre}} retiré. Régénérez la période pour l'appliquer.",
+      "tarifaSinAplicar": "Pas appliqué : régénérez la période"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licences",
@@ -17074,7 +17102,9 @@
       "tuCuentaYaEstaActiva": "Votre compte chez <b>{{empresa}}</b> est déjà actif.",
       "invitacionYaUsada": "Cette invitation a déjà été utilisée : votre compte est actif.",
       "entraEnLaApp": "Connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Si vous ne vous souvenez plus du mot de passe, demandez à votre entreprise de le réinitialiser.",
-      "tuCuentaEstaLista": "Votre compte est prêt."
+      "tuCuentaEstaLista": "Votre compte est prêt.",
+      "invitacionNoValida": "Cette invitation n'est plus valable.",
+      "pideInvitacionNueva": "Si vous avez déjà créé votre compte, connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Sinon, demandez à votre entreprise de vous envoyer une nouvelle invitation."
     },
     "InspectionPreview": {
       "alerta": "Alerte",
@@ -17728,7 +17758,9 @@
       "cerrar": "Fermer",
       "recargarConLoNuevo": "Recharger avec le plus récent et vérifier",
       "publicandoDeUnaVez": "Publication de tout en une fois…",
-      "publicarDetalleTodo": "Ceci écrit dans le planning réel : la centrale, le Planning et les agents dans leur application le verront. Tout part en une fois : si une modification échoue, rien n’est publié."
+      "publicarDetalleTodo": "Ceci écrit dans le planning réel : la centrale, le Planning et les agents dans leur application le verront. Tout part en une fois : si une modification échoue, rien n’est publié.",
+      "seQuedaronConMarcaje": "Non appliqué : le quart a déjà un pointage et reste en place : {{lista}}",
+      "volverAlBorrador": "Retour au brouillon"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Cet écran va disparaître : le Planificateur est le nouveau",
@@ -18473,7 +18505,7 @@
       },
       "sinPermiso": {
         "titulo": "Votre rôle ne peut pas ouvrir les bulletins de paie",
-        "desc": "Votre rôle n'a pas les autorisations des bulletins de paie (voir et modifier les bulletins et les profils de paie). Un administrateur peut les accorder dans Paramètres › Rôles."
+        "desc": "Votre rôle n'a pas les autorisations des bulletins de paie (voir et modifier les bulletins et les profils de paie). Un administrateur peut les accorder dans Rôles et permissions."
       }
     },
     "ClientBillingContract": {
@@ -18849,7 +18881,9 @@
         "editarLinea": "Modifier la ligne",
         "minutosHint": "Prévu : {{p}} · travaillé : {{w}}",
         "excluirDeLaFactura": "Exclure de la facture",
-        "revisionLista": "Prête pour la vérification du client. Aucun e-mail n'est envoyé : copiez le lien et partagez-le avec lui."
+        "revisionLista": "Prête pour la vérification du client. Aucun e-mail n'est envoyé : copiez le lien et partagez-le avec lui.",
+        "nuevaRevision": "Nouvelle vérification du client",
+        "nuevaRevisionConfirm": "Une nouvelle série s'ouvre avec un autre lien : l'ancien lien ne fonctionne plus et l'approbation précédente ne compte plus. Les objections en attente restent à résoudre."
       },
       "regla": {
         "usarElDeLaEmpresa": "Utiliser la valeur de l’entreprise",
@@ -19967,7 +20001,8 @@
       "placeType": "Type de lieu et numéro",
       "postSite": "Site surveillé",
       "reason": "Motif de la visite",
-      "station": "Site"
+      "station": "Site",
+      "place": "Lieu"
     },
     "placeType": {
       "apartment": "Appartement",
@@ -22981,7 +23016,7 @@
     "errores": {
       "requerido": "Ce champ est requis",
       "correoInvalido": "Vérifiez l’e-mail : il doit ressembler à nom@entreprise.com",
-      "celularInvalido": "Vérifiez le portable : au moins 7 chiffres",
+      "celularInvalido": "Vérifiez le portable : saisissez un seul numéro, avec ou sans «+» et l'indicatif du pays (7 à 15 chiffres)",
       "sedesVacias": "Choisissez au moins un site, ou « Toute l’activité »",
       "fecha": "Vérifiez la date",
       "fechaPasada": "Choisissez aujourd'hui ou une date future : avant, il aurait des services qu'il n'a jamais faits",

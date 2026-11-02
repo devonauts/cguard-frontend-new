@@ -123,6 +123,7 @@ import {
   seguirEditando,
   type Conflict,
   type Editor,
+  type Publicado,
 } from "@/lib/planificador/servidor";
 import { useFrenoAlSalir } from "@/lib/useFrenoAlSalir";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -499,6 +500,7 @@ export default function Planificador() {
           b,
           zonaDeLaEmpresa(),
           60,
+          Date.now(),
         );
 
         limpiar(r.plan, -ANTES, DESPUES);
@@ -577,6 +579,19 @@ export default function Planificador() {
                 ),
               );
           }
+        }
+        // What already happened comes from the live read, never from a saved
+        // draft: a day that ended since the draft was saved is drawn as it was.
+        if (plan !== r.plan) {
+          const hecho = new Map(r.plan.personas.map((x) => [x.id, x.pasado]));
+
+          for (const x of plan.personas) {
+            const h = hecho.get(x.id);
+
+            if (h) x.pasado = h;
+            else delete x.pasado;
+          }
+          limpiar(plan, -ANTES, DESPUES);
         }
         if (choques.length)
           toast.warning(
@@ -681,8 +696,13 @@ export default function Planificador() {
   // sacafrancos fijos cubren solos al cargar también es nuevo para el horario.
   const contextoDePublicacion = useCallback(
     () =>
-      contextoEnLaEmpresa(tenantId, base, hoyIdx, DESPUES, (dia, h, m) =>
-        instanteEnLaEmpresa(dia, h, m),
+      contextoEnLaEmpresa(
+        tenantId,
+        base,
+        hoyIdx,
+        DESPUES,
+        (dia, h, m) => instanteEnLaEmpresa(dia, h, m),
+        Date.now(),
       ),
     [tenantId, base, hoyIdx],
   );
@@ -896,12 +916,12 @@ export default function Planificador() {
   };
 
   /** Publish: save first (the server applies exactly what was reviewed), then all or nothing. */
-  const publicarAhora = async (): Promise<{ applied: number }> => {
+  const publicarAhora = async (): Promise<Publicado> => {
     await guardarAhora(true);
     const l = leidoRef.current;
     const p = planRef.current;
 
-    if (!l || !p) return { applied: 0 };
+    if (!l || !p) return { applied: 0, kept: [] };
     const pub = planificarPublicacion(l.plan, p, l.enlace, contextoDePublicacion());
 
     return publicarEnElServidor(tenantId, {
@@ -3940,7 +3960,7 @@ function HojaPublicar({
   cerrar: () => void;
   publicado: () => void;
   /** Saves, then publishes on the server: everything or nothing. */
-  publicarAhora: () => Promise<{ applied: number }>;
+  publicarAhora: () => Promise<Publicado>;
   /** Re-read the live schedule keeping the draft on top. */
   recargar: () => void;
 }) {
@@ -3985,6 +4005,15 @@ function HojaPublicar({
           n: r.applied,
         }),
       );
+      if (r.kept.length)
+        toast.warning(
+          t("ui.Planificador.seQuedaronConMarcaje", {
+            defaultValue:
+              "Esto no se aplicó porque el turno ya tiene marcaje y se queda: {{lista}}",
+            lista: r.kept.map((k) => k.text).join(" · "),
+          }),
+          { duration: 12000 },
+        );
       publicado();
     } catch (e: any) {
       if (e instanceof DraftConflict)
@@ -4048,8 +4077,9 @@ function HojaPublicar({
             </ul>
           )}
           <div className="flex flex-wrap justify-end gap-2">
+            {/* The dialog already has its «Cerrar» (×): this one says where it goes. */}
             <Button size="sm" variant="outline" onClick={cerrar}>
-              {t("ui.Planificador.cerrar", "Cerrar")}
+              {t("ui.Planificador.volverAlBorrador", "Volver al borrador")}
             </Button>
             {error.recargar && (
               <Button

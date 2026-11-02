@@ -917,7 +917,8 @@
         "checkbox": "Allow the guard to see this contact",
         "descriptioninput": "Enter the contact description",
         "addContact": "Add contact",
-        "mobilePlaceholder": "e.g. +593987654321"
+        "mobilePlaceholder": "e.g. +593987654321",
+        "editContact": "Edit contact"
       },
       "loadError": "Contacts could not be loaded"
     },
@@ -1888,7 +1889,8 @@
       },
       "status": {
         "achieved": "Achieved",
-        "notAchieved": "Not Achieved"
+        "notAchieved": "Not Achieved",
+        "notMeasured": "Not measured yet"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1898,7 +1900,9 @@
       "errors": {
         "frequencyRequired": "Choose the frequency.",
         "descriptionRequired": "Enter the description."
-      }
+      },
+      "emptyNone": "No KPIs yet",
+      "emptyHint": "Add the first KPI to measure this month's work."
     },
     "assignSites": {
       "assignButton": "Assign Post Sites",
@@ -2107,8 +2111,9 @@
         "typeRequired": "Choose the license type.",
         "numberRequired": "Enter the license number."
       },
-      "confirmDelete": "Delete {{count}} license(s)? This cannot be undone.",
-      "subtitleSupervisor": "This supervisor's documents and credentials"
+      "subtitleSupervisor": "This supervisor's documents and credentials",
+      "confirmDelete_one": "Delete this license? This cannot be undone.",
+      "confirmDelete_other": "Delete {{count}} licenses? This cannot be undone."
     },
     "list": {
       "applyFilters": "Apply filters",
@@ -6464,7 +6469,8 @@
       "placeType": "Place Type and Number",
       "postSite": "Site",
       "reason": "Reason of visit",
-      "station": "Station"
+      "station": "Station",
+      "place": "Place"
     },
     "placeType": {
       "apartment": "Apartment",
@@ -6851,7 +6857,7 @@
       "qrFailed": "Could not generate the code",
       "printFailed": "Could not prepare the sheet",
       "popupBlocked": "The browser blocked the print window.",
-      "radiusPerPoint": "each point's radius (shown on each one)"
+      "verifyNotePerPoint": "Location check: on each scan the server compares the guard's GPS with the checkpoint's location. It only counts as valid within each point's radius (shown on each one)."
     },
     "rondaHistory": {
       "empty": "No patrols have been recorded at this station.",
@@ -7782,7 +7788,9 @@
       "platformHint": "{{marca}} manages them for all companies. Here you can see whether they're active.",
       "statusActive": "Active",
       "statusInactive": "Inactive",
-      "minLengthOutOfRange": "The minimum length must be a number between {{min}} and {{max}}."
+      "minLengthOutOfRange": "The minimum length must be a number between {{min}} and {{max}}.",
+      "savedCorrected": "Policy saved, but what the platform requires stayed as it was. Check the values on screen.",
+      "requiredByPlatform": "Required by the platform: it cannot be turned off."
     },
     "central": {
       "loadError": "The settings could not be loaded.",
@@ -8965,7 +8973,8 @@
       "codigoDePrueba": "There is no SMS provider in this environment. Test code: {{code}}",
       "escribeTuNumeroAntes": "Enter your mobile number before confirming it.",
       "correoNoValido": "That email address is not valid.",
-      "esTuCorreoActual": "That is already your email address."
+      "esTuCorreoActual": "That is already your email address.",
+      "telefonoNoValido": "That phone number doesn't look valid. Check the country and the number."
     },
     "Routes": {
       "turnoDia": "Day shift",
@@ -10126,7 +10135,11 @@
       "revocarAcceso": "Revoke access",
       "appMiSeguridad": "{{app}} app",
       "portalWeb": "Web portal",
-      "nombreDeLaPersona": "Person's name (optional)"
+      "nombreDeLaPersona": "Person's name (optional)",
+      "correoDeInvitacion": "E-mail they receive",
+      "opcionDescargaApp": "Download the {{app}} app",
+      "opcionBienvenida": "Welcome and activation",
+      "mismaCuenta": "It is the same account either way (app and portal): only the e-mail changes."
     },
     "CommandBar": {
       "datosDeDemostracion": "Demo data",
@@ -10258,7 +10271,8 @@
       "tipo": "Type",
       "tipoVigilanteAdicional": "Extra guard",
       "tipoCotizacion": "Quote",
-      "tipoServicio": "Service"
+      "tipoServicio": "Service",
+      "fechaPedida": "Requested date"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "App colour",
@@ -10919,7 +10933,8 @@
       "nocheSegunReglas": "Night hours and their surcharge come from the pay rules above: the estimate uses what is actually paid.",
       "descansoEnJornada": "Rest between shifts and consecutive hours are set in Working time and rest.",
       "irAJornada": "Working time and rest",
-      "monedaUnica": "It is the company's one currency: payslips use it too."
+      "monedaUnica": "It is the company's one currency: payslips use it too.",
+      "campoVacio": "“{{campo}}” is empty: type a number before saving."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",
@@ -12344,7 +12359,17 @@
       "menuCorrerCiclo": "Shift {{nombre}}'s cycle…",
       "irAEstaciones": "Go to Stations",
       "moverCoberturaDel": "Move the coverage of {{dia}}",
-      "moverDePuesto": "Move the guard to another post"
+      "moverDePuesto": "Move the guard to another post",
+      "estadoTurno": {
+        "planned": "Scheduled",
+        "covered": "Cover",
+        "extension": "Extension",
+        "reinforcement": "Reinforcement",
+        "absent": "Absent",
+        "cancelled": "Cancelled",
+        "transferred_out": "Moved",
+        "training": "Shadowing"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",
@@ -12626,7 +12651,8 @@
       "sinEstacion": "No station",
       "sucediendoAhoraMismo": "Happening right now",
       "turnos": "Shifts",
-      "falta": "Absence"
+      "falta": "Absence",
+      "ausente": "Absent"
     },
     "ShiftTemplates": {
       "basico": "Basic",
@@ -13109,7 +13135,8 @@
       "agregarSolicitud": "Add request",
       "opcional": "optional",
       "horaOpcional": "The time is optional: without one, the whole day counts.",
-      "formIntro": "Vacation, sick leave or personal time. Once you approve it, their shifts on those dates become open gaps for someone to cover."
+      "formIntro": "Vacation, sick leave or personal time. Once you approve it, their shifts on those dates become open gaps for someone to cover.",
+      "rechazadoOk": "Time off rejected. {{nombre}} has been notified."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -15049,11 +15076,11 @@
       "noCodeHint": "This link opens directly, with no code. Anyone who receives it —or has it forwarded to them— gets in.",
       "expiresHint": "Expires in {{horas}} hours. You can revoke it earlier from the list.",
       "recipientsLabel": "Email recipients",
-      "noRecipientsHint": "This client has no contacts with an email address. Enter below who to send it to.",
+      "noRecipientsHint": "This client has no contacts with an e-mail address. Add one under «Contacts» to send it, or generate the link without sending it and share it yourself.",
       "sourcePortal": "portal",
       "sourceContact": "contact",
-      "otherEmailsLabel": "Other emails (comma-separated)",
-      "otherEmailsPlaceholder": "accountant@company.com",
+      "otherEmailsLabel": "Other recipients (comma-separated)",
+      "otherEmailsPlaceholder": "user@yourcompany.com",
       "messageLabel": "Message (optional)",
       "messagePlaceholder": "Please find attached this month's documents for your review.",
       "requireCodeLabel": "Require an access code",
@@ -15063,7 +15090,8 @@
       "expiry72h": "72 hours",
       "expiry7d": "7 days",
       "historyTitle": "History · {{nombre}}",
-      "historyEmpty": "No activity recorded yet."
+      "historyEmpty": "No activity recorded yet.",
+      "otherEmailsHint": "Only this client's contacts or users of your company. For anyone else, add them as a client contact first, or generate the link without sending it and share it yourself."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "This link has expired",
@@ -15541,7 +15569,8 @@
       "exportadaConRechazos_many": "Payroll exported without {{count}} timecards, which are not paid:",
       "exportadaConRechazos_other": "Payroll exported without {{count}} timecards, which are not paid:",
       "tarifaInvalida": "The rate must be greater than zero. To remove it, leave the field empty.",
-      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it."
+      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it.",
+      "tarifaSinAplicar": "Not applied: generate the period again"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",
@@ -16515,7 +16544,9 @@
       "tuCuentaYaEstaActiva": "Your account at <b>{{empresa}}</b> is now active.",
       "invitacionYaUsada": "This invitation has already been used: your account is active.",
       "entraEnLaApp": "Sign in to the guard app with your username and password. If you don't remember the password, ask your company to reset it.",
-      "tuCuentaEstaLista": "Your account is ready."
+      "tuCuentaEstaLista": "Your account is ready.",
+      "invitacionNoValida": "This invitation is no longer valid.",
+      "pideInvitacionNueva": "If you already created your account, sign in to the guard app with your username and password. If not, ask your company to send you a new invitation."
     },
     "InspectionPreview": {
       "alerta": "Alert",
@@ -17169,7 +17200,9 @@
       "cerrar": "Close",
       "recargarConLoNuevo": "Reload with the latest and review",
       "publicandoDeUnaVez": "Publishing everything at once…",
-      "publicarDetalleTodo": "This writes to the live schedule: the control room, the Schedule and the guards in their app will see it. It goes all at once: if one change fails, nothing is published."
+      "publicarDetalleTodo": "This writes to the live schedule: the control room, the Schedule and the guards in their app will see it. It goes all at once: if one change fails, nothing is published.",
+      "seQuedaronConMarcaje": "Not applied because the shift already has a clock-in and stays: {{lista}}",
+      "volverAlBorrador": "Back to the draft"
     },
     "AvisoRetiradaHorario": {
       "titulo": "This screen is going away: the Planner is the new one",
@@ -17914,7 +17947,7 @@
       },
       "sinPermiso": {
         "titulo": "Your role cannot open Payslips",
-        "desc": "Your role does not have the Payslips permissions (view and edit payslips and pay profiles). An administrator can grant them in Settings › Roles."
+        "desc": "Your role does not have the Payslips permissions (view and edit payslips and pay profiles). An administrator can grant them in Roles and permissions."
       }
     },
     "ClientBillingContract": {
@@ -18290,7 +18323,9 @@
         "editarLinea": "Edit line",
         "minutosHint": "Scheduled: {{p}} · worked: {{w}}",
         "excluirDeLaFactura": "Exclude from the invoice",
-        "revisionLista": "Ready for the client's review. No e-mail is sent: copy the link and share it with them."
+        "revisionLista": "Ready for the client's review. No e-mail is sent: copy the link and share it with them.",
+        "nuevaRevision": "New client review",
+        "nuevaRevisionConfirm": "A new round opens with another link: the previous link stops working and the previous approval no longer counts. Pending objections stay there to be resolved."
       },
       "regla": {
         "usarElDeLaEmpresa": "Use the company value",
@@ -22981,7 +23016,7 @@
     "errores": {
       "requerido": "This is required",
       "correoInvalido": "Check the e-mail: it should look like name@company.com",
-      "celularInvalido": "Check the mobile number: it needs at least 7 digits",
+      "celularInvalido": "Check the mobile number: type a single number, with or without «+» and the country code (7 to 15 digits)",
       "sedesVacias": "Choose at least one site, or «Whole operation»",
       "fecha": "Check the date",
       "fechaPasada": "Pick today or a later date: an earlier start would give them shifts they never worked",

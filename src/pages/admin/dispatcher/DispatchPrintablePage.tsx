@@ -20,8 +20,8 @@ import IncidentMap from "@/components/IncidentMap/IncidentMap";
 // El acta impresa se queda con el mapa PLANO a propósito (nadie despacha desde
 // un papel); lo que se comparte es la sonda de coordenadas.
 import { coordDeSitio } from "./DispatchIncidentMap";
-import DispatchFiles from "./DispatchFiles";
-import { callerTypeLabel, personName } from "./dispatchLabels";
+import DispatchFiles from "@/components/despacho/DispatchFiles";
+import { callerTypeLabel, personName } from "@/components/despacho/dispatchLabels";
 import { uploadCommentAttachment, uploadErrorText } from "./commentAttachment";
 import { toast } from "sonner";
 import {

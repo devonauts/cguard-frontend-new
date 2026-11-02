@@ -41,6 +41,7 @@ import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { nombreDelProducto } from "@/hooks/usePageTitle";
 import { SeccionConexion } from "@/components/conexion/SeccionConexion";
 import { listarTodo } from "@/lib/listarCompleto";
+import { celularValido } from "@/lib/agregarPersona";
 const WEEKDAYS = [
   { n: 1, label: "Lun" },
   { n: 2, label: "Mar" },
@@ -75,11 +76,13 @@ const FIELD_OPTIONS: Record<string, OpcionCampo[]> = {
     { value: "Divorciado", labelKey: "invite.guard.divorced" },
   ],
   academicInstruction: [
-    { value: "Primaria", labelKey: "invite.guard.edu.primary" },
-    { value: "Secundaria", labelKey: "invite.guard.edu.secondary" },
-    { value: "Universitaria", labelKey: "invite.guard.edu.universityStudies" },
-    { value: "Universidad", labelKey: "invite.guard.edu.university" },
-    { value: "Especial", labelKey: "invite.guard.edu.special" },
+    // The guard sheet labels (guards.profile.academic): the two stored
+    // values «Universitaria» / «Universidad» read as two different things.
+    { value: "Primaria", labelKey: "guards.profile.academic.primary" },
+    { value: "Secundaria", labelKey: "guards.profile.academic.secondary" },
+    { value: "Universitaria", labelKey: "guards.profile.academic.university" },
+    { value: "Universidad", labelKey: "guards.profile.academic.universityDegree" },
+    { value: "Especial", labelKey: "guards.profile.academic.special" },
   ],
 };
 
@@ -413,8 +416,14 @@ export default function SupervisorDetailPage() {
       // account shared with another company refuses the change).
       const telefono = String(form.phoneNumber || "").trim();
 
-      if (sup && telefono !== String(sup.phoneNumber || "").trim())
+      if (sup && telefono !== String(sup.phoneNumber || "").trim()) {
+        if (telefono && !celularValido(telefono)) {
+          toast.error(t("agregarPersona.errores.celularInvalido"));
+
+          return;
+        }
         body.phoneNumber = telefono || null;
+      }
 
       /* EL NOMBRE, APARTE (nombres y apellidos separados): vive en la cuenta y
          antes no se podía cambiar desde aquí. */

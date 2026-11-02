@@ -3331,7 +3331,9 @@
       "platformHint": "A {{marca}} as gerencia para todas as empresas. Aqui você pode ver se estão ativas.",
       "statusActive": "Ativa",
       "statusInactive": "Inativa",
-      "minLengthOutOfRange": "O comprimento mínimo deve ser um número entre {{min}} e {{max}}."
+      "minLengthOutOfRange": "O comprimento mínimo deve ser um número entre {{min}} e {{max}}.",
+      "savedCorrected": "Política salva, mas o que a plataforma exige ficou como estava. Confira os valores na tela.",
+      "requiredByPlatform": "Exigido pela plataforma: não pode ser desligado."
     },
     "central": {
       "loadError": "Não foi possível carregar as configurações.",
@@ -4328,7 +4330,8 @@
       },
       "status": {
         "achieved": "Atingido",
-        "notAchieved": "Não atingido"
+        "notAchieved": "Não atingido",
+        "notMeasured": "Ainda sem medição"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -4338,7 +4341,9 @@
       "errors": {
         "frequencyRequired": "Escolha a frequência.",
         "descriptionRequired": "Digite a descrição."
-      }
+      },
+      "emptyNone": "Ainda sem indicadores",
+      "emptyHint": "Adicione o primeiro KPI para medir o trabalho deste mês."
     },
     "created": "KPI criado com sucesso",
     "deleteError": "Erro ao excluir KPI(s)",
@@ -4427,8 +4432,9 @@
         "typeRequired": "Escolha o tipo de licença.",
         "numberRequired": "Digite o número da licença."
       },
-      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita.",
-      "subtitleSupervisor": "Documentos e credenciais do supervisor"
+      "subtitleSupervisor": "Documentos e credenciais do supervisor",
+      "confirmDelete_one": "Excluir esta licença? Esta ação não pode ser desfeita.",
+      "confirmDelete_other": "Excluir {{count}} licenças? Esta ação não pode ser desfeita."
     },
     "list": {
       "actions": {
@@ -4980,7 +4986,8 @@
         "Addcontact": "ADICIONAR",
         "descriptioninput": "Insira a descrição do contato",
         "addContact": "Adicionar contato",
-        "mobilePlaceholder": "ex.: +593987654321"
+        "mobilePlaceholder": "ex.: +593987654321",
+        "editContact": "Editar contato"
       },
       "confirmDeleteMessage": "Tem certeza de que deseja excluir permanentemente o(s) contato(s) selecionado(s)? Esta ação não pode ser desfeita.",
       "confirmDeleteTitle": "Excluir contato(s)?",
@@ -5967,9 +5974,10 @@
       "numPeople": "Número de pessoas",
       "companions": "Acompanhantes",
       "placeType": "Tipo de local e número",
-      "postSite": "posto de vigilância",
+      "postSite": "Posto de vigilância",
       "reason": "Motivo da visita",
-      "station": "Estação"
+      "station": "Estação",
+      "place": "Local"
     },
     "markExit": "Marcar saída",
     "noLogs": "Nenhum registro de diário encontrado",
@@ -7730,7 +7738,7 @@
       "qrFailed": "Não foi possível gerar o código",
       "printFailed": "Não foi possível preparar a folha",
       "popupBlocked": "O navegador bloqueou a janela de impressão.",
-      "radiusPerPoint": "o raio de cada ponto (indicado em cada um)"
+      "verifyNotePerPoint": "Verificação de localização: ao escanear, o servidor compara o GPS do vigilante com a localização do ponto. Só conta como válido dentro do raio de cada ponto (indicado em cada um)."
     },
     "rondaHistory": {
       "empty": "Não há rondas registradas neste posto.",
@@ -8965,7 +8973,8 @@
       "codigoDePrueba": "Não há provedor de SMS neste ambiente. Código de teste: {{code}}",
       "escribeTuNumeroAntes": "Digite seu número de celular antes de confirmá-lo.",
       "correoNoValido": "Esse e-mail não é válido.",
-      "esTuCorreoActual": "Esse já é o seu e-mail."
+      "esTuCorreoActual": "Esse já é o seu e-mail.",
+      "telefonoNoValido": "Esse telefone não parece válido. Confira o país e o número."
     },
     "Routes": {
       "turnoDia": "Turno diurno",
@@ -10126,7 +10135,11 @@
       "revocarAcceso": "Revogar acesso",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Portal web",
-      "nombreDeLaPersona": "Nome da pessoa (opcional)"
+      "nombreDeLaPersona": "Nome da pessoa (opcional)",
+      "correoDeInvitacion": "E-mail que recebe",
+      "opcionDescargaApp": "Baixar o app {{app}}",
+      "opcionBienvenida": "Boas-vindas e ativação",
+      "mismaCuenta": "É a mesma conta nos dois casos (app e portal): só muda o e-mail."
     },
     "CommandBar": {
       "datosDeDemostracion": "Dados de demonstração",
@@ -10258,7 +10271,8 @@
       "tipo": "Tipo",
       "tipoVigilanteAdicional": "Vigilante adicional",
       "tipoCotizacion": "Orçamento",
-      "tipoServicio": "Serviço"
+      "tipoServicio": "Serviço",
+      "fechaPedida": "Data solicitada"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Cor do aplicativo",
@@ -10919,7 +10933,8 @@
       "nocheSegunReglas": "A noite e o seu adicional vêm das regras de pagamento acima: a estimativa usa o mesmo que se paga.",
       "descansoEnJornada": "O descanso entre turnos e as horas seguidas definem-se em Jornada e descanso.",
       "irAJornada": "Jornada e descanso",
-      "monedaUnica": "É a moeda de toda a empresa: também a dos recibos."
+      "monedaUnica": "É a moeda de toda a empresa: também a dos recibos.",
+      "campoVacio": "«{{campo}}» está vazio: digite um número antes de salvar."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",
@@ -12344,7 +12359,17 @@
       "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…",
       "irAEstaciones": "Ir para Estações",
       "moverCoberturaDel": "Mover a cobertura de {{dia}}",
-      "moverDePuesto": "Mover o vigilante de posto"
+      "moverDePuesto": "Mover o vigilante de posto",
+      "estadoTurno": {
+        "planned": "Programado",
+        "covered": "Cobertura",
+        "extension": "Extensão",
+        "reinforcement": "Reforço",
+        "absent": "Ausente",
+        "cancelled": "Cancelado",
+        "transferred_out": "Transferido",
+        "training": "Acompanhamento"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duração:",
@@ -12626,7 +12651,8 @@
       "sinEstacion": "Sem estação",
       "sucediendoAhoraMismo": "Acontecendo agora mesmo",
       "turnos": "Turnos",
-      "falta": "Falta"
+      "falta": "Falta",
+      "ausente": "Ausente"
     },
     "ShiftTemplates": {
       "basico": "Básico",
@@ -13109,7 +13135,8 @@
       "agregarSolicitud": "Adicionar solicitação",
       "opcional": "opcional",
       "horaOpcional": "A hora é opcional: sem hora, conta o dia inteiro.",
-      "formIntro": "Férias, doença ou folga. Ao aprovar, os turnos dessas datas ficam como vagas para alguém cobrir."
+      "formIntro": "Férias, doença ou folga. Ao aprovar, os turnos dessas datas ficam como vagas para alguém cobrir.",
+      "rechazadoOk": "Folga recusada. {{nombre}} foi avisado."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -15049,11 +15076,11 @@
       "noCodeHint": "Este link abre direto, sem código. Quem o receber —ou para quem for encaminhado— entra.",
       "expiresHint": "Expira em {{horas}} horas. Você pode revogá-lo antes pela lista.",
       "recipientsLabel": "Destinatários do e-mail",
-      "noRecipientsHint": "Este cliente não tem contatos com e-mail. Escreva abaixo para quem enviar.",
+      "noRecipientsHint": "Este cliente não tem contatos com e-mail. Adicione um em «Contatos» para enviar, ou gere o link sem enviar e compartilhe você mesmo.",
       "sourcePortal": "portal",
       "sourceContact": "contato",
-      "otherEmailsLabel": "Outros e-mails (separados por vírgula)",
-      "otherEmailsPlaceholder": "contador@empresa.com",
+      "otherEmailsLabel": "Outros destinatários (separados por vírgula)",
+      "otherEmailsPlaceholder": "usuario@suaempresa.com",
       "messageLabel": "Mensagem (opcional)",
       "messagePlaceholder": "Segue em anexo a documentação do mês para sua análise.",
       "requireCodeLabel": "Exigir código de acesso",
@@ -15063,7 +15090,8 @@
       "expiry72h": "72 horas",
       "expiry7d": "7 dias",
       "historyTitle": "Histórico · {{nombre}}",
-      "historyEmpty": "Nenhuma atividade registrada ainda."
+      "historyEmpty": "Nenhuma atividade registrada ainda.",
+      "otherEmailsHint": "Apenas contatos deste cliente ou usuários da sua empresa. Para outra pessoa, adicione-a antes como contato do cliente, ou gere o link sem enviar e compartilhe você mesmo."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Este link expirou",
@@ -15541,7 +15569,8 @@
       "exportadaConRechazos_many": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
       "exportadaConRechazos_other": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
       "tarifaInvalida": "A tarifa tem de ser maior que zero. Para removê-la, deixe o campo vazio.",
-      "tarifaQuitada": "Tarifa de {{nombre}} removida. Gere o período novamente para aplicar."
+      "tarifaQuitada": "Tarifa de {{nombre}} removida. Gere o período novamente para aplicar.",
+      "tarifaSinAplicar": "Não aplicada: gere o período novamente"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenças",
@@ -16515,7 +16544,9 @@
       "tuCuentaYaEstaActiva": "Sua conta em <b>{{empresa}}</b> já está ativa.",
       "invitacionYaUsada": "Este convite já foi usado: sua conta já está ativa.",
       "entraEnLaApp": "Entre no app do vigilante com seu usuário e senha. Se não lembrar a senha, peça à sua empresa para redefini-la.",
-      "tuCuentaEstaLista": "Sua conta está pronta."
+      "tuCuentaEstaLista": "Sua conta está pronta.",
+      "invitacionNoValida": "Este convite não é mais válido.",
+      "pideInvitacionNueva": "Se você já criou sua conta, entre no app do vigilante com seu usuário e senha. Se não, peça à sua empresa um novo convite."
     },
     "InspectionPreview": {
       "alerta": "Alerta",
@@ -17169,7 +17200,9 @@
       "cerrar": "Fechar",
       "recargarConLoNuevo": "Recarregar com o mais recente e revisar",
       "publicandoDeUnaVez": "Publicando tudo de uma vez…",
-      "publicarDetalleTodo": "Isto grava na escala real: a central, a Escala e os vigilantes no app verão. Vai tudo de uma vez: se uma alteração falhar, nada é publicado."
+      "publicarDetalleTodo": "Isto grava na escala real: a central, a Escala e os vigilantes no app verão. Vai tudo de uma vez: se uma alteração falhar, nada é publicado.",
+      "seQuedaronConMarcaje": "Não aplicado porque o turno já tem marcação e permanece: {{lista}}",
+      "volverAlBorrador": "Voltar ao rascunho"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta tela vai sair: o Planejador é a nova",
@@ -17914,7 +17947,7 @@
       },
       "sinPermiso": {
         "titulo": "Seu perfil não pode abrir Holerites",
-        "desc": "Seu perfil não tem as permissões de Holerites (ver e editar holerites e perfis de pagamento). Um administrador pode concedê-las em Configurações › Perfis."
+        "desc": "Seu perfil não tem as permissões de Holerites (ver e editar holerites e perfis de pagamento). Um administrador pode concedê-las em Funções e permissões."
       }
     },
     "ClientBillingContract": {
@@ -18290,7 +18323,9 @@
         "editarLinea": "Editar linha",
         "minutosHint": "Programados: {{p}} · trabalhados: {{w}}",
         "excluirDeLaFactura": "Excluir da fatura",
-        "revisionLista": "Pronta para a revisão do cliente. Nenhum e-mail é enviado: copie o link e compartilhe com ele."
+        "revisionLista": "Pronta para a revisão do cliente. Nenhum e-mail é enviado: copie o link e compartilhe com ele.",
+        "nuevaRevision": "Nova revisão do cliente",
+        "nuevaRevisionConfirm": "Abre-se uma nova rodada com outro link: o link anterior deixa de funcionar e a aprovação anterior deixa de valer. As objeções pendentes continuam lá para serem resolvidas."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usar o valor da empresa",
@@ -22981,7 +23016,7 @@
     "errores": {
       "requerido": "Falta este dado",
       "correoInvalido": "Revise o e-mail: deve ser como nome@empresa.com",
-      "celularInvalido": "Revise o celular: precisa ter pelo menos 7 números",
+      "celularInvalido": "Revise o celular: digite um único número, com ou sem «+» e o código do país (de 7 a 15 dígitos)",
       "sedesVacias": "Escolha pelo menos uma sede, ou «Toda a operação»",
       "fecha": "Revise a data",
       "fechaPasada": "Escolha hoje ou uma data futura: antes de hoje ele teria turnos que não trabalhou",

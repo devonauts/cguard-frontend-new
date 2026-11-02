@@ -102,7 +102,7 @@ import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, limitesDelDia, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 import { resolveApiBase } from "@/lib/apiBase";
 import i18n from "@/i18n";
-import { callerTypeLabel } from "./dispatchLabels";
+import { callerTypeLabel } from "@/components/despacho/dispatchLabels";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -786,7 +786,11 @@ export default function DispatcherPage() {
       if (!r) return "-";
       // If client is an object with an explicit name, prefer that
       if (r.client && typeof r.client === "object") {
+        // Same name as the detail, print and public pages (the company first):
+        // the list showed the client's `name` («Qa Operacion») while those
+        // showed its commercial name («QA operacion Sede Norte»).
         return (
+          clientDisplayName(r.client, "") ||
           r.client.name ||
           r.client.fullName ||
           r.client.displayName ||

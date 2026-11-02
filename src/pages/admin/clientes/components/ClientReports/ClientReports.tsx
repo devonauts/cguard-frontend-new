@@ -203,12 +203,11 @@ function ActividadChart({
         title={t("comun.sinDatos")}
       />
     );
-  const dia = (iso: string) =>
-    new Date(iso).toLocaleDateString(localeActual(), {
-      timeZone: zonaDeLaEmpresa(),
-      day: "2-digit",
-      month: "short",
-    });
+  // The series keys are the company's civil days («2026-10-02»): read as UTC
+  // midnight and printed in the company's zone, the axis said 01-oct for a
+  // period starting 02/10 (QA re-test G8).
+  const dia = (d: string) =>
+    soloFechaCivil(d, { day: "2-digit", month: "short", year: undefined }, "");
 
   return (
     <AreaChart

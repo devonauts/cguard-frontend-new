@@ -26,6 +26,7 @@ import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { filterNotes } from "./filterNotes";
+import { fileUrlFromFile } from "@/lib/fileUrl";
 
 type Props = {
   site?: PostSite;
@@ -603,7 +604,9 @@ export default function PostSiteNotes({ site }: Props) {
           >
             <div className="sticky top-0 flex items-center justify-between border-b p-6">
               <h2 className="text-lg font-semibold text-foreground">
-                {t("clients.notes.form.Title", "Add New Note")}
+                {formData.id
+                  ? t("clients.notes.form.editTitle", "Editar nota")
+                  : t("clients.notes.form.Title", "Agregar nueva nota")}
               </h2>
             </div>
 
@@ -883,8 +886,14 @@ export default function PostSiteNotes({ site }: Props) {
                 </strong>
                 <div className="mt-1 flex flex-wrap gap-2">
                   {(detailsNote.attachments || []).map((att, ai) => {
+                    // Never the bare privateUrl: it is a storage path, not a
+                    // URL (the link opened the CRM). The API now signs
+                    // downloadUrl; older payloads go through /file/download.
                     const href =
-                      att.publicUrl || att.downloadUrl || att.privateUrl || "";
+                      att.downloadUrl ||
+                      att.publicUrl ||
+                      fileUrlFromFile(att) ||
+                      "";
                     return (
                       <a
                         key={att.id ?? ai}

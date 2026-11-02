@@ -18,6 +18,7 @@ import { PageContainer, PageHeader, Section, SkeletonCards, EmptyState, Modal, F
 import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import { fechaYHora, soloFecha, soloFechaCivil, hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { fechaDePago } from "./fechaDePago";
 import { localeActual } from "@/lib/localeActual";
 import clientBillingService, { balanceCents, BUILTIN_PAYMENT_METHODS, type Invoice, type InvoiceLine, type PaymentMethod } from "@/lib/api/clientBillingService";
 import { QK, dinero, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, conModuloDeFacturacion, avisarError } from "./comun";
@@ -87,9 +88,11 @@ function FacturaDetallePage() {
     try {
       await clientBillingService.deleteInvoice(inv.id);
       toast.success(t("ui.Facturacion.detalle.borradorEliminado", "Borrador eliminado"));
+      // Leave first: a refetch of the deleted draft while still here answered
+      // 404 «Esa factura no existe.» next to «Borrador eliminado».
+      navigate("/facturacion/facturas");
       qc.removeQueries({ queryKey: [QK, "invoice", inv.id] });
       await qc.invalidateQueries({ queryKey: [QK, "invoices"] });
-      navigate("/facturacion/facturas");
     } catch (e) {
       avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
@@ -275,7 +278,7 @@ function FacturaDetallePage() {
             {(inv.payments ?? []).length ? (
               <div className="space-y-2">
                 {(inv.payments ?? []).map((p) => (
-                  <ListRow key={p.id} title={dinero(p.amountCents, p.currency || inv.currency)} subtitle={[nombreDeMetodo(p.method), p.reference, p.note].filter(Boolean).join(" · ")} meta={soloFecha(p.receivedAt || p.createdAt)} />
+                  <ListRow key={p.id} title={dinero(p.amountCents, p.currency || inv.currency)} subtitle={[nombreDeMetodo(p.method), p.reference, p.note].filter(Boolean).join(" · ")} meta={p.receivedAt ? fechaDePago(p.receivedAt) : soloFecha(p.createdAt)} />
                 ))}
               </div>
             ) : (

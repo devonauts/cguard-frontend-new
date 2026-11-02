@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { EMAIL_PATTERN, phoneForServer } from "./contactFields";
+import { EMAIL_PATTERN, isValidPhone, phoneForServer } from "./contactFields";
 
 describe("phoneForServer", () => {
   it("sends a valid number in E.164, as the profile stores it", () => {
@@ -18,5 +18,13 @@ describe("EMAIL_PATTERN", () => {
     expect(EMAIL_PATTERN.test("ana@empresa")).toBe(false);
     expect(EMAIL_PATTERN.test("ana empresa.com")).toBe(false);
     expect(EMAIL_PATTERN.test("@empresa.com")).toBe(false);
+  });
+});
+
+describe("isValidPhone", () => {
+  it("accepts a real mobile and an empty field, refuses 15 stray digits", () => {
+    expect(isValidPhone("+593", "991112233")).toBe(true);
+    expect(isValidPhone("+593", "")).toBe(true);
+    expect(isValidPhone("+593", "991112239900008")).toBe(false);
   });
 });

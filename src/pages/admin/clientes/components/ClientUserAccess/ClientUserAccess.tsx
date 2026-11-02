@@ -306,7 +306,13 @@ export default function ClientUserAccess({ client }: Props) {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </LabeledField>
-          <LabeledField label={t("ui.ClientUserAccess.tipoDeAcceso")}>
+          {/* Both choices create the SAME customer account (app and portal)
+              with the same activation link; what changes is only the e-mail
+              template. «Portal web» read like a different, web-only access
+              and the list then said «Acceso a la app» (QA re-test N1). */}
+          <LabeledField
+            label={t("ui.ClientUserAccess.correoDeInvitacion", "Correo que recibe")}
+          >
             <div
               className={`grid gap-2 ${appInviteEnabled ? "grid-cols-2" : "grid-cols-1"}`}
             >
@@ -314,9 +320,15 @@ export default function ClientUserAccess({ client }: Props) {
                 [
                   [
                     "app",
-                    t("ui.ClientUserAccess.appMiSeguridad", { defaultValue: "App {{app}}", app }),
+                    t("ui.ClientUserAccess.opcionDescargaApp", {
+                      defaultValue: "Descargar la app {{app}}",
+                      app,
+                    }),
                   ],
-                  ["portal", t("ui.ClientUserAccess.portalWeb", "Portal web")],
+                  [
+                    "portal",
+                    t("ui.ClientUserAccess.opcionBienvenida", "Bienvenida y activación"),
+                  ],
                 ] as const
               )
                 .filter(([canal]) => canal !== "app" || appInviteEnabled)
@@ -356,6 +368,10 @@ export default function ClientUserAccess({ client }: Props) {
             {t(
               "ui.ClientUserAccess.seCrearaElAccesoY",
               "Se creará el acceso y se enviará un enlace para que la persona configure su contraseña.",
+            )}{" "}
+            {t(
+              "ui.ClientUserAccess.mismaCuenta",
+              "Es la misma cuenta en los dos casos (app y portal): solo cambia el correo.",
             )}
           </p>
         </div>

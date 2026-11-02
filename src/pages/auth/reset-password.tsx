@@ -17,6 +17,7 @@ import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta } from "./AuthShell";
 import { FadeIn, IconTile } from "@/components/kit";
 import { AuthService } from "@/services/auth/authService";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { ApiService } from "@/services/api/apiService";
 
 /** The field app's sign-in deep link (registered by the app itself). */
 const ESQUEMA_DE_LA_APP_DE_CAMPO = "cguardpro://login";
@@ -40,6 +41,39 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [doneField, setDoneField] = useState(false);
   const navigate = useNavigate();
+  /* The company whose account this link resets (QA re-test N8): the page
+     wears its brand instead of the platform's lockup. Empty when the server
+     cannot tell (unknown token, or the person works for several companies). */
+  const [empresa, setEmpresa] = useState<{
+    tenantName?: string | null;
+    tenantLogoUrl?: string | null;
+  }>({});
+
+  useEffect(() => {
+    if (!token) return;
+    let vivo = true;
+
+    ApiService.get(
+      `/auth/password-reset/brand?token=${encodeURIComponent(token)}`,
+      { skipAuth: true },
+    )
+      .then((r: any) => {
+        const d = r?.data ?? r;
+
+        if (vivo && d && typeof d === "object") setEmpresa(d);
+      })
+      .catch(() => {
+        /* decoration only */
+      });
+
+    return () => {
+      vivo = false;
+    };
+  }, [token]);
+  const marcaDeLaEmpresa = {
+    brandName: empresa.tenantName || undefined,
+    logoUrl: empresa.tenantLogoUrl || undefined,
+  };
 
   useEffect(() => {
     document.title = tituloConMarca(t("auth.reset_title", {
@@ -110,6 +144,7 @@ export default function ResetPassword() {
   if (doneField) {
     return (
       <AuthShell
+        {...marcaDeLaEmpresa}
         showFeatures={false}
         splash={false}
         subtitle={t("auth.reset_done_field_subtitle", {
@@ -160,6 +195,7 @@ export default function ResetPassword() {
 
   return (
     <AuthShell
+      {...marcaDeLaEmpresa}
       showFeatures={false}
       subtitle={
         isField
