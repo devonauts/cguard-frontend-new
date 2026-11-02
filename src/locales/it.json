@@ -11903,7 +11903,8 @@
       "notasPrivadasInstruccionesEspeciales": "Note riservate, istruzioni particolari…",
       "centroDeConvencionesQuito": "Centro congressi, Milano",
       "clienteRequerido": "Cliente obbligatorio",
-      "fechasYLugar": "Date e luogo"
+      "fechasYLugar": "Date e luogo",
+      "finAntesDeInicio": "La data di fine non può essere precedente a quella di inizio"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Ancora nessuna radio IP",

@@ -11903,7 +11903,8 @@
       "notasPrivadasInstruccionesEspeciales": "Privénotities, bijzondere instructies…",
       "centroDeConvencionesQuito": "Congrescentrum, Amsterdam",
       "clienteRequerido": "Klant vereist",
-      "fechasYLugar": "Datums en locatie"
+      "fechasYLugar": "Datums en locatie",
+      "finAntesDeInicio": "De einddatum mag niet vóór de begindatum liggen"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Nog geen IP-portofoons",

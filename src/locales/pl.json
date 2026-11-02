@@ -11971,7 +11971,8 @@
       "notasPrivadasInstruccionesEspeciales": "Notatki wewnętrzne, instrukcje szczególne…",
       "centroDeConvencionesQuito": "Centrum konferencyjne, Warszawa",
       "clienteRequerido": "Klient jest wymagany",
-      "fechasYLugar": "Daty i miejsce"
+      "fechasYLugar": "Daty i miejsce",
+      "finAntesDeInicio": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Nie ma jeszcze radiotelefonów IP",

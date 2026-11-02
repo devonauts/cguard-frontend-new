@@ -11363,7 +11363,8 @@
       "notasPrivadasInstruccionesEspeciales": "Notas privadas, instruções especiais…",
       "centroDeConvencionesQuito": "Centro de convenções, Quito",
       "clienteRequerido": "Cliente obrigatório",
-      "fechasYLugar": "Datas e local"
+      "fechasYLugar": "Datas e local",
+      "finAntesDeInicio": "A data de término não pode ser anterior à de início"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Ainda não há rádios IP",
