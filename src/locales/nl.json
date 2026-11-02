@@ -15249,7 +15249,9 @@
       "sinFilasParaExportar": "Er zijn geen records om te exporteren",
       "seudonimoCliente": "Klant",
       "seudonimoSede": "Locatie",
-      "seudonimoPuesto": "Post"
+      "seudonimoPuesto": "Post",
+      "sinCoincidencias": "Geen record komt overeen met ‘{{q}}’.",
+      "rangoInvalido": "Controleer de datums: ‘Van’ mag niet na ‘Tot’ liggen."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Dichtstbij met beveiliger",

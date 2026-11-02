@@ -15249,7 +15249,9 @@
       "sinFilasParaExportar": "Aucun enregistrement à exporter",
       "seudonimoCliente": "Client",
       "seudonimoSede": "Site",
-      "seudonimoPuesto": "Poste"
+      "seudonimoPuesto": "Poste",
+      "sinCoincidencias": "Aucun enregistrement ne correspond à « {{q}} ».",
+      "rangoInvalido": "Vérifiez les dates : « Du » ne peut pas être après « Au »."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Le plus proche avec agent",

@@ -14709,7 +14709,9 @@
       "sinFilasParaExportar": "Não há registros para exportar",
       "seudonimoCliente": "Cliente",
       "seudonimoSede": "Local",
-      "seudonimoPuesto": "Posto"
+      "seudonimoPuesto": "Posto",
+      "sinCoincidencias": "Nenhum registro corresponde a “{{q}}”.",
+      "rangoInvalido": "Verifique as datas: “De” não pode ser posterior a “Até”."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Mais próximo com vigilante",

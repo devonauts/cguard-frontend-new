@@ -15249,7 +15249,9 @@
       "sinFilasParaExportar": "Nessun record da esportare",
       "seudonimoCliente": "Cliente",
       "seudonimoSede": "Sede",
-      "seudonimoPuesto": "Postazione"
+      "seudonimoPuesto": "Postazione",
+      "sinCoincidencias": "Nessun record corrisponde a «{{q}}».",
+      "rangoInvalido": "Controlla le date: «Dal» non può essere successiva ad «Al»."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Il più vicino con guardia",

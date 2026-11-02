@@ -15413,7 +15413,9 @@
       "sinFilasParaExportar": "Brak rekordów do eksportu",
       "seudonimoCliente": "Klient",
       "seudonimoSede": "Obiekt",
-      "seudonimoPuesto": "Posterunek"
+      "seudonimoPuesto": "Posterunek",
+      "sinCoincidencias": "Żaden rekord nie pasuje do „{{q}}”.",
+      "rangoInvalido": "Sprawdź daty: „Od” nie może być późniejsza niż „Do”."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Najbliższy z pracownikiem ochrony",

@@ -115,3 +115,15 @@ export function warnIfCapped<T>(
 
   return rows;
 }
+
+/**
+ * A date range worth asking the server for: both dates complete, plausible
+ * (years 2000–2100) and in order. Typing a date passes through «0202-…» and
+ * «1902-…», and each keystroke used to fire a 5000-row query.
+ */
+export function rangoValido(from: string, to: string): boolean {
+  const ok = (s: string) =>
+    /^\d{4}-\d{2}-\d{2}$/.test(s) && s >= "2000-01-01" && s <= "2100-12-31";
+
+  return ok(from) && ok(to) && from <= to;
+}

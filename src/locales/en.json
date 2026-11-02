@@ -14709,7 +14709,9 @@
       "sinFilasParaExportar": "There are no records to export",
       "seudonimoCliente": "Client",
       "seudonimoSede": "Site",
-      "seudonimoPuesto": "Post"
+      "seudonimoPuesto": "Post",
+      "sinCoincidencias": "No record matches “{{q}}”.",
+      "rangoInvalido": "Check the dates: “From” cannot be after “Until”."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Nearest with a guard",

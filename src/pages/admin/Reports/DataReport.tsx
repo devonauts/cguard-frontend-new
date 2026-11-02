@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import ReportPageShell from "./ReportPageShell";
+import { rangoValido } from "./reportFormat";
 
 import { Segmented } from "@/components/kit";
 import MobileCardList from "@/components/responsive/MobileCardList";
@@ -15,6 +16,7 @@ import { exportColumns, pieDeInforme, type ExportFormat } from "@/lib/export/rep
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
+import { plano } from "@/lib/buscadorGlobal";
 import {
   createNameMask,
   exportValue,
@@ -237,22 +239,60 @@ export default function DataReport<T>({
   const tableRef = useRef<HTMLDivElement>(null);
   const esTelefono = useEsTelefono();
 
+  // Only the LAST request may paint: typing a date fires one query per
+  // keystroke, and an older, wider answer arriving late left the table on the
+  // previous range.
+  const ultimaPeticion = useRef(0);
   const fetchRows = useCallback(() => {
+    const id = ++ultimaPeticion.current;
+
     setLoading(true);
     load({ from, to })
-      .then((r) => setRows(Array.isArray(r) ? r : []))
+      .then((r) => {
+        if (id === ultimaPeticion.current) setRows(Array.isArray(r) ? r : []);
+      })
       .catch(() => {
+        if (id !== ultimaPeticion.current) return;
         setRows([]);
         toast.error(
           t("ui.DataReport.errorCargarInforme", "No se pudo cargar el informe"),
         );
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (id === ultimaPeticion.current) setLoading(false);
+      });
   }, [from, to, load]);
 
+  // Typing in Desde/Hasta goes through «0202-…» and «1902-…»: wait until the
+  // range is a real one and the typing stops before asking the server.
+  const primeraCarga = useRef(true);
+
   useEffect(() => {
-    fetchRows();
+    if (!rangoValido(from, to)) return;
+    if (primeraCarga.current) {
+      primeraCarga.current = false;
+      fetchRows();
+
+      return;
+    }
+    const h = setTimeout(fetchRows, 400);
+
+    return () => clearTimeout(h);
   }, [from, to]);
+
+  const aplicarFiltros = () => {
+    if (!rangoValido(from, to)) {
+      toast.error(
+        t(
+          "ui.DataReport.rangoInvalido",
+          "Revisa las fechas: «Desde» no puede ser posterior a «Hasta».",
+        ),
+      );
+
+      return;
+    }
+    fetchRows();
+  };
 
   // El mando a distancia del informe, para quien lo haya pedido.
   useEffect(() => {
@@ -266,10 +306,11 @@ export default function DataReport<T>({
 
   const filtered = useMemo(() => {
     if (!searchable || !search.trim()) return rows;
-    const q = search.toLowerCase();
+    // Accent-blind, like the reports center: «garita» finds «Garíta».
+    const q = plano(search.trim());
 
     return rows.filter((row) =>
-      columns.some((c) => c.value(row).toLowerCase().includes(q)),
+      columns.some((c) => plano(c.value(row)).includes(q)),
     );
   }, [rows, search, columns, searchable]);
 
@@ -426,7 +467,15 @@ export default function DataReport<T>({
     <ReportPageShell
       count={filtered.length}
       description={description}
-      empty={{ message: emptyMessage }}
+      empty={{
+        message:
+          rows.length > 0 && search.trim()
+            ? t("ui.DataReport.sinCoincidencias", {
+                defaultValue: "Ningún registro coincide con «{{q}}».",
+                q: search.trim(),
+              })
+            : emptyMessage,
+      }}
       exporting={exportando}
       filters={
         <div className="space-y-3">
@@ -482,15 +531,19 @@ export default function DataReport<T>({
       search={searchable ? search : undefined}
       title={title}
       tone={tone}
-      onApplyFilters={fetchRows}
+      onApplyFilters={aplicarFiltros}
       onExport={exportar}
       onPrint={() => openPrint(true)}
       onSearchChange={searchable ? setSearch : undefined}
     >
       {/* Con filas; sin ellas el armazón pinta su «sin datos», que es lo que
-          hay que ver. */}
-      {!loading && filtered.length > 0 && summary}
-      {loading || filtered.length === 0 ? null : esTelefono ? (
+          hay que ver. ONE child expression on purpose: with two, `children`
+          is an array ([false, null]) even with no rows, the shell took it as
+          content and the report showed an empty box instead of its message. */}
+      {loading || filtered.length === 0 ? null : (
+        <>
+          {summary}
+          {esTelefono ? (
         /* ── EL INFORME, PLEGADO EN FICHAS ─────────────────────────────────
            Diez informes comparten este componente y todos pintaban de siete a
            nueve columnas en 390 px. `ReportColumn` ya trae lo que hace falta
@@ -649,6 +702,8 @@ export default function DataReport<T>({
             </tbody>
           </table>
         </div>
+          )}
+        </>
       )}
     </ReportPageShell>
   );

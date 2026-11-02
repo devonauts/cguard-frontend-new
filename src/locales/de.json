@@ -15249,7 +15249,9 @@
       "sinFilasParaExportar": "Keine Datensätze zum Exportieren",
       "seudonimoCliente": "Kunde",
       "seudonimoSede": "Standort",
-      "seudonimoPuesto": "Posten"
+      "seudonimoPuesto": "Posten",
+      "sinCoincidencias": "Kein Eintrag passt zu „{{q}}“.",
+      "rangoInvalido": "Prüfe die Daten: „Von“ darf nicht nach „Bis“ liegen."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Nächstes Objekt mit Wachkraft",
