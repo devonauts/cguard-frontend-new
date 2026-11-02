@@ -3,7 +3,7 @@ import { CheckSquare } from "lucide-react";
 
 import DataReport, { type ReportColumn } from "./DataReport";
 import {
-  formatDate,
+  formatDateTime,
   rangeBounds,
   REPORT_ROW_LIMIT,
   warnIfCapped,
@@ -53,7 +53,7 @@ const columns: ReportColumn<TaskRow>[] = [
     key: "created",
     label: "Creada",
     labelKey: "reports.col.task.created",
-    value: (r) => formatDate(r.createdAt),
+    value: (r) => formatDateTime(r.createdAt),
   },
   {
     key: "task",
@@ -90,7 +90,8 @@ const columns: ReportColumn<TaskRow>[] = [
     key: "due",
     label: "Para",
     labelKey: "reports.col.task.due",
-    value: (r) => formatDate(r.dateToDoTheTask),
+    // The deadline has a time (the form asks for date and hour).
+    value: (r) => formatDateTime(r.dateToDoTheTask),
   },
   {
     key: "done",

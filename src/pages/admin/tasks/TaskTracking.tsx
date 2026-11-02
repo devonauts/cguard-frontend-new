@@ -37,22 +37,27 @@ import taskService, {
   type TaskStatus,
   type TaskImage,
 } from "@/lib/api/taskService";
-import { localeActual } from "@/lib/localeActual";
 import { newIdempotencyKey } from "@/lib/idempotencyKey";
-import { zonaDeLaEmpresa, desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
+import { desdeInputFechaHora, fechaYHora } from "@/lib/horaDeLaEmpresa";
+import i18n from "@/i18n";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import {
   AsyncCombobox,
   type AsyncOption,
 } from "@/components/app/async-combobox";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
-function fmtDate(s?: string | null): string {
-  if (!s) return "—";
-  const d = new Date(s);
+/** Where a task came from — the same words as the task report (tasks.origen.*). */
+function origenDeTarea(source?: string | null): string {
+  if (source === "client") return i18n.t("comun.cliente", "Cliente");
+  if (source === "passdown") return i18n.t("tasks.origen.passdown", "Relevo");
+  if (source === "staff") return i18n.t("tasks.origen.staff", "Personal");
 
-  return Number.isNaN(d.getTime())
-    ? "—"
-    : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
+  return "—";
+}
+
+/** Same format as the task report (no seconds), in the company's zone. */
+function fmtDate(s?: string | null): string {
+  return fechaYHora(s);
 }
 
 /**
@@ -296,11 +301,7 @@ export default function TaskTracking() {
       header: t("clients.assignGuards.table.source", "Origen"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
-          {r.source === "client"
-            ? t("clients.client", "Cliente")
-            : r.source === "passdown"
-              ? t("ui.PassdownsPage.paseDeTurno", "Pase de turno")
-              : t("ui.IntegrationsList.operacion", "Operación")}
+          {origenDeTarea(r.source)}
         </span>
       ),
     },
@@ -505,13 +506,7 @@ export default function TaskTracking() {
                 <DetailField
                   label={t("clients.assignGuards.table.source", "Origen")}
                 >
-                  {selected.source === "client"
-                    ? t("clients.client", "Cliente")
-                    : selected.source === "passdown"
-                      ? t("ui.PassdownsPage.paseDeTurno", "Pase de turno")
-                      : selected.source === "staff"
-                        ? t("ui.IntegrationsList.operacion", "Operación")
-                        : "—"}
+                  {origenDeTarea(selected.source)}
                 </DetailField>
                 <DetailField
                   label={t("ui.TaskTracking.fechaLimite", "Fecha límite")}
