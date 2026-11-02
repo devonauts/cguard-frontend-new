@@ -22,14 +22,14 @@ import AuthShell, {
 import { ApiService } from "@/services/api/apiService";
 import { AuthService } from "@/services/auth/authService";
 
-// Supervisor app (patrullaje vehicular) store links — configurable via env so
-// they can be updated without a code change. Fallback to a store search until set.
+// Supervisor app (patrullaje vehicular) store listings — the same ones the
+// server's app version policy uses; overridable via env.
 const SUPERVISOR_PLAY_URL =
   (import.meta as any).env?.VITE_SUPERVISOR_PLAY_URL ||
-  "https://play.google.com/store/search?q=CGuardPro%20Supervisor&c=apps";
+  "https://play.google.com/store/apps/details?id=com.cguardpro.supervisor";
 const SUPERVISOR_IOS_URL =
   (import.meta as any).env?.VITE_SUPERVISOR_IOS_URL ||
-  "https://apps.apple.com/search?term=CGuardPro%20Supervisor";
+  "https://apps.apple.com/app/id6786120830";
 
 /**
  * SupervisorRegistration — onboarding for a SUPERVISOR (securitySupervisor).
