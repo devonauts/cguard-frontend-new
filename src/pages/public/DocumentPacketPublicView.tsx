@@ -89,6 +89,30 @@ const MOTIVO: Record<string, { tituloKey: string; textoKey: string }> = {
   },
 };
 
+/* Module level on purpose: declared inside the component, every keystroke
+   created NEW component types, React remounted the whole subtree and the
+   input lost focus after one character — the access code kept only its first
+   digit, and the name/comment of the decision did the same (QA re-test N1). */
+function Marco({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="min-h-screen px-4 py-8"
+      style={{ background: "var(--app-bg, #0d1117)" }}
+    >
+      <div className="mx-auto w-full max-w-2xl space-y-5">
+        <div className="flex justify-center">
+          <BrandLockup />
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Tarjeta({ children }: { children: React.ReactNode }) {
+  return <div className="glass rounded-3xl p-5 sm:p-6">{children}</div>;
+}
+
 export default function DocumentPacketPublicView() {
   const { t } = useTranslation();
   const { token = "" } = useParams();
@@ -166,11 +190,59 @@ export default function DocumentPacketPublicView() {
     }
   };
 
-  /** La descarga es una navegación normal: el servidor anota y redirige. */
-  const descargar = (d: Doc) => {
-    const qs = claveActiva ? `?code=${encodeURIComponent(claveActiva)}` : "";
+  const [descargando, setDescargando] = useState<string | null>(null);
 
-    window.location.href = `${API}${d.downloadPath}${qs}`;
+  /**
+   * Without an access code the download is a plain navigation (the server
+   * records it and serves or redirects). WITH a code, the code goes in the
+   * `X-Packet-Code` header the server accepts, not in `?code=`, which left it
+   * in the browser history and in access logs (QA re-test N5). Only if the
+   * fetch itself cannot complete (e.g. a cross-origin storage redirect without
+   * CORS) does it fall back to the old URL form, so the file still downloads.
+   */
+  const descargar = async (d: Doc) => {
+    const url = `${API}${d.downloadPath}`;
+
+    if (!claveActiva) {
+      window.location.href = url;
+
+      return;
+    }
+    setDescargando(d.itemId);
+    setErrorClave(null);
+    let respuesta: Response | null = null;
+
+    try {
+      respuesta = await fetch(url, {
+        headers: { "X-Packet-Code": claveActiva },
+      });
+    } catch {
+      window.location.href = `${url}?code=${encodeURIComponent(claveActiva)}`;
+      setDescargando(null);
+
+      return;
+    }
+    try {
+      if (!respuesta.ok) {
+        setErrorClave(t("ui.DocumentPacketPublic.errorCheckFailed"));
+
+        return;
+      }
+      const blob = await respuesta.blob();
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = href;
+      a.download = d.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(href), 60_000);
+    } catch {
+      setErrorClave(t("ui.DocumentPacketPublic.errorCheckFailed"));
+    } finally {
+      setDescargando(null);
+    }
   };
 
   const decidir = async () => {
@@ -222,24 +294,6 @@ export default function DocumentPacketPublicView() {
       setEnviandoDecision(false);
     }
   };
-
-  const Marco = ({ children }: { children: React.ReactNode }) => (
-    <div
-      className="min-h-screen px-4 py-8"
-      style={{ background: "var(--app-bg, #0d1117)" }}
-    >
-      <div className="mx-auto w-full max-w-2xl space-y-5">
-        <div className="flex justify-center">
-          <BrandLockup />
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-
-  const Tarjeta = ({ children }: { children: React.ReactNode }) => (
-    <div className="glass rounded-3xl p-5 sm:p-6">{children}</div>
-  );
 
   if (cargando) {
     return (
@@ -432,15 +486,26 @@ export default function DocumentPacketPublicView() {
                   <a download> con la clave en el href la dejaría en el historial. */}
               <Button
                 className="h-10 shrink-0"
+                disabled={descargando === d.itemId}
                 size="sm"
                 variant="outline"
-                onClick={() => descargar(d)}
+                onClick={() => void descargar(d)}
               >
-                <Download className="mr-1.5 h-4 w-4" /> {t("actions.download")}
+                {descargando === d.itemId ? (
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="mr-1.5 h-4 w-4" />
+                )}{" "}
+                {t("actions.download")}
               </Button>
             </div>
           ))}
         </div>
+        {errorClave && !decidiendo && (
+          <p className="mt-2 text-sm" style={{ color: "var(--bad-text)" }}>
+            {errorClave}
+          </p>
+        )}
       </Tarjeta>
 
       {/* ── Revisión ── */}
