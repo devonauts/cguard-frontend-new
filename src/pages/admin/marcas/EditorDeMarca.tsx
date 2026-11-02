@@ -14,6 +14,13 @@
  * brand route), accent colour, PDF layout, the sender name of its mails, its
  * own invoice prefix and website, with a live preview «Así ve esta marca su
  * cliente».
+ *
+ * Phase 5 — «Textos de factura»: every company-level text its documents print
+ * (title, notes, terms, footer, payment instructions and bank details, the
+ * quote's texts, the reports' footer), per brand; the preview shows them. A
+ * BRAND ADMIN may edit their own brand's identity and texts here
+ * (`puedeEditarIdentidad`), but not the principal's legal data, and they do
+ * not archive. A sample PDF drawn by the server shows the real document.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,9 +29,11 @@ import { toast } from "sonner";
 import {
   Archive,
   ArchiveRestore,
+  FileSearch,
   ImageUp,
   Layers,
   Loader2,
+  Lock,
   Palette,
 } from "lucide-react";
 
@@ -33,6 +42,8 @@ import { revisarMarca } from "./reglasDeMarca";
 import { useComprarCupoDeMarca } from "./comprarCupoDeMarca";
 import { prefijoValido, webValida } from "./identidadDeMarca";
 import VistaDeMarcaParaElCliente from "./VistaDeMarcaParaElCliente";
+import TextosDeFacturaDeMarca from "./TextosDeFacturaDeMarca";
+import { datosDeTextos, textosDe, type TextosBorrador } from "./textosDeMarca";
 
 import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
 import { Button } from "@/components/ui/button";
@@ -79,6 +90,8 @@ interface Borrador {
   senderName: string;
   invoicePrefix: string;
   website: string;
+  // Phase 5 — its own texts on its documents.
+  textos: TextosBorrador;
 }
 
 const borradorDe = (m: Marca | null, pais: string): Borrador => ({
@@ -98,18 +111,26 @@ const borradorDe = (m: Marca | null, pais: string): Borrador => ({
   senderName: m?.senderName || "",
   invoicePrefix: m?.invoicePrefix || "",
   website: m?.website || "",
+  textos: textosDe(m),
 });
 
 export function EditorDeMarca({
   abierto,
   marca,
   puedeEditar,
+  puedeEditarIdentidad = false,
   onCerrar,
 }: {
   abierto: boolean;
   /** `null` = create a new one. */
   marca: Marca | null;
+  /** The tenant admin: everything (create, archive, legal data). */
   puedeEditar: boolean;
+  /**
+   * Phase 5: a brand admin on their OWN brand — identity and texts, not the
+   * principal's legal data, no archiving.
+   */
+  puedeEditarIdentidad?: boolean;
   onCerrar: () => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -120,6 +141,7 @@ export function EditorDeMarca({
   const [intento, setIntento] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
+  const [previa, setPrevia] = useState<"invoice" | "quote" | null>(null);
   const archivo = useRef<HTMLInputElement>(null);
   const paises = useMemo(() => listaDePaises(i18n.language), [i18n.language]);
   const terminos = terminosFiscales(b.country, i18n.language, {
@@ -141,7 +163,10 @@ export function EditorDeMarca({
     (k: keyof Borrador) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setB((x) => ({ ...x, [k]: e.target.value }));
-  const solo = !puedeEditar;
+  const editable = puedeEditar || (puedeEditarIdentidad && !!marca);
+  const solo = !editable;
+  // The principal's legal identity is the company's own: only the tenant admin changes it.
+  const legalBloqueado = !puedeEditar && !!marca?.isPrincipal;
 
   const refrescar = () => qc.invalidateQueries({ queryKey: ["marcas"] });
 
@@ -190,7 +215,32 @@ export function EditorDeMarca({
     senderName: b.senderName.trim() || null,
     invoicePrefix: b.invoicePrefix.trim().toUpperCase() || null,
     website: b.website.trim() || null,
+    ...datosDeTextos(b.textos),
   });
+
+  /** Phase 5: the real document, drawn by the server with the unsaved form. */
+  const verPdf = async (tipo: "invoice" | "quote") => {
+    if (!marca || previa) return;
+    // Open the tab now (a popup after an await is blocked).
+    const ventana = window.open("", "_blank");
+
+    setPrevia(tipo);
+    try {
+      const blob = await marcasService.vistaPrevia(marca.id, tipo, datos());
+      const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+
+      if (ventana) ventana.location.href = url;
+      else window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch {
+      ventana?.close();
+      toast.error(
+        t("ui.EditorDeMarca.pdfError", "No se pudo preparar el PDF de ejemplo. Inténtalo otra vez."),
+      );
+    } finally {
+      setPrevia(null);
+    }
+  };
 
   const guardar = async () => {
     setIntento(true);
@@ -335,11 +385,11 @@ export function EditorDeMarca({
           )}
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={onCerrar}>
-              {puedeEditar
+              {editable
                 ? t("common.cancel", { defaultValue: "Cancelar" })
                 : t("common.close", { defaultValue: "Cerrar" })}
             </Button>
-            {puedeEditar && (
+            {editable && (
               <Button
                 disabled={guardando || subiendo}
                 type="button"
@@ -377,7 +427,7 @@ export function EditorDeMarca({
       }
       onOpenChange={(o) => !o && onCerrar()}
     >
-      <fieldset className="space-y-5" disabled={solo}>
+      <fieldset className="min-w-0 space-y-5" disabled={solo}>
         {/* ── How people know it ─────────────────────────────── */}
         <div className="flex items-start gap-4">
           <div className="flex flex-col items-center gap-2">
@@ -387,7 +437,7 @@ export function EditorDeMarca({
               nombre={b.name || "?"}
               size={64}
             />
-            {puedeEditar && (
+            {editable && (
               <>
                 <input
                   ref={archivo}
@@ -489,14 +539,24 @@ export function EditorDeMarca({
         </div>
 
         {/* ── Legal identity (required: it is another company) ── */}
-        <div
-          className="space-y-3 rounded-xl border p-3"
+        <fieldset
+          className="min-w-0 space-y-3 rounded-xl border p-3"
+          disabled={legalBloqueado}
           style={{ borderColor: "var(--hairline)" }}
         >
           <div>
-            <div className="text-sm font-medium">
+            <div className="flex items-center gap-1.5 text-sm font-medium">
+              {legalBloqueado && <Lock className="size-3.5" style={{ color: "var(--ink-faint)" }} />}
               {t("ui.EditorDeMarca.identidadTitulo", "Identidad legal")}
             </div>
+            {legalBloqueado && (
+              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                {t(
+                  "ui.EditorDeMarca.legalSoloAdmin",
+                  "Los datos legales de la marca principal los cambia un administrador de la empresa.",
+                )}
+              </p>
+            )}
             <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
               {t(
                 "ui.EditorDeMarca.identidadAyuda",
@@ -626,7 +686,7 @@ export function EditorDeMarca({
               />
             </FormField>
           </div>
-        </div>
+        </fieldset>
 
         {/* ── Phase 3: how its clients see it ───────────────────── */}
         <div
@@ -759,8 +819,9 @@ export function EditorDeMarca({
                       "La marca principal usa la serie de la empresa.",
                     )
                   : t(
-                      "ui.EditorDeMarca.prefijoAyuda",
-                      "Sus facturas llevan su propia numeración. Vacío: el prefijo de la empresa y el código de la marca.",
+                      "ui.EditorDeMarca.prefijoAyudaSerie",
+                      "Sus documentos llevan su propia numeración: {{ejemplo}}. Vacío: el código de la marca.",
+                      { ejemplo: `${(b.invoicePrefix || b.code || "AND").toUpperCase()}-INV · -CN · -QUO` },
                     )
               }
               htmlFor="marca-prefijo"
@@ -772,7 +833,7 @@ export function EditorDeMarca({
                 disabled={!!marca?.isPrincipal}
                 id="marca-prefijo"
                 maxLength={12}
-                placeholder={b.code ? `FAC-${b.code}` : "FAC-AND"}
+                placeholder={b.code || "AND"}
                 value={b.invoicePrefix}
                 onChange={(e) =>
                   setB((x) => ({ ...x, invoicePrefix: e.target.value.toUpperCase() }))
@@ -803,10 +864,48 @@ export function EditorDeMarca({
           </div>
         </div>
 
+        <TextosDeFacturaDeMarca
+          principal={!!marca?.isPrincipal}
+          valor={b.textos}
+          onChange={(textos) => setB((x) => ({ ...x, textos }))}
+        />
+
         <VistaDeMarcaParaElCliente
           b={{ ...b, isPrincipal: !!marca?.isPrincipal }}
           idioma={i18n.language}
         />
+        {marca && (
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              disabled={!!previa}
+              size="sm"
+              type="button"
+              variant="outline"
+              onClick={() => void verPdf("invoice")}
+            >
+              {previa === "invoice" ? (
+                <Loader2 className="mr-1.5 size-4 animate-spin" />
+              ) : (
+                <FileSearch className="mr-1.5 size-4" />
+              )}
+              {t("ui.EditorDeMarca.pdfFactura", "Ver factura de ejemplo (PDF)")}
+            </Button>
+            <Button
+              disabled={!!previa}
+              size="sm"
+              type="button"
+              variant="outline"
+              onClick={() => void verPdf("quote")}
+            >
+              {previa === "quote" ? (
+                <Loader2 className="mr-1.5 size-4 animate-spin" />
+              ) : (
+                <FileSearch className="mr-1.5 size-4" />
+              )}
+              {t("ui.EditorDeMarca.pdfCotizacion", "Ver cotización de ejemplo (PDF)")}
+            </Button>
+          </div>
+        )}
       </fieldset>
     </Modal>
   );

@@ -48,7 +48,42 @@ export interface Marca {
   /** Prefix of its own invoice series; null = `<prefix>-<code>`. */
   invoicePrefix?: string | null;
   website?: string | null;
+  /**
+   * Phase 5: the brand's OWN texts on its documents. A non-principal brand
+   * prints only these (empty = the block is left out, never the company's);
+   * the principal falls back to the company's texts.
+   */
+  billingTexts?: TextosDeFactura;
 }
+
+/** A way of paying as the billing settings store it (bank details in `description`). */
+export interface MetodoDePago {
+  method: string;
+  builtin?: boolean;
+  label?: string | null;
+  enabled: boolean;
+  description?: string | null;
+  note?: string | null;
+}
+
+/** Phase 5 — every company-level text a document prints, per brand. */
+export interface TextosDeFactura {
+  invoiceTitle: string | null;
+  invoiceDefaultNotes: string | null;
+  invoiceTerms: string | null;
+  invoiceFooter: string | null;
+  paymentInstructions: string | null;
+  paymentMethods: MetodoDePago[] | null;
+  quoteTitle: string | null;
+  quoteDefaultIntro: string | null;
+  quoteTerms: string | null;
+  quoteClosing: string | null;
+  quoteFooter: string | null;
+  reportFooterText: string | null;
+}
+
+/** The free-text keys of `TextosDeFactura` (the list lives in pages/admin/marcas/textosDeMarca). */
+export type ClaveDeTexto = Exclude<keyof TextosDeFactura, "paymentMethods">;
 
 export interface CuposDeMarca {
   /** Brands paid for: 2 with the module + every extra slot bought. */
@@ -79,7 +114,7 @@ export interface ListaDeMarcas {
 }
 
 
-export type DatosDeMarca = Partial<
+export type DatosDeMarca = Partial<TextosDeFactura> & Partial<
   Pick<
     Marca,
     | "name"
@@ -134,6 +169,21 @@ export const marcasService = {
 
     return ApiService.post(`${base()}/${id}/logo`, form);
   },
+  /**
+   * Phase 5: a sample invoice / proposal of the brand drawn by the server
+   * with the unsaved form on top (a PDF blob). Tenant admin or the brand's
+   * own brand admin.
+   */
+  vistaPrevia: async (id: string, tipo: "invoice" | "quote", d: DatosDeMarca): Promise<Blob> => {
+    // Lazy: `lib/api` reads the session token at import (keeps this module testable).
+    const { default: api } = await import("../api");
+    const resp = await api.post<Blob>(`${base()}/${id}/preview/${tipo}`, d, {
+      responseType: "blob",
+      toast: { silentError: true },
+    } as never);
+
+    return (resp as { data?: Blob })?.data ?? (resp as unknown as Blob);
+  },
   /** Buy extra brand slots: answers exactly like a one-time module purchase. */
   comprarCupos: (quantity = 1): Promise<ResultadoDeCompra> =>
     ApiService.post(`${base()}/slots/purchase`, { quantity }),
@@ -165,6 +215,11 @@ export interface ParDeHoras {
   hours: number;
   people: number;
   shifts: number;
+  /** Phase 5: what the site brand owes the employer brand (rated hours only); null = no rate at all. */
+  amountCents?: number | null;
+  currency?: string | null;
+  /** Hours of the pair without a rate in effect. */
+  unratedHours?: number;
 }
 
 export interface FilaDeHoras {
@@ -178,6 +233,10 @@ export interface FilaDeHoras {
   siteName: string | null;
   hours: number;
   shifts: number;
+  /** Phase 5: the hour rate applied; null = «Sin tarifa». */
+  rateCents?: number | null;
+  amountCents?: number | null;
+  currency?: string | null;
 }
 
 export interface HorasEntreMarcas {
@@ -185,6 +244,11 @@ export interface HorasEntreMarcas {
   to: string;
   matrix: ParDeHoras[];
   rows: FilaDeHoras[];
+  /**
+   * Every brand the ids above refer to (the server sends them all: a brand
+   * admin's list of brands holds only theirs, the other side of a pair too).
+   */
+  brands?: Array<{ id: string; name: string; code: string | null; color: string | null; isPrincipal: boolean }>;
 }
 
 export interface FiltroDeHoras {
@@ -219,6 +283,38 @@ export const horasEntreMarcasService = {
    */
   urlDeDescarga: (f: FiltroDeHoras, format: "csv" | "xlsx" | "pdf"): string =>
     `${base()}/cross-hours?${consultaDeHoras(f, format)}`,
+};
+
+/**
+ * PHASE 5 — the hour rate between two brands: what the SITE brand owes the
+ * EMPLOYER brand per hour, effective from a date (the rate in effect on each
+ * shift's date applies). Read: whoever reads the report. Write: tenant admin.
+ */
+export interface TarifaEntreMarcas {
+  id: string;
+  employerBrandId: string;
+  siteBrandId: string;
+  rateCents: number;
+  currency: string;
+  effectiveFrom: string;
+  createdById?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface CambioDeTarifa {
+  employerBrandId: string;
+  siteBrandId: string;
+  /** null = remove the entry of that date. */
+  rateCents: number | null;
+  currency?: string | null;
+  effectiveFrom: string;
+}
+
+export const tarifasEntreMarcasService = {
+  leer: (): Promise<{ rates: TarifaEntreMarcas[]; currency: string }> =>
+    ApiService.get(`${base()}/hour-rates`),
+  guardar: (rates: CambioDeTarifa[]): Promise<{ rates: TarifaEntreMarcas[]; currency: string }> =>
+    ApiService.put(`${base()}/hour-rates`, { rates }),
 };
 
 /** The brand workspace saved in the account (the top-bar choice). */

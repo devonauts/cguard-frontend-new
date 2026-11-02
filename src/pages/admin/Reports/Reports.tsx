@@ -14,6 +14,9 @@ import { SECTION_THEME, iconForReport, toneForReport } from "./reportIcons";
 
 import AppLayout from "@/layouts/app-layout";
 import { REPORT_SECTIONS } from "@/config/reports-config";
+import { HORAS_ENTRE_MARCAS, seccionesConMultimarca } from "@/config/reportesDeMultimarca";
+import { useModuloMultimarca } from "@/hooks/useMarcas";
+import { usePermissions } from "@/hooks/usePermissions";
 import { plano } from "@/lib/buscadorGlobal";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,6 +53,10 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+  const multimarca = useModuloMultimarca();
+  const { hasPermission } = usePermissions();
+  const conMultimarca = multimarca && hasPermission("attendanceRead");
+  const BASE = useMemo(() => seccionesConMultimarca(REPORT_SECTIONS, conMultimarca), [conMultimarca]);
 
   const go = (href?: string) => {
     if (!href) return;
@@ -57,8 +64,8 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
   };
 
   const totalReports = useMemo(
-    () => REPORT_SECTIONS.reduce((n, s) => n + s.reports.length, 0),
-    [],
+    () => BASE.reduce((n, s) => n + s.reports.length, 0),
+    [BASE],
   );
 
   // reports-config es una constante de módulo: guarda la CLAVE, no el texto.
@@ -74,9 +81,9 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
     // Accent-blind: «panico» finds «Pánico».
     const q = plano(query.trim());
 
-    if (!q) return REPORT_SECTIONS;
+    if (!q) return BASE;
 
-    return REPORT_SECTIONS.map((s) => ({
+    return BASE.map((s) => ({
       ...s,
       reports: s.reports.filter(
         (r) =>
@@ -84,7 +91,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
           plano(tx(r.descriptionKey, r.description || "")).includes(q),
       ),
     })).filter((s) => s.reports.length > 0);
-  }, [query, tx]);
+  }, [query, tx, BASE]);
 
   // Search field reused inside the page hero.
   const searchField = (
@@ -198,7 +205,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                     // Only the reports actually wired to data are clickable; the
                     // rest are shown disabled with a "Próximamente" badge instead
                     // of navigating to an empty shell.
-                    const ready = READY_REPORT_HREFS.has(report.href);
+                    const ready = READY_REPORT_HREFS.has(report.href) || report.id === HORAS_ENTRE_MARCAS.id;
 
                     return (
                       <button

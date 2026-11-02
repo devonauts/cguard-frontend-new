@@ -137,7 +137,7 @@ export function mensajeDeAccesoDeMarca(code: string | null): string {
     case "marca_estructura":
       return i18n.t(
         "ui.AccesoDeMarca.errores.estructura",
-        "Crear, editar o archivar marcas, o cambiar qué marcas ve cada persona, lo hace un administrador de la empresa.",
+        "Crear o archivar marcas, cambiar los datos legales de la marca principal o qué marcas ve cada persona lo hace un administrador de la empresa.",
       );
     case "marca_roles":
       return i18n.t(

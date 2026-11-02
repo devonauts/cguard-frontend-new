@@ -12173,7 +12173,8 @@
       "subtitulo_one": "{{count}} rapport over operaties, incidenten, tijd en salarisadministratie — alles op één plek.",
       "subtitulo_other": "{{count}} rapporten over operaties, incidenten, tijd en salarisadministratie — alles op één plek.",
       "subtitulo_few": "{{count}} rapporten over operaties, incidenten, tijd en salarisadministratie — alles op één plek.",
-      "subtitulo_many": "{{count}} rapporten over operaties, incidenten, tijd en salarisadministratie — alles op één plek."
+      "subtitulo_many": "{{count}} rapporten over operaties, incidenten, tijd en salarisadministratie — alles op één plek.",
+      "horasEntreMarcasDesc": "Goedgekeurde uren van het ene merk op locaties van het andere, met het te verrekenen bedrag."
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Rotatiepatroon",
@@ -19967,7 +19968,12 @@
       "prefijoPrincipal": "Het hoofdmerk gebruikt de nummerreeks van het bedrijf.",
       "prefijoAyuda": "De facturen hebben een eigen nummering. Leeg: het voorvoegsel van het bedrijf en de merkcode.",
       "prefijo": "Factuurvoorvoegsel",
-      "web": "Website"
+      "web": "Website",
+      "pdfError": "De voorbeeld-pdf kon niet worden gemaakt. Probeer het opnieuw.",
+      "legalSoloAdmin": "De juridische gegevens van het hoofdmerk worden gewijzigd door een beheerder van het bedrijf.",
+      "prefijoAyudaSerie": "Haar documenten hebben een eigen nummering: {{ejemplo}}. Leeg: de merkcode.",
+      "pdfFactura": "Voorbeeldfactuur bekijken (pdf)",
+      "pdfCotizacion": "Voorbeeldofferte bekijken (pdf)"
     },
     "ElegirMarca": {
       "ahora": "Je bent hier",
@@ -19996,7 +20002,10 @@
         "identificadorMalo": "Het fiscale nummer is niet geldig voor het gekozen land.",
         "sinCupos": "Je gebruikt al je merken al. Voeg er nog een toe om verder te gaan.",
         "sinModulo": "De module Multimerk is niet actief.",
-        "tieneClientes": "Dit merk heeft nog klanten. Verplaats ze naar een ander merk en probeer het opnieuw."
+        "tieneClientes": "Dit merk heeft nog klanten. Verplaats ze naar een ander merk en probeer het opnieuw.",
+        "textoMalo": "Controleer de factuurteksten van het merk.",
+        "tarifaMala": "Controleer het tarief: twee bedrijven, een bedrag per uur en de ingangsdatum.",
+        "tarifaMoneda": "Dit merkenpaar heeft al tarieven in een andere valuta."
       },
       "irALaTienda": "Bekijken in Extra modules",
       "nueva": "Nieuw merk",
@@ -20011,7 +20020,8 @@
       "soloLecturaTitulo": "Je ziet je merken, maar wijzigt ze niet",
       "excedidoTitulo": "Je gebruikt {{usadas}} merken en hebt er {{pagadas}} betaald",
       "excedidoDesc": "De betaling voor een extra merk is terugbetaald. Je merken en hun gegevens blijven zoals ze zijn, maar je kunt geen nieuw merk aanmaken of heractiveren tot je een merk toevoegt of een ongebruikt merk archiveert.",
-      "cuposExcedidos": "Voeg een merk toe of archiveer er een om weer te kunnen aanmaken."
+      "cuposExcedidos": "Voeg een merk toe of archiveer er een om weer te kunnen aanmaken.",
+      "adminDeMarcaTitulo": "Je bewerkt de identiteit en teksten van je merk"
     },
     "Multimarca": {
       "principal": "Hoofdmerk"
@@ -20061,7 +20071,7 @@
       "errores": {
         "pago": "Betalingen, de winkel en extra merken beheert een beheerder van het bedrijf, niet die van een merk.",
         "cuenta": "Het bedrijfsaccount beheert een algemeen beheerder.",
-        "estructura": "Merken aanmaken, bewerken of archiveren, of wijzigen wie welke merken ziet, doet een beheerder van het bedrijf.",
+        "estructura": "Merken aanmaken of archiveren, de juridische gegevens van het hoofdmerk of welke merken iemand ziet wijzigen, doet een beheerder van het bedrijf.",
         "roles": "Je kunt de rol beheerder, merkbeheerder of vestigingsmanager niet toekennen en niemand met die rol bewerken.",
         "empresa": "Deze instelling geldt voor het hele bedrijf: een algemeen beheerder wijzigt haar.",
         "fueraDeAlcance": "Dat hoort bij een merk dat niet aan jou is toegewezen.",
@@ -20071,7 +20081,7 @@
     "HorasEntreMarcas": {
       "archivo": "uren-tussen-merken",
       "errorDescarga": "Het bestand kon niet worden gemaakt. Probeer het opnieuw.",
-      "subtitulo": "Iedereen wordt betaald door het merk waar hij of zij geregistreerd is. Hier zie je hoeveel uur mensen van het ene merk op locaties van een ander werkten, om ze tussen de bedrijven te verrekenen.",
+      "subtitulo": "Iedereen wordt betaald door het merk waarbij hij geregistreerd is. Hier zie je de goedgekeurde uren die mensen van het ene bedrijf op locaties van het andere werkten, en wat het ene het andere schuldig is.",
       "titulo": "Uren tussen merken",
       "mesPasado": "Vorige maand",
       "esteMes": "Deze maand",
@@ -20092,7 +20102,7 @@
       "personas": "Personen",
       "turnos": "Diensten",
       "matriz": "Wie werkte waar",
-      "matrizAyuda": "Rijen: het merk dat de persoon betaalt. Kolommen: het merk van de klant waar gewerkt is. Periode {{desde}} – {{hasta}}.",
+      "matrizAyuda": "Rijen: het bedrijf dat het personeel levert. Kolommen: het bedrijf van de klant waar gewerkt werd. Periode {{desde}} – {{hasta}}.",
       "pagaTrabajaEn": "Betaalt / Werkte bij",
       "total": "Totaal",
       "buscar": "Zoek persoon, klant of locatie",
@@ -20104,7 +20114,21 @@
       "personasYTurnos_one": "{{personas}} pers. · {{count}} dienst",
       "nTurnos_one": "{{count}} dienst",
       "personasYTurnos_other": "{{personas}} pers. · {{count}} diensten",
-      "nTurnos_other": "{{count}} diensten"
+      "nTurnos_other": "{{count}} diensten",
+      "empresaPersonal": "Bedrijf dat het personeel levert",
+      "empresaCliente": "Bedrijf van de klant",
+      "empresaPersonalCorta": "Levert personeel",
+      "empresaClienteCorta": "Bedrijf van de klant",
+      "sinTarifa": "Geen tarief",
+      "ponerTarifa": "Tarief instellen",
+      "tarifas": "Tarieven",
+      "horasAprobadas": "Goedgekeurde uren",
+      "importe": "Bedrag",
+      "horasSinTarifa": "{{horas}} zonder tarief",
+      "liquidacion": "Verrekening tussen merken",
+      "liquidacionAyuda": "Het bedrijf van de klant betaalt het bedrijf dat het personeel leverde de goedgekeurde uren tegen het tarief dat die dag gold.",
+      "debeA": "{{cliente}} betaalt {{personal}}",
+      "personalCliente": "Personeel / Klant"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",
@@ -20119,7 +20143,64 @@
       "total": "Totaal",
       "correoDe": "E-mails komen van",
       "portal": "Klantenportaal en app",
-      "direccionDelCorreo": "Het verzendadres is dat van het platform; de klant ziet de naam van het merk."
+      "direccionDelCorreo": "Het verzendadres is dat van het platform; de klant ziet de naam van het merk.",
+      "prefijoFactura": "INV",
+      "textoDeLaEmpresa": "Tekst van het bedrijf",
+      "comoPagar": "Zo betaalt u",
+      "pago": "Betaling",
+      "condiciones": "Voorwaarden"
+    },
+    "TarifasEntreMarcas": {
+      "titulo": "Uurtarieven tussen merken",
+      "ayuda": "Het bedrijf van de klant betaalt het bedrijf dat het personeel levert dit tarief per goedgekeurd uur. Elk tarief geldt vanaf zijn datum; eerdere uren houden het hunne.",
+      "porHora": "Uurtarief",
+      "desde": "Geldt vanaf",
+      "guardar": "Tarief opslaan",
+      "guardada": "Tarief opgeslagen",
+      "elige": "Kies",
+      "faltanMarcas": "Kies beide bedrijven.",
+      "mismaMarca": "Een tarief geldt tussen twee verschillende bedrijven.",
+      "montoMalo": "Vul een bedrag per uur in (0 of meer).",
+      "fechaMala": "Kies vanaf welke dag het geldt.",
+      "quitarTitulo": "Dit tarief verwijderen?",
+      "quitarMensaje": "Uren vanaf {{desde}} krijgen weer het vorige tarief, of blijven zonder tarief.",
+      "quitar": "Verwijderen",
+      "soloLectura": "De tarieven worden door de bedrijfsadministratie vastgesteld.",
+      "vacio": "Nog geen tarieven",
+      "vacioDesc": "Zonder tarief toont het rapport de uren maar niet het bedrag.",
+      "desdeEl": "Vanaf {{fecha}}",
+      "vigente": "Geldend",
+      "porHoraValor": "{{monto}} / u"
+    },
+    "TextosDeMarca": {
+      "titulo": "Factuurteksten",
+      "ayudaPrincipal": "Wat je hier schrijft vervangt de tekst van het bedrijf op de documenten van het hoofdmerk. Leeg: die uit Facturatie › Documentontwerp wordt gebruikt.",
+      "ayudaMarca": "Haar facturen, offertes, e-mails en rapporten drukken alleen deze teksten af. Een lege tekst verschijnt niet: die van het hoofdbedrijf wordt nooit gebruikt.",
+      "vacioPrincipal": "Leeg: de tekst van het bedrijf",
+      "vacioMarca": "Leeg: wordt niet afgedrukt",
+      "facturas": "Facturen",
+      "cobro": "Betaling",
+      "cotizaciones": "Offertes",
+      "informes": "Rapporten",
+      "invoiceTitle": "Factuurtitel",
+      "invoiceDefaultNotes": "Notities waarmee elke factuur begint",
+      "invoiceTerms": "Voorwaarden",
+      "invoiceFooter": "Voettekst",
+      "paymentInstructions": "Betaalinstructies",
+      "paymentInstructionsAyuda": "Worden afgedrukt als de factuur geen betaalmethoden aanbiedt.",
+      "metodos": "Betaalmethoden en bankgegevens",
+      "metodosAyudaPrincipal": "Als er geen is aangevinkt, worden die van het bedrijf gebruikt.",
+      "metodosAyudaMarca": "Als er geen is aangevinkt, bieden haar facturen de betaalmethoden van het bedrijf aan zonder bankgegevens.",
+      "datosDe": "Gegevens voor {{metodo}}",
+      "datosEjemplo": "Bank, rekening, houder…",
+      "notaDe": "Notitie voor {{metodo}}",
+      "notaEjemplo": "Bv.: vermeld het factuurnummer in de omschrijving",
+      "quoteTitle": "Offertetitel",
+      "quoteDefaultIntro": "Inleiding",
+      "quoteTerms": "Algemene voorwaarden",
+      "quoteClosing": "Afsluiting",
+      "quoteFooter": "Voettekst",
+      "reportFooterText": "Voettekst van de rapporten aan haar klanten"
     }
   },
   "visitantes": {

@@ -35,6 +35,27 @@ export function mensajeDeMarca(t: TFunction, code: string | null): string {
         "ui.MarcasPage.errores.faltanDatos",
         "Faltan datos obligatorios: nombre, razón social, identificador fiscal y país.",
       );
+    // Phase 5: billing texts and hour rates.
+    case "brand_text_invalid":
+      return t(
+        "ui.MarcasPage.errores.textoMalo",
+        "Revisa los textos de factura de la marca.",
+      );
+    case "hour_rate_invalid":
+      return t(
+        "ui.MarcasPage.errores.tarifaMala",
+        "Revisa la tarifa: dos empresas, un importe por hora y la fecha desde la que rige.",
+      );
+    case "hour_rate_same_brand":
+      return t(
+        "ui.TarifasEntreMarcas.mismaMarca",
+        "La tarifa es entre dos empresas distintas.",
+      );
+    case "hour_rate_currency_mismatch":
+      return t(
+        "ui.MarcasPage.errores.tarifaMoneda",
+        "Este par de marcas ya tiene tarifas en otra moneda.",
+      );
     case "addon_required":
       return t(
         "ui.MarcasPage.errores.sinModulo",

@@ -35,6 +35,7 @@ import clientBillingService, {
   type ShiftType,
 } from "@/lib/api/clientBillingService";
 import { QK, dinero, nombreDelCliente, useEtiquetasDeFacturacion, useClientesParaFacturar, conModuloDeFacturacion, FilaTotal, avisarError } from "./comun";
+import { terminosDeCotizacion } from "../marcas/textosDeMarca";
 
 type Para = "prospecto" | "cliente";
 
@@ -130,9 +131,24 @@ function CotizacionEditorPage() {
     setBillingCycle(s.defaultBillingCycle || "monthly");
     setPaymentTermsDays(String(s.defaultTermsDays ?? 30));
     setValidUntil((v) => v || sumarDias(hoyEnLaEmpresa(), Number(s.quoteValidityDays || 30)));
-    if (!termsTocados) setTerms(s.quoteTerms || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editando, ajustes.data]);
+
+  // Module Multimarca (phase 5): the terms are the ISSUING brand's — a brand's
+  // own (none = none, never the principal's), the principal's own or the
+  // company's. They follow the client / brand chosen until the user types.
+  const idMarcaEmisora = para === "cliente"
+    ? ((clientes.data ?? []).find((c) => c.id === clientAccountId) as { brandId?: string | null } | undefined)?.brandId ?? null
+    : marcaProspecto || null;
+  const marcaEmisora = multimarca.activo
+    ? multimarca.marcas.find((m) => m.id === idMarcaEmisora) ?? (para === "cliente" && clientAccountId ? multimarca.principal : null)
+    : null;
+
+  useEffect(() => {
+    if (editando || !ajustes.data || termsTocados) return;
+    setTerms(terminosDeCotizacion(marcaEmisora, ajustes.data.settings.quoteTerms));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editando, ajustes.data, marcaEmisora?.id, marcaEmisora?.billingTexts?.quoteTerms]);
 
   // An existing quote fills the form once.
   useEffect(() => {

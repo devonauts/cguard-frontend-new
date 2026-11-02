@@ -12,6 +12,13 @@
  * By default only CROSS pairs (X ≠ Y); «Incluir horas en la propia marca»
  * adds the rest. Someone limited to some brands sees the rows where their
  * brand is the employer or the site (the server narrows it).
+ *
+ * Phase 5 (Mike, 2026-11-02): with MONEY and two filters that tell one brand
+ * from the other — «Empresa que pone el personal» and «Empresa del cliente».
+ * Only approved hours count; each one is valued at the pair's hour rate in
+ * effect that day. A card per pair says what the client's company owes the
+ * other; rows without a rate say «Sin tarifa» and, for the tenant admin,
+ * open the rates dialog on that pair.
  */
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,6 +28,7 @@ import { toast } from "sonner";
 import {
   ArrowLeftRight,
   ArrowRight,
+  BadgeDollarSign,
   Clock,
   Download,
   FileSpreadsheet,
@@ -31,12 +39,16 @@ import {
 
 import {
   construirMatriz,
+  horasSinTarifa,
+  importesPorMoneda,
   periodoRapido,
   periodoValido,
   redondearHoras,
   textoDeHoras,
+  textoDeImporte,
   type PeriodoRapido,
 } from "./horasEntreMarcas";
+import TarifasEntreMarcas from "./TarifasEntreMarcas";
 
 import AppLayout from "@/layouts/app-layout";
 import EtiquetaDeMarca from "@/components/multimarca/EtiquetaDeMarca";
@@ -61,6 +73,7 @@ import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 import { useEsTelefono } from "@/hooks/useEsTelefono";
 import { useMarcas, type MarcaEtiqueta } from "@/hooks/useMarcas";
 import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   horasEntreMarcasService,
   type FilaDeHoras,
@@ -78,6 +91,11 @@ export default function HorasEntreMarcasPage() {
   const telefono = useEsTelefono();
   const { activo, todas, marcas } = useMarcas({ archivadas: true });
   const { restringido } = useAccesoDeMarca();
+  const { hasPermission } = usePermissions();
+  // Phase 5: the rates are an agreement between the companies: tenant admin only.
+  const puedeTarifar = hasPermission("tenantEdit") && !restringido;
+  const [tarifasAbiertas, setTarifasAbiertas] = useState(false);
+  const [parInicial, setParInicial] = useState<{ employerBrandId: string; siteBrandId: string } | null>(null);
   const hoy = hoyEnLaEmpresa();
   const inicial = periodoRapido("mesPasado", hoy);
   const [rapido, setRapido] = useState<PeriodoRapido | "otro">("mesPasado");
@@ -112,6 +130,17 @@ export default function HorasEntreMarcasPage() {
   const etiqueta = useMemo(() => {
     const m = new Map<string, MarcaEtiqueta>();
 
+    // The report names every brand of its pairs: a brand admin's own list
+    // holds only theirs, and the other side of a pair needs a name too.
+    for (const b of q.data?.brands ?? [])
+      m.set(b.id, {
+        id: b.id,
+        nombre: b.name,
+        codigo: b.code,
+        color: b.color || "var(--brand)",
+        logoUrl: null,
+        principal: !!b.isPrincipal,
+      });
     for (const b of todas.length ? todas : marcas)
       m.set(b.id, {
         id: b.id,
@@ -123,7 +152,7 @@ export default function HorasEntreMarcasPage() {
       });
 
     return (id: string) => m.get(id) ?? null;
-  }, [todas, marcas]);
+  }, [todas, marcas, q.data]);
   const nombreDe = (id: string) => etiqueta(id)?.nombre ?? "—";
 
   const matriz = useMemo(
@@ -145,6 +174,38 @@ export default function HorasEntreMarcasPage() {
   }, [q.data, busqueda, etiqueta]);
   const personas = new Set((q.data?.rows ?? []).map((r) => r.userId)).size;
   const turnos = (q.data?.matrix ?? []).reduce((s, p) => s + (p.shifts || 0), 0);
+  // Phase 5: the money.
+  const importes = importesPorMoneda(q.data?.matrix ?? []);
+  const sinTarifa = horasSinTarifa(q.data?.matrix ?? []);
+  const dinero = (cents: number | null | undefined, currency: string | null | undefined) =>
+    textoDeImporte(cents, currency, locale);
+  const textoImporteTotal = importes.length
+    ? importes.map((x) => dinero(x.cents, x.currency)).join(" · ")
+    : t("ui.HorasEntreMarcas.sinTarifa", "Sin tarifa");
+  const abrirTarifas = (par?: { employerBrandId: string; siteBrandId: string } | null) => {
+    setParInicial(par ?? null);
+    setTarifasAbiertas(true);
+  };
+  /** «Sin tarifa», a button that opens the rates on that pair for the tenant admin. */
+  const sinTarifaDe = (par: { employerBrandId: string; siteBrandId: string }) =>
+    puedeTarifar ? (
+      <button
+        className="cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold underline-offset-2 hover:underline"
+        style={{ background: "color-mix(in oklab, var(--warn) 14%, transparent)", color: "var(--warn-text)" }}
+        title={t("ui.HorasEntreMarcas.ponerTarifa", "Poner tarifa")}
+        type="button"
+        onClick={() => abrirTarifas(par)}
+      >
+        {t("ui.HorasEntreMarcas.sinTarifa", "Sin tarifa")}
+      </button>
+    ) : (
+      <span
+        className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+        style={{ background: "color-mix(in oklab, var(--warn) 14%, transparent)", color: "var(--warn-text)" }}
+      >
+        {t("ui.HorasEntreMarcas.sinTarifa", "Sin tarifa")}
+      </span>
+    );
 
   const elegirRapido = (p: PeriodoRapido | "otro") => {
     setRapido(p);
@@ -182,6 +243,10 @@ export default function HorasEntreMarcasPage() {
           actions={
             activo ? (
               <div className="flex flex-wrap gap-2">
+                <Button size="sm" type="button" variant="outline" onClick={() => abrirTarifas(null)}>
+                  <BadgeDollarSign className="mr-1.5 size-4" />
+                  {t("ui.HorasEntreMarcas.tarifas", "Tarifas")}
+                </Button>
                 <Button
                   disabled={!valido || !!bajando}
                   size="sm"
@@ -218,7 +283,7 @@ export default function HorasEntreMarcasPage() {
           icon={<ArrowLeftRight />}
           subtitle={t(
             "ui.HorasEntreMarcas.subtitulo",
-            "Cada persona cobra en la marca en la que se registró. Aquí ves cuántas horas trabajó gente de una marca en sitios de otra, para liquidarlas entre empresas.",
+            "Cada persona cobra en la marca en la que se registró. Aquí ves las horas aprobadas que gente de una empresa trabajó en sitios de otra, y cuánto le debe una a la otra.",
           )}
           title={t("ui.HorasEntreMarcas.titulo", "Horas entre marcas")}
         />
@@ -284,7 +349,7 @@ export default function HorasEntreMarcasPage() {
                   </FormField>
                   <FormField
                     htmlFor="horas-empleadora"
-                    label={t("ui.HorasEntreMarcas.empleadora", "Marca que paga")}
+                    label={t("ui.HorasEntreMarcas.empresaPersonal", "Empresa que pone el personal")}
                   >
                     <select
                       className={FIELD_CLS}
@@ -302,7 +367,7 @@ export default function HorasEntreMarcasPage() {
                   </FormField>
                   <FormField
                     htmlFor="horas-sitio"
-                    label={t("ui.HorasEntreMarcas.marcaDelSitio", "Marca del sitio")}
+                    label={t("ui.HorasEntreMarcas.empresaCliente", "Empresa del cliente")}
                   >
                     <select
                       className={FIELD_CLS}
@@ -376,12 +441,23 @@ export default function HorasEntreMarcasPage() {
               />
             ) : (
               <>
-                <StatsStrip className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <StatsStrip className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <StatCard
                     flat
                     icon={<Clock />}
-                    label={t("ui.HorasEntreMarcas.totalHoras", "Horas")}
+                    label={t("ui.HorasEntreMarcas.horasAprobadas", "Horas aprobadas")}
                     value={horas(matriz.total)}
+                  />
+                  <StatCard
+                    flat
+                    hint={
+                      sinTarifa > 0
+                        ? t("ui.HorasEntreMarcas.horasSinTarifa", "{{horas}} sin tarifa", { horas: horas(sinTarifa) })
+                        : undefined
+                    }
+                    icon={<BadgeDollarSign />}
+                    label={t("ui.HorasEntreMarcas.importe", "Importe")}
+                    value={textoImporteTotal}
                   />
                   <StatCard
                     flat
@@ -397,6 +473,65 @@ export default function HorasEntreMarcasPage() {
                   />
                 </StatsStrip>
 
+                {/* ── Phase 5: what each client's company owes, per pair ── */}
+                <Section
+                  icon={<BadgeDollarSign />}
+                  title={t("ui.HorasEntreMarcas.liquidacion", "Liquidación entre marcas")}
+                >
+                  <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {t(
+                      "ui.HorasEntreMarcas.liquidacionAyuda",
+                      "La empresa del cliente le paga a la empresa que puso el personal las horas aprobadas por la tarifa vigente de cada día.",
+                    )}
+                  </p>
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3" data-testid="totales-por-par">
+                    {(q.data.matrix ?? []).map((c) => (
+                      <div
+                        key={`${c.employerBrandId}|${c.siteBrandId}`}
+                        className="glass-flat space-y-2 rounded-xl p-3"
+                      >
+                        <div className="flex flex-wrap items-center gap-1.5 text-sm">
+                          <EtiquetaDeMarca marca={etiqueta(c.siteBrandId)} />
+                          <span className="truncate font-medium">{nombreDe(c.siteBrandId)}</span>
+                          <ArrowRight className="size-3.5" style={{ color: "var(--ink-faint)" }} />
+                          <EtiquetaDeMarca marca={etiqueta(c.employerBrandId)} />
+                          <span className="truncate font-medium">{nombreDe(c.employerBrandId)}</span>
+                        </div>
+                        <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
+                          {t("ui.HorasEntreMarcas.debeA", "{{cliente}} le paga a {{personal}}", {
+                            cliente: nombreDe(c.siteBrandId),
+                            personal: nombreDe(c.employerBrandId),
+                          })}
+                        </div>
+                        <div className="flex items-end justify-between gap-2">
+                          <div>
+                            <div className="text-xl font-bold tabular-nums">
+                              {c.amountCents != null ? dinero(c.amountCents, c.currency) : sinTarifaDe(c)}
+                            </div>
+                            {c.amountCents != null && (c.unratedHours ?? 0) > 0 && (
+                              <div className="mt-1 flex flex-wrap items-center gap-1 text-[11px]" style={{ color: "var(--warn-text)" }}>
+                                {t("ui.HorasEntreMarcas.horasSinTarifa", "{{horas}} sin tarifa", { horas: horas(c.unratedHours) })}
+                                {puedeTarifar && (
+                                  <button className="underline" type="button" onClick={() => abrirTarifas(c)}>
+                                    {t("ui.HorasEntreMarcas.ponerTarifa", "Poner tarifa")}
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right text-xs" style={{ color: "var(--ink-soft)" }}>
+                            <div className="font-semibold tabular-nums" style={{ color: "var(--ink)" }}>{horas(c.hours)}</div>
+                            {t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{count}} turnos", {
+                              personas: c.people,
+                              count: c.shifts,
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Section>
+
                 {/* ── Matrix employer × site brand ───────────────── */}
                 <Section
                   icon={<ArrowLeftRight />}
@@ -405,7 +540,7 @@ export default function HorasEntreMarcasPage() {
                   <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
                     {t(
                       "ui.HorasEntreMarcas.matrizAyuda",
-                      "Filas: la marca que paga a la persona. Columnas: la marca del cliente donde trabajó. Periodo {{desde}} – {{hasta}}.",
+                      "Filas: la empresa que pone el personal. Columnas: la empresa del cliente donde trabajó. Periodo {{desde}} – {{hasta}}.",
                       {
                         desde: soloFechaCivil(q.data.from || desde),
                         hasta: soloFechaCivil(q.data.to || hasta),
@@ -430,6 +565,9 @@ export default function HorasEntreMarcasPage() {
                               </div>
                               <div className="text-right">
                                 <div className="font-semibold tabular-nums">{horas(c!.hours)}</div>
+                                {c!.amountCents != null && (
+                                  <div className="text-xs font-medium tabular-nums">{dinero(c!.amountCents, c!.currency)}</div>
+                                )}
                                 <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
                                   {t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{count}} turnos", {
                                     personas: c!.people,
@@ -447,7 +585,7 @@ export default function HorasEntreMarcasPage() {
                         <thead>
                           <tr className="border-b" style={{ borderColor: "var(--hairline)" }}>
                             <th className="px-3 py-2 text-left text-xs font-semibold" style={{ color: "var(--ink-faint)" }}>
-                              {t("ui.HorasEntreMarcas.pagaTrabajaEn", "Paga / Trabajó en")}
+                              {t("ui.HorasEntreMarcas.personalCliente", "Personal / Cliente")}
                             </th>
                             {matriz.columnas.map((s) => (
                               <th key={s} className="px-3 py-2 text-right">
@@ -490,6 +628,11 @@ export default function HorasEntreMarcasPage() {
                                     }
                                   >
                                     <div className="font-semibold">{horas(c?.hours)}</div>
+                                    {c && c.amountCents != null && (
+                                      <div className="text-xs font-medium" style={{ color: "var(--ok-text, var(--ink-soft))" }}>
+                                        {dinero(c.amountCents, c.currency)}
+                                      </div>
+                                    )}
                                     {c && (
                                       <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
                                         {t("ui.HorasEntreMarcas.personasYTurnos", "{{personas}} pers. · {{count}} turnos", {
@@ -556,8 +699,19 @@ export default function HorasEntreMarcasPage() {
                               {[r.clientName, r.siteName].filter(Boolean).join(" · ")}
                             </span>
                           </div>
-                          <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-                            {t("ui.HorasEntreMarcas.nTurnos", "{{count}} turnos", { count: r.shifts })}
+                          <div className="flex items-center justify-between gap-2 text-[11px]" style={{ color: "var(--ink-faint)" }}>
+                            <span>
+                              {t("ui.HorasEntreMarcas.nTurnos", "{{count}} turnos", { count: r.shifts })}
+                              {r.rateCents != null &&
+                                ` · ${t("ui.TarifasEntreMarcas.porHoraValor", "{{monto}} / h", { monto: dinero(r.rateCents, r.currency) })}`}
+                            </span>
+                            {r.amountCents != null ? (
+                              <span className="text-xs font-semibold tabular-nums" style={{ color: "var(--ink)" }}>
+                                {dinero(r.amountCents, r.currency)}
+                              </span>
+                            ) : (
+                              sinTarifaDe(r)
+                            )}
                           </div>
                         </div>
                       )}
@@ -571,12 +725,14 @@ export default function HorasEntreMarcasPage() {
                             style={{ borderColor: "var(--hairline)", color: "var(--ink-faint)" }}
                           >
                             <th className="px-3 py-2 font-semibold">{t("ui.HorasEntreMarcas.persona", "Persona")}</th>
-                            <th className="px-3 py-2 font-semibold">{t("ui.HorasEntreMarcas.empleadora", "Marca que paga")}</th>
-                            <th className="px-3 py-2 font-semibold">{t("ui.HorasEntreMarcas.marcaDelSitio", "Marca del sitio")}</th>
+                            <th className="px-3 py-2 font-semibold">{t("ui.HorasEntreMarcas.empresaPersonalCorta", "Pone el personal")}</th>
+                            <th className="px-3 py-2 font-semibold">{t("ui.HorasEntreMarcas.empresaClienteCorta", "Empresa del cliente")}</th>
                             <th className="px-3 py-2 font-semibold">{t("ui.HorasEntreMarcas.cliente", "Cliente")}</th>
                             <th className="px-3 py-2 font-semibold">{t("ui.HorasEntreMarcas.sitio", "Sitio")}</th>
                             <th className="px-3 py-2 text-right font-semibold">{t("ui.HorasEntreMarcas.turnos", "Turnos")}</th>
                             <th className="px-3 py-2 text-right font-semibold">{t("ui.HorasEntreMarcas.totalHoras", "Horas")}</th>
+                            <th className="px-3 py-2 text-right font-semibold">{t("ui.TarifasEntreMarcas.porHora", "Tarifa por hora")}</th>
+                            <th className="px-3 py-2 text-right font-semibold">{t("ui.HorasEntreMarcas.importe", "Importe")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -597,11 +753,17 @@ export default function HorasEntreMarcasPage() {
                               <td className="px-3 py-2">{r.siteName || "—"}</td>
                               <td className="px-3 py-2 text-right tabular-nums">{r.shifts}</td>
                               <td className="px-3 py-2 text-right font-semibold tabular-nums">{horas(r.hours)}</td>
+                              <td className="px-3 py-2 text-right tabular-nums">
+                                {r.rateCents != null ? dinero(r.rateCents, r.currency) : sinTarifaDe(r)}
+                              </td>
+                              <td className="px-3 py-2 text-right font-semibold tabular-nums">
+                                {r.amountCents != null ? dinero(r.amountCents, r.currency) : "—"}
+                              </td>
                             </tr>
                           ))}
                           {!filas.length && (
                             <tr>
-                              <td className="px-3 py-6 text-center" colSpan={7} style={{ color: "var(--ink-faint)" }}>
+                              <td className="px-3 py-6 text-center" colSpan={9} style={{ color: "var(--ink-faint)" }}>
                                 {t("ui.HorasEntreMarcas.sinCoincidencias", "Nada coincide con la búsqueda.")}
                               </td>
                             </tr>
@@ -616,6 +778,22 @@ export default function HorasEntreMarcasPage() {
                               <td className="px-3 py-2 text-right font-bold tabular-nums">
                                 {horas(redondearHoras(filas.reduce((s, r) => s + (Number(r.hours) || 0), 0)))}
                               </td>
+                              <td />
+                              <td className="px-3 py-2 text-right font-bold tabular-nums">
+                                {importesPorMoneda(
+                                  filas.map((r) => ({
+                                    employerBrandId: r.employerBrandId,
+                                    siteBrandId: r.siteBrandId,
+                                    hours: r.hours,
+                                    people: 1,
+                                    shifts: r.shifts,
+                                    amountCents: r.amountCents ?? null,
+                                    currency: r.currency ?? null,
+                                  })),
+                                )
+                                  .map((x) => dinero(x.cents, x.currency))
+                                  .join(" · ") || "—"}
+                              </td>
                             </tr>
                           </tfoot>
                         )}
@@ -627,6 +805,15 @@ export default function HorasEntreMarcasPage() {
             )}
           </div>
         )}
+        <TarifasEntreMarcas
+          abierto={tarifasAbiertas}
+          desdeInicial={desde}
+          etiqueta={etiqueta}
+          marcas={marcas}
+          parInicial={parInicial}
+          puedeEditar={puedeTarifar}
+          onCerrar={() => setTarifasAbiertas(false)}
+        />
       </PageContainer>
     </AppLayout>
   );
