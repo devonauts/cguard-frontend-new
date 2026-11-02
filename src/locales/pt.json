@@ -20494,7 +20494,7 @@
       "mileageRequired": "Quilometragem inicial obrigatória",
       "modelRequired": "Modelo obrigatório",
       "plateRequired": "Placa obrigatória",
-      "vinAlphanumeric": "VIN inválido (deve ter exatamente 17 caracteres alfanuméricos)",
+      "vinAlphanumeric": "VIN inválido (deve ter exatamente 17 letras ou números; as letras I, O e Q não são usadas)",
       "vinLength": "VIN inválido (deve ter exatamente 17 caracteres)",
       "yearInvalid": "Ano inválido"
     }
@@ -21789,6 +21789,7 @@
       "cerrado_por_persona": "encerrado por uma pessoa"
     },
     "ajustes": {
+      "topeAjustado": "O limite vai de {{min}} a {{max}} mensagens: foi salvo {{valor}}.",
       "titulo": "Ajustes do acompanhamento",
       "activo": "{{agente}} faz o acompanhamento",
       "activoHint": "Escreve ao vigilante assim que algo não bate e segue a conversa até fechá-la.",

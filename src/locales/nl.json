@@ -20494,7 +20494,7 @@
       "mileageRequired": "Beginstand van de kilometerteller is verplicht",
       "modelRequired": "Model is verplicht",
       "plateRequired": "Kenteken is verplicht",
-      "vinAlphanumeric": "Ongeldig VIN (moet precies 17 alfanumerieke tekens hebben)",
+      "vinAlphanumeric": "Ongeldig VIN (moet precies 17 letters of cijfers hebben; de letters I, O en Q worden niet gebruikt)",
       "vinLength": "Ongeldig VIN (moet precies 17 tekens hebben)",
       "yearInvalid": "Ongeldig bouwjaar"
     }
@@ -21789,6 +21789,7 @@
       "cerrado_por_persona": "gesloten door een mens"
     },
     "ajustes": {
+      "topeAjustado": "Het maximum ligt tussen {{min}} en {{max}} berichten: {{valor}} is opgeslagen.",
       "titulo": "Instellingen van de opvolging",
       "activo": "{{agente}} volgt op",
       "activoHint": "Schrijft de beveiliger zodra er iets niet klopt en voert het gesprek tot het is afgesloten.",

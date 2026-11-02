@@ -20494,7 +20494,7 @@
       "mileageRequired": "Starting mileage is required",
       "modelRequired": "Model is required",
       "plateRequired": "Plate is required",
-      "vinAlphanumeric": "Invalid VIN (must be exactly 17 alphanumeric characters)",
+      "vinAlphanumeric": "Invalid VIN (must be exactly 17 letters or digits; the letters I, O and Q are not used)",
       "vinLength": "Invalid VIN (must be exactly 17 characters)",
       "yearInvalid": "Invalid year"
     }
@@ -21789,6 +21789,7 @@
       "cerrado_por_persona": "closed by a person"
     },
     "ajustes": {
+      "topeAjustado": "The cap goes from {{min}} to {{max}} messages: {{valor}} was saved.",
       "titulo": "Follow-up settings",
       "activo": "{{agente}} follows up",
       "activoHint": "Messages the officer as soon as something is off and keeps the conversation going until it is closed.",

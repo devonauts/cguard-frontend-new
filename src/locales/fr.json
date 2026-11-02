@@ -20494,7 +20494,7 @@
       "mileageRequired": "Le kilométrage initial est obligatoire",
       "modelRequired": "Le modèle est obligatoire",
       "plateRequired": "La plaque d'immatriculation est obligatoire",
-      "vinAlphanumeric": "VIN non valide (il doit comporter exactement 17 caractères alphanumériques)",
+      "vinAlphanumeric": "VIN non valide (il doit comporter exactement 17 lettres ou chiffres ; les lettres I, O et Q ne sont pas utilisées)",
       "vinLength": "VIN non valide (il doit comporter exactement 17 caractères)",
       "yearInvalid": "Année non valide"
     }
@@ -21789,6 +21789,7 @@
       "cerrado_por_persona": "clos par une personne"
     },
     "ajustes": {
+      "topeAjustado": "Le plafond va de {{min}} à {{max}} messages : {{valor}} a été enregistré.",
       "titulo": "Réglages du suivi",
       "activo": "{{agente}} assure le suivi",
       "activoHint": "Écrit à l’agent dès que quelque chose cloche et poursuit la conversation jusqu’à la clore.",

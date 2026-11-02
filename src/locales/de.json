@@ -20494,7 +20494,7 @@
       "mileageRequired": "Anfangskilometerstand erforderlich",
       "modelRequired": "Modell erforderlich",
       "plateRequired": "Kennzeichen erforderlich",
-      "vinAlphanumeric": "Ungültige VIN (muss genau 17 alphanumerische Zeichen haben)",
+      "vinAlphanumeric": "Ungültige VIN (muss genau 17 Buchstaben oder Ziffern haben; die Buchstaben I, O und Q kommen nicht vor)",
       "vinLength": "Ungültige VIN (muss genau 17 Zeichen haben)",
       "yearInvalid": "Ungültiges Jahr"
     }
@@ -21789,6 +21789,7 @@
       "cerrado_por_persona": "von einem Menschen geschlossen"
     },
     "ajustes": {
+      "topeAjustado": "Das Limit liegt zwischen {{min}} und {{max}} Nachrichten: gespeichert wurde {{valor}}.",
       "titulo": "Einstellungen der Nachverfolgung",
       "activo": "{{agente}} verfolgt nach",
       "activoHint": "Schreibt der Sicherheitskraft, sobald etwas nicht stimmt, und führt das Gespräch bis zum Abschluss.",

@@ -153,6 +153,18 @@ export default function VigiaProPage() {
       setVigilantes(!!r.vigilantes?.activo);
       setTope(r.topeMensajesDia);
       toast.success(t("vigiaPro.ajustes.guardado"));
+      // The server keeps the cap within its limits (−5 became 20): say so
+      // instead of letting the field change under the person's eyes.
+      if (tope !== null && r.topeMensajesDia !== tope) {
+        toast.info(
+          t("vigiaPro.ajustes.topeAjustado", {
+            defaultValue: "El tope va de {{min}} a {{max}} mensajes: se guardó {{valor}}.",
+            min: 20,
+            max: 5000,
+            valor: r.topeMensajesDia,
+          }),
+        );
+      }
       await qc.invalidateQueries({ queryKey: ["vigia-pro"] });
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || t("vigiaPro.ajustes.error"));

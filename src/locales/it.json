@@ -20494,7 +20494,7 @@
       "mileageRequired": "Chilometraggio iniziale obbligatorio",
       "modelRequired": "Modello obbligatorio",
       "plateRequired": "Targa obbligatoria",
-      "vinAlphanumeric": "Numero di telaio non valido (deve avere esattamente 17 caratteri alfanumerici)",
+      "vinAlphanumeric": "Numero di telaio non valido (deve avere esattamente 17 lettere o cifre; le lettere I, O e Q non si usano)",
       "vinLength": "Numero di telaio non valido (deve avere esattamente 17 caratteri)",
       "yearInvalid": "Anno non valido"
     }
@@ -21789,6 +21789,7 @@
       "cerrado_por_persona": "chiuso da una persona"
     },
     "ajustes": {
+      "topeAjustado": "Il limite va da {{min}} a {{max}} messaggi: è stato salvato {{valor}}.",
       "titulo": "Impostazioni del monitoraggio",
       "activo": "{{agente}} fa il monitoraggio",
       "activoHint": "Scrive alla guardia appena qualcosa non va e porta avanti la conversazione fino a chiuderla.",

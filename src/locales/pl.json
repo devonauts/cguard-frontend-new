@@ -20806,7 +20806,7 @@
       "mileageRequired": "Początkowy przebieg jest wymagany",
       "modelRequired": "Model jest wymagany",
       "plateRequired": "Numer rejestracyjny jest wymagany",
-      "vinAlphanumeric": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 znaków alfanumerycznych)",
+      "vinAlphanumeric": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 liter lub cyfr; litery I, O i Q nie są używane)",
       "vinLength": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 znaków)",
       "yearInvalid": "Nieprawidłowy rok"
     }
@@ -22103,6 +22103,7 @@
       "cerrado_por_persona": "zamknięta przez człowieka"
     },
     "ajustes": {
+      "topeAjustado": "Limit wynosi od {{min}} do {{max}} wiadomości: zapisano {{valor}}.",
       "titulo": "Ustawienia monitorowania",
       "activo": "{{agente}} monitoruje",
       "activoHint": "Pisze do pracownika, gdy tylko coś się nie zgadza, i prowadzi rozmowę do jej zamknięcia.",
