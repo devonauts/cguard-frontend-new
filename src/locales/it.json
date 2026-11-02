@@ -18469,7 +18469,7 @@
       },
       "sinPermiso": {
         "titulo": "Il tuo ruolo non può aprire Buste paga",
-        "desc": "Il tuo ruolo non ha i permessi di Buste paga (vedere e modificare buste paga e profili retributivi). Un amministratore può concederli in Impostazioni › Ruoli."
+        "desc": "Il tuo ruolo non ha i permessi di Buste paga (vedere e modificare buste paga e profili retributivi). Un amministratore può concederli in Ruoli e permessi."
       }
     },
     "ClientBillingContract": {

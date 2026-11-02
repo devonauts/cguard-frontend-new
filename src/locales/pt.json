@@ -17910,7 +17910,7 @@
       },
       "sinPermiso": {
         "titulo": "Seu perfil não pode abrir Holerites",
-        "desc": "Seu perfil não tem as permissões de Holerites (ver e editar holerites e perfis de pagamento). Um administrador pode concedê-las em Configurações › Perfis."
+        "desc": "Seu perfil não tem as permissões de Holerites (ver e editar holerites e perfis de pagamento). Um administrador pode concedê-las em Funções e permissões."
       }
     },
     "ClientBillingContract": {

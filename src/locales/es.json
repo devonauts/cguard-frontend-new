@@ -17910,7 +17910,7 @@
       },
       "sinPermiso": {
         "titulo": "Tu rol no puede abrir Roles de pago",
-        "desc": "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Configuración › Roles."
+        "desc": "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Roles y permisos."
       }
     },
     "ClientBillingContract": {

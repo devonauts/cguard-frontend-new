@@ -18765,7 +18765,7 @@
       },
       "sinPermiso": {
         "titulo": "Twoja rola nie może otworzyć Pasków wypłat",
-        "desc": "Twoja rola nie ma uprawnień do Pasków wypłat (przeglądanie i edycja pasków oraz profili płacowych). Administrator może je nadać w Ustawienia › Role."
+        "desc": "Twoja rola nie ma uprawnień do Pasków wypłat (przeglądanie i edycja pasków oraz profili płacowych). Administrator może je nadać w Role i uprawnienia."
       }
     },
     "ClientBillingContract": {

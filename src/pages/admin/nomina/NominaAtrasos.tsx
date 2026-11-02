@@ -26,6 +26,7 @@ import attendanceService, { type AtrasoDePersona } from "@/lib/api/attendanceSer
 
 import { enlaceAMarcaciones, minutos } from "@/lib/asistenciaVistas";
 
+import { localeActual } from "@/lib/localeActual";
 import { RangoDeAsistencia, etiquetaDeRango, useFiltrosDeAsistencia } from "./filtrosAsistencia";
 
 type Fila = AtrasoDePersona & { id: string };
@@ -64,7 +65,8 @@ export default function NominaAtrasos() {
         : t("comun.vigilante", "Vigilante");
 
   const dia = (ymd: string) =>
-    new Date(`${ymd}T12:00:00Z`).toLocaleDateString(undefined, { timeZone: "UTC", weekday: "short", day: "2-digit", month: "short" });
+    // The app's language, not the browser's («Sun, Nov 01» on a Spanish screen).
+    new Date(`${ymd}T12:00:00Z`).toLocaleDateString(localeActual(), { timeZone: "UTC", weekday: "short", day: "2-digit", month: "short" });
 
   const columns: Column<Fila>[] = [
     {

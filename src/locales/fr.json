@@ -18469,7 +18469,7 @@
       },
       "sinPermiso": {
         "titulo": "Votre rôle ne peut pas ouvrir les bulletins de paie",
-        "desc": "Votre rôle n'a pas les autorisations des bulletins de paie (voir et modifier les bulletins et les profils de paie). Un administrateur peut les accorder dans Paramètres › Rôles."
+        "desc": "Votre rôle n'a pas les autorisations des bulletins de paie (voir et modifier les bulletins et les profils de paie). Un administrateur peut les accorder dans Rôles et permissions."
       }
     },
     "ClientBillingContract": {

@@ -18469,7 +18469,7 @@
       },
       "sinPermiso": {
         "titulo": "Ihre Rolle kann Lohnabrechnungen nicht öffnen",
-        "desc": "Ihrer Rolle fehlen die Berechtigungen für Lohnabrechnungen (Abrechnungen und Lohnprofile ansehen und bearbeiten). Eine Administratorin oder ein Administrator kann sie unter Einstellungen › Rollen vergeben."
+        "desc": "Ihrer Rolle fehlen die Berechtigungen für Lohnabrechnungen (Abrechnungen und Lohnprofile ansehen und bearbeiten). Eine Administratorin oder ein Administrator kann sie unter Rollen und Berechtigungen vergeben."
       }
     },
     "ClientBillingContract": {

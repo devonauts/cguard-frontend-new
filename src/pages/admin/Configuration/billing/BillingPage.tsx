@@ -58,6 +58,7 @@ import {
 import { CODIGO_PAGO_DE_EMPRESA } from "@/lib/pagoRequerido";
 import { localeActual } from "@/lib/localeActual";
 import { roleDisplayName } from "@/config/roleLabels";
+import { correoVisible } from "@/lib/correoVisible";
 
 function money(cents: number, currency = "USD") {
   // en-US → dot as decimal separator (e.g. $12.50), comma as thousands.
@@ -682,7 +683,9 @@ function BillingPageDeLaPrincipal() {
                                 className="truncate text-xs"
                                 style={{ color: "var(--ink-soft)" }}
                               >
-                                {u.email}
+                                {/* An account without a mailbox carries an invented u-…@sin-correo.local. */}
+                                {correoVisible(u.email) ||
+                                  t("usuarioDeAcceso.sinCorreoCorto", "Sin correo")}
                               </div>
                             )}
                           </div>

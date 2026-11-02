@@ -18469,7 +18469,7 @@
       },
       "sinPermiso": {
         "titulo": "Uw rol kan Loonstroken niet openen",
-        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Instellingen › Rollen."
+        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Rollen en rechten."
       }
     },
     "ClientBillingContract": {
