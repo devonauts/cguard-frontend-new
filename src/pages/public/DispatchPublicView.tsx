@@ -5,8 +5,8 @@ import { FileText, ShieldAlert } from "lucide-react";
 
 import { clientDisplayName } from "@/lib/clientName";
 import BrandLockup from "@/components/BrandLockup";
-import DispatchFiles from "@/pages/admin/dispatcher/DispatchFiles";
-import { callerTypeLabel } from "@/pages/admin/dispatcher/dispatchLabels";
+import DispatchFiles from "@/components/despacho/DispatchFiles";
+import { callerTypeLabel } from "@/components/despacho/dispatchLabels";
 import IncidentMap from "@/components/IncidentMap/IncidentMap";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";

@@ -102,7 +102,7 @@ import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, limitesDelDia, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 import { resolveApiBase } from "@/lib/apiBase";
 import i18n from "@/i18n";
-import { callerTypeLabel } from "./dispatchLabels";
+import { callerTypeLabel } from "@/components/despacho/dispatchLabels";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
