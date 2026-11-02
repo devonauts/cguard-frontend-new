@@ -533,7 +533,8 @@
         "checkbox": "Pozwól pracownikowi ochrony widzieć ten kontakt",
         "descriptioninput": "Proszę wpisać opis kontaktu",
         "addContact": "Dodaj kontakt",
-        "mobilePlaceholder": "np. +593987654321"
+        "mobilePlaceholder": "np. +593987654321",
+        "editContact": "Edytuj kontakt"
       },
       "loadError": "Nie udało się wczytać kontaktów"
     },

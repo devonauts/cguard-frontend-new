@@ -917,7 +917,8 @@
         "checkbox": "Allow the guard to see this contact",
         "descriptioninput": "Enter the contact description",
         "addContact": "Add contact",
-        "mobilePlaceholder": "e.g. +593987654321"
+        "mobilePlaceholder": "e.g. +593987654321",
+        "editContact": "Edit contact"
       },
       "loadError": "Contacts could not be loaded"
     },

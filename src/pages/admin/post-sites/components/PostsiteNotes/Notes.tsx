@@ -604,7 +604,9 @@ export default function PostSiteNotes({ site }: Props) {
           >
             <div className="sticky top-0 flex items-center justify-between border-b p-6">
               <h2 className="text-lg font-semibold text-foreground">
-                {t("clients.notes.form.Title", "Add New Note")}
+                {formData.id
+                  ? t("clients.notes.form.editTitle", "Editar nota")
+                  : t("clients.notes.form.Title", "Agregar nueva nota")}
               </h2>
             </div>
 

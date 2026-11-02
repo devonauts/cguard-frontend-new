@@ -4980,7 +4980,8 @@
         "Addcontact": "ADICIONAR",
         "descriptioninput": "Insira a descrição do contato",
         "addContact": "Adicionar contato",
-        "mobilePlaceholder": "ex.: +593987654321"
+        "mobilePlaceholder": "ex.: +593987654321",
+        "editContact": "Editar contato"
       },
       "confirmDeleteMessage": "Tem certeza de que deseja excluir permanentemente o(s) contato(s) selecionado(s)? Esta ação não pode ser desfeita.",
       "confirmDeleteTitle": "Excluir contato(s)?",

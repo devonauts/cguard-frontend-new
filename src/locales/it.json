@@ -533,7 +533,8 @@
         "checkbox": "Consenti alla guardia di vedere il contatto",
         "descriptioninput": "Inserisci la descrizione del contatto",
         "addContact": "Aggiungi contatto",
-        "mobilePlaceholder": "es. +593987654321"
+        "mobilePlaceholder": "es. +593987654321",
+        "editContact": "Modifica contatto"
       },
       "loadError": "Impossibile caricare i contatti"
     },

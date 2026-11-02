@@ -533,7 +533,8 @@
         "checkbox": "Sicherheitskraft darf diesen Kontakt sehen",
         "descriptioninput": "Beschreibung des Kontakts eingeben",
         "addContact": "Kontakt hinzufügen",
-        "mobilePlaceholder": "z. B. +593987654321"
+        "mobilePlaceholder": "z. B. +593987654321",
+        "editContact": "Kontakt bearbeiten"
       },
       "loadError": "Die Kontakte konnten nicht geladen werden"
     },

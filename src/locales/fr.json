@@ -533,7 +533,8 @@
         "checkbox": "Autoriser l'agent à voir ce contact",
         "descriptioninput": "Saisissez la description du contact",
         "addContact": "Ajouter un contact",
-        "mobilePlaceholder": "ex. : +593987654321"
+        "mobilePlaceholder": "ex. : +593987654321",
+        "editContact": "Modifier le contact"
       },
       "loadError": "Impossible de charger les contacts"
     },

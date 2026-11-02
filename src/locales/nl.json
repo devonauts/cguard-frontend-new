@@ -533,7 +533,8 @@
         "checkbox": "Beveiliger mag dit contact zien",
         "descriptioninput": "Voer de omschrijving van het contact in",
         "addContact": "Contact toevoegen",
-        "mobilePlaceholder": "bijv. +593987654321"
+        "mobilePlaceholder": "bijv. +593987654321",
+        "editContact": "Contact bewerken"
       },
       "loadError": "Contacten laden mislukt"
     },
