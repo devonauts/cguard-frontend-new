@@ -7498,7 +7498,9 @@
       "computadoras": "Desktop-Computer",
       "computadoras.desc": "Geben Sie jeden Computer frei, der die Desktop-App nutzt, oder widerrufen Sie ihn.",
       "app-escritorio": "Desktop-App",
-      "app-escritorio.desc": "Laden Sie das Dashboard für Mac oder Windows herunter, im eigenen Fenster."
+      "app-escritorio.desc": "Laden Sie das Dashboard für Mac oder Windows herunter, im eigenen Fenster.",
+      "payroll-slips": "Lohnabrechnungen",
+      "payroll-slips.desc": "Land, Grundgehalt, Arbeitszeit, Doppelschichten, Einkommensteuer und Nummerierung der Lohnabrechnung."
     },
     "section": {
       "mi_cuenta": "Mein Konto",
@@ -7788,7 +7790,7 @@
       "certIconAlt": "Symbol der Zertifizierung",
       "noIcon": "Kein Symbol",
       "thisCert": "diese Zertifizierung",
-      "bannerDialogDesc": "Konfigurieren Sie das Banner, das im Modul MOBIL angezeigt wird.",
+      "bannerDialogDesc": "Richten Sie das Banner ein, das Ihre Kunden in ihrer App sehen.",
       "bannerTitlePlaceholder": "Titel des Banners",
       "bannerDescPlaceholder": "Beschreibung des Banners",
       "selectFileBtn": "Datei auswählen",
@@ -8102,7 +8104,7 @@
       "emailHeaderDesc": "Hintergrund des Streifens, in dem Ihr Logo steht. Ein dunkler Ton empfiehlt sich, damit der weiße Text lesbar ist.",
       "panelInfoBefore": "Und die Farbe des Dashboards? Die gehört Ihnen, nicht der Firma: Sie wird gewählt unter",
       "panelInfoStrong": "Mein Konto › Erscheinungsbild",
-      "panelInfoAfter": " und wird in Ihrem Browser gespeichert, wie der Dunkelmodus. Der Administrator entscheidet nicht, mit welchen Farben sein Team acht Stunden am Tag arbeitet.",
+      "panelInfoAfter": " und wird in Ihrem Konto gespeichert, wie der Dunkelmodus. Der Administrator entscheidet nicht, mit welchen Farben sein Team acht Stunden am Tag arbeitet.",
       "saveBtn": "Marke speichern"
     },
     "phoneField": {
@@ -15589,7 +15591,9 @@
       "inicio": "Start",
       "miCuenta": "Mein Konto",
       "vistaPreviaAppMiSeguridadCliente": "Vorschau · App {{app}} (Kunde)",
-      "seguridad": "Sicherheit"
+      "seguridad": "Sicherheit",
+      "nombreDeEjemplo": "Anna Schmidt",
+      "sitioDeEjemplo": "Zentralgebäude"
     },
     "MobilPage": {
       "serviceTemplateDesc": {

@@ -1122,7 +1122,7 @@ export default function MobilPage() {
           <DialogContent className="max-h-[90vh] max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-2xl">
             <DialogHeader className="text-center">
               <DialogTitle className="mx-auto">{bannerTitle}</DialogTitle>
-              <DialogDescription>{t('settings.mobil.bannerDialogDesc', { defaultValue: 'Configura el banner que se mostrará en el módulo MOBIL.' })}</DialogDescription>
+              <DialogDescription>{t('settings.mobil.bannerDialogDesc', { defaultValue: 'Configura el banner que verán tus clientes en su app.' })}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div>

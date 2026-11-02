@@ -6991,7 +6991,9 @@
       "computadoras": "Desktop computers",
       "computadoras.desc": "Approve or revoke each computer that uses the desktop app.",
       "app-escritorio": "Desktop app",
-      "app-escritorio.desc": "Download the dashboard for Mac or Windows, in its own window."
+      "app-escritorio.desc": "Download the dashboard for Mac or Windows, in its own window.",
+      "payroll-slips": "Payslips",
+      "payroll-slips.desc": "Country, base salary, working hours, double shifts, income tax and payslip numbering."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -7281,7 +7283,7 @@
       "certIconAlt": "Certification icon",
       "noIcon": "No icon",
       "thisCert": "this certification",
-      "bannerDialogDesc": "Configure the banner that will be shown in the MOBIL module.",
+      "bannerDialogDesc": "Set up the banner your clients will see in their app.",
       "bannerTitlePlaceholder": "Banner title",
       "bannerDescPlaceholder": "Banner description",
       "selectFileBtn": "Select file",
@@ -7595,7 +7597,7 @@
       "emailHeaderDesc": "Background of the band where your logo goes. A dark tone works best so the white text is readable.",
       "panelInfoBefore": "The panel color? That one is yours, not the company's: it's chosen in",
       "panelInfoStrong": "My account › Appearance",
-      "panelInfoAfter": " and is saved in your browser, like dark mode. The administrator doesn't decide which colors their team works with eight hours a day.",
+      "panelInfoAfter": " and is saved to your account, like dark mode. The administrator doesn't decide which colors their team works with eight hours a day.",
       "saveBtn": "Save branding"
     },
     "phoneField": {
@@ -15049,7 +15051,9 @@
       "inicio": "Home",
       "miCuenta": "My Account",
       "vistaPreviaAppMiSeguridadCliente": "Preview · {{app}} app (client)",
-      "seguridad": "Security"
+      "seguridad": "Security",
+      "nombreDeEjemplo": "Jane Smith",
+      "sitioDeEjemplo": "Central Building"
     },
     "MobilPage": {
       "serviceTemplateDesc": {

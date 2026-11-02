@@ -7498,7 +7498,9 @@
       "computadoras": "Desktopcomputers",
       "computadoras.desc": "Keur elke computer goed die de desktop-app gebruikt, of trek hem in.",
       "app-escritorio": "Desktop-app",
-      "app-escritorio.desc": "Download het dashboard voor Mac of Windows, in een eigen venster."
+      "app-escritorio.desc": "Download het dashboard voor Mac of Windows, in een eigen venster.",
+      "payroll-slips": "Loonstroken",
+      "payroll-slips.desc": "Land, basissalaris, arbeidstijd, dubbele diensten, inkomstenbelasting en nummering van de loonstrook."
     },
     "section": {
       "mi_cuenta": "Mijn account",
@@ -7788,7 +7790,7 @@
       "certIconAlt": "Pictogram certificering",
       "noIcon": "Geen pictogram",
       "thisCert": "deze certificering",
-      "bannerDialogDesc": "Stel de banner in die in de MOBIL-module wordt getoond.",
+      "bannerDialogDesc": "Stel de banner in die uw klanten in hun app zien.",
       "bannerTitlePlaceholder": "Titel van de banner",
       "bannerDescPlaceholder": "Omschrijving van de banner",
       "selectFileBtn": "Bestand selecteren",
@@ -8102,7 +8104,7 @@
       "emailHeaderDesc": "Achtergrond van de balk waarin uw logo staat. Een donkere tint werkt het best, zodat de witte tekst leesbaar is.",
       "panelInfoBefore": "De kleur van het panel? Die is van u, niet van het bedrijf: die kiest u bij",
       "panelInfoStrong": "Mijn account › Weergave",
-      "panelInfoAfter": " en die wordt in uw browser opgeslagen, net als de donkere modus. De beheerder bepaalt niet met welke kleuren zijn team acht uur per dag werkt.",
+      "panelInfoAfter": " en die wordt in uw account opgeslagen, net als de donkere modus. De beheerder bepaalt niet met welke kleuren zijn team acht uur per dag werkt.",
       "saveBtn": "Huisstijl opslaan"
     },
     "phoneField": {
@@ -15589,7 +15591,9 @@
       "inicio": "Home",
       "miCuenta": "Mijn account",
       "vistaPreviaAppMiSeguridadCliente": "Voorbeeld · app {{app}} (klant)",
-      "seguridad": "Beveiliging"
+      "seguridad": "Beveiliging",
+      "nombreDeEjemplo": "Anna de Vries",
+      "sitioDeEjemplo": "Centraal gebouw"
     },
     "MobilPage": {
       "serviceTemplateDesc": {

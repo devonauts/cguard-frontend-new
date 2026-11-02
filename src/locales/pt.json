@@ -2603,7 +2603,9 @@
       "computadoras": "Computadores desktop",
       "computadoras.desc": "Aprove ou revogue cada computador que usa o app para desktop.",
       "app-escritorio": "App para desktop",
-      "app-escritorio.desc": "Baixe o painel para Mac ou Windows, em uma janela própria."
+      "app-escritorio.desc": "Baixe o painel para Mac ou Windows, em uma janela própria.",
+      "payroll-slips": "Holerites",
+      "payroll-slips.desc": "País, salário base, jornada, dobras de turno, imposto de renda e numeração do holerite."
     },
     "section": {
       "apps_y_portales": "Apps e portais",
@@ -2893,7 +2895,7 @@
       "certIconAlt": "Ícone da certificação",
       "noIcon": "Sem ícone",
       "thisCert": "esta certificação",
-      "bannerDialogDesc": "Configure o banner que será exibido no módulo MOBIL.",
+      "bannerDialogDesc": "Configure o banner que seus clientes verão no app.",
       "bannerTitlePlaceholder": "Título do banner",
       "bannerDescPlaceholder": "Descrição do banner",
       "selectFileBtn": "Selecionar arquivo",
@@ -3207,7 +3209,7 @@
       "emailHeaderDesc": "Fundo da faixa onde fica o seu logotipo. Convém um tom escuro para que o texto branco seja legível.",
       "panelInfoBefore": "A cor do painel? Essa é sua, não da empresa: escolhe-se em",
       "panelInfoStrong": "Minha conta › Aparência",
-      "panelInfoAfter": " e fica salva no seu navegador, como o modo escuro. O administrador não decide com quais cores a sua equipe trabalha oito horas por dia.",
+      "panelInfoAfter": " e fica salva na sua conta, como o modo escuro. O administrador não decide com quais cores a sua equipe trabalha oito horas por dia.",
       "saveBtn": "Salvar marca"
     },
     "phoneField": {
@@ -15049,7 +15051,9 @@
       "inicio": "Início",
       "miCuenta": "Minha conta",
       "vistaPreviaAppMiSeguridadCliente": "Pré-visualização · app {{app}} (cliente)",
-      "seguridad": "Segurança"
+      "seguridad": "Segurança",
+      "nombreDeEjemplo": "Ana Souza",
+      "sitioDeEjemplo": "Edifício Central"
     },
     "MobilPage": {
       "serviceTemplateDesc": {

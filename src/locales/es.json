@@ -6991,7 +6991,9 @@
       "computadoras": "Computadoras de escritorio",
       "computadoras.desc": "Aprueba o revoca cada computadora que usa la app de escritorio.",
       "app-escritorio": "App de escritorio",
-      "app-escritorio.desc": "Descarga el panel para Mac o Windows, en su propia ventana."
+      "app-escritorio.desc": "Descarga el panel para Mac o Windows, en su propia ventana.",
+      "payroll-slips": "Roles de pago",
+      "payroll-slips.desc": "País, sueldo base, jornada, dobladas, renta y numeración del rol de pago."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -7281,7 +7283,7 @@
       "certIconAlt": "Icono certificación",
       "noIcon": "Sin icono",
       "thisCert": "esta certificación",
-      "bannerDialogDesc": "Configura el banner que se mostrará en el módulo MOBIL.",
+      "bannerDialogDesc": "Configura el banner que verán tus clientes en su app.",
       "bannerTitlePlaceholder": "Título del banner",
       "bannerDescPlaceholder": "Descripción del banner",
       "selectFileBtn": "Seleccionar archivo",
@@ -7595,7 +7597,7 @@
       "emailHeaderDesc": "Fondo de la franja donde va tu logotipo. Conviene un tono oscuro para que el texto blanco se lea.",
       "panelInfoBefore": "¿El color del panel? Ése es tuyo, no de la empresa: se elige en",
       "panelInfoStrong": "Mi cuenta › Apariencia",
-      "panelInfoAfter": " y se guarda en tu navegador, como el modo oscuro. El administrador no decide con qué colores trabaja su equipo ocho horas al día.",
+      "panelInfoAfter": " y se guarda en tu cuenta, como el modo oscuro. El administrador no decide con qué colores trabaja su equipo ocho horas al día.",
       "saveBtn": "Guardar marca"
     },
     "phoneField": {
@@ -15049,7 +15051,9 @@
       "inicio": "Inicio",
       "miCuenta": "Mi Cuenta",
       "vistaPreviaAppMiSeguridadCliente": "Vista previa · app {{app}} (cliente)",
-      "seguridad": "Seguridad"
+      "seguridad": "Seguridad",
+      "nombreDeEjemplo": "Ana Pérez",
+      "sitioDeEjemplo": "Edificio Central"
     },
     "MobilPage": {
       "serviceTemplateDesc": {

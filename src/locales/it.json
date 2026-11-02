@@ -7498,7 +7498,9 @@
       "computadoras": "Computer desktop",
       "computadoras.desc": "Approva o revoca ogni computer che usa l’app desktop.",
       "app-escritorio": "App desktop",
-      "app-escritorio.desc": "Scarica il pannello per Mac o Windows, in una finestra tutta sua."
+      "app-escritorio.desc": "Scarica il pannello per Mac o Windows, in una finestra tutta sua.",
+      "payroll-slips": "Buste paga",
+      "payroll-slips.desc": "Paese, stipendio base, orario, doppi turni, imposta sul reddito e numerazione della busta paga."
     },
     "section": {
       "mi_cuenta": "Il mio account",
@@ -7788,7 +7790,7 @@
       "certIconAlt": "Icona certificazione",
       "noIcon": "Nessuna icona",
       "thisCert": "questa certificazione",
-      "bannerDialogDesc": "Configura il banner che verrà mostrato nel modulo MOBIL.",
+      "bannerDialogDesc": "Configura il banner che i tuoi clienti vedranno nella loro app.",
       "bannerTitlePlaceholder": "Titolo del banner",
       "bannerDescPlaceholder": "Descrizione del banner",
       "selectFileBtn": "Seleziona file",
@@ -8102,7 +8104,7 @@
       "emailHeaderDesc": "Sfondo della fascia dove va il tuo logo. Conviene una tonalità scura perché il testo bianco resti leggibile.",
       "panelInfoBefore": "E il colore del pannello? Quello è tuo, non dell'azienda: si sceglie in",
       "panelInfoStrong": "Il mio account › Aspetto",
-      "panelInfoAfter": " e resta salvato nel tuo browser, come il tema scuro. L'amministratore non decide con quali colori il suo team lavora otto ore al giorno.",
+      "panelInfoAfter": " e resta salvato nel tuo account, come il tema scuro. L'amministratore non decide con quali colori il suo team lavora otto ore al giorno.",
       "saveBtn": "Salva identità visiva"
     },
     "phoneField": {
@@ -15589,7 +15591,9 @@
       "inicio": "Home",
       "miCuenta": "Il mio account",
       "vistaPreviaAppMiSeguridadCliente": "Anteprima · app {{app}} (cliente)",
-      "seguridad": "Sicurezza"
+      "seguridad": "Sicurezza",
+      "nombreDeEjemplo": "Anna Rossi",
+      "sitioDeEjemplo": "Edificio Centrale"
     },
     "MobilPage": {
       "serviceTemplateDesc": {

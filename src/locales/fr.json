@@ -7498,7 +7498,9 @@
       "computadoras": "Ordinateurs de bureau",
       "computadoras.desc": "Approuvez ou révoquez chaque ordinateur qui utilise l’application de bureau.",
       "app-escritorio": "Application de bureau",
-      "app-escritorio.desc": "Téléchargez le tableau de bord pour Mac ou Windows, dans sa propre fenêtre."
+      "app-escritorio.desc": "Téléchargez le tableau de bord pour Mac ou Windows, dans sa propre fenêtre.",
+      "payroll-slips": "Bulletins de paie",
+      "payroll-slips.desc": "Pays, salaire de base, durée du travail, doubles postes, impôt et numérotation du bulletin de paie."
     },
     "section": {
       "mi_cuenta": "Mon compte",
@@ -7788,7 +7790,7 @@
       "certIconAlt": "Icône de la certification",
       "noIcon": "Sans icône",
       "thisCert": "cette certification",
-      "bannerDialogDesc": "Configurez la bannière qui s'affichera dans le module MOBIL.",
+      "bannerDialogDesc": "Configurez la bannière que vos clients verront dans leur application.",
       "bannerTitlePlaceholder": "Titre de la bannière",
       "bannerDescPlaceholder": "Description de la bannière",
       "selectFileBtn": "Sélectionner un fichier",
@@ -8102,7 +8104,7 @@
       "emailHeaderDesc": "Fond du bandeau où figure votre logo. Un ton foncé convient mieux pour que le texte blanc reste lisible.",
       "panelInfoBefore": "La couleur du panneau ? Celle-là est la vôtre, pas celle de l'entreprise : elle se choisit dans",
       "panelInfoStrong": "Mon compte › Apparence",
-      "panelInfoAfter": " et elle est enregistrée dans votre navigateur, comme le mode sombre. L'administrateur ne décide pas avec quelles couleurs son équipe travaille huit heures par jour.",
+      "panelInfoAfter": " et elle est enregistrée dans votre compte, comme le mode sombre. L'administrateur ne décide pas avec quelles couleurs son équipe travaille huit heures par jour.",
       "saveBtn": "Enregistrer"
     },
     "phoneField": {
@@ -15589,7 +15591,9 @@
       "inicio": "Accueil",
       "miCuenta": "Mon compte",
       "vistaPreviaAppMiSeguridadCliente": "Aperçu · app {{app}} (client)",
-      "seguridad": "Sécurité"
+      "seguridad": "Sécurité",
+      "nombreDeEjemplo": "Claire Martin",
+      "sitioDeEjemplo": "Bâtiment central"
     },
     "MobilPage": {
       "serviceTemplateDesc": {

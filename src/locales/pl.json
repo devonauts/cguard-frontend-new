@@ -7512,7 +7512,9 @@
       "computadoras": "Komputery z aplikacją desktopową",
       "computadoras.desc": "Zatwierdzaj lub unieważniaj komputery, na których działa aplikacja desktopowa.",
       "app-escritorio": "Aplikacja desktopowa",
-      "app-escritorio.desc": "Pobierz panel na Maca lub Windows, we własnym oknie."
+      "app-escritorio.desc": "Pobierz panel na Maca lub Windows, we własnym oknie.",
+      "payroll-slips": "Paski wypłaty",
+      "payroll-slips.desc": "Kraj, wynagrodzenie bazowe, czas pracy, podwójne zmiany, podatek dochodowy i numeracja paska wypłaty."
     },
     "section": {
       "mi_cuenta": "Moje konto",
@@ -7802,7 +7804,7 @@
       "certIconAlt": "Ikona certyfikatu",
       "noIcon": "Brak ikony",
       "thisCert": "ten certyfikat",
-      "bannerDialogDesc": "Prosimy skonfigurować baner wyświetlany w module MOBIL.",
+      "bannerDialogDesc": "Skonfiguruj baner, który klienci zobaczą w swojej aplikacji.",
       "bannerTitlePlaceholder": "Tytuł banera",
       "bannerDescPlaceholder": "Opis banera",
       "selectFileBtn": "Wybierz plik",
@@ -8116,7 +8118,7 @@
       "emailHeaderDesc": "Tło paska, na którym umieszczony jest logotyp. Zalecany ciemny odcień, aby biały tekst był czytelny.",
       "panelInfoBefore": "A kolor panelu? Ten należy do Państwa, nie do firmy: wybiera się go w",
       "panelInfoStrong": "Moje konto › Wygląd",
-      "panelInfoAfter": " i zapisuje w przeglądarce, tak jak tryb ciemny. Administrator nie decyduje, w jakich kolorach jego zespół pracuje osiem godzin dziennie.",
+      "panelInfoAfter": " i zapisuje się na twoim koncie, tak jak tryb ciemny. Administrator nie decyduje, w jakich kolorach jego zespół pracuje osiem godzin dziennie.",
       "saveBtn": "Zapisz markę"
     },
     "phoneField": {
@@ -15765,7 +15767,9 @@
       "inicio": "Start",
       "miCuenta": "Moje konto",
       "vistaPreviaAppMiSeguridadCliente": "Podgląd · aplikacja {{app}} (klient)",
-      "seguridad": "Bezpieczeństwo"
+      "seguridad": "Bezpieczeństwo",
+      "nombreDeEjemplo": "Anna Kowalska",
+      "sitioDeEjemplo": "Budynek główny"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
