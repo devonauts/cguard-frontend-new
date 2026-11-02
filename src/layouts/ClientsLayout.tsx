@@ -65,8 +65,7 @@ import { StatusBadge, SmartImage } from "@/components/kit";
 import { clientService } from "@/lib/api/clientService";
 import { useAuth } from "@/contexts/AuthContext";
 import { hasFeature } from "@/lib/entitlements";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
-import { localeActual } from "@/lib/localeActual";
+import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 
 type Props = {
   navKey: string;
@@ -268,7 +267,10 @@ export default function ClientsLayout({
     return `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}`;
   })();
   const base = `/clients/${client?.id}`;
-  const fmtD = (d: any) => (d ? new Date(d).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : null);
+  // Contract dates are CIVIL days («2026-11-01»), not instants: parsed as UTC
+  // midnight and printed in the company's zone they showed one day earlier
+  // west of Greenwich (QA G8: 01/11 → «31/10/2026»).
+  const fmtD = (d: any) => (d ? soloFechaCivil(d, {}, "") || null : null);
 
   const kpis = [
     {
