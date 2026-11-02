@@ -18,7 +18,8 @@ import { PageContainer, PageHeader, Section, SkeletonCards, Modal, FormField, FI
 import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import clientBillingService, { BILLING_CYCLES, isHexColor, type BillingSettings, type DocumentStyle, type TaxJurisdiction, type TaxRate, type UsState } from "@/lib/api/clientBillingService";
-import { QK, porcentaje, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
+import { QK, porcentaje, useEtiquetasDeFacturacion, conModuloDeFacturacion, avisarError } from "./comun";
+import { diasDeRecordatorio, validarAjustes, type CampoDeAjustes } from "./validarAjustes";
 import { ReglaDeRecargo } from "./ReglaDeRecargo";
 import { CobrosGateway } from "./CobrosGateway";
 import { MetodosDePagoAjustes, metodoSinNombre } from "./MetodosDePago";
@@ -52,13 +53,49 @@ function AjustesFacturacionPage() {
 
   const set = <K extends keyof BillingSettings>(k: K, v: BillingSettings[K]) => setForm((f) => (f ? { ...f, [k]: v } : f));
   const setEstilo = (patch: Partial<DocumentStyle>) => setForm((f) => (f ? { ...f, documentStyle: { ...estiloDe(f), ...patch } } : f));
-  const num = (s: string) => { const n = Number(s); return Number.isFinite(n) ? n : 0; };
+  // Empty or not a number is NaN, so `validarAjustes` names the field instead of saving a 0.
+  const num = (s: string) => (s.trim() === "" ? NaN : Number(s));
+  const campoNum = (n: number) => (Number.isFinite(n) ? n : "");
 
   const guardar = async () => {
     if (!form) return;
     if (metodoSinNombre(form.paymentMethods)) {
       setTab("metodos");
       toast.error(t("ui.Facturacion.metodos.nombreObligatorio", "Ponle un nombre a cada método propio."));
+
+      return;
+    }
+    const problema = validarAjustes(form, reminderText);
+
+    if (problema) {
+      setTab(problema.tab);
+      const etiqueta: Record<CampoDeAjustes, string> = {
+        invoicePadding: t("ui.Facturacion.ajustes.relleno", "Dígitos del número"),
+        defaultTermsDays: t("ui.Facturacion.ajustes.terminosDePago", "Términos de pago (días)"),
+        roundingMinutes: t("ui.Facturacion.ajustes.redondeo", "Redondeo de minutos"),
+        lateFeeBps: t("ui.Facturacion.ajustes.recargoPorMora", "Recargo por mora (%)"),
+        lateFeeGraceDays: t("ui.Facturacion.ajustes.diasDeGracia", "Días de gracia"),
+      };
+      const pct = (bps: number) => bps / 100;
+
+      toast.error(
+        problema.tipo === "rango"
+          ? t("ui.Facturacion.ajustes.fueraDeRango", {
+              campo: etiqueta[problema.campo],
+              min: problema.campo === "lateFeeBps" ? pct(problema.min) : problema.min,
+              max: problema.campo === "lateFeeBps" ? pct(problema.max) : problema.max,
+              defaultValue: "«{{campo}}» tiene que estar entre {{min}} y {{max}}.",
+            })
+          : problema.tipo === "recordatorio"
+            ? t("ui.Facturacion.ajustes.recordatorioInvalido", {
+                valor: problema.valor,
+                defaultValue: "Recordatorios: «{{valor}}» no es un número entero de días entre -30 y 180.",
+              })
+            : t("ui.Facturacion.ajustes.demasiadosRecordatorios", {
+                max: problema.max,
+                defaultValue: "Como máximo {{max}} recordatorios.",
+              }),
+      );
 
       return;
     }
@@ -78,7 +115,7 @@ function AjustesFacturacionPage() {
       toast.success(t("ui.Facturacion.ajustes.guardado", "Ajustes guardados"));
       await qc.invalidateQueries({ queryKey: [QK, "settings"] });
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }
@@ -91,7 +128,7 @@ function AjustesFacturacionPage() {
       toast.success(t("ui.Facturacion.ajustes.tasaEliminada", "Tasa eliminada"));
       await qc.invalidateQueries({ queryKey: [QK, "settings"] });
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     }
   };
 
@@ -171,13 +208,13 @@ function AjustesFacturacionPage() {
                 <input className={FIELD_CLS} disabled={!canEdit} value={form.invoicePrefix} onChange={(e) => set("invoicePrefix", e.target.value)} />
               </FormField>
               <FormField label={t("ui.Facturacion.ajustes.relleno", "Dígitos del número")}>
-                <input className={FIELD_CLS} disabled={!canEdit} max={8} min={3} type="number" value={form.invoicePadding} onChange={(e) => set("invoicePadding", num(e.target.value))} />
+                <input className={FIELD_CLS} disabled={!canEdit} max={8} min={3} type="number" value={campoNum(form.invoicePadding)} onChange={(e) => set("invoicePadding", num(e.target.value))} />
               </FormField>
               <FormField label={t("ui.Facturacion.ajustes.prefijoNotaDeCredito", "Prefijo de nota de crédito")}>
                 <input className={FIELD_CLS} disabled={!canEdit} value={form.creditNotePrefix} onChange={(e) => set("creditNotePrefix", e.target.value)} />
               </FormField>
               <FormField label={t("ui.Facturacion.ajustes.terminosDePago", "Términos de pago (días)")} hint={t("ui.Facturacion.ajustes.terminosDePagoHint", "Net 30 = 30. Cada contrato puede cambiarlo.")}>
-                <input className={FIELD_CLS} disabled={!canEdit} max={180} min={0} type="number" value={form.defaultTermsDays} onChange={(e) => set("defaultTermsDays", num(e.target.value))} />
+                <input className={FIELD_CLS} disabled={!canEdit} max={180} min={0} type="number" value={campoNum(form.defaultTermsDays)} onChange={(e) => set("defaultTermsDays", num(e.target.value))} />
               </FormField>
               <FormField label={t("ui.Facturacion.ajustes.cicloPorDefecto", "Ciclo de facturación por defecto")}>
                 <select className={FIELD_CLS} disabled={!canEdit} value={form.defaultBillingCycle} onChange={(e) => set("defaultBillingCycle", e.target.value as BillingSettings["defaultBillingCycle"])}>
@@ -185,7 +222,7 @@ function AjustesFacturacionPage() {
                 </select>
               </FormField>
               <FormField label={t("ui.Facturacion.ajustes.redondeo", "Redondeo de minutos")} hint={t("ui.Facturacion.ajustes.redondeoHint", "Las horas facturables se redondean al múltiplo más cercano (15 = cuartos de hora). 0 = sin redondeo.")}>
-                <input className={FIELD_CLS} disabled={!canEdit} max={60} min={0} type="number" value={form.roundingMinutes} onChange={(e) => set("roundingMinutes", num(e.target.value))} />
+                <input className={FIELD_CLS} disabled={!canEdit} max={60} min={0} type="number" value={campoNum(form.roundingMinutes)} onChange={(e) => set("roundingMinutes", num(e.target.value))} />
               </FormField>
             </div>
             <div className="cg-eyebrow mb-2 mt-5">{t("ui.Facturacion.ajustes.cotizaciones", "Cotizaciones")}</div>
@@ -207,13 +244,13 @@ function AjustesFacturacionPage() {
               <ReglaDeRecargo currency={form.currency} label={t("ui.Facturacion.ajustes.festivos", "Festivos")} value={form.holidayRule} withPriority onChange={(v) => set("holidayRule", v)} />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <FormField label={t("ui.Facturacion.ajustes.recargoPorMora", "Recargo por mora (%)")} hint={t("ui.Facturacion.ajustes.recargoPorMoraHint", "Se aplica una sola vez sobre el saldo vencido. 0 = sin recargo.")}>
-                  <input className={FIELD_CLS} disabled={!canEdit} inputMode="decimal" value={(form.lateFeeBps / 100).toFixed(2)} onChange={(e) => set("lateFeeBps", Math.round(num(e.target.value.replace(",", ".")) * 100))} />
+                  <input className={FIELD_CLS} disabled={!canEdit} inputMode="decimal" value={(form.lateFeeBps / 100).toFixed(2)} onChange={(e) => set("lateFeeBps", Math.round((Number(e.target.value.replace(",", ".")) || 0) * 100))} />
                 </FormField>
                 <FormField label={t("ui.Facturacion.ajustes.diasDeGracia", "Días de gracia")}>
-                  <input className={FIELD_CLS} disabled={!canEdit} min={0} type="number" value={form.lateFeeGraceDays} onChange={(e) => set("lateFeeGraceDays", num(e.target.value))} />
+                  <input className={FIELD_CLS} disabled={!canEdit} min={0} type="number" value={campoNum(form.lateFeeGraceDays)} onChange={(e) => set("lateFeeGraceDays", num(e.target.value))} />
                 </FormField>
                 <FormField label={t("ui.Facturacion.ajustes.recordatorios", "Recordatorios (días)")} hint={t("ui.Facturacion.ajustes.recordatoriosHint", "Separados por comas, respecto al vencimiento: -3 = tres días antes, 7 = una semana después.")}>
-                  <input className={FIELD_CLS} disabled={!canEdit} value={reminderText} onChange={(e) => { setReminderText(e.target.value); set("reminderDays", e.target.value.split(",").map((x) => x.trim()).filter(Boolean).map(Number).filter((n) => Number.isFinite(n))); }} />
+                  <input className={FIELD_CLS} disabled={!canEdit} value={reminderText} onChange={(e) => { setReminderText(e.target.value); set("reminderDays", diasDeRecordatorio(e.target.value).dias); }} />
                 </FormField>
               </div>
             </div>
@@ -313,7 +350,7 @@ function TasaModal({ inicial, usStates, onClose, onSaved }: { inicial: Partial<T
       toast.success(t("ui.Facturacion.ajustes.tasaGuardada", "Tasa guardada"));
       await onSaved();
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }

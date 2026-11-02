@@ -18512,7 +18512,8 @@
         "contratoHint": "Optioneel: neemt de betalingstermijn en belastingvrijstelling over.",
         "sinContrato": "Geen contract",
         "periodoDesde": "Periode van",
-        "periodoHasta": "tot"
+        "periodoHasta": "tot",
+        "numeroInvalido": "Aantal en prijs moeten getallen zijn (bijvoorbeeld 1500 of 12,50)."
       },
       "ajustes": {
         "si": "Ja",
@@ -18583,7 +18584,10 @@
         "validezCotizacion": "Geldigheid van de offerte (dagen)",
         "validezCotizacionHint": "Zonder handtekening binnen deze termijn verloopt de offerte vanzelf.",
         "terminosCotizacion": "Standaardvoorwaarden van offertes",
-        "terminosCotizacionHint": "Worden in elke nieuwe offerte overgenomen; je kunt ze per offerte aanpassen."
+        "terminosCotizacionHint": "Worden in elke nieuwe offerte overgenomen; je kunt ze per offerte aanpassen.",
+        "fueraDeRango": "‘{{campo}}’ moet tussen {{min}} en {{max}} liggen.",
+        "recordatorioInvalido": "Herinneringen: ‘{{valor}}’ is geen geheel aantal dagen tussen -30 en 180.",
+        "demasiadosRecordatorios": "Maximaal {{max}} herinneringen."
       },
       "recargo": {
         "lastMinute": "Last-minute dekking",
@@ -18670,7 +18674,8 @@
         "minutosFacturables": "Factureerbare minuten",
         "editarLinea": "Regel bewerken",
         "minutosHint": "Gepland: {{p}} · gewerkt: {{w}}",
-        "excluirDeLaFactura": "Uitsluiten van de factuur"
+        "excluirDeLaFactura": "Uitsluiten van de factuur",
+        "revisionLista": "Klaar voor controle door de klant. Er wordt geen e-mail verstuurd: kopieer de link en deel die met de klant."
       },
       "regla": {
         "usarElDeLaEmpresa": "Bedrijfswaarde gebruiken",
@@ -18939,7 +18944,8 @@
         "pestanaDiseno": "Documentontwerp",
         "pestanaTextos": "Teksten",
         "validezYTerminosMovidos": "Geldigheid, inleiding en voorwaarden van offertes staan nu bij Teksten."
-      }
+      },
+      "periodoAlReves": "De periode eindigt voordat ze begint."
     },
     "ClientInvoices": {
       "pagadoTotal": "Totaal betaald",
@@ -19023,7 +19029,8 @@
         "noSeEnvio": "De e-mail kon niet worden verzonden. Controleer de ontvangers.",
         "enviadaOk": "Offerte verzonden",
         "enviarDesc": "De pdf en de link om online te tekenen worden verstuurd. De offerte staat dan op verzonden.",
-        "enviar": "Versturen"
+        "enviar": "Versturen",
+        "noCancelar": "Nee, behouden"
       },
       "volver": "Terug naar offertes",
       "revision": "Revisie {{n}}",

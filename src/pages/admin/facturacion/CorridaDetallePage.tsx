@@ -18,7 +18,7 @@ import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shar
 import { usePermissions } from "@/hooks/usePermissions";
 import { soloFechaCivil, fechaYHora } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { type BillingRun, type Discrepancy, type DiscrepancySeverity, type RunItem } from "@/lib/api/clientBillingService";
-import { QK, dinero, horas, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
+import { QK, dinero, horas, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, conModuloDeFacturacion, avisarError } from "./comun";
 
 /** What the engine wrote about a discrepancy, as a sentence (it comes as an object). */
 function detalleLegible(t: (k: string, d: string, o?: Record<string, unknown>) => string, detail: Discrepancy["detail"], moneda?: string): string | null {
@@ -70,7 +70,7 @@ function CorridaDetallePage() {
 
       return true;
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
 
       return false;
     } finally {
@@ -96,10 +96,16 @@ function CorridaDetallePage() {
       const r = await clientBillingService.sendToClientReview(run.id);
 
       setReviewUrl(r.reviewUrl);
-      toast.success(t("ui.Facturacion.corridaDetalle.enviadaARevision", "Corrida enviada a revisión del cliente"));
+      // No e-mail goes out: the link is shared by hand (QA 2026-11-01 read «enviada»).
+      toast.success(
+        t(
+          "ui.Facturacion.corridaDetalle.revisionLista",
+          "Lista para la revisión del cliente. No se envía ningún correo: copia el enlace y compártelo con él.",
+        ),
+      );
       await refrescar();
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setTrabajando(false);
     }
@@ -128,7 +134,7 @@ function CorridaDetallePage() {
       await qc.invalidateQueries({ queryKey: [QK, "invoices"] });
       navigate(`/facturacion/facturas/${invoice.id}`);
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setTrabajando(false);
     }

@@ -673,7 +673,15 @@ export interface Quote {
   convertedAt: string | null;
   lines?: QuoteLine[];
   events?: QuoteEvent[];
-  clientAccount?: (ClientAccountRef & { state?: string | null; zipCode?: string | null; taxExempt?: boolean | null }) | null;
+  clientAccount?: (ClientAccountRef & {
+    state?: string | null;
+    zipCode?: string | null;
+    address?: string | null;
+    city?: string | null;
+    phoneNumber?: string | null;
+    apContactName?: string | null;
+    taxExempt?: boolean | null;
+  }) | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -879,7 +887,8 @@ const clientBillingService = {
   },
 
   // ── Invoices ──────────────────────────────────────────────────────────────
-  async invoices(filter: { status?: InvoiceFilterStatus; clientAccountId?: string; from?: string; to?: string; limit?: number } = {}): Promise<{ invoices: Invoice[] }> {
+  /** `collectedThisMonthCents`: payments received this company month, partial ones included. */
+  async invoices(filter: { status?: InvoiceFilterStatus; clientAccountId?: string; from?: string; to?: string; limit?: number } = {}): Promise<{ invoices: Invoice[]; collectedThisMonthCents?: number }> {
     return unwrap(await api.get(`${base()}/invoices${qs(filter)}`));
   },
 

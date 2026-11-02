@@ -17972,7 +17972,8 @@
         "contratoHint": "Opcional: usa seus prazos de pagamento e isenção fiscal.",
         "sinContrato": "Sem contrato",
         "periodoDesde": "Período de",
-        "periodoHasta": "até"
+        "periodoHasta": "até",
+        "numeroInvalido": "A quantidade e o preço têm de ser números (por exemplo 1500 ou 12,50)."
       },
       "ajustes": {
         "si": "Sim",
@@ -18043,7 +18044,10 @@
         "validezCotizacion": "Validade da cotação (dias)",
         "validezCotizacionHint": "Passado esse prazo sem assinatura, a cotação vence sozinha.",
         "terminosCotizacion": "Termos padrão das cotações",
-        "terminosCotizacionHint": "São copiados em cada nova cotação; você pode alterá-los em cada uma."
+        "terminosCotizacionHint": "São copiados em cada nova cotação; você pode alterá-los em cada uma.",
+        "fueraDeRango": "«{{campo}}» tem de estar entre {{min}} e {{max}}.",
+        "recordatorioInvalido": "Lembretes: «{{valor}}» não é um número inteiro de dias entre -30 e 180.",
+        "demasiadosRecordatorios": "No máximo {{max}} lembretes."
       },
       "recargo": {
         "lastMinute": "Cobertura de última hora",
@@ -18130,7 +18134,8 @@
         "minutosFacturables": "Minutos faturáveis",
         "editarLinea": "Editar linha",
         "minutosHint": "Programados: {{p}} · trabalhados: {{w}}",
-        "excluirDeLaFactura": "Excluir da fatura"
+        "excluirDeLaFactura": "Excluir da fatura",
+        "revisionLista": "Pronta para a revisão do cliente. Nenhum e-mail é enviado: copie o link e compartilhe com ele."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usar o valor da empresa",
@@ -18399,7 +18404,8 @@
         "pestanaDiseno": "Design dos documentos",
         "pestanaTextos": "Textos",
         "validezYTerminosMovidos": "A validade, a introdução e os termos dos orçamentos agora estão em Textos."
-      }
+      },
+      "periodoAlReves": "O período termina antes de começar."
     },
     "ClientInvoices": {
       "pagadoTotal": "Pago no total",
@@ -18483,7 +18489,8 @@
         "noSeEnvio": "Não foi possível enviar o e-mail. Verifique os destinatários.",
         "enviadaOk": "Cotação enviada",
         "enviarDesc": "São enviados o PDF e o link para assinar on-line. A cotação fica como enviada.",
-        "enviar": "Enviar"
+        "enviar": "Enviar",
+        "noCancelar": "Não, mantê-la"
       },
       "volver": "Voltar às cotações",
       "revision": "Revisão {{n}}",

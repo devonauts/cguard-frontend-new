@@ -18512,7 +18512,8 @@
         "contratoHint": "Facultatif : reprend ses conditions de paiement et son exonération.",
         "sinContrato": "Sans contrat",
         "periodoDesde": "Période du",
-        "periodoHasta": "au"
+        "periodoHasta": "au",
+        "numeroInvalido": "La quantité et le prix doivent être des nombres (par exemple 1500 ou 12,50)."
       },
       "ajustes": {
         "si": "Oui",
@@ -18583,7 +18584,10 @@
         "validezCotizacion": "Validité du devis (jours)",
         "validezCotizacionHint": "Passé ce délai sans signature, le devis expire de lui-même.",
         "terminosCotizacion": "Conditions par défaut des devis",
-        "terminosCotizacionHint": "Copiées dans chaque nouveau devis ; vous pouvez les modifier pour chacun."
+        "terminosCotizacionHint": "Copiées dans chaque nouveau devis ; vous pouvez les modifier pour chacun.",
+        "fueraDeRango": "« {{campo}} » doit être compris entre {{min}} et {{max}}.",
+        "recordatorioInvalido": "Rappels : « {{valor}} » n'est pas un nombre entier de jours entre -30 et 180.",
+        "demasiadosRecordatorios": "{{max}} rappels au maximum."
       },
       "recargo": {
         "lastMinute": "Remplacement de dernière minute",
@@ -18670,7 +18674,8 @@
         "minutosFacturables": "Minutes facturables",
         "editarLinea": "Modifier la ligne",
         "minutosHint": "Prévu : {{p}} · travaillé : {{w}}",
-        "excluirDeLaFactura": "Exclure de la facture"
+        "excluirDeLaFactura": "Exclure de la facture",
+        "revisionLista": "Prête pour la vérification du client. Aucun e-mail n'est envoyé : copiez le lien et partagez-le avec lui."
       },
       "regla": {
         "usarElDeLaEmpresa": "Utiliser la valeur de l’entreprise",
@@ -18939,7 +18944,8 @@
         "pestanaDiseno": "Conception des documents",
         "pestanaTextos": "Textes",
         "validezYTerminosMovidos": "La validité, l’introduction et les conditions des devis sont désormais dans Textes."
-      }
+      },
+      "periodoAlReves": "La période se termine avant de commencer."
     },
     "ClientInvoices": {
       "pagadoTotal": "Payé au total",
@@ -19023,7 +19029,8 @@
         "noSeEnvio": "L'e-mail n'a pas pu être envoyé. Vérifiez les destinataires.",
         "enviadaOk": "Devis envoyé",
         "enviarDesc": "Le PDF et le lien de signature en ligne sont envoyés. Le devis passe à l'état envoyé.",
-        "enviar": "Envoyer"
+        "enviar": "Envoyer",
+        "noCancelar": "Non, la garder"
       },
       "volver": "Retour aux devis",
       "revision": "Révision {{n}}",

@@ -24,7 +24,7 @@ import {
   useEtiquetasDeFacturacion,
   useClientesParaFacturar,
   useContratos,
-  mensajeDeError,
+  avisarError,
   conModuloDeFacturacion,
 } from "./comun";
 
@@ -84,24 +84,27 @@ function FacturasPage() {
   };
 
   const lista = useQuery({
-    queryKey: [QK, "invoices", { status, clientAccountId, from, to }],
-    queryFn: async () =>
-      (
-        await clientBillingService.invoices({
-          status: status === "all" ? undefined : status,
-          clientAccountId: clientAccountId || undefined,
-          from: from || undefined,
-          to: to || undefined,
-        })
-      ).invoices,
+    // `cobrado`: the answer now carries the month's collections (a cache
+    // persisted with the old shape — a bare list — must not be read as this).
+    queryKey: [QK, "invoices", { status, clientAccountId, from, to, cobrado: true }],
+    queryFn: () =>
+      clientBillingService.invoices({
+        status: status === "all" ? undefined : status,
+        clientAccountId: clientAccountId || undefined,
+        from: from || undefined,
+        to: to || undefined,
+      }),
   });
-  const filas: Invoice[] = lista.data ?? [];
+  const filas: Invoice[] = lista.data?.invoices ?? [];
   const moneda = filas[0]?.currency || "USD";
 
   const resumen = useMemo(() => {
     const mes = hoyEnLaEmpresa().slice(0, 7);
     let abierto = 0;
     let vencido = 0;
+    // The server sums every payment received this month (partial ones too);
+    // the rows are only a fallback for an older server.
+    const delServidor = lista.data?.collectedThisMonthCents;
     let cobradoMes = 0;
 
     for (const i of filas) {
@@ -123,8 +126,8 @@ function FacturasPage() {
         cobradoMes += Number(i.paidCents || 0);
     }
 
-    return { abierto, vencido, cobradoMes };
-  }, [filas]);
+    return { abierto, vencido, cobradoMes: typeof delServidor === "number" ? delServidor : cobradoMes };
+  }, [filas, lista.data?.collectedThisMonthCents]);
 
   const etiquetasSuc = useEtiquetasDeSucursal();
   const columnas: Column<Invoice>[] = [
@@ -367,6 +370,10 @@ export function NuevaFacturaManual({
     setLineas((ls) => ls.map((l, j) => (j === i ? { ...l, ...patch } : l)));
   const aCentavos = (s: string) =>
     Math.round((Number(String(s).replace(",", ".")) || 0) * 100);
+  // «abc» as a price became a $0.00 line in silence (QA 2026-11-01): a number
+  // that is not one blocks the draft and is marked.
+  const noEsNumero = (s: string) =>
+    String(s).trim() !== "" && !Number.isFinite(Number(String(s).trim().replace(",", ".")));
   const total = lineas.reduce(
     (s, l) =>
       s + Math.round((aCentavos(l.quantity) * aCentavos(l.unitPrice)) / 100),
@@ -375,7 +382,9 @@ export function NuevaFacturaManual({
   const validas = lineas.filter(
     (l) => l.description.trim() && aCentavos(l.quantity) > 0,
   );
-  const listo = !!clientAccountId && validas.length > 0;
+  const conNumeroMalo = lineas.some((l) => noEsNumero(l.quantity) || noEsNumero(l.unitPrice));
+  const periodoAlReves = !!periodStart && !!periodEnd && periodEnd < periodStart;
+  const listo = !!clientAccountId && validas.length > 0 && !conNumeroMalo && !periodoAlReves;
 
   const crear = async () => {
     setSaving(true);
@@ -406,12 +415,7 @@ export function NuevaFacturaManual({
       await qc.invalidateQueries({ queryKey: [QK, "invoices"] });
       onCreated(invoice);
     } catch (e) {
-      toast.error(
-        mensajeDeError(
-          e,
-          t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"),
-        ),
-      );
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }
@@ -522,7 +526,14 @@ export function NuevaFacturaManual({
               onChange={(e) => setPeriodStart(e.target.value)}
             />
           </FormField>
-          <FormField label={t("ui.Facturacion.facturas.periodoHasta", "hasta")}>
+          <FormField
+            error={
+              periodoAlReves
+                ? t("ui.Facturacion.periodoAlReves", "El periodo termina antes de empezar.")
+                : undefined
+            }
+            label={t("ui.Facturacion.facturas.periodoHasta", "hasta")}
+          >
             <input
               className={FIELD_CLS}
               type="date"
@@ -549,6 +560,7 @@ export function NuevaFacturaManual({
                   onChange={(e) => setLinea(i, { description: e.target.value })}
                 />
                 <input
+                  aria-invalid={noEsNumero(l.quantity) || undefined}
                   className={`${FIELD_CLS} col-span-4 sm:col-span-2`}
                   inputMode="decimal"
                   placeholder={t("ui.Facturacion.facturas.cantidad", "Cant.")}
@@ -556,6 +568,7 @@ export function NuevaFacturaManual({
                   onChange={(e) => setLinea(i, { quantity: e.target.value })}
                 />
                 <input
+                  aria-invalid={noEsNumero(l.unitPrice) || undefined}
                   className={`${FIELD_CLS} col-span-5 sm:col-span-2`}
                   inputMode="decimal"
                   placeholder={t(
@@ -592,6 +605,11 @@ export function NuevaFacturaManual({
               </div>
             ))}
           </div>
+          {conNumeroMalo && (
+            <p className="mt-1 text-xs" role="alert" style={{ color: "var(--bad-text)" }}>
+              {t("ui.Facturacion.facturas.numeroInvalido", "La cantidad y el precio tienen que ser números (por ejemplo 1500 o 12,50).")}
+            </p>
+          )}
           <Button
             className="mt-2"
             size="sm"

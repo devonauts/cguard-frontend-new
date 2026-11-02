@@ -17972,7 +17972,8 @@
         "contratoHint": "Opcional: toma sus términos de pago y su exención fiscal.",
         "sinContrato": "Sin contrato",
         "periodoDesde": "Periodo desde",
-        "periodoHasta": "hasta"
+        "periodoHasta": "hasta",
+        "numeroInvalido": "La cantidad y el precio tienen que ser números (por ejemplo 1500 o 12,50)."
       },
       "ajustes": {
         "si": "Sí",
@@ -18043,7 +18044,10 @@
         "validezCotizacion": "Validez de la cotización (días)",
         "validezCotizacionHint": "Pasado ese plazo sin firma, la cotización vence sola.",
         "terminosCotizacion": "Términos por defecto de las cotizaciones",
-        "terminosCotizacionHint": "Se copian en cada cotización nueva; puedes cambiarlos en cada una."
+        "terminosCotizacionHint": "Se copian en cada cotización nueva; puedes cambiarlos en cada una.",
+        "fueraDeRango": "«{{campo}}» tiene que estar entre {{min}} y {{max}}.",
+        "recordatorioInvalido": "Recordatorios: «{{valor}}» no es un número entero de días entre -30 y 180.",
+        "demasiadosRecordatorios": "Como máximo {{max}} recordatorios."
       },
       "recargo": {
         "lastMinute": "Cobertura de último minuto",
@@ -18130,7 +18134,8 @@
         "minutosFacturables": "Minutos facturables",
         "editarLinea": "Editar línea",
         "minutosHint": "Programados: {{p}} · trabajados: {{w}}",
-        "excluirDeLaFactura": "Excluir de la factura"
+        "excluirDeLaFactura": "Excluir de la factura",
+        "revisionLista": "Lista para la revisión del cliente. No se envía ningún correo: copia el enlace y compártelo con él."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usar el valor de la empresa",
@@ -18399,7 +18404,8 @@
         "pestanaDiseno": "Diseño de documentos",
         "pestanaTextos": "Textos",
         "validezYTerminosMovidos": "La validez, la introducción y los términos de las cotizaciones están en Textos."
-      }
+      },
+      "periodoAlReves": "El periodo termina antes de empezar."
     },
     "ClientInvoices": {
       "pagadoTotal": "Pagado en total",
@@ -18483,7 +18489,8 @@
         "noSeEnvio": "No se pudo enviar el correo. Revisa los destinatarios.",
         "enviadaOk": "Cotización enviada",
         "enviarDesc": "Se envía el PDF y el enlace para firmar en línea. La cotización queda como enviada.",
-        "enviar": "Enviar"
+        "enviar": "Enviar",
+        "noCancelar": "No, mantenerla"
       },
       "volver": "Volver a cotizaciones",
       "revision": "Revisión {{n}}",
