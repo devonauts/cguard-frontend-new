@@ -20311,9 +20311,10 @@
       "numPeople": "Liczba osób",
       "companions": "Osoby towarzyszące",
       "placeType": "Rodzaj miejsca i numer",
-      "postSite": "obiekt",
+      "postSite": "Obiekt",
       "reason": "Cel wizyty",
-      "station": "Posterunek"
+      "station": "Posterunek",
+      "place": "Miejsce"
     },
     "placeType": {
       "apartment": "Mieszkanie",

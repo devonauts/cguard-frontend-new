@@ -6467,9 +6467,10 @@
       "numPeople": "Número de personas",
       "companions": "Acompañantes",
       "placeType": "Tipo de lugar y número",
-      "postSite": "puesto de vigilancia",
+      "postSite": "Puesto de vigilancia",
       "reason": "Motivo de la visita",
-      "station": "Estación"
+      "station": "Estación",
+      "place": "Lugar"
     },
     "placeType": {
       "apartment": "Apartamento",

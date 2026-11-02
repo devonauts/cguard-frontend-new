@@ -6469,7 +6469,8 @@
       "placeType": "Place Type and Number",
       "postSite": "Site",
       "reason": "Reason of visit",
-      "station": "Station"
+      "station": "Station",
+      "place": "Place"
     },
     "placeType": {
       "apartment": "Apartment",

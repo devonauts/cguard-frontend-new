@@ -19993,9 +19993,10 @@
       "numPeople": "Numero di persone",
       "companions": "Accompagnatori",
       "placeType": "Tipo di luogo e numero",
-      "postSite": "posto di servizio",
+      "postSite": "Posto di servizio",
       "reason": "Motivo della visita",
-      "station": "Postazione"
+      "station": "Postazione",
+      "place": "Luogo"
     },
     "placeType": {
       "apartment": "Appartamento",

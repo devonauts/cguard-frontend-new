@@ -633,6 +633,11 @@ export default function Visitors() {
         r.station?.stationName || r.station?.name || r.stationName || "",
     },
     {
+      // Same «Lugar» the station export has (e.g. «Casa - 24»).
+      label: t("visitantes.logTable.place", "Lugar"),
+      get: (r) => r.placeType || "",
+    },
+    {
       label: t("visitantes.logTable.client", "Cliente"),
       get: (r) => getClientLabelFromRecord(r) || "",
     },
