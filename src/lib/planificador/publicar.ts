@@ -786,11 +786,23 @@ export function planificarPublicacion(
       );
     }
   }
+  /* A live cover shift is withdrawn only when the person editing took it out
+     of the draft: it was in the plan as read and is not in the draft now. One
+     that never made it into the plan as read is not a change of theirs, and
+     deleting it left the night of an extension with nobody (QA 2026-11-01). */
+  const cubiertosAntes = new Set<string>();
+
+  for (const k of Object.keys(original.cubre)) {
+    const ds = k.split("|")[2];
+
+    for (const id of original.cubre[k]) cubiertosAntes.add(`${id}|${ds}`);
+  }
   for (const [pd, shiftId] of Object.entries(enlace.cargadas)) {
     const [id, ds] = pd.split("|");
     const d = Number(ds);
 
-    if (d < d0 || d >= d1 || cubiertos.has(pd)) continue;
+    if (d < d0 || d >= d1 || cubiertos.has(pd) || !cubiertosAntes.has(pd))
+      continue;
     const p = plan.personas.find((x) => x.id === id);
 
     if (!p) continue;
