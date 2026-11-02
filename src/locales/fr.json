@@ -10322,7 +10322,16 @@
       "nDocumentosSubidos_one": "{{count}} document envoyé",
       "nDocumentosSubidos_other": "{{count}} documents envoyés",
       "nDocumentosSubidos_few": "{{count}} documents envoyés",
-      "nDocumentosSubidos_many": "{{count}} documents envoyés"
+      "nDocumentosSubidos_many": "{{count}} documents envoyés",
+      "agrupar": {
+        "creando": "Création…",
+        "crear": "Créer le dossier",
+        "resumen": "{{count}} document(s) sélectionné(s). Le dossier apparaît dans « Remises au client », d’où il se partage dans l’application ou par un lien privé.",
+        "nombre": "Nom du dossier",
+        "desde": "Période du",
+        "hasta": "Période au",
+        "nota": "Note pour le client (facultatif)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Rechercher par ID, titre ou lieu",

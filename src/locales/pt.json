@@ -9782,7 +9782,16 @@
       "nDocumentosSubidos_one": "{{count}} documento enviado",
       "nDocumentosSubidos_other": "{{count}} documentos enviados",
       "nDocumentosSubidos_few": "{{count}} documentos enviados",
-      "nDocumentosSubidos_many": "{{count}} documentos enviados"
+      "nDocumentosSubidos_many": "{{count}} documentos enviados",
+      "agrupar": {
+        "creando": "Criando…",
+        "crear": "Criar pasta",
+        "resumen": "{{count}} documento(s) marcado(s). A pasta aparece em «Entregas ao cliente», de onde é compartilhada no app ou por um link privado.",
+        "nombre": "Nome da pasta",
+        "desde": "Período de",
+        "hasta": "Período até",
+        "nota": "Nota para o cliente (opcional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Buscar por ID, título ou localização",

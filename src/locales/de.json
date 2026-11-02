@@ -10322,7 +10322,16 @@
       "nDocumentosSubidos_one": "{{count}} Dokument hochgeladen",
       "nDocumentosSubidos_other": "{{count}} Dokumente hochgeladen",
       "nDocumentosSubidos_few": "{{count}} Dokumente hochgeladen",
-      "nDocumentosSubidos_many": "{{count}} Dokumente hochgeladen"
+      "nDocumentosSubidos_many": "{{count}} Dokumente hochgeladen",
+      "agrupar": {
+        "creando": "Wird erstellt…",
+        "crear": "Ordner erstellen",
+        "resumen": "{{count}} Dokument(e) markiert. Der Ordner erscheint unter „Übergaben an den Auftraggeber“ und wird von dort in der App oder über einen privaten Link geteilt.",
+        "nombre": "Ordnername",
+        "desde": "Zeitraum von",
+        "hasta": "Zeitraum bis",
+        "nota": "Hinweis für den Auftraggeber (optional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Nach ID, Titel oder Standort suchen",

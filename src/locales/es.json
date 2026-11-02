@@ -9725,7 +9725,7 @@
       "sinActividadReciente": "Sin actividad reciente.",
       "bibliotecaDeDocumentos": "Biblioteca de documentos",
       "cat": {
-        "postOrders": "Post Orders",
+        "postOrders": "Consignas del puesto",
         "manuales": "Manuales",
         "procedimientos": "Procedimientos",
         "reportes": "Reportes",
@@ -9782,7 +9782,16 @@
       "nDocumentosSubidos_one": "{{count}} documento subido",
       "nDocumentosSubidos_other": "{{count}} documentos subidos",
       "nDocumentosSubidos_few": "{{count}} documentos subidos",
-      "nDocumentosSubidos_many": "{{count}} documentos subidos"
+      "nDocumentosSubidos_many": "{{count}} documentos subidos",
+      "agrupar": {
+        "creando": "Creando…",
+        "crear": "Crear carpeta",
+        "resumen": "{{count}} documento(s) marcados. La carpeta aparece en «Entregas al cliente», desde donde se comparte en la app o por un enlace privado.",
+        "nombre": "Nombre de la carpeta",
+        "desde": "Periodo desde",
+        "hasta": "Periodo hasta",
+        "nota": "Nota para el cliente (opcional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Buscar por ID, título o ubicación",

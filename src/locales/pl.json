@@ -10360,7 +10360,16 @@
       "nDocumentosSubidos_one": "Przesłano {{count}} dokument",
       "nDocumentosSubidos_other": "Przesłano {{count}} dokumentów",
       "nDocumentosSubidos_few": "Przesłano {{count}} dokumenty",
-      "nDocumentosSubidos_many": "Przesłano {{count}} dokumentów"
+      "nDocumentosSubidos_many": "Przesłano {{count}} dokumentów",
+      "agrupar": {
+        "creando": "Tworzenie…",
+        "crear": "Utwórz folder",
+        "resumen": "Zaznaczone dokumenty: {{count}}. Folder pojawi się w „Przekazania dla zleceniodawcy”, skąd można go udostępnić w aplikacji lub przez prywatny link.",
+        "nombre": "Nazwa folderu",
+        "desde": "Okres od",
+        "hasta": "Okres do",
+        "nota": "Notatka dla zleceniodawcy (opcjonalnie)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Szukaj po ID, tytule lub lokalizacji",

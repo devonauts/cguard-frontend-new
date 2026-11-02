@@ -9782,7 +9782,16 @@
       "nDocumentosSubidos_one": "{{count}} document uploaded",
       "nDocumentosSubidos_other": "{{count}} documents uploaded",
       "nDocumentosSubidos_few": "{{count}} documents uploaded",
-      "nDocumentosSubidos_many": "{{count}} documents uploaded"
+      "nDocumentosSubidos_many": "{{count}} documents uploaded",
+      "agrupar": {
+        "creando": "Creating…",
+        "crear": "Create folder",
+        "resumen": "{{count}} document(s) selected. The folder appears under «Deliveries to the client», where it can be shared in the app or through a private link.",
+        "nombre": "Folder name",
+        "desde": "Period from",
+        "hasta": "Period to",
+        "nota": "Note for the client (optional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Search by ID, title or location",

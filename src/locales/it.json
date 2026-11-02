@@ -10322,7 +10322,16 @@
       "nDocumentosSubidos_one": "{{count}} documento caricato",
       "nDocumentosSubidos_other": "{{count}} documenti caricati",
       "nDocumentosSubidos_few": "{{count}} documenti caricati",
-      "nDocumentosSubidos_many": "{{count}} documenti caricati"
+      "nDocumentosSubidos_many": "{{count}} documenti caricati",
+      "agrupar": {
+        "creando": "Creazione…",
+        "crear": "Crea cartella",
+        "resumen": "{{count}} documento/i selezionato/i. La cartella compare in «Consegne al committente», da dove si condivide nell’app o con un link privato.",
+        "nombre": "Nome della cartella",
+        "desde": "Periodo dal",
+        "hasta": "Periodo al",
+        "nota": "Nota per il committente (facoltativa)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Cerca per ID, titolo o posizione",

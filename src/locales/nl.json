@@ -10322,7 +10322,16 @@
       "nDocumentosSubidos_one": "{{count}} document geüpload",
       "nDocumentosSubidos_other": "{{count}} documenten geüpload",
       "nDocumentosSubidos_few": "{{count}} documenten geüpload",
-      "nDocumentosSubidos_many": "{{count}} documenten geüpload"
+      "nDocumentosSubidos_many": "{{count}} documenten geüpload",
+      "agrupar": {
+        "creando": "Bezig met aanmaken…",
+        "crear": "Map aanmaken",
+        "resumen": "{{count}} document(en) gemarkeerd. De map verschijnt onder „Leveringen aan de opdrachtgever”, vanwaar je hem deelt in de app of via een privélink.",
+        "nombre": "Mapnaam",
+        "desde": "Periode van",
+        "hasta": "Periode tot",
+        "nota": "Notitie voor de opdrachtgever (optioneel)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Zoeken op ID, titel of locatie",
