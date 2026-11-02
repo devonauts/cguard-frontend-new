@@ -13185,7 +13185,8 @@
       "sinEstacion": "Geen station",
       "sucediendoAhoraMismo": "Nu bezig",
       "turnos": "Diensten",
-      "falta": "Afwezig"
+      "falta": "Afwezig",
+      "ausente": "Afwezig"
     },
     "ShiftTemplates": {
       "basico": "Basis",

@@ -12626,7 +12626,8 @@
       "sinEstacion": "No station",
       "sucediendoAhoraMismo": "Happening right now",
       "turnos": "Shifts",
-      "falta": "Absence"
+      "falta": "Absence",
+      "ausente": "Absent"
     },
     "ShiftTemplates": {
       "basico": "Basic",

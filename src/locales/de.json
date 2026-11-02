@@ -13185,7 +13185,8 @@
       "sinEstacion": "Keine Station",
       "sucediendoAhoraMismo": "Findet gerade statt",
       "turnos": "Schichten",
-      "falta": "Fehlzeit"
+      "falta": "Fehlzeit",
+      "ausente": "Abwesend"
     },
     "ShiftTemplates": {
       "basico": "Basis",

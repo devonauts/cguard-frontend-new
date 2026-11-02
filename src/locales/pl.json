@@ -13295,7 +13295,8 @@
       "sinEstacion": "Bez stacji",
       "sucediendoAhoraMismo": "Trwa w tej chwili",
       "turnos": "Zmiany",
-      "falta": "Nieobecność"
+      "falta": "Nieobecność",
+      "ausente": "Nieobecny"
     },
     "ShiftTemplates": {
       "basico": "Podstawowy",

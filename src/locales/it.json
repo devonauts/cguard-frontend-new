@@ -13185,7 +13185,8 @@
       "sinEstacion": "Senza stazione",
       "sucediendoAhoraMismo": "In corso proprio ora",
       "turnos": "Turni",
-      "falta": "Assenza"
+      "falta": "Assenza",
+      "ausente": "Assente"
     },
     "ShiftTemplates": {
       "basico": "Base",
