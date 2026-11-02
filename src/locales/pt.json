@@ -4330,7 +4330,8 @@
       },
       "status": {
         "achieved": "Atingido",
-        "notAchieved": "Não atingido"
+        "notAchieved": "Não atingido",
+        "notMeasured": "Ainda sem medição"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -4340,7 +4341,9 @@
       "errors": {
         "frequencyRequired": "Escolha a frequência.",
         "descriptionRequired": "Digite a descrição."
-      }
+      },
+      "emptyNone": "Ainda sem indicadores",
+      "emptyHint": "Adicione o primeiro KPI para medir o trabalho deste mês."
     },
     "created": "KPI criado com sucesso",
     "deleteError": "Erro ao excluir KPI(s)",
@@ -4429,8 +4432,9 @@
         "typeRequired": "Escolha o tipo de licença.",
         "numberRequired": "Digite o número da licença."
       },
-      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita.",
-      "subtitleSupervisor": "Documentos e credenciais do supervisor"
+      "subtitleSupervisor": "Documentos e credenciais do supervisor",
+      "confirmDelete_one": "Excluir esta licença? Esta ação não pode ser desfeita.",
+      "confirmDelete_other": "Excluir {{count}} licenças? Esta ação não pode ser desfeita."
     },
     "list": {
       "actions": {
@@ -13126,7 +13130,8 @@
       "rechazarTitulo": "Recusar a ausência",
       "rechazarMensaje": "A ausência de {{nombre}} é recusada e a pessoa é avisada. Você pode dizer o motivo (opcional).",
       "rechazarMotivo": "Motivo (opcional)",
-      "solicitudEliminada": "Solicitação excluída"
+      "solicitudEliminada": "Solicitação excluída",
+      "rechazadoOk": "Folga recusada. {{nombre}} foi avisado."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -16532,7 +16537,9 @@
       "tuCuentaYaEstaActiva": "Sua conta em <b>{{empresa}}</b> já está ativa.",
       "invitacionYaUsada": "Este convite já foi usado: sua conta já está ativa.",
       "entraEnLaApp": "Entre no app do vigilante com seu usuário e senha. Se não lembrar a senha, peça à sua empresa para redefini-la.",
-      "tuCuentaEstaLista": "Sua conta está pronta."
+      "tuCuentaEstaLista": "Sua conta está pronta.",
+      "invitacionNoValida": "Este convite não é mais válido.",
+      "pideInvitacionNueva": "Se você já criou sua conta, entre no app do vigilante com seu usuário e senha. Se não, peça à sua empresa um novo convite."
     },
     "InspectionPreview": {
       "alerta": "Alerta",
@@ -23000,7 +23007,7 @@
     "errores": {
       "requerido": "Falta este dado",
       "correoInvalido": "Revise o e-mail: deve ser como nome@empresa.com",
-      "celularInvalido": "Revise o celular: precisa ter pelo menos 7 números",
+      "celularInvalido": "Revise o celular: digite um único número, com ou sem «+» e o código do país (de 7 a 15 dígitos)",
       "sedesVacias": "Escolha pelo menos uma sede, ou «Toda a operação»",
       "fecha": "Revise a data",
       "fechaPasada": "Escolha hoje ou uma data futura: antes de hoje ele teria turnos que não trabalhou",

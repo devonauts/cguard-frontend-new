@@ -1677,7 +1677,8 @@
       },
       "status": {
         "achieved": "Osiągnięty",
-        "notAchieved": "Nieosiągnięty"
+        "notAchieved": "Nieosiągnięty",
+        "notMeasured": "Jeszcze nie zmierzono"
       },
       "totalKpis": "KPI",
       "scope": {
@@ -1687,7 +1688,9 @@
       "errors": {
         "frequencyRequired": "Wybierz częstotliwość.",
         "descriptionRequired": "Wpisz opis."
-      }
+      },
+      "emptyNone": "Brak wskaźników",
+      "emptyHint": "Dodaj pierwszy KPI, aby mierzyć pracę w tym miesiącu."
     },
     "assignSites": {
       "assignButton": "Przypisz posterunek",
@@ -1896,8 +1899,11 @@
         "typeRequired": "Wybierz rodzaj koncesji.",
         "numberRequired": "Wpisz numer koncesji."
       },
-      "confirmDelete": "Usunąć licencje ({{count}})? Tej operacji nie można cofnąć.",
-      "subtitleSupervisor": "Dokumenty i uprawnienia supervisora"
+      "subtitleSupervisor": "Dokumenty i uprawnienia supervisora",
+      "confirmDelete_one": "Usunąć tę licencję? Tej operacji nie można cofnąć.",
+      "confirmDelete_few": "Usunąć {{count}} licencje? Tej operacji nie można cofnąć.",
+      "confirmDelete_many": "Usunąć {{count}} licencji? Tej operacji nie można cofnąć.",
+      "confirmDelete_other": "Usunąć {{count}} licencji? Tej operacji nie można cofnąć."
     },
     "list": {
       "applyFilters": "Zastosuj filtry",
@@ -13803,7 +13809,8 @@
       "rechazarTitulo": "Odrzuć nieobecność",
       "rechazarMensaje": "Nieobecność osoby {{nombre}} zostaje odrzucona, a osoba dostaje powiadomienie. Możesz podać powód (opcjonalnie).",
       "rechazarMotivo": "Powód (opcjonalnie)",
-      "solicitudEliminada": "Wniosek usunięty"
+      "solicitudEliminada": "Wniosek usunięty",
+      "rechazadoOk": "Nieobecność odrzucona. {{nombre}} otrzymał powiadomienie."
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
@@ -17321,7 +17328,9 @@
       "tuCuentaYaEstaActiva": "Twoje konto w <b>{{empresa}}</b> jest już aktywne.",
       "invitacionYaUsada": "To zaproszenie zostało już użyte: Twoje konto jest aktywne.",
       "entraEnLaApp": "Zaloguj się do aplikacji pracownika ochrony swoją nazwą użytkownika i hasłem. Jeśli nie pamiętasz hasła, poproś firmę o jego zresetowanie.",
-      "tuCuentaEstaLista": "Twoje konto jest gotowe."
+      "tuCuentaEstaLista": "Twoje konto jest gotowe.",
+      "invitacionNoValida": "To zaproszenie jest już nieważne.",
+      "pideInvitacionNueva": "Jeśli masz już konto, zaloguj się w aplikacji ochroniarza swoją nazwą użytkownika i hasłem. Jeśli nie, poproś firmę o nowe zaproszenie."
     },
     "InspectionPreview": {
       "alerta": "Alert",
@@ -23324,7 +23333,7 @@
     "errores": {
       "requerido": "To pole jest wymagane",
       "correoInvalido": "Sprawdź e-mail: powinien wyglądać jak imie@firma.pl",
-      "celularInvalido": "Sprawdź numer: co najmniej 7 cyfr",
+      "celularInvalido": "Sprawdź numer: wpisz jeden numer, z «+» lub bez, z kodem kraju (od 7 do 15 cyfr)",
       "sedesVacias": "Wybierz co najmniej jeden obiekt albo „Cała działalność”",
       "fecha": "Sprawdź datę",
       "fechaPasada": "Wybierz dzisiaj lub późniejszą datę: wcześniejszy start da zmiany, których nie przepracował",

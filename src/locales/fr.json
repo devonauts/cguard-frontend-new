@@ -1677,7 +1677,8 @@
       },
       "status": {
         "achieved": "Atteint",
-        "notAchieved": "Non atteint"
+        "notAchieved": "Non atteint",
+        "notMeasured": "Pas encore mesuré"
       },
       "totalKpis": "KPI",
       "scope": {
@@ -1687,7 +1688,9 @@
       "errors": {
         "frequencyRequired": "Choisissez la fréquence.",
         "descriptionRequired": "Saisissez la description."
-      }
+      },
+      "emptyNone": "Aucun indicateur pour l'instant",
+      "emptyHint": "Ajoutez le premier KPI pour mesurer le travail de ce mois."
     },
     "assignSites": {
       "assignButton": "Attribuer un poste",
@@ -1896,8 +1899,9 @@
         "typeRequired": "Choisissez le type de licence.",
         "numberRequired": "Saisissez le numéro de la licence."
       },
-      "confirmDelete": "Supprimer {{count}} licence(s) ? Cette action est irréversible.",
-      "subtitleSupervisor": "Documents et habilitations du superviseur"
+      "subtitleSupervisor": "Documents et habilitations du superviseur",
+      "confirmDelete_one": "Supprimer cette licence ? Cette action est irréversible.",
+      "confirmDelete_other": "Supprimer {{count}} licences ? Cette action est irréversible."
     },
     "list": {
       "applyFilters": "Appliquer les filtres",
@@ -13685,7 +13689,8 @@
       "rechazarTitulo": "Refuser l’absence",
       "rechazarMensaje": "L’absence de {{nombre}} est refusée et la personne est prévenue. Vous pouvez indiquer pourquoi (facultatif).",
       "rechazarMotivo": "Motif (facultatif)",
-      "solicitudEliminada": "Demande supprimée"
+      "solicitudEliminada": "Demande supprimée",
+      "rechazadoOk": "Absence refusée. {{nombre}} a été prévenu."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -17091,7 +17096,9 @@
       "tuCuentaYaEstaActiva": "Votre compte chez <b>{{empresa}}</b> est déjà actif.",
       "invitacionYaUsada": "Cette invitation a déjà été utilisée : votre compte est actif.",
       "entraEnLaApp": "Connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Si vous ne vous souvenez plus du mot de passe, demandez à votre entreprise de le réinitialiser.",
-      "tuCuentaEstaLista": "Votre compte est prêt."
+      "tuCuentaEstaLista": "Votre compte est prêt.",
+      "invitacionNoValida": "Cette invitation n'est plus valable.",
+      "pideInvitacionNueva": "Si vous avez déjà créé votre compte, connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Sinon, demandez à votre entreprise de vous envoyer une nouvelle invitation."
     },
     "InspectionPreview": {
       "alerta": "Alerte",
@@ -23000,7 +23007,7 @@
     "errores": {
       "requerido": "Ce champ est requis",
       "correoInvalido": "Vérifiez l’e-mail : il doit ressembler à nom@entreprise.com",
-      "celularInvalido": "Vérifiez le portable : au moins 7 chiffres",
+      "celularInvalido": "Vérifiez le portable : saisissez un seul numéro, avec ou sans «+» et l'indicatif du pays (7 à 15 chiffres)",
       "sedesVacias": "Choisissez au moins un site, ou « Toute l’activité »",
       "fecha": "Vérifiez la date",
       "fechaPasada": "Choisissez aujourd'hui ou une date future : avant, il aurait des services qu'il n'a jamais faits",

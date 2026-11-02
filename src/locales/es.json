@@ -1889,7 +1889,8 @@
       },
       "status": {
         "achieved": "Cumplido",
-        "notAchieved": "No cumplido"
+        "notAchieved": "No cumplido",
+        "notMeasured": "Sin medición todavía"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1899,7 +1900,9 @@
       "errors": {
         "frequencyRequired": "Elige la frecuencia.",
         "descriptionRequired": "Escribe la descripción."
-      }
+      },
+      "emptyNone": "Sin indicadores todavía",
+      "emptyHint": "Añade el primer KPI para medir el trabajo de este mes."
     },
     "assignSites": {
       "assignButton": "Asignar estación",
@@ -2108,8 +2111,9 @@
         "typeRequired": "Elige el tipo de licencia.",
         "numberRequired": "Escribe el número de la licencia."
       },
-      "confirmDelete": "¿Eliminar {{count}} licencia(s)? Esta acción no se puede deshacer.",
-      "subtitleSupervisor": "Documentos y credenciales del supervisor"
+      "subtitleSupervisor": "Documentos y credenciales del supervisor",
+      "confirmDelete_one": "¿Eliminar esta licencia? Esta acción no se puede deshacer.",
+      "confirmDelete_other": "¿Eliminar {{count}} licencias? Esta acción no se puede deshacer."
     },
     "list": {
       "applyFilters": "Aplicar filtros",
@@ -13126,7 +13130,8 @@
       "rechazarTitulo": "Rechazar el permiso",
       "rechazarMensaje": "Se rechaza el permiso de {{nombre}} y se le avisa. Puedes decirle por qué (opcional).",
       "rechazarMotivo": "Motivo (opcional)",
-      "solicitudEliminada": "Solicitud eliminada"
+      "solicitudEliminada": "Solicitud eliminada",
+      "rechazadoOk": "Permiso rechazado. Se le avisó a {{nombre}}."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -16532,7 +16537,9 @@
       "tuCuentaYaEstaActiva": "Tu cuenta en <b>{{empresa}}</b> ya está activa.",
       "invitacionYaUsada": "Esta invitación ya se usó: tu cuenta ya está activa.",
       "entraEnLaApp": "Entra en la app del vigilante con tu usuario y contraseña. Si no recuerdas la contraseña, pide a tu empresa que te la restablezca.",
-      "tuCuentaEstaLista": "Tu cuenta está lista."
+      "tuCuentaEstaLista": "Tu cuenta está lista.",
+      "invitacionNoValida": "Esta invitación ya no es válida.",
+      "pideInvitacionNueva": "Si ya creaste tu cuenta, entra en la app del vigilante con tu usuario y contraseña. Si no, pide a tu empresa que te envíe una invitación nueva."
     },
     "InspectionPreview": {
       "alerta": "Alerta",
@@ -23000,7 +23007,7 @@
     "errores": {
       "requerido": "Falta este dato",
       "correoInvalido": "Revisa el correo: debe ser como nombre@empresa.com",
-      "celularInvalido": "Revisa el celular: tiene que tener al menos 7 números",
+      "celularInvalido": "Revisa el celular: escribe un solo número, con o sin «+» y el código del país (de 7 a 15 dígitos)",
       "sedesVacias": "Elige al menos una sede, o «Toda la operación»",
       "fecha": "Revisa la fecha",
       "fechaPasada": "Elige hoy o una fecha futura: antes de hoy le saldrían turnos que no trabajó",

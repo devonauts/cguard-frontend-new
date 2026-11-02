@@ -1677,7 +1677,8 @@
       },
       "status": {
         "achieved": "Raggiunto",
-        "notAchieved": "Non raggiunto"
+        "notAchieved": "Non raggiunto",
+        "notMeasured": "Non ancora misurato"
       },
       "totalKpis": "KPI",
       "scope": {
@@ -1687,7 +1688,9 @@
       "errors": {
         "frequencyRequired": "Scegli la frequenza.",
         "descriptionRequired": "Inserisci la descrizione."
-      }
+      },
+      "emptyNone": "Ancora nessun indicatore",
+      "emptyHint": "Aggiungi il primo KPI per misurare il lavoro di questo mese."
     },
     "assignSites": {
       "assignButton": "Assegna postazione",
@@ -1896,8 +1899,9 @@
         "typeRequired": "Scegli il tipo di licenza.",
         "numberRequired": "Inserisci il numero della licenza."
       },
-      "confirmDelete": "Eliminare {{count}} licenza/e? Questa azione non può essere annullata.",
-      "subtitleSupervisor": "Documenti e credenziali del supervisore"
+      "subtitleSupervisor": "Documenti e credenziali del supervisore",
+      "confirmDelete_one": "Eliminare questa licenza? Questa azione non può essere annullata.",
+      "confirmDelete_other": "Eliminare {{count}} licenze? Questa azione non può essere annullata."
     },
     "list": {
       "applyFilters": "Applica filtri",
@@ -13685,7 +13689,8 @@
       "rechazarTitulo": "Rifiuta il permesso",
       "rechazarMensaje": "Il permesso di {{nombre}} viene rifiutato e la persona viene avvisata. Puoi indicare il motivo (facoltativo).",
       "rechazarMotivo": "Motivo (facoltativo)",
-      "solicitudEliminada": "Richiesta eliminata"
+      "solicitudEliminada": "Richiesta eliminata",
+      "rechazadoOk": "Permesso rifiutato. {{nombre}} è stato avvisato."
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",
@@ -17091,7 +17096,9 @@
       "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo.",
       "invitacionYaUsada": "Questo invito è già stato usato: il tuo account è attivo.",
       "entraEnLaApp": "Accedi all'app della guardia con il tuo nome utente e la tua password. Se non ricordi la password, chiedi alla tua azienda di reimpostarla.",
-      "tuCuentaEstaLista": "Il tuo account è pronto."
+      "tuCuentaEstaLista": "Il tuo account è pronto.",
+      "invitacionNoValida": "Questo invito non è più valido.",
+      "pideInvitacionNueva": "Se hai già creato il tuo account, accedi all'app della guardia con nome utente e password. Altrimenti chiedi alla tua azienda di inviarti un nuovo invito."
     },
     "InspectionPreview": {
       "alerta": "Allerta",
@@ -23000,7 +23007,7 @@
     "errores": {
       "requerido": "Campo obbligatorio",
       "correoInvalido": "Controlla l’e-mail: deve essere come nome@azienda.it",
-      "celularInvalido": "Controlla il cellulare: almeno 7 cifre",
+      "celularInvalido": "Controlla il cellulare: scrivi un solo numero, con o senza «+» e il prefisso internazionale (da 7 a 15 cifre)",
       "sedesVacias": "Scegli almeno una sede, o «Tutta l’operatività»",
       "fecha": "Controlla la data",
       "fechaPasada": "Scegli oggi o una data futura: prima di oggi avrebbe turni mai lavorati",

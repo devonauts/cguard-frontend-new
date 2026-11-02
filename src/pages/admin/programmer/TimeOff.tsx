@@ -374,6 +374,15 @@ export default function TimeOff() {
       );
       setPicked(null);
       avisarEfecto(updated.scheduleEffect);
+      // A pending request that is rejected changes no schedule, so the
+      // effect says nothing: the rejection itself is confirmed.
+      if (status === "rejected" && (!updated.scheduleEffect || updated.scheduleEffect.action === "none"))
+        toast.success(
+          t("ui.TimeOff.rechazadoOk", {
+            nombre: nombreDeSolicitud(id),
+            defaultValue: "Permiso rechazado. Se le avisó a {{nombre}}.",
+          }),
+        );
     } catch (err) {
       console.error(`Failed to set ${status}`, err);
     }

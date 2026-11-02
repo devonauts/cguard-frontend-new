@@ -1677,7 +1677,8 @@
       },
       "status": {
         "achieved": "Behaald",
-        "notAchieved": "Niet behaald"
+        "notAchieved": "Niet behaald",
+        "notMeasured": "Nog niet gemeten"
       },
       "totalKpis": "KPI's",
       "scope": {
@@ -1687,7 +1688,9 @@
       "errors": {
         "frequencyRequired": "Kies de frequentie.",
         "descriptionRequired": "Vul de omschrijving in."
-      }
+      },
+      "emptyNone": "Nog geen KPI's",
+      "emptyHint": "Voeg de eerste KPI toe om het werk van deze maand te meten."
     },
     "assignSites": {
       "assignButton": "Post toewijzen",
@@ -1896,8 +1899,9 @@
         "typeRequired": "Kies het soort vergunning.",
         "numberRequired": "Vul het vergunningsnummer in."
       },
-      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt.",
-      "subtitleSupervisor": "Documenten en pasjes van de supervisor"
+      "subtitleSupervisor": "Documenten en pasjes van de supervisor",
+      "confirmDelete_one": "Deze licentie verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "confirmDelete_other": "{{count}} licenties verwijderen? Dit kan niet ongedaan worden gemaakt."
     },
     "list": {
       "applyFilters": "Filters toepassen",
@@ -13685,7 +13689,8 @@
       "rechazarTitulo": "Verlof afwijzen",
       "rechazarMensaje": "Het verlof van {{nombre}} wordt afgewezen en de persoon krijgt bericht. Je kunt de reden opgeven (optioneel).",
       "rechazarMotivo": "Reden (optioneel)",
-      "solicitudEliminada": "Aanvraag verwijderd"
+      "solicitudEliminada": "Aanvraag verwijderd",
+      "rechazadoOk": "Verlof afgewezen. {{nombre}} is op de hoogte gebracht."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -17091,7 +17096,9 @@
       "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief.",
       "invitacionYaUsada": "Deze uitnodiging is al gebruikt: je account is actief.",
       "entraEnLaApp": "Log in op de beveiligersapp met je gebruikersnaam en wachtwoord. Weet je het wachtwoord niet meer, vraag je bedrijf dan om het te resetten.",
-      "tuCuentaEstaLista": "Je account is klaar."
+      "tuCuentaEstaLista": "Je account is klaar.",
+      "invitacionNoValida": "Deze uitnodiging is niet meer geldig.",
+      "pideInvitacionNueva": "Heb je je account al aangemaakt, meld je dan aan in de bewakers-app met je gebruikersnaam en wachtwoord. Zo niet, vraag je bedrijf om een nieuwe uitnodiging."
     },
     "InspectionPreview": {
       "alerta": "Waarschuwing",
@@ -23000,7 +23007,7 @@
     "errores": {
       "requerido": "Verplicht veld",
       "correoInvalido": "Controleer het e-mailadres: zoals naam@bedrijf.nl",
-      "celularInvalido": "Controleer het mobiele nummer: minstens 7 cijfers",
+      "celularInvalido": "Controleer het mobiele nummer: typ één nummer, met of zonder «+» en de landcode (7 tot 15 cijfers)",
       "sedesVacias": "Kies minstens één locatie, of „Hele operatie”",
       "fecha": "Controleer de datum",
       "fechaPasada": "Kies vandaag of een latere datum: eerder geeft diensten die nooit gewerkt zijn",

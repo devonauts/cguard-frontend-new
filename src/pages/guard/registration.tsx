@@ -130,6 +130,13 @@ export default function GuardRegistration() {
   const [empresaDeLaInvitacion, setEmpresaDeLaInvitacion] = useState<
     string | null
   >(null);
+  const [logoDeLaInvitacion, setLogoDeLaInvitacion] = useState<string | null>(
+    null,
+  );
+  /* A link that came with a token (or a guard file) and could not be opened:
+     the form cannot be submitted without it, so it is not shown — the page
+     says what happened and what to do (QA re-test #13). */
+  const enlaceCaido = inviteNotFound && !!(inviteToken || securityGuardId);
   // QA-99: the office already completed this profile («Crear perfil»). The
   // guard does not retype it: they only choose their password.
   const [passwordOnly, setPasswordOnly] = useState(false);
@@ -352,6 +359,7 @@ export default function GuardRegistration() {
                 .includes("expired");
 
             if (isExpiredToken) {
+              setInviteNotFound(true);
               setIsLoading(false);
 
               return;
@@ -417,8 +425,11 @@ export default function GuardRegistration() {
           return;
         }
 
+        // The server names the company of the link even when its token is
+        // gone, so the page carries that company's brand, not the platform's.
+        setEmpresaDeLaInvitacion(err?.data?.tenantName || null);
+        setLogoDeLaInvitacion(err?.data?.tenantLogoUrl || null);
         if (err?.data?.messageCode === "server.user.invitationAlreadyAccepted") {
-          setEmpresaDeLaInvitacion(err?.data?.tenantName || null);
           setInvitacionCerrada(true);
 
           return;
@@ -1151,13 +1162,13 @@ export default function GuardRegistration() {
                 "ui.GuardRegistration.tuSolicitudFueEnviada",
                 "Tu solicitud fue enviada a tu empresa de seguridad.",
               )
-          : invitacionCerrada
+          : invitacionCerrada || enlaceCaido
             ? undefined
             : t("guard.registration_subtitle", {
                 defaultValue: "Completa tus datos para activar tu cuenta.",
               })
       }
-      tenantLogoUrl={fetched?.tenantLogoUrl}
+      tenantLogoUrl={fetched?.tenantLogoUrl || logoDeLaInvitacion}
       tenantName={
         fetched?.tenantName || fetched?.tenant?.name || empresaDeLaInvitacion
       }
@@ -1298,6 +1309,21 @@ export default function GuardRegistration() {
               "ui.GuardRegistration.entraEnLaApp",
               "Entra en la app del vigilante con tu usuario y contraseña. Si no recuerdas la contraseña, pide a tu empresa que te la restablezca.",
             )}
+          </p>
+        </div>
+      ) : enlaceCaido ? (
+        <div className="space-y-3">
+          <InfoNote tone="warn">
+            {inviteError ||
+              t("ui.GuardRegistration.invitacionNoValida", {
+                defaultValue: "Esta invitación ya no es válida.",
+              })}
+          </InfoNote>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {t("ui.GuardRegistration.pideInvitacionNueva", {
+              defaultValue:
+                "Si ya creaste tu cuenta, entra en la app del vigilante con tu usuario y contraseña. Si no, pide a tu empresa que te envíe una invitación nueva.",
+            })}
           </p>
         </div>
       ) : (

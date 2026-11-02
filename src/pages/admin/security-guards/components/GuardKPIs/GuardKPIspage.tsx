@@ -70,7 +70,8 @@ interface KpiMetric {
   key: string;
   name: string;
   target: number;
-  actual: number;
+  /** null: the target exists but nothing measures it yet (standard reports). */
+  actual: number | null;
 }
 
 export default function GuardIndicators({ guard }: Props) {
@@ -836,14 +837,28 @@ export default function GuardIndicators({ guard }: Props) {
                           <td colSpan={5} className="px-4 py-6">
                             <EmptyState
                               icon={<BarChart3 />}
-                              title={t(
-                                "clients.empty.title",
-                                "No se encontraron resultados",
-                              )}
-                              description={t(
-                                "clients.empty.description",
-                                "No pudimos encontrar ningún elemento que coincida con su búsqueda",
-                              )}
+                              title={
+                                searchQuery.trim()
+                                  ? t(
+                                      "clients.empty.title",
+                                      "No se encontraron resultados",
+                                    )
+                                  : t(
+                                      "guards.KPI.emptyNone",
+                                      "Sin indicadores todavía",
+                                    )
+                              }
+                              description={
+                                searchQuery.trim()
+                                  ? t(
+                                      "clients.empty.description",
+                                      "No pudimos encontrar ningún elemento que coincida con su búsqueda",
+                                    )
+                                  : t(
+                                      "guards.KPI.emptyHint",
+                                      "Añade el primer KPI para medir el trabajo de este mes.",
+                                    )
+                              }
                             />
                           </td>
                         </tr>
@@ -1137,6 +1152,25 @@ export default function GuardIndicators({ guard }: Props) {
                                             actual: Number(actuals.task),
                                           });
                                         }
+                                        // A target nothing measures yet is still a target:
+                                        // omitting it said «Sin metas definidas» for a KPI
+                                        // with 3 standard reports (QA re-test N7).
+                                        if (
+                                          kpi.standardReports &&
+                                          hasTarget(kpi.standardReportsNumber)
+                                        ) {
+                                          metrics.push({
+                                            key: "standardReports",
+                                            name: t(
+                                              "guards.KPI.modal.standardReports",
+                                              "Reportes estándar",
+                                            ),
+                                            target: Number(
+                                              kpi.standardReportsNumber,
+                                            ),
+                                            actual: null,
+                                          });
+                                        }
                                         if (
                                           hasTarget(kpi.routeReportsNumber) &&
                                           actuals.route !== null
@@ -1213,18 +1247,25 @@ export default function GuardIndicators({ guard }: Props) {
                                                         {m.target}
                                                       </td>
                                                       <td className="border px-4 py-2">
-                                                        {m.actual}
+                                                        {m.actual ?? "—"}
                                                       </td>
                                                       <td
                                                         className="border px-4 py-2 font-semibold"
                                                         style={{
                                                           color:
-                                                            m.actual >= m.target
-                                                              ? "var(--ok-text)"
-                                                              : "var(--bad-text)",
+                                                            m.actual === null
+                                                              ? "var(--ink-soft)"
+                                                              : m.actual >= m.target
+                                                                ? "var(--ok-text)"
+                                                                : "var(--bad-text)",
                                                         }}
                                                       >
-                                                        {m.actual >= m.target
+                                                        {m.actual === null
+                                                          ? t(
+                                                              "guards.KPI.status.notMeasured",
+                                                              "Sin medición todavía",
+                                                            )
+                                                          : m.actual >= m.target
                                                           ? t(
                                                               "guards.KPI.status.achieved",
                                                               "Achieved",
@@ -1242,11 +1283,13 @@ export default function GuardIndicators({ guard }: Props) {
 
                                             <div className="w-full">
                                               <KpiBarChart
-                                                data={metrics.map((m) => ({
-                                                  name: m.name,
-                                                  target: m.target,
-                                                  actual: m.actual,
-                                                }))}
+                                                data={metrics
+                                                  .filter((m) => m.actual !== null)
+                                                  .map((m) => ({
+                                                    name: m.name,
+                                                    target: m.target,
+                                                    actual: m.actual as number,
+                                                  }))}
                                                 width={720}
                                                 height={300}
                                               />

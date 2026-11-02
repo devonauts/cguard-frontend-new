@@ -1889,7 +1889,8 @@
       },
       "status": {
         "achieved": "Achieved",
-        "notAchieved": "Not Achieved"
+        "notAchieved": "Not Achieved",
+        "notMeasured": "Not measured yet"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1899,7 +1900,9 @@
       "errors": {
         "frequencyRequired": "Choose the frequency.",
         "descriptionRequired": "Enter the description."
-      }
+      },
+      "emptyNone": "No KPIs yet",
+      "emptyHint": "Add the first KPI to measure this month's work."
     },
     "assignSites": {
       "assignButton": "Assign Post Sites",
@@ -2108,8 +2111,9 @@
         "typeRequired": "Choose the license type.",
         "numberRequired": "Enter the license number."
       },
-      "confirmDelete": "Delete {{count}} license(s)? This cannot be undone.",
-      "subtitleSupervisor": "This supervisor's documents and credentials"
+      "subtitleSupervisor": "This supervisor's documents and credentials",
+      "confirmDelete_one": "Delete this license? This cannot be undone.",
+      "confirmDelete_other": "Delete {{count}} licenses? This cannot be undone."
     },
     "list": {
       "applyFilters": "Apply filters",
@@ -13126,7 +13130,8 @@
       "rechazarTitulo": "Reject the leave",
       "rechazarMensaje": "The leave of {{nombre}} is rejected and they are notified. You can tell them why (optional).",
       "rechazarMotivo": "Reason (optional)",
-      "solicitudEliminada": "Request deleted"
+      "solicitudEliminada": "Request deleted",
+      "rechazadoOk": "Time off rejected. {{nombre}} has been notified."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -16532,7 +16537,9 @@
       "tuCuentaYaEstaActiva": "Your account at <b>{{empresa}}</b> is now active.",
       "invitacionYaUsada": "This invitation has already been used: your account is active.",
       "entraEnLaApp": "Sign in to the guard app with your username and password. If you don't remember the password, ask your company to reset it.",
-      "tuCuentaEstaLista": "Your account is ready."
+      "tuCuentaEstaLista": "Your account is ready.",
+      "invitacionNoValida": "This invitation is no longer valid.",
+      "pideInvitacionNueva": "If you already created your account, sign in to the guard app with your username and password. If not, ask your company to send you a new invitation."
     },
     "InspectionPreview": {
       "alerta": "Alert",
@@ -23000,7 +23007,7 @@
     "errores": {
       "requerido": "This is required",
       "correoInvalido": "Check the e-mail: it should look like name@company.com",
-      "celularInvalido": "Check the mobile number: it needs at least 7 digits",
+      "celularInvalido": "Check the mobile number: type a single number, with or without «+» and the country code (7 to 15 digits)",
       "sedesVacias": "Choose at least one site, or «Whole operation»",
       "fecha": "Check the date",
       "fechaPasada": "Pick today or a later date: an earlier start would give them shifts they never worked",

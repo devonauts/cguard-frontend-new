@@ -1677,7 +1677,8 @@
       },
       "status": {
         "achieved": "Erreicht",
-        "notAchieved": "Nicht erreicht"
+        "notAchieved": "Nicht erreicht",
+        "notMeasured": "Noch nicht gemessen"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1687,7 +1688,9 @@
       "errors": {
         "frequencyRequired": "Wählen Sie die Häufigkeit.",
         "descriptionRequired": "Geben Sie die Beschreibung ein."
-      }
+      },
+      "emptyNone": "Noch keine Kennzahlen",
+      "emptyHint": "Fügen Sie die erste Kennzahl hinzu, um die Arbeit dieses Monats zu messen."
     },
     "assignSites": {
       "assignButton": "Objekt zuweisen",
@@ -1896,8 +1899,9 @@
         "typeRequired": "Wählen Sie die Art der Lizenz.",
         "numberRequired": "Geben Sie die Lizenznummer ein."
       },
-      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden.",
-      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors"
+      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors",
+      "confirmDelete_one": "Diese Lizenz löschen? Das kann nicht rückgängig gemacht werden.",
+      "confirmDelete_other": "{{count}} Lizenzen löschen? Das kann nicht rückgängig gemacht werden."
     },
     "list": {
       "applyFilters": "Filter anwenden",
@@ -13685,7 +13689,8 @@
       "rechazarTitulo": "Abwesenheit ablehnen",
       "rechazarMensaje": "Die Abwesenheit von {{nombre}} wird abgelehnt, und die Person wird benachrichtigt. Du kannst den Grund angeben (optional).",
       "rechazarMotivo": "Grund (optional)",
-      "solicitudEliminada": "Antrag gelöscht"
+      "solicitudEliminada": "Antrag gelöscht",
+      "rechazadoOk": "Abwesenheit abgelehnt. {{nombre}} wurde benachrichtigt."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -17091,7 +17096,9 @@
       "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv.",
       "invitacionYaUsada": "Diese Einladung wurde bereits verwendet: Ihr Konto ist aktiv.",
       "entraEnLaApp": "Melden Sie sich in der App der Sicherheitskraft mit Benutzername und Passwort an. Wenn Sie das Passwort nicht mehr wissen, bitten Sie Ihr Unternehmen, es zurückzusetzen.",
-      "tuCuentaEstaLista": "Ihr Konto ist bereit."
+      "tuCuentaEstaLista": "Ihr Konto ist bereit.",
+      "invitacionNoValida": "Diese Einladung ist nicht mehr gültig.",
+      "pideInvitacionNueva": "Wenn Sie Ihr Konto schon erstellt haben, melden Sie sich in der Wachleute-App mit Benutzername und Passwort an. Andernfalls bitten Sie Ihr Unternehmen um eine neue Einladung."
     },
     "InspectionPreview": {
       "alerta": "Warnung",
@@ -23000,7 +23007,7 @@
     "errores": {
       "requerido": "Pflichtfeld",
       "correoInvalido": "E-Mail prüfen: sie sollte wie name@firma.de aussehen",
-      "celularInvalido": "Handynummer prüfen: mindestens 7 Ziffern",
+      "celularInvalido": "Handynummer prüfen: eine einzige Nummer, mit oder ohne «+» und Ländervorwahl (7 bis 15 Ziffern)",
       "sedesVacias": "Wähle mindestens ein Objekt oder „Gesamter Betrieb“",
       "fecha": "Datum prüfen",
       "fechaPasada": "Wähle heute oder ein späteres Datum: ein früherer Beginn erzeugt Schichten, die nie gearbeitet wurden",
