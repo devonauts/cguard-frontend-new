@@ -76,11 +76,13 @@ const FIELD_OPTIONS: Record<string, OpcionCampo[]> = {
     { value: "Divorciado", labelKey: "invite.guard.divorced" },
   ],
   academicInstruction: [
-    { value: "Primaria", labelKey: "invite.guard.edu.primary" },
-    { value: "Secundaria", labelKey: "invite.guard.edu.secondary" },
-    { value: "Universitaria", labelKey: "invite.guard.edu.universityStudies" },
-    { value: "Universidad", labelKey: "invite.guard.edu.university" },
-    { value: "Especial", labelKey: "invite.guard.edu.special" },
+    // The guard sheet labels (guards.profile.academic): the two stored
+    // values «Universitaria» / «Universidad» read as two different things.
+    { value: "Primaria", labelKey: "guards.profile.academic.primary" },
+    { value: "Secundaria", labelKey: "guards.profile.academic.secondary" },
+    { value: "Universitaria", labelKey: "guards.profile.academic.university" },
+    { value: "Universidad", labelKey: "guards.profile.academic.universityDegree" },
+    { value: "Especial", labelKey: "guards.profile.academic.special" },
   ],
 };
 
