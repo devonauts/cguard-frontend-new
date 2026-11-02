@@ -1659,7 +1659,15 @@
         "achieved": "Atteint",
         "notAchieved": "Non atteint"
       },
-      "totalKpis": "KPI"
+      "totalKpis": "KPI",
+      "scope": {
+        "guard": "Agent",
+        "postSite": "Site"
+      },
+      "errors": {
+        "frequencyRequired": "Choisissez la fréquence.",
+        "descriptionRequired": "Saisissez la description."
+      }
     },
     "assignSites": {
       "assignButton": "Attribuer un poste",
@@ -1800,7 +1808,9 @@
       },
       "empty": {
         "description": "Aucun élément<br />ne correspond<br />à votre recherche",
-        "title": "Aucun résultat trouvé"
+        "title": "Aucun résultat trouvé",
+        "none": "Aucune licence pour l’instant",
+        "hint": "Ajoutez la première licence ou carte professionnelle."
       },
       "form": {
         "backImageLabel": "Image du verso de la licence",
@@ -1861,7 +1871,13 @@
         "updated": "Licence mise à jour"
       },
       "selected": "sélectionnées",
-      "untitled": "Licence"
+      "untitled": "Licence",
+      "errors": {
+        "typeRequired": "Choisissez le type de licence.",
+        "numberRequired": "Saisissez le numéro de la licence."
+      },
+      "confirmDelete": "Supprimer {{count}} licence(s) ? Cette action est irréversible.",
+      "subtitleSupervisor": "Documents et habilitations du superviseur"
     },
     "list": {
       "applyFilters": "Appliquer les filtres",
@@ -1969,7 +1985,12 @@
           "excelValidationFailed": "Impossible de valider le fichier Excel avant l'envoi. Vérifiez le format.",
           "missingColumns": "Colonnes obligatoires manquantes : {{columns}}",
           "selectFile": "Sélectionnez un fichier"
-        }
+        },
+        "summaryOk_one": "{{count}} agent importé",
+        "summaryOk_other": "{{count}} agents importés",
+        "summaryWithErrors": "Importés : {{ok}} · Non importés : {{fallidas}}",
+        "rowError": "Ligne {{fila}} ({{nombre}}) : {{error}}",
+        "invitationsNotSent": "Aucune invitation n'a été envoyée : envoyez-les depuis la liste quand vous voulez."
       },
       "labels": {
         "name": "Nom",
@@ -2164,7 +2185,8 @@
         "message": "Aucun élément<br />ne correspond<br />à votre recherche",
         "title": "Aucun résultat trouvé",
         "hint": "Créez la première note pour cet agent.",
-        "none": "Aucune note pour l'instant"
+        "none": "Aucune note pour l'instant",
+        "hintSupervisor": "Créez la première note pour ce superviseur."
       },
       "modal": {
         "cancel": "Annuler",
@@ -2209,7 +2231,12 @@
       "loadError": "Impossible de charger les notes",
       "noteCreated": "Note créée",
       "noteDeleted": "Note supprimée",
-      "sectionTitle": "Notes"
+      "sectionTitle": "Notes",
+      "errors": {
+        "titleRequired": "Saisissez le titre de la note.",
+        "descriptionRequired": "Saisissez la description de la note.",
+        "dateRequired": "Choisissez la date de la note."
+      }
     },
     "profile": {
       "noLicense": "Aucune licence trouvée",
@@ -2225,7 +2252,8 @@
         "statusNoAccess": "Aucun accès configuré",
         "statusPending": "Invitation en attente",
         "tokenExpired": "Le lien d'invitation a expiré",
-        "tokenExpires": "Invitation valable jusqu'au"
+        "tokenExpires": "Invitation valable jusqu'au",
+        "alreadyActive": "Son compte est déjà actif : aucune invitation nécessaire. En cas d'oubli du mot de passe, utilisez « Réinitialiser le mot de passe » dans la liste des agents."
       },
       "actions": {
         "cancel": "Annuler",
@@ -2501,7 +2529,11 @@
       "locNoneBody": "{{sin}} de ses {{total}} derniers pointages sont arrivés sans aucune coordonnée. Le pointage est quand même enregistré — l'agent n'est jamais bloqué — mais le service reste sans preuve du lieu.",
       "locCoarseBody": "{{n}} de ses {{total}} derniers pointages sont arrivés avec une position plus grossière que {{suelo}} m. Suffisant pour enregistrer, pas pour confirmer sa présence au poste.",
       "locFix": "Cause habituelle : sous Android, l'autorisation de localisation est restée sur « Approximative ». Il faut la passer sur « Précise » dans les réglages du téléphone — Android ne permet pas à l'application de le faire, quelqu'un doit donc prendre ce téléphone en main.",
-      "locLast": "Dernier pointage sans position : {{cuando}}"
+      "locLast": "Dernier pointage sans position : {{cuando}}",
+      "titleSupervisor": "Appareil du superviseur",
+      "subtitleSupervisor": "Le premier appareil depuis lequel le superviseur se connecte devient l'appareil lié. Si un autre appareil apparaît, il est signalé comme non reconnu (il n'est pas bloqué). Réinitialisez le lien si le superviseur a changé de téléphone.",
+      "emptySupervisor": "Aucun appareil n'a encore été enregistré pour ce superviseur.",
+      "resetDoneSupervisor": "Lien réinitialisé. Le prochain appareil du superviseur sera l'appareil lié."
     },
     "documents": {
       "deleteConfirm": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible.",
@@ -2568,7 +2600,11 @@
       "deleted": "Mémo supprimé",
       "pending": "En attente",
       "title": "Mémos",
-      "total": "mémos"
+      "total": "mémos",
+      "count_one": "{{count}} mémo",
+      "count_other": "{{count}} mémos",
+      "acceptedCount_one": "{{count}} accepté",
+      "acceptedCount_other": "{{count}} acceptés"
     },
     "actionNotImplemented": "Action pas encore disponible",
     "overview": {
@@ -2596,7 +2632,9 @@
       "loadError": "Impossible de charger les rôles disponibles.",
       "error": "Impossible de changer le rôle.",
       "hasBothRoles": "La personne cumule les deux rôles. En choisir un ne lui laissera que celui-là.",
-      "welcomeSent": "Un e-mail de bienvenue lui a été envoyé avec le lien de téléchargement de l'app superviseur."
+      "welcomeSent": "Un e-mail de bienvenue lui a été envoyé avec le lien de téléchargement de l'app superviseur.",
+      "inviteSent": "Cette personne n’avait pas encore de mot de passe : nous lui avons envoyé l’invitation pour le créer et se connecter à l’application superviseur.",
+      "inviteLinkReady": "Pas encore de mot de passe ni d’e-mail : partagez le lien d’accès depuis sa fiche superviseur (« Renvoyer l’invitation »)."
     },
     "department": {
       "title": "Département",
@@ -2741,7 +2779,8 @@
       "blood_required": "Le groupe sanguin est obligatoire",
       "credentials_required": "Les habilitations sont obligatoires",
       "address_required": "L'adresse est obligatoire",
-      "phone_required": "Le téléphone est obligatoire"
+      "phone_required": "Le téléphone est obligatoire",
+      "revisaEstosDatos": "Vérifiez ces informations : {{campos}}"
     },
     "password": "Mot de passe",
     "password_min": "8 caractères minimum",
@@ -2768,7 +2807,8 @@
         "university": "Université",
         "universityStudies": "Universitaire"
       },
-      "freeUnion": "Union libre"
+      "freeUnion": "Union libre",
+      "credentialsHint": "N° de votre carte professionnelle ou licence d'agent"
     },
     "select": "Sélectionnez",
     "eyebrow_guard": "Invitation · Équipe de sécurité",
@@ -5971,6 +6011,16 @@
         "error": "Erreur lors de la restauration de l'utilisateur",
         "success": "Utilisateur restauré",
         "title": "Restaurer l'utilisateur"
+      },
+      "suspend": {
+        "title": "Suspendre l'utilisateur",
+        "description": "{{user}} ne pourra plus se connecter et passera dans Archivés. Vous pourrez le restaurer plus tard.",
+        "confirm": "Suspendre"
+      },
+      "closeSessions": {
+        "title": "Fermer les sessions",
+        "description": "{{user}} sera déconnecté du web et des applications sur tous ses appareils et devra se reconnecter.",
+        "confirm": "Fermer les sessions"
       }
     },
     "editUser": {
@@ -9745,7 +9795,10 @@
       "yaPuedesEntrar": "Vous pouvez déjà vous connecter",
       "tuEmpresaTeAsignaraAUnPuesto": "Votre entreprise vous affectera à un poste.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Connectez-vous avec votre identifiant et votre mot de passe.",
-      "cuentaListaDescargaLaApp": "Votre compte avec <b>{{empresa}}</b> est prêt. Téléchargez l'application pour suivre et gérer votre service de sécurité depuis votre téléphone."
+      "cuentaListaDescargaLaApp": "Votre compte avec <b>{{empresa}}</b> est prêt. Téléchargez l'application pour suivre et gérer votre service de sécurité depuis votre téléphone.",
+      "tuPuestoYTurnosEnLaApp": "Votre poste et vos services apparaîtront dans l'application.",
+      "iniciaConTuUsuario": "Connectez-vous avec votre identifiant et votre mot de passe.",
+      "iniciaCuandoEsteActiva": "Connectez-vous une fois votre compte activé."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Ma position",
@@ -10813,7 +10866,8 @@
       "noSeEncontroElVigilante": "L'agent demandé est introuvable.",
       "errorGuardandoCambios": "Erreur lors de l'enregistrement : {{msg}}",
       "datosPersonales": "Informations personnelles",
-      "guardarCambios": "Enregistrer les modifications"
+      "guardarCambios": "Enregistrer les modifications",
+      "cambiosGuardados": "Modifications enregistrées"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adresse de l'entreprise*",
@@ -13310,7 +13364,8 @@
       "laZonaYLosPuestosQueCubre": "La zone et les postes couverts par ce superviseur, ainsi que son planning généré, s'affichent dans leurs onglets dédiés.",
       "limitaLoQueEsteSupervisorVe": "Limite ce que ce superviseur voit dans son application : exceptions de présence et demandes de pointage.",
       "nombres": "Prénoms",
-      "perfilActualizado": "Profil mis à jour"
+      "perfilActualizado": "Profil mis à jour",
+      "identidadDeLaCuenta": "Les prénoms et noms s'enregistrent ici. L'e-mail est celui de son compte d'accès et ne se modifie pas depuis cette fiche."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Aucun poste de superviseur pour l'instant",
@@ -13566,7 +13621,13 @@
       "calendario": "Calendrier",
       "vacioAyuda": "Congés, absences et absences justifiées de tout le personnel, saisis ici, dans le Planning ou depuis l’application de l’agent.",
       "registrarElPrimero": "Enregistrer une absence",
-      "vacioTitulo": "Pas encore d’absences ni de congés"
+      "vacioTitulo": "Pas encore d’absences ni de congés",
+      "aprobarTitulo": "Approuver l’absence",
+      "aprobarMensaje": "L’absence de {{nombre}} est approuvée : ses services de ces jours deviennent des trous dans Couverture et la personne est prévenue.",
+      "rechazarTitulo": "Refuser l’absence",
+      "rechazarMensaje": "L’absence de {{nombre}} est refusée et la personne est prévenue. Vous pouvez indiquer pourquoi (facultatif).",
+      "rechazarMotivo": "Motif (facultatif)",
+      "solicitudEliminada": "Demande supprimée"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -14251,7 +14312,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invitation renvoyée à {{email}}.",
       "invitacionYaEnviada": "L'invitation a déjà été envoyée à {{email}} il y a quelques minutes. Demandez-lui de vérifier sa boîte de réception et ses spams. Vous pourrez la renvoyer dans {{faltan}} min.",
-      "invitacionNoSalio": "Nous n'avons pas pu envoyer l'e-mail à {{email}}. Réessayez dans quelques minutes."
+      "invitacionNoSalio": "Nous n'avons pas pu envoyer l'e-mail à {{email}}. Réessayez dans quelques minutes.",
+      "correoDeRestablecimientoNoEnviado": "L’e-mail de réinitialisation à {{email}} n’a pas pu être envoyé. Réessayez dans quelques minutes."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajustez la recherche ou enregistrez un nouveau visiteur.",
@@ -14364,7 +14426,8 @@
       "asignarAEstacionNombre": "Affecter {{name}} à une station",
       "seAsignaraAlPrimerPuesto": "L'agent sera affecté au premier poste disponible de la station et apparaîtra dans le Planning.",
       "asignando": "Affectation...",
-      "asignar": "Affecter"
+      "asignar": "Affecter",
+      "correoDeRestablecimientoNoEnviado": "L’e-mail de réinitialisation à {{email}} n’a pas pu être envoyé. Réessayez dans quelques minutes."
     },
     "GuardHorarioPage": {
       "sinHorario": "Aucun planning",
@@ -16956,7 +17019,10 @@
       "tuEmpresa": "votre entreprise",
       "volver": "Retour",
       "registrarse": "S'inscrire",
-      "tuCuentaYaEstaActiva": "Votre compte chez <b>{{empresa}}</b> est déjà actif."
+      "tuCuentaYaEstaActiva": "Votre compte chez <b>{{empresa}}</b> est déjà actif.",
+      "invitacionYaUsada": "Cette invitation a déjà été utilisée : votre compte est actif.",
+      "entraEnLaApp": "Connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Si vous ne vous souvenez plus du mot de passe, demandez à votre entreprise de le réinitialiser.",
+      "tuCuentaEstaLista": "Votre compte est prêt."
     },
     "InspectionPreview": {
       "alerta": "Alerte",

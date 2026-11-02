@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import type { GuardDetail } from "../../guardDetailTypes";
 
 import { useRegistroDeFicha } from "@/layouts/FichaPersona";
+import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import TarjetaReconocimientoFacial from "@/components/rostro/TarjetaReconocimientoFacial";
 
 // The loaded guard record, flattened with the derived photo URL. The linked app
@@ -233,7 +234,7 @@ export default function GuardResumenPage() {
                         {t("guards.employment.hiredOn", "Fecha de ingreso")}
                       </div>
                       <div className="text-lg font-semibold">
-                        {expediente.guard?.hiredOn || "—"}
+                        {soloFechaCivil(expediente.guard?.hiredOn)}
                       </div>
                     </div>
                     <div>

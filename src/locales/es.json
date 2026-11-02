@@ -180,6 +180,16 @@
         "error": "Error restaurando usuario",
         "success": "Usuario restaurado",
         "title": "Restaurar usuario"
+      },
+      "suspend": {
+        "title": "Suspender usuario",
+        "description": "{{user}} dejará de poder entrar y pasará a Archivados. Puedes restaurarlo después.",
+        "confirm": "Suspender"
+      },
+      "closeSessions": {
+        "title": "Cerrar sesiones",
+        "description": "{{user}} saldrá de la web y de las apps en todos sus dispositivos y tendrá que volver a iniciar sesión.",
+        "confirm": "Cerrar sesiones"
       }
     },
     "editUser": {
@@ -1831,7 +1841,7 @@
         "create_profile": "Crear perfil",
         "invite": "Invitar usando SMS o correo electrónico"
       },
-      "empty": "No KPI data",
+      "empty": "Sin datos de KPI",
       "kpiadded": "Añadir Nuevo KPI",
       "kpisearch": "Buscar KPI",
       "kpitable": {
@@ -1841,11 +1851,11 @@
       },
       "subtitle": "KPIs y desempeño del vigilante.",
       "table": {
-        "noTargets": "No targets defined",
-        "actual": "Actual",
-        "name": "Name",
-        "status": "Status",
-        "target": "Target"
+        "noTargets": "Sin metas definidas",
+        "actual": "Real",
+        "name": "Nombre",
+        "status": "Estado",
+        "target": "Meta"
       },
       "title": "Indicadores de rendimiento",
       "toasts": {
@@ -1857,28 +1867,36 @@
         "created": "KPI creado correctamente",
         "deleted": "KPI eliminado",
         "deletedMultiple": "KPIs eliminados",
-        "excelDownloaded": "Excel downloaded",
-        "excelError": "Could not generate/get Excel",
+        "excelDownloaded": "Excel descargado",
+        "excelError": "No se pudo generar el Excel",
         "excelExportError": "Error al exportar el Excel",
-        "pdfError": "Could not generate/get PDF",
+        "pdfError": "No se pudo generar el PDF",
         "pdfGenerated": "PDF generado",
-        "pdfOpened": "PDF opened",
+        "pdfOpened": "PDF abierto",
         "updated": "KPI actualizado correctamente"
       },
-      "descriptionLabel": "DESCRIPTION :",
-      "exportExcel": "Export as Excel",
-      "exportPdf": "Export as PDF",
+      "descriptionLabel": "DESCRIPCIÓN:",
+      "exportExcel": "Exportar a Excel",
+      "exportPdf": "Exportar a PDF",
       "feedTitle": "Indicadores clave (KPIs)",
       "metrics": {
-        "incidentReports": "Incident Reports",
-        "routeReports": "Route Reports",
-        "taskReports": "Task Reports"
+        "incidentReports": "Informes de incidentes",
+        "routeReports": "Informes de recorridos",
+        "taskReports": "Informes de tareas"
       },
       "status": {
         "achieved": "Cumplido",
         "notAchieved": "No cumplido"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Vigilante",
+        "postSite": "Sede"
+      },
+      "errors": {
+        "frequencyRequired": "Elige la frecuencia.",
+        "descriptionRequired": "Escribe la descripción."
+      }
     },
     "assignSites": {
       "assignButton": "Asignar estación",
@@ -1941,7 +1959,7 @@
       "noResults": "Sin resultados",
       "noResultsHint": "Ninguna asignación coincide con la búsqueda.",
       "thisPost": "esta estación",
-      "assignedCount": "Assigned Sites",
+      "assignedCount": "Estaciones asignadas",
       "nStations": "{{count}} estaciones",
       "selectAll": "Seleccionar todo",
       "shiftCount": "{{count}} turnos"
@@ -2019,7 +2037,9 @@
       },
       "empty": {
         "description": "No pudimos encontrar<br />elementos que coincidan<br />con tu búsqueda",
-        "title": "No se encontraron resultados"
+        "title": "No se encontraron resultados",
+        "none": "Sin licencias todavía",
+        "hint": "Agrega la primera licencia o credencial."
       },
       "form": {
         "backImageLabel": "Imagen trasera de la licencia",
@@ -2057,8 +2077,8 @@
       "details": {
         "edit": "Editar",
         "download": "Descargar",
-        "notFound": "Details not available",
-        "title": "License details"
+        "notFound": "No hay detalles disponibles",
+        "title": "Detalles de la licencia"
       },
       "noNumber": "Sin número",
       "status": {
@@ -2070,17 +2090,23 @@
       "subtitle": "Documentos y credenciales del vigilante",
       "toasts": {
         "noPermissionCreateType": "No tiene permiso para crear tipos de licencia",
-        "createError": "Could not create license",
-        "created": "License created",
+        "createError": "No se pudo guardar la licencia",
+        "created": "Licencia creada",
         "deleteError": "No se pudo eliminar",
-        "deleted": "Deleted",
-        "deletedBulk": "Deleted",
-        "downloadError": "No se pudo descargar el reporte",
-        "loadError": "Could not load licenses",
-        "updated": "License updated"
+        "deleted": "Licencia eliminada",
+        "deletedBulk": "Licencias eliminadas",
+        "downloadError": "No se pudo descargar la licencia",
+        "loadError": "No se pudieron cargar las licencias",
+        "updated": "Licencia actualizada"
       },
       "selected": "seleccionadas",
-      "untitled": "Licencia"
+      "untitled": "Licencia",
+      "errors": {
+        "typeRequired": "Elige el tipo de licencia.",
+        "numberRequired": "Escribe el número de la licencia."
+      },
+      "confirmDelete": "¿Eliminar {{count}} licencia(s)? Esta acción no se puede deshacer.",
+      "subtitleSupervisor": "Documentos y credenciales del supervisor"
     },
     "list": {
       "applyFilters": "Aplicar filtros",
@@ -2188,7 +2214,12 @@
           "excelValidationFailed": "No se pudo validar el archivo Excel antes de subir. Asegúrate del formato.",
           "missingColumns": "Faltan columnas obligatorias: {{columns}}",
           "selectFile": "Selecciona un archivo"
-        }
+        },
+        "summaryOk_one": "{{count}} vigilante importado",
+        "summaryOk_other": "{{count}} vigilantes importados",
+        "summaryWithErrors": "Importados: {{ok}} · Sin importar: {{fallidas}}",
+        "rowError": "Fila {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "No se envió ninguna invitación: envíalas desde la lista cuando quieras."
       },
       "labels": {
         "name": "Nombre",
@@ -2383,7 +2414,8 @@
         "message": "No pudimos encontrar<br />elementos que coincidan<br />con tu búsqueda",
         "title": "No se encontraron resultados",
         "hint": "Crea la primera nota para este vigilante.",
-        "none": "Sin notas todavía"
+        "none": "Sin notas todavía",
+        "hintSupervisor": "Crea la primera nota para este supervisor."
       },
       "modal": {
         "cancel": "Cancelar",
@@ -2428,7 +2460,12 @@
       "loadError": "Error al cargar notas",
       "noteCreated": "Nota creada correctamente",
       "noteDeleted": "Nota eliminada",
-      "sectionTitle": "Notas"
+      "sectionTitle": "Notas",
+      "errors": {
+        "titleRequired": "Escribe el título de la nota.",
+        "descriptionRequired": "Escribe la descripción de la nota.",
+        "dateRequired": "Elige la fecha de la nota."
+      }
     },
     "profile": {
       "noLicense": "No se encontró ninguna licencia",
@@ -2444,7 +2481,8 @@
         "statusNoAccess": "Sin acceso configurado",
         "statusPending": "Invitación pendiente",
         "tokenExpired": "El enlace de invitación ha expirado",
-        "tokenExpires": "Invitación válida hasta"
+        "tokenExpires": "Invitación válida hasta",
+        "alreadyActive": "Ya activó su cuenta: no necesita invitación. Si olvidó la contraseña, usa «Restablecer contraseña» en la lista de vigilantes."
       },
       "actions": {
         "cancel": "Cancelar",
@@ -2522,8 +2560,8 @@
         "primary": "Primaria",
         "secondary": "Secundaria",
         "special": "Especial",
-        "university": "Universitaria",
-        "universityDegree": "Universidad"
+        "university": "Estudios universitarios",
+        "universityDegree": "Título universitario"
       },
       "maritalStatus": {
         "freeUnion": "Unión libre"
@@ -2720,7 +2758,11 @@
       "locNoneBody": "{{sin}} de sus últimos {{total}} fichajes entraron sin ninguna coordenada. El fichaje se registra igual —no se le bloquea— pero el turno queda sin prueba de dónde estaba.",
       "locCoarseBody": "{{n}} de sus últimos {{total}} fichajes llegaron con una posición más gruesa de {{suelo}} m. Sirve para registrar, no para confirmar que estaba en el puesto.",
       "locFix": "Causa habitual: en Android el permiso de ubicación quedó en «Aproximada». Hay que ponerlo en «Precisa» en los ajustes del teléfono — Android no permite cambiarlo desde la aplicación, así que alguien tiene que tocar ese móvil.",
-      "locLast": "Último fichaje sin ubicación: {{cuando}}"
+      "locLast": "Último fichaje sin ubicación: {{cuando}}",
+      "titleSupervisor": "Dispositivo del supervisor",
+      "subtitleSupervisor": "El primer dispositivo desde el que el supervisor inicia sesión queda vinculado. Si aparece otro dispositivo, se marca como no reconocido (no se bloquea). Restablece el vínculo si el supervisor cambió de teléfono.",
+      "emptySupervisor": "Aún no se ha registrado ningún dispositivo para este supervisor.",
+      "resetDoneSupervisor": "Vínculo restablecido. El próximo dispositivo del supervisor quedará vinculado."
     },
     "documents": {
       "deleteConfirm": "¿Seguro que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
@@ -2787,7 +2829,11 @@
       "deleted": "Memo eliminado",
       "pending": "Pendiente",
       "title": "Memos",
-      "total": "memos"
+      "total": "memos",
+      "count_one": "{{count}} memo",
+      "count_other": "{{count}} memos",
+      "acceptedCount_one": "{{count}} aceptado",
+      "acceptedCount_other": "{{count}} aceptados"
     },
     "actionNotImplemented": "Acción no disponible todavía",
     "overview": {
@@ -2815,7 +2861,9 @@
       "loadError": "No se pudieron cargar los roles disponibles.",
       "error": "No se pudo cambiar el rol.",
       "hasBothRoles": "Ahora tiene los dos papeles. Al elegir uno, se quedará sólo con ese.",
-      "welcomeSent": "Le enviamos un correo de bienvenida con el enlace para descargar la app de supervisor."
+      "welcomeSent": "Le enviamos un correo de bienvenida con el enlace para descargar la app de supervisor.",
+      "inviteSent": "Todavía no tenía contraseña: le enviamos la invitación para crearla y entrar en la app de supervisor.",
+      "inviteLinkReady": "Todavía no tenía contraseña y no tiene correo: compártele el enlace de acceso desde su ficha de supervisor («Reenviar invitación»)."
     },
     "department": {
       "title": "Departamento",
@@ -8318,7 +8366,7 @@
         "edit": "Editar Tipo de Licencia",
         "create": "Nuevo Tipo de Licencia"
       },
-      "createError": "Could not create license type"
+      "createError": "No se pudo crear el tipo de licencia"
     },
     "table": {
       "column": {
@@ -9205,7 +9253,10 @@
       "yaPuedesEntrar": "Ya puedes entrar",
       "tuEmpresaTeAsignaraAUnPuesto": "Tu empresa te asignará a un puesto.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Inicia sesión con tu usuario y contraseña.",
-      "cuentaListaDescargaLaApp": "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la app para monitorear y gestionar tu servicio de seguridad desde tu teléfono."
+      "cuentaListaDescargaLaApp": "Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la app para monitorear y gestionar tu servicio de seguridad desde tu teléfono.",
+      "tuPuestoYTurnosEnLaApp": "Tu puesto y tus turnos aparecerán en la app.",
+      "iniciaConTuUsuario": "Inicia sesión con tu usuario y contraseña.",
+      "iniciaCuandoEsteActiva": "Inicia sesión cuando tu cuenta esté activa."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mi ubicación",
@@ -10273,7 +10324,8 @@
       "noSeEncontroElVigilante": "No se encontró el vigilante solicitado.",
       "errorGuardandoCambios": "Error guardando cambios: {{msg}}",
       "datosPersonales": "Datos personales",
-      "guardarCambios": "Guardar cambios"
+      "guardarCambios": "Guardar cambios",
+      "cambiosGuardados": "Cambios guardados"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Dirección de la Empresa*",
@@ -12770,7 +12822,8 @@
       "laZonaYLosPuestosQueCubre": "La zona y los puestos que cubre este supervisor, y su horario generado, se ven en sus pestañas dedicadas.",
       "limitaLoQueEsteSupervisorVe": "Limita lo que este supervisor ve en su app: excepciones de asistencia y solicitudes de fichaje.",
       "nombres": "Nombres",
-      "perfilActualizado": "Perfil actualizado"
+      "perfilActualizado": "Perfil actualizado",
+      "identidadDeLaCuenta": "Nombres y apellidos se guardan aquí. El correo es el de su cuenta de acceso y no se cambia desde esta ficha."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Aún no hay puestos de supervisor",
@@ -13026,7 +13079,13 @@
       "calendario": "Calendario",
       "vacioAyuda": "Vacaciones, permisos y faltas justificadas de todo el personal, vengan de aquí, del Horario o de la app del vigilante.",
       "registrarElPrimero": "Registrar un permiso",
-      "vacioTitulo": "Todavía no hay permisos ni vacaciones"
+      "vacioTitulo": "Todavía no hay permisos ni vacaciones",
+      "aprobarTitulo": "Aprobar el permiso",
+      "aprobarMensaje": "Se aprueba el permiso de {{nombre}}: sus turnos de esos días quedan como hueco en Cobertura y se le avisa.",
+      "rechazarTitulo": "Rechazar el permiso",
+      "rechazarMensaje": "Se rechaza el permiso de {{nombre}} y se le avisa. Puedes decirle por qué (opcional).",
+      "rechazarMotivo": "Motivo (opcional)",
+      "solicitudEliminada": "Solicitud eliminada"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -13711,7 +13770,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invitación reenviada a {{email}}.",
       "invitacionYaEnviada": "La invitación ya se envió a {{email}} hace unos minutos. Pídele que revise su bandeja de entrada y la carpeta de spam. Podrás reenviarla en {{faltan}} min.",
-      "invitacionNoSalio": "No pudimos enviar el correo a {{email}}. Inténtalo de nuevo en unos minutos."
+      "invitacionNoSalio": "No pudimos enviar el correo a {{email}}. Inténtalo de nuevo en unos minutos.",
+      "correoDeRestablecimientoNoEnviado": "No se pudo enviar el correo de restablecimiento a {{email}}. Inténtalo de nuevo en unos minutos."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajusta la búsqueda o registra un visitante nuevo.",
@@ -13821,10 +13881,11 @@
       "ningunVigilanteCoincide": "Ningún vigilante coincide con tu búsqueda.",
       "agregaTuPrimerVigilante": "Agrega tu primer vigilante para comenzar.",
       "errorAlImportar": "Error al importar",
-      "asignarAEstacionNombre": "Asignar a {{name}} a una estación",
+      "asignarAEstacionNombre": "Elige la estación de {{name}}",
       "seAsignaraAlPrimerPuesto": "Se asignará al primer puesto disponible de la estación y aparecerá en el Horario.",
       "asignando": "Asignando...",
-      "asignar": "Asignar"
+      "asignar": "Asignar",
+      "correoDeRestablecimientoNoEnviado": "No se pudo enviar el correo de restablecimiento a {{email}}. Inténtalo de nuevo en unos minutos."
     },
     "GuardHorarioPage": {
       "sinHorario": "Sin horario",
@@ -16416,7 +16477,10 @@
       "tuEmpresa": "tu empresa",
       "volver": "Volver",
       "registrarse": "Registrarse",
-      "tuCuentaYaEstaActiva": "Tu cuenta en <b>{{empresa}}</b> ya está activa."
+      "tuCuentaYaEstaActiva": "Tu cuenta en <b>{{empresa}}</b> ya está activa.",
+      "invitacionYaUsada": "Esta invitación ya se usó: tu cuenta ya está activa.",
+      "entraEnLaApp": "Entra en la app del vigilante con tu usuario y contraseña. Si no recuerdas la contraseña, pide a tu empresa que te la restablezca.",
+      "tuCuentaEstaLista": "Tu cuenta está lista."
     },
     "InspectionPreview": {
       "alerta": "Alerta",
@@ -19763,7 +19827,8 @@
       "blood_required": "El grupo sanguíneo es obligatorio",
       "credentials_required": "Las credenciales son obligatorias",
       "address_required": "La dirección es obligatoria",
-      "phone_required": "El teléfono es obligatorio"
+      "phone_required": "El teléfono es obligatorio",
+      "revisaEstosDatos": "Revisa estos datos: {{campos}}"
     },
     "password": "Contraseña",
     "password_min": "Mínimo 8 caracteres",
@@ -19790,7 +19855,8 @@
         "university": "Universidad",
         "universityStudies": "Universitaria"
       },
-      "freeUnion": "Unión libre"
+      "freeUnion": "Unión libre",
+      "credentialsHint": "N.º de tu credencial o licencia de guardia"
     },
     "select": "Seleccione",
     "eyebrow_guard": "Invitación · Equipo de seguridad",

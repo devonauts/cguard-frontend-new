@@ -48,6 +48,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { PageContainer, PageHeader, Section } from "@/components/kit";
+import { fechaYHora } from "@/lib/horaDeLaEmpresa";
 import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
 
 /* dynamic options loaded from API */
@@ -1376,7 +1377,7 @@ export default function NewAdminUserPage() {
                             {t("adminOfficeUsers.newUser.invite.expiresLabel", {
                               defaultValue: "Expira:",
                             })}{" "}
-                            {generatedExpiresAt}
+                            {fechaYHora(generatedExpiresAt)}
                           </div>
                         )}
                       </div>

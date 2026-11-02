@@ -1659,7 +1659,15 @@
         "achieved": "Osiągnięty",
         "notAchieved": "Nieosiągnięty"
       },
-      "totalKpis": "KPI"
+      "totalKpis": "KPI",
+      "scope": {
+        "guard": "Pracownik ochrony",
+        "postSite": "Obiekt"
+      },
+      "errors": {
+        "frequencyRequired": "Wybierz częstotliwość.",
+        "descriptionRequired": "Wpisz opis."
+      }
     },
     "assignSites": {
       "assignButton": "Przypisz posterunek",
@@ -1800,7 +1808,9 @@
       },
       "empty": {
         "description": "Nie znaleźliśmy<br />pozycji pasujących<br />do wyszukiwania",
-        "title": "Nie znaleziono wyników"
+        "title": "Nie znaleziono wyników",
+        "none": "Brak koncesji",
+        "hint": "Dodaj pierwszą koncesję lub legitymację."
       },
       "form": {
         "backImageLabel": "Zdjęcie dokumentu — tył",
@@ -1861,7 +1871,13 @@
         "updated": "Koncesja zaktualizowana"
       },
       "selected": "wybrane",
-      "untitled": "Koncesja"
+      "untitled": "Koncesja",
+      "errors": {
+        "typeRequired": "Wybierz rodzaj koncesji.",
+        "numberRequired": "Wpisz numer koncesji."
+      },
+      "confirmDelete": "Usunąć licencje ({{count}})? Tej operacji nie można cofnąć.",
+      "subtitleSupervisor": "Dokumenty i uprawnienia supervisora"
     },
     "list": {
       "applyFilters": "Zastosuj filtry",
@@ -1969,7 +1985,14 @@
           "excelValidationFailed": "Nie udało się sprawdzić pliku Excel przed wgraniem. Proszę zweryfikować format.",
           "missingColumns": "Brakuje wymaganych kolumn: {{columns}}",
           "selectFile": "Proszę wybrać plik"
-        }
+        },
+        "summaryOk_one": "Zaimportowano {{count}} ochroniarza",
+        "summaryOk_few": "Zaimportowano {{count}} ochroniarzy",
+        "summaryOk_many": "Zaimportowano {{count}} ochroniarzy",
+        "summaryOk_other": "Zaimportowano {{count}} ochroniarzy",
+        "summaryWithErrors": "Zaimportowano: {{ok}} · Nie zaimportowano: {{fallidas}}",
+        "rowError": "Wiersz {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Nie wysłano żadnych zaproszeń: wyślij je z listy, kiedy zechcesz."
       },
       "labels": {
         "name": "Nazwa",
@@ -2170,7 +2193,8 @@
         "message": "Nie znaleźliśmy<br />pozycji pasujących<br />do wyszukiwania",
         "title": "Nie znaleziono wyników",
         "hint": "Proszę utworzyć pierwszą notatkę dla tego pracownika ochrony.",
-        "none": "Brak notatek"
+        "none": "Brak notatek",
+        "hintSupervisor": "Proszę utworzyć pierwszą notatkę dla tego supervisora."
       },
       "modal": {
         "cancel": "Anuluj",
@@ -2215,7 +2239,12 @@
       "loadError": "Błąd podczas wczytywania notatek",
       "noteCreated": "Notatka utworzona",
       "noteDeleted": "Notatka usunięta",
-      "sectionTitle": "Notatki"
+      "sectionTitle": "Notatki",
+      "errors": {
+        "titleRequired": "Wpisz tytuł notatki.",
+        "descriptionRequired": "Wpisz opis notatki.",
+        "dateRequired": "Wybierz datę notatki."
+      }
     },
     "profile": {
       "noLicense": "Nie znaleziono żadnego uprawnienia",
@@ -2231,7 +2260,8 @@
         "statusNoAccess": "Dostęp nieskonfigurowany",
         "statusPending": "Zaproszenie oczekuje",
         "tokenExpired": "Link zaproszenia wygasł",
-        "tokenExpires": "Zaproszenie ważne do"
+        "tokenExpires": "Zaproszenie ważne do",
+        "alreadyActive": "Konto jest już aktywne: zaproszenie nie jest potrzebne. Jeśli hasło zostało zapomniane, użyj „Zresetuj hasło” na liście pracowników ochrony."
       },
       "actions": {
         "cancel": "Anuluj",
@@ -2507,7 +2537,11 @@
       "locNoneBody": "{{sin}} z ostatnich {{total}} odbić przyszło bez żadnych współrzędnych. Odbicie i tak zostaje zapisane — nikt nie jest blokowany — ale zmiana nie ma dowodu miejsca.",
       "locCoarseBody": "{{n}} z ostatnich {{total}} odbić przyszło z pozycją mniej dokładną niż {{suelo}} m. Wystarczy do zapisu, nie do potwierdzenia obecności na posterunku.",
       "locFix": "Zwykła przyczyna: w Androidzie uprawnienie lokalizacji zostało na „Przybliżona”. Trzeba ustawić „Dokładna” w ustawieniach telefonu — Android nie pozwala zmienić tego z aplikacji, więc ktoś musi wziąć ten telefon do ręki.",
-      "locLast": "Ostatnie odbicie bez lokalizacji: {{cuando}}"
+      "locLast": "Ostatnie odbicie bez lokalizacji: {{cuando}}",
+      "titleSupervisor": "Urządzenie supervisora",
+      "subtitleSupervisor": "Pierwsze urządzenie, z którego supervisor się loguje, zostaje powiązane. Jeśli pojawi się inne urządzenie, zostanie oznaczone jako nierozpoznane (nie jest blokowane). Proszę zresetować powiązanie, jeśli supervisor zmienił telefon.",
+      "emptySupervisor": "Dla tego supervisora nie zarejestrowano jeszcze żadnego urządzenia.",
+      "resetDoneSupervisor": "Powiązanie zresetowane. Kolejne urządzenie supervisora zostanie powiązane."
     },
     "documents": {
       "deleteConfirm": "Czy na pewno usunąć „{{name}}”? Tej operacji nie można cofnąć.",
@@ -2574,7 +2608,15 @@
       "deleted": "Notatka służbowa usunięta",
       "pending": "Oczekuje",
       "title": "Notatki służbowe",
-      "total": "notatki służbowe"
+      "total": "notatki służbowe",
+      "count_one": "{{count}} notatka służbowa",
+      "count_other": "{{count}} notatki służbowej",
+      "acceptedCount_one": "{{count}} zaakceptowana",
+      "acceptedCount_other": "{{count}} zaakceptowanej",
+      "count_few": "{{count}} notatki służbowe",
+      "count_many": "{{count}} notatek służbowych",
+      "acceptedCount_few": "{{count}} zaakceptowane",
+      "acceptedCount_many": "{{count}} zaakceptowanych"
     },
     "actionNotImplemented": "Ta akcja nie jest jeszcze dostępna",
     "overview": {
@@ -2602,7 +2644,9 @@
       "loadError": "Nie udało się wczytać dostępnych ról.",
       "error": "Nie udało się zmienić roli.",
       "hasBothRoles": "Obecnie pełni obie role. Wybór jednej pozostawi tylko tę jedną.",
-      "welcomeSent": "Wysłaliśmy powitalną wiadomość e-mail z linkiem do pobrania aplikacji nadzorcy."
+      "welcomeSent": "Wysłaliśmy powitalną wiadomość e-mail z linkiem do pobrania aplikacji nadzorcy.",
+      "inviteSent": "Ta osoba nie miała jeszcze hasła: wysłaliśmy zaproszenie, aby je utworzyć i zalogować się w aplikacji supervisora.",
+      "inviteLinkReady": "Brak hasła i adresu e-mail: udostępnij link dostępu z karty supervisora („Wyślij zaproszenie ponownie”)."
     },
     "department": {
       "title": "Dział",
@@ -2747,7 +2791,8 @@
       "blood_required": "Grupa krwi jest wymagana",
       "credentials_required": "Legitymacja jest wymagana",
       "address_required": "Adres jest wymagany",
-      "phone_required": "Telefon jest wymagany"
+      "phone_required": "Telefon jest wymagany",
+      "revisaEstosDatos": "Sprawdź te dane: {{campos}}"
     },
     "password": "Hasło",
     "password_min": "Minimum 8 znaków",
@@ -2774,7 +2819,8 @@
         "university": "Studia wyższe",
         "universityStudies": "Wyższe"
       },
-      "freeUnion": "Konkubinat"
+      "freeUnion": "Konkubinat",
+      "credentialsHint": "Numer legitymacji lub licencji pracownika ochrony"
     },
     "select": "Wybierz",
     "eyebrow_guard": "Zaproszenie · Zespół ochrony",
@@ -5977,6 +6023,16 @@
         "error": "Błąd podczas przywracania użytkownika",
         "success": "Użytkownik przywrócony",
         "title": "Przywróć użytkownika"
+      },
+      "suspend": {
+        "title": "Zawieś użytkownika",
+        "description": "{{user}} nie będzie mógł się zalogować i trafi do Zarchiwizowanych. Możesz go później przywrócić.",
+        "confirm": "Zawieś"
+      },
+      "closeSessions": {
+        "title": "Zamknij sesje",
+        "description": "{{user}} zostanie wylogowany z internetu i aplikacji na wszystkich urządzeniach i będzie musiał zalogować się ponownie.",
+        "confirm": "Zamknij sesje"
       }
     },
     "editUser": {
@@ -9771,7 +9827,10 @@
       "yaPuedesEntrar": "Możesz już się zalogować",
       "tuEmpresaTeAsignaraAUnPuesto": "Twoja firma przydzieli cię do stanowiska.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Zaloguj się swoją nazwą użytkownika i hasłem.",
-      "cuentaListaDescargaLaApp": "Twoje konto w <b>{{empresa}}</b> jest gotowe. Pobierz aplikację, aby monitorować usługę ochrony i zarządzać nią z telefonu."
+      "cuentaListaDescargaLaApp": "Twoje konto w <b>{{empresa}}</b> jest gotowe. Pobierz aplikację, aby monitorować usługę ochrony i zarządzać nią z telefonu.",
+      "tuPuestoYTurnosEnLaApp": "Twoje stanowisko i zmiany pojawią się w aplikacji.",
+      "iniciaConTuUsuario": "Zaloguj się swoją nazwą użytkownika i hasłem.",
+      "iniciaCuandoEsteActiva": "Zaloguj się, gdy konto będzie aktywne."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Moja lokalizacja",
@@ -10853,7 +10912,8 @@
       "noSeEncontroElVigilante": "Nie znaleziono wskazanego pracownika ochrony.",
       "errorGuardandoCambios": "Błąd zapisywania zmian: {{msg}}",
       "datosPersonales": "Dane osobowe",
-      "guardarCambios": "Zapisz zmiany"
+      "guardarCambios": "Zapisz zmiany",
+      "cambiosGuardados": "Zmiany zapisane"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adres firmy*",
@@ -13416,7 +13476,8 @@
       "laZonaYLosPuestosQueCubre": "Strefa i posterunki obsługiwane przez tego przełożonego oraz jego wygenerowany grafik są widoczne w osobnych kartach.",
       "limitaLoQueEsteSupervisorVe": "Ogranicza to, co ten przełożony widzi w swojej aplikacji: wyjątki obecności i prośby o odbicie.",
       "nombres": "Imiona",
-      "perfilActualizado": "Profil zaktualizowany"
+      "perfilActualizado": "Profil zaktualizowany",
+      "identidadDeLaCuenta": "Imiona i nazwiska zapisuje się tutaj. Adres e-mail należy do konta logowania i nie zmienia się go w tej karcie."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Nie ma jeszcze pozycji nadzorcy",
@@ -13678,7 +13739,13 @@
       "calendario": "Kalendarz",
       "vacioAyuda": "Urlopy, nieobecności i usprawiedliwione absencje całego personelu – wpisane tutaj, w Grafiku lub w aplikacji ochroniarza.",
       "registrarElPrimero": "Zarejestruj nieobecność",
-      "vacioTitulo": "Brak nieobecności i urlopów"
+      "vacioTitulo": "Brak nieobecności i urlopów",
+      "aprobarTitulo": "Zatwierdź nieobecność",
+      "aprobarMensaje": "Nieobecność osoby {{nombre}} zostaje zatwierdzona: jej zmiany w te dni stają się lukami w Obsadzie, a osoba dostaje powiadomienie.",
+      "rechazarTitulo": "Odrzuć nieobecność",
+      "rechazarMensaje": "Nieobecność osoby {{nombre}} zostaje odrzucona, a osoba dostaje powiadomienie. Możesz podać powód (opcjonalnie).",
+      "rechazarMotivo": "Powód (opcjonalnie)",
+      "solicitudEliminada": "Wniosek usunięty"
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
@@ -14385,7 +14452,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Zaproszenie wysłane ponownie na {{email}}.",
       "invitacionYaEnviada": "Zaproszenie zostało już wysłane na {{email}} kilka minut temu. Poproś o sprawdzenie skrzynki odbiorczej i folderu spam. Ponownie wyślesz je za {{faltan}} min.",
-      "invitacionNoSalio": "Nie udało się wysłać e-maila na {{email}}. Spróbuj ponownie za kilka minut."
+      "invitacionNoSalio": "Nie udało się wysłać e-maila na {{email}}. Spróbuj ponownie za kilka minut.",
+      "correoDeRestablecimientoNoEnviado": "Nie udało się wysłać e-maila resetującego do {{email}}. Spróbuj ponownie za kilka minut."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Prosimy zmienić wyszukiwanie lub zarejestrować nowego gościa.",
@@ -14500,7 +14568,8 @@
       "asignarAEstacionNombre": "Przypisz {{name}} do stacji",
       "seAsignaraAlPrimerPuesto": "Zostanie przypisany do pierwszego wolnego posterunku stacji i pojawi się w Grafiku.",
       "asignando": "Przypisywanie...",
-      "asignar": "Przypisz"
+      "asignar": "Przypisz",
+      "correoDeRestablecimientoNoEnviado": "Nie udało się wysłać e-maila resetującego do {{email}}. Spróbuj ponownie za kilka minut."
     },
     "GuardHorarioPage": {
       "sinHorario": "Brak grafiku",
@@ -17180,7 +17249,10 @@
       "tuEmpresa": "Twojej firmy",
       "volver": "Wstecz",
       "registrarse": "Zarejestruj się",
-      "tuCuentaYaEstaActiva": "Twoje konto w <b>{{empresa}}</b> jest już aktywne."
+      "tuCuentaYaEstaActiva": "Twoje konto w <b>{{empresa}}</b> jest już aktywne.",
+      "invitacionYaUsada": "To zaproszenie zostało już użyte: Twoje konto jest aktywne.",
+      "entraEnLaApp": "Zaloguj się do aplikacji pracownika ochrony swoją nazwą użytkownika i hasłem. Jeśli nie pamiętasz hasła, poproś firmę o jego zresetowanie.",
+      "tuCuentaEstaLista": "Twoje konto jest gotowe."
     },
     "InspectionPreview": {
       "alerta": "Alert",

@@ -174,6 +174,23 @@ export function PromoteDialog({
           ),
         );
       }
+      // Nobody set a password on this account yet: the server sent the
+      // supervisor invitation (create the password) instead of the welcome.
+      if (r?.invitacionEnviada) {
+        toast.info(
+          t(
+            "guards.promote.inviteSent",
+            "Todavía no tenía contraseña: le enviamos la invitación para crearla y entrar en la app de supervisor.",
+          ),
+        );
+      } else if (r?.invitationLink) {
+        toast.info(
+          t(
+            "guards.promote.inviteLinkReady",
+            "Todavía no tenía contraseña y no tiene correo: compártele el enlace de acceso desde su ficha de supervisor («Reenviar invitación»).",
+          ),
+        );
+      }
       onOpenChange(false);
       onDone?.(elegido);
     } catch (e: any) {

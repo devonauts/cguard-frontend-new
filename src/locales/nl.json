@@ -1659,7 +1659,15 @@
         "achieved": "Behaald",
         "notAchieved": "Niet behaald"
       },
-      "totalKpis": "KPI's"
+      "totalKpis": "KPI's",
+      "scope": {
+        "guard": "Beveiliger",
+        "postSite": "Locatie"
+      },
+      "errors": {
+        "frequencyRequired": "Kies de frequentie.",
+        "descriptionRequired": "Vul de omschrijving in."
+      }
     },
     "assignSites": {
       "assignButton": "Post toewijzen",
@@ -1800,7 +1808,9 @@
       },
       "empty": {
         "description": "We konden niets vinden<br />dat overeenkomt<br />met je zoekopdracht",
-        "title": "Geen resultaten gevonden"
+        "title": "Geen resultaten gevonden",
+        "none": "Nog geen vergunningen",
+        "hint": "Voeg de eerste vergunning of pas toe."
       },
       "form": {
         "backImageLabel": "Achterkant van de pas",
@@ -1861,7 +1871,13 @@
         "updated": "Vergunning bijgewerkt"
       },
       "selected": "geselecteerd",
-      "untitled": "Vergunning"
+      "untitled": "Vergunning",
+      "errors": {
+        "typeRequired": "Kies het soort vergunning.",
+        "numberRequired": "Vul het vergunningsnummer in."
+      },
+      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "subtitleSupervisor": "Documenten en pasjes van de supervisor"
     },
     "list": {
       "applyFilters": "Filters toepassen",
@@ -1969,7 +1985,12 @@
           "excelValidationFailed": "Het Excel-bestand kon niet worden gecontroleerd vóór het uploaden. Controleer de opmaak.",
           "missingColumns": "Verplichte kolommen ontbreken: {{columns}}",
           "selectFile": "Selecteer een bestand"
-        }
+        },
+        "summaryOk_one": "{{count}} bewaker geïmporteerd",
+        "summaryOk_other": "{{count}} bewakers geïmporteerd",
+        "summaryWithErrors": "Geïmporteerd: {{ok}} · Niet geïmporteerd: {{fallidas}}",
+        "rowError": "Rij {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Er zijn geen uitnodigingen verstuurd: verstuur ze vanuit de lijst wanneer je wilt."
       },
       "labels": {
         "name": "Naam",
@@ -2164,7 +2185,8 @@
         "message": "We konden niets vinden<br />dat overeenkomt<br />met je zoekopdracht",
         "title": "Geen resultaten gevonden",
         "hint": "Maak de eerste notitie voor deze beveiliger.",
-        "none": "Nog geen notities"
+        "none": "Nog geen notities",
+        "hintSupervisor": "Maak de eerste notitie voor deze supervisor."
       },
       "modal": {
         "cancel": "Annuleren",
@@ -2209,7 +2231,12 @@
       "loadError": "De notities konden niet worden geladen",
       "noteCreated": "Notitie aangemaakt",
       "noteDeleted": "Notitie verwijderd",
-      "sectionTitle": "Notities"
+      "sectionTitle": "Notities",
+      "errors": {
+        "titleRequired": "Vul de titel van de notitie in.",
+        "descriptionRequired": "Vul de omschrijving van de notitie in.",
+        "dateRequired": "Kies de datum van de notitie."
+      }
     },
     "profile": {
       "noLicense": "Geen pas gevonden",
@@ -2225,7 +2252,8 @@
         "statusNoAccess": "Geen toegang ingesteld",
         "statusPending": "Uitnodiging in behandeling",
         "tokenExpired": "De uitnodigingslink is verlopen",
-        "tokenExpires": "Uitnodiging geldig tot"
+        "tokenExpires": "Uitnodiging geldig tot",
+        "alreadyActive": "Het account is al actief: geen uitnodiging nodig. Is het wachtwoord vergeten, gebruik dan „Wachtwoord resetten” in de lijst met beveiligers."
       },
       "actions": {
         "cancel": "Annuleren",
@@ -2501,7 +2529,11 @@
       "locNoneBody": "{{sin}} van de laatste {{total}} kloppingen kwamen binnen zonder enige coördinaat. De klopping wordt gewoon vastgelegd — niemand wordt geblokkeerd — maar de dienst heeft geen bewijs van de plek.",
       "locCoarseBody": "{{n}} van de laatste {{total}} kloppingen kwamen binnen met een positie grover dan {{suelo}} m. Goed genoeg om vast te leggen, niet om aanwezigheid op de post te bevestigen.",
       "locFix": "Gebruikelijke oorzaak: op Android staat de locatietoestemming op ‘Globaal’. Die moet in de telefooninstellingen op ‘Precies’ — Android laat de app dat niet wijzigen, dus iemand moet die telefoon zelf oppakken.",
-      "locLast": "Laatste klopping zonder locatie: {{cuando}}"
+      "locLast": "Laatste klopping zonder locatie: {{cuando}}",
+      "titleSupervisor": "Apparaat van de supervisor",
+      "subtitleSupervisor": "Het eerste apparaat waarmee de supervisor inlogt, wordt gekoppeld. Verschijnt er een ander apparaat, dan wordt dat gemarkeerd als niet herkend (het wordt niet geblokkeerd). Reset de koppeling als de supervisor een andere telefoon heeft.",
+      "emptySupervisor": "Er is nog geen apparaat vastgelegd voor deze supervisor.",
+      "resetDoneSupervisor": "Koppeling gereset. Het volgende apparaat van de supervisor wordt gekoppeld."
     },
     "documents": {
       "deleteConfirm": "\"{{name}}\" verwijderen? Dit kan niet ongedaan worden gemaakt.",
@@ -2568,7 +2600,11 @@
       "deleted": "Memo verwijderd",
       "pending": "In behandeling",
       "title": "Memo's",
-      "total": "memo's"
+      "total": "memo's",
+      "count_one": "{{count}} memo",
+      "count_other": "{{count}} memo's",
+      "acceptedCount_one": "{{count}} geaccepteerd",
+      "acceptedCount_other": "{{count}} geaccepteerd"
     },
     "actionNotImplemented": "Deze actie is nog niet beschikbaar",
     "overview": {
@@ -2596,7 +2632,9 @@
       "loadError": "De beschikbare rollen konden niet worden geladen.",
       "error": "De rol kon niet worden gewijzigd.",
       "hasBothRoles": "Hij heeft nu beide rollen. Kies je er één, dan houdt hij alleen die.",
-      "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden."
+      "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden.",
+      "inviteSent": "Er was nog geen wachtwoord: we hebben de uitnodiging gestuurd om er een aan te maken en in te loggen in de supervisor-app.",
+      "inviteLinkReady": "Nog geen wachtwoord en geen e-mail: deel de toegangslink vanuit het supervisorprofiel („Uitnodiging opnieuw sturen”)."
     },
     "department": {
       "title": "Afdeling",
@@ -2741,7 +2779,8 @@
       "blood_required": "De bloedgroep is verplicht",
       "credentials_required": "De pasgegevens zijn verplicht",
       "address_required": "Het adres is verplicht",
-      "phone_required": "Het telefoonnummer is verplicht"
+      "phone_required": "Het telefoonnummer is verplicht",
+      "revisaEstosDatos": "Controleer deze gegevens: {{campos}}"
     },
     "password": "Wachtwoord",
     "password_min": "Minimaal 8 tekens",
@@ -2768,7 +2807,8 @@
         "university": "Universiteit",
         "universityStudies": "Universitair"
       },
-      "freeUnion": "Samenwonend"
+      "freeUnion": "Samenwonend",
+      "credentialsHint": "Nummer van je beveiligerspas of -vergunning"
     },
     "select": "Selecteer",
     "eyebrow_guard": "Uitnodiging · Beveiligingsteam",
@@ -5971,6 +6011,16 @@
         "error": "Fout bij het herstellen van de gebruiker",
         "success": "Gebruiker hersteld",
         "title": "Gebruiker herstellen"
+      },
+      "suspend": {
+        "title": "Gebruiker schorsen",
+        "description": "{{user}} kan niet meer inloggen en gaat naar Gearchiveerd. Je kunt deze persoon later herstellen.",
+        "confirm": "Schorsen"
+      },
+      "closeSessions": {
+        "title": "Sessies afsluiten",
+        "description": "{{user}} wordt op alle apparaten uitgelogd van het web en de apps en moet opnieuw inloggen.",
+        "confirm": "Sessies afsluiten"
       }
     },
     "editUser": {
@@ -9745,7 +9795,10 @@
       "yaPuedesEntrar": "Je kunt nu inloggen",
       "tuEmpresaTeAsignaraAUnPuesto": "Je bedrijf wijst je een post toe.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Log in met je gebruikersnaam en wachtwoord.",
-      "cuentaListaDescargaLaApp": "Je account bij <b>{{empresa}}</b> is klaar. Download de app om je beveiligingsdienst vanaf je telefoon te volgen en te beheren."
+      "cuentaListaDescargaLaApp": "Je account bij <b>{{empresa}}</b> is klaar. Download de app om je beveiligingsdienst vanaf je telefoon te volgen en te beheren.",
+      "tuPuestoYTurnosEnLaApp": "Je post en je diensten verschijnen in de app.",
+      "iniciaConTuUsuario": "Log in met je gebruikersnaam en wachtwoord.",
+      "iniciaCuandoEsteActiva": "Log in zodra je account actief is."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mijn positie",
@@ -10813,7 +10866,8 @@
       "noSeEncontroElVigilante": "De gevraagde bewaker is niet gevonden.",
       "errorGuardandoCambios": "Fout bij opslaan van wijzigingen: {{msg}}",
       "datosPersonales": "Persoonsgegevens",
-      "guardarCambios": "Wijzigingen opslaan"
+      "guardarCambios": "Wijzigingen opslaan",
+      "cambiosGuardados": "Wijzigingen opgeslagen"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adres van het bedrijf*",
@@ -13310,7 +13364,8 @@
       "laZonaYLosPuestosQueCubre": "De zone en posten die deze supervisor dekt, en zijn gegenereerde rooster, staan op de eigen tabbladen.",
       "limitaLoQueEsteSupervisorVe": "Beperkt wat deze supervisor in zijn app ziet: aanwezigheidsuitzonderingen en klokverzoeken.",
       "nombres": "Voornamen",
-      "perfilActualizado": "Profiel bijgewerkt"
+      "perfilActualizado": "Profiel bijgewerkt",
+      "identidadDeLaCuenta": "Voor- en achternamen worden hier opgeslagen. Het e-mailadres hoort bij het inlogaccount en wordt niet via dit profiel gewijzigd."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Nog geen supervisorposten",
@@ -13566,7 +13621,13 @@
       "calendario": "Kalender",
       "vacioAyuda": "Vakantie, verlof en gemelde afwezigheid van al het personeel, ingevoerd hier, in het Rooster of in de app van de beveiliger.",
       "registrarElPrimero": "Verlof registreren",
-      "vacioTitulo": "Nog geen verlof of vakantie"
+      "vacioTitulo": "Nog geen verlof of vakantie",
+      "aprobarTitulo": "Verlof goedkeuren",
+      "aprobarMensaje": "Het verlof van {{nombre}} wordt goedgekeurd: de diensten op die dagen worden gaten in Dekking en de persoon krijgt bericht.",
+      "rechazarTitulo": "Verlof afwijzen",
+      "rechazarMensaje": "Het verlof van {{nombre}} wordt afgewezen en de persoon krijgt bericht. Je kunt de reden opgeven (optioneel).",
+      "rechazarMotivo": "Reden (optioneel)",
+      "solicitudEliminada": "Aanvraag verwijderd"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -14251,7 +14312,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Uitnodiging opnieuw verzonden naar {{email}}.",
       "invitacionYaEnviada": "De uitnodiging is een paar minuten geleden al naar {{email}} verzonden. Vraag om de inbox en de spammap te controleren. Je kunt haar over {{faltan}} min. opnieuw verzenden.",
-      "invitacionNoSalio": "We konden de e-mail naar {{email}} niet verzenden. Probeer het over een paar minuten opnieuw."
+      "invitacionNoSalio": "We konden de e-mail naar {{email}} niet verzenden. Probeer het over een paar minuten opnieuw.",
+      "correoDeRestablecimientoNoEnviado": "De resetmail naar {{email}} kon niet worden verzonden. Probeer het over een paar minuten opnieuw."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Pas uw zoekopdracht aan of registreer een nieuwe bezoeker.",
@@ -14364,7 +14426,8 @@
       "asignarAEstacionNombre": "{{name}} aan een station toewijzen",
       "seAsignaraAlPrimerPuesto": "Wordt toegewezen aan de eerste beschikbare post van het station en verschijnt in het Rooster.",
       "asignando": "Toewijzen...",
-      "asignar": "Toewijzen"
+      "asignar": "Toewijzen",
+      "correoDeRestablecimientoNoEnviado": "De resetmail naar {{email}} kon niet worden verzonden. Probeer het over een paar minuten opnieuw."
     },
     "GuardHorarioPage": {
       "sinHorario": "Geen rooster",
@@ -16956,7 +17019,10 @@
       "tuEmpresa": "je bedrijf",
       "volver": "Terug",
       "registrarse": "Registreren",
-      "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief."
+      "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief.",
+      "invitacionYaUsada": "Deze uitnodiging is al gebruikt: je account is actief.",
+      "entraEnLaApp": "Log in op de beveiligersapp met je gebruikersnaam en wachtwoord. Weet je het wachtwoord niet meer, vraag je bedrijf dan om het te resetten.",
+      "tuCuentaEstaLista": "Je account is klaar."
     },
     "InspectionPreview": {
       "alerta": "Waarschuwing",

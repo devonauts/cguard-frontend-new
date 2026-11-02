@@ -25,6 +25,10 @@ import {
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import {
+  plantillaDeVigilantes,
+  resumenDeImportacion,
+} from "@/lib/guardImport";
 
 import { loadXlsx } from "../../../lib/lazyXlsx";
 
@@ -1046,16 +1050,24 @@ export default function SecurityGuardsPage() {
           .filter(Boolean)
           .join(" + ");
 
-        toast.success(
-          via
-            ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
-                defaultValue: "Enlace de restablecimiento enviado por {{via}}",
-                via,
-              })
-            : t(
-                "ui.SecurityGuardsPage.enlaceCopiado",
-                "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
-              ),
+        if (via) {
+          toast.success(
+            t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
+              defaultValue: "Enlace de restablecimiento enviado por {{via}}",
+              via,
+            }),
+          );
+
+          return;
+        }
+        // Without a mailbox the server answers with the link (handled above),
+        // so here the guard HAS an e-mail and sending it failed.
+        toast.error(
+          t("ui.SecurityGuardsPage.correoDeRestablecimientoNoEnviado", {
+            email: r?.email || guard.email || "",
+            defaultValue:
+              "No se pudo enviar el correo de restablecimiento a {{email}}. Inténtalo de nuevo en unos minutos.",
+          }),
         );
       } catch (err: any) {
         toast.error(
@@ -3031,7 +3043,7 @@ export default function SecurityGuardsPage() {
                 className="px-0"
                 variant="link"
                 onClick={() => {
-                  const csvContent = `Nombre,Correo,Teléfono,Estado,Cédula,Fecha Contrato,Género,Tipo Sangre,Credenciales,Fecha Nac.,Lugar Nac.,Estado Civ.,Educación,Dirección\nFrank Mendoza,frankmendoza12@gmail.com,+593123456789,Activo,12345678888,30/11/2025,Femenino,AB-,7878787887878usahuia,10/6/2004,Pastocalle,Casado,Universidad,Calle principal`;
+                  const csvContent = plantillaDeVigilantes();
                   const blob = new Blob([csvContent], {
                     type: "text/csv;charset=utf-8;",
                   });
@@ -3191,7 +3203,10 @@ export default function SecurityGuardsPage() {
                         }
                       };
 
-                      let text = tryDecode(arrayBuffer, "utf-8") ?? "";
+                      let text = (tryDecode(arrayBuffer, "utf-8") ?? "").replace(
+                        /^\uFEFF/,
+                        "",
+                      );
 
                       const firstLineUtf = (
                         text.split(/\r?\n/)[0] || ""
@@ -3212,7 +3227,7 @@ export default function SecurityGuardsPage() {
                           tryDecode(arrayBuffer, "iso-8859-1");
 
                         if (alt) {
-                          text = alt;
+                          text = alt.replace(/^\uFEFF/, "");
                         }
                       }
 
@@ -3280,7 +3295,11 @@ export default function SecurityGuardsPage() {
                         },
                       );
                       const XLSX = await loadXlsx();
-                      const wb = XLSX.read(arrBuf, { type: "array" });
+                      // Day first, as the importer reads dates (code 14 defaults to m/d/yy).
+                      const wb = XLSX.read(arrBuf, {
+                        type: "array",
+                        dateNF: "dd/mm/yyyy",
+                      });
                       const sheetName = wb.SheetNames[0];
                       const sheet = wb.Sheets[sheetName];
                       const rows = XLSX.utils.sheet_to_json(sheet, {
@@ -3379,8 +3398,14 @@ export default function SecurityGuardsPage() {
                         if (!line) return "";
                         const cols = parseLine(line);
 
-                        // Re-join using comma for backend consistency
-                        return cols.join(",");
+                        // Re-join using comma for backend consistency; a value
+                        // with a comma or quote (an address) is quoted, or it
+                        // would shift every column after it.
+                        return cols
+                          .map((c) =>
+                            /[",]/.test(c) ? `"${c.replace(/"/g, '""')}"` : c,
+                          )
+                          .join(",");
                       });
 
                       // Log detection results for debugging
@@ -3467,7 +3492,11 @@ export default function SecurityGuardsPage() {
                         },
                       );
                       const XLSX = await loadXlsx();
-                      const wb = XLSX.read(arrBuf, { type: "array" });
+                      // Day first, as the importer reads dates (code 14 defaults to m/d/yy).
+                      const wb = XLSX.read(arrBuf, {
+                        type: "array",
+                        dateNF: "dd/mm/yyyy",
+                      });
                       const sheetName = wb.SheetNames[0];
                       const sheet = wb.Sheets[sheetName];
                       let csv = XLSX.utils.sheet_to_csv(sheet);
@@ -3551,13 +3580,15 @@ export default function SecurityGuardsPage() {
                     );
 
                     toast.dismiss(toastId);
-                    toast.success(
-                      t(
-                        "guards.list.importDialog.completed",
-                        "Importación completada",
-                      ),
+                    const resumen = resumenDeImportacion(result as any, t);
+
+                    (resumen.tipo === "ok" ? toast.success : toast.warning)(
+                      resumen.titulo,
+                      {
+                        description: resumen.detalle,
+                        duration: resumen.tipo === "ok" ? 6000 : 15000,
+                      },
                     );
-                    // Optionally process result if backend returns details
                     setImportDialogOpen(false);
                     setImportFile(null);
                     // reload list
@@ -3658,7 +3689,7 @@ export default function SecurityGuardsPage() {
             <DialogDescription>
               {assignGuard
                 ? t("ui.SecurityGuardsPage.asignarAEstacionNombre", {
-                    defaultValue: "Asignar a {{name}} a una estación",
+                    defaultValue: "Elige la estación de {{name}}",
                     name: assignGuard.name,
                   })
                 : ""}

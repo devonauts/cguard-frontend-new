@@ -97,8 +97,10 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
   const displayName =
     entity?.name || (title ? t(title) : cfg?.title ? t(cfg.title) : "—");
 
+  // The supervisor profile edits in place: `?editar=1` opens its form (the
+  // plain path was the page already shown, so the button did nothing).
   const editTarget = isSupervisor
-    ? `/supervisors/${id}/perfil`
+    ? `/supervisors/${id}/perfil?editar=1`
     : `/security-guards/edit/${id}`;
 
   return (

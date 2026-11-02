@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
+import { nombreDeRol as nombreDeRolBase } from "./nombreDeRol";
 import AdminUserCardsGrid, {
   type AdminUserCardAction,
   type AdminUserRow,
@@ -82,21 +83,8 @@ import MobileCardList from "@/components/responsive/MobileCardList";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 /* Debounce helper */
-/** Lower-case role slug (as the list normalizes them) → its key in `adminOfficeUsers.roleNames`. */
-const ROLES_CONOCIDOS: Record<string, string> = {
-  admin: "admin",
-  administrativeassistant: "administrativeAssistant",
-  administrativesupervisor: "administrativeSupervisor",
-  branchmanager: "branchManager",
-  clientaccountmanager: "clientAccountManager",
-  dispatcher: "dispatcher",
-  hrmanager: "hrManager",
-  operationsmanager: "operationsManager",
-  secretary: "secretary",
-  securitysupervisor: "securitySupervisor",
-  supervisor: "supervisor",
-};
 
 function useDebounced<T>(value: T, delay = 400) {
   const [deb, setDeb] = useState(value);
@@ -113,13 +101,7 @@ function useDebounced<T>(value: T, delay = 400) {
 export default function AdminOfficeUsersPage() {
   const { t } = useTranslation();
   /** A role slug in the reader's language («dispatcher» → «Despachador»); custom roles keep their name. */
-  const nombreDeRol = (slug: string) => {
-    const clave = ROLES_CONOCIDOS[slug.toLowerCase()];
-
-    return clave
-      ? t(`adminOfficeUsers.roleNames.${clave}`, { defaultValue: slug })
-      : slug;
-  };
+  const nombreDeRol = (slug: string) => nombreDeRolBase(slug, t);
   const [openFilter, setOpenFilter] = useState(false);
   // Vista Tarjetas ⇄ Lista (persistida). Tarjetas por defecto, como en Clientes/Vigilantes.
   const [viewMode, setViewMode] = useVistaGuardada<"cards" | "list">(
@@ -405,6 +387,26 @@ export default function AdminOfficeUsersPage() {
       return;
     }
     if (!user.id) return;
+    const seguro = await confirmDialog({
+      title: t("adminOfficeUsers.dialogs.suspend.title", {
+        defaultValue: "Suspender usuario",
+      }),
+      message: t("adminOfficeUsers.dialogs.suspend.description", {
+        defaultValue:
+          "{{user}} dejará de poder entrar y pasará a Archivados. Puedes restaurarlo después.",
+        user: formatUserDisplay(user),
+      }),
+      confirmText: t("adminOfficeUsers.dialogs.suspend.confirm", {
+        defaultValue: "Suspender",
+      }),
+      tone: "danger",
+    });
+
+    if (!seguro) {
+      setSelectedUserToAct(null);
+
+      return;
+    }
     try {
       setActionLoading(true);
       await userService.suspendUser(user.id);
@@ -1210,7 +1212,9 @@ export default function AdminOfficeUsersPage() {
                     disabled={!hasPermission("userImport")}
                     onClick={() => {
                       if (!hasPermission("userImport")) return;
-                      console.log("Importar");
+                      // There is no office-only importer: «Agregar varias»
+                      // takes a pasted or uploaded sheet with office rows.
+                      navigate("/personal/varias");
                     }}
                   >
                     <ArrowDownUp className="mr-2 h-4 w-4" />{" "}
@@ -1605,6 +1609,33 @@ export default function AdminOfficeUsersPage() {
                                             !u.id
                                           )
                                             return;
+                                          const seguro = await confirmDialog({
+                                            title: t(
+                                              "adminOfficeUsers.dialogs.closeSessions.title",
+                                              {
+                                                defaultValue:
+                                                  "Cerrar sesiones",
+                                              },
+                                            ),
+                                            message: t(
+                                              "adminOfficeUsers.dialogs.closeSessions.description",
+                                              {
+                                                defaultValue:
+                                                  "{{user}} saldrá de la web y de las apps en todos sus dispositivos y tendrá que volver a iniciar sesión.",
+                                                user: formatUserDisplay(u),
+                                              },
+                                            ),
+                                            confirmText: t(
+                                              "adminOfficeUsers.dialogs.closeSessions.confirm",
+                                              {
+                                                defaultValue:
+                                                  "Cerrar sesiones",
+                                              },
+                                            ),
+                                            tone: "danger",
+                                          });
+
+                                          if (!seguro) return;
                                           try {
                                             await userService.closeSessions(
                                               u.id,

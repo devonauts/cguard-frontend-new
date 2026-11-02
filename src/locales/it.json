@@ -1659,7 +1659,15 @@
         "achieved": "Raggiunto",
         "notAchieved": "Non raggiunto"
       },
-      "totalKpis": "KPI"
+      "totalKpis": "KPI",
+      "scope": {
+        "guard": "Guardia",
+        "postSite": "Sede"
+      },
+      "errors": {
+        "frequencyRequired": "Scegli la frequenza.",
+        "descriptionRequired": "Inserisci la descrizione."
+      }
     },
     "assignSites": {
       "assignButton": "Assegna postazione",
@@ -1800,7 +1808,9 @@
       },
       "empty": {
         "description": "Non abbiamo trovato<br />elementi corrispondenti<br />alla tua ricerca",
-        "title": "Nessun risultato trovato"
+        "title": "Nessun risultato trovato",
+        "none": "Ancora nessuna licenza",
+        "hint": "Aggiungi la prima licenza o tessera."
       },
       "form": {
         "backImageLabel": "Immagine del retro della licenza",
@@ -1861,7 +1871,13 @@
         "updated": "Licenza aggiornata"
       },
       "selected": "selezionate",
-      "untitled": "Licenza"
+      "untitled": "Licenza",
+      "errors": {
+        "typeRequired": "Scegli il tipo di licenza.",
+        "numberRequired": "Inserisci il numero della licenza."
+      },
+      "confirmDelete": "Eliminare {{count}} licenza/e? Questa azione non può essere annullata.",
+      "subtitleSupervisor": "Documenti e credenziali del supervisore"
     },
     "list": {
       "applyFilters": "Applica filtri",
@@ -1969,7 +1985,12 @@
           "excelValidationFailed": "Impossibile validare il file Excel prima del caricamento. Verifica il formato.",
           "missingColumns": "Mancano colonne obbligatorie: {{columns}}",
           "selectFile": "Seleziona un file"
-        }
+        },
+        "summaryOk_one": "{{count}} guardia importata",
+        "summaryOk_other": "{{count}} guardie importate",
+        "summaryWithErrors": "Importate: {{ok}} · Non importate: {{fallidas}}",
+        "rowError": "Riga {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Non è stato inviato nessun invito: inviali dall'elenco quando vuoi."
       },
       "labels": {
         "name": "Nome",
@@ -2164,7 +2185,8 @@
         "message": "Non abbiamo trovato<br />elementi corrispondenti<br />alla tua ricerca",
         "title": "Nessun risultato trovato",
         "hint": "Crea la prima nota per questa guardia.",
-        "none": "Ancora nessuna nota"
+        "none": "Ancora nessuna nota",
+        "hintSupervisor": "Crea la prima nota per questo supervisore."
       },
       "modal": {
         "cancel": "Annulla",
@@ -2209,7 +2231,12 @@
       "loadError": "Errore durante il caricamento delle note",
       "noteCreated": "Nota creata correttamente",
       "noteDeleted": "Nota eliminata",
-      "sectionTitle": "Note"
+      "sectionTitle": "Note",
+      "errors": {
+        "titleRequired": "Inserisci il titolo della nota.",
+        "descriptionRequired": "Inserisci la descrizione della nota.",
+        "dateRequired": "Scegli la data della nota."
+      }
     },
     "profile": {
       "noLicense": "Nessuna licenza trovata",
@@ -2225,7 +2252,8 @@
         "statusNoAccess": "Nessun accesso configurato",
         "statusPending": "Invito in attesa",
         "tokenExpired": "Il link dell'invito è scaduto",
-        "tokenExpires": "Invito valido fino al"
+        "tokenExpires": "Invito valido fino al",
+        "alreadyActive": "L'account è già attivo: non serve un invito. Se ha dimenticato la password, usa «Reimposta password» nell'elenco delle guardie."
       },
       "actions": {
         "cancel": "Annulla",
@@ -2501,7 +2529,11 @@
       "locNoneBody": "{{sin}} delle sue ultime {{total}} timbrature sono arrivate senza alcuna coordinata. La timbratura viene comunque registrata — non viene mai bloccato — ma il turno resta senza prova di dove fosse.",
       "locCoarseBody": "{{n}} delle sue ultime {{total}} timbrature sono arrivate con una posizione più grossolana di {{suelo}} m. Va bene per registrare, non per confermare che era in postazione.",
       "locFix": "Causa abituale: su Android il permesso di posizione è rimasto su «Approssimativa». Va portato su «Precisa» nelle impostazioni del telefono — Android non permette all'app di cambiarlo, quindi qualcuno deve mettere mano a quel telefono.",
-      "locLast": "Ultima timbratura senza posizione: {{cuando}}"
+      "locLast": "Ultima timbratura senza posizione: {{cuando}}",
+      "titleSupervisor": "Dispositivo del supervisore",
+      "subtitleSupervisor": "Il primo dispositivo da cui il supervisore accede resta abbinato. Se compare un altro dispositivo, viene segnalato come non riconosciuto (non viene bloccato). Reimposta l'abbinamento se il supervisore ha cambiato telefono.",
+      "emptySupervisor": "Non è ancora stato registrato nessun dispositivo per questo supervisore.",
+      "resetDoneSupervisor": "Abbinamento reimpostato. Il prossimo dispositivo del supervisore sarà quello abbinato."
     },
     "documents": {
       "deleteConfirm": "Vuoi davvero eliminare \"{{name}}\"? L'operazione non può essere annullata.",
@@ -2568,7 +2600,11 @@
       "deleted": "Comunicazione eliminata",
       "pending": "In attesa",
       "title": "Comunicazioni",
-      "total": "comunicazioni"
+      "total": "comunicazioni",
+      "count_one": "{{count}} comunicazione",
+      "count_other": "{{count}} comunicazioni",
+      "acceptedCount_one": "{{count}} accettata",
+      "acceptedCount_other": "{{count}} accettate"
     },
     "actionNotImplemented": "Azione non ancora disponibile",
     "overview": {
@@ -2596,7 +2632,9 @@
       "loadError": "Impossibile caricare i ruoli disponibili.",
       "error": "Impossibile cambiare il ruolo.",
       "hasBothRoles": "Al momento ricopre entrambi i ruoli. Scegliendone uno, resterà solo con quello.",
-      "welcomeSent": "Gli abbiamo inviato un'email di benvenuto con il link per scaricare l'app supervisore."
+      "welcomeSent": "Gli abbiamo inviato un'email di benvenuto con il link per scaricare l'app supervisore.",
+      "inviteSent": "Non aveva ancora una password: gli abbiamo inviato l’invito per crearla ed entrare nell’app supervisore.",
+      "inviteLinkReady": "Non ha ancora password né e-mail: condividi il link di accesso dalla sua scheda supervisore («Reinvia invito»)."
     },
     "department": {
       "title": "Reparto",
@@ -2741,7 +2779,8 @@
       "blood_required": "Il gruppo sanguigno è obbligatorio",
       "credentials_required": "Le credenziali sono obbligatorie",
       "address_required": "L'indirizzo è obbligatorio",
-      "phone_required": "Il telefono è obbligatorio"
+      "phone_required": "Il telefono è obbligatorio",
+      "revisaEstosDatos": "Controlla questi dati: {{campos}}"
     },
     "password": "Password",
     "password_min": "Minimo 8 caratteri",
@@ -2768,7 +2807,8 @@
         "university": "Laurea",
         "universityStudies": "Studi universitari"
       },
-      "freeUnion": "Convivenza"
+      "freeUnion": "Convivenza",
+      "credentialsHint": "N. del tuo tesserino o della tua licenza di guardia"
     },
     "select": "Seleziona",
     "eyebrow_guard": "Invito · Squadra di sicurezza",
@@ -5971,6 +6011,16 @@
         "error": "Errore durante il ripristino dell'utente",
         "success": "Utente ripristinato",
         "title": "Ripristina utente"
+      },
+      "suspend": {
+        "title": "Sospendi utente",
+        "description": "{{user}} non potrà più accedere e passerà in Archiviati. Potrai ripristinarlo in seguito.",
+        "confirm": "Sospendi"
+      },
+      "closeSessions": {
+        "title": "Chiudi le sessioni",
+        "description": "{{user}} verrà disconnesso dal web e dalle app su tutti i dispositivi e dovrà accedere di nuovo.",
+        "confirm": "Chiudi le sessioni"
       }
     },
     "editUser": {
@@ -9745,7 +9795,10 @@
       "yaPuedesEntrar": "Puoi già accedere",
       "tuEmpresaTeAsignaraAUnPuesto": "La tua azienda ti assegnerà a una postazione.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password.",
-      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono."
+      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono.",
+      "tuPuestoYTurnosEnLaApp": "La tua postazione e i tuoi turni compariranno nell'app.",
+      "iniciaConTuUsuario": "Accedi con il tuo nome utente e la tua password.",
+      "iniciaCuandoEsteActiva": "Accedi quando il tuo account sarà attivo."
     },
     "AddressAutocomplete": {
       "miUbicacion": "La mia posizione",
@@ -10813,7 +10866,8 @@
       "noSeEncontroElVigilante": "La guardia richiesta non è stata trovata.",
       "errorGuardandoCambios": "Errore nel salvataggio delle modifiche: {{msg}}",
       "datosPersonales": "Dati personali",
-      "guardarCambios": "Salva modifiche"
+      "guardarCambios": "Salva modifiche",
+      "cambiosGuardados": "Modifiche salvate"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Indirizzo dell'azienda*",
@@ -13310,7 +13364,8 @@
       "laZonaYLosPuestosQueCubre": "La zona e le postazioni coperte da questo supervisore, e il suo orario generato, si vedono nelle schede dedicate.",
       "limitaLoQueEsteSupervisorVe": "Limita ciò che questo supervisore vede nella sua app: eccezioni di presenza e richieste di timbratura.",
       "nombres": "Nomi",
-      "perfilActualizado": "Profilo aggiornato"
+      "perfilActualizado": "Profilo aggiornato",
+      "identidadDeLaCuenta": "Nomi e cognomi si salvano qui. L'e-mail è quella del suo account di accesso e non si modifica da questa scheda."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ancora nessun posto da supervisore",
@@ -13566,7 +13621,13 @@
       "calendario": "Calendario",
       "vacioAyuda": "Ferie, permessi e assenze giustificate di tutto il personale, da qui, dall’Orario o dall’app della guardia.",
       "registrarElPrimero": "Registra un permesso",
-      "vacioTitulo": "Ancora nessun permesso né ferie"
+      "vacioTitulo": "Ancora nessun permesso né ferie",
+      "aprobarTitulo": "Approva il permesso",
+      "aprobarMensaje": "Il permesso di {{nombre}} viene approvato: i suoi turni di quei giorni diventano buchi in Copertura e la persona viene avvisata.",
+      "rechazarTitulo": "Rifiuta il permesso",
+      "rechazarMensaje": "Il permesso di {{nombre}} viene rifiutato e la persona viene avvisata. Puoi indicare il motivo (facoltativo).",
+      "rechazarMotivo": "Motivo (facoltativo)",
+      "solicitudEliminada": "Richiesta eliminata"
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",
@@ -14251,7 +14312,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invito reinviato a {{email}}.",
       "invitacionYaEnviada": "L'invito è già stato inviato a {{email}} pochi minuti fa. Chiedigli di controllare la posta in arrivo e lo spam. Potrai reinviarlo tra {{faltan}} min.",
-      "invitacionNoSalio": "Non siamo riusciti a inviare l'e-mail a {{email}}. Riprova tra qualche minuto."
+      "invitacionNoSalio": "Non siamo riusciti a inviare l'e-mail a {{email}}. Riprova tra qualche minuto.",
+      "correoDeRestablecimientoNoEnviado": "Non è stato possibile inviare l’e-mail di reimpostazione a {{email}}. Riprova tra qualche minuto."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Modifica la ricerca o registra un nuovo visitatore.",
@@ -14364,7 +14426,8 @@
       "asignarAEstacionNombre": "Assegna {{name}} a una stazione",
       "seAsignaraAlPrimerPuesto": "Verrà assegnato alla prima postazione disponibile della stazione e comparirà nell'Orario.",
       "asignando": "Assegnazione...",
-      "asignar": "Assegna"
+      "asignar": "Assegna",
+      "correoDeRestablecimientoNoEnviado": "Non è stato possibile inviare l’e-mail di reimpostazione a {{email}}. Riprova tra qualche minuto."
     },
     "GuardHorarioPage": {
       "sinHorario": "Nessun orario",
@@ -16956,7 +17019,10 @@
       "tuEmpresa": "la tua azienda",
       "volver": "Indietro",
       "registrarse": "Registrati",
-      "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo."
+      "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo.",
+      "invitacionYaUsada": "Questo invito è già stato usato: il tuo account è attivo.",
+      "entraEnLaApp": "Accedi all'app della guardia con il tuo nome utente e la tua password. Se non ricordi la password, chiedi alla tua azienda di reimpostarla.",
+      "tuCuentaEstaLista": "Il tuo account è pronto."
     },
     "InspectionPreview": {
       "alerta": "Allerta",

@@ -1659,7 +1659,15 @@
         "achieved": "Erreicht",
         "notAchieved": "Nicht erreicht"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Sicherheitskraft",
+        "postSite": "Objekt"
+      },
+      "errors": {
+        "frequencyRequired": "Wählen Sie die Häufigkeit.",
+        "descriptionRequired": "Geben Sie die Beschreibung ein."
+      }
     },
     "assignSites": {
       "assignButton": "Objekt zuweisen",
@@ -1800,7 +1808,9 @@
       },
       "empty": {
         "description": "Zu Ihrer Suche wurden<br />keine passenden<br />Einträge gefunden",
-        "title": "Keine Ergebnisse gefunden"
+        "title": "Keine Ergebnisse gefunden",
+        "none": "Noch keine Lizenzen",
+        "hint": "Fügen Sie die erste Lizenz oder den ersten Ausweis hinzu."
       },
       "form": {
         "backImageLabel": "Rückseite der Lizenz",
@@ -1861,7 +1871,13 @@
         "updated": "Lizenz aktualisiert"
       },
       "selected": "ausgewählt",
-      "untitled": "Lizenz"
+      "untitled": "Lizenz",
+      "errors": {
+        "typeRequired": "Wählen Sie die Art der Lizenz.",
+        "numberRequired": "Geben Sie die Lizenznummer ein."
+      },
+      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden.",
+      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors"
     },
     "list": {
       "applyFilters": "Filter anwenden",
@@ -1969,7 +1985,12 @@
           "excelValidationFailed": "Die Excel-Datei konnte vor dem Hochladen nicht geprüft werden. Bitte prüfen Sie das Format.",
           "missingColumns": "Es fehlen Pflichtspalten: {{columns}}",
           "selectFile": "Bitte wählen Sie eine Datei aus"
-        }
+        },
+        "summaryOk_one": "{{count}} Wachmann importiert",
+        "summaryOk_other": "{{count}} Wachleute importiert",
+        "summaryWithErrors": "Importiert: {{ok}} · Nicht importiert: {{fallidas}}",
+        "rowError": "Zeile {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Es wurden keine Einladungen verschickt: Senden Sie sie bei Bedarf aus der Liste."
       },
       "labels": {
         "name": "Name",
@@ -2164,7 +2185,8 @@
         "message": "Zu Ihrer Suche wurden<br />keine passenden<br />Einträge gefunden",
         "title": "Keine Ergebnisse gefunden",
         "hint": "Legen Sie die erste Notiz für diese Sicherheitskraft an.",
-        "none": "Noch keine Notizen"
+        "none": "Noch keine Notizen",
+        "hintSupervisor": "Legen Sie die erste Notiz für diesen Supervisor an."
       },
       "modal": {
         "cancel": "Abbrechen",
@@ -2209,7 +2231,12 @@
       "loadError": "Die Notizen konnten nicht geladen werden",
       "noteCreated": "Notiz erfolgreich angelegt",
       "noteDeleted": "Notiz gelöscht",
-      "sectionTitle": "Notizen"
+      "sectionTitle": "Notizen",
+      "errors": {
+        "titleRequired": "Geben Sie den Titel der Notiz ein.",
+        "descriptionRequired": "Geben Sie die Beschreibung der Notiz ein.",
+        "dateRequired": "Wählen Sie das Datum der Notiz."
+      }
     },
     "profile": {
       "noLicense": "Es wurde keine Lizenz gefunden",
@@ -2225,7 +2252,8 @@
         "statusNoAccess": "Kein Zugang eingerichtet",
         "statusPending": "Einladung ausstehend",
         "tokenExpired": "Der Einladungslink ist abgelaufen",
-        "tokenExpires": "Einladung gültig bis"
+        "tokenExpires": "Einladung gültig bis",
+        "alreadyActive": "Das Konto ist bereits aktiv: Keine Einladung nötig. Falls das Passwort vergessen wurde, verwenden Sie „Passwort zurücksetzen“ in der Liste der Sicherheitskräfte."
       },
       "actions": {
         "cancel": "Abbrechen",
@@ -2501,7 +2529,11 @@
       "locNoneBody": "{{sin}} der letzten {{total}} Buchungen kamen ganz ohne Koordinaten an. Die Buchung wird trotzdem erfasst — niemand wird blockiert — aber die Schicht hat keinen Nachweis des Orts.",
       "locCoarseBody": "{{n}} der letzten {{total}} Buchungen kamen mit einer Position gröber als {{suelo}} m an. Reicht zum Erfassen, nicht zum Bestätigen der Anwesenheit am Posten.",
       "locFix": "Üblicher Grund: Unter Android steht die Standortberechtigung auf „Ungefähr“. Sie muss in den Telefoneinstellungen auf „Genau“ gesetzt werden — Android lässt das die App nicht ändern, also muss jemand dieses Telefon in die Hand nehmen.",
-      "locLast": "Letzte Buchung ohne Standort: {{cuando}}"
+      "locLast": "Letzte Buchung ohne Standort: {{cuando}}",
+      "titleSupervisor": "Gerät des Supervisors",
+      "subtitleSupervisor": "Das erste Gerät, mit dem sich der Supervisor anmeldet, wird verknüpft. Meldet sich ein weiteres Gerät an, wird es als nicht erkannt markiert (aber nicht gesperrt). Setzen Sie die Verknüpfung zurück, wenn der Supervisor das Telefon gewechselt hat.",
+      "emptySupervisor": "Für diesen Supervisor wurde noch kein Gerät registriert.",
+      "resetDoneSupervisor": "Verknüpfung zurückgesetzt. Das nächste Gerät des Supervisors wird verknüpft."
     },
     "documents": {
       "deleteConfirm": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -2568,7 +2600,11 @@
       "deleted": "Mitteilung gelöscht",
       "pending": "Offen",
       "title": "Mitteilungen",
-      "total": "Mitteilungen"
+      "total": "Mitteilungen",
+      "count_one": "{{count}} Mitteilung",
+      "count_other": "{{count}} Mitteilungen",
+      "acceptedCount_one": "{{count}} angenommen",
+      "acceptedCount_other": "{{count}} angenommen"
     },
     "actionNotImplemented": "Aktion noch nicht verfügbar",
     "overview": {
@@ -2596,7 +2632,9 @@
       "loadError": "Die verfügbaren Rollen konnten nicht geladen werden.",
       "error": "Die Rolle konnte nicht gewechselt werden.",
       "hasBothRoles": "Aktuell bestehen beide Rollen. Mit der Auswahl bleibt nur die gewählte bestehen.",
-      "welcomeSent": "Wir haben eine Willkommens-E-Mail mit dem Link zum Herunterladen der Supervisor-App gesendet."
+      "welcomeSent": "Wir haben eine Willkommens-E-Mail mit dem Link zum Herunterladen der Supervisor-App gesendet.",
+      "inviteSent": "Es gab noch kein Passwort: Wir haben die Einladung gesendet, um eines zu erstellen und sich in der Supervisor-App anzumelden.",
+      "inviteLinkReady": "Noch kein Passwort und keine E-Mail: Teilen Sie den Zugangslink über das Supervisor-Profil („Einladung erneut senden“)."
     },
     "department": {
       "title": "Abteilung",
@@ -2741,7 +2779,8 @@
       "blood_required": "Die Blutgruppe ist erforderlich",
       "credentials_required": "Die Nachweise sind erforderlich",
       "address_required": "Die Adresse ist erforderlich",
-      "phone_required": "Die Telefonnummer ist erforderlich"
+      "phone_required": "Die Telefonnummer ist erforderlich",
+      "revisaEstosDatos": "Bitte prüfen Sie: {{campos}}"
     },
     "password": "Passwort",
     "password_min": "Mindestens 8 Zeichen",
@@ -2768,7 +2807,8 @@
         "university": "Hochschulabschluss",
         "universityStudies": "Hochschulstudium"
       },
-      "freeUnion": "Lebensgemeinschaft"
+      "freeUnion": "Lebensgemeinschaft",
+      "credentialsHint": "Nummer Ihres Dienstausweises oder Ihrer Lizenz"
     },
     "select": "Auswählen",
     "eyebrow_guard": "Einladung · Sicherheitsteam",
@@ -5971,6 +6011,16 @@
         "error": "Fehler beim Wiederherstellen des Benutzers",
         "success": "Benutzer wiederhergestellt",
         "title": "Benutzer wiederherstellen"
+      },
+      "suspend": {
+        "title": "Benutzer sperren",
+        "description": "{{user}} kann sich nicht mehr anmelden und wird unter Archiviert geführt. Du kannst die Person später wiederherstellen.",
+        "confirm": "Sperren"
+      },
+      "closeSessions": {
+        "title": "Sitzungen beenden",
+        "description": "{{user}} wird im Web und in den Apps auf allen Geräten abgemeldet und muss sich erneut anmelden.",
+        "confirm": "Sitzungen beenden"
       }
     },
     "editUser": {
@@ -9745,7 +9795,10 @@
       "yaPuedesEntrar": "Sie können sich jetzt anmelden",
       "tuEmpresaTeAsignaraAUnPuesto": "Ihr Unternehmen weist Sie einem Posten zu.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Melden Sie sich mit Ihrem Benutzernamen und Passwort an.",
-      "cuentaListaDescargaLaApp": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die App herunter, um Ihren Sicherheitsdienst vom Telefon aus zu überwachen und zu verwalten."
+      "cuentaListaDescargaLaApp": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die App herunter, um Ihren Sicherheitsdienst vom Telefon aus zu überwachen und zu verwalten.",
+      "tuPuestoYTurnosEnLaApp": "Ihr Posten und Ihre Schichten erscheinen in der App.",
+      "iniciaConTuUsuario": "Melden Sie sich mit Ihrem Benutzernamen und Passwort an.",
+      "iniciaCuandoEsteActiva": "Melden Sie sich an, sobald Ihr Konto aktiv ist."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mein Standort",
@@ -10813,7 +10866,8 @@
       "noSeEncontroElVigilante": "Der angeforderte Wachmann wurde nicht gefunden.",
       "errorGuardandoCambios": "Fehler beim Speichern der Änderungen: {{msg}}",
       "datosPersonales": "Persönliche Daten",
-      "guardarCambios": "Änderungen speichern"
+      "guardarCambios": "Änderungen speichern",
+      "cambiosGuardados": "Änderungen gespeichert"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adresse der Firma*",
@@ -13310,7 +13364,8 @@
       "laZonaYLosPuestosQueCubre": "Die Zone und die Posten, die dieser Vorgesetzte abdeckt, sowie sein erstellter Dienstplan werden in eigenen Registerkarten angezeigt.",
       "limitaLoQueEsteSupervisorVe": "Begrenzt, was dieser Vorgesetzte in seiner App sieht: Anwesenheitsausnahmen und Stempelanfragen.",
       "nombres": "Vornamen",
-      "perfilActualizado": "Profil aktualisiert"
+      "perfilActualizado": "Profil aktualisiert",
+      "identidadDeLaCuenta": "Vor- und Nachnamen werden hier gespeichert. Die E-Mail gehört zum Anmeldekonto und wird nicht in diesem Profil geändert."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Noch keine Supervisor-Positionen",
@@ -13566,7 +13621,13 @@
       "calendario": "Kalender",
       "vacioAyuda": "Urlaub, Abwesenheiten und entschuldigte Fehlzeiten des ganzen Personals, ob hier, im Dienstplan oder in der App der Wache erfasst.",
       "registrarElPrimero": "Abwesenheit erfassen",
-      "vacioTitulo": "Noch keine Abwesenheiten oder Urlaube"
+      "vacioTitulo": "Noch keine Abwesenheiten oder Urlaube",
+      "aprobarTitulo": "Abwesenheit genehmigen",
+      "aprobarMensaje": "Die Abwesenheit von {{nombre}} wird genehmigt: Die Schichten an diesen Tagen werden zu Lücken in der Abdeckung, und die Person wird benachrichtigt.",
+      "rechazarTitulo": "Abwesenheit ablehnen",
+      "rechazarMensaje": "Die Abwesenheit von {{nombre}} wird abgelehnt, und die Person wird benachrichtigt. Du kannst den Grund angeben (optional).",
+      "rechazarMotivo": "Grund (optional)",
+      "solicitudEliminada": "Antrag gelöscht"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -14251,7 +14312,8 @@
       "viaPush": "Push",
       "invitacionReenviadaA": "Einladung erneut an {{email}} gesendet.",
       "invitacionYaEnviada": "Die Einladung wurde vor wenigen Minuten bereits an {{email}} gesendet. Bitten Sie die Person, Posteingang und Spam-Ordner zu prüfen. Sie können sie in {{faltan}} Min. erneut senden.",
-      "invitacionNoSalio": "Die E-Mail an {{email}} konnte nicht gesendet werden. Bitte versuchen Sie es in ein paar Minuten erneut."
+      "invitacionNoSalio": "Die E-Mail an {{email}} konnte nicht gesendet werden. Bitte versuchen Sie es in ein paar Minuten erneut.",
+      "correoDeRestablecimientoNoEnviado": "Die E-Mail zum Zurücksetzen an {{email}} konnte nicht gesendet werden. Bitte versuche es in einigen Minuten erneut."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Passen Sie die Suche an oder erfassen Sie einen neuen Besucher.",
@@ -14364,7 +14426,8 @@
       "asignarAEstacionNombre": "{{name}} einer Station zuweisen",
       "seAsignaraAlPrimerPuesto": "Wird dem ersten freien Posten der Station zugewiesen und erscheint im Dienstplan.",
       "asignando": "Wird zugewiesen...",
-      "asignar": "Zuweisen"
+      "asignar": "Zuweisen",
+      "correoDeRestablecimientoNoEnviado": "Die E-Mail zum Zurücksetzen an {{email}} konnte nicht gesendet werden. Bitte versuche es in einigen Minuten erneut."
     },
     "GuardHorarioPage": {
       "sinHorario": "Kein Dienstplan",
@@ -16956,7 +17019,10 @@
       "tuEmpresa": "Ihr Unternehmen",
       "volver": "Zurück",
       "registrarse": "Registrieren",
-      "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv."
+      "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv.",
+      "invitacionYaUsada": "Diese Einladung wurde bereits verwendet: Ihr Konto ist aktiv.",
+      "entraEnLaApp": "Melden Sie sich in der App der Sicherheitskraft mit Benutzername und Passwort an. Wenn Sie das Passwort nicht mehr wissen, bitten Sie Ihr Unternehmen, es zurückzusetzen.",
+      "tuCuentaEstaLista": "Ihr Konto ist bereit."
     },
     "InspectionPreview": {
       "alerta": "Warnung",

@@ -3926,7 +3926,8 @@
         "statusNoAccess": "Sem acesso configurado",
         "statusPending": "Convite pendente",
         "tokenExpired": "O link do convite expirou",
-        "tokenExpires": "Convite válido até"
+        "tokenExpires": "Convite válido até",
+        "alreadyActive": "A conta já está ativa: não precisa de convite. Se esqueceu a senha, use «Redefinir senha» na lista de vigilantes."
       },
       "editHint": "O e-mail e o telefone são a identidade do vigilante e se gerenciam pelo convite de acesso.",
       "nav": "Perfil",
@@ -4328,7 +4329,15 @@
         "achieved": "Atingido",
         "notAchieved": "Não atingido"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Vigilante",
+        "postSite": "Local"
+      },
+      "errors": {
+        "frequencyRequired": "Escolha a frequência.",
+        "descriptionRequired": "Digite a descrição."
+      }
     },
     "created": "KPI criado com sucesso",
     "deleteError": "Erro ao excluir KPI(s)",
@@ -4347,7 +4356,9 @@
       },
       "empty": {
         "description": "Não encontramos<br />itens que correspondam<br />à sua busca",
-        "title": "Nenhum resultado encontrado"
+        "title": "Nenhum resultado encontrado",
+        "none": "Nenhuma licença ainda",
+        "hint": "Adicione a primeira licença ou credencial."
       },
       "form": {
         "backImageLabel": "Imagem do verso da licença",
@@ -4410,7 +4421,13 @@
         "updated": "Licença atualizada"
       },
       "selected": "selecionadas",
-      "untitled": "Licença"
+      "untitled": "Licença",
+      "errors": {
+        "typeRequired": "Escolha o tipo de licença.",
+        "numberRequired": "Digite o número da licença."
+      },
+      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita.",
+      "subtitleSupervisor": "Documentos e credenciais do supervisor"
     },
     "list": {
       "actions": {
@@ -4549,7 +4566,12 @@
         "requiredColumns": "Nome, E-mail, Telefone, Status, Documento, Data Contrato, Gênero, Tipo Sanguíneo, Credenciais, Data Nasc., Local Nasc., Est. Civil, Escolaridade, Endereço",
         "requiredColumnsLabel": "Colunas obrigatórias:",
         "templateDownloaded": "Modelo baixado",
-        "title": "Importar Vigilantes do Excel"
+        "title": "Importar Vigilantes do Excel",
+        "summaryOk_one": "{{count}} vigilante importado",
+        "summaryOk_other": "{{count}} vigilantes importados",
+        "summaryWithErrors": "Importados: {{ok}} · Não importados: {{fallidas}}",
+        "rowError": "Linha {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Nenhum convite foi enviado: envie pela lista quando quiser."
       },
       "labels": {
         "name": "Nome",
@@ -4620,7 +4642,8 @@
         "message": "Não encontramos<br />itens que correspondam<br />à sua busca",
         "title": "Nenhum resultado encontrado",
         "hint": "Crie a primeira nota para este vigilante.",
-        "none": "Sem notas ainda"
+        "none": "Sem notas ainda",
+        "hintSupervisor": "Crie a primeira nota para este supervisor."
       },
       "form": {
         "attachments": {
@@ -4666,7 +4689,12 @@
       "loadError": "Erro ao carregar as notas",
       "noteCreated": "Nota criada com sucesso",
       "noteDeleted": "Nota excluída",
-      "sectionTitle": "Notas"
+      "sectionTitle": "Notas",
+      "errors": {
+        "titleRequired": "Digite o título da nota.",
+        "descriptionRequired": "Digite a descrição da nota.",
+        "dateRequired": "Escolha a data da nota."
+      }
     },
     "pdfError": "Não foi possível gerar/obter o PDF",
     "pdfGenerated": "PDF gerado",
@@ -4782,7 +4810,11 @@
       "locNoneBody": "{{sin}} das suas últimas {{total}} marcações entraram sem qualquer coordenada. A marcação regista-se na mesma — não é bloqueado — mas o turno fica sem prova de onde estava.",
       "locCoarseBody": "{{n}} das suas últimas {{total}} marcações chegaram com uma posição mais grosseira do que {{suelo}} m. Serve para registar, não para confirmar que estava no posto.",
       "locFix": "Causa habitual: no Android a permissão de localização ficou em «Aproximada». Tem de passar a «Precisa» nas definições do telemóvel — o Android não deixa alterá-la pela aplicação, por isso alguém tem de mexer nesse telemóvel.",
-      "locLast": "Última marcação sem localização: {{cuando}}"
+      "locLast": "Última marcação sem localização: {{cuando}}",
+      "titleSupervisor": "Dispositivo do supervisor",
+      "subtitleSupervisor": "O primeiro dispositivo em que o supervisor faz login fica vinculado. Se aparecer outro, ele é marcado como não reconhecido (não é bloqueado). Redefina o vínculo se o supervisor trocou de celular.",
+      "emptySupervisor": "Ainda não há dispositivo registrado para este supervisor.",
+      "resetDoneSupervisor": "Vínculo redefinido. O próximo dispositivo do supervisor será vinculado."
     },
     "documents": {
       "deleteConfirm": "Excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
@@ -4849,7 +4881,11 @@
       "deleted": "Memorando excluído",
       "pending": "Pendente",
       "title": "Memorandos",
-      "total": "memorandos"
+      "total": "memorandos",
+      "count_one": "{{count}} memorando",
+      "count_other": "{{count}} memorandos",
+      "acceptedCount_one": "{{count}} aceito",
+      "acceptedCount_other": "{{count}} aceitos"
     },
     "actionNotImplemented": "Ação ainda não disponível",
     "overview": {
@@ -4877,7 +4913,9 @@
       "loadError": "Não foi possível carregar as funções disponíveis.",
       "error": "Não foi possível mudar a função.",
       "hasBothRoles": "Atualmente tem os dois papéis. Ao escolher um, ficará apenas com esse.",
-      "welcomeSent": "Enviámos-lhe um email de boas-vindas com a ligação para descarregar a app de supervisor."
+      "welcomeSent": "Enviámos-lhe um email de boas-vindas com a ligação para descarregar a app de supervisor.",
+      "inviteSent": "Ainda não tinha senha: enviamos o convite para criá-la e entrar no app de supervisor.",
+      "inviteLinkReady": "Ainda não tem senha nem e-mail: compartilhe o link de acesso pela ficha de supervisor («Reenviar convite»)."
     },
     "department": {
       "title": "Departamento",
@@ -6628,6 +6666,16 @@
         "error": "Erro ao restaurar usuário",
         "success": "Usuário restaurado",
         "title": "Restaurar usuário"
+      },
+      "suspend": {
+        "title": "Suspender usuário",
+        "description": "{{user}} não poderá mais entrar e passará para Arquivados. Você pode restaurá-lo depois.",
+        "confirm": "Suspender"
+      },
+      "closeSessions": {
+        "title": "Encerrar sessões",
+        "description": "{{user}} sairá da web e dos apps em todos os dispositivos e terá que entrar novamente.",
+        "confirm": "Encerrar sessões"
       }
     },
     "editUser": {
@@ -9205,7 +9253,10 @@
       "yaPuedesEntrar": "Você já pode entrar",
       "tuEmpresaTeAsignaraAUnPuesto": "Sua empresa vai atribuir você a um posto.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Entre com seu usuário e senha.",
-      "cuentaListaDescargaLaApp": "Sua conta com <b>{{empresa}}</b> está pronta. Baixe o app para monitorar e gerenciar seu serviço de segurança pelo celular."
+      "cuentaListaDescargaLaApp": "Sua conta com <b>{{empresa}}</b> está pronta. Baixe o app para monitorar e gerenciar seu serviço de segurança pelo celular.",
+      "tuPuestoYTurnosEnLaApp": "Seu posto e seus turnos aparecerão no app.",
+      "iniciaConTuUsuario": "Entre com seu usuário e senha.",
+      "iniciaCuandoEsteActiva": "Entre quando sua conta estiver ativa."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Minha localização",
@@ -10273,7 +10324,8 @@
       "noSeEncontroElVigilante": "O vigilante solicitado não foi encontrado.",
       "errorGuardandoCambios": "Erro ao salvar alterações: {{msg}}",
       "datosPersonales": "Dados pessoais",
-      "guardarCambios": "Salvar alterações"
+      "guardarCambios": "Salvar alterações",
+      "cambiosGuardados": "Alterações salvas"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Endereço da empresa*",
@@ -12770,7 +12822,8 @@
       "laZonaYLosPuestosQueCubre": "A zona e os postos que este supervisor cobre, e sua escala gerada, aparecem nas abas dedicadas.",
       "limitaLoQueEsteSupervisorVe": "Limita o que este supervisor vê no app: exceções de presença e solicitações de ponto.",
       "nombres": "Nomes",
-      "perfilActualizado": "Perfil atualizado"
+      "perfilActualizado": "Perfil atualizado",
+      "identidadDeLaCuenta": "Nomes e sobrenomes são salvos aqui. O e-mail é o da conta de acesso e não é alterado nesta ficha."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ainda não há postos de supervisor",
@@ -13026,7 +13079,13 @@
       "calendario": "Calendário",
       "vacioAyuda": "Férias, licenças e faltas justificadas de todo o pessoal, venham daqui, da Escala ou do app do vigilante.",
       "registrarElPrimero": "Registrar uma licença",
-      "vacioTitulo": "Ainda não há licenças nem férias"
+      "vacioTitulo": "Ainda não há licenças nem férias",
+      "aprobarTitulo": "Aprovar a ausência",
+      "aprobarMensaje": "A ausência de {{nombre}} é aprovada: os turnos desses dias ficam como vaga em Cobertura e a pessoa é avisada.",
+      "rechazarTitulo": "Recusar a ausência",
+      "rechazarMensaje": "A ausência de {{nombre}} é recusada e a pessoa é avisada. Você pode dizer o motivo (opcional).",
+      "rechazarMotivo": "Motivo (opcional)",
+      "solicitudEliminada": "Solicitação excluída"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -13711,7 +13770,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Convite reenviado para {{email}}.",
       "invitacionYaEnviada": "O convite já foi enviado para {{email}} há poucos minutos. Peça que verifique a caixa de entrada e a pasta de spam. Você poderá reenviá-lo em {{faltan}} min.",
-      "invitacionNoSalio": "Não conseguimos enviar o e-mail para {{email}}. Tente de novo em alguns minutos."
+      "invitacionNoSalio": "Não conseguimos enviar o e-mail para {{email}}. Tente de novo em alguns minutos.",
+      "correoDeRestablecimientoNoEnviado": "Não foi possível enviar o e-mail de redefinição para {{email}}. Tente novamente em alguns minutos."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajuste a busca ou registre um novo visitante.",
@@ -13824,7 +13884,8 @@
       "asignarAEstacionNombre": "Atribuir {{name}} a uma estação",
       "seAsignaraAlPrimerPuesto": "Será atribuído ao primeiro posto disponível da estação e aparecerá na Escala.",
       "asignando": "Atribuindo...",
-      "asignar": "Atribuir"
+      "asignar": "Atribuir",
+      "correoDeRestablecimientoNoEnviado": "Não foi possível enviar o e-mail de redefinição para {{email}}. Tente novamente em alguns minutos."
     },
     "GuardHorarioPage": {
       "sinHorario": "Sem horário",
@@ -16416,7 +16477,10 @@
       "tuEmpresa": "sua empresa",
       "volver": "Voltar",
       "registrarse": "Cadastrar-se",
-      "tuCuentaYaEstaActiva": "Sua conta em <b>{{empresa}}</b> já está ativa."
+      "tuCuentaYaEstaActiva": "Sua conta em <b>{{empresa}}</b> já está ativa.",
+      "invitacionYaUsada": "Este convite já foi usado: sua conta já está ativa.",
+      "entraEnLaApp": "Entre no app do vigilante com seu usuário e senha. Se não lembrar a senha, peça à sua empresa para redefini-la.",
+      "tuCuentaEstaLista": "Sua conta está pronta."
     },
     "InspectionPreview": {
       "alerta": "Alerta",
@@ -19763,7 +19827,8 @@
       "blood_required": "O tipo sanguíneo é obrigatório",
       "credentials_required": "As credenciais são obrigatórias",
       "address_required": "O endereço é obrigatório",
-      "phone_required": "O telefone é obrigatório"
+      "phone_required": "O telefone é obrigatório",
+      "revisaEstosDatos": "Revise estes dados: {{campos}}"
     },
     "password": "Senha",
     "password_min": "Mínimo de 8 caracteres",
@@ -19790,7 +19855,8 @@
         "university": "Universidade",
         "universityStudies": "Ensino superior"
       },
-      "freeUnion": "União estável"
+      "freeUnion": "União estável",
+      "credentialsHint": "N.º da sua credencial ou licença de vigilante"
     },
     "select": "Selecione",
     "eyebrow_guard": "Convite · Equipe de segurança",

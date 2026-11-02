@@ -180,6 +180,16 @@
         "error": "Error restoring user",
         "success": "User restored",
         "title": "Restore user"
+      },
+      "suspend": {
+        "title": "Suspend user",
+        "description": "{{user}} will no longer be able to sign in and will move to Archived. You can restore them later.",
+        "confirm": "Suspend"
+      },
+      "closeSessions": {
+        "title": "Sign out sessions",
+        "description": "{{user}} will be signed out of the web and the apps on every device and will have to sign in again.",
+        "confirm": "Sign out sessions"
       }
     },
     "editUser": {
@@ -1841,7 +1851,7 @@
       },
       "subtitle": "This guard's KPIs and performance.",
       "table": {
-        "noTargets": "No targets defined",
+        "noTargets": "No targets set",
         "actual": "Actual",
         "name": "Name",
         "status": "Status",
@@ -1878,7 +1888,15 @@
         "achieved": "Achieved",
         "notAchieved": "Not Achieved"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Guard",
+        "postSite": "Site"
+      },
+      "errors": {
+        "frequencyRequired": "Choose the frequency.",
+        "descriptionRequired": "Enter the description."
+      }
     },
     "assignSites": {
       "assignButton": "Assign Post Sites",
@@ -2019,7 +2037,9 @@
       },
       "empty": {
         "description": "We couldn't find<br />any items matching<br />your search",
-        "title": "No results found"
+        "title": "No results found",
+        "none": "No licenses yet",
+        "hint": "Add the first license or credential."
       },
       "form": {
         "backImageLabel": "Back License Image",
@@ -2070,17 +2090,23 @@
       "subtitle": "This guard's documents and credentials",
       "toasts": {
         "noPermissionCreateType": "You don't have permission to create licence types",
-        "createError": "Could not create license",
+        "createError": "Could not save the license",
         "created": "License created",
         "deleteError": "Could not delete",
         "deleted": "Deleted",
         "deletedBulk": "Deleted",
-        "downloadError": "Could not download report",
+        "downloadError": "Could not download the license",
         "loadError": "Could not load licenses",
         "updated": "License updated"
       },
       "selected": "selected",
-      "untitled": "License"
+      "untitled": "License",
+      "errors": {
+        "typeRequired": "Choose the license type.",
+        "numberRequired": "Enter the license number."
+      },
+      "confirmDelete": "Delete {{count}} license(s)? This cannot be undone.",
+      "subtitleSupervisor": "This supervisor's documents and credentials"
     },
     "list": {
       "applyFilters": "Apply filters",
@@ -2188,7 +2214,12 @@
           "excelValidationFailed": "Could not validate Excel before upload",
           "missingColumns": "Missing required columns: {{columns}}",
           "selectFile": "Select a file"
-        }
+        },
+        "summaryOk_one": "{{count}} guard imported",
+        "summaryOk_other": "{{count}} guards imported",
+        "summaryWithErrors": "Imported: {{ok}} · Not imported: {{fallidas}}",
+        "rowError": "Row {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "No invitations were sent: send them from the list whenever you like."
       },
       "labels": {
         "name": "Name",
@@ -2383,7 +2414,8 @@
         "message": "We couldn't find<br />any items matching<br />your search",
         "title": "No results found",
         "hint": "Create the first note for this guard.",
-        "none": "No notes yet"
+        "none": "No notes yet",
+        "hintSupervisor": "Create the first note for this supervisor."
       },
       "modal": {
         "cancel": "Cancel",
@@ -2428,7 +2460,12 @@
       "loadError": "The notes could not be loaded",
       "noteCreated": "Note created successfully",
       "noteDeleted": "Note deleted",
-      "sectionTitle": "Notes"
+      "sectionTitle": "Notes",
+      "errors": {
+        "titleRequired": "Enter the note title.",
+        "descriptionRequired": "Enter the note description.",
+        "dateRequired": "Choose the note date."
+      }
     },
     "profile": {
       "noLicense": "No license found",
@@ -2444,7 +2481,8 @@
         "statusNoAccess": "No access configured",
         "statusPending": "Invitation pending",
         "tokenExpired": "The invitation link has expired",
-        "tokenExpires": "Invitation valid until"
+        "tokenExpires": "Invitation valid until",
+        "alreadyActive": "Their account is already active: no invitation needed. If they forgot the password, use «Reset password» in the guards list."
       },
       "actions": {
         "cancel": "Cancel",
@@ -2523,7 +2561,7 @@
         "secondary": "Secondary",
         "special": "Special",
         "university": "University studies",
-        "universityDegree": "University"
+        "universityDegree": "University degree"
       },
       "maritalStatus": {
         "freeUnion": "Common-law union"
@@ -2720,7 +2758,11 @@
       "locNoneBody": "{{sin}} of their last {{total}} clock-ins came in with no coordinates at all. The clock-in is still recorded — they are never blocked — but the shift has no proof of where they were.",
       "locCoarseBody": "{{n}} of their last {{total}} clock-ins arrived with a position coarser than {{suelo}} m. Good enough to record, not to confirm they were at the post.",
       "locFix": "Usual cause: on Android the location permission was left on “Approximate”. It has to be set to “Precise” in the phone's settings — Android won't let the app change it, so someone has to pick that phone up.",
-      "locLast": "Last clock-in without location: {{cuando}}"
+      "locLast": "Last clock-in without location: {{cuando}}",
+      "titleSupervisor": "Supervisor's device",
+      "subtitleSupervisor": "The first device a supervisor signs in from becomes the linked one. If another device shows up it is flagged as unrecognised (it is not blocked). Reset the link if the supervisor changed phones.",
+      "emptySupervisor": "No device has been registered for this supervisor yet.",
+      "resetDoneSupervisor": "Link reset. The supervisor's next device will be the linked one."
     },
     "documents": {
       "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",
@@ -2787,7 +2829,11 @@
       "deleted": "Memo deleted",
       "pending": "Pending",
       "title": "Memos",
-      "total": "memos"
+      "total": "memos",
+      "count_one": "{{count}} memo",
+      "count_other": "{{count}} memos",
+      "acceptedCount_one": "{{count}} accepted",
+      "acceptedCount_other": "{{count}} accepted"
     },
     "actionNotImplemented": "That action isn't available yet",
     "overview": {
@@ -2815,7 +2861,9 @@
       "loadError": "Could not load the available roles.",
       "error": "Could not change the role.",
       "hasBothRoles": "They currently hold both roles. Picking one leaves them with only that one.",
-      "welcomeSent": "We sent them a welcome email with the link to download the supervisor app."
+      "welcomeSent": "We sent them a welcome email with the link to download the supervisor app.",
+      "inviteSent": "They had no password yet: we sent them the invitation to create one and sign in to the supervisor app.",
+      "inviteLinkReady": "They have no password and no email yet: share the access link from their supervisor sheet («Resend invitation»)."
     },
     "department": {
       "title": "Department",
@@ -9205,7 +9253,10 @@
       "yaPuedesEntrar": "You can sign in now",
       "tuEmpresaTeAsignaraAUnPuesto": "Your company will assign you to a post.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Sign in with your username and password.",
-      "cuentaListaDescargaLaApp": "Your account with <b>{{empresa}}</b> is ready. Download the app to monitor and manage your security service from your phone."
+      "cuentaListaDescargaLaApp": "Your account with <b>{{empresa}}</b> is ready. Download the app to monitor and manage your security service from your phone.",
+      "tuPuestoYTurnosEnLaApp": "Your post and your shifts will show up in the app.",
+      "iniciaConTuUsuario": "Sign in with your username and password.",
+      "iniciaCuandoEsteActiva": "Sign in once your account is active."
     },
     "AddressAutocomplete": {
       "miUbicacion": "My location",
@@ -10273,7 +10324,8 @@
       "noSeEncontroElVigilante": "The requested guard wasn't found.",
       "errorGuardandoCambios": "Error saving changes: {{msg}}",
       "datosPersonales": "Personal details",
-      "guardarCambios": "Save changes"
+      "guardarCambios": "Save changes",
+      "cambiosGuardados": "Changes saved"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Company address*",
@@ -12770,7 +12822,8 @@
       "laZonaYLosPuestosQueCubre": "The zone and posts this supervisor covers, and their generated schedule, are shown in their own tabs.",
       "limitaLoQueEsteSupervisorVe": "Limits what this supervisor sees in their app: attendance exceptions and clock-in requests.",
       "nombres": "First names",
-      "perfilActualizado": "Profile updated"
+      "perfilActualizado": "Profile updated",
+      "identidadDeLaCuenta": "First and last names are saved here. The email belongs to their sign-in account and is not changed from this sheet."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "No supervisor posts yet",
@@ -13026,7 +13079,13 @@
       "calendario": "Calendar",
       "vacioAyuda": "Vacation, leave and excused absences for all staff, whether entered here, in the Schedule or from the guard app.",
       "registrarElPrimero": "Record a leave",
-      "vacioTitulo": "No leave or vacation yet"
+      "vacioTitulo": "No leave or vacation yet",
+      "aprobarTitulo": "Approve the leave",
+      "aprobarMensaje": "The leave of {{nombre}} is approved: their shifts on those days become gaps in Coverage and they are notified.",
+      "rechazarTitulo": "Reject the leave",
+      "rechazarMensaje": "The leave of {{nombre}} is rejected and they are notified. You can tell them why (optional).",
+      "rechazarMotivo": "Reason (optional)",
+      "solicitudEliminada": "Request deleted"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -13711,7 +13770,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invitation resent to {{email}}.",
       "invitacionYaEnviada": "The invitation was already sent to {{email}} a few minutes ago. Ask them to check their inbox and spam folder. You can resend it in {{faltan}} min.",
-      "invitacionNoSalio": "We couldn't send the email to {{email}}. Please try again in a few minutes."
+      "invitacionNoSalio": "We couldn't send the email to {{email}}. Please try again in a few minutes.",
+      "correoDeRestablecimientoNoEnviado": "The password reset email to {{email}} could not be sent. Please try again in a few minutes."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Adjust your search, or register a new visitor.",
@@ -13824,7 +13884,8 @@
       "asignarAEstacionNombre": "Assign {{name}} to a station",
       "seAsignaraAlPrimerPuesto": "They'll be assigned to the station's first available post and will appear in the Schedule.",
       "asignando": "Assigning...",
-      "asignar": "Assign"
+      "asignar": "Assign",
+      "correoDeRestablecimientoNoEnviado": "The password reset email to {{email}} could not be sent. Please try again in a few minutes."
     },
     "GuardHorarioPage": {
       "sinHorario": "No schedule",
@@ -16416,7 +16477,10 @@
       "tuEmpresa": "your company",
       "volver": "Back",
       "registrarse": "Sign up",
-      "tuCuentaYaEstaActiva": "Your account at <b>{{empresa}}</b> is now active."
+      "tuCuentaYaEstaActiva": "Your account at <b>{{empresa}}</b> is now active.",
+      "invitacionYaUsada": "This invitation has already been used: your account is active.",
+      "entraEnLaApp": "Sign in to the guard app with your username and password. If you don't remember the password, ask your company to reset it.",
+      "tuCuentaEstaLista": "Your account is ready."
     },
     "InspectionPreview": {
       "alerta": "Alert",
@@ -19763,7 +19827,8 @@
       "blood_required": "Blood type is required",
       "credentials_required": "Credentials are required",
       "address_required": "Address is required",
-      "phone_required": "Phone is required"
+      "phone_required": "Phone is required",
+      "revisaEstosDatos": "Please check: {{campos}}"
     },
     "password": "Password",
     "password_min": "At least 8 characters",
@@ -19790,7 +19855,8 @@
         "university": "University",
         "universityStudies": "University studies"
       },
-      "freeUnion": "Common-law union"
+      "freeUnion": "Common-law union",
+      "credentialsHint": "Your guard credential or licence number"
     },
     "select": "Select",
     "eyebrow_guard": "Invitation · Security team",
