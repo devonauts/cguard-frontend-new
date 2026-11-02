@@ -10686,7 +10686,11 @@
       "revocarAcceso": "Revoca accesso",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Portale web",
-      "nombreDeLaPersona": "Nome della persona (facoltativo)"
+      "nombreDeLaPersona": "Nome della persona (facoltativo)",
+      "correoDeInvitacion": "Email che riceve",
+      "opcionDescargaApp": "Scarica l’app {{app}}",
+      "opcionBienvenida": "Benvenuto e attivazione",
+      "mismaCuenta": "È lo stesso account in entrambi i casi (app e portale): cambia solo l’email."
     },
     "CommandBar": {
       "datosDeDemostracion": "Dati dimostrativi",
@@ -10818,7 +10822,8 @@
       "tipo": "Tipo",
       "tipoVigilanteAdicional": "Guardia aggiuntiva",
       "tipoCotizacion": "Preventivo",
-      "tipoServicio": "Servizio"
+      "tipoServicio": "Servizio",
+      "fechaPedida": "Data richiesta"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Colore dell'applicazione",
@@ -15604,11 +15609,11 @@
       "noCodeHint": "Questo link si apre direttamente, senza codice. Chiunque lo riceva —o a cui venga inoltrato— entra.",
       "expiresHint": "Scade tra {{horas}} ore. Puoi revocarlo prima dall'elenco.",
       "recipientsLabel": "Destinatari dell'email",
-      "noRecipientsHint": "Questo committente non ha contatti con email. Indica sotto a chi inviarlo.",
+      "noRecipientsHint": "Questo committente non ha contatti con email. Aggiungine uno in «Contatti» per inviarlo, oppure genera il link senza inviarlo e condividilo tu.",
       "sourcePortal": "portale",
       "sourceContact": "contatto",
-      "otherEmailsLabel": "Altre email (separate da virgola)",
-      "otherEmailsPlaceholder": "contabile@azienda.com",
+      "otherEmailsLabel": "Altri destinatari (separati da virgola)",
+      "otherEmailsPlaceholder": "utente@tuaazienda.com",
       "messageLabel": "Messaggio (facoltativo)",
       "messagePlaceholder": "In allegato la documentazione del mese per la vostra revisione.",
       "requireCodeLabel": "Richiedi un codice di accesso",
@@ -15618,7 +15623,8 @@
       "expiry72h": "72 ore",
       "expiry7d": "7 giorni",
       "historyTitle": "Cronologia · {{nombre}}",
-      "historyEmpty": "Nessuna attività registrata finora."
+      "historyEmpty": "Nessuna attività registrata finora.",
+      "otherEmailsHint": "Solo contatti di questo committente o utenti della tua azienda. Per altre persone, aggiungile prima come contatto del committente, oppure genera il link senza inviarlo e condividilo tu."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Questo link è scaduto",

@@ -10730,7 +10730,11 @@
       "revocarAcceso": "Cofnij dostęp",
       "appMiSeguridad": "Aplikacja {{app}}",
       "portalWeb": "Portal internetowy",
-      "nombreDeLaPersona": "Imię i nazwisko osoby (opcjonalnie)"
+      "nombreDeLaPersona": "Imię i nazwisko osoby (opcjonalnie)",
+      "correoDeInvitacion": "Wiadomość, którą otrzyma",
+      "opcionDescargaApp": "Pobierz aplikację {{app}}",
+      "opcionBienvenida": "Powitanie i aktywacja",
+      "mismaCuenta": "W obu przypadkach to to samo konto (aplikacja i portal): zmienia się tylko wiadomość."
     },
     "CommandBar": {
       "datosDeDemostracion": "Dane demonstracyjne",
@@ -10864,7 +10868,8 @@
       "tipo": "Typ",
       "tipoVigilanteAdicional": "Dodatkowy ochroniarz",
       "tipoCotizacion": "Wycena",
-      "tipoServicio": "Usługa"
+      "tipoServicio": "Usługa",
+      "fechaPedida": "Żądana data"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Kolor aplikacji",
@@ -15782,11 +15787,11 @@
       "noCodeHint": "Ten link otwiera się bezpośrednio, bez kodu. Każdy, kto go otrzyma —lub komu zostanie przekazany— uzyska dostęp.",
       "expiresHint": "Wygasa za {{horas}} godz. Możesz go cofnąć wcześniej z listy.",
       "recipientsLabel": "Odbiorcy e-maila",
-      "noRecipientsHint": "Ten zleceniodawca nie ma kontaktów z adresem e-mail. Wpisz poniżej, do kogo wysłać.",
+      "noRecipientsHint": "Ten zleceniodawca nie ma kontaktów z adresem e-mail. Dodaj kontakt w „Kontakty”, aby wysłać, albo wygeneruj link bez wysyłania i udostępnij go samodzielnie.",
       "sourcePortal": "portal",
       "sourceContact": "kontakt",
-      "otherEmailsLabel": "Inne adresy e-mail (oddzielone przecinkami)",
-      "otherEmailsPlaceholder": "ksiegowosc@firma.com",
+      "otherEmailsLabel": "Inni odbiorcy (oddzieleni przecinkami)",
+      "otherEmailsPlaceholder": "uzytkownik@twojafirma.com",
       "messageLabel": "Wiadomość (opcjonalnie)",
       "messagePlaceholder": "W załączeniu przesyłamy dokumentację za bieżący miesiąc do weryfikacji.",
       "requireCodeLabel": "Wymagaj kodu dostępu",
@@ -15796,7 +15801,8 @@
       "expiry72h": "72 godziny",
       "expiry7d": "7 dni",
       "historyTitle": "Historia · {{nombre}}",
-      "historyEmpty": "Nie zarejestrowano jeszcze żadnej aktywności."
+      "historyEmpty": "Nie zarejestrowano jeszcze żadnej aktywności.",
+      "otherEmailsHint": "Tylko kontakty tego zleceniodawcy lub użytkownicy Twojej firmy. Inną osobę dodaj najpierw jako kontakt zleceniodawcy albo wygeneruj link bez wysyłania i udostępnij go samodzielnie."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Ten link wygasł",

@@ -10127,7 +10127,11 @@
       "revocarAcceso": "Revocar acceso",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Portal web",
-      "nombreDeLaPersona": "Nombre de la persona (opcional)"
+      "nombreDeLaPersona": "Nombre de la persona (opcional)",
+      "correoDeInvitacion": "Correo que recibe",
+      "opcionDescargaApp": "Descargar la app {{app}}",
+      "opcionBienvenida": "Bienvenida y activación",
+      "mismaCuenta": "Es la misma cuenta en los dos casos (app y portal): solo cambia el correo."
     },
     "CommandBar": {
       "datosDeDemostracion": "Datos de demostración",
@@ -10259,7 +10263,8 @@
       "tipo": "Tipo",
       "tipoVigilanteAdicional": "Vigilante adicional",
       "tipoCotizacion": "Cotización",
-      "tipoServicio": "Servicio"
+      "tipoServicio": "Servicio",
+      "fechaPedida": "Fecha pedida"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Color de la aplicación",
@@ -15045,11 +15050,11 @@
       "noCodeHint": "Este enlace abre directo, sin clave. Quien lo reciba —o a quien se lo reenvíen— entra.",
       "expiresHint": "Caduca en {{horas}} horas. Puedes revocarlo antes desde la lista.",
       "recipientsLabel": "Destinatarios del correo",
-      "noRecipientsHint": "Este cliente no tiene contactos con correo. Escribe abajo a quién enviárselo.",
+      "noRecipientsHint": "Este cliente no tiene contactos con correo. Agrega uno en «Contactos» para enviárselo, o genera el enlace sin enviarlo y compártelo tú.",
       "sourcePortal": "portal",
       "sourceContact": "contacto",
-      "otherEmailsLabel": "Otros correos (separados por coma)",
-      "otherEmailsPlaceholder": "contador@empresa.com",
+      "otherEmailsLabel": "Otros destinatarios (separados por coma)",
+      "otherEmailsPlaceholder": "usuario@tuempresa.com",
       "messageLabel": "Mensaje (opcional)",
       "messagePlaceholder": "Adjuntamos la documentación del mes para su revisión.",
       "requireCodeLabel": "Pedir clave de acceso",
@@ -15059,7 +15064,8 @@
       "expiry72h": "72 horas",
       "expiry7d": "7 días",
       "historyTitle": "Historial · {{nombre}}",
-      "historyEmpty": "Sin actividad registrada todavía."
+      "historyEmpty": "Sin actividad registrada todavía.",
+      "otherEmailsHint": "Solo contactos de este cliente o usuarios de tu empresa. Para otra persona, agrégala antes como contacto del cliente, o genera el enlace sin enviarlo y compártelo tú."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Este enlace ha caducado",

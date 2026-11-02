@@ -204,7 +204,24 @@ export default function ClientPortal({ client }: Props) {
     client,
     client?.contactName || t("ui.ClientPortal.esteCliente", "este cliente"),
   );
+  /* An account EXISTS as soon as the client is invited (userId is set at
+     invitation time); it is LINKED only once the titular activates it. The
+     tab said «Vinculado» for an invitation nobody had accepted while the list
+     said «Invitado» (QA re-test M1). `linked` keeps meaning «has an account»
+     for the actions below; the status shown follows onboardingStatus. */
   const linked = !!client?.userId;
+  const estadoAcceso: "active" | "invited" | "none" =
+    client?.onboardingStatus === "active"
+      ? "active"
+      : linked || client?.onboardingStatus === "invited"
+        ? "invited"
+        : "none";
+  const etiquetaAcceso =
+    estadoAcceso === "active"
+      ? t("ui.ClientPortal.vinculado", "Vinculado")
+      : estadoAcceso === "invited"
+        ? t("clients.onboarding.invited", "Invitado")
+        : t("ui.ClientPortal.sinUsuario", "Sin usuario");
   // Real access roster from /access-users (client.portalUsers never existed in
   // the backend — this card always said 0/1 while Accesos showed the truth).
   const [accessUsers, setAccessUsers] = useState<AccessUser[]>([]);
@@ -331,14 +348,16 @@ export default function ClientPortal({ client }: Props) {
       {/* Status KPIs */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi
-          accent={linked ? "green" : "slate"}
+          accent={
+            estadoAcceso === "active"
+              ? "green"
+              : estadoAcceso === "invited"
+                ? "orange"
+                : "slate"
+          }
           icon={<Globe />}
           label={t("ui.ClientPortal.accesoAlPortal", "Acceso al portal")}
-          value={
-            linked
-              ? t("ui.ClientPortal.vinculado", "Vinculado")
-              : t("ui.ClientPortal.sinUsuario", "Sin usuario")
-          }
+          value={etiquetaAcceso}
         />
         <Kpi
           accent="blue"
@@ -403,10 +422,18 @@ export default function ClientPortal({ client }: Props) {
                     )}
                 </p>
               </div>
-              <StatusBadge tone={linked ? "ok" : "neutral"}>
-                {linked
+              <StatusBadge
+                tone={
+                  estadoAcceso === "active"
+                    ? "ok"
+                    : estadoAcceso === "invited"
+                      ? "warn"
+                      : "neutral"
+                }
+              >
+                {estadoAcceso === "active"
                   ? t("ui.ClientPortal.usuarioVinculado", "Usuario vinculado")
-                  : t("ui.ClientPortal.sinUsuario", "Sin usuario")}
+                  : etiquetaAcceso}
               </StatusBadge>
             </div>
 

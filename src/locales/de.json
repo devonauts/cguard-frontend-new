@@ -10686,7 +10686,11 @@
       "revocarAcceso": "Zugang widerrufen",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Webportal",
-      "nombreDeLaPersona": "Name der Person (optional)"
+      "nombreDeLaPersona": "Name der Person (optional)",
+      "correoDeInvitacion": "E-Mail, die die Person erhält",
+      "opcionDescargaApp": "App {{app}} herunterladen",
+      "opcionBienvenida": "Willkommen und Aktivierung",
+      "mismaCuenta": "In beiden Fällen ist es dasselbe Konto (App und Portal): Nur die E-Mail ist anders."
     },
     "CommandBar": {
       "datosDeDemostracion": "Demodaten",
@@ -10818,7 +10822,8 @@
       "tipo": "Art",
       "tipoVigilanteAdicional": "Zusätzlicher Wachmann",
       "tipoCotizacion": "Angebot",
-      "tipoServicio": "Dienstleistung"
+      "tipoServicio": "Dienstleistung",
+      "fechaPedida": "Gewünschtes Datum"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Farbe der App",
@@ -15604,11 +15609,11 @@
       "noCodeHint": "Dieser Link öffnet direkt, ohne Code. Wer ihn erhält – oder an wen er weitergeleitet wird – kommt hinein.",
       "expiresHint": "Läuft in {{horas}} Stunden ab. Sie können ihn vorher über die Liste widerrufen.",
       "recipientsLabel": "E-Mail-Empfänger",
-      "noRecipientsHint": "Dieser Auftraggeber hat keine Kontakte mit E-Mail-Adresse. Geben Sie unten an, an wen es gesendet werden soll.",
+      "noRecipientsHint": "Dieser Auftraggeber hat keine Kontakte mit E-Mail-Adresse. Legen Sie unter „Kontakte“ einen an, um es zu senden, oder erstellen Sie den Link ohne Versand und teilen Sie ihn selbst.",
       "sourcePortal": "Portal",
       "sourceContact": "Kontakt",
-      "otherEmailsLabel": "Weitere E-Mails (durch Komma getrennt)",
-      "otherEmailsPlaceholder": "buchhaltung@firma.com",
+      "otherEmailsLabel": "Weitere Empfänger (durch Komma getrennt)",
+      "otherEmailsPlaceholder": "benutzer@ihrefirma.com",
       "messageLabel": "Nachricht (optional)",
       "messagePlaceholder": "Anbei die Unterlagen des Monats zur Prüfung.",
       "requireCodeLabel": "Zugangscode verlangen",
@@ -15618,7 +15623,8 @@
       "expiry72h": "72 Stunden",
       "expiry7d": "7 Tage",
       "historyTitle": "Verlauf · {{nombre}}",
-      "historyEmpty": "Noch keine Aktivität aufgezeichnet."
+      "historyEmpty": "Noch keine Aktivität aufgezeichnet.",
+      "otherEmailsHint": "Nur Kontakte dieses Auftraggebers oder Benutzer Ihres Unternehmens. Andere Personen zuerst als Kontakt des Auftraggebers anlegen – oder den Link ohne Versand erstellen und selbst teilen."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Dieser Link ist abgelaufen",
