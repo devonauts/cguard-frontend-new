@@ -18875,7 +18875,9 @@
         "editarLinea": "Regel bewerken",
         "minutosHint": "Gepland: {{p}} · gewerkt: {{w}}",
         "excluirDeLaFactura": "Uitsluiten van de factuur",
-        "revisionLista": "Klaar voor controle door de klant. Er wordt geen e-mail verstuurd: kopieer de link en deel die met de klant."
+        "revisionLista": "Klaar voor controle door de klant. Er wordt geen e-mail verstuurd: kopieer de link en deel die met de klant.",
+        "nuevaRevision": "Nieuwe controle door de klant",
+        "nuevaRevisionConfirm": "Er start een nieuwe ronde met een andere link: de vorige link werkt niet meer en de vorige goedkeuring telt niet meer. Openstaande bezwaren blijven staan om op te lossen."
       },
       "regla": {
         "usarElDeLaEmpresa": "Bedrijfswaarde gebruiken",

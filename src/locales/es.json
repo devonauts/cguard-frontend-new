@@ -18316,7 +18316,9 @@
         "editarLinea": "Editar línea",
         "minutosHint": "Programados: {{p}} · trabajados: {{w}}",
         "excluirDeLaFactura": "Excluir de la factura",
-        "revisionLista": "Lista para la revisión del cliente. No se envía ningún correo: copia el enlace y compártelo con él."
+        "revisionLista": "Lista para la revisión del cliente. No se envía ningún correo: copia el enlace y compártelo con él.",
+        "nuevaRevision": "Nueva revisión del cliente",
+        "nuevaRevisionConfirm": "Se abre una ronda nueva con otro enlace: el enlace anterior deja de funcionar y la aprobación anterior ya no cuenta. Las objeciones pendientes siguen ahí para resolverlas."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usar el valor de la empresa",

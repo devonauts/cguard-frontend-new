@@ -18875,7 +18875,9 @@
         "editarLinea": "Position bearbeiten",
         "minutosHint": "Geplant: {{p}} · gearbeitet: {{w}}",
         "excluirDeLaFactura": "Von der Rechnung ausschließen",
-        "revisionLista": "Bereit zur Prüfung durch den Kunden. Es wird keine E-Mail versendet: Kopieren Sie den Link und teilen Sie ihn mit dem Kunden."
+        "revisionLista": "Bereit zur Prüfung durch den Kunden. Es wird keine E-Mail versendet: Kopieren Sie den Link und teilen Sie ihn mit dem Kunden.",
+        "nuevaRevision": "Neue Kundenprüfung",
+        "nuevaRevisionConfirm": "Eine neue Runde mit einem anderen Link beginnt: Der bisherige Link funktioniert nicht mehr und die bisherige Freigabe zählt nicht mehr. Offene Einwände bleiben zur Klärung bestehen."
       },
       "regla": {
         "usarElDeLaEmpresa": "Firmenwert verwenden",

@@ -18875,7 +18875,9 @@
         "editarLinea": "Modifica riga",
         "minutosHint": "Programmati: {{p}} · lavorati: {{w}}",
         "excluirDeLaFactura": "Escludi dalla fattura",
-        "revisionLista": "Pronta per la revisione del cliente. Non viene inviata alcuna e-mail: copia il link e condividilo con lui."
+        "revisionLista": "Pronta per la revisione del cliente. Non viene inviata alcuna e-mail: copia il link e condividilo con lui.",
+        "nuevaRevision": "Nuova revisione del cliente",
+        "nuevaRevisionConfirm": "Si apre un nuovo giro con un altro link: il link precedente smette di funzionare e l'approvazione precedente non vale più. Le obiezioni in sospeso restano da risolvere."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usa il valore aziendale",

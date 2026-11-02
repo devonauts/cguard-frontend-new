@@ -18316,7 +18316,9 @@
         "editarLinea": "Editar linha",
         "minutosHint": "Programados: {{p}} · trabalhados: {{w}}",
         "excluirDeLaFactura": "Excluir da fatura",
-        "revisionLista": "Pronta para a revisão do cliente. Nenhum e-mail é enviado: copie o link e compartilhe com ele."
+        "revisionLista": "Pronta para a revisão do cliente. Nenhum e-mail é enviado: copie o link e compartilhe com ele.",
+        "nuevaRevision": "Nova revisão do cliente",
+        "nuevaRevisionConfirm": "Abre-se uma nova rodada com outro link: o link anterior deixa de funcionar e a aprovação anterior deixa de valer. As objeções pendentes continuam lá para serem resolvidas."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usar o valor da empresa",

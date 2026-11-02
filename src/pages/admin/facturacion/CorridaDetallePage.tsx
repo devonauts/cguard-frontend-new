@@ -102,6 +102,19 @@ function CorridaDetallePage() {
 
   const enviarARevision = async () => {
     if (!run) return;
+    // A round already answered (or approved): the new link replaces the old one.
+    if (run.status !== "draft") {
+      const ok = await confirmDialog({
+        title: t("ui.Facturacion.corridaDetalle.nuevaRevision", "Nueva revisión del cliente"),
+        message: t(
+          "ui.Facturacion.corridaDetalle.nuevaRevisionConfirm",
+          "Se abre una ronda nueva con otro enlace: el enlace anterior deja de funcionar y la aprobación anterior ya no cuenta. Las objeciones pendientes siguen ahí para resolverlas.",
+        ),
+        confirmText: t("ui.Facturacion.corridaDetalle.nuevaRevision", "Nueva revisión del cliente"),
+      });
+
+      if (!ok) return;
+    }
     setTrabajando(true);
     try {
       const r = await clientBillingService.sendToClientReview(run.id);
@@ -188,7 +201,15 @@ function CorridaDetallePage() {
           actions={
             <>
               <Button variant="outline" onClick={() => navigate(-1)}><ArrowLeft size={14} /> {t("ui.Facturacion.detalle.atras", "Atrás")}</Button>
-              {run.status === "draft" && canEdit && <Button disabled={trabajando} variant="outline" onClick={enviarARevision}><Send size={14} /> {t("ui.Facturacion.corridaDetalle.enviarARevision", "Enviar a revisión del cliente")}</Button>}
+              {/* Same rule as the server (runsService.puedeAbrirRevision): a draft, an answered review or an approved run. */}
+              {(run.status === "draft" || run.status === "approved" || (run.status === "clientReview" && !!run.clientReviewedAt)) && canEdit && (
+                <Button disabled={trabajando} variant="outline" onClick={enviarARevision}>
+                  <Send size={14} />{" "}
+                  {run.status === "draft"
+                    ? t("ui.Facturacion.corridaDetalle.enviarARevision", "Enviar a revisión del cliente")
+                    : t("ui.Facturacion.corridaDetalle.nuevaRevision", "Nueva revisión del cliente")}
+                </Button>
+              )}
               {(run.status === "draft" || run.status === "clientReview") && canEdit && (
                 <Button disabled={trabajando || bloqueantes > 0} title={bloqueantes > 0 ? t("ui.Facturacion.corridaDetalle.noSePuedeAprobar", "Resuelve las {{n}} discrepancias que bloquean antes de aprobar", { n: bloqueantes }) : undefined} variant="brand" onClick={aprobar}>
                   <CheckCircle2 size={14} /> {t("ui.Facturacion.corridaDetalle.aprobar", "Aprobar")}
