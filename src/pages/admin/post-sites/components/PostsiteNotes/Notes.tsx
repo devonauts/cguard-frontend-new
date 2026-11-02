@@ -17,6 +17,12 @@ import {
   FIELD_CLS_LG,
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useTranslation } from "react-i18next";
 import { postSiteService } from "@/lib/api/postSiteService";
 import securityGuardService from "@/lib/api/securityGuardService";
@@ -85,7 +91,6 @@ export default function PostSiteNotes({ site }: Props) {
   });
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [viewOnly, setViewOnly] = useState(false);
   const [detailsNote, setDetailsNote] = useState<NoteApiRow | null>(null);
   const [confirmDeleteIds, setConfirmDeleteIds] = useState<string[]>([]);
@@ -494,69 +499,53 @@ export default function PostSiteNotes({ site }: Props) {
                         {note.addedBy || "-"}
                       </td>
                       <td className="px-2 py-2.5 text-right">
-                        <div className="relative inline-block">
-                          <button
-                            onClick={() =>
-                              setOpenMenuId((prev) =>
-                                prev === note.id ? null : String(note.id),
-                              )
-                            }
-                            className="p-2 rounded-full hover:bg-muted focus:outline-none"
-                            title={t("actions.action") || "Actions"}
-                          >
-                            <EllipsisVertical size={18} />
-                          </button>
-
-                          {openMenuId === String(note.id) && (
-                            <div className="glass-raised absolute right-0 z-50 mt-2 w-44">
-                              <button
-                                onClick={() => {
-                                  setDetailsNote(note.raw || note);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
-                              >
-                                <Eye size={16} />
-                                <span className="text-sm">
-                                  {t("actions.viewDetails") || "View Details"}
-                                </span>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setFormData({
-                                    title: note.title,
-                                    description: note.description,
-                                    date: note.date,
-                                    attachments: [],
-                                    id: note.id,
-                                  });
-                                  setViewOnly(false);
-                                  setShowModal(true);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
-                              >
-                                <Pencil size={16} />
-                                <span className="text-sm">
-                                  {t("actions.edit") || "Edit"}
-                                </span>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setOpenMenuId(null);
-                                  setConfirmDeleteIds([String(note.id)]);
-                                }}
-                                className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2"
-                                style={{ color: "var(--bad-text)" }}
-                              >
-                                <Trash size={16} />
-                                <span className="text-sm">
-                                  {t("actions.delete") || "Delete"}
-                                </span>
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        {/* Radix renders the menu in a portal: the old
+                            absolutely-positioned menu was clipped by the
+                            table's overflow-x-auto wrapper (same as Contacts). */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              className="p-2 rounded-full hover:bg-muted focus:outline-none"
+                              aria-label={t("actions.action", "Acción")}
+                              title={t("actions.action") || "Actions"}
+                            >
+                              <EllipsisVertical size={18} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuItem
+                              onSelect={() => setDetailsNote(note.raw || note)}
+                            >
+                              <Eye className="mr-2" size={16} />
+                              {t("actions.viewDetails") || "View Details"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                setFormData({
+                                  title: note.title,
+                                  description: note.description,
+                                  date: note.date,
+                                  attachments: [],
+                                  id: note.id,
+                                });
+                                setViewOnly(false);
+                                setShowModal(true);
+                              }}
+                            >
+                              <Pencil className="mr-2" size={16} />
+                              {t("actions.edit") || "Edit"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() =>
+                                setConfirmDeleteIds([String(note.id)])
+                              }
+                              style={{ color: "var(--bad-text)" }}
+                            >
+                              <Trash className="mr-2" size={16} />
+                              {t("actions.delete") || "Delete"}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   ))
