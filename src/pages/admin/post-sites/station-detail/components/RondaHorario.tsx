@@ -7,7 +7,7 @@ import { ApiService } from "@/services/api/apiService";
 import { Button } from "@/components/ui/button";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { apartarDelWidget } from "@/lib/apartarDelWidget";
-import { leerDias } from "@/lib/diasDeRonda";
+import { DIAS_CORTOS, leerDias } from "@/lib/diasDeRonda";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -39,15 +39,7 @@ export interface HorarioDeRonda {
 }
 
 /** Los días como los escribe y los lee el servidor: números 0-6, domingo=0. */
-const DIAS: Array<{ n: number; corta: string; k: string }> = [
-  { n: 1, corta: "L", k: "ui.RondaHorario.diaCortoLun" },
-  { n: 2, corta: "M", k: "ui.RondaHorario.diaCortoMar" },
-  { n: 3, corta: "X", k: "ui.RondaHorario.diaCortoMie" },
-  { n: 4, corta: "J", k: "ui.RondaHorario.diaCortoJue" },
-  { n: 5, corta: "V", k: "ui.RondaHorario.diaCortoVie" },
-  { n: 6, corta: "S", k: "ui.RondaHorario.diaCortoSab" },
-  { n: 0, corta: "D", k: "ui.RondaHorario.diaCortoDom" },
-];
+const DIAS = DIAS_CORTOS;
 
 export { leerDias };
 

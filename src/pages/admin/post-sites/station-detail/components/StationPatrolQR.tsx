@@ -452,7 +452,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
         icon={<QrCode />}
         title={
           <span>
-            {t("station.patrolQr.title", "Generar Códigos QR de Rondas")}
+            {t("station.patrolQr.title", "Generar Códigos QR de Rondas")}{" "}
             {!loading && checkpoints.length > 0 && (
               <span className="ml-2 text-sm font-normal text-muted-foreground">
                 ({checkpoints.length})
@@ -477,19 +477,24 @@ export default function StationPatrolQR({ station, stationId }: Props) {
         >
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
-            {t(
-              "station.patrolQr.verifyNote",
-              "Verificación de ubicación: al escanear, el servidor compara el GPS del vigilante con la ubicación del punto. Solo cuenta como válido si está dentro de",
-            )}{" "}
-            <strong>
-              {radioComun != null
-                ? `${radioComun} m`
-                : t(
-                    "station.patrolQr.radiusPerPoint",
-                    "el radio de cada punto (indicado en cada uno)",
-                  )}
-            </strong>
-            .{" "}
+            {radioComun != null ? (
+              <>
+                {t(
+                  "station.patrolQr.verifyNote",
+                  "Verificación de ubicación: al escanear, el servidor compara el GPS del vigilante con la ubicación del punto. Solo cuenta como válido si está dentro de",
+                )}{" "}
+                <strong>{radioComun} m</strong>.{" "}
+              </>
+            ) : (
+              // A whole sentence per language: gluing «dentro de» + «el
+              // radio…» read «dentro de el radio».
+              <>
+                {t(
+                  "station.patrolQr.verifyNotePerPoint",
+                  "Verificación de ubicación: al escanear, el servidor compara el GPS del vigilante con la ubicación del punto. Solo cuenta como válido si está dentro del radio de cada punto (indicado en cada uno).",
+                )}{" "}
+              </>
+            )}
             {t(
               "station.patrolQr.verifyNote2",
               'Los escaneos fuera de rango quedan registrados como "fuera de ubicación".',

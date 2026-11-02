@@ -9094,7 +9094,7 @@
       "popupBlocked": "Przeglądarka zablokowała okno drukowania.",
       "printFailed": "Nie udało się przygotować arkusza",
       "qrFailed": "Nie udało się wygenerować kodu",
-      "radiusPerPoint": "promienia danego punktu (podanego przy każdym)"
+      "verifyNotePerPoint": "Weryfikacja lokalizacji: przy skanowaniu system porównuje GPS pracownika ochrony z lokalizacją punktu. Skan liczy się tylko wtedy, gdy mieści się w promieniu danego punktu (podanym przy każdym)."
     },
     "rondaHistory": {
       "empty": "Na tym posterunku nie zarejestrowano żadnych obchodów.",

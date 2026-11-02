@@ -6852,7 +6852,7 @@
       "qrFailed": "Could not generate the code",
       "printFailed": "Could not prepare the sheet",
       "popupBlocked": "The browser blocked the print window.",
-      "radiusPerPoint": "each point's radius (shown on each one)"
+      "verifyNotePerPoint": "Location check: on each scan the server compares the guard's GPS with the checkpoint's location. It only counts as valid within each point's radius (shown on each one)."
     },
     "rondaHistory": {
       "empty": "No patrols have been recorded at this station.",

@@ -42,6 +42,7 @@ import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 import { resolveApiBase } from "@/lib/apiBase";
 import { consignaIncompleta } from "@/lib/consignaIncompleta";
+import { DIAS_CORTOS, ordenLunesPrimero } from "@/lib/diasDeRonda";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
 type Recurrence =
@@ -85,7 +86,6 @@ const fileUrl = (u?: string | null) => (u ? `${API_BASE}${u}` : null);
 // 2026-01-04 is a Sunday.
 const dowName = (i: number, weekday: "narrow" | "long") =>
   new Date(2026, 0, 4 + i).toLocaleDateString(localeActual(), { weekday });
-const DOW = [0, 1, 2, 3, 4, 5, 6];
 // La prioridad de la consigna se lee con los semánticos fijos del sistema.
 const PRIO: Record<
   string,
@@ -109,7 +109,7 @@ function recurrenceSummary(o: Order, t: any): string {
         ? t("station.orders.rec.weeklyDays", "Cada {{days}}", {
             days: o.days
               .slice()
-              .sort()
+              .sort((a, b) => ordenLunesPrimero(a) - ordenLunesPrimero(b))
               .map((d) => dowName(d, "long"))
               .join(", "),
           })
@@ -577,9 +577,10 @@ function OrderModal({
           {o.recurrence === "weekly" && (
             <LabeledField label={t("station.orders.fDays", "Días")}>
               <div className="flex gap-1.5">
-                {DOW.map((i) => (
+                {DIAS_CORTOS.map(({ n: i, corta, k }) => (
                   <button
                     key={i}
+                    title={dowName(i, "long")}
                     type="button"
                     onClick={() => toggleDay(i)}
                     aria-pressed={!!o.days?.includes(i)}
@@ -597,7 +598,7 @@ function OrderModal({
                           }
                     }
                   >
-                    {dowName(i, "narrow")}
+                    {t(k, corta)}
                   </button>
                 ))}
               </div>

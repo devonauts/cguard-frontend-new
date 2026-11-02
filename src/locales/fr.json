@@ -9074,7 +9074,7 @@
       "popupBlocked": "Le navigateur a bloqué la fenêtre d’impression.",
       "printFailed": "Impossible de préparer la feuille",
       "qrFailed": "Impossible de générer le code",
-      "radiusPerPoint": "le rayon de chaque point (indiqué sur chacun)"
+      "verifyNotePerPoint": "Vérification de la position : à chaque scan, le GPS de l'agent est comparé à la position du point. Le scan n'est valide que dans le rayon de chaque point (indiqué sur chacun)."
     },
     "rondaHistory": {
       "empty": "Aucune ronde enregistrée à ce poste.",
