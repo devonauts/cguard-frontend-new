@@ -13874,6 +13874,7 @@
       "reintentar": "Réessayer"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "La clé actuelle cesse de fonctionner immédiatement : le relais de ce site se déconnecte jusqu’à l’installation du nouveau lien.",
       "aunNoHaySitiosRemotos": "Aucun site distant pour l'instant",
       "direccionDeRecepcion": "Adresse de réception :",
       "seGeneraraUnaClaveDe": "Une clé de site et un jeton de publication (chiffré) seront générés.",

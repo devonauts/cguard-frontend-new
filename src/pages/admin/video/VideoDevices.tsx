@@ -396,8 +396,12 @@ export default function VideoDevices() {
   const onSync = async (d: Device) => {
     setBusy((b) => ({ ...b, [d.id]: "sync" }));
     try {
-      const cams = await videoService.syncCameras(d.id);
-      const n = Array.isArray(cams) ? cams.length : 0;
+      // The endpoint answers { rows, count }: reading it as an array said
+      // «0 cámaras sincronizadas» while two cameras appeared.
+      const cams: any = await videoService.syncCameras(d.id);
+      const n = Array.isArray(cams)
+        ? cams.length
+        : Number(cams?.count ?? cams?.rows?.length ?? 0);
 
       toast.success(
         `${d.name}: ${t("ui.VideoDevices.camarasSincronizadas", { defaultValue: "{{count}} cámaras sincronizadas", count: n })}`,

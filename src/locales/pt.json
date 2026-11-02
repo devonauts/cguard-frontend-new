@@ -13317,6 +13317,7 @@
       "reintentar": "Tentar novamente"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "A chave atual deixa de funcionar na hora: o relay deste local se desconecta até você instalar o novo link.",
       "aunNoHaySitiosRemotos": "Ainda não há sites remotos",
       "direccionDeRecepcion": "Endereço de recepção:",
       "seGeneraraUnaClaveDe": "Serão gerados uma chave de site e um token de publicação (criptografado).",

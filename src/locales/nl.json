@@ -13874,6 +13874,7 @@
       "reintentar": "Opnieuw proberen"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "De huidige sleutel werkt meteen niet meer: de relay van deze locatie verbreekt de verbinding tot je de nieuwe link installeert.",
       "aunNoHaySitiosRemotos": "Nog geen locaties op afstand",
       "direccionDeRecepcion": "Ontvangstadres:",
       "seGeneraraUnaClaveDe": "Er worden een locatiesleutel en een publicatietoken (versleuteld) aangemaakt.",

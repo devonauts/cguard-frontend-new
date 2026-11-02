@@ -13874,6 +13874,7 @@
       "reintentar": "Riprova"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "La chiave attuale smette subito di funzionare: il relay di questo sito si disconnette finché non installi il nuovo link.",
       "aunNoHaySitiosRemotos": "Ancora nessun sito remoto",
       "direccionDeRecepcion": "Indirizzo di ricezione:",
       "seGeneraraUnaClaveDe": "Verranno generati una chiave di sito e un token di pubblicazione (cifrato).",

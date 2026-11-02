@@ -13996,6 +13996,7 @@
       "reintentar": "Ponów"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "Obecny klucz od razu przestaje działać: przekaźnik tej lokalizacji rozłączy się, dopóki nie zainstalujesz nowego łącza.",
       "aunNoHaySitiosRemotos": "Nie ma jeszcze obiektów zdalnych",
       "direccionDeRecepcion": "Adres odbioru:",
       "seGeneraraUnaClaveDe": "Zostanie wygenerowany klucz obiektu oraz token publikacji (zaszyfrowany).",

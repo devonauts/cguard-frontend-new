@@ -13874,6 +13874,7 @@
       "reintentar": "Erneut versuchen"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "Der aktuelle Schlüssel funktioniert sofort nicht mehr: Das Relay dieses Standorts trennt sich, bis Sie den neuen Link installieren.",
       "aunNoHaySitiosRemotos": "Noch keine externen Standorte",
       "direccionDeRecepcion": "Empfangsadresse:",
       "seGeneraraUnaClaveDe": "Es werden ein Standortschlüssel und ein Veröffentlichungs-Token (verschlüsselt) erzeugt.",
