@@ -172,8 +172,10 @@ export default function StationCardsGrid({
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
+                      aria-label={t("actions.action", "Acción")}
                       className="h-8 w-8 shrink-0"
                       size="icon"
+                      title={t("actions.action", "Acción")}
                       variant="ghost"
                     >
                       <EllipsisVertical className="h-4 w-4" />

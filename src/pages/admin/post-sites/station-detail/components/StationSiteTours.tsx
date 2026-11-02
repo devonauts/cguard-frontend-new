@@ -837,8 +837,10 @@ export default function StationSiteTours({
                                       <ChevronDown size={15} />
                                     </button>
                                     <button
+                                      aria-label={t("common.delete", "Eliminar")}
                                       className="cg-focus rounded p-1.5"
                                       style={{ color: "var(--bad-text)" }}
+                                      title={t("common.delete", "Eliminar")}
                                       onClick={() => deleteCheckpoint(id, c.id)}
                                     >
                                       <Trash2 size={15} />
