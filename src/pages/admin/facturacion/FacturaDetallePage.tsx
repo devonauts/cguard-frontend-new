@@ -87,9 +87,11 @@ function FacturaDetallePage() {
     try {
       await clientBillingService.deleteInvoice(inv.id);
       toast.success(t("ui.Facturacion.detalle.borradorEliminado", "Borrador eliminado"));
+      // Leave first: a refetch of the deleted draft while still here answered
+      // 404 «Esa factura no existe.» next to «Borrador eliminado».
+      navigate("/facturacion/facturas");
       qc.removeQueries({ queryKey: [QK, "invoice", inv.id] });
       await qc.invalidateQueries({ queryKey: [QK, "invoices"] });
-      navigate("/facturacion/facturas");
     } catch (e) {
       avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {

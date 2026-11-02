@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -122,11 +122,16 @@ function SettingsSection({ title, icon, children }: { title: string; icon: React
 
 type SetSettings = (fn: (prev: NominaSettings | null) => NominaSettings | null) => void;
 
+/** Fields left empty, by path → their label: «Guardar» names them instead of saving another value. */
+type MarcarVacio = (path: string, label: string | null) => void;
+
 /**
  * A number typed as text: clearing the field to write another value no longer
- * stores a 0 on the way; leaving it empty keeps the last valid number.
+ * stores a 0 on the way. A field LEFT empty is reported (`onVacio`) and blocks
+ * the save: it used to save the last digits typed while the field read blank
+ * (QA retest 2026-11-01).
  */
-function Num({ label, path, s, setS }: { label: string; path: string; s: NominaSettings; setS: SetSettings }) {
+function Num({ label, path, s, setS, onVacio }: { label: string; path: string; s: NominaSettings; setS: SetSettings; onVacio: MarcarVacio }) {
   const valor = get(s, path) as number | undefined;
   const [texto, setTexto] = useState(valor == null ? "" : String(valor));
   const ultimo = useRef<number | undefined>(valor);
@@ -135,21 +140,25 @@ function Num({ label, path, s, setS }: { label: string; path: string; s: NominaS
     if (valor !== ultimo.current) {
       ultimo.current = valor;
       setTexto(valor == null ? "" : String(valor));
+      onVacio(path, null);
     }
-  }, [valor]);
+  }, [valor, path, onVacio]);
+
+  const vacio = texto.trim() === "";
 
   return (
     <label className="block">
       <span className="cg-eyebrow">{label}</span>
       <input
+        aria-invalid={vacio || undefined}
         className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
         type="number"
         value={texto}
-        onBlur={() => setTexto(ultimo.current == null ? "" : String(ultimo.current))}
         onChange={(e) => {
           setTexto(e.target.value);
           const n = e.target.value.trim() === "" ? NaN : Number(e.target.value);
 
+          onVacio(path, e.target.value.trim() === "" ? label : null);
           if (!Number.isFinite(n)) return;
           ultimo.current = n;
           setS((prev) => set(prev as NominaSettings, path, n));
@@ -226,6 +235,18 @@ export default function NominaSettings() {
   // body still carries this value (nobody picked a state here), so an older
   // tab never undoes a state saved elsewhere.
   const [regionCargada, setRegionCargada] = useState<string | null>(null);
+  const [vacios, setVacios] = useState<Record<string, string>>({});
+  const marcarVacio = useCallback<MarcarVacio>((path, label) => {
+    setVacios((v) => {
+      if (label === null ? !(path in v) : v[path] === label) return v;
+      const sig = { ...v };
+
+      if (label === null) delete sig[path];
+      else sig[path] = label;
+
+      return sig;
+    });
+  }, []);
 
   useEffect(() => {
     attendanceService
@@ -239,6 +260,18 @@ export default function NominaSettings() {
   }, []);
 
   const save = async () => {
+    const vacio = Object.values(vacios)[0];
+
+    if (vacio) {
+      toast.error(
+        t("ui.NominaSettings.campoVacio", {
+          campo: vacio,
+          defaultValue: "«{{campo}}» está vacío: escribe un número antes de guardar.",
+        }),
+      );
+
+      return;
+    }
     setSaving(true);
     try {
       const cuerpo = s
@@ -297,6 +330,7 @@ export default function NominaSettings() {
             >
               <Num
                 label={t("ui.NominaSettings.entradaAnticipadaPermitida", "Entrada anticipada permitida")}
+                onVacio={marcarVacio}
                 path="windows.earlyClockInMin"
                 s={s}
                 setS={setS}
@@ -306,6 +340,7 @@ export default function NominaSettings() {
                   "ui.NominaSettings.toleranciaDeRetrasoGracia",
                   "Tolerancia de retraso (gracia)",
                 )}
+                onVacio={marcarVacio}
                 path="windows.lateGraceMin"
                 s={s}
                 setS={setS}
@@ -315,12 +350,14 @@ export default function NominaSettings() {
                   "ui.NominaSettings.umbralDeSalidaAnticipada",
                   "Umbral de salida anticipada",
                 )}
+                onVacio={marcarVacio}
                 path="windows.earlyClockoutThresholdMin"
                 s={s}
                 setS={setS}
               />
               <Num
                 label={t("ui.NominaSettings.umbralSinMarcarSalida")}
+                onVacio={marcarVacio}
                 path="windows.missedClockoutThresholdMin"
                 s={s}
                 setS={setS}
@@ -330,6 +367,7 @@ export default function NominaSettings() {
                   "ui.NominaSettings.umbralInasistenciaNoShow",
                   "Umbral inasistencia (no-show)",
                 )}
+                onVacio={marcarVacio}
                 path="windows.noShowThresholdMin"
                 s={s}
                 setS={setS}
@@ -339,6 +377,7 @@ export default function NominaSettings() {
             <SettingsSection icon={<MapPinned />} title={t("ui.NominaSettings.geocerca", "Geocerca")}>
               <Num
                 label={t("ui.NominaSettings.radioPorDefectoM")}
+                onVacio={marcarVacio}
                 path="geofence.defaultRadiusM"
                 s={s}
                 setS={setS}
@@ -512,18 +551,21 @@ export default function NominaSettings() {
               </label>
               <Num
                 label={t("ui.NominaSettings.tarifaPorHoraPorDefecto")}
+                onVacio={marcarVacio}
                 path="payroll.defaultHourlyRate"
                 s={s}
                 setS={setS}
               />
               <Num
                 label={t("ui.NominaSettings.umbralDeHorasExtraH")}
+                onVacio={marcarVacio}
                 path="payroll.overtimeThresholdHours"
                 s={s}
                 setS={setS}
               />
               <Num
                 label={t("ui.NominaSettings.multiplicadorDeHoraExtra")}
+                onVacio={marcarVacio}
                 path="payroll.overtimeMultiplier"
                 s={s}
                 setS={setS}

@@ -10920,7 +10920,8 @@
       "nocheSegunReglas": "Night hours and their surcharge come from the pay rules above: the estimate uses what is actually paid.",
       "descansoEnJornada": "Rest between shifts and consecutive hours are set in Working time and rest.",
       "irAJornada": "Working time and rest",
-      "monedaUnica": "It is the company's one currency: payslips use it too."
+      "monedaUnica": "It is the company's one currency: payslips use it too.",
+      "campoVacio": "“{{campo}}” is empty: type a number before saving."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",
@@ -15536,7 +15537,8 @@
       "exportadaConRechazos_many": "Payroll exported without {{count}} timecards, which are not paid:",
       "exportadaConRechazos_other": "Payroll exported without {{count}} timecards, which are not paid:",
       "tarifaInvalida": "The rate must be greater than zero. To remove it, leave the field empty.",
-      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it."
+      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it.",
+      "tarifaSinAplicar": "Not applied: generate the period again"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",
@@ -17909,7 +17911,7 @@
       },
       "sinPermiso": {
         "titulo": "Your role cannot open Payslips",
-        "desc": "Your role does not have the Payslips permissions (view and edit payslips and pay profiles). An administrator can grant them in Settings › Roles."
+        "desc": "Your role does not have the Payslips permissions (view and edit payslips and pay profiles). An administrator can grant them in Roles and permissions."
       }
     },
     "ClientBillingContract": {

@@ -11479,7 +11479,8 @@
       "nocheSegunReglas": "La notte e la sua maggiorazione vengono dalle regole di paga qui sopra: la stima usa ciò che si paga.",
       "descansoEnJornada": "Il riposo tra turni e le ore consecutive si impostano in Orario e riposo.",
       "irAJornada": "Orario e riposo",
-      "monedaUnica": "È la valuta di tutta l’azienda: anche quella delle buste paga."
+      "monedaUnica": "È la valuta di tutta l’azienda: anche quella delle buste paga.",
+      "campoVacio": "«{{campo}}» è vuoto: scrivi un numero prima di salvare."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Dove vai a lavorare?",
@@ -16095,7 +16096,8 @@
       "exportadaConRechazos_many": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
       "exportadaConRechazos_other": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
       "tarifaInvalida": "La tariffa deve essere maggiore di zero. Per toglierla, lascia il campo vuoto.",
-      "tarifaQuitada": "Tariffa di {{nombre}} tolta. Genera di nuovo il periodo per applicarlo."
+      "tarifaQuitada": "Tariffa di {{nombre}} tolta. Genera di nuovo il periodo per applicarlo.",
+      "tarifaSinAplicar": "Non applicata: genera di nuovo il periodo"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",
@@ -18468,7 +18470,7 @@
       },
       "sinPermiso": {
         "titulo": "Il tuo ruolo non può aprire Buste paga",
-        "desc": "Il tuo ruolo non ha i permessi di Buste paga (vedere e modificare buste paga e profili retributivi). Un amministratore può concederli in Impostazioni › Ruoli."
+        "desc": "Il tuo ruolo non ha i permessi di Buste paga (vedere e modificare buste paga e profili retributivi). Un amministratore può concederli in Ruoli e permessi."
       }
     },
     "ClientBillingContract": {

@@ -11479,7 +11479,8 @@
       "nocheSegunReglas": "La nuit et sa majoration viennent des règles de paie ci-dessus : l’estimation utilise ce qui est payé.",
       "descansoEnJornada": "Le repos entre services et les heures consécutives se règlent dans Temps de travail et repos.",
       "irAJornada": "Temps de travail et repos",
-      "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des bulletins."
+      "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des bulletins.",
+      "campoVacio": "« {{campo}} » est vide : saisissez un nombre avant d'enregistrer."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
@@ -16095,7 +16096,8 @@
       "exportadaConRechazos_many": "Paie exportée sans {{count}} fiches, qui ne sont pas payées :",
       "exportadaConRechazos_other": "Paie exportée sans {{count}} fiches, qui ne sont pas payées :",
       "tarifaInvalida": "Le taux doit être supérieur à zéro. Pour le retirer, laissez le champ vide.",
-      "tarifaQuitada": "Taux de {{nombre}} retiré. Régénérez la période pour l'appliquer."
+      "tarifaQuitada": "Taux de {{nombre}} retiré. Régénérez la période pour l'appliquer.",
+      "tarifaSinAplicar": "Pas appliqué : régénérez la période"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licences",
@@ -18468,7 +18470,7 @@
       },
       "sinPermiso": {
         "titulo": "Votre rôle ne peut pas ouvrir les bulletins de paie",
-        "desc": "Votre rôle n'a pas les autorisations des bulletins de paie (voir et modifier les bulletins et les profils de paie). Un administrateur peut les accorder dans Paramètres › Rôles."
+        "desc": "Votre rôle n'a pas les autorisations des bulletins de paie (voir et modifier les bulletins et les profils de paie). Un administrateur peut les accorder dans Rôles et permissions."
       }
     },
     "ClientBillingContract": {

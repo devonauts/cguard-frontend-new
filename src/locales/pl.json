@@ -11531,7 +11531,8 @@
       "nocheSegunReglas": "Noc i jej dodatek pochodzą z zasad płacy powyżej: szacunek używa tego, co się płaci.",
       "descansoEnJornada": "Odpoczynek między zmianami i godziny z rzędu ustawiasz w Czas pracy i odpoczynek.",
       "irAJornada": "Czas pracy i odpoczynek",
-      "monedaUnica": "To waluta całej firmy: także pasków płacowych."
+      "monedaUnica": "To waluta całej firmy: także pasków płacowych.",
+      "campoVacio": "„{{campo}}” jest puste: wpisz liczbę przed zapisaniem."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Gdzie odbędzie się służba?",
@@ -16293,7 +16294,8 @@
       "exportadaConRechazos_many": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
       "exportadaConRechazos_other": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
       "tarifaInvalida": "Stawka musi być większa od zera. Aby ją usunąć, zostaw pole puste.",
-      "tarifaQuitada": "Stawka {{nombre}} usunięta. Wygeneruj okres ponownie, aby to zastosować."
+      "tarifaQuitada": "Stawka {{nombre}} usunięta. Wygeneruj okres ponownie, aby to zastosować.",
+      "tarifaSinAplicar": "Niezastosowana: wygeneruj okres ponownie"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencje",
@@ -18764,7 +18766,7 @@
       },
       "sinPermiso": {
         "titulo": "Twoja rola nie może otworzyć Pasków wypłat",
-        "desc": "Twoja rola nie ma uprawnień do Pasków wypłat (przeglądanie i edycja pasków oraz profili płacowych). Administrator może je nadać w Ustawienia › Role."
+        "desc": "Twoja rola nie ma uprawnień do Pasków wypłat (przeglądanie i edycja pasków oraz profili płacowych). Administrator może je nadać w Role i uprawnienia."
       }
     },
     "ClientBillingContract": {

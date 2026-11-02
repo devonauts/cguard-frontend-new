@@ -595,13 +595,21 @@ export default function NominaTimecards() {
     }
   };
 
+  /** The rate the person has now (saved here, or from the server), else the card's. */
+  const tarifaDeLaPersona = (r: TarjetaDeNomina): number | null =>
+    tarifasGuardadas.current.has(r.userId)
+      ? (tarifasGuardadas.current.get(r.userId) ?? null)
+      : r.tarifaActualCentavos !== undefined
+        ? r.tarifaActualCentavos
+        : (r.tarifaCentavos ?? null);
+
   const guardarTarifa = async (r: TarjetaDeNomina, valor: string, campo?: HTMLInputElement) => {
     // The card keeps the rate it was generated with until the period is
     // generated again: compare with what was saved here, or clearing a rate
     // just saved sent nothing (QA 2026-11-01).
     const previa = tarifasGuardadas.current.has(r.userId)
       ? (tarifasGuardadas.current.get(r.userId) ?? null)
-      : (r.tarifaCentavos ?? null);
+      : tarifaDeLaPersona(r);
     const centavos =
       valor.trim() === "" ? null : Math.round(Number(valor.replace(",", ".")) * 100);
     const restaurar = () => {
@@ -743,14 +751,22 @@ export default function NominaTimecards() {
       /* Se edita AQUÍ, que es donde alguien se da cuenta de que falta. Mandarle
          a otra pantalla a arreglarlo es la forma más segura de que no se
          arregle — y de que el periodo se exporte con importes en blanco. */
-      render: (_v, r) => (
+      render: (_v, r) => {
+        // The field shows the person's rate; a rate saved but not applied yet
+        // (the card still has the old one) says so under it.
+        const actual = tarifaDeLaPersona(r);
+        const pendiente = actual !== (r.tarifaCentavos ?? null);
+
+        return (
+        <span className="inline-flex flex-col items-end gap-0.5">
         <input
+          key={`${r.id}-${actual ?? ""}`}
           className="cg-input cg-focus w-24 px-2 py-1 text-right text-sm tabular-nums"
           type="number"
           min={0}
           step="0.01"
           placeholder="—"
-          defaultValue={r.tarifaCentavos != null ? r.tarifaCentavos / 100 : ""}
+          defaultValue={actual != null ? actual / 100 : ""}
           // La fila abre los días: escribir la tarifa no debe abrirlos.
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
@@ -770,7 +786,14 @@ export default function NominaTimecards() {
           }
           onBlur={(e) => guardarTarifa(r, e.target.value, e.currentTarget)}
         />
-      ),
+        {pendiente && r.estado === "borrador" && (
+          <span className="text-[11px]" style={{ color: "var(--warn-text)" }}>
+            {t("ui.NominaTimecards.tarifaSinAplicar", "Sin aplicar: genera el periodo otra vez")}
+          </span>
+        )}
+        </span>
+        );
+      },
     },
     {
       key: "importeCentavos",

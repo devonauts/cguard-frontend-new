@@ -10920,7 +10920,8 @@
       "nocheSegunReglas": "La noche y su recargo salen de las reglas de pago de arriba: la estimación usa lo mismo que se paga.",
       "descansoEnJornada": "El descanso entre turnos y las horas seguidas se definen en Jornada y descanso.",
       "irAJornada": "Jornada y descanso",
-      "monedaUnica": "Es la moneda de toda la empresa: también la de los roles de pago."
+      "monedaUnica": "Es la moneda de toda la empresa: también la de los roles de pago.",
+      "campoVacio": "«{{campo}}» está vacío: escribe un número antes de guardar."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "¿Dónde vas a trabajar?",
@@ -15536,7 +15537,8 @@
       "exportadaConRechazos_many": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
       "exportadaConRechazos_other": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
       "tarifaInvalida": "La tarifa tiene que ser mayor que cero. Para quitarla, deja el campo vacío.",
-      "tarifaQuitada": "Tarifa de {{nombre}} quitada. Vuelve a generar el periodo para aplicarlo."
+      "tarifaQuitada": "Tarifa de {{nombre}} quitada. Vuelve a generar el periodo para aplicarlo.",
+      "tarifaSinAplicar": "Sin aplicar: genera el periodo otra vez"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencias",
@@ -17909,7 +17911,7 @@
       },
       "sinPermiso": {
         "titulo": "Tu rol no puede abrir Roles de pago",
-        "desc": "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Configuración › Roles."
+        "desc": "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Roles y permisos."
       }
     },
     "ClientBillingContract": {

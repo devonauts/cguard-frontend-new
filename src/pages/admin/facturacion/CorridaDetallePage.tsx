@@ -50,7 +50,18 @@ function CorridaDetallePage() {
   const [editando, setEditando] = useState<RunItem | null>(null);
   const [reviewUrl, setReviewUrl] = useState<string | null>(null);
 
-  const detalle = useQuery({ queryKey: [QK, "run", id], queryFn: () => clientBillingService.run(id), enabled: !!id });
+  // The client answers from outside: the page asks the server on every visit
+  // and, while the run waits for that answer, every 15 s (the default 30 s of
+  // cache showed «Esperando la respuesta» after the client had answered).
+  const detalle = useQuery({
+    queryKey: [QK, "run", id],
+    queryFn: () => clientBillingService.run(id),
+    enabled: !!id,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchInterval: (q) => (q.state.data?.run?.status === "clientReview" ? 15_000 : false),
+  });
   const run = detalle.data?.run;
   const moneda = run?.contract?.currency;
   const canEdit = hasPermission("billingEdit");

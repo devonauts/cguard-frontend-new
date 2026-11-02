@@ -11479,7 +11479,8 @@
       "nocheSegunReglas": "De nacht en de toeslag komen uit de loonregels hierboven: de schatting gebruikt wat echt wordt betaald.",
       "descansoEnJornada": "Rust tussen diensten en uren achter elkaar stelt u in bij Werktijd en rust.",
       "irAJornada": "Werktijd en rust",
-      "monedaUnica": "Dit is de valuta van het hele bedrijf: ook voor loonstroken."
+      "monedaUnica": "Dit is de valuta van het hele bedrijf: ook voor loonstroken.",
+      "campoVacio": "‘{{campo}}’ is leeg: vul een getal in voordat u opslaat."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",
@@ -16095,7 +16096,8 @@
       "exportadaConRechazos_many": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
       "exportadaConRechazos_other": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
       "tarifaInvalida": "Het tarief moet groter dan nul zijn. Laat het veld leeg om het te verwijderen.",
-      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen."
+      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen.",
+      "tarifaSinAplicar": "Niet toegepast: genereer de periode opnieuw"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",
@@ -18468,7 +18470,7 @@
       },
       "sinPermiso": {
         "titulo": "Uw rol kan Loonstroken niet openen",
-        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Instellingen › Rollen."
+        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Rollen en rechten."
       }
     },
     "ClientBillingContract": {
