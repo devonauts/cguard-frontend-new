@@ -19,7 +19,7 @@ import { TabTable, THead, Th, Tr } from "@/pages/admin/clientes/components/_shar
 import { usePermissions } from "@/hooks/usePermissions";
 import { fechaYHora, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import clientBillingService, { QUOTE_EDITABLE, type Quote, type QuoteLine } from "@/lib/api/clientBillingService";
-import { QK, dinero, cantidad, nombreDelCliente, destinatarioDeCotizacion, FilaTotal, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
+import { QK, dinero, cantidad, nombreDelCliente, destinatarioDeCotizacion, FilaTotal, useEtiquetasDeFacturacion, conModuloDeFacturacion, avisarError } from "./comun";
 
 function CotizacionDetallePage() {
   const { t } = useTranslation();
@@ -50,7 +50,7 @@ function CotizacionDetallePage() {
 
       return r;
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
 
       return null;
     } finally {
@@ -123,6 +123,8 @@ function CotizacionDetallePage() {
       message: t("ui.Cotizaciones.detalle.cancelarMsg", "La cotización queda cancelada y su enlace deja de funcionar. No se puede deshacer; puedes duplicarla después."),
       tone: "danger",
       confirmText: t("ui.Cotizaciones.detalle.cancelar", "Cancelar cotización"),
+      // «Cancelar» next to «Cancelar cotización» read as the same button.
+      cancelText: t("ui.Cotizaciones.detalle.noCancelar", "No, mantenerla"),
     });
 
     if (ok) await correr(() => clientBillingService.cancelQuote(q.id), t("ui.Cotizaciones.detalle.cancelada", "Cotización cancelada"));
@@ -150,7 +152,7 @@ function CotizacionDetallePage() {
     try {
       await clientBillingService.downloadQuotePdf(q);
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.detalle.noSePudoDescargar", "No se pudo descargar el PDF")));
+      avisarError(e, t("ui.Facturacion.detalle.noSePudoDescargar", "No se pudo descargar el PDF"));
     }
   };
 
@@ -175,6 +177,7 @@ function CotizacionDetallePage() {
   );
 
   const p = q.prospect;
+  const cliente = q.clientAccountId ? q.clientAccount : null;
   const lineas: QuoteLine[] = q.lines ?? [];
 
   return (
@@ -237,10 +240,18 @@ function CotizacionDetallePage() {
               ) : (
                 <Field label={t("ui.Cotizaciones.editor.empresa", "Empresa")} value={p?.company || "—"} />
               )}
-              <Field label={t("ui.Cotizaciones.editor.contacto", "Nombre del contacto")} value={[p?.contactName, p?.title].filter(Boolean).join(" · ") || "—"} />
-              <Field label={t("ui.Cotizaciones.editor.correo", "Correo")} value={p?.email || q.clientAccount?.email || "—"} />
-              <Field label={t("ui.Cotizaciones.editor.telefono", "Teléfono")} value={p?.phone || "—"} />
-              <Field label={t("ui.Cotizaciones.editor.direccion", "Dirección")} value={[p?.address, p?.city, p?.state, p?.postalCode].filter(Boolean).join(", ") || "—"} />
+              {/* A quote for an existing client has no prospect data of its own: its card is the client's. */}
+              <Field label={t("ui.Cotizaciones.editor.contacto", "Nombre del contacto")} value={[p?.contactName || cliente?.apContactName, p?.title].filter(Boolean).join(" · ") || "—"} />
+              <Field label={t("ui.Cotizaciones.editor.correo", "Correo")} value={p?.email || cliente?.email || "—"} />
+              <Field label={t("ui.Cotizaciones.editor.telefono", "Teléfono")} value={p?.phone || cliente?.phoneNumber || "—"} />
+              <Field
+                label={t("ui.Cotizaciones.editor.direccion", "Dirección")}
+                value={
+                  [p?.address, p?.city, p?.state, p?.postalCode].filter(Boolean).join(", ") ||
+                  [cliente?.address, cliente?.city, cliente?.state, cliente?.zipCode].filter(Boolean).join(", ") ||
+                  "—"
+                }
+              />
               <Field label={t("ui.Cotizaciones.editor.idioma", "Idioma del documento")} value={q.language === "es" ? "Español" : "English"} />
               <Field label={t("ui.Cotizaciones.editor.validaHasta", "Válida hasta")} value={soloFechaCivil(q.validUntil)} />
               <Field label={t("ui.Cotizaciones.editor.inicio", "Inicio propuesto del servicio")} value={soloFechaCivil(q.startDate)} />

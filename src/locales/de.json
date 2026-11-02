@@ -6271,7 +6271,8 @@
     "free": {
       "title": "Kostenloser Tarif",
       "body": "{{marca}} stellt Ihrem Unternehmen den Dienst kostenlos zur Verfügung."
-    }
+    },
+    "invoicesEmptyDescActive": "Ihre erste Rechnung erscheint hier, sobald sie ausgestellt ist, und Sie können sie als PDF herunterladen."
   },
   "brand": {
     "tagline": "Intelligente Sicherheit"
@@ -15979,7 +15980,14 @@
       "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
       "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?",
       "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen.",
-      "enviarAPago": "Zur Zahlung senden"
+      "enviarAPago": "Zur Zahlung senden",
+      "exportadaConRechazos": "Lohnliste exportiert ohne {{count}} Zeitkarte(n), die nicht ausgezahlt werden:",
+      "exportadaConRechazos_one": "Lohnliste exportiert ohne 1 Zeitkarte, die nicht ausgezahlt wird:",
+      "exportadaConRechazos_few": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "exportadaConRechazos_many": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "exportadaConRechazos_other": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "tarifaInvalida": "Der Satz muss größer als null sein. Zum Entfernen das Feld leer lassen.",
+      "tarifaQuitada": "Satz von {{nombre}} entfernt. Erzeugen Sie die Periode neu, um es anzuwenden."
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",
@@ -18344,6 +18352,10 @@
         "vacio": "Keine ausgestellten Lohnlisten",
         "vacioDesc": "Solange Lohnabrechnungen ausgeschaltet ist, werden nur veröffentlichte Lohnlisten angezeigt.",
         "noEmitida": "Nur bereits ausgestellte Lohnlisten und Lohnabrechnungen können angesehen werden."
+      },
+      "sinPermiso": {
+        "titulo": "Ihre Rolle kann Lohnabrechnungen nicht öffnen",
+        "desc": "Ihrer Rolle fehlen die Berechtigungen für Lohnabrechnungen (Abrechnungen und Lohnprofile ansehen und bearbeiten). Eine Administratorin oder ein Administrator kann sie unter Einstellungen › Rollen vergeben."
       }
     },
     "ClientBillingContract": {
@@ -18556,7 +18568,8 @@
         "contratoHint": "Optional: übernimmt Zahlungsziel und Steuerbefreiung.",
         "sinContrato": "Ohne Vertrag",
         "periodoDesde": "Zeitraum von",
-        "periodoHasta": "bis"
+        "periodoHasta": "bis",
+        "numeroInvalido": "Menge und Preis müssen Zahlen sein (zum Beispiel 1500 oder 12,50)."
       },
       "ajustes": {
         "si": "Ja",
@@ -18627,7 +18640,10 @@
         "validezCotizacion": "Gültigkeit des Angebots (Tage)",
         "validezCotizacionHint": "Ohne Unterschrift in dieser Frist läuft das Angebot von selbst ab.",
         "terminosCotizacion": "Standardbedingungen der Angebote",
-        "terminosCotizacionHint": "Werden in jedes neue Angebot übernommen; Sie können sie pro Angebot ändern."
+        "terminosCotizacionHint": "Werden in jedes neue Angebot übernommen; Sie können sie pro Angebot ändern.",
+        "fueraDeRango": "„{{campo}}“ muss zwischen {{min}} und {{max}} liegen.",
+        "recordatorioInvalido": "Erinnerungen: „{{valor}}“ ist keine ganze Zahl von Tagen zwischen -30 und 180.",
+        "demasiadosRecordatorios": "Höchstens {{max}} Erinnerungen."
       },
       "recargo": {
         "lastMinute": "Kurzfristige Abdeckung",
@@ -18714,7 +18730,8 @@
         "minutosFacturables": "Abrechenbare Minuten",
         "editarLinea": "Position bearbeiten",
         "minutosHint": "Geplant: {{p}} · gearbeitet: {{w}}",
-        "excluirDeLaFactura": "Von der Rechnung ausschließen"
+        "excluirDeLaFactura": "Von der Rechnung ausschließen",
+        "revisionLista": "Bereit zur Prüfung durch den Kunden. Es wird keine E-Mail versendet: Kopieren Sie den Link und teilen Sie ihn mit dem Kunden."
       },
       "regla": {
         "usarElDeLaEmpresa": "Firmenwert verwenden",
@@ -18983,7 +19000,8 @@
         "pestanaDiseno": "Dokumentdesign",
         "pestanaTextos": "Texte",
         "validezYTerminosMovidos": "Gültigkeit, Einleitung und Bedingungen der Angebote finden Sie jetzt unter Texte."
-      }
+      },
+      "periodoAlReves": "Der Zeitraum endet, bevor er beginnt."
     },
     "ClientInvoices": {
       "pagadoTotal": "Insgesamt bezahlt",
@@ -19067,7 +19085,8 @@
         "noSeEnvio": "Die E-Mail konnte nicht gesendet werden. Prüfen Sie die Empfänger.",
         "enviadaOk": "Angebot gesendet",
         "enviarDesc": "PDF und Link zur Online-Unterschrift werden gesendet. Das Angebot gilt als gesendet.",
-        "enviar": "Senden"
+        "enviar": "Senden",
+        "noCancelar": "Nein, behalten"
       },
       "volver": "Zurück zu den Angeboten",
       "revision": "Revision {{n}}",

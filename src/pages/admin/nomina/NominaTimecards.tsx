@@ -172,6 +172,9 @@ export default function NominaTimecards() {
      period after asked twice on every visit, and a late first answer could
      paint the wrong period (QA 2026-11-01). */
   const [rangoListo, setRangoListo] = useState(!!rangoDelEnlace);
+  // Rates saved from this screen, by person: the cards show theirs only after
+  // the period is generated again.
+  const tarifasGuardadas = useRef(new Map<string, number | null>());
   const ultimaCarga = useRef(0);
 
   const cargar = useCallback(() => {
@@ -548,13 +551,27 @@ export default function NominaTimecards() {
     }
     setTrabajando(true);
     try {
-      await payrollService.exportar(sel, { desde, hasta });
-      toast.success(t("ui.NominaTimecards.nominaExportada", "Nómina exportada"));
+      const r = await payrollService.exportar(sel, { desde, hasta });
+
+      if (r.rechazadas > 0) {
+        toast.warning(
+          t("ui.NominaTimecards.exportadaConRechazos", {
+            count: r.rechazadas,
+            defaultValue: "Nómina exportada sin {{count}} tarjeta(s), que no salen a pagar:",
+          }),
+          { description: r.motivos.join(" · "), duration: 15000 },
+        );
+      } else {
+        toast.success(t("ui.NominaTimecards.nominaExportada", "Nómina exportada"));
+      }
       cargar();
     } catch (e) {
-      toast.error(
-        (e as Error)?.message || t("ui.NominaTimecards.noSePudoExportar", "No se pudo exportar"),
-      );
+      // The interceptor already showed the server's reason (nothing payable).
+      if (!(e as { toastShown?: boolean })?.toastShown) {
+        toast.error(
+          (e as Error)?.message || t("ui.NominaTimecards.noSePudoExportar", "No se pudo exportar"),
+        );
+      }
     } finally {
       setTrabajando(false);
     }
@@ -578,20 +595,47 @@ export default function NominaTimecards() {
     }
   };
 
-  const guardarTarifa = async (r: TarjetaDeNomina, valor: string) => {
-    const previa = r.tarifaCentavos ?? null;
+  const guardarTarifa = async (r: TarjetaDeNomina, valor: string, campo?: HTMLInputElement) => {
+    // The card keeps the rate it was generated with until the period is
+    // generated again: compare with what was saved here, or clearing a rate
+    // just saved sent nothing (QA 2026-11-01).
+    const previa = tarifasGuardadas.current.has(r.userId)
+      ? (tarifasGuardadas.current.get(r.userId) ?? null)
+      : (r.tarifaCentavos ?? null);
     const centavos =
-      valor.trim() === "" ? null : Math.round(Number(valor) * 100);
+      valor.trim() === "" ? null : Math.round(Number(valor.replace(",", ".")) * 100);
+    const restaurar = () => {
+      if (campo) campo.value = previa != null ? String(previa / 100) : "";
+    };
 
-    if (Number.isNaN(centavos as number)) return;
+    if (Number.isNaN(centavos as number)) return restaurar();
+    if (centavos !== null && centavos <= 0) {
+      // The server stores a zero or negative rate as «sin tarifa»: say it here
+      // instead of «Tarifa guardada».
+      toast.error(
+        t(
+          "ui.NominaTimecards.tarifaInvalida",
+          "La tarifa tiene que ser mayor que cero. Para quitarla, deja el campo vacío.",
+        ),
+      );
+
+      return restaurar();
+    }
     if (centavos === previa) return;
 
     try {
       await payrollService.ponerTarifas([
         { userId: r.userId, hourlyRateCents: centavos },
       ]);
+      tarifasGuardadas.current.set(r.userId, centavos);
       toast.success(
-        r.nombre
+        centavos === null
+          ? t("ui.NominaTimecards.tarifaQuitada", {
+              nombre: r.nombre || "—",
+              defaultValue:
+                "Tarifa de {{nombre}} quitada. Vuelve a generar el periodo para aplicarlo.",
+            })
+          : r.nombre
           ? t("ui.NominaTimecards.tarifaGuardada", {
               nombre: r.nombre,
               defaultValue:
@@ -724,7 +768,7 @@ export default function NominaTimecards() {
                   "Tarifa por hora. Se aplica al volver a generar el periodo.",
                 )
           }
-          onBlur={(e) => guardarTarifa(r, e.target.value)}
+          onBlur={(e) => guardarTarifa(r, e.target.value, e.currentTarget)}
         />
       ),
     },

@@ -23,7 +23,7 @@ import clientBillingService, {
   type Invoice,
   type PaymentMethodConfig,
 } from "@/lib/api/clientBillingService";
-import { QK, useEtiquetasDeFacturacion, mensajeDeError } from "./comun";
+import { QK, useEtiquetasDeFacturacion, avisarError } from "./comun";
 
 /**
  * The company's methods. Shares the settings query with the settings page; a
@@ -141,7 +141,7 @@ export function MetodosDeLaFactura({ inv, canEdit, onSaved }: { inv: Invoice; ca
       setEditando(false);
       await onSaved();
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }

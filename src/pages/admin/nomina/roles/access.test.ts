@@ -34,6 +34,17 @@ describe("payslips gate · payrollAccessMode", () => {
     expect(payrollAccessMode({ entitled: true, readRefused: true, store: null, storeLoading: false })).toBe("none");
   });
 
+  it("the module is there but the role may not (403) → denied, not a skeleton forever", () => {
+    expect(payrollAccessMode({ entitled: true, forbidden: true, store: null, storeLoading: false })).toBe("denied");
+    expect(
+      payrollAccessMode({ entitled: false, forbidden: true, store: { owned: true, paused: true }, storeLoading: false }),
+    ).toBe("denied");
+  });
+
+  it("a 402 on the read-only endpoint still wins over a 403: without the module there is nothing to ask for", () => {
+    expect(payrollAccessMode({ entitled: false, readRefused: true, forbidden: true, store: null, storeLoading: false })).toBe("none");
+  });
+
   it("not entitled and the store has not answered yet → loading (no flash of the presentation)", () => {
     expect(payrollAccessMode({ entitled: false, store: undefined, storeLoading: true })).toBe("loading");
   });

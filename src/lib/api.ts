@@ -314,7 +314,9 @@ api.interceptors.response.use(
       return Promise.reject(apiError);
     }
 
-    if (!cfg.toast?.silentError) {
+    const silentStatus = (cfg.toast?.silentStatuses || []).includes(apiError.status);
+
+    if (!cfg.toast?.silentError && !silentStatus) {
       const custom = cfg.toast?.error;
       const msg = String(
         typeof custom === "function"

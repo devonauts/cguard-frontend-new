@@ -669,7 +669,8 @@
     "free": {
       "title": "Plan gratis",
       "body": "{{marca}} le da el servicio sin costo a tu empresa."
-    }
+    },
+    "invoicesEmptyDescActive": "Tu primera factura aparecerá aquí cuando se emita, y podrás descargarla en PDF."
   },
   "categories": {
     "Understood": "Entendido",
@@ -15439,7 +15440,14 @@
       "reabrirPeriodoMensaje": "Los fichajes, turnos y marcas desde ese día se podrán volver a cambiar. Las tarjetas ya aprobadas o exportadas no se tocan. Escribe el motivo: queda en la bitácora.",
       "reabrirPeriodoTitulo": "¿Reabrir la nómina desde el {{desde}}?",
       "generarCerrado": "Este periodo está cerrado. Reábrelo para volver a calcularlo.",
-      "enviarAPago": "Enviar a pago"
+      "enviarAPago": "Enviar a pago",
+      "exportadaConRechazos": "Nómina exportada sin {{count}} tarjeta(s), que no salen a pagar:",
+      "exportadaConRechazos_one": "Nómina exportada sin 1 tarjeta, que no sale a pagar:",
+      "exportadaConRechazos_few": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
+      "exportadaConRechazos_many": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
+      "exportadaConRechazos_other": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
+      "tarifaInvalida": "La tarifa tiene que ser mayor que cero. Para quitarla, deja el campo vacío.",
+      "tarifaQuitada": "Tarifa de {{nombre}} quitada. Vuelve a generar el periodo para aplicarlo."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencias",
@@ -17804,6 +17812,10 @@
         "vacio": "No hay planillas emitidas",
         "vacioDesc": "Mientras Roles de pago esté apagado solo se muestran las planillas publicadas.",
         "noEmitida": "Solo se pueden ver las planillas y los roles ya emitidos."
+      },
+      "sinPermiso": {
+        "titulo": "Tu rol no puede abrir Roles de pago",
+        "desc": "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Configuración › Roles."
       }
     },
     "ClientBillingContract": {
@@ -18016,7 +18028,8 @@
         "contratoHint": "Opcional: toma sus términos de pago y su exención fiscal.",
         "sinContrato": "Sin contrato",
         "periodoDesde": "Periodo desde",
-        "periodoHasta": "hasta"
+        "periodoHasta": "hasta",
+        "numeroInvalido": "La cantidad y el precio tienen que ser números (por ejemplo 1500 o 12,50)."
       },
       "ajustes": {
         "si": "Sí",
@@ -18087,7 +18100,10 @@
         "validezCotizacion": "Validez de la cotización (días)",
         "validezCotizacionHint": "Pasado ese plazo sin firma, la cotización vence sola.",
         "terminosCotizacion": "Términos por defecto de las cotizaciones",
-        "terminosCotizacionHint": "Se copian en cada cotización nueva; puedes cambiarlos en cada una."
+        "terminosCotizacionHint": "Se copian en cada cotización nueva; puedes cambiarlos en cada una.",
+        "fueraDeRango": "«{{campo}}» tiene que estar entre {{min}} y {{max}}.",
+        "recordatorioInvalido": "Recordatorios: «{{valor}}» no es un número entero de días entre -30 y 180.",
+        "demasiadosRecordatorios": "Como máximo {{max}} recordatorios."
       },
       "recargo": {
         "lastMinute": "Cobertura de último minuto",
@@ -18174,7 +18190,8 @@
         "minutosFacturables": "Minutos facturables",
         "editarLinea": "Editar línea",
         "minutosHint": "Programados: {{p}} · trabajados: {{w}}",
-        "excluirDeLaFactura": "Excluir de la factura"
+        "excluirDeLaFactura": "Excluir de la factura",
+        "revisionLista": "Lista para la revisión del cliente. No se envía ningún correo: copia el enlace y compártelo con él."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usar el valor de la empresa",
@@ -18443,7 +18460,8 @@
         "pestanaDiseno": "Diseño de documentos",
         "pestanaTextos": "Textos",
         "validezYTerminosMovidos": "La validez, la introducción y los términos de las cotizaciones están en Textos."
-      }
+      },
+      "periodoAlReves": "El periodo termina antes de empezar."
     },
     "ClientInvoices": {
       "pagadoTotal": "Pagado en total",
@@ -18527,7 +18545,8 @@
         "noSeEnvio": "No se pudo enviar el correo. Revisa los destinatarios.",
         "enviadaOk": "Cotización enviada",
         "enviarDesc": "Se envía el PDF y el enlace para firmar en línea. La cotización queda como enviada.",
-        "enviar": "Enviar"
+        "enviar": "Enviar",
+        "noCancelar": "No, mantenerla"
       },
       "volver": "Volver a cotizaciones",
       "revision": "Revisión {{n}}",

@@ -669,7 +669,8 @@
     "free": {
       "title": "Free plan",
       "body": "{{marca}} provides the service to your company at no cost."
-    }
+    },
+    "invoicesEmptyDescActive": "Your first invoice will appear here once it is issued, and you can download it as a PDF."
   },
   "categories": {
     "Understood": "Understood",
@@ -15439,7 +15440,14 @@
       "reabrirPeriodoMensaje": "Punches, shifts and marks from that day on can be changed again. Timecards already approved or exported are not touched. Write the reason: it goes to the audit log.",
       "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?",
       "generarCerrado": "This period is closed. Reopen it to recalculate.",
-      "enviarAPago": "Send to pay"
+      "enviarAPago": "Send to pay",
+      "exportadaConRechazos": "Payroll exported without {{count}} timecard(s), which are not paid:",
+      "exportadaConRechazos_one": "Payroll exported without 1 timecard, which is not paid:",
+      "exportadaConRechazos_few": "Payroll exported without {{count}} timecards, which are not paid:",
+      "exportadaConRechazos_many": "Payroll exported without {{count}} timecards, which are not paid:",
+      "exportadaConRechazos_other": "Payroll exported without {{count}} timecards, which are not paid:",
+      "tarifaInvalida": "The rate must be greater than zero. To remove it, leave the field empty.",
+      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",
@@ -17804,6 +17812,10 @@
         "vacio": "No issued payroll sheets",
         "vacioDesc": "While Payslips is switched off, only published payroll sheets are shown.",
         "noEmitida": "Only payroll sheets and payslips already issued can be viewed."
+      },
+      "sinPermiso": {
+        "titulo": "Your role cannot open Payslips",
+        "desc": "Your role does not have the Payslips permissions (view and edit payslips and pay profiles). An administrator can grant them in Settings › Roles."
       }
     },
     "ClientBillingContract": {
@@ -18016,7 +18028,8 @@
         "contratoHint": "Optional: takes its payment terms and tax exemption.",
         "sinContrato": "No contract",
         "periodoDesde": "Period from",
-        "periodoHasta": "to"
+        "periodoHasta": "to",
+        "numeroInvalido": "Quantity and price must be numbers (for example 1500 or 12.50)."
       },
       "ajustes": {
         "si": "Yes",
@@ -18087,7 +18100,10 @@
         "validezCotizacion": "Quote validity (days)",
         "validezCotizacionHint": "After that many days without a signature, the quote expires on its own.",
         "terminosCotizacion": "Default quote terms",
-        "terminosCotizacionHint": "Copied into every new quote; you can change them on each one."
+        "terminosCotizacionHint": "Copied into every new quote; you can change them on each one.",
+        "fueraDeRango": "“{{campo}}” must be between {{min}} and {{max}}.",
+        "recordatorioInvalido": "Reminders: “{{valor}}” is not a whole number of days between -30 and 180.",
+        "demasiadosRecordatorios": "At most {{max}} reminders."
       },
       "recargo": {
         "lastMinute": "Last-minute coverage",
@@ -18174,7 +18190,8 @@
         "minutosFacturables": "Billable minutes",
         "editarLinea": "Edit line",
         "minutosHint": "Scheduled: {{p}} · worked: {{w}}",
-        "excluirDeLaFactura": "Exclude from the invoice"
+        "excluirDeLaFactura": "Exclude from the invoice",
+        "revisionLista": "Ready for the client's review. No e-mail is sent: copy the link and share it with them."
       },
       "regla": {
         "usarElDeLaEmpresa": "Use the company value",
@@ -18443,7 +18460,8 @@
         "pestanaDiseno": "Document design",
         "pestanaTextos": "Texts",
         "validezYTerminosMovidos": "Proposal validity, introduction and terms are now under Texts."
-      }
+      },
+      "periodoAlReves": "The period ends before it starts."
     },
     "ClientInvoices": {
       "pagadoTotal": "Paid in total",
@@ -18527,7 +18545,8 @@
         "noSeEnvio": "The email could not be sent. Check the recipients.",
         "enviadaOk": "Quote sent",
         "enviarDesc": "The PDF and the link to sign online are sent. The quote is marked as sent.",
-        "enviar": "Send"
+        "enviar": "Send",
+        "noCancelar": "No, keep it"
       },
       "volver": "Back to quotes",
       "revision": "Revision {{n}}",

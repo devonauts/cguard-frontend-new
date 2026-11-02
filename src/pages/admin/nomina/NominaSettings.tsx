@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -104,6 +104,119 @@ function get(obj: unknown, path: string): unknown {
   return path.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), obj);
 }
 
+/*
+ * The fields live OUTSIDE the page component. Declared inside it, every render
+ * made a new component type, so React remounted each input after one keystroke:
+ * the field lost focus, «Tolerancia de retraso» kept only its first digit (or
+ * 0) and the e-mail field a single letter — and «Guardar» saved that (QA
+ * 2026-11-01).
+ */
+
+function SettingsSection({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
+  return (
+    <Section icon={icon} title={title}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
+    </Section>
+  );
+}
+
+type SetSettings = (fn: (prev: NominaSettings | null) => NominaSettings | null) => void;
+
+/**
+ * A number typed as text: clearing the field to write another value no longer
+ * stores a 0 on the way; leaving it empty keeps the last valid number.
+ */
+function Num({ label, path, s, setS }: { label: string; path: string; s: NominaSettings; setS: SetSettings }) {
+  const valor = get(s, path) as number | undefined;
+  const [texto, setTexto] = useState(valor == null ? "" : String(valor));
+  const ultimo = useRef<number | undefined>(valor);
+
+  useEffect(() => {
+    if (valor !== ultimo.current) {
+      ultimo.current = valor;
+      setTexto(valor == null ? "" : String(valor));
+    }
+  }, [valor]);
+
+  return (
+    <label className="block">
+      <span className="cg-eyebrow">{label}</span>
+      <input
+        className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
+        type="number"
+        value={texto}
+        onBlur={() => setTexto(ultimo.current == null ? "" : String(ultimo.current))}
+        onChange={(e) => {
+          setTexto(e.target.value);
+          const n = e.target.value.trim() === "" ? NaN : Number(e.target.value);
+
+          if (!Number.isFinite(n)) return;
+          ultimo.current = n;
+          setS((prev) => set(prev as NominaSettings, path, n));
+        }}
+      />
+    </label>
+  );
+}
+
+function Toggle({ label, path, s, setS }: { label: string; path: string; s: NominaSettings; setS: SetSettings }) {
+  return (
+    <label className="glass-flat glass-hover flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
+      <input
+        checked={!!get(s, path)}
+        className="cg-focus size-4"
+        style={{ accentColor: "var(--brand)" }}
+        type="checkbox"
+        onChange={(e) => setS((prev) => set(prev as NominaSettings, path, e.target.checked))}
+      />
+      <span className="text-sm">{label}</span>
+    </label>
+  );
+}
+
+const listaDeCorreos = (texto: string) =>
+  texto
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+
+/** The text is the person's while typing («a@b.com, » keeps its comma); the list is what is saved. */
+function CorreosExtra({ s, setS, label, placeholder, hint }: { s: NominaSettings; setS: SetSettings; label: string; placeholder: string; hint: string }) {
+  const unidos = (s.notifications?.customEmails || []).join(", ");
+  const [texto, setTexto] = useState(unidos);
+  const ultimo = useRef(unidos);
+
+  useEffect(() => {
+    if (unidos !== ultimo.current) {
+      ultimo.current = unidos;
+      setTexto(unidos);
+    }
+  }, [unidos]);
+
+  return (
+    <label className="block">
+      <span className="cg-eyebrow">{label}</span>
+      <input
+        className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+        placeholder={placeholder}
+        type="text"
+        value={texto}
+        onBlur={() => setTexto(ultimo.current)}
+        onChange={(e) => {
+          setTexto(e.target.value);
+          const lista = listaDeCorreos(e.target.value);
+
+          ultimo.current = lista.join(", ");
+          setS((p) => set(p as NominaSettings, "notifications.customEmails", lista));
+        }}
+      />
+      <span className="mt-1 block text-xs" style={{ color: "var(--ink-faint)" }}>
+        {hint}
+      </span>
+    </label>
+  );
+}
+
 export default function NominaSettings() {
   const { t } = useTranslation();
   const [s, setS] = useState<NominaSettings | null>(null);
@@ -145,55 +258,6 @@ export default function NominaSettings() {
     }
   };
 
-  const Num = ({ label, path }: { label: string; path: string }) => {
-    return (
-      <label className="block">
-        <span className="cg-eyebrow">{label}</span>
-        <input
-          className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
-          type="number"
-          value={(get(s, path) as number | undefined) ?? 0}
-          onChange={(e) =>
-            setS((prev) =>
-              set(prev as NominaSettings, path, Number(e.target.value)),
-            )
-          }
-        />
-      </label>
-    );
-  };
-
-  const Toggle = ({ label, path }: { label: string; path: string }) => {
-    return (
-      <label className="glass-flat glass-hover flex cursor-pointer items-center gap-2.5 px-3 py-2.5">
-        <input
-          checked={!!get(s, path)}
-          className="cg-focus size-4"
-          style={{ accentColor: "var(--brand)" }}
-          type="checkbox"
-          onChange={(e) =>
-            setS((prev) => set(prev as NominaSettings, path, e.target.checked))
-          }
-        />
-        <span className="text-sm">{label}</span>
-      </label>
-    );
-  };
-
-  const SettingsSection = ({
-    title,
-    icon,
-    children,
-  }: {
-    title: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-  }) => (
-    <Section icon={icon} title={title}>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
-    </Section>
-  );
-
   return (
     <AppLayout>
       <SettingsLayout
@@ -208,10 +272,14 @@ export default function NominaSettings() {
               <Toggle
                 label={t("ui.NominaSettings.relojDeAsistenciaHabilitado")}
                 path="general.timeClockEnabled"
+                s={s}
+                setS={setS}
               />
               <Toggle
                 label={t("ui.NominaSettings.requerirNotasEnExcepciones")}
                 path="general.requireNotesOnException"
+                s={s}
+                setS={setS}
               />
               {/* Selfie y rostro: se configuran en las apps (Mike 2026-10-09). */}
               <p className="glass-flat px-3 py-2.5 text-sm sm:col-span-2">
@@ -230,6 +298,8 @@ export default function NominaSettings() {
               <Num
                 label={t("ui.NominaSettings.entradaAnticipadaPermitida", "Entrada anticipada permitida")}
                 path="windows.earlyClockInMin"
+                s={s}
+                setS={setS}
               />
               <Num
                 label={t(
@@ -237,6 +307,8 @@ export default function NominaSettings() {
                   "Tolerancia de retraso (gracia)",
                 )}
                 path="windows.lateGraceMin"
+                s={s}
+                setS={setS}
               />
               <Num
                 label={t(
@@ -244,10 +316,14 @@ export default function NominaSettings() {
                   "Umbral de salida anticipada",
                 )}
                 path="windows.earlyClockoutThresholdMin"
+                s={s}
+                setS={setS}
               />
               <Num
                 label={t("ui.NominaSettings.umbralSinMarcarSalida")}
                 path="windows.missedClockoutThresholdMin"
+                s={s}
+                setS={setS}
               />
               <Num
                 label={t(
@@ -255,6 +331,8 @@ export default function NominaSettings() {
                   "Umbral inasistencia (no-show)",
                 )}
                 path="windows.noShowThresholdMin"
+                s={s}
+                setS={setS}
               />
             </SettingsSection>
 
@@ -262,6 +340,8 @@ export default function NominaSettings() {
               <Num
                 label={t("ui.NominaSettings.radioPorDefectoM")}
                 path="geofence.defaultRadiusM"
+                s={s}
+                setS={setS}
               />
               <Toggle
                 label={t(
@@ -269,6 +349,8 @@ export default function NominaSettings() {
                   "Requerir validación de geocerca",
                 )}
                 path="geofence.requireValidation"
+                s={s}
+                setS={setS}
               />
               <Toggle
                 label={t(
@@ -276,6 +358,8 @@ export default function NominaSettings() {
                   "Permitir fuera de geocerca (con aprobación)",
                 )}
                 path="geofence.allowOutsideWithApproval"
+                s={s}
+                setS={setS}
               />
             </SettingsSection>
 
@@ -283,54 +367,31 @@ export default function NominaSettings() {
               <Toggle
                 label={t("ui.NominaSettings.notificarSoloAlSupervisorAsignado")}
                 path="notifications.assignedSupervisorsOnly"
+                s={s}
+                setS={setS}
               />
               {/* El backend YA enviaba a estos correos (attendanceService y el
                   barrido nocturno los leen); lo que faltaba era el campo para
                   escribirlos. Un ajuste funcional e inalcanzable es el problema
                   inverso al del interruptor muerto, y se nota igual de poco. */}
-              <label className="block">
-                <span className="cg-eyebrow">
-                  {t(
-                    "ui.NominaSettings.avisarAdemasAEstosCorreos",
-                    "Avisar además a estos correos",
-                  )}
-                </span>
-                <input
-                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
-                  placeholder={t(
-                    "ui.NominaSettings.operacionesEmpresaComRrhhEmpresa",
-                  )}
-                  type="text"
-                  value={(s.notifications?.customEmails || []).join(", ")}
-                  onChange={(e) =>
-                    setS((p) =>
-                      set(
-                        p as NominaSettings,
-                        "notifications.customEmails",
-                        e.target.value
-                          .split(",")
-                          .map((x) => x.trim())
-                          .filter(Boolean),
-                      ),
-                    )
-                  }
-                />
-                <span
-                  className="mt-1 block text-xs"
-                  style={{ color: "var(--ink-faint)" }}
-                >
-                  {t(
-                    "ui.NominaSettings.separadosPorComasReciben",
-                    "Separados por comas. Reciben las novedades de asistencia además de los supervisores.",
-                  )}
-                </span>
-              </label>
+              <CorreosExtra
+                hint={t(
+                  "ui.NominaSettings.separadosPorComasReciben",
+                  "Separados por comas. Reciben las novedades de asistencia además de los supervisores.",
+                )}
+                label={t("ui.NominaSettings.avisarAdemasAEstosCorreos", "Avisar además a estos correos")}
+                placeholder={t("ui.NominaSettings.operacionesEmpresaComRrhhEmpresa")}
+                s={s}
+                setS={setS}
+              />
             </SettingsSection>
 
             <SettingsSection icon={<CheckSquare />} title={t("sidebar.asistencia.aprobaciones", "Aprobaciones")}>
               <Toggle
                 label={t("ui.NominaSettings.autoAprobarMarcacionesNormales", "Auto-aprobar marcaciones normales")}
                 path="approval.autoApproveNormal"
+                s={s}
+                setS={setS}
               />
               <Toggle
                 label={t(
@@ -338,6 +399,8 @@ export default function NominaSettings() {
                   "Requerir aprobación para excepciones",
                 )}
                 path="approval.requireApprovalForExceptions"
+                s={s}
+                setS={setS}
               />
               <Toggle
                 label={t(
@@ -345,6 +408,8 @@ export default function NominaSettings() {
                   "Bloquear registros al cerrar la nómina",
                 )}
                 path="approval.lockAfterPayrollClose"
+                s={s}
+                setS={setS}
               />
             </SettingsSection>
 
@@ -448,14 +513,20 @@ export default function NominaSettings() {
               <Num
                 label={t("ui.NominaSettings.tarifaPorHoraPorDefecto")}
                 path="payroll.defaultHourlyRate"
+                s={s}
+                setS={setS}
               />
               <Num
                 label={t("ui.NominaSettings.umbralDeHorasExtraH")}
                 path="payroll.overtimeThresholdHours"
+                s={s}
+                setS={setS}
               />
               <Num
                 label={t("ui.NominaSettings.multiplicadorDeHoraExtra")}
                 path="payroll.overtimeMultiplier"
+                s={s}
+                setS={setS}
               />
               {/* ONE night surcharge (phase 3): the estimate uses the pay
                   rule's window and rate, the same ones that are paid. */}

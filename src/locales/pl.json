@@ -6277,7 +6277,8 @@
     "free": {
       "title": "Plan bezpłatny",
       "body": "{{marca}} zapewnia Twojej firmie usługę bez opłat."
-    }
+    },
+    "invoicesEmptyDescActive": "Twoja pierwsza faktura pojawi się tutaj po wystawieniu i będzie można ją pobrać w PDF."
   },
   "brand": {
     "tagline": "Inteligentna ochrona"
@@ -16171,7 +16172,14 @@
       "reabrirPeriodoMensaje": "Odbicia, zmiany i oznaczenia od tego dnia będzie można znowu zmieniać. Karty już zatwierdzone lub wyeksportowane pozostają bez zmian. Podaj powód: zostanie zapisany w dzienniku.",
       "reabrirPeriodoTitulo": "Otworzyć ponownie płace od {{desde}}?",
       "generarCerrado": "Ten okres jest zamknięty. Otwórz go ponownie, aby przeliczyć.",
-      "enviarAPago": "Wyślij do wypłaty"
+      "enviarAPago": "Wyślij do wypłaty",
+      "exportadaConRechazos": "Lista płac wyeksportowana bez {{count}} kart(y), które nie idą do wypłaty:",
+      "exportadaConRechazos_one": "Lista płac wyeksportowana bez 1 karty, która nie idzie do wypłaty:",
+      "exportadaConRechazos_few": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
+      "exportadaConRechazos_many": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
+      "exportadaConRechazos_other": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
+      "tarifaInvalida": "Stawka musi być większa od zera. Aby ją usunąć, zostaw pole puste.",
+      "tarifaQuitada": "Stawka {{nombre}} usunięta. Wygeneruj okres ponownie, aby to zastosować."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencje",
@@ -18634,6 +18642,10 @@
         "vacio": "Brak wystawionych list płac",
         "vacioDesc": "Dopóki Paski wypłaty są wyłączone, widać tylko opublikowane listy płac.",
         "noEmitida": "Można przeglądać tylko już wystawione listy płac i paski wypłaty."
+      },
+      "sinPermiso": {
+        "titulo": "Twoja rola nie może otworzyć Pasków wypłat",
+        "desc": "Twoja rola nie ma uprawnień do Pasków wypłat (przeglądanie i edycja pasków oraz profili płacowych). Administrator może je nadać w Ustawienia › Role."
       }
     },
     "ClientBillingContract": {
@@ -18846,7 +18858,8 @@
         "contratoHint": "Opcjonalnie: przejmuje terminy płatności i zwolnienie podatkowe.",
         "sinContrato": "Bez umowy",
         "periodoDesde": "Okres od",
-        "periodoHasta": "do"
+        "periodoHasta": "do",
+        "numeroInvalido": "Ilość i cena muszą być liczbami (na przykład 1500 lub 12,50)."
       },
       "ajustes": {
         "si": "Tak",
@@ -18917,7 +18930,10 @@
         "validezCotizacion": "Ważność oferty (dni)",
         "validezCotizacionHint": "Po tym czasie bez podpisu oferta wygasa automatycznie.",
         "terminosCotizacion": "Domyślne warunki ofert",
-        "terminosCotizacionHint": "Kopiowane do każdej nowej oferty; możesz je zmienić w każdej z nich."
+        "terminosCotizacionHint": "Kopiowane do każdej nowej oferty; możesz je zmienić w każdej z nich.",
+        "fueraDeRango": "„{{campo}}” musi mieścić się między {{min}} a {{max}}.",
+        "recordatorioInvalido": "Przypomnienia: „{{valor}}” nie jest całkowitą liczbą dni od -30 do 180.",
+        "demasiadosRecordatorios": "Najwyżej {{max}} przypomnień."
       },
       "recargo": {
         "lastMinute": "Obsada na ostatnią chwilę",
@@ -19004,7 +19020,8 @@
         "minutosFacturables": "Minuty do zafakturowania",
         "editarLinea": "Edytuj pozycję",
         "minutosHint": "Zaplanowane: {{p}} · przepracowane: {{w}}",
-        "excluirDeLaFactura": "Wyklucz z faktury"
+        "excluirDeLaFactura": "Wyklucz z faktury",
+        "revisionLista": "Gotowa do weryfikacji przez klienta. Żaden e-mail nie jest wysyłany: skopiuj link i udostępnij go klientowi."
       },
       "regla": {
         "usarElDeLaEmpresa": "Użyj wartości firmy",
@@ -19273,7 +19290,8 @@
         "pestanaDiseno": "Wygląd dokumentów",
         "pestanaTextos": "Teksty",
         "validezYTerminosMovidos": "Ważność, wprowadzenie i warunki ofert są teraz w Tekstach."
-      }
+      },
+      "periodoAlReves": "Okres kończy się, zanim się zacznie."
     },
     "ClientInvoices": {
       "pagadoTotal": "Zapłacono łącznie",
@@ -19357,7 +19375,8 @@
         "noSeEnvio": "Nie udało się wysłać e-maila. Sprawdź odbiorców.",
         "enviadaOk": "Oferta wysłana",
         "enviarDesc": "Wysyłany jest PDF i link do podpisu online. Oferta zostaje oznaczona jako wysłana.",
-        "enviar": "Wyślij"
+        "enviar": "Wyślij",
+        "noCancelar": "Nie, zachowaj"
       },
       "volver": "Wróć do ofert",
       "revision": "Wersja {{n}}",

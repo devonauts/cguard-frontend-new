@@ -6271,7 +6271,8 @@
     "free": {
       "title": "Piano gratuito",
       "body": "{{marca}} offre il servizio alla tua azienda senza alcun costo."
-    }
+    },
+    "invoicesEmptyDescActive": "La tua prima fattura apparirà qui appena emessa, e potrai scaricarla in PDF."
   },
   "brand": {
     "tagline": "Sicurezza Intelligente"
@@ -15979,7 +15980,14 @@
       "reabrirPeriodoMensaje": "Timbrature, turni e segni da quel giorno potranno essere di nuovo modificati. Le schede già approvate o esportate non vengono toccate. Scrivi il motivo: resta nel registro.",
       "reabrirPeriodoTitulo": "Riaprire le paghe dal {{desde}}?",
       "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo.",
-      "enviarAPago": "Invia al pagamento"
+      "enviarAPago": "Invia al pagamento",
+      "exportadaConRechazos": "Paghe esportate senza {{count}} scheda/e, che non vanno in pagamento:",
+      "exportadaConRechazos_one": "Paghe esportate senza 1 scheda, che non va in pagamento:",
+      "exportadaConRechazos_few": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "exportadaConRechazos_many": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "exportadaConRechazos_other": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "tarifaInvalida": "La tariffa deve essere maggiore di zero. Per toglierla, lascia il campo vuoto.",
+      "tarifaQuitada": "Tariffa di {{nombre}} tolta. Genera di nuovo il periodo per applicarlo."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",
@@ -18344,6 +18352,10 @@
         "vacio": "Nessun foglio paga emesso",
         "vacioDesc": "Finché Buste paga è spento, si vedono solo i fogli paga pubblicati.",
         "noEmitida": "Si possono vedere solo i fogli paga e le buste paga già emessi."
+      },
+      "sinPermiso": {
+        "titulo": "Il tuo ruolo non può aprire Buste paga",
+        "desc": "Il tuo ruolo non ha i permessi di Buste paga (vedere e modificare buste paga e profili retributivi). Un amministratore può concederli in Impostazioni › Ruoli."
       }
     },
     "ClientBillingContract": {
@@ -18556,7 +18568,8 @@
         "contratoHint": "Facoltativo: prende i suoi termini di pagamento e l’esenzione fiscale.",
         "sinContrato": "Senza contratto",
         "periodoDesde": "Periodo dal",
-        "periodoHasta": "al"
+        "periodoHasta": "al",
+        "numeroInvalido": "Quantità e prezzo devono essere numeri (per esempio 1500 o 12,50)."
       },
       "ajustes": {
         "si": "Sì",
@@ -18627,7 +18640,10 @@
         "validezCotizacion": "Validità del preventivo (giorni)",
         "validezCotizacionHint": "Trascorso questo termine senza firma, il preventivo scade da solo.",
         "terminosCotizacion": "Termini predefiniti dei preventivi",
-        "terminosCotizacionHint": "Vengono copiati in ogni nuovo preventivo; puoi modificarli in ciascuno."
+        "terminosCotizacionHint": "Vengono copiati in ogni nuovo preventivo; puoi modificarli in ciascuno.",
+        "fueraDeRango": "«{{campo}}» deve essere compreso tra {{min}} e {{max}}.",
+        "recordatorioInvalido": "Promemoria: «{{valor}}» non è un numero intero di giorni tra -30 e 180.",
+        "demasiadosRecordatorios": "Al massimo {{max}} promemoria."
       },
       "recargo": {
         "lastMinute": "Copertura dell’ultimo minuto",
@@ -18714,7 +18730,8 @@
         "minutosFacturables": "Minuti fatturabili",
         "editarLinea": "Modifica riga",
         "minutosHint": "Programmati: {{p}} · lavorati: {{w}}",
-        "excluirDeLaFactura": "Escludi dalla fattura"
+        "excluirDeLaFactura": "Escludi dalla fattura",
+        "revisionLista": "Pronta per la revisione del cliente. Non viene inviata alcuna e-mail: copia il link e condividilo con lui."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usa il valore aziendale",
@@ -18983,7 +19000,8 @@
         "pestanaDiseno": "Design dei documenti",
         "pestanaTextos": "Testi",
         "validezYTerminosMovidos": "Validità, introduzione e termini dei preventivi ora sono in Testi."
-      }
+      },
+      "periodoAlReves": "Il periodo finisce prima di cominciare."
     },
     "ClientInvoices": {
       "pagadoTotal": "Pagato in totale",
@@ -19067,7 +19085,8 @@
         "noSeEnvio": "Impossibile inviare l'e-mail. Controlla i destinatari.",
         "enviadaOk": "Preventivo inviato",
         "enviarDesc": "Vengono inviati il PDF e il link per firmare online. Il preventivo risulta inviato.",
-        "enviar": "Invia"
+        "enviar": "Invia",
+        "noCancelar": "No, mantienila"
       },
       "volver": "Torna ai preventivi",
       "revision": "Revisione {{n}}",

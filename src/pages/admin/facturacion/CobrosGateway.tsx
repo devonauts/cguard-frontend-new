@@ -16,7 +16,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import { Section, SkeletonCards, FormField, FIELD_CLS, StatusBadge, Field, InfoNote } from "@/components/kit";
 import { fechaYHora } from "@/lib/horaDeLaEmpresa";
 import clientBillingService from "@/lib/api/clientBillingService";
-import { QK, mensajeDeError } from "./comun";
+import { QK, avisarError } from "./comun";
 
 export function CobrosGateway({ canEdit }: { canEdit: boolean }) {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ export function CobrosGateway({ canEdit }: { canEdit: boolean }) {
       toast.success(t("ui.Facturacion.cobros.conectada", "Pasarela conectada"));
       await refrescar();
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.cobros.noSePudoConectar", "No se pudo conectar. Revisa las claves.")));
+      avisarError(e, t("ui.Facturacion.cobros.noSePudoConectar", "No se pudo conectar. Revisa las claves."));
     } finally {
       setTrabajando(false);
     }
@@ -51,7 +51,7 @@ export function CobrosGateway({ canEdit }: { canEdit: boolean }) {
       toast.success(t("ui.Facturacion.ajustes.guardado", "Ajustes guardados"));
       await refrescar();
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setTrabajando(false);
     }
@@ -65,7 +65,7 @@ export function CobrosGateway({ canEdit }: { canEdit: boolean }) {
       toast.success(t("ui.Facturacion.cobros.desconectada", "Pasarela desconectada"));
       await refrescar();
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setTrabajando(false);
     }
