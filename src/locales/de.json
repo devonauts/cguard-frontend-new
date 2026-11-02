@@ -13228,7 +13228,9 @@
       "eliminado": "Gelöscht.",
       "errorAlEliminar": "Fehler beim Löschen.",
       "lugar": "Ort",
-      "mostrandoRango": "{{desde}}–{{hasta}} von {{total}}"
+      "mostrandoRango": "{{desde}}–{{hasta}} von {{total}}",
+      "salidaAntesDeEntrada": "Der Ausgang kann nicht vor dem Eingang liegen.",
+      "fotoNoSubida": "Der Besuch wurde gespeichert, aber das Ausweisfoto konnte nicht hochgeladen werden. Fügen Sie es später im Eintrag hinzu."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Fortschritt der Einrichtung",
@@ -19814,7 +19816,7 @@
     "tagLabel": "Kennzeichnung",
     "bitacorasImprimir": "Wachbücher – Drucken",
     "exportar": "Exportieren",
-    "sinVigilantesEnEstacion": "Dieser Station sind noch keine Wachleute zugewiesen. Weisen Sie auf der Seite des Objekts einen zu, um den Besuch erfassen zu können."
+    "sinVigilantesEnEstacion": "Dieser Station sind noch keine Wachleute zugewiesen."
   },
   "app": {
     "loading": "Wird geladen…",

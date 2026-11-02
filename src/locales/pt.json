@@ -5958,7 +5958,7 @@
     "selectStation": "Selecione uma estação",
     "selectTag": "Selecione uma etiqueta",
     "showArchived": "Mostrar dados arquivados",
-    "site": "posto de vigilância",
+    "site": "Posto de vigilância",
     "station": "Estação",
     "table": {
       "company": "Empresa",
@@ -5990,7 +5990,7 @@
     "tagLabel": "Etiqueta",
     "bitacorasImprimir": "Registros - Imprimir",
     "exportar": "Exportar",
-    "sinVigilantesEnEstacion": "Esta estação ainda não tem vigilantes atribuídos. Atribua um na ficha do posto para poder registrar a visita."
+    "sinVigilantesEnEstacion": "Esta estação ainda não tem vigilantes atribuídos."
   },
   "kit": {
     "pagination": {
@@ -12688,7 +12688,9 @@
       "eliminado": "Excluído.",
       "errorAlEliminar": "Erro ao excluir.",
       "lugar": "Local",
-      "mostrandoRango": "Mostrando {{desde}}–{{hasta}} de {{total}}"
+      "mostrandoRango": "Mostrando {{desde}}–{{hasta}} de {{total}}",
+      "salidaAntesDeEntrada": "A saída não pode ser anterior à entrada.",
+      "fotoNoSubida": "A visita foi salva, mas a foto do documento não pôde ser enviada. Adicione-a depois pelo registro."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Progresso da configuração",

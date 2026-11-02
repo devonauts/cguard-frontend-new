@@ -13228,7 +13228,9 @@
       "eliminado": "Verwijderd.",
       "errorAlEliminar": "Fout bij het verwijderen.",
       "lugar": "Plaats",
-      "mostrandoRango": "{{desde}}–{{hasta}} van {{total}}"
+      "mostrandoRango": "{{desde}}–{{hasta}} van {{total}}",
+      "salidaAntesDeEntrada": "Het vertrek kan niet vóór de aankomst liggen.",
+      "fotoNoSubida": "Het bezoek is opgeslagen, maar de foto van het identiteitsbewijs kon niet worden geüpload. Voeg die later toe via de registratie."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Voortgang van de inrichting",
@@ -19814,7 +19816,7 @@
     "tagLabel": "Label",
     "bitacorasImprimir": "Logboeken - Afdrukken",
     "exportar": "Exporteren",
-    "sinVigilantesEnEstacion": "Aan dit station zijn nog geen beveiligers toegewezen. Wijs er een toe via de pagina van de post om het bezoek te kunnen registreren."
+    "sinVigilantesEnEstacion": "Aan dit station zijn nog geen beveiligers toegewezen."
   },
   "app": {
     "loading": "Laden…",

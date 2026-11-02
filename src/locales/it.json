@@ -13228,7 +13228,9 @@
       "eliminado": "Eliminato.",
       "errorAlEliminar": "Errore durante l'eliminazione.",
       "lugar": "Luogo",
-      "mostrandoRango": "Visualizzazione {{desde}}–{{hasta}} di {{total}}"
+      "mostrandoRango": "Visualizzazione {{desde}}–{{hasta}} di {{total}}",
+      "salidaAntesDeEntrada": "L'uscita non può essere precedente all'ingresso.",
+      "fotoNoSubida": "La visita è stata salvata, ma la foto del documento non è stata caricata. Aggiungila più tardi dalla scheda."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Avanzamento della configurazione",
@@ -19732,7 +19734,7 @@
     "selectStation": "Seleziona una postazione",
     "selectTag": "Seleziona un tag",
     "showArchived": "Mostra dati archiviati",
-    "site": "posto di servizio",
+    "site": "Posto di servizio",
     "station": "Postazione",
     "title": "Visitatori",
     "updated": "Visitatore aggiornato",
@@ -19814,7 +19816,7 @@
     "tagLabel": "Tag",
     "bitacorasImprimir": "Registri di servizio - Stampa",
     "exportar": "Esporta",
-    "sinVigilantesEnEstacion": "Questa stazione non ha ancora guardie assegnate. Assegnane una dalla scheda del posto per poter registrare la visita."
+    "sinVigilantesEnEstacion": "Questa stazione non ha ancora guardie assegnate."
   },
   "app": {
     "loading": "Caricamento…",

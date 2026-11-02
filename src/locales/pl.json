@@ -13334,7 +13334,9 @@
       "eliminado": "Usunięto.",
       "errorAlEliminar": "Błąd usuwania.",
       "lugar": "Miejsce",
-      "mostrandoRango": "Wyświetlanie {{desde}}–{{hasta}} z {{total}}"
+      "mostrandoRango": "Wyświetlanie {{desde}}–{{hasta}} z {{total}}",
+      "salidaAntesDeEntrada": "Wyjście nie może być wcześniejsze niż wejście.",
+      "fotoNoSubida": "Wizyta została zapisana, ale nie udało się przesłać zdjęcia dokumentu. Dodaj je później z poziomu wpisu."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Postęp konfiguracji",
@@ -20040,7 +20042,7 @@
     "selectStation": "Proszę wybrać posterunek",
     "selectTag": "Proszę wybrać identyfikator",
     "showArchived": "Pokaż dane zarchiwizowane",
-    "site": "obiekt",
+    "site": "Obiekt",
     "station": "Posterunek",
     "title": "Goście",
     "updated": "Gość zaktualizowany",
@@ -20122,7 +20124,7 @@
     "tagLabel": "Identyfikator",
     "bitacorasImprimir": "Rejestry wizyt — drukowanie",
     "exportar": "Eksportuj",
-    "sinVigilantesEnEstacion": "Do tej stacji nie przypisano jeszcze pracowników ochrony. Przypisz kogoś na karcie posterunku, aby móc zarejestrować wizytę."
+    "sinVigilantesEnEstacion": "Do tej stacji nie przypisano jeszcze pracowników ochrony."
   },
   "app": {
     "loading": "Ładowanie…",

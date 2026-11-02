@@ -6457,7 +6457,7 @@
     "tagLabel": "Tag",
     "bitacorasImprimir": "Logs - Print",
     "exportar": "Export",
-    "sinVigilantesEnEstacion": "This station has no guards assigned yet. Assign one from the post's page to be able to log the visit."
+    "sinVigilantesEnEstacion": "This station has no guards assigned yet."
   },
   "components": {
     "addRemove": {
@@ -12688,7 +12688,9 @@
       "eliminado": "Deleted.",
       "errorAlEliminar": "Error deleting.",
       "lugar": "Place",
-      "mostrandoRango": "Showing {{desde}}–{{hasta}} of {{total}}"
+      "mostrandoRango": "Showing {{desde}}–{{hasta}} of {{total}}",
+      "salidaAntesDeEntrada": "The exit cannot be before the entry.",
+      "fotoNoSubida": "The visit was saved, but the ID photo could not be uploaded. Add it later from the record."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Setup progress",

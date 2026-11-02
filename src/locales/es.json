@@ -6362,7 +6362,7 @@
     "notprint": "No hay elementos seleccionados para imprimir",
     "paginationPlaceholder": "0 of 0",
     "perPage": "Elementos por página",
-    "placeTypeSelect": "Selecciona un lugar y el numero",
+    "placeTypeSelect": "Selecciona un lugar y el número",
     "placeTypeValue": "Número lugar",
     "print": "Imprimir",
     "save": "Guardar",
@@ -6375,7 +6375,7 @@
     "selectStation": "Selecciona una estación",
     "selectTag": "Selecciona una etiqueta",
     "showArchived": "Mostrar datos archivados",
-    "site": "puesto de vigilancia",
+    "site": "Puesto de vigilancia",
     "station": "Estación",
     "title": "Visitantes",
     "updated": "Visitante actualizado",
@@ -6457,7 +6457,7 @@
     "tagLabel": "Etiqueta",
     "bitacorasImprimir": "Bitácoras - Imprimir",
     "exportar": "Exportar",
-    "sinVigilantesEnEstacion": "Esta estación todavía no tiene vigilantes asignados. Asígnale uno desde la ficha del puesto para poder registrar la visita."
+    "sinVigilantesEnEstacion": "Esta estación todavía no tiene vigilantes asignados."
   },
   "components": {
     "addRemove": {
@@ -12688,7 +12688,9 @@
       "eliminado": "Eliminado.",
       "errorAlEliminar": "Error al eliminar.",
       "lugar": "Lugar",
-      "mostrandoRango": "Mostrando {{desde}}–{{hasta}} de {{total}}"
+      "mostrandoRango": "Mostrando {{desde}}–{{hasta}} de {{total}}",
+      "salidaAntesDeEntrada": "La salida no puede ser anterior a la entrada.",
+      "fotoNoSubida": "La visita se guardó, pero la foto del documento no se pudo subir. Agrégala después desde el registro."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Progreso de configuración",

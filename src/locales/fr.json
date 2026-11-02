@@ -13228,7 +13228,9 @@
       "eliminado": "Supprimé.",
       "errorAlEliminar": "Erreur lors de la suppression.",
       "lugar": "Lieu",
-      "mostrandoRango": "Affichage de {{desde}} à {{hasta}} sur {{total}}"
+      "mostrandoRango": "Affichage de {{desde}} à {{hasta}} sur {{total}}",
+      "salidaAntesDeEntrada": "La sortie ne peut pas être antérieure à l'entrée.",
+      "fotoNoSubida": "La visite a été enregistrée, mais la photo de la pièce d'identité n'a pas pu être envoyée. Ajoutez-la plus tard depuis la fiche."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Progression de la configuration",
@@ -19814,7 +19816,7 @@
     "tagLabel": "Étiquette",
     "bitacorasImprimir": "Mains courantes - Imprimer",
     "exportar": "Exporter",
-    "sinVigilantesEnEstacion": "Cette station n'a encore aucun agent affecté. Affectez-en un depuis la fiche du poste pour pouvoir enregistrer la visite."
+    "sinVigilantesEnEstacion": "Cette station n'a encore aucun agent affecté."
   },
   "app": {
     "loading": "Chargement…",
