@@ -55,10 +55,12 @@ import {
     StatusBadge,
     SkeletonCards,
     Field,
+    SmartImage,
 } from "@/components/kit";
 import visitorLogService from "@/lib/api/visitorLogService";
 import { runOrQueue } from "@/lib/offline/offlineQueue";
-import api from '@/lib/api';
+import { isNetworkFailure } from "@/lib/offline/networkStatus";
+import { visitorIdImages } from "@/lib/visitorIdImages";
 import { useTranslation } from 'react-i18next';
 import { clientService } from '@/lib/api/clientService';
 import { postSiteService, type PostSiteFilters } from '@/lib/api/postSiteService';
@@ -145,6 +147,8 @@ type VisitLogRow = {
   postSiteTitle?: string;
   station?: { stationName?: string; name?: string };
   stationName?: string;
+  idPhoto?: unknown;
+  attachments?: unknown;
 };
 
 // Payload sent to create a visitor-log entry.
@@ -161,6 +165,7 @@ type VisitorLogCreatePayload = {
   stationId?: string;
   guardId: string;
   placeType?: string;
+  idPhoto?: Awaited<ReturnType<typeof visitorLogService.uploadPhoto>>[];
 };
 
 type VisitorFilters = {
@@ -1012,6 +1017,21 @@ export default function Visitors() {
             : newVisitor.placeTypeKind || newVisitor.placeTypeValue || undefined,
       };
 
+      // The ID image is uploaded first and saved in idPhoto with the visit,
+      // the same as the station tab. It used to become a separate attachment
+      // row that no screen read back (QA re-test round 3, N14).
+      let idPhotoDropped = false;
+      if (idImageFile) {
+        try {
+          payload.idPhoto = [await visitorLogService.uploadPhoto(idImageFile)];
+        } catch (err) {
+          // Offline the upload fails before the queue: keep the visit, warn
+          // below. A server error with network still stops the save.
+          if (!isNetworkFailure(err)) throw err;
+          idPhotoDropped = true;
+        }
+      }
+
       // Sin red, la visita queda en cola y sale sola al reconectar; la
       // foto del documento no viaja en la cola (se agrega luego).
       const { queued, result: created } = await runOrQueue(
@@ -1022,8 +1042,9 @@ export default function Visitors() {
       );
 
       if (queued) {
+        setIdImageFile(null);
         toast.warning(
-          idImageFile
+          idPhotoDropped
             ? t(
                 "ui.Visitors.sinConexionVisitaEnColaSinFoto",
                 "Sin conexión: la visita quedó en cola y se registrará sola al reconectar. La foto del documento no viaja en la cola — agrégala después desde el registro.",
@@ -1060,54 +1081,14 @@ export default function Visitors() {
         ? Math.abs(createdDateObj.getTime() - now.getTime())
         : null;
 
-      // If an ID image file was provided, upload to storage and create attachment metadata
-      try {
-        if (idImageFile) {
-          // upload file to storage (securityGuardService handles tenant id)
-          const uploaded = await securityGuardService.uploadFileToStorage(
-            idImageFile,
-            "notesImages",
-          );
-
-          const tenantId = localStorage.getItem("tenantId");
-
-          if (tenantId) {
-            const attPayload: {
-              name: string;
-              mimeType: string;
-              sizeInBytes: number;
-              storageId: string;
-              fileToken: string | null;
-              privateUrl: string | null;
-              publicUrl: string | null;
-              notableType: string;
-              notableId: string;
-            } = {
-              name: uploaded.name || idImageFile.name,
-              mimeType: idImageFile.type || "image/*",
-              sizeInBytes: uploaded.sizeInBytes || idImageFile.size,
-              storageId: "notesImages",
-              // prefer fileToken when present (encrypted privateUrl)
-              fileToken: uploaded.fileToken || null,
-              // Without one of the two the server refuses the record (400).
-              privateUrl: uploaded.fileToken ? null : uploaded.privateUrl || null,
-              publicUrl: uploaded.publicUrl || null,
-              notableType: "visitorLog",
-              notableId: created.id,
-            };
-
-            await api.post(`/tenant/${tenantId}/attachments`, attPayload);
-            // clear selected file after successful upload
-            setIdImageFile(null);
-          }
-        }
-      } catch (err) {
-        console.warn("Failed to upload/create attachment for visitor", err);
-        try {
-          toast.error(
-            t("visitantes.attachUploadError") || "Fallo al subir adjunto",
-          );
-        } catch (e) {}
+      setIdImageFile(null);
+      if (idPhotoDropped) {
+        toast.warning(
+          t(
+            "ui.StationVisitors.fotoNoSubida",
+            "La visita se guardó, pero la foto del documento no se pudo subir. Agrégala después desde el registro.",
+          ),
+        );
       }
 
       toast.success(t("visitantes.created") || "Visitante creado");
@@ -1866,6 +1847,49 @@ export default function Visitors() {
                       {selectedLog.reason || selectedLog.visitReason || "-"}
                     </p>
                   </div>
+                  <div>
+                    <div className="cg-eyebrow mb-1">
+                      {t("visitantes.form.idImage") || "Imagen del ID"}
+                    </div>
+                    {visitorIdImages(selectedLog).length === 0 ? (
+                      <p className="text-sm" style={{ color: "var(--ink)" }}>
+                        -
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-3">
+                        {visitorIdImages(selectedLog).map((img) =>
+                          img.isImage ? (
+                            <a
+                              key={img.key}
+                              href={img.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={img.name}
+                            >
+                              <SmartImage
+                                src={img.url}
+                                alt={img.name || t("visitantes.form.idImage") || "Imagen del ID"}
+                                fit="contain"
+                                className="h-40 w-64 max-w-full border"
+                                style={{ borderColor: "var(--hairline)" }}
+                              />
+                            </a>
+                          ) : (
+                            <a
+                              key={img.key}
+                              href={img.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm underline"
+                              style={{ color: "var(--brand-text)" }}
+                            >
+                              {img.name || img.url}
+                            </a>
+                          ),
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
             </div>
@@ -2101,6 +2125,7 @@ export default function Visitors() {
                   </Label>
                   <Input
                     type="file"
+                    accept="image/*"
                     onChange={(e) => {
                       const f =
                         e.target.files && e.target.files.length
