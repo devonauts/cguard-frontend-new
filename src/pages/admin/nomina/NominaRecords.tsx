@@ -847,7 +847,7 @@ export default function NominaRecords() {
                   )}
                 </span>
               </span>
-              <span className="capitalize">{etiquetaDeRango(f.from, f.to)}</span>
+              <span>{etiquetaDeRango(f.from, f.to)}</span>
             </div>
           )}
           {errorCarga && (
