@@ -34,11 +34,18 @@ interface GuardOption {
   name: string;
 }
 
+/**
+ * The guard autocomplete answers `{ id, label, guardId, sgId }`, where `id` is
+ * the USER id and `sgId` the guard record — the one an enrollment points at.
+ * Sending `id` made every individual assignment fail with a 404. A person with
+ * no guard record yet (`sgId: null`) cannot be enrolled, so it is left out.
+ */
 function extractGuard(g: any): GuardOption | null {
-  const id = g.id || g.guardId || g.securityGuardId || g.userId;
+  const id = "sgId" in g ? g.sgId : g.securityGuardId || g.id;
 
   if (!id) return null;
   const name =
+    g.label ||
     g.fullName ||
     g.guardName ||
     g.displayName ||
