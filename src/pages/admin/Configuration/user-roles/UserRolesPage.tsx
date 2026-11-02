@@ -141,11 +141,19 @@ export default function UserRolesPage() {
   // built-in rows without the isSystem flag) and pass custom names through.
   const displayRows = useMemo(
     () =>
-      rows.map((r) => ({
-        ...r,
-        name: roleDisplayName(r.slug || r.name) || r.name,
-        description: roleDisplayDescription(r.slug || r.name, r.description),
-      })),
+      rows.map((r) => {
+        // roleDisplayName hands back its input when the role is not a built-in:
+        // a custom role then showed its slug («qa-configuracion-rol-8») and the
+        // search by its real name found nothing. Only a real translation wins.
+        const key = r.slug || r.name;
+        const translated = roleDisplayName(key);
+
+        return {
+          ...r,
+          name: translated && translated !== key ? translated : r.name || key,
+          description: roleDisplayDescription(key, r.description),
+        };
+      }),
     [rows, lang],
   );
 
