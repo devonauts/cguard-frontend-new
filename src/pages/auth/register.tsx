@@ -686,6 +686,12 @@ export default function Register() {
                   type="text"
                   value={valor}
                   onChange={(e) => poner(e.target.value)}
+                  // Read-only, so a script that clicks and «types» into it left
+                  // it empty and the server never saw the trap. A person cannot
+                  // reach it (off-screen, no tab stop, hidden from readers):
+                  // focusing or typing into it marks it.
+                  onFocus={() => poner((v) => v || "focus")}
+                  onKeyDown={() => poner((v) => v || "key")}
                 />
               ))}
             </div>
