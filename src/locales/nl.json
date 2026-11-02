@@ -1898,8 +1898,9 @@
         "typeRequired": "Kies het soort vergunning.",
         "numberRequired": "Vul het vergunningsnummer in."
       },
-      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt.",
-      "subtitleSupervisor": "Documenten en pasjes van de supervisor"
+      "subtitleSupervisor": "Documenten en pasjes van de supervisor",
+      "confirmDelete_one": "Deze licentie verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "confirmDelete_other": "{{count}} licenties verwijderen? Dit kan niet ongedaan worden gemaakt."
     },
     "list": {
       "applyFilters": "Filters toepassen",

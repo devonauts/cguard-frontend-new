@@ -1898,8 +1898,9 @@
         "typeRequired": "Wählen Sie die Art der Lizenz.",
         "numberRequired": "Geben Sie die Lizenznummer ein."
       },
-      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden.",
-      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors"
+      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors",
+      "confirmDelete_one": "Diese Lizenz löschen? Das kann nicht rückgängig gemacht werden.",
+      "confirmDelete_other": "{{count}} Lizenzen löschen? Das kann nicht rückgängig gemacht werden."
     },
     "list": {
       "applyFilters": "Filter anwenden",

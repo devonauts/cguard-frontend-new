@@ -1898,8 +1898,9 @@
         "typeRequired": "Choisissez le type de licence.",
         "numberRequired": "Saisissez le numéro de la licence."
       },
-      "confirmDelete": "Supprimer {{count}} licence(s) ? Cette action est irréversible.",
-      "subtitleSupervisor": "Documents et habilitations du superviseur"
+      "subtitleSupervisor": "Documents et habilitations du superviseur",
+      "confirmDelete_one": "Supprimer cette licence ? Cette action est irréversible.",
+      "confirmDelete_other": "Supprimer {{count}} licences ? Cette action est irréversible."
     },
     "list": {
       "applyFilters": "Appliquer les filtres",

@@ -2110,8 +2110,9 @@
         "typeRequired": "Choose the license type.",
         "numberRequired": "Enter the license number."
       },
-      "confirmDelete": "Delete {{count}} license(s)? This cannot be undone.",
-      "subtitleSupervisor": "This supervisor's documents and credentials"
+      "subtitleSupervisor": "This supervisor's documents and credentials",
+      "confirmDelete_one": "Delete this license? This cannot be undone.",
+      "confirmDelete_other": "Delete {{count}} licenses? This cannot be undone."
     },
     "list": {
       "applyFilters": "Apply filters",

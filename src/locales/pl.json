@@ -1898,8 +1898,11 @@
         "typeRequired": "Wybierz rodzaj koncesji.",
         "numberRequired": "Wpisz numer koncesji."
       },
-      "confirmDelete": "Usunąć licencje ({{count}})? Tej operacji nie można cofnąć.",
-      "subtitleSupervisor": "Dokumenty i uprawnienia supervisora"
+      "subtitleSupervisor": "Dokumenty i uprawnienia supervisora",
+      "confirmDelete_one": "Usunąć tę licencję? Tej operacji nie można cofnąć.",
+      "confirmDelete_few": "Usunąć {{count}} licencje? Tej operacji nie można cofnąć.",
+      "confirmDelete_many": "Usunąć {{count}} licencji? Tej operacji nie można cofnąć.",
+      "confirmDelete_other": "Usunąć {{count}} licencji? Tej operacji nie można cofnąć."
     },
     "list": {
       "applyFilters": "Zastosuj filtry",

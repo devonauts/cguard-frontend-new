@@ -472,7 +472,7 @@ export default function GuardNotes({
                                       defaultValue: "Eliminar",
                                     }) as string
                                   }
-                                  className="cg-focus rounded-lg p-1.5 opacity-0 transition hover:[color:var(--bad-text)] group-hover:opacity-100"
+                                  className="cg-focus rounded-lg p-1.5 opacity-0 transition hover:[color:var(--bad-text)] group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100"
                                   style={{ color: "var(--ink-faint)" }}
                                 >
                                   <Trash2 size={14} />

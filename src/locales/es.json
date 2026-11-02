@@ -2110,8 +2110,9 @@
         "typeRequired": "Elige el tipo de licencia.",
         "numberRequired": "Escribe el número de la licencia."
       },
-      "confirmDelete": "¿Eliminar {{count}} licencia(s)? Esta acción no se puede deshacer.",
-      "subtitleSupervisor": "Documentos y credenciales del supervisor"
+      "subtitleSupervisor": "Documentos y credenciales del supervisor",
+      "confirmDelete_one": "¿Eliminar esta licencia? Esta acción no se puede deshacer.",
+      "confirmDelete_other": "¿Eliminar {{count}} licencias? Esta acción no se puede deshacer."
     },
     "list": {
       "applyFilters": "Aplicar filtros",

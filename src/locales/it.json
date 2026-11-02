@@ -1898,8 +1898,9 @@
         "typeRequired": "Scegli il tipo di licenza.",
         "numberRequired": "Inserisci il numero della licenza."
       },
-      "confirmDelete": "Eliminare {{count}} licenza/e? Questa azione non può essere annullata.",
-      "subtitleSupervisor": "Documenti e credenziali del supervisore"
+      "subtitleSupervisor": "Documenti e credenziali del supervisore",
+      "confirmDelete_one": "Eliminare questa licenza? Questa azione non può essere annullata.",
+      "confirmDelete_other": "Eliminare {{count}} licenze? Questa azione non può essere annullata."
     },
     "list": {
       "applyFilters": "Applica filtri",

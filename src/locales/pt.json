@@ -4430,8 +4430,9 @@
         "typeRequired": "Escolha o tipo de licença.",
         "numberRequired": "Digite o número da licença."
       },
-      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita.",
-      "subtitleSupervisor": "Documentos e credenciais do supervisor"
+      "subtitleSupervisor": "Documentos e credenciais do supervisor",
+      "confirmDelete_one": "Excluir esta licença? Esta ação não pode ser desfeita.",
+      "confirmDelete_other": "Excluir {{count}} licenças? Esta ação não pode ser desfeita."
     },
     "list": {
       "actions": {
