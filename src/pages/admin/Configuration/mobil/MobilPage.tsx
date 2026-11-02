@@ -603,11 +603,14 @@ export default function MobilPage() {
             </p>
 
             <Table className="cg-tabla-fichas table-fixed min-w-[560px]">
+              {/* Image and actions get fixed widths: as percentages the 128 px
+                  thumbnail spilled over «Editar/Eliminar» at 1280–1440 px, and a
+                  click on «Eliminar» opened the preview. */}
               <colgroup>
-                <col style={{ width: '25%' }} />
-                <col style={{ width: '45%' }} />
-                <col style={{ width: '20%' }} />
-                <col style={{ width: '10%' }} />
+                <col style={{ width: '30%' }} />
+                <col />
+                <col style={{ width: '9.5rem' }} />
+                <col style={{ width: '6.5rem' }} />
               </colgroup>
               <TableHeader>
                 <TableRow>
@@ -644,20 +647,20 @@ export default function MobilPage() {
                 )}
                 {bannerItems.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell data-rotulo={t('settings.mobil.colTitle', { defaultValue: 'Título' })}>{item.title}</TableCell>
-                      <TableCell data-rotulo={t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}>{item.description || '-'}</TableCell>
-                      <TableCell className="text-center" data-rotulo={t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}>
+                      <TableCell className="break-words" data-rotulo={t('settings.mobil.colTitle', { defaultValue: 'Título' })}>{item.title}</TableCell>
+                      <TableCell className="break-words" data-rotulo={t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}>{item.description || '-'}</TableCell>
+                      <TableCell className="overflow-hidden text-center" data-rotulo={t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}>
                         {resolveBannerImageUrl(item) ? (
                           <button
                             type="button"
                             onClick={() => openBannerPreview(resolveBannerImageUrl(item))}
-                            className="glass-flat glass-hover cg-focus group inline-flex items-center justify-center overflow-hidden p-0"
+                            className="glass-flat glass-hover cg-focus group inline-flex max-w-full items-center justify-center overflow-hidden p-0"
                           >
                             <SmartImage
                               src={resolveBannerImageUrl(item)}
                               alt={item.title || t('settings.mobil.bannerAlt', { defaultValue: 'Banner' })}
                               rounded="rounded-none"
-                              className="h-16 w-32 transition duration-200 group-hover:scale-105"
+                              className="h-16 w-32 max-w-full transition duration-200 group-hover:scale-105"
                               crossOrigin="anonymous"
                             />
                           </button>
@@ -665,7 +668,7 @@ export default function MobilPage() {
                           <StatusBadge tone="neutral" dot={false}>{t('settings.mobil.noImage', { defaultValue: 'Sin imagen' })}</StatusBadge>
                         )}
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
+                      <TableCell className="relative z-10 whitespace-nowrap text-right space-x-2">
                         <Button size="icon-sm" variant="outline" aria-label={t('settings.mobil.editAction', { defaultValue: 'Editar' })} onClick={() => openEditBanner(item)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
