@@ -1,4 +1,5 @@
 import { ApiService } from "../api/apiService";
+import { seguirLecturaDePerfil } from "@/lib/verificacionPendiente";
 
 import { deviceSignals } from "./deviceFingerprint";
 
@@ -117,7 +118,9 @@ export class AuthService {
   }
 
   static async getProfile(): Promise<any> {
-    return ApiService.get("/auth/me");
+    // «Verifica tu correo» is known the moment /auth/me answers, and 403s
+    // arriving meanwhile wait for it (lib/verificacionPendiente).
+    return seguirLecturaDePerfil(ApiService.get("/auth/me"));
   }
 
   static async signOut(): Promise<void> {
