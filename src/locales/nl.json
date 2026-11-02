@@ -16094,7 +16094,8 @@
       "exportadaConRechazos_many": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
       "exportadaConRechazos_other": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
       "tarifaInvalida": "Het tarief moet groter dan nul zijn. Laat het veld leeg om het te verwijderen.",
-      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen."
+      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen.",
+      "tarifaSinAplicar": "Niet toegepast: genereer de periode opnieuw"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",

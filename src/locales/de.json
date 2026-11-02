@@ -16094,7 +16094,8 @@
       "exportadaConRechazos_many": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
       "exportadaConRechazos_other": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
       "tarifaInvalida": "Der Satz muss größer als null sein. Zum Entfernen das Feld leer lassen.",
-      "tarifaQuitada": "Satz von {{nombre}} entfernt. Erzeugen Sie die Periode neu, um es anzuwenden."
+      "tarifaQuitada": "Satz von {{nombre}} entfernt. Erzeugen Sie die Periode neu, um es anzuwenden.",
+      "tarifaSinAplicar": "Nicht angewendet: Periode neu erzeugen"
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",

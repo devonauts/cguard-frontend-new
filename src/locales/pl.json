@@ -16292,7 +16292,8 @@
       "exportadaConRechazos_many": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
       "exportadaConRechazos_other": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
       "tarifaInvalida": "Stawka musi być większa od zera. Aby ją usunąć, zostaw pole puste.",
-      "tarifaQuitada": "Stawka {{nombre}} usunięta. Wygeneruj okres ponownie, aby to zastosować."
+      "tarifaQuitada": "Stawka {{nombre}} usunięta. Wygeneruj okres ponownie, aby to zastosować.",
+      "tarifaSinAplicar": "Niezastosowana: wygeneruj okres ponownie"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencje",

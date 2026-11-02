@@ -16094,7 +16094,8 @@
       "exportadaConRechazos_many": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
       "exportadaConRechazos_other": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
       "tarifaInvalida": "La tariffa deve essere maggiore di zero. Per toglierla, lascia il campo vuoto.",
-      "tarifaQuitada": "Tariffa di {{nombre}} tolta. Genera di nuovo il periodo per applicarlo."
+      "tarifaQuitada": "Tariffa di {{nombre}} tolta. Genera di nuovo il periodo per applicarlo.",
+      "tarifaSinAplicar": "Non applicata: genera di nuovo il periodo"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",

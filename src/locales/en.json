@@ -15535,7 +15535,8 @@
       "exportadaConRechazos_many": "Payroll exported without {{count}} timecards, which are not paid:",
       "exportadaConRechazos_other": "Payroll exported without {{count}} timecards, which are not paid:",
       "tarifaInvalida": "The rate must be greater than zero. To remove it, leave the field empty.",
-      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it."
+      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it.",
+      "tarifaSinAplicar": "Not applied: generate the period again"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",

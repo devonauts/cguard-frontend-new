@@ -15535,7 +15535,8 @@
       "exportadaConRechazos_many": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
       "exportadaConRechazos_other": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
       "tarifaInvalida": "La tarifa tiene que ser mayor que cero. Para quitarla, deja el campo vacío.",
-      "tarifaQuitada": "Tarifa de {{nombre}} quitada. Vuelve a generar el periodo para aplicarlo."
+      "tarifaQuitada": "Tarifa de {{nombre}} quitada. Vuelve a generar el periodo para aplicarlo.",
+      "tarifaSinAplicar": "Sin aplicar: genera el periodo otra vez"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencias",
