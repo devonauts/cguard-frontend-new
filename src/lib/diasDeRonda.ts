@@ -59,3 +59,21 @@ export const DAY_CODES = [
   "friday",
   "saturday",
 ] as const;
+
+/**
+ * One weekday letter row for every day picker (Rondas and Consignas), Monday
+ * first, with i18n keys. Consignas used Intl's narrow names Sunday first
+ * («D L M M J V S», two «M») while Rondas showed «L M X J V S D».
+ */
+export const DIAS_CORTOS: Array<{ n: number; corta: string; k: string }> = [
+  { n: 1, corta: "L", k: "ui.RondaHorario.diaCortoLun" },
+  { n: 2, corta: "M", k: "ui.RondaHorario.diaCortoMar" },
+  { n: 3, corta: "X", k: "ui.RondaHorario.diaCortoMie" },
+  { n: 4, corta: "J", k: "ui.RondaHorario.diaCortoJue" },
+  { n: 5, corta: "V", k: "ui.RondaHorario.diaCortoVie" },
+  { n: 6, corta: "S", k: "ui.RondaHorario.diaCortoSab" },
+  { n: 0, corta: "D", k: "ui.RondaHorario.diaCortoDom" },
+];
+
+/** Sort key that puts Monday first and Sunday last (days are 0-6, Sunday = 0). */
+export const ordenLunesPrimero = (d: number) => (d + 6) % 7;

@@ -533,7 +533,8 @@
         "checkbox": "Beveiliger mag dit contact zien",
         "descriptioninput": "Voer de omschrijving van het contact in",
         "addContact": "Contact toevoegen",
-        "mobilePlaceholder": "bijv. +593987654321"
+        "mobilePlaceholder": "bijv. +593987654321",
+        "editContact": "Contact bewerken"
       },
       "loadError": "Contacten laden mislukt"
     },
@@ -9073,7 +9074,7 @@
       "popupBlocked": "De browser blokkeerde het afdrukvenster.",
       "printFailed": "Kan het blad niet voorbereiden",
       "qrFailed": "Kan de code niet genereren",
-      "radiusPerPoint": "de straal van elk punt (bij elk punt vermeld)"
+      "verifyNotePerPoint": "Positiecontrole: bij elke scan vergelijkt het systeem de gps van de beveiliger met de positie van het punt. De scan telt alleen als hij plaatsvindt binnen de straal van elk punt (bij elk punt vermeld)."
     },
     "rondaHistory": {
       "empty": "Er zijn geen rondes vastgelegd op deze post.",

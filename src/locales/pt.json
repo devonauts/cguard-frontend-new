@@ -4980,7 +4980,8 @@
         "Addcontact": "ADICIONAR",
         "descriptioninput": "Insira a descrição do contato",
         "addContact": "Adicionar contato",
-        "mobilePlaceholder": "ex.: +593987654321"
+        "mobilePlaceholder": "ex.: +593987654321",
+        "editContact": "Editar contato"
       },
       "confirmDeleteMessage": "Tem certeza de que deseja excluir permanentemente o(s) contato(s) selecionado(s)? Esta ação não pode ser desfeita.",
       "confirmDeleteTitle": "Excluir contato(s)?",
@@ -7730,7 +7731,7 @@
       "qrFailed": "Não foi possível gerar o código",
       "printFailed": "Não foi possível preparar a folha",
       "popupBlocked": "O navegador bloqueou a janela de impressão.",
-      "radiusPerPoint": "o raio de cada ponto (indicado em cada um)"
+      "verifyNotePerPoint": "Verificação de localização: ao escanear, o servidor compara o GPS do vigilante com a localização do ponto. Só conta como válido dentro do raio de cada ponto (indicado em cada um)."
     },
     "rondaHistory": {
       "empty": "Não há rondas registradas neste posto.",

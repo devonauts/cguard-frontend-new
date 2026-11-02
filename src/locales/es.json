@@ -917,7 +917,8 @@
         "checkbox": "Permitir que el vigilante vea el contacto",
         "descriptioninput": "Ingresa la descripción del contacto",
         "addContact": "Agregar contacto",
-        "mobilePlaceholder": "ej. +593987654321"
+        "mobilePlaceholder": "ej. +593987654321",
+        "editContact": "Editar contacto"
       },
       "loadError": "No se pudieron cargar los contactos"
     },
@@ -6851,7 +6852,7 @@
       "qrFailed": "No se pudo generar el código",
       "printFailed": "No se pudo preparar la hoja",
       "popupBlocked": "El navegador bloqueó la ventana de impresión.",
-      "radiusPerPoint": "el radio de cada punto (indicado en cada uno)"
+      "verifyNotePerPoint": "Verificación de ubicación: al escanear, el servidor compara el GPS del vigilante con la ubicación del punto. Solo cuenta como válido si está dentro del radio de cada punto (indicado en cada uno)."
     },
     "rondaHistory": {
       "empty": "No hay rondas registradas en esta estación.",

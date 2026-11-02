@@ -533,7 +533,8 @@
         "checkbox": "Sicherheitskraft darf diesen Kontakt sehen",
         "descriptioninput": "Beschreibung des Kontakts eingeben",
         "addContact": "Kontakt hinzufügen",
-        "mobilePlaceholder": "z. B. +593987654321"
+        "mobilePlaceholder": "z. B. +593987654321",
+        "editContact": "Kontakt bearbeiten"
       },
       "loadError": "Die Kontakte konnten nicht geladen werden"
     },
@@ -9073,7 +9074,7 @@
       "popupBlocked": "Der Browser hat das Druckfenster blockiert.",
       "printFailed": "Das Blatt konnte nicht vorbereitet werden",
       "qrFailed": "Der Code konnte nicht erzeugt werden",
-      "radiusPerPoint": "dem Radius des jeweiligen Punkts (bei jedem angegeben)"
+      "verifyNotePerPoint": "Standortprüfung: Beim Scannen wird das GPS der Wachkraft mit dem Standort des Kontrollpunkts verglichen. Es zählt nur als gültig innerhalb des Radius des jeweiligen Punkts (bei jedem angegeben)."
     },
     "rondaHistory": {
       "empty": "Für dieses Objekt sind keine Rundgänge erfasst.",

@@ -533,7 +533,8 @@
         "checkbox": "Consenti alla guardia di vedere il contatto",
         "descriptioninput": "Inserisci la descrizione del contatto",
         "addContact": "Aggiungi contatto",
-        "mobilePlaceholder": "es. +593987654321"
+        "mobilePlaceholder": "es. +593987654321",
+        "editContact": "Modifica contatto"
       },
       "loadError": "Impossibile caricare i contatti"
     },
@@ -9073,7 +9074,7 @@
       "popupBlocked": "Il browser ha bloccato la finestra di stampa.",
       "printFailed": "Impossibile preparare il foglio",
       "qrFailed": "Impossibile generare il codice",
-      "radiusPerPoint": "il raggio di ciascun punto (indicato su ognuno)"
+      "verifyNotePerPoint": "Verifica della posizione: alla scansione, il sistema confronta il GPS della guardia con la posizione del punto. Vale come valida solo se è entro il raggio di ciascun punto (indicato su ognuno)."
     },
     "rondaHistory": {
       "empty": "Nessuna ronda registrata in questo posto.",

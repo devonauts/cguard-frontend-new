@@ -12,6 +12,12 @@ import MobileCardList from "@/components/responsive/MobileCardList";
 import { Button } from "@/components/ui/button";
 import { Section, EmptyState, Modal } from "@/components/kit";
 import type { PostSite } from "@/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Contact = {
   id: string;
@@ -49,6 +55,7 @@ interface ContactApiRow {
   desc?: string;
   note?: string;
   notes?: string;
+  allowGuard?: boolean | number | null;
 }
 
 export default function PostSiteContacts({ site }: { site?: SiteProp }) {
@@ -61,7 +68,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
   const [form, setForm] = useState<Partial<Contact>>({});
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const drawerAllowGuard = useRef<boolean>(false);
   const [confirmDeleteIds, setConfirmDeleteIds] = useState<string[]>([]);
   const { id: paramsId } = useParams();
@@ -182,6 +188,9 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               mobile: r.mobile || r.phone || r.contactPhone,
               postSite: site?.name || r.postSiteName || r.postSite || undefined,
               description: r.description || r.desc || r.note || r.notes || "",
+              // Without it the edit dialog opened unticked and every edit
+              // saved allowGuard:false.
+              allowGuard: !!r.allowGuard,
             })),
           );
           return;
@@ -208,6 +217,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               mobile: r.mobile || r.phone,
               postSite: site?.name || r.postSiteName || r.postSite || undefined,
               description: r.description || r.desc || r.note || r.notes || "",
+              allowGuard: !!r.allowGuard,
             })),
           );
         }
@@ -394,26 +404,31 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
 
   useScrollToTopOnMount(containerRef);
 
-  function deleteContact(id: string) {
-    (async () => {
-      try {
-        const clientIdLocal = resolvedClientId;
+  /** Deletes the contacts and reports once (it toasted per contact AND again). */
+  async function deleteContacts(ids: string[]) {
+    const clientIdLocal = resolvedClientId;
+    const results = await Promise.allSettled(
+      ids.map(async (id) => {
         if (!clientIdLocal) throw new Error("Post site has no client account");
         await clientService.destroyClientContact(String(clientIdLocal), id);
-        setContacts((prev) => prev.filter((c) => c.id !== id));
-        setSelectedIds((prev) => prev.filter((x) => x !== id));
-        toast.success(
-          t("clients.contacts.contactDeleted", "Contact deleted successfully"),
-        );
-      } catch (err) {
-        console.warn("[PostSiteContacts] delete error", err);
-        toast.error(
-          t("clients.contacts.contactDeleteFailed", "Could not delete contact"),
-        );
-      } finally {
-        setOpenMenuId(null);
-      }
-    })();
+        return id;
+      }),
+    );
+    const removed = results.flatMap((r) =>
+      r.status === "fulfilled" ? [r.value] : [],
+    );
+    if (removed.length) {
+      setContacts((prev) => prev.filter((c) => !removed.includes(c.id)));
+      setSelectedIds((prev) => prev.filter((x) => !removed.includes(x)));
+      const base = t("clients.contacts.contactDeleted", "Contacto eliminado");
+      toast.success(removed.length > 1 ? `${base} (${removed.length})` : base);
+    }
+    if (removed.length < ids.length) {
+      console.warn("[PostSiteContacts] delete error", results);
+      toast.error(
+        t("clients.contacts.contactDeleteFailed", "Could not delete contact"),
+      );
+    }
   }
 
   function deleteSelected() {
@@ -586,59 +601,38 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                       <td className="px-2 py-2.5">{c.email || "-"}</td>
                       <td className="px-2 py-2.5">{c.mobile || "-"}</td>
                       <td className="px-2 py-2.5 text-right">
-                        <div className="relative inline-block">
-                          <button
-                            onClick={() =>
-                              setOpenMenuId((prev) =>
-                                prev === c.id ? null : c.id,
-                              )
-                            }
-                            aria-expanded={openMenuId === c.id}
-                            aria-controls={`actions-${c.id}-menu`}
-                            className="p-2 rounded-full hover:bg-muted focus:outline-none"
-                            title={t("actions.action") || "Actions"}
-                          >
-                            <EllipsisVertical size={18} />
-                          </button>
-
-                          {openMenuId === c.id && (
-                            <div
-                              id={`actions-${c.id}-menu`}
-                              className="glass-raised absolute right-0 z-50 mt-2 w-36"
+                        {/* Radix renders the menu in a portal: the old
+                            absolutely-positioned menu was clipped by the
+                            table's overflow-x-auto wrapper. */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              className="p-2 rounded-full hover:bg-muted focus:outline-none"
+                              aria-label={t("actions.action", "Acción")}
+                              title={t("actions.action") || "Actions"}
                             >
-                              <button
-                                onClick={() => {
-                                  setForm(c);
-                                  setShowAdd(true);
-                                  setOpenMenuId(null);
-                                }}
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
-                                aria-label={t("actions.edit", "Editar")}
-                                title={t("actions.edit") || "Edit"}
-                              >
-                                <Pencil size={16} />
-                                <span className="text-sm">
-                                  {t("actions.edit") || "Edit"}
-                                </span>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setConfirmDeleteIds([c.id]);
-                                  setOpenMenuId(null);
-                                }}
-                                className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2"
-                                style={{ color: "var(--bad-text)" }}
-                                aria-label={t("actions.delete", "Eliminar")}
-                                title={t("actions.delete") || "Delete"}
-                              >
-                                <Trash size={16} />
-                                <span className="text-sm">
-                                  {t("actions.delete") || "Delete"}
-                                </span>
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                              <EllipsisVertical size={18} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-36">
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                setForm(c);
+                                setShowAdd(true);
+                              }}
+                            >
+                              <Pencil className="mr-2" size={16} />
+                              {t("actions.edit") || "Edit"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onSelect={() => setConfirmDeleteIds([c.id])}
+                              style={{ color: "var(--bad-text)" }}
+                            >
+                              <Trash className="mr-2" size={16} />
+                              {t("actions.delete") || "Delete"}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   ))
@@ -687,10 +681,14 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
         onOpenChange={(o) => {
           if (!o) handleCloseAdd();
         }}
-        title={t(
-          "clients.contacts.form.AddClientContact",
-          "Agregar contacto a la sede",
-        )}
+        title={
+          form && (form as any).id
+            ? t("clients.contacts.form.editContact", "Editar contacto")
+            : t(
+                "clients.contacts.form.AddClientContact",
+                "Agregar contacto a la sede",
+              )
+        }
         icon={<Users className="h-5 w-5" />}
         footer={
           <Button onClick={handleAdd} disabled={!canSubmit}>
@@ -794,16 +792,9 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             <Button
               variant="destructive"
               onClick={() => {
-                const removedCount = confirmDeleteIds.length;
-                confirmDeleteIds.forEach((cid) => deleteContact(cid));
+                const ids = [...confirmDeleteIds];
                 setConfirmDeleteIds([]);
-                const base = t(
-                  "clients.contacts.contactDeleted",
-                  "Contacto eliminado",
-                );
-                toast.success(
-                  removedCount > 1 ? `${base} (${removedCount})` : base,
-                );
+                void deleteContacts(ids);
               }}
             >
               {t("actions.delete", "Eliminar")}

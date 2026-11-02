@@ -533,7 +533,8 @@
         "checkbox": "Autoriser l'agent à voir ce contact",
         "descriptioninput": "Saisissez la description du contact",
         "addContact": "Ajouter un contact",
-        "mobilePlaceholder": "ex. : +593987654321"
+        "mobilePlaceholder": "ex. : +593987654321",
+        "editContact": "Modifier le contact"
       },
       "loadError": "Impossible de charger les contacts"
     },
@@ -9073,7 +9074,7 @@
       "popupBlocked": "Le navigateur a bloqué la fenêtre d’impression.",
       "printFailed": "Impossible de préparer la feuille",
       "qrFailed": "Impossible de générer le code",
-      "radiusPerPoint": "le rayon de chaque point (indiqué sur chacun)"
+      "verifyNotePerPoint": "Vérification de la position : à chaque scan, le GPS de l'agent est comparé à la position du point. Le scan n'est valide que dans le rayon de chaque point (indiqué sur chacun)."
     },
     "rondaHistory": {
       "empty": "Aucune ronde enregistrée à ce poste.",

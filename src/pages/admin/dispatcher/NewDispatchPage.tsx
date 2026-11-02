@@ -1240,21 +1240,35 @@ export default function NewDispatchPage() {
             },
           ]);
 
+          // Post sites come with `clientAccountId` / `clientAccount`; the
+          // old aliases were never set, so the client name was not resolved.
           const cid =
+            ps?.clientAccountId ||
+            ps?.clientAccount?.id ||
             ps?.clientId ||
             (typeof ps?.client === "object" ? ps?.client?.id : ps?.client) ||
             null;
+          // Set the site even without a client: the «client changed» effect
+          // clears siteId on mount, after the reset above.
+          try {
+            form.setValue("siteId", String(siteId));
+          } catch (e) {
+            /* ignore */
+          }
           if (cid) {
             form.setValue("clientId", cid);
-            // Ensure siteId is set on the form when opened from a post-site context
-            try {
-              form.setValue("siteId", String(siteId));
-            } catch (e) {
-              /* ignore */
-            }
+            const ca = ps?.clientAccount;
+            const nombreDelCliente = ca
+              ? String(
+                  ca.commercialName ||
+                    [ca.name, ca.lastName].filter(Boolean).join(" ") ||
+                    "",
+                ).trim()
+              : "";
             try {
               const existing = clientes.find((c) => c.id === cid);
               if (existing) setPrefillClientName(existing.name);
+              else if (nombreDelCliente) setPrefillClientName(nombreDelCliente);
               else {
                 const cdata = await clientService.getClient(String(cid));
                 const cname =
@@ -1870,13 +1884,13 @@ export default function NewDispatchPage() {
                           <FormControl>
                             <Input
                               {...field}
+                              // The field holds the id; show the name (it
+                              // showed the UUID: `??` never fell through "").
                               value={
-                                field.value ??
-                                (prefillClientName ||
-                                  clientes.find(
-                                    (c) => c.id === form.getValues("clientId"),
-                                  )?.name ||
-                                  "")
+                                prefillClientName ||
+                                clientes.find((c) => c.id === field.value)
+                                  ?.name ||
+                                ""
                               }
                               disabled
                             />
@@ -1895,10 +1909,10 @@ export default function NewDispatchPage() {
                             <Input
                               {...field}
                               value={
-                                field.value ??
-                                (prefillSiteName ||
-                                  (sitios && sitios[0] && sitios[0].name) ||
-                                  "")
+                                prefillSiteName ||
+                                sitios.find((x) => x.id === field.value)
+                                  ?.name ||
+                                ""
                               }
                               disabled
                             />
