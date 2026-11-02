@@ -673,7 +673,8 @@
         "dateRequired": "Data jest wymagana",
         "descriptionRequired": "Opis jest wymagany",
         "titleRequired": "Tytuł jest wymagany"
-      }
+      },
+      "description": "Opis"
     },
     "pagination": {
       "itemsPerPage": "Pozycji na stronę",
@@ -6885,7 +6886,8 @@
     "deleted": "Notatki usunięte",
     "loadError": "Nie udało się wczytać notatek",
     "saveError": "Nie udało się zapisać notatki",
-    "updated": "Notatka zaktualizowana"
+    "updated": "Notatka zaktualizowana",
+    "attachmentsFailed": "Nie udało się przesłać plików: {{count}}"
   },
   "postSites": {
     "action": "Akcja",

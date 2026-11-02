@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   ChevronDown,
   Plus,
@@ -8,6 +8,7 @@ import {
   Pencil,
   Trash,
   StickyNote,
+  Paperclip,
 } from "lucide-react";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { EmptyState, Modal, SearchInput } from "@/components/kit";
@@ -18,10 +19,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { postSiteService } from "@/lib/api/postSiteService";
+import securityGuardService from "@/lib/api/securityGuardService";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { filterNotes } from "./filterNotes";
 
 type Props = {
   site?: PostSite;
@@ -37,6 +41,14 @@ interface NoteApiRow {
   createdAt?: string;
   createdBy?: { fullName?: string; name?: string } | null;
   createdById?: string;
+  attachments?: NoteAttachmentRow[];
+}
+interface NoteAttachmentRow {
+  id?: string;
+  name?: string;
+  publicUrl?: string | null;
+  privateUrl?: string | null;
+  downloadUrl?: string | null;
 }
 // Normalized note row for the table.
 interface NoteRow {
@@ -76,6 +88,14 @@ export default function PostSiteNotes({ site }: Props) {
   const [viewOnly, setViewOnly] = useState(false);
   const [detailsNote, setDetailsNote] = useState<NoteApiRow | null>(null);
   const [confirmDeleteIds, setConfirmDeleteIds] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  // Bumped after uploading attachments so the list (and the detail view)
+  // shows the files the server linked to the note.
+  const [reloadKey, setReloadKey] = useState(0);
+  const visibleNotes = useMemo(
+    () => filterNotes(notesData, searchQuery),
+    [notesData, searchQuery],
+  );
 
   const isFormValid =
     formData.title.trim() !== "" &&
@@ -176,9 +196,45 @@ export default function PostSiteNotes({ site }: Props) {
     return () => {
       mounted = false;
     };
-  }, [site && site.id]);
+  }, [site && site.id, reloadKey]);
+
+  /**
+   * Uploads the chosen files and links them to the note. Returns how many
+   * failed, so the person is told instead of silently losing them.
+   */
+  const uploadAttachments = async (noteId: string, files: File[]) => {
+    const tenantId = localStorage.getItem("tenantId");
+    let failed = 0;
+    for (const f of files) {
+      try {
+        const storageId =
+          f.type === "application/pdf" ? "notesPdf" : "notesImages";
+        const up: any = await securityGuardService.uploadFileToStorage(
+          f,
+          storageId,
+        );
+        await api.post(`/tenant/${tenantId}/attachments`, {
+          name: up.name || f.name,
+          mimeType: f.type || "application/octet-stream",
+          sizeInBytes: up.sizeInBytes || f.size,
+          storageId,
+          fileToken: up.fileToken || null,
+          // Without fileToken or privateUrl the server refuses the record (400).
+          privateUrl: up.fileToken ? null : up.privateUrl || null,
+          publicUrl: up.publicUrl || null,
+          notableType: "note",
+          notableId: noteId,
+        });
+      } catch (err) {
+        console.warn("[PostSiteNotes] attachment upload failed", f.name, err);
+        failed += 1;
+      }
+    }
+    return failed;
+  };
 
   const handleSubmitNote = () => {
+    if (saving) return;
     if (!site || !site.id) {
       toast.error(t("notes.noSite", "No post site selected"));
       return;
@@ -193,6 +249,8 @@ export default function PostSiteNotes({ site }: Props) {
         };
 
         if (!validateForm()) return;
+        setSaving(true);
+        const files = formData.attachments || [];
 
         // If editing an existing note (we store id in formData as well)
         if ((formData as any).id) {
@@ -215,6 +273,11 @@ export default function PostSiteNotes({ site }: Props) {
                 : n,
             ),
           );
+          if (files.length) {
+            const failed = await uploadAttachments(noteId, files);
+            if (failed) reportFailedUploads(failed);
+            setReloadKey((k) => k + 1);
+          }
           toast.success(t("notes.updated", "Note updated"));
         } else {
           const resp = await postSiteService.createPostSiteNote(
@@ -232,6 +295,11 @@ export default function PostSiteNotes({ site }: Props) {
               created.createdById ||
               "",
           };
+          if (files.length && created?.id) {
+            const failed = await uploadAttachments(String(created.id), files);
+            if (failed) reportFailedUploads(failed);
+            setReloadKey((k) => k + 1);
+          }
           setNotesData((prev) => [row, ...prev]);
           toast.success(t("notes.created", "Note created"));
         }
@@ -246,9 +314,19 @@ export default function PostSiteNotes({ site }: Props) {
       } catch (err) {
         console.warn("[PostSiteNotes] submit error", err);
         toast.error(t("notes.saveError", "Could not save note"));
+      } finally {
+        setSaving(false);
       }
     })();
   };
+
+  const reportFailedUploads = (count: number) =>
+    toast.error(
+      t("notes.attachmentsFailed", {
+        defaultValue: "{{count}} archivo(s) no se pudieron subir",
+        count,
+      }),
+    );
 
   const removeAttachment = (index: number) => {
     setFormData((prev) => ({
@@ -353,13 +431,15 @@ export default function PostSiteNotes({ site }: Props) {
                         const checked = e.target.checked;
                         if (checked)
                           setSelectedIds(
-                            (notesData || []).map((n) => String(n.id)),
+                            visibleNotes.map((n) => String(n.id)),
                           );
                         else setSelectedIds([]);
                       }}
                       checked={
-                        (notesData || []).length > 0 &&
-                        selectedIds.length === (notesData || []).length
+                        visibleNotes.length > 0 &&
+                        visibleNotes.every((n) =>
+                          selectedIds.includes(String(n.id)),
+                        )
                       }
                       aria-label={t(
                         "ui.PostSiteNotes.seleccionarTodasLasNotas",
@@ -380,7 +460,7 @@ export default function PostSiteNotes({ site }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {notesData.length === 0 ? (
+                {visibleNotes.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-4 py-8">
                       <EmptyState
@@ -391,7 +471,7 @@ export default function PostSiteNotes({ site }: Props) {
                     </td>
                   </tr>
                 ) : (
-                  notesData.map((note, idx) => (
+                  visibleNotes.map((note, idx) => (
                     <tr
                       key={note.id || idx}
                       className="border-b hover:bg-muted/40"
@@ -486,7 +566,7 @@ export default function PostSiteNotes({ site }: Props) {
 
           <div className="md:hidden">
             <MobileCardList
-              items={notesData}
+              items={visibleNotes}
               renderCard={(note: NoteRow) => (
                 <div>
                   <div className="text-sm font-semibold">{note.title}</div>
@@ -646,8 +726,8 @@ export default function PostSiteNotes({ site }: Props) {
             <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t p-6">
               <button
                 onClick={handleSubmitNote}
-                disabled={!isFormValid}
-                className={`cg-btn-brand cg-focus rounded-md px-6 py-2 font-semibold ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={!isFormValid || saving}
+                className={`cg-btn-brand cg-focus rounded-md px-6 py-2 font-semibold ${!isFormValid || saving ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {t("actions.save", "Save")}
               </button>
@@ -773,16 +853,16 @@ export default function PostSiteNotes({ site }: Props) {
         {detailsNote && (
           <div className="space-y-2">
             <div className="text-sm text-foreground">
-              <strong>{t("clients.notes.form.Title", "Título")}: </strong>
+              <strong>{t("clients.notes.Title", "Título")}: </strong>
               {detailsNote.title}
             </div>
             <div className="text-sm text-foreground">
-              <strong>{t("clients.notes.form.Date", "Fecha")}: </strong>
+              <strong>{t("clients.notes.Date", "Fecha")}: </strong>
               {detailsNote.noteDate || detailsNote.createdAt?.split("T")?.[0]}
             </div>
             <div className="text-sm text-foreground">
               <strong>
-                {t("clients.notes.form.Description", "Descripción")}:{" "}
+                {t("clients.notes.description", "Descripción")}:{" "}
               </strong>
               <div className="mt-1 whitespace-pre-wrap">
                 {detailsNote.description}
@@ -796,6 +876,34 @@ export default function PostSiteNotes({ site }: Props) {
                 detailsNote.createdById ||
                 "-"}
             </div>
+            {(detailsNote.attachments || []).length > 0 && (
+              <div className="text-sm text-foreground">
+                <strong>
+                  {t("clients.notes.form.AttachFile", "Archivos adjuntos")}:
+                </strong>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {(detailsNote.attachments || []).map((att, ai) => {
+                    const href =
+                      att.publicUrl || att.downloadUrl || att.privateUrl || "";
+                    return (
+                      <a
+                        key={att.id ?? ai}
+                        href={href || undefined}
+                        target="_blank"
+                        rel="noreferrer"
+                        title={att.name || ""}
+                        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium [background:var(--glass-sunken)]"
+                      >
+                        <Paperclip size={12} />
+                        <span className="max-w-[180px] truncate">
+                          {att.name || "-"}
+                        </span>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>

@@ -673,7 +673,8 @@
         "dateRequired": "Das Datum ist erforderlich",
         "descriptionRequired": "Die Beschreibung ist erforderlich",
         "titleRequired": "Der Titel ist erforderlich"
-      }
+      },
+      "description": "Beschreibung"
     },
     "pagination": {
       "itemsPerPage": "Einträge pro Seite",
@@ -6877,7 +6878,8 @@
     "deleted": "Notizen gelöscht",
     "loadError": "Die Notizen konnten nicht geladen werden",
     "saveError": "Die Notiz konnte nicht gespeichert werden",
-    "updated": "Notiz aktualisiert"
+    "updated": "Notiz aktualisiert",
+    "attachmentsFailed": "{{count}} Datei(en) konnten nicht hochgeladen werden"
   },
   "postSites": {
     "action": "Aktion",

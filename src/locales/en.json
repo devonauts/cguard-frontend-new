@@ -1063,7 +1063,8 @@
         "dateRequired": "Date is required",
         "descriptionRequired": "Description is required",
         "titleRequired": "Title is required"
-      }
+      },
+      "description": "Description"
     },
     "pagination": {
       "itemsPerPage": "Items per page",
@@ -8602,7 +8603,8 @@
     "deleted": "Notes deleted",
     "loadError": "Could not load notes",
     "saveError": "Could not save note",
-    "updated": "Note updated"
+    "updated": "Note updated",
+    "attachmentsFailed": "{{count}} file(s) could not be uploaded"
   },
   "postsite": {
     "Details": {

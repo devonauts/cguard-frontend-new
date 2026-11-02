@@ -673,7 +673,8 @@
         "dateRequired": "La date est obligatoire",
         "descriptionRequired": "La description est obligatoire",
         "titleRequired": "Le titre est obligatoire"
-      }
+      },
+      "description": "Description"
     },
     "pagination": {
       "itemsPerPage": "Éléments par page",
@@ -6877,7 +6878,8 @@
     "deleted": "Notes supprimées",
     "loadError": "Impossible de charger les notes",
     "saveError": "Impossible d'enregistrer la note",
-    "updated": "Note mise à jour"
+    "updated": "Note mise à jour",
+    "attachmentsFailed": "{{count}} fichier(s) n'ont pas pu être envoyés"
   },
   "postSites": {
     "action": "Action",

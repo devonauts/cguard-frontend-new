@@ -673,7 +673,8 @@
         "dateRequired": "De datum is verplicht",
         "descriptionRequired": "De omschrijving is verplicht",
         "titleRequired": "De titel is verplicht"
-      }
+      },
+      "description": "Omschrijving"
     },
     "pagination": {
       "itemsPerPage": "Items per pagina",
@@ -6877,7 +6878,8 @@
     "deleted": "Notities verwijderd",
     "loadError": "De notities konden niet worden geladen",
     "saveError": "De notitie kon niet worden opgeslagen",
-    "updated": "Notitie bijgewerkt"
+    "updated": "Notitie bijgewerkt",
+    "attachmentsFailed": "{{count}} bestand(en) konden niet worden geüpload"
   },
   "postSites": {
     "action": "Actie",

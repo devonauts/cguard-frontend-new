@@ -5344,7 +5344,8 @@
         "dateRequired": "A data é obrigatória",
         "descriptionRequired": "A descrição é obrigatória",
         "titleRequired": "O título é obrigatório"
-      }
+      },
+      "description": "Descrição"
     },
     "sourcePivot": "pivot",
     "stations": {
@@ -8602,7 +8603,8 @@
     "deleted": "Notas excluídas",
     "loadError": "Não foi possível carregar as notas",
     "saveError": "Não foi possível salvar a nota",
-    "updated": "Nota atualizada"
+    "updated": "Nota atualizada",
+    "attachmentsFailed": "{{count}} arquivo(s) não puderam ser enviados"
   },
   "postsite": {
     "Details": {

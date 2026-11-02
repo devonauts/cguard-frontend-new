@@ -1051,7 +1051,7 @@
         "Title": "Agregar nueva nota",
         "Titleinput": "Ingresa el título de la nota",
         "Titlenote": "Título *",
-        "NoFilesSelected": "No files selected",
+        "NoFilesSelected": "No se seleccionaron archivos",
         "selectDate": "Selecciona"
       },
       "addedBy": "Agregado por",
@@ -1063,7 +1063,8 @@
         "dateRequired": "La fecha es obligatoria",
         "descriptionRequired": "La descripción es obligatoria",
         "titleRequired": "El título es obligatorio"
-      }
+      },
+      "description": "Descripción"
     },
     "pagination": {
       "itemsPerPage": "Elementos por página",
@@ -8596,13 +8597,14 @@
   },
   "notes": {
     "deleteError": "No se pudieron eliminar las notas",
-    "noSelection": "No notes selected",
-    "noSite": "No post site selected",
-    "created": "Note created",
-    "deleted": "Notes deleted",
-    "loadError": "Could not load notes",
+    "noSelection": "No hay notas seleccionadas",
+    "noSite": "No hay una sede seleccionada",
+    "created": "Nota creada",
+    "deleted": "Notas eliminadas",
+    "loadError": "No se pudieron cargar las notas",
     "saveError": "No se pudo guardar la nota",
-    "updated": "Note updated"
+    "updated": "Nota actualizada",
+    "attachmentsFailed": "{{count}} archivo(s) no se pudieron subir"
   },
   "postsite": {
     "Details": {
