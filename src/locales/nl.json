@@ -1872,7 +1872,8 @@
         "typeRequired": "Kies het soort vergunning.",
         "numberRequired": "Vul het vergunningsnummer in."
       },
-      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt."
+      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "subtitleSupervisor": "Documenten en pasjes van de supervisor"
     },
     "list": {
       "applyFilters": "Filters toepassen",
@@ -2180,7 +2181,8 @@
         "message": "We konden niets vinden<br />dat overeenkomt<br />met je zoekopdracht",
         "title": "Geen resultaten gevonden",
         "hint": "Maak de eerste notitie voor deze beveiliger.",
-        "none": "Nog geen notities"
+        "none": "Nog geen notities",
+        "hintSupervisor": "Maak de eerste notitie voor deze supervisor."
       },
       "modal": {
         "cancel": "Annuleren",
@@ -2522,7 +2524,11 @@
       "locNoneBody": "{{sin}} van de laatste {{total}} kloppingen kwamen binnen zonder enige coördinaat. De klopping wordt gewoon vastgelegd — niemand wordt geblokkeerd — maar de dienst heeft geen bewijs van de plek.",
       "locCoarseBody": "{{n}} van de laatste {{total}} kloppingen kwamen binnen met een positie grover dan {{suelo}} m. Goed genoeg om vast te leggen, niet om aanwezigheid op de post te bevestigen.",
       "locFix": "Gebruikelijke oorzaak: op Android staat de locatietoestemming op ‘Globaal’. Die moet in de telefooninstellingen op ‘Precies’ — Android laat de app dat niet wijzigen, dus iemand moet die telefoon zelf oppakken.",
-      "locLast": "Laatste klopping zonder locatie: {{cuando}}"
+      "locLast": "Laatste klopping zonder locatie: {{cuando}}",
+      "titleSupervisor": "Apparaat van de supervisor",
+      "subtitleSupervisor": "Het eerste apparaat waarmee de supervisor inlogt, wordt gekoppeld. Verschijnt er een ander apparaat, dan wordt dat gemarkeerd als niet herkend (het wordt niet geblokkeerd). Reset de koppeling als de supervisor een andere telefoon heeft.",
+      "emptySupervisor": "Er is nog geen apparaat vastgelegd voor deze supervisor.",
+      "resetDoneSupervisor": "Koppeling gereset. Het volgende apparaat van de supervisor wordt gekoppeld."
     },
     "documents": {
       "deleteConfirm": "\"{{name}}\" verwijderen? Dit kan niet ongedaan worden gemaakt.",
@@ -13321,7 +13327,8 @@
       "laZonaYLosPuestosQueCubre": "De zone en posten die deze supervisor dekt, en zijn gegenereerde rooster, staan op de eigen tabbladen.",
       "limitaLoQueEsteSupervisorVe": "Beperkt wat deze supervisor in zijn app ziet: aanwezigheidsuitzonderingen en klokverzoeken.",
       "nombres": "Voornamen",
-      "perfilActualizado": "Profiel bijgewerkt"
+      "perfilActualizado": "Profiel bijgewerkt",
+      "identidadDeLaCuenta": "Voor- en achternamen worden hier opgeslagen. Het e-mailadres hoort bij het inlogaccount en wordt niet via dit profiel gewijzigd."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Nog geen supervisorposten",

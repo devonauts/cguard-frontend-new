@@ -421,7 +421,9 @@ export default function GuardNotes({
                                 ) : undefined}
                                 description={q
                                     ? renderWithLineBreaks(t('guards.notes.empty.message', { defaultValue: 'No encontramos<br />notas que coincidan<br />con tu búsqueda' }))
-                                    : t('guards.notes.empty.hint', { defaultValue: 'Crea la primera nota para este vigilante.' })}
+                                    : navKey === 'supervisors'
+                                        ? t('guards.notes.empty.hintSupervisor', { defaultValue: 'Crea la primera nota para este supervisor.' })
+                                        : t('guards.notes.empty.hint', { defaultValue: 'Crea la primera nota para este vigilante.' })}
                                 icon={<StickyNote />}
                                 title={q
                                     ? t('guards.notes.empty.title', { defaultValue: 'Sin resultados' })

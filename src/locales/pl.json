@@ -1872,7 +1872,8 @@
         "typeRequired": "Wybierz rodzaj koncesji.",
         "numberRequired": "Wpisz numer koncesji."
       },
-      "confirmDelete": "Usunąć licencje ({{count}})? Tej operacji nie można cofnąć."
+      "confirmDelete": "Usunąć licencje ({{count}})? Tej operacji nie można cofnąć.",
+      "subtitleSupervisor": "Dokumenty i uprawnienia supervisora"
     },
     "list": {
       "applyFilters": "Zastosuj filtry",
@@ -2188,7 +2189,8 @@
         "message": "Nie znaleźliśmy<br />pozycji pasujących<br />do wyszukiwania",
         "title": "Nie znaleziono wyników",
         "hint": "Proszę utworzyć pierwszą notatkę dla tego pracownika ochrony.",
-        "none": "Brak notatek"
+        "none": "Brak notatek",
+        "hintSupervisor": "Proszę utworzyć pierwszą notatkę dla tego supervisora."
       },
       "modal": {
         "cancel": "Anuluj",
@@ -2530,7 +2532,11 @@
       "locNoneBody": "{{sin}} z ostatnich {{total}} odbić przyszło bez żadnych współrzędnych. Odbicie i tak zostaje zapisane — nikt nie jest blokowany — ale zmiana nie ma dowodu miejsca.",
       "locCoarseBody": "{{n}} z ostatnich {{total}} odbić przyszło z pozycją mniej dokładną niż {{suelo}} m. Wystarczy do zapisu, nie do potwierdzenia obecności na posterunku.",
       "locFix": "Zwykła przyczyna: w Androidzie uprawnienie lokalizacji zostało na „Przybliżona”. Trzeba ustawić „Dokładna” w ustawieniach telefonu — Android nie pozwala zmienić tego z aplikacji, więc ktoś musi wziąć ten telefon do ręki.",
-      "locLast": "Ostatnie odbicie bez lokalizacji: {{cuando}}"
+      "locLast": "Ostatnie odbicie bez lokalizacji: {{cuando}}",
+      "titleSupervisor": "Urządzenie supervisora",
+      "subtitleSupervisor": "Pierwsze urządzenie, z którego supervisor się loguje, zostaje powiązane. Jeśli pojawi się inne urządzenie, zostanie oznaczone jako nierozpoznane (nie jest blokowane). Proszę zresetować powiązanie, jeśli supervisor zmienił telefon.",
+      "emptySupervisor": "Dla tego supervisora nie zarejestrowano jeszcze żadnego urządzenia.",
+      "resetDoneSupervisor": "Powiązanie zresetowane. Kolejne urządzenie supervisora zostanie powiązane."
     },
     "documents": {
       "deleteConfirm": "Czy na pewno usunąć „{{name}}”? Tej operacji nie można cofnąć.",
@@ -13433,7 +13439,8 @@
       "laZonaYLosPuestosQueCubre": "Strefa i posterunki obsługiwane przez tego przełożonego oraz jego wygenerowany grafik są widoczne w osobnych kartach.",
       "limitaLoQueEsteSupervisorVe": "Ogranicza to, co ten przełożony widzi w swojej aplikacji: wyjątki obecności i prośby o odbicie.",
       "nombres": "Imiona",
-      "perfilActualizado": "Profil zaktualizowany"
+      "perfilActualizado": "Profil zaktualizowany",
+      "identidadDeLaCuenta": "Imiona i nazwiska zapisuje się tutaj. Adres e-mail należy do konta logowania i nie zmienia się go w tej karcie."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Nie ma jeszcze pozycji nadzorcy",

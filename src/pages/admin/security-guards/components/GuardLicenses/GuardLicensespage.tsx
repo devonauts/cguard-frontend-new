@@ -562,9 +562,15 @@ export default function GuardLicenses({
               </>
             }
             icon={<IdCard />}
-            subtitle={t("guards.licenses.subtitle", {
-              defaultValue: "Documentos y credenciales del vigilante",
-            })}
+            subtitle={
+              navKey === "supervisors"
+                ? t("guards.licenses.subtitleSupervisor", {
+                    defaultValue: "Documentos y credenciales del supervisor",
+                  })
+                : t("guards.licenses.subtitle", {
+                    defaultValue: "Documentos y credenciales del vigilante",
+                  })
+            }
             title={t("guards.nav.licencias") || "Licencias"}
           />
 

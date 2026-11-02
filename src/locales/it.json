@@ -1872,7 +1872,8 @@
         "typeRequired": "Scegli il tipo di licenza.",
         "numberRequired": "Inserisci il numero della licenza."
       },
-      "confirmDelete": "Eliminare {{count}} licenza/e? Questa azione non può essere annullata."
+      "confirmDelete": "Eliminare {{count}} licenza/e? Questa azione non può essere annullata.",
+      "subtitleSupervisor": "Documenti e credenziali del supervisore"
     },
     "list": {
       "applyFilters": "Applica filtri",
@@ -2180,7 +2181,8 @@
         "message": "Non abbiamo trovato<br />elementi corrispondenti<br />alla tua ricerca",
         "title": "Nessun risultato trovato",
         "hint": "Crea la prima nota per questa guardia.",
-        "none": "Ancora nessuna nota"
+        "none": "Ancora nessuna nota",
+        "hintSupervisor": "Crea la prima nota per questo supervisore."
       },
       "modal": {
         "cancel": "Annulla",
@@ -2522,7 +2524,11 @@
       "locNoneBody": "{{sin}} delle sue ultime {{total}} timbrature sono arrivate senza alcuna coordinata. La timbratura viene comunque registrata — non viene mai bloccato — ma il turno resta senza prova di dove fosse.",
       "locCoarseBody": "{{n}} delle sue ultime {{total}} timbrature sono arrivate con una posizione più grossolana di {{suelo}} m. Va bene per registrare, non per confermare che era in postazione.",
       "locFix": "Causa abituale: su Android il permesso di posizione è rimasto su «Approssimativa». Va portato su «Precisa» nelle impostazioni del telefono — Android non permette all'app di cambiarlo, quindi qualcuno deve mettere mano a quel telefono.",
-      "locLast": "Ultima timbratura senza posizione: {{cuando}}"
+      "locLast": "Ultima timbratura senza posizione: {{cuando}}",
+      "titleSupervisor": "Dispositivo del supervisore",
+      "subtitleSupervisor": "Il primo dispositivo da cui il supervisore accede resta abbinato. Se compare un altro dispositivo, viene segnalato come non riconosciuto (non viene bloccato). Reimposta l'abbinamento se il supervisore ha cambiato telefono.",
+      "emptySupervisor": "Non è ancora stato registrato nessun dispositivo per questo supervisore.",
+      "resetDoneSupervisor": "Abbinamento reimpostato. Il prossimo dispositivo del supervisore sarà quello abbinato."
     },
     "documents": {
       "deleteConfirm": "Vuoi davvero eliminare \"{{name}}\"? L'operazione non può essere annullata.",
@@ -13321,7 +13327,8 @@
       "laZonaYLosPuestosQueCubre": "La zona e le postazioni coperte da questo supervisore, e il suo orario generato, si vedono nelle schede dedicate.",
       "limitaLoQueEsteSupervisorVe": "Limita ciò che questo supervisore vede nella sua app: eccezioni di presenza e richieste di timbratura.",
       "nombres": "Nomi",
-      "perfilActualizado": "Profilo aggiornato"
+      "perfilActualizado": "Profilo aggiornato",
+      "identidadDeLaCuenta": "Nomi e cognomi si salvano qui. L'e-mail è quella del suo account di accesso e non si modifica da questa scheda."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ancora nessun posto da supervisore",

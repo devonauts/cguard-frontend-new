@@ -58,6 +58,8 @@ export default function GuardDevicePage({
 }: Props) {
   const { id } = useParams();
   const { t } = useTranslation();
+  // The supervisor sheet reuses this screen: its texts name a supervisor.
+  const esSupervisor = navKey === "supervisors";
   const userId = guard?.userId || guard?.user?.id || (id as string);
   // El usuario REAL de la app (la ficha llega por contexto, no por props).
   const ficha = useFichaPersona();
@@ -99,10 +101,15 @@ export default function GuardDevicePage({
     try {
       await guardDeviceService.resetBinding(d.id);
       toast.success(
-        t("guards.device.resetDone", {
-          defaultValue:
-            "Vínculo restablecido. El próximo dispositivo del vigilante quedará vinculado.",
-        }),
+        esSupervisor
+          ? t("guards.device.resetDoneSupervisor", {
+              defaultValue:
+                "Vínculo restablecido. El próximo dispositivo del supervisor quedará vinculado.",
+            })
+          : t("guards.device.resetDone", {
+              defaultValue:
+                "Vínculo restablecido. El próximo dispositivo del vigilante quedará vinculado.",
+            }),
       );
       await load();
     } catch (e) {
@@ -166,13 +173,26 @@ export default function GuardDevicePage({
               ) : undefined
             }
             icon={<Smartphone />}
-            subtitle={t("guards.device.subtitle", {
-              defaultValue:
-                "El primer dispositivo desde el que el vigilante inicia sesión queda vinculado. Si aparece otro dispositivo, se marca como no reconocido (no se bloquea). Restablece el vínculo si el vigilante cambió de teléfono.",
-            })}
-            title={t("guards.device.title", {
-              defaultValue: "Dispositivo del vigilante",
-            })}
+            subtitle={
+              esSupervisor
+                ? t("guards.device.subtitleSupervisor", {
+                    defaultValue:
+                      "El primer dispositivo desde el que el supervisor inicia sesión queda vinculado. Si aparece otro dispositivo, se marca como no reconocido (no se bloquea). Restablece el vínculo si el supervisor cambió de teléfono.",
+                  })
+                : t("guards.device.subtitle", {
+                    defaultValue:
+                      "El primer dispositivo desde el que el vigilante inicia sesión queda vinculado. Si aparece otro dispositivo, se marca como no reconocido (no se bloquea). Restablece el vínculo si el vigilante cambió de teléfono.",
+                  })
+            }
+            title={
+              esSupervisor
+                ? t("guards.device.titleSupervisor", {
+                    defaultValue: "Dispositivo del supervisor",
+                  })
+                : t("guards.device.title", {
+                    defaultValue: "Dispositivo del vigilante",
+                  })
+            }
           />
 
           {/* ── ¿TIENE CONEXIÓN? ─────────────────────────────────────────────
@@ -254,10 +274,17 @@ export default function GuardDevicePage({
             <SkeletonCards className="sm:grid-cols-1" count={2} />
           ) : devices.length === 0 ? (
             <EmptyState
-              description={t("guards.device.empty", {
-                defaultValue:
-                  "Aún no se ha registrado ningún dispositivo para este vigilante.",
-              })}
+              description={
+                esSupervisor
+                  ? t("guards.device.emptySupervisor", {
+                      defaultValue:
+                        "Aún no se ha registrado ningún dispositivo para este supervisor.",
+                    })
+                  : t("guards.device.empty", {
+                      defaultValue:
+                        "Aún no se ha registrado ningún dispositivo para este vigilante.",
+                    })
+              }
               icon={<Smartphone />}
               title={t("guards.device.emptyTitle", {
                 defaultValue: "Sin dispositivos todavía",

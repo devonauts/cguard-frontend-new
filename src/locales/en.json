@@ -2100,7 +2100,8 @@
         "typeRequired": "Choose the license type.",
         "numberRequired": "Enter the license number."
       },
-      "confirmDelete": "Delete {{count}} license(s)? This cannot be undone."
+      "confirmDelete": "Delete {{count}} license(s)? This cannot be undone.",
+      "subtitleSupervisor": "This supervisor's documents and credentials"
     },
     "list": {
       "applyFilters": "Apply filters",
@@ -2408,7 +2409,8 @@
         "message": "We couldn't find<br />any items matching<br />your search",
         "title": "No results found",
         "hint": "Create the first note for this guard.",
-        "none": "No notes yet"
+        "none": "No notes yet",
+        "hintSupervisor": "Create the first note for this supervisor."
       },
       "modal": {
         "cancel": "Cancel",
@@ -2750,7 +2752,11 @@
       "locNoneBody": "{{sin}} of their last {{total}} clock-ins came in with no coordinates at all. The clock-in is still recorded — they are never blocked — but the shift has no proof of where they were.",
       "locCoarseBody": "{{n}} of their last {{total}} clock-ins arrived with a position coarser than {{suelo}} m. Good enough to record, not to confirm they were at the post.",
       "locFix": "Usual cause: on Android the location permission was left on “Approximate”. It has to be set to “Precise” in the phone's settings — Android won't let the app change it, so someone has to pick that phone up.",
-      "locLast": "Last clock-in without location: {{cuando}}"
+      "locLast": "Last clock-in without location: {{cuando}}",
+      "titleSupervisor": "Supervisor's device",
+      "subtitleSupervisor": "The first device a supervisor signs in from becomes the linked one. If another device shows up it is flagged as unrecognised (it is not blocked). Reset the link if the supervisor changed phones.",
+      "emptySupervisor": "No device has been registered for this supervisor yet.",
+      "resetDoneSupervisor": "Link reset. The supervisor's next device will be the linked one."
     },
     "documents": {
       "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",
@@ -12781,7 +12787,8 @@
       "laZonaYLosPuestosQueCubre": "The zone and posts this supervisor covers, and their generated schedule, are shown in their own tabs.",
       "limitaLoQueEsteSupervisorVe": "Limits what this supervisor sees in their app: attendance exceptions and clock-in requests.",
       "nombres": "First names",
-      "perfilActualizado": "Profile updated"
+      "perfilActualizado": "Profile updated",
+      "identidadDeLaCuenta": "First and last names are saved here. The email belongs to their sign-in account and is not changed from this sheet."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "No supervisor posts yet",

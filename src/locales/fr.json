@@ -1872,7 +1872,8 @@
         "typeRequired": "Choisissez le type de licence.",
         "numberRequired": "Saisissez le numéro de la licence."
       },
-      "confirmDelete": "Supprimer {{count}} licence(s) ? Cette action est irréversible."
+      "confirmDelete": "Supprimer {{count}} licence(s) ? Cette action est irréversible.",
+      "subtitleSupervisor": "Documents et habilitations du superviseur"
     },
     "list": {
       "applyFilters": "Appliquer les filtres",
@@ -2180,7 +2181,8 @@
         "message": "Aucun élément<br />ne correspond<br />à votre recherche",
         "title": "Aucun résultat trouvé",
         "hint": "Créez la première note pour cet agent.",
-        "none": "Aucune note pour l'instant"
+        "none": "Aucune note pour l'instant",
+        "hintSupervisor": "Créez la première note pour ce superviseur."
       },
       "modal": {
         "cancel": "Annuler",
@@ -2522,7 +2524,11 @@
       "locNoneBody": "{{sin}} de ses {{total}} derniers pointages sont arrivés sans aucune coordonnée. Le pointage est quand même enregistré — l'agent n'est jamais bloqué — mais le service reste sans preuve du lieu.",
       "locCoarseBody": "{{n}} de ses {{total}} derniers pointages sont arrivés avec une position plus grossière que {{suelo}} m. Suffisant pour enregistrer, pas pour confirmer sa présence au poste.",
       "locFix": "Cause habituelle : sous Android, l'autorisation de localisation est restée sur « Approximative ». Il faut la passer sur « Précise » dans les réglages du téléphone — Android ne permet pas à l'application de le faire, quelqu'un doit donc prendre ce téléphone en main.",
-      "locLast": "Dernier pointage sans position : {{cuando}}"
+      "locLast": "Dernier pointage sans position : {{cuando}}",
+      "titleSupervisor": "Appareil du superviseur",
+      "subtitleSupervisor": "Le premier appareil depuis lequel le superviseur se connecte devient l'appareil lié. Si un autre appareil apparaît, il est signalé comme non reconnu (il n'est pas bloqué). Réinitialisez le lien si le superviseur a changé de téléphone.",
+      "emptySupervisor": "Aucun appareil n'a encore été enregistré pour ce superviseur.",
+      "resetDoneSupervisor": "Lien réinitialisé. Le prochain appareil du superviseur sera l'appareil lié."
     },
     "documents": {
       "deleteConfirm": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible.",
@@ -13321,7 +13327,8 @@
       "laZonaYLosPuestosQueCubre": "La zone et les postes couverts par ce superviseur, ainsi que son planning généré, s'affichent dans leurs onglets dédiés.",
       "limitaLoQueEsteSupervisorVe": "Limite ce que ce superviseur voit dans son application : exceptions de présence et demandes de pointage.",
       "nombres": "Prénoms",
-      "perfilActualizado": "Profil mis à jour"
+      "perfilActualizado": "Profil mis à jour",
+      "identidadDeLaCuenta": "Les prénoms et noms s'enregistrent ici. L'e-mail est celui de son compte d'accès et ne se modifie pas depuis cette fiche."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Aucun poste de superviseur pour l'instant",

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 
 import { toast } from "sonner";
 import {
@@ -380,6 +380,19 @@ export default function SupervisorDetailPage() {
     if (sup) hydrate(sup);
     setEditing(true);
   };
+
+  // «Editar» in the sheet header lands here with `?editar=1`.
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (!sup || !searchParams.get("editar")) return;
+    beginEdit();
+    const rest = new URLSearchParams(searchParams);
+
+    rest.delete("editar");
+    setSearchParams(rest, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sup, searchParams]);
   const cancelEdit = () => {
     if (sup) hydrate(sup);
     setEditing(false);
@@ -499,8 +512,8 @@ export default function SupervisorDetailPage() {
                   }}
                 >
                   {t(
-                    "ui.SupervisorDetail.elNombreElCorreoYElTelefono",
-                    "El nombre, el correo y el teléfono son la identidad del supervisor y se gestionan desde la invitación de acceso (Usuarios de administración).",
+                    "ui.SupervisorDetail.identidadDeLaCuenta",
+                    "Nombres y apellidos se guardan aquí. El correo es el de su cuenta de acceso y no se cambia desde esta ficha.",
                   )}
                 </div>
               )}

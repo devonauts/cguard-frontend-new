@@ -1872,7 +1872,8 @@
         "typeRequired": "Wählen Sie die Art der Lizenz.",
         "numberRequired": "Geben Sie die Lizenznummer ein."
       },
-      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden."
+      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden.",
+      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors"
     },
     "list": {
       "applyFilters": "Filter anwenden",
@@ -2180,7 +2181,8 @@
         "message": "Zu Ihrer Suche wurden<br />keine passenden<br />Einträge gefunden",
         "title": "Keine Ergebnisse gefunden",
         "hint": "Legen Sie die erste Notiz für diese Sicherheitskraft an.",
-        "none": "Noch keine Notizen"
+        "none": "Noch keine Notizen",
+        "hintSupervisor": "Legen Sie die erste Notiz für diesen Supervisor an."
       },
       "modal": {
         "cancel": "Abbrechen",
@@ -2522,7 +2524,11 @@
       "locNoneBody": "{{sin}} der letzten {{total}} Buchungen kamen ganz ohne Koordinaten an. Die Buchung wird trotzdem erfasst — niemand wird blockiert — aber die Schicht hat keinen Nachweis des Orts.",
       "locCoarseBody": "{{n}} der letzten {{total}} Buchungen kamen mit einer Position gröber als {{suelo}} m an. Reicht zum Erfassen, nicht zum Bestätigen der Anwesenheit am Posten.",
       "locFix": "Üblicher Grund: Unter Android steht die Standortberechtigung auf „Ungefähr“. Sie muss in den Telefoneinstellungen auf „Genau“ gesetzt werden — Android lässt das die App nicht ändern, also muss jemand dieses Telefon in die Hand nehmen.",
-      "locLast": "Letzte Buchung ohne Standort: {{cuando}}"
+      "locLast": "Letzte Buchung ohne Standort: {{cuando}}",
+      "titleSupervisor": "Gerät des Supervisors",
+      "subtitleSupervisor": "Das erste Gerät, mit dem sich der Supervisor anmeldet, wird verknüpft. Meldet sich ein weiteres Gerät an, wird es als nicht erkannt markiert (aber nicht gesperrt). Setzen Sie die Verknüpfung zurück, wenn der Supervisor das Telefon gewechselt hat.",
+      "emptySupervisor": "Für diesen Supervisor wurde noch kein Gerät registriert.",
+      "resetDoneSupervisor": "Verknüpfung zurückgesetzt. Das nächste Gerät des Supervisors wird verknüpft."
     },
     "documents": {
       "deleteConfirm": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -13321,7 +13327,8 @@
       "laZonaYLosPuestosQueCubre": "Die Zone und die Posten, die dieser Vorgesetzte abdeckt, sowie sein erstellter Dienstplan werden in eigenen Registerkarten angezeigt.",
       "limitaLoQueEsteSupervisorVe": "Begrenzt, was dieser Vorgesetzte in seiner App sieht: Anwesenheitsausnahmen und Stempelanfragen.",
       "nombres": "Vornamen",
-      "perfilActualizado": "Profil aktualisiert"
+      "perfilActualizado": "Profil aktualisiert",
+      "identidadDeLaCuenta": "Vor- und Nachnamen werden hier gespeichert. Die E-Mail gehört zum Anmeldekonto und wird nicht in diesem Profil geändert."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Noch keine Supervisor-Positionen",

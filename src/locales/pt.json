@@ -4418,7 +4418,8 @@
         "typeRequired": "Escolha o tipo de licença.",
         "numberRequired": "Digite o número da licença."
       },
-      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita."
+      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita.",
+      "subtitleSupervisor": "Documentos e credenciais do supervisor"
     },
     "list": {
       "actions": {
@@ -4633,7 +4634,8 @@
         "message": "Não encontramos<br />itens que correspondam<br />à sua busca",
         "title": "Nenhum resultado encontrado",
         "hint": "Crie a primeira nota para este vigilante.",
-        "none": "Sem notas ainda"
+        "none": "Sem notas ainda",
+        "hintSupervisor": "Crie a primeira nota para este supervisor."
       },
       "form": {
         "attachments": {
@@ -4800,7 +4802,11 @@
       "locNoneBody": "{{sin}} das suas últimas {{total}} marcações entraram sem qualquer coordenada. A marcação regista-se na mesma — não é bloqueado — mas o turno fica sem prova de onde estava.",
       "locCoarseBody": "{{n}} das suas últimas {{total}} marcações chegaram com uma posição mais grosseira do que {{suelo}} m. Serve para registar, não para confirmar que estava no posto.",
       "locFix": "Causa habitual: no Android a permissão de localização ficou em «Aproximada». Tem de passar a «Precisa» nas definições do telemóvel — o Android não deixa alterá-la pela aplicação, por isso alguém tem de mexer nesse telemóvel.",
-      "locLast": "Última marcação sem localização: {{cuando}}"
+      "locLast": "Última marcação sem localização: {{cuando}}",
+      "titleSupervisor": "Dispositivo do supervisor",
+      "subtitleSupervisor": "O primeiro dispositivo em que o supervisor faz login fica vinculado. Se aparecer outro, ele é marcado como não reconhecido (não é bloqueado). Redefina o vínculo se o supervisor trocou de celular.",
+      "emptySupervisor": "Ainda não há dispositivo registrado para este supervisor.",
+      "resetDoneSupervisor": "Vínculo redefinido. O próximo dispositivo do supervisor será vinculado."
     },
     "documents": {
       "deleteConfirm": "Excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
@@ -12781,7 +12787,8 @@
       "laZonaYLosPuestosQueCubre": "A zona e os postos que este supervisor cobre, e sua escala gerada, aparecem nas abas dedicadas.",
       "limitaLoQueEsteSupervisorVe": "Limita o que este supervisor vê no app: exceções de presença e solicitações de ponto.",
       "nombres": "Nomes",
-      "perfilActualizado": "Perfil atualizado"
+      "perfilActualizado": "Perfil atualizado",
+      "identidadDeLaCuenta": "Nomes e sobrenomes são salvos aqui. O e-mail é o da conta de acesso e não é alterado nesta ficha."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ainda não há postos de supervisor",
