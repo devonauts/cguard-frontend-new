@@ -288,7 +288,6 @@ describe("11 · our brand in the code only where it is gated to our hosts", () =
     ["src/lib/enlacesLegales.ts", "our legal pages only on our hosts (block 4)"],
     ["src/lib/appDelCliente.ts", "our customer app's name, only when `puedeUsarArteDePlataforma`"],
     ["src/pages/client/registration.tsx", "our app art gated (block 5); store links kept by owner's decision"],
-    ["src/pages/supervisor/registration.tsx", "store search URLs, kept by owner's decision (block 5)"],
     ["src/pages/StyleGuide.tsx", "our design system; partner hosts are redirected (block 10)"],
     ["src/pages/auth/reset-password.tsx", "the app's URL scheme, opened by a button and never displayed"],
     ["src/lib/centinela.ts", "host allow-list; never rendered"],
