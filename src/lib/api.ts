@@ -6,6 +6,8 @@ import i18n from "@/i18n";
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "sonner";
 
+import { callarPorVerificacion } from "@/lib/verificacionPendiente";
+
 import {
   reportRequestOk,
   reportNetworkFailure,
@@ -314,7 +316,10 @@ api.interceptors.response.use(
       return Promise.reject(apiError);
     }
 
-    const silentStatus = (cfg.toast?.silentStatuses || []).includes(apiError.status);
+    const silentStatus =
+      (cfg.toast?.silentStatuses || []).includes(apiError.status) ||
+      // Background 403s behind «Verifica tu correo» (lib/verificacionPendiente).
+      callarPorVerificacion(apiError.status);
 
     if (!cfg.toast?.silentError && !silentStatus) {
       const custom = cfg.toast?.error;

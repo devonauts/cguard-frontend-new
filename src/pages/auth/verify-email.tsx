@@ -9,11 +9,13 @@ import AuthShell from "./AuthShell";
 import { ApiService } from "@/services/api/apiService";
 import { FadeIn } from "@/components/kit";
 import { resolveApiBase } from "@/lib/apiBase";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function VerifyEmail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { refreshProfile } = useAuth();
 
   const calledRef = useRef(false);
 
@@ -100,6 +102,15 @@ export default function VerifyEmail() {
             t("auth.verify_email_success") ||
               "Correo verificado, puedes iniciar sesión",
           );
+          // Opened in the tab that is already signed in: refresh the session
+          // now, or «Verifica tu correo» stayed on top until its 15 s poll.
+          if (localStorage.getItem("authToken")) {
+            try {
+              await refreshProfile();
+            } catch {
+              /* the gate's own poll still catches up */
+            }
+          }
           navigate("/login", { replace: true });
 
           return;
