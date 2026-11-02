@@ -15,7 +15,7 @@ import type { ReactNode } from "react";
 import type { DashboardPrefs } from "../prefs";
 import type { EntityKind, LiveStatus } from "../types";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { X, Palette, MapPin, ShieldCheck, Save, RotateCcw } from "lucide-react";
 
@@ -56,6 +56,18 @@ export function CustomizePanel({
   const [p, setP] = useState<DashboardPrefs>(value);
   const { accent, setAccent, resetAccent } = useAccent();
   const { theme } = useThemeContext();
+
+  // Esc closes the sheet, like every other dialog of the CRM.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKey);
+
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
 
   if (!open) return null;
   const set = (patch: Partial<DashboardPrefs>) =>
@@ -317,7 +329,8 @@ export function CustomizePanel({
           className="sticky bottom-0 -mx-5 flex gap-2 px-5 py-3 backdrop-blur"
           style={{
             borderTop: "1px solid var(--hairline)",
-            background: "var(--glass)",
+            // Opaque: with the translucent glass the last rows showed through.
+            background: "var(--glass-solid)",
           }}
         >
           <button

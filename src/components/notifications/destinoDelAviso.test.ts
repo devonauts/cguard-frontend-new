@@ -163,3 +163,15 @@ describe("cada tipo de aviso lleva a una pantalla que existe, también sin paylo
     });
   }
 });
+
+describe("un aviso de incidente abre ESE incidente", () => {
+  it("lleva a la ficha del incidente, no al informe general", () => {
+    const destino = targetForNotification({
+      ...avisoDe("incident.created"),
+      sourceEntityType: "incident",
+      sourceEntityId: "inc-42",
+    });
+
+    expect(destino).toBe("/dispatch-tickets/inc-42");
+  });
+});

@@ -938,7 +938,7 @@ export function useControlCenter(
               : "online",
           to:
             e.sourceEntityType === "incident" && e.sourceEntityId
-              ? `/reports/incident/${e.sourceEntityId}`
+              ? `/dispatch-tickets/${e.sourceEntityId}`
               : undefined,
           branchId: ((e as any).branchId as string | null) ?? null,
           postSiteId:
@@ -958,7 +958,7 @@ export function useControlCenter(
             (i.status || "").toLowerCase() === "abierto"
               ? "incident"
               : "online",
-          to: i.id ? `/reports/incident/${i.id}` : undefined,
+          to: i.id ? `/dispatch-tickets/${i.id}` : undefined,
           postSiteId: ((i as any).postSiteId as string | undefined) ?? null,
         }));
       const activity: ActivityItem[] = (

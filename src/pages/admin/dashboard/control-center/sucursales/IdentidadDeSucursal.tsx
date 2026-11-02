@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { COUNTRIES } from "@/lib/data/countries";
+import { listaDePaises } from "@/lib/paisDeLaEmpresa";
 import {
   taxIdLabelFor,
   validateTaxNumberForCountry,
@@ -53,7 +53,7 @@ export function IdentidadDeSucursal({
   onCambio: (v: Identidad) => void;
   paisDeLaEmpresa: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const pais = valor.country || paisDeLaEmpresa;
   const etiquetaFiscal =
     taxIdLabelFor(pais) || t("sucursales.identidad.identificador");
@@ -99,9 +99,11 @@ export function IdentidadDeSucursal({
             <option value="">
               {t("sucursales.identidad.paisDeLaEmpresa")}
             </option>
-            {COUNTRIES.map((c) => (
+            {/* In the reader's language and alphabetical (the static list was
+                English and opened with US, Canada and India). */}
+            {listaDePaises(i18n.language).map((c) => (
               <option key={c.code} value={c.code}>
-                {c.flag} {c.name}
+                {c.bandera} {c.nombre}
               </option>
             ))}
           </select>
