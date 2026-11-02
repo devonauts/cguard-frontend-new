@@ -211,6 +211,10 @@ export default function ClientesPage() {
   const [archiveSingleClient, setArchiveSingleClient] = useState<Client | null>(
     null,
   );
+  // The archive dialog serves the bulk action and the row menu alike.
+  const idsAArchivar = archiveSingleClient
+    ? [archiveSingleClient.id]
+    : selectedIds;
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteClient, setDeleteClient] = useState<Client | null>(null);
   const [openRestoreDialog, setOpenRestoreDialog] = useState(false);
@@ -830,20 +834,17 @@ export default function ClientesPage() {
         actions.push({
           label: t("actions.archive"),
           icon: <Archive className="h-4 w-4" />,
-          onClick: async () => {
-            try {
-              /* Archivar de verdad: baja sedes y estaciones y suelta a los
-                 vigilantes. Antes esto sólo ponía `active: false`, una bandera
-                 que no archivaba nada — el cliente seguía con su operación
-                 viva y visible. */
-              await clientService.archiveClients([client.id]);
-              toast.success(t("clients.clientArchived"));
-              loadClients();
-            } catch (error: any) {
-              toast.error(
-                getServerErrorMessage(error, t("clients.errorArchiveClient")),
-              );
-            }
+          onClick: () => {
+            /* Archivar de verdad: baja sedes y estaciones y suelta a los
+               vigilantes. Same confirmation as the bulk action, with its
+               scope: from the row menu it archived without asking (QA M7). */
+            setArchiveSingleClient(client);
+            setAlcanceArchivado(null);
+            clientService
+              .archiveImpact(client.id)
+              .then(setAlcanceArchivado)
+              .catch(() => setAlcanceArchivado(null));
+            setOpenArchiveBulkDialog(true);
           },
         });
       }
@@ -1327,8 +1328,10 @@ export default function ClientesPage() {
                 </Select>
               </div>
 
-              <div>
-                {page} – {Math.max(1, Math.ceil(totalCount / limit))}
+              {/* Row range, like every other list («1 – 25 de 40»); this
+                  showed page/total pages instead (QA C3). */}
+              <div className="tabular-nums">
+                {from} – {to} {t("clients.pagination.of", "de")} {totalCount}
               </div>
 
               <div className="flex gap-2">
@@ -1561,7 +1564,10 @@ export default function ClientesPage() {
 
       <AlertDialog
         open={openArchiveBulkDialog}
-        onOpenChange={setOpenArchiveBulkDialog}
+        onOpenChange={(o) => {
+          setOpenArchiveBulkDialog(o);
+          if (!o) setArchiveSingleClient(null);
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -1570,7 +1576,7 @@ export default function ClientesPage() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {t("clients.alerts.archiveClients.desc", {
-                count: selectedIds.length,
+                count: idsAArchivar.length,
               })}
             </AlertDialogDescription>
             {alcanceArchivado && (
@@ -1613,7 +1619,7 @@ export default function ClientesPage() {
             <AlertDialogAction
               onClick={async () => {
                 try {
-                  const results = await enLotes(selectedIds, (id) =>
+                  const results = await enLotes(idsAArchivar, (id) =>
                     clientService.archiveClients([id]),
                   );
                   const failed = results.filter(
@@ -1639,7 +1645,8 @@ export default function ClientesPage() {
                       ),
                     );
                   }
-                  setSelectedIds([]);
+                  if (!archiveSingleClient) setSelectedIds([]);
+                  setArchiveSingleClient(null);
                   setOpenArchiveBulkDialog(false);
                 } finally {
                   loadClients();
@@ -1805,13 +1812,17 @@ export default function ClientesPage() {
               onClick={async () => {
                 if (!restoreClient) return;
                 try {
-                  await clientService.updateClient(restoreClient.id, {
-                    active: true,
-                  } as any);
+                  /* Restore = undo the archive (client, sites, stations).
+                     PATCH { active: true } could not even find an archived
+                     client — it carries `deletedAt` — and answered 404
+                     «Extraviado» (QA G1). */
+                  await clientService.restoreClients([restoreClient.id]);
                   toast.success(t("clients.clientRestored"));
                   loadClients();
                 } catch (error: any) {
-                  // backend handles errors
+                  toast.error(
+                    getServerErrorMessage(error, t("clients.errorRestore")),
+                  );
                 }
               }}
             >
