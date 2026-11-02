@@ -15,7 +15,7 @@ export default function PostOrderAck() {
       icon={FileCheck}
       title={t(
         "ui.PostOrderAck.reconocimientoDeOrdenesDePublicacion",
-        "Reconocimiento de Órdenes de Publicación",
+        "Reconocimiento de consignas",
       )}
     />
   );

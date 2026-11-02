@@ -14387,7 +14387,9 @@
       "inscripciones": "Einschreibungen",
       "completaron": "Abgeschlossen",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lektionen"
+      "lecciones": "Lektionen",
+      "pistaParaTodos": "Allen zugewiesen: zählt, wer den Kurs geöffnet hat",
+      "nDeMCompletaronParaTodos": "Allen Wachkräften zugewiesen. Jede erscheint hier, sobald sie den Kurs öffnet: {{done}} von {{total}} haben ihn abgeschlossen."
     },
     "VehiclesPage": {
       "vehiculo": "Fahrzeug",
@@ -17231,7 +17233,9 @@
       "cliente": "Kunde",
       "todosLosClientes": "Alle Kunden",
       "sede": "Standort",
-      "todasLasSedes": "Alle Standorte"
+      "todasLasSedes": "Alle Standorte",
+      "nHuecos_one": "{{count}} Lücke",
+      "nHuecos_other": "{{count}} Lücken"
     },
     "PuestaEnMarcha": {
       "titulo": "Einrichtung · {{hechos}} von {{total}}",

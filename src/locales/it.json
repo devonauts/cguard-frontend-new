@@ -14387,7 +14387,9 @@
       "inscripciones": "Iscrizioni",
       "completaron": "Hanno completato",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lezioni"
+      "lecciones": "Lezioni",
+      "pistaParaTodos": "Assegnato a tutti: conta chi ha già aperto il corso",
+      "nDeMCompletaronParaTodos": "Assegnato a tutte le guardie. Ognuna appare qui quando apre il corso: {{done}} su {{total}} lo hanno completato."
     },
     "VehiclesPage": {
       "vehiculo": "veicolo",
@@ -17231,7 +17233,9 @@
       "cliente": "Cliente",
       "todosLosClientes": "Tutti i clienti",
       "sede": "Sede",
-      "todasLasSedes": "Tutte le sedi"
+      "todasLasSedes": "Tutte le sedi",
+      "nHuecos_one": "{{count}} buco",
+      "nHuecos_other": "{{count}} buchi"
     },
     "PuestaEnMarcha": {
       "titulo": "Avvio · {{hechos}} di {{total}}",

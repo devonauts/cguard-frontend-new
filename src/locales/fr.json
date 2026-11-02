@@ -14387,7 +14387,9 @@
       "inscripciones": "Inscriptions",
       "completaron": "Ont terminé",
       "cuestionarioDosPuntos": "Quiz :",
-      "lecciones": "Leçons"
+      "lecciones": "Leçons",
+      "pistaParaTodos": "Attribué à tous : compte ceux qui ont ouvert le cours",
+      "nDeMCompletaronParaTodos": "Attribué à tous les agents. Chacun apparaît ici en ouvrant le cours : {{done}} sur {{total}} l’ont terminé."
     },
     "VehiclesPage": {
       "vehiculo": "véhicule",
@@ -17231,7 +17233,9 @@
       "cliente": "Client",
       "todosLosClientes": "Tous les clients",
       "sede": "Site",
-      "todasLasSedes": "Tous les sites"
+      "todasLasSedes": "Tous les sites",
+      "nHuecos_one": "{{count}} trou",
+      "nHuecos_other": "{{count}} trous"
     },
     "PuestaEnMarcha": {
       "titulo": "Mise en route · {{hechos}} sur {{total}}",

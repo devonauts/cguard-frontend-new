@@ -14523,7 +14523,9 @@
       "inscripciones": "Zapisy",
       "completaron": "Ukończyli",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lekcje"
+      "lecciones": "Lekcje",
+      "pistaParaTodos": "Przypisano wszystkim: liczy osoby, które otworzyły kurs",
+      "nDeMCompletaronParaTodos": "Przypisano wszystkim pracownikom ochrony. Każdy pojawia się tu po otwarciu kursu: {{done}} z {{total}} go ukończyło."
     },
     "VehiclesPage": {
       "vehiculo": "pojazd",
@@ -17457,7 +17459,11 @@
       "cliente": "Klient",
       "todosLosClientes": "Wszyscy klienci",
       "sede": "Obiekt",
-      "todasLasSedes": "Wszystkie obiekty"
+      "todasLasSedes": "Wszystkie obiekty",
+      "nHuecos_one": "{{count}} luka",
+      "nHuecos_other": "{{count}} luki",
+      "nHuecos_few": "{{count}} luki",
+      "nHuecos_many": "{{count}} luk"
     },
     "PuestaEnMarcha": {
       "titulo": "Uruchomienie · {{hechos}} z {{total}}",

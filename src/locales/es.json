@@ -11048,7 +11048,7 @@
       "buscarPais": "Buscar país o código"
     },
     "PostOrderAck": {
-      "reconocimientoDeOrdenesDePublicacion": "Reconocimiento de Órdenes de Publicación",
+      "reconocimientoDeOrdenesDePublicacion": "Reconocimiento de consignas",
       "quienHaLeidoYAceptado": "Quién ha leído y aceptado las consignas de cada puesto."
     },
     "PostSite": {
@@ -13819,7 +13819,7 @@
       "urlDePortada": "URL de portada",
       "cursoActualizado": "Curso actualizado.",
       "volver": "Volver",
-      "cursoAddon": "Curso addon",
+      "cursoAddon": "Curso complementario",
       "publicado": "Publicado",
       "borrador": "Borrador",
       "cursoDeLaPlataforma": "Curso de la plataforma otorgado a tu empresa. Es de solo lectura; puedes asignarlo a tus vigilantes.",
@@ -13847,7 +13847,9 @@
       "inscripciones": "Inscripciones",
       "completaron": "Completaron",
       "cuestionarioDosPuntos": "Cuestionario:",
-      "lecciones": "Lecciones"
+      "lecciones": "Lecciones",
+      "pistaParaTodos": "Asignado a todos: cuenta quien ya abrió el curso",
+      "nDeMCompletaronParaTodos": "Asignado a todos los vigilantes. Cada uno aparece aquí al abrir el curso: {{done}} de {{total}} lo completaron."
     },
     "VehiclesPage": {
       "vehiculo": "vehículo",
@@ -14195,9 +14197,9 @@
       "noSePudoCargarEl": "No se pudo cargar el catálogo.",
       "noTienesPermisoParaVer": "No tienes permiso para ver el catálogo.",
       "cursosDeLaPlataforma": "Cursos de la plataforma",
-      "cursosAddonOtorgadosATu": "Cursos addon otorgados a tu empresa por {{marca}}. Son de solo lectura, pero puedes asignarlos.",
-      "sinCursosAddon": "Sin cursos addon",
-      "tuEmpresaAunNoTiene": "Tu empresa aún no tiene cursos addon otorgados.",
+      "cursosAddonOtorgadosATu": "Cursos complementarios otorgados a tu empresa por {{marca}}. Son de solo lectura, pero puedes asignarlos.",
+      "sinCursosAddon": "Sin cursos complementarios",
+      "tuEmpresaAunNoTiene": "Tu empresa aún no tiene cursos complementarios otorgados.",
       "nPts": "{{n}} pts"
     },
     "TrainingCoursesPage": {
@@ -14215,7 +14217,7 @@
       "cursoCreado": "Curso creado.",
       "cursoEliminado": "Curso eliminado.",
       "curso": "Curso",
-      "addon": "Addon",
+      "addon": "Complementario",
       "puntos": "Puntos",
       "cursos": "Cursos",
       "publicados": "Publicados",
@@ -16691,7 +16693,9 @@
       "cliente": "Cliente",
       "todosLosClientes": "Todos los clientes",
       "sede": "Sede",
-      "todasLasSedes": "Todas las sedes"
+      "todasLasSedes": "Todas las sedes",
+      "nHuecos_one": "{{count}} hueco",
+      "nHuecos_other": "{{count}} huecos"
     },
     "PuestaEnMarcha": {
       "titulo": "Puesta en marcha · {{hechos}} de {{total}}",

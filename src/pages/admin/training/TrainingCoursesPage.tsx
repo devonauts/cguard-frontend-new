@@ -197,7 +197,7 @@ export default function TrainingCoursesPage() {
             <span className="truncate font-medium">{c.title}</span>
             {c.isAddon && (
               <StatusBadge className="shrink-0" dot={false} tone="neutral">
-                <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Addon")}
+                <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Complementario")}
               </StatusBadge>
             )}
           </div>

@@ -13847,7 +13847,9 @@
       "inscripciones": "Inscrições",
       "completaron": "Concluíram",
       "cuestionarioDosPuntos": "Questionário:",
-      "lecciones": "Lições"
+      "lecciones": "Lições",
+      "pistaParaTodos": "Atribuído a todos: conta quem já abriu o curso",
+      "nDeMCompletaronParaTodos": "Atribuído a todos os vigilantes. Cada um aparece aqui ao abrir o curso: {{done}} de {{total}} o concluíram."
     },
     "VehiclesPage": {
       "vehiculo": "veículo",
@@ -16691,7 +16693,9 @@
       "cliente": "Cliente",
       "todosLosClientes": "Todos os clientes",
       "sede": "Unidade",
-      "todasLasSedes": "Todas as unidades"
+      "todasLasSedes": "Todas as unidades",
+      "nHuecos_one": "{{count}} lacuna",
+      "nHuecos_other": "{{count}} lacunas"
     },
     "PuestaEnMarcha": {
       "titulo": "Primeiros passos · {{hechos}} de {{total}}",

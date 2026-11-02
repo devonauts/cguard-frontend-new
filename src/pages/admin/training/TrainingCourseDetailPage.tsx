@@ -187,7 +187,7 @@ export default function TrainingCourseDetailPage() {
               {isAddon && (
                 <StatusBadge dot={false} tone="slate">
                   <Lock className="h-3 w-3" />{" "}
-                  {t("ui.TrainingCourseDetailPage.cursoAddon", "Curso addon")}
+                  {t("ui.TrainingCourseDetailPage.cursoAddon", "Curso complementario")}
                 </StatusBadge>
               )}
               {course.published ? (

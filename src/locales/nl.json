@@ -14387,7 +14387,9 @@
       "inscripciones": "Inschrijvingen",
       "completaron": "Voltooid",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lessen"
+      "lecciones": "Lessen",
+      "pistaParaTodos": "Aan iedereen toegewezen: telt wie de cursus heeft geopend",
+      "nDeMCompletaronParaTodos": "Aan alle beveiligers toegewezen. Iedereen verschijnt hier zodra die de cursus opent: {{done}} van {{total}} hebben hem afgerond."
     },
     "VehiclesPage": {
       "vehiculo": "voertuig",
@@ -17231,7 +17233,9 @@
       "cliente": "Klant",
       "todosLosClientes": "Alle klanten",
       "sede": "Locatie",
-      "todasLasSedes": "Alle locaties"
+      "todasLasSedes": "Alle locaties",
+      "nHuecos_one": "{{count}} gat",
+      "nHuecos_other": "{{count}} gaten"
     },
     "PuestaEnMarcha": {
       "titulo": "Aan de slag · {{hechos}} van {{total}}",
