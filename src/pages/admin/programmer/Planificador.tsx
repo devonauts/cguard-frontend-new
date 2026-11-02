@@ -500,6 +500,7 @@ export default function Planificador() {
           b,
           zonaDeLaEmpresa(),
           60,
+          Date.now(),
         );
 
         limpiar(r.plan, -ANTES, DESPUES);
@@ -578,6 +579,19 @@ export default function Planificador() {
                 ),
               );
           }
+        }
+        // What already happened comes from the live read, never from a saved
+        // draft: a day that ended since the draft was saved is drawn as it was.
+        if (plan !== r.plan) {
+          const hecho = new Map(r.plan.personas.map((x) => [x.id, x.pasado]));
+
+          for (const x of plan.personas) {
+            const h = hecho.get(x.id);
+
+            if (h) x.pasado = h;
+            else delete x.pasado;
+          }
+          limpiar(plan, -ANTES, DESPUES);
         }
         if (choques.length)
           toast.warning(
@@ -682,8 +696,13 @@ export default function Planificador() {
   // sacafrancos fijos cubren solos al cargar también es nuevo para el horario.
   const contextoDePublicacion = useCallback(
     () =>
-      contextoEnLaEmpresa(tenantId, base, hoyIdx, DESPUES, (dia, h, m) =>
-        instanteEnLaEmpresa(dia, h, m),
+      contextoEnLaEmpresa(
+        tenantId,
+        base,
+        hoyIdx,
+        DESPUES,
+        (dia, h, m) => instanteEnLaEmpresa(dia, h, m),
+        Date.now(),
       ),
     [tenantId, base, hoyIdx],
   );
