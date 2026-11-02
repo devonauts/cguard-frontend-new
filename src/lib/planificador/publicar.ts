@@ -746,6 +746,14 @@ export function planificarPublicacion(
       ).some((x) => x.stationId === pu.id);
 
       if (yaReal || encadenadas.has(`${pu.id}|${franja}|${d}|${id}`)) continue;
+      // Covering elsewhere would delete their own shift that day, but they
+      // already clocked into it: it is the proof of pay and stays.
+      if (real && enlace.marcados?.[real.id]) {
+        no.push(
+          `${nombreDe(p)} cubriendo ${pu.nombre} el ${ctx.fechaDe(d)}: ya marcó entrada en su turno de ese día; ese turno se queda.`,
+        );
+        continue;
+      }
       /* Si el hueco viene de una FALTA con novedad abierta, cubrirlo por la
          novedad (como en Cobertura en vivo): crea el turno de cobertura y
          cierra la novedad a la vez, en vez de dejar la alerta viva. Quien lo
@@ -806,6 +814,14 @@ export function planificarPublicacion(
     const p = plan.personas.find((x) => x.id === id);
 
     if (!p) continue;
+    /* A shift someone clocked into is never withdrawn: the server refuses it
+       and the whole publish used to fail on that one row (QA 2026-11-02). */
+    if (enlace.marcados?.[shiftId]) {
+      no.push(
+        `${nombreDe(p)}: el turno del ${ctx.fechaDe(d)} ya tiene marcaje; se queda en el horario.`,
+      );
+      continue;
+    }
     cambios.push(
       llamada(
         "quitarTurno",

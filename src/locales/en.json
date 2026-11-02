@@ -17163,7 +17163,9 @@
       "cerrar": "Close",
       "recargarConLoNuevo": "Reload with the latest and review",
       "publicandoDeUnaVez": "Publishing everything at once…",
-      "publicarDetalleTodo": "This writes to the live schedule: the control room, the Schedule and the guards in their app will see it. It goes all at once: if one change fails, nothing is published."
+      "publicarDetalleTodo": "This writes to the live schedule: the control room, the Schedule and the guards in their app will see it. It goes all at once: if one change fails, nothing is published.",
+      "seQuedaronConMarcaje": "Not applied because the shift already has a clock-in and stays: {{lista}}",
+      "volverAlBorrador": "Back to the draft"
     },
     "AvisoRetiradaHorario": {
       "titulo": "This screen is going away: the Planner is the new one",

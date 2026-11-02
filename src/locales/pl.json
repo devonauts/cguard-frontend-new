@@ -17962,7 +17962,9 @@
       "cerrar": "Zamknij",
       "recargarConLoNuevo": "Wczytaj najnowsze i sprawdź",
       "publicandoDeUnaVez": "Publikowanie wszystkiego naraz…",
-      "publicarDetalleTodo": "To zapisuje w rzeczywistym grafiku: zobaczą to centrala, Grafik i ochroniarze w aplikacji. Wszystko naraz: jeśli jedna zmiana się nie powiedzie, nic nie zostanie opublikowane."
+      "publicarDetalleTodo": "To zapisuje w rzeczywistym grafiku: zobaczą to centrala, Grafik i ochroniarze w aplikacji. Wszystko naraz: jeśli jedna zmiana się nie powiedzie, nic nie zostanie opublikowane.",
+      "seQuedaronConMarcaje": "Nie zastosowano, bo zmiana ma już rejestrację wejścia i zostaje: {{lista}}",
+      "volverAlBorrador": "Wróć do szkicu"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Ten ekran zostanie wycofany: nowy jest Planer",

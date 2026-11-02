@@ -17722,7 +17722,9 @@
       "cerrar": "Sluiten",
       "recargarConLoNuevo": "Opnieuw laden met het nieuwste en controleren",
       "publicandoDeUnaVez": "Alles in één keer publiceren…",
-      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd."
+      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd.",
+      "seQuedaronConMarcaje": "Niet toegepast omdat de dienst al een klokregistratie heeft en blijft: {{lista}}",
+      "volverAlBorrador": "Terug naar het concept"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",

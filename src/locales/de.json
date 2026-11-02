@@ -17722,7 +17722,9 @@
       "cerrar": "Schließen",
       "recargarConLoNuevo": "Mit dem Neuesten neu laden und prüfen",
       "publicandoDeUnaVez": "Alles wird auf einmal veröffentlicht…",
-      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht."
+      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht.",
+      "seQuedaronConMarcaje": "Nicht übernommen, weil die Schicht bereits eine Stempelung hat und bleibt: {{lista}}",
+      "volverAlBorrador": "Zurück zum Entwurf"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",

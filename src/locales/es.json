@@ -17163,7 +17163,9 @@
       "cerrar": "Cerrar",
       "recargarConLoNuevo": "Recargar con lo nuevo y revisar",
       "publicandoDeUnaVez": "Publicando todo de una vez…",
-      "publicarDetalleTodo": "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app. Va todo de una vez: si un cambio falla, no se publica nada."
+      "publicarDetalleTodo": "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app. Va todo de una vez: si un cambio falla, no se publica nada.",
+      "seQuedaronConMarcaje": "Esto no se aplicó porque el turno ya tiene marcaje y se queda: {{lista}}",
+      "volverAlBorrador": "Volver al borrador"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta pantalla se va a retirar: el Planificador es la nueva",

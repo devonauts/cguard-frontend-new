@@ -17722,7 +17722,9 @@
       "cerrar": "Fermer",
       "recargarConLoNuevo": "Recharger avec le plus récent et vérifier",
       "publicandoDeUnaVez": "Publication de tout en une fois…",
-      "publicarDetalleTodo": "Ceci écrit dans le planning réel : la centrale, le Planning et les agents dans leur application le verront. Tout part en une fois : si une modification échoue, rien n’est publié."
+      "publicarDetalleTodo": "Ceci écrit dans le planning réel : la centrale, le Planning et les agents dans leur application le verront. Tout part en une fois : si une modification échoue, rien n’est publié.",
+      "seQuedaronConMarcaje": "Non appliqué : le quart a déjà un pointage et reste en place : {{lista}}",
+      "volverAlBorrador": "Retour au brouillon"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Cet écran va disparaître : le Planificateur est le nouveau",

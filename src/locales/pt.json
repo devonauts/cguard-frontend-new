@@ -17163,7 +17163,9 @@
       "cerrar": "Fechar",
       "recargarConLoNuevo": "Recarregar com o mais recente e revisar",
       "publicandoDeUnaVez": "Publicando tudo de uma vez…",
-      "publicarDetalleTodo": "Isto grava na escala real: a central, a Escala e os vigilantes no app verão. Vai tudo de uma vez: se uma alteração falhar, nada é publicado."
+      "publicarDetalleTodo": "Isto grava na escala real: a central, a Escala e os vigilantes no app verão. Vai tudo de uma vez: se uma alteração falhar, nada é publicado.",
+      "seQuedaronConMarcaje": "Não aplicado porque o turno já tem marcação e permanece: {{lista}}",
+      "volverAlBorrador": "Voltar ao rascunho"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta tela vai sair: o Planejador é a nova",

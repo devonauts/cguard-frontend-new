@@ -17722,7 +17722,9 @@
       "cerrar": "Chiudi",
       "recargarConLoNuevo": "Ricarica con le novità e rivedi",
       "publicandoDeUnaVez": "Pubblicazione di tutto in una volta…",
-      "publicarDetalleTodo": "Questo scrive nel turnario reale: lo vedranno la centrale, il Turnario e le guardie nella loro app. Va tutto in una volta: se una modifica fallisce, non si pubblica nulla."
+      "publicarDetalleTodo": "Questo scrive nel turnario reale: lo vedranno la centrale, il Turnario e le guardie nella loro app. Va tutto in una volta: se una modifica fallisce, non si pubblica nulla.",
+      "seQuedaronConMarcaje": "Non applicato perché il turno ha già una timbratura e resta: {{lista}}",
+      "volverAlBorrador": "Torna alla bozza"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Questa schermata sarà rimossa: il Pianificatore è la nuova",
