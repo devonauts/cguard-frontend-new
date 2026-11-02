@@ -9524,7 +9524,8 @@
       "codigoDePrueba": "Er is geen sms-provider in deze omgeving. Testcode: {{code}}",
       "escribeTuNumeroAntes": "Vul je mobiele nummer in voordat je het bevestigt.",
       "correoNoValido": "Dat e-mailadres is niet geldig.",
-      "esTuCorreoActual": "Dat is al je e-mailadres."
+      "esTuCorreoActual": "Dat is al je e-mailadres.",
+      "telefonoNoValido": "Dat telefoonnummer lijkt niet geldig. Controleer het land en het nummer."
     },
     "Routes": {
       "turnoDia": "Dagdienst",

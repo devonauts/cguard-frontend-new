@@ -8965,7 +8965,8 @@
       "codigoDePrueba": "No hay proveedor de SMS en este entorno. Código de prueba: {{code}}",
       "escribeTuNumeroAntes": "Escribe tu número móvil antes de confirmarlo.",
       "correoNoValido": "Ese correo no es válido.",
-      "esTuCorreoActual": "Ese ya es tu correo."
+      "esTuCorreoActual": "Ese ya es tu correo.",
+      "telefonoNoValido": "Ese teléfono no parece válido. Revisa el país y el número."
     },
     "Routes": {
       "turnoDia": "Turno día",

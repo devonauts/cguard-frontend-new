@@ -8965,7 +8965,8 @@
       "codigoDePrueba": "There is no SMS provider in this environment. Test code: {{code}}",
       "escribeTuNumeroAntes": "Enter your mobile number before confirming it.",
       "correoNoValido": "That email address is not valid.",
-      "esTuCorreoActual": "That is already your email address."
+      "esTuCorreoActual": "That is already your email address.",
+      "telefonoNoValido": "That phone number doesn't look valid. Check the country and the number."
     },
     "Routes": {
       "turnoDia": "Day shift",

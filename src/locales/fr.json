@@ -9524,7 +9524,8 @@
       "codigoDePrueba": "Aucun fournisseur SMS dans cet environnement. Code de test : {{code}}",
       "escribeTuNumeroAntes": "Saisissez votre numéro de mobile avant de le confirmer.",
       "correoNoValido": "Cette adresse e-mail n'est pas valide.",
-      "esTuCorreoActual": "C'est déjà votre adresse e-mail."
+      "esTuCorreoActual": "C'est déjà votre adresse e-mail.",
+      "telefonoNoValido": "Ce numéro ne semble pas valide. Vérifiez le pays et le numéro."
     },
     "Routes": {
       "turnoDia": "Vacation de jour",

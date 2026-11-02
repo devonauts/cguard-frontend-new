@@ -9546,7 +9546,8 @@
       "codigoDePrueba": "W tym środowisku nie ma dostawcy SMS. Kod testowy: {{code}}",
       "escribeTuNumeroAntes": "Wpisz swój numer komórkowy, zanim go potwierdzisz.",
       "correoNoValido": "Ten adres e-mail jest nieprawidłowy.",
-      "esTuCorreoActual": "To już jest twój adres e-mail."
+      "esTuCorreoActual": "To już jest twój adres e-mail.",
+      "telefonoNoValido": "Ten numer telefonu nie wygląda na prawidłowy. Sprawdź kraj i numer."
     },
     "Routes": {
       "turnoDia": "Zmiana dzienna",

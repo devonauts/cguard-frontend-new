@@ -9524,7 +9524,8 @@
       "codigoDePrueba": "In dieser Umgebung gibt es keinen SMS-Anbieter. Testcode: {{code}}",
       "escribeTuNumeroAntes": "Gib deine Handynummer ein, bevor du sie bestätigst.",
       "correoNoValido": "Diese E-Mail-Adresse ist ungültig.",
-      "esTuCorreoActual": "Das ist bereits deine E-Mail-Adresse."
+      "esTuCorreoActual": "Das ist bereits deine E-Mail-Adresse.",
+      "telefonoNoValido": "Diese Telefonnummer scheint ungültig zu sein. Prüfe Land und Nummer."
     },
     "Routes": {
       "turnoDia": "Tagschicht",
