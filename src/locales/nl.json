@@ -15927,7 +15927,14 @@
       "reabrirPeriodoMensaje": "Prikkingen, diensten en markeringen vanaf die dag kunnen weer worden gewijzigd. Al goedgekeurde of geëxporteerde tijdkaarten blijven ongewijzigd. Geef de reden op: die komt in het logboek.",
       "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?",
       "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen.",
-      "enviarAPago": "Naar betaling sturen"
+      "enviarAPago": "Naar betaling sturen",
+      "exportadaConRechazos": "Loonlijst geëxporteerd zonder {{count}} urenkaart(en), die niet worden uitbetaald:",
+      "exportadaConRechazos_one": "Loonlijst geëxporteerd zonder 1 urenkaart, die niet wordt uitbetaald:",
+      "exportadaConRechazos_few": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
+      "exportadaConRechazos_many": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
+      "exportadaConRechazos_other": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
+      "tarifaInvalida": "Het tarief moet groter dan nul zijn. Laat het veld leeg om het te verwijderen.",
+      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",

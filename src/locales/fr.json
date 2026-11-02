@@ -15927,7 +15927,14 @@
       "reabrirPeriodoMensaje": "Les pointages, postes et marques à partir de ce jour pourront être modifiés à nouveau. Les feuilles déjà approuvées ou exportées ne sont pas touchées. Indiquez le motif : il est consigné au journal.",
       "reabrirPeriodoTitulo": "Rouvrir la paie à partir du {{desde}} ?",
       "generarCerrado": "Cette période est clôturée. Rouvrez-la pour la recalculer.",
-      "enviarAPago": "Envoyer en paie"
+      "enviarAPago": "Envoyer en paie",
+      "exportadaConRechazos": "Paie exportée sans {{count}} fiche(s), qui ne sont pas payées :",
+      "exportadaConRechazos_one": "Paie exportée sans 1 fiche, qui n'est pas payée :",
+      "exportadaConRechazos_few": "Paie exportée sans {{count}} fiches, qui ne sont pas payées :",
+      "exportadaConRechazos_many": "Paie exportée sans {{count}} fiches, qui ne sont pas payées :",
+      "exportadaConRechazos_other": "Paie exportée sans {{count}} fiches, qui ne sont pas payées :",
+      "tarifaInvalida": "Le taux doit être supérieur à zéro. Pour le retirer, laissez le champ vide.",
+      "tarifaQuitada": "Taux de {{nombre}} retiré. Régénérez la période pour l'appliquer."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licences",

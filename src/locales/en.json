@@ -15387,7 +15387,14 @@
       "reabrirPeriodoMensaje": "Punches, shifts and marks from that day on can be changed again. Timecards already approved or exported are not touched. Write the reason: it goes to the audit log.",
       "reabrirPeriodoTitulo": "Reopen payroll from {{desde}}?",
       "generarCerrado": "This period is closed. Reopen it to recalculate.",
-      "enviarAPago": "Send to pay"
+      "enviarAPago": "Send to pay",
+      "exportadaConRechazos": "Payroll exported without {{count}} timecard(s), which are not paid:",
+      "exportadaConRechazos_one": "Payroll exported without 1 timecard, which is not paid:",
+      "exportadaConRechazos_few": "Payroll exported without {{count}} timecards, which are not paid:",
+      "exportadaConRechazos_many": "Payroll exported without {{count}} timecards, which are not paid:",
+      "exportadaConRechazos_other": "Payroll exported without {{count}} timecards, which are not paid:",
+      "tarifaInvalida": "The rate must be greater than zero. To remove it, leave the field empty.",
+      "tarifaQuitada": "Rate of {{nombre}} removed. Generate the period again to apply it."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenses",

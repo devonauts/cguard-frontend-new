@@ -107,7 +107,7 @@ async function descargarPost(
   url: string,
   cuerpo: unknown,
   nombreDeReserva: string,
-): Promise<void> {
+): Promise<Record<string, string>> {
   const resp = await api.post<Blob>(url, cuerpo, {
     responseType: "blob",
   } as never);
@@ -121,6 +121,39 @@ async function descargarPost(
     ) || nombreDeReserva;
 
   downloadBlob(nombre, blob);
+
+  return cabeceras;
+}
+
+/**
+ * What stayed out of a pay export, from its X-Payroll-* headers (pure;
+ * exported for tests). A card without a rate is not paid, and the screen has
+ * to say so next to the download instead of «Nómina exportada».
+ */
+export function resultadoDeExportacion(cabeceras: Record<string, string> | undefined): {
+  incluidas: number | null;
+  rechazadas: number;
+  motivos: string[];
+} {
+  const h = cabeceras || {};
+  const leer = (k: string) => h[k] ?? h[k.toLowerCase()];
+  const incluidas = leer("X-Payroll-Included");
+  let motivos: string[] = [];
+
+  try {
+    const crudo = leer("X-Payroll-Rejected-Reasons");
+    const lista = crudo ? JSON.parse(decodeURIComponent(crudo)) : [];
+
+    motivos = Array.isArray(lista) ? lista.map(String) : [];
+  } catch {
+    motivos = [];
+  }
+
+  return {
+    incluidas: incluidas == null ? null : Number(incluidas) || 0,
+    rechazadas: Number(leer("X-Payroll-Rejected")) || 0,
+    motivos,
+  };
 }
 
 const payrollService = {
@@ -201,14 +234,19 @@ const payrollService = {
     );
   },
 
-  /** CSV resumen. Marca las tarjetas como exportadas. */
-  async exportar(ids: string[], periodo: Periodo): Promise<void> {
+  /**
+   * CSV resumen. Marca las tarjetas como exportadas. Dice cuántas quedaron
+   * fuera y por qué; si no sale ninguna, el servidor responde un error.
+   */
+  async exportar(ids: string[], periodo: Periodo): Promise<ReturnType<typeof resultadoDeExportacion>> {
     const t = getTenantId();
 
-    await descargarPost(
-      `/tenant/${t}/payroll/timecards/export?desde=${periodo.desde}&hasta=${periodo.hasta}`,
-      { data: { ids } },
-      `nomina-${periodo.desde}_${periodo.hasta}.csv`,
+    return resultadoDeExportacion(
+      await descargarPost(
+        `/tenant/${t}/payroll/timecards/export?desde=${periodo.desde}&hasta=${periodo.hasta}`,
+        { data: { ids } },
+        `nomina-${periodo.desde}_${periodo.hasta}.csv`,
+      ),
     );
   },
 

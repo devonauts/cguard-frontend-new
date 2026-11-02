@@ -15927,7 +15927,14 @@
       "reabrirPeriodoMensaje": "Timbrature, turni e segni da quel giorno potranno essere di nuovo modificati. Le schede già approvate o esportate non vengono toccate. Scrivi il motivo: resta nel registro.",
       "reabrirPeriodoTitulo": "Riaprire le paghe dal {{desde}}?",
       "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo.",
-      "enviarAPago": "Invia al pagamento"
+      "enviarAPago": "Invia al pagamento",
+      "exportadaConRechazos": "Paghe esportate senza {{count}} scheda/e, che non vanno in pagamento:",
+      "exportadaConRechazos_one": "Paghe esportate senza 1 scheda, che non va in pagamento:",
+      "exportadaConRechazos_few": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "exportadaConRechazos_many": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "exportadaConRechazos_other": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "tarifaInvalida": "La tariffa deve essere maggiore di zero. Per toglierla, lascia il campo vuoto.",
+      "tarifaQuitada": "Tariffa di {{nombre}} tolta. Genera di nuovo il periodo per applicarlo."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",

@@ -15387,7 +15387,14 @@
       "reabrirPeriodoMensaje": "Los fichajes, turnos y marcas desde ese día se podrán volver a cambiar. Las tarjetas ya aprobadas o exportadas no se tocan. Escribe el motivo: queda en la bitácora.",
       "reabrirPeriodoTitulo": "¿Reabrir la nómina desde el {{desde}}?",
       "generarCerrado": "Este periodo está cerrado. Reábrelo para volver a calcularlo.",
-      "enviarAPago": "Enviar a pago"
+      "enviarAPago": "Enviar a pago",
+      "exportadaConRechazos": "Nómina exportada sin {{count}} tarjeta(s), que no salen a pagar:",
+      "exportadaConRechazos_one": "Nómina exportada sin 1 tarjeta, que no sale a pagar:",
+      "exportadaConRechazos_few": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
+      "exportadaConRechazos_many": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
+      "exportadaConRechazos_other": "Nómina exportada sin {{count}} tarjetas, que no salen a pagar:",
+      "tarifaInvalida": "La tarifa tiene que ser mayor que cero. Para quitarla, deja el campo vacío.",
+      "tarifaQuitada": "Tarifa de {{nombre}} quitada. Vuelve a generar el periodo para aplicarlo."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencias",

@@ -15387,7 +15387,14 @@
       "reabrirPeriodoMensaje": "Batidas, turnos e marcações a partir desse dia poderão ser alterados de novo. Cartões já aprovados ou exportados não são alterados. Escreva o motivo: fica no registro.",
       "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?",
       "generarCerrado": "Este período está fechado. Reabra-o para recalcular.",
-      "enviarAPago": "Enviar para pagamento"
+      "enviarAPago": "Enviar para pagamento",
+      "exportadaConRechazos": "Folha exportada sem {{count}} cartão(ões), que não vão para pagamento:",
+      "exportadaConRechazos_one": "Folha exportada sem 1 cartão, que não vai para pagamento:",
+      "exportadaConRechazos_few": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
+      "exportadaConRechazos_many": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
+      "exportadaConRechazos_other": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
+      "tarifaInvalida": "A tarifa tem de ser maior que zero. Para removê-la, deixe o campo vazio.",
+      "tarifaQuitada": "Tarifa de {{nombre}} removida. Gere o período novamente para aplicar."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenças",

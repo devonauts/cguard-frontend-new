@@ -15927,7 +15927,14 @@
       "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
       "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?",
       "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen.",
-      "enviarAPago": "Zur Zahlung senden"
+      "enviarAPago": "Zur Zahlung senden",
+      "exportadaConRechazos": "Lohnliste exportiert ohne {{count}} Zeitkarte(n), die nicht ausgezahlt werden:",
+      "exportadaConRechazos_one": "Lohnliste exportiert ohne 1 Zeitkarte, die nicht ausgezahlt wird:",
+      "exportadaConRechazos_few": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "exportadaConRechazos_many": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "exportadaConRechazos_other": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "tarifaInvalida": "Der Satz muss größer als null sein. Zum Entfernen das Feld leer lassen.",
+      "tarifaQuitada": "Satz von {{nombre}} entfernt. Erzeugen Sie die Periode neu, um es anzuwenden."
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",

@@ -16119,7 +16119,14 @@
       "reabrirPeriodoMensaje": "Odbicia, zmiany i oznaczenia od tego dnia będzie można znowu zmieniać. Karty już zatwierdzone lub wyeksportowane pozostają bez zmian. Podaj powód: zostanie zapisany w dzienniku.",
       "reabrirPeriodoTitulo": "Otworzyć ponownie płace od {{desde}}?",
       "generarCerrado": "Ten okres jest zamknięty. Otwórz go ponownie, aby przeliczyć.",
-      "enviarAPago": "Wyślij do wypłaty"
+      "enviarAPago": "Wyślij do wypłaty",
+      "exportadaConRechazos": "Lista płac wyeksportowana bez {{count}} kart(y), które nie idą do wypłaty:",
+      "exportadaConRechazos_one": "Lista płac wyeksportowana bez 1 karty, która nie idzie do wypłaty:",
+      "exportadaConRechazos_few": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
+      "exportadaConRechazos_many": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
+      "exportadaConRechazos_other": "Lista płac wyeksportowana bez {{count}} kart, które nie idą do wypłaty:",
+      "tarifaInvalida": "Stawka musi być większa od zera. Aby ją usunąć, zostaw pole puste.",
+      "tarifaQuitada": "Stawka {{nombre}} usunięta. Wygeneruj okres ponownie, aby to zastosować."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licencje",
