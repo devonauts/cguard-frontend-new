@@ -85,12 +85,22 @@ function formatTime(iso: string | null) {
   });
 }
 
-type ShiftStatusValue = "completed" | "in-progress" | "pending" | "cancelled";
+type ShiftStatusValue =
+  | "completed"
+  | "in-progress"
+  | "pending"
+  | "cancelled"
+  /** Handed to a colleague (approved swap) or moved: someone else works it. */
+  | "transferred";
 
 function computeStatus(row: ShiftRecord): ShiftStatusValue {
   /* A voided shift (absent, cancelled, moved to another station) leaves the
      post without that guard whatever the clock says: it was «Pendiente» and
      later «Completado» (QA 2026-11-01). */
+  /* A swapped or moved shift did not leave the post empty: the colleague's
+     row covers it. It counted as «Cancelado — quedaron sin vigilante»
+     (QA 2026-11-02, N8). */
+  if (String((row as any).status || "") === "transferred_out") return "transferred";
   if ((ESTADOS_ANULADOS as readonly string[]).includes(String((row as any).status || "")))
     return "cancelled";
   const now = new Date();
@@ -228,6 +238,12 @@ export default function ShiftStatus() {
       return <StatusBadge tone={e.tone}>{t(e.key, e.defaultValue)}</StatusBadge>;
     }
     switch (status) {
+      case "transferred":
+        return (
+          <StatusBadge tone="neutral">
+            {t("ui.Schedule.estadoTurno.transferred_out", "Trasladado")}
+          </StatusBadge>
+        );
       case "pending":
         return <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>;
       case "in-progress":
