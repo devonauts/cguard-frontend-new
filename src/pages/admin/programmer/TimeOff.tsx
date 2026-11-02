@@ -78,7 +78,6 @@ import AusenciasCalendario from "./AusenciasCalendario";
 import { rangoDelMes } from "./ausenciasCalendario";
 
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 import { listarTodo } from "@/lib/listarCompleto";
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -93,7 +92,8 @@ function formatDate(iso: string | null) {
   const d = m
     ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
     : new Date(iso);
-  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+  // tz: civil day built at local midnight (a calendar date, not an instant).
+  return d.toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
     year: "numeric",
