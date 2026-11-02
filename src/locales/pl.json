@@ -17012,7 +17012,8 @@
       "hintImprimir": "Otwiera podgląd wydruku w przeglądarce",
       "enviarPorCorreo": "Wyślij e-mailem",
       "hintEnviarPorCorreo": "Wysyła raport do odbiorcy",
-      "exportando": "Eksportowanie…"
+      "exportando": "Eksportowanie…",
+      "descargarComo": "Pobierz jako"
     },
     "ExportarPeriodo": {
       "semana": "Tydzień",

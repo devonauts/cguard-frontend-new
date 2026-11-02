@@ -16250,7 +16250,8 @@
       "hintImprimir": "Opens the browser's print view",
       "enviarPorCorreo": "Send by email",
       "hintEnviarPorCorreo": "Sends the report to a recipient",
-      "exportando": "Exporting…"
+      "exportando": "Exporting…",
+      "descargarComo": "Download as"
     },
     "ExportarPeriodo": {
       "semana": "Week",

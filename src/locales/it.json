@@ -16790,7 +16790,8 @@
       "hintImprimir": "Apre l'anteprima di stampa del browser",
       "enviarPorCorreo": "Invia per email",
       "hintEnviarPorCorreo": "Invia il report a un destinatario",
-      "exportando": "Esportazione…"
+      "exportando": "Esportazione…",
+      "descargarComo": "Scarica come"
     },
     "ExportarPeriodo": {
       "semana": "Settimana",

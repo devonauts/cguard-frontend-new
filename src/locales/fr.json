@@ -16790,7 +16790,8 @@
       "hintImprimir": "Ouvre l'aperçu d'impression du navigateur",
       "enviarPorCorreo": "Envoyer par e-mail",
       "hintEnviarPorCorreo": "Envoie le rapport à un destinataire",
-      "exportando": "Exportation…"
+      "exportando": "Exportation…",
+      "descargarComo": "Télécharger en"
     },
     "ExportarPeriodo": {
       "semana": "Semaine",
