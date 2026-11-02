@@ -1326,6 +1326,9 @@ export default function PostSiteWizard({
 
   // ── step validation ──────────────────────────────────────────────────────────
   const canGoNext = () => {
+    // In the guided setup there is no «continue without type» link on
+    // purpose, but «Siguiente» skipped the type anyway and ticked the step.
+    if (step === 1 && enPuesta) return !!serviceType;
     if (step === 2)
       return !!address.trim() && !errorVigencia && !faltaNombreEvento;
 
