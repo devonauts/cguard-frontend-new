@@ -69,6 +69,8 @@ export default function SecurityPolicyPage() {
   const [session, setSession] = useState<SessionPolicy | null>(null);
   const [platform, setPlatform] = useState<PlatformSwitch[]>([]);
   const [limites, setLimites] = useState<any>({});
+  // What the platform already requires and the company cannot loosen (GET …/settings/security `suelo`).
+  const [suelo, setSuelo] = useState<Partial<PasswordPolicy>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -83,6 +85,7 @@ export default function SecurityPolicyPage() {
         setSession(data.session);
         setPlatform(data.platform || []);
         setLimites(data.limites || {});
+        setSuelo(data.suelo || {});
       } catch {
         toast.error(
           t("settings.security.loadError", {
@@ -127,12 +130,30 @@ export default function SecurityPolicyPage() {
 
       if (data?.password) setPassword(data.password);
       if (data?.session) setSession(data.session);
-      toast.success(
-        t("settings.security.savedOk", {
-          defaultValue:
-            "Política guardada. Las contraseñas nuevas ya la exigen; la sesión aplica al recargar.",
-        }),
-      );
+      // The server keeps the platform floor whatever is sent: say so instead
+      // of «Política guardada» over a value that did not stick.
+      const sent = password as Record<string, unknown> | null;
+      const kept = (data?.password || {}) as Record<string, unknown>;
+      const corrected =
+        !!sent &&
+        !!data?.password &&
+        Object.keys(sent).some((k) => k in kept && kept[k] !== sent[k]);
+
+      if (corrected) {
+        toast.warning(
+          t("settings.security.savedCorrected", {
+            defaultValue:
+              "Política guardada, pero lo que la plataforma exige se quedó como estaba. Revisa los valores en pantalla.",
+          }),
+        );
+      } else {
+        toast.success(
+          t("settings.security.savedOk", {
+            defaultValue:
+              "Política guardada. Las contraseñas nuevas ya la exigen; la sesión aplica al recargar.",
+          }),
+        );
+      }
     } catch (e: any) {
       toast.error(
         e?.response?.data?.message ||
@@ -146,6 +167,9 @@ export default function SecurityPolicyPage() {
   };
 
   const disabled = !canEdit || loading;
+  const requiredByPlatform = t("settings.security.requiredByPlatform", {
+    defaultValue: "Lo exige la plataforma: no se puede apagar.",
+  });
 
   return (
     <SettingsPageShell
@@ -208,7 +232,8 @@ export default function SecurityPolicyPage() {
             <div className="space-y-1">
               <ToggleRow
                 checked={password.requireUppercase}
-                disabled={disabled}
+                disabled={disabled || !!suelo.requireUppercase}
+                hint={suelo.requireUppercase ? requiredByPlatform : undefined}
                 label={t("settings.security.requireUppercase", {
                   defaultValue: "Exigir mayúsculas",
                 })}
@@ -218,7 +243,8 @@ export default function SecurityPolicyPage() {
               />
               <ToggleRow
                 checked={password.requireLowercase}
-                disabled={disabled}
+                disabled={disabled || !!suelo.requireLowercase}
+                hint={suelo.requireLowercase ? requiredByPlatform : undefined}
                 label={t("settings.security.requireLowercase", {
                   defaultValue: "Exigir minúsculas",
                 })}
@@ -228,7 +254,8 @@ export default function SecurityPolicyPage() {
               />
               <ToggleRow
                 checked={password.requireNumber}
-                disabled={disabled}
+                disabled={disabled || !!suelo.requireNumber}
+                hint={suelo.requireNumber ? requiredByPlatform : undefined}
                 label={t("settings.security.requireNumber", {
                   defaultValue: "Exigir números",
                 })}
@@ -238,7 +265,8 @@ export default function SecurityPolicyPage() {
               />
               <ToggleRow
                 checked={password.requireSymbol}
-                disabled={disabled}
+                disabled={disabled || !!suelo.requireSymbol}
+                hint={suelo.requireSymbol ? requiredByPlatform : undefined}
                 label={t("settings.security.requireSymbol", {
                   defaultValue: "Exigir símbolos",
                 })}

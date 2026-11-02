@@ -3331,7 +3331,9 @@
       "platformHint": "A {{marca}} as gerencia para todas as empresas. Aqui você pode ver se estão ativas.",
       "statusActive": "Ativa",
       "statusInactive": "Inativa",
-      "minLengthOutOfRange": "O comprimento mínimo deve ser um número entre {{min}} e {{max}}."
+      "minLengthOutOfRange": "O comprimento mínimo deve ser um número entre {{min}} e {{max}}.",
+      "savedCorrected": "Política salva, mas o que a plataforma exige ficou como estava. Confira os valores na tela.",
+      "requiredByPlatform": "Exigido pela plataforma: não pode ser desligado."
     },
     "central": {
       "loadError": "Não foi possível carregar as configurações.",

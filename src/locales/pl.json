@@ -8323,7 +8323,9 @@
       "platformHint": "Zarządza nimi {{marca}} dla wszystkich firm. Tutaj widać, czy są aktywne.",
       "statusActive": "Aktywne",
       "statusInactive": "Nieaktywne",
-      "minLengthOutOfRange": "Minimalna długość musi być liczbą od {{min}} do {{max}}."
+      "minLengthOutOfRange": "Minimalna długość musi być liczbą od {{min}} do {{max}}.",
+      "savedCorrected": "Zasady zapisane, ale to, czego wymaga platforma, pozostało bez zmian. Sprawdź wartości na ekranie.",
+      "requiredByPlatform": "Wymagane przez platformę: nie można wyłączyć."
     },
     "central": {
       "loadError": "Nie udało się wczytać ustawień.",

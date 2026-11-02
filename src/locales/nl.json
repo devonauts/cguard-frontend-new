@@ -8303,7 +8303,9 @@
       "platformHint": "{{marca}} beheert deze voor alle bedrijven. Hier ziet u of ze actief zijn.",
       "statusActive": "Actief",
       "statusInactive": "Inactief",
-      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn."
+      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn.",
+      "savedCorrected": "Beleid opgeslagen, maar wat het platform vereist is gebleven zoals het was. Controleer de waarden op het scherm.",
+      "requiredByPlatform": "Vereist door het platform: kan niet worden uitgeschakeld."
     },
     "central": {
       "loadError": "De instellingen konden niet worden geladen.",

@@ -8303,7 +8303,9 @@
       "platformHint": "Le gestisce {{marca}} per tutte le aziende. Qui puoi vedere se sono attive.",
       "statusActive": "Attiva",
       "statusInactive": "Inattiva",
-      "minLengthOutOfRange": "La lunghezza minima deve essere un numero tra {{min}} e {{max}}."
+      "minLengthOutOfRange": "La lunghezza minima deve essere un numero tra {{min}} e {{max}}.",
+      "savedCorrected": "Criterio salvato, ma ciò che la piattaforma richiede è rimasto com'era. Controlla i valori a schermo.",
+      "requiredByPlatform": "Richiesto dalla piattaforma: non si può disattivare."
     },
     "central": {
       "loadError": "Impossibile caricare le impostazioni.",

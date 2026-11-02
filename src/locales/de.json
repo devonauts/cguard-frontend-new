@@ -8303,7 +8303,9 @@
       "platformHint": "{{marca}} verwaltet sie für alle Firmen. Hier können Sie sehen, ob sie aktiv sind.",
       "statusActive": "Aktiv",
       "statusInactive": "Inaktiv",
-      "minLengthOutOfRange": "Die Mindestlänge muss eine Zahl zwischen {{min}} und {{max}} sein."
+      "minLengthOutOfRange": "Die Mindestlänge muss eine Zahl zwischen {{min}} und {{max}} sein.",
+      "savedCorrected": "Richtlinie gespeichert, aber was die Plattform verlangt, ist unverändert geblieben. Prüfe die Werte auf dem Bildschirm.",
+      "requiredByPlatform": "Von der Plattform vorgeschrieben: kann nicht ausgeschaltet werden."
     },
     "central": {
       "loadError": "Die Einstellungen konnten nicht geladen werden.",
