@@ -8217,7 +8217,8 @@
       "platformHeading": "Beveiliging van het platform",
       "platformHint": "{{marca}} beheert deze voor alle bedrijven. Hier ziet u of ze actief zijn.",
       "statusActive": "Actief",
-      "statusInactive": "Inactief"
+      "statusInactive": "Inactief",
+      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn."
     },
     "central": {
       "loadError": "De instellingen konden niet worden geladen.",

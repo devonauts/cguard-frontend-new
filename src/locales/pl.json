@@ -8231,7 +8231,8 @@
       "platformHeading": "Zabezpieczenia systemu",
       "platformHint": "Zarządza nimi {{marca}} dla wszystkich firm. Tutaj widać, czy są aktywne.",
       "statusActive": "Aktywne",
-      "statusInactive": "Nieaktywne"
+      "statusInactive": "Nieaktywne",
+      "minLengthOutOfRange": "Minimalna długość musi być liczbą od {{min}} do {{max}}."
     },
     "central": {
       "loadError": "Nie udało się wczytać ustawień.",

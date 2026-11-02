@@ -8217,7 +8217,8 @@
       "platformHeading": "Schutzmaßnahmen der Plattform",
       "platformHint": "{{marca}} verwaltet sie für alle Firmen. Hier können Sie sehen, ob sie aktiv sind.",
       "statusActive": "Aktiv",
-      "statusInactive": "Inaktiv"
+      "statusInactive": "Inaktiv",
+      "minLengthOutOfRange": "Die Mindestlänge muss eine Zahl zwischen {{min}} und {{max}} sein."
     },
     "central": {
       "loadError": "Die Einstellungen konnten nicht geladen werden.",

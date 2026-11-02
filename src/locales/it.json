@@ -8217,7 +8217,8 @@
       "platformHeading": "Protezioni della piattaforma",
       "platformHint": "Le gestisce {{marca}} per tutte le aziende. Qui puoi vedere se sono attive.",
       "statusActive": "Attiva",
-      "statusInactive": "Inattiva"
+      "statusInactive": "Inattiva",
+      "minLengthOutOfRange": "La lunghezza minima deve essere un numero tra {{min}} e {{max}}."
     },
     "central": {
       "loadError": "Impossibile caricare le impostazioni.",

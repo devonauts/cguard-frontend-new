@@ -7710,7 +7710,8 @@
       "platformHeading": "Platform protections",
       "platformHint": "{{marca}} manages them for all companies. Here you can see whether they're active.",
       "statusActive": "Active",
-      "statusInactive": "Inactive"
+      "statusInactive": "Inactive",
+      "minLengthOutOfRange": "The minimum length must be a number between {{min}} and {{max}}."
     },
     "central": {
       "loadError": "The settings could not be loaded.",

@@ -3325,7 +3325,8 @@
       "platformHeading": "Proteções da plataforma",
       "platformHint": "A {{marca}} as gerencia para todas as empresas. Aqui você pode ver se estão ativas.",
       "statusActive": "Ativa",
-      "statusInactive": "Inativa"
+      "statusInactive": "Inativa",
+      "minLengthOutOfRange": "O comprimento mínimo deve ser um número entre {{min}} e {{max}}."
     },
     "central": {
       "loadError": "Não foi possível carregar as configurações.",
