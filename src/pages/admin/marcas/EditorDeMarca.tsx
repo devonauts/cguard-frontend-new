@@ -25,6 +25,10 @@
  * Phase 5 — «Portal de clientes»: the brand's own client-portal domain
  * (`PortalDeClientesDeMarca`), outside the form's fieldset because a brand
  * admin may manage it for their own brand even where the rest is read-only.
+ *
+ * Phase 5 — «WhatsApp y SMS»: the brand's own SMS number and WhatsApp sender
+ * (`RemitentesDeMarca`), managed by the company admin or by the brand admin
+ * of this brand; buying a number stays with the company admin.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -49,6 +53,7 @@ import VistaDeMarcaParaElCliente from "./VistaDeMarcaParaElCliente";
 import TextosDeFacturaDeMarca from "./TextosDeFacturaDeMarca";
 import { datosDeTextos, textosDe, type TextosBorrador } from "./textosDeMarca";
 import PortalDeClientesDeMarca from "./PortalDeClientesDeMarca";
+import RemitentesDeMarca from "./RemitentesDeMarca";
 
 import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
 import { Button } from "@/components/ui/button";
@@ -63,6 +68,7 @@ import {
   type Marca,
 } from "@/lib/api/marcasService";
 import { listaDePaises, terminosFiscales } from "@/lib/paisDeLaEmpresa";
+import { useAccesoDeMarca } from "@/hooks/useAccesoDeMarca";
 import { getTenantCountry } from "@/utils/tenantLocation";
 
 export const COLORES_DE_MARCA = [
@@ -149,6 +155,12 @@ export function EditorDeMarca({
   const [previa, setPrevia] = useState<"invoice" | "quote" | null>(null);
   const archivo = useRef<HTMLInputElement>(null);
   const paises = useMemo(() => listaDePaises(i18n.language), [i18n.language]);
+  const acceso = useAccesoDeMarca();
+  // Phase 5: the brand admin manages THIS brand's senders; the company admin all.
+  const gestionaRemitentes =
+    !!marca &&
+    (puedeEditar ||
+      (acceso.esAdminDeMarca && !!acceso.brandAccess?.includes(marca.id)));
   const terminos = terminosFiscales(b.country, i18n.language, {
     razonSocial: t("ui.EditorDeMarca.razonSocial", "Razón social"),
     idFiscal: t("ui.EditorDeMarca.identificador", "Identificador fiscal"),
@@ -917,6 +929,19 @@ export function EditorDeMarca({
       {marca && !marca.archivedAt && (
         <div className="mt-5">
           <PortalDeClientesDeMarca brandId={marca.id} />
+        </div>
+      )}
+
+      {/* Phase 5 — its own SMS number and WhatsApp sender (saved on its own). */}
+      {marca && !marca.archivedAt && (
+        <div className="mt-5">
+          <RemitentesDeMarca
+            esPrincipal={!!marca.isPrincipal}
+            marcaId={marca.id}
+            nombre={marca.name}
+            puedeComprar={puedeEditar}
+            puedeGestionar={gestionaRemitentes}
+          />
         </div>
       )}
     </Modal>

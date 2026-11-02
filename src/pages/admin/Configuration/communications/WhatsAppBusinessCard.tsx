@@ -22,6 +22,7 @@ import {
 import i18n from "@/i18n";
 import GuiaConectarWhatsApp from "@/components/vigia/GuiaConectarWhatsApp";
 import { localeActual } from "@/lib/localeActual";
+import { loadFacebookSdk } from "@/lib/whatsapp/registroIncrustado";
 import {
   communicationService,
   WhatsAppStatus,
@@ -40,58 +41,7 @@ declare global {
   }
 }
 
-const FB_SDK_ID = "facebook-jssdk";
-const FB_SDK_SRC = "https://connect.facebook.net/en_US/sdk.js";
 const FB_ORIGINS = ["https://www.facebook.com", "https://web.facebook.com"];
-
-let fbSdkPromise: Promise<void> | null = null;
-
-/** Inject the Facebook JS SDK once, then (re)init with the platform app. */
-async function loadFacebookSdk(appId: string, graphVersion: string) {
-  if (!window.FB) {
-    if (!fbSdkPromise) {
-      fbSdkPromise = new Promise<void>((resolve, reject) => {
-        window.fbAsyncInit = () => resolve();
-        if (document.getElementById(FB_SDK_ID)) {
-          // Script tag already present (e.g. previous failed init) — wait for it.
-          if (window.FB) resolve();
-
-          return;
-        }
-        const script = document.createElement("script");
-
-        script.id = FB_SDK_ID;
-        script.src = FB_SDK_SRC;
-        script.async = true;
-        script.defer = true;
-        script.crossOrigin = "anonymous";
-        script.onerror = () => {
-          fbSdkPromise = null;
-          script.remove();
-          reject(
-            new Error(
-              i18n.t("ui.WhatsAppBusinessCard.noSePudoCargarElSdkDeMeta", {
-                defaultValue:
-                  "No se pudo cargar el SDK de Meta. Revisa tu conexión o bloqueadores de anuncios.",
-              }),
-            ),
-          );
-        };
-        document.head.appendChild(script);
-      });
-    }
-    await fbSdkPromise;
-  }
-  // Safe to call repeatedly; keeps appId/version fresh on reconnect.
-  window.FB.init({
-    appId,
-    autoLogAppEvents: true,
-    xfbml: false,
-    version: graphVersion || "v21.0",
-  });
-
-  return window.FB;
-}
 
 /** Humanize Meta messaging limit tiers. */
 function messagingLimitLabel(limit?: string | null): string {
