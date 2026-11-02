@@ -362,7 +362,8 @@ export default function GuardLicenses({
   };
 
   // «Descargar» on the card and in the details: the license PDF (it carries
-  // both images). Where there is no PDF (supervisors) the image opens instead.
+  // both images), for guards and supervisors alike. If the PDF cannot be
+  // made, the image opens instead.
   const downloadRow = async (row: GuardLicense) => {
     try {
       const blob = await api.download(row.id);

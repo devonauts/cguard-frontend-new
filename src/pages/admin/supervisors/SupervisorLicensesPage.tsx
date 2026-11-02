@@ -38,11 +38,14 @@ export default function SupervisorLicensesPage() {
         .then((r) => r.data?.data ?? r.data),
     remove: (ids: string[]) =>
       Promise.all((ids || []).map((lid) => api.delete(`${base}/${lid}`))),
-    // No PDF report for supervisors (yet).
-    download: (_licenseId: string) =>
-      Promise.reject(
-        new Error(t("ui.SupervisorLicensesPage.reporteNoDisponible", "Reporte no disponible")),
-      ),
+    // The same «Informe de licencia» PDF as a guard's license (QA r3 N-R2-9).
+    download: (licenseId: string) =>
+      api
+        .get(`${base}/${licenseId}/download?format=pdf`, {
+          responseType: "blob",
+          toast: { silentError: true },
+        })
+        .then((r) => (r && r.data !== undefined ? r.data : r)),
   };
 
   return (
