@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createNameMask,
   exportValue,
+  HIDE_PLACE_NAMES_IN_TEXT,
   hiddenFromSettings,
   learnCompanyNames,
   learnNames,
@@ -14,6 +15,8 @@ import {
 } from "./reportPrivacy";
 
 const LABELS = { clientName: "Cliente", siteName: "Sede", stationName: "Puesto" };
+/** The place-names-in-text path, off by default but kept (HIDE_PLACE_NAMES_IN_TEXT). */
+const PLACES_ON = { placeNamesInText: true };
 
 interface Row {
   guard: string;
@@ -101,7 +104,7 @@ describe("report privacy", () => {
   });
 
   it("hides the row names inside free text with the same alias (incident location / title)", () => {
-    const mask = createNameMask(hiddenFromSettings({ hideClientName: true, hideStationName: true }), LABELS);
+    const mask = createNameMask(hiddenFromSettings({ hideClientName: true, hideStationName: true }), LABELS, PLACES_ON);
     const incidents = [
       { station: "Garita Principal", site: "QA operacion Sede Norte", location: "garita principal", title: "Garita Principal - Persona sospechosa" },
       { station: "Puerta principal", site: "QA operacion Sede Norte", location: "Puerta principal", title: "Puerta principal - Segunda prueba en la Puerta principal" },
@@ -121,11 +124,11 @@ describe("report privacy", () => {
   });
 
   it("only replaces whole names and leaves text alone when nothing is hidden", () => {
-    const mask = createNameMask(hiddenFromSettings({ hideStationName: true }), LABELS);
+    const mask = createNameMask(hiddenFromSettings({ hideStationName: true }), LABELS, PLACES_ON);
 
     mask("stationName", "Alfa");
     expect(mask.inText("Alfabeto en Alfa, ALFA.")).toBe("Alfabeto en Puesto 1, Puesto 1.");
-    const open = createNameMask(NOTHING_HIDDEN, LABELS);
+    const open = createNameMask(NOTHING_HIDDEN, LABELS, PLACES_ON);
 
     open("stationName", "Alfa");
     expect(open.inText("en Alfa")).toBe("en Alfa");
@@ -133,7 +136,7 @@ describe("report privacy", () => {
 
   describe("round 3 (QA re-test 2026-11-02)", () => {
     const todo = () =>
-      createNameMask(hiddenFromSettings({ hideClientName: true, hideStationName: true }), LABELS);
+      createNameMask(hiddenFromSettings({ hideClientName: true, hideStationName: true }), LABELS, PLACES_ON);
     const empresa = {
       clients: [{ name: "Condominio Los Álamos", lastName: null, commercialName: "Los Álamos S.A." }],
       sites: [{ name: "QA operacion Sede Norte" }],
@@ -195,10 +198,52 @@ describe("report privacy", () => {
     });
 
     it("learns nothing when the switches are off", () => {
-      const mask = createNameMask(NOTHING_HIDDEN, LABELS);
+      const mask = createNameMask(NOTHING_HIDDEN, LABELS, PLACES_ON);
 
       learnCompanyNames(mask, empresa);
       expect(mask.inText("Garita Principal (Alfa 1)")).toBe("Garita Principal (Alfa 1)");
+    });
+  });
+
+  describe("place names in free text are off by default (owner, 2026-11-02)", () => {
+    const empresa = {
+      clients: [{ name: "Roberto", lastName: "Villacís Chiriboga", commercialName: null }],
+      sites: [{ name: "Prueba" }, { name: "Sede Norte" }],
+      stations: [{ name: "Norte", nickname: "Charlie 3" }, { name: "Garita Principal", nickname: null }],
+    };
+    const todo = () =>
+      createNameMask(hiddenFromSettings({ hideClientName: true, hideStationName: true }), LABELS);
+
+    it("the switch is off", () => {
+      expect(HIDE_PLACE_NAMES_IN_TEXT).toBe(false);
+    });
+
+    it("keeps ordinary words that equal a site or station name", () => {
+      const mask = todo();
+
+      learnCompanyNames(mask, empresa);
+      const text = "Segunda prueba en la puerta norte de Garita Principal (Charlie 3), Sede Norte";
+
+      expect(mask.inText(text)).toBe(text);
+    });
+
+    it("still pseudonymizes the site and station columns", () => {
+      const mask = todo();
+
+      learnCompanyNames(mask, empresa);
+      expect(mask("siteName", "Prueba")).toBe("Sede 1");
+      expect(mask("stationName", "Norte")).toBe("Puesto 1");
+      expect(exportValue({ privacy: "siteName", value: () => "Prueba" }, {}, mask)).toBe("Sede 1");
+    });
+
+    it("still hides a person's full name in free text, as before", () => {
+      const mask = todo();
+
+      learnCompanyNames(mask, empresa);
+      const alias = mask("clientName", "Roberto Villacís Chiriboga");
+      const col = { freeText: true, value: () => "Visita de Roberto Villacis Chiriboga en la sede Prueba" };
+
+      expect(exportValue(col, {}, mask)).toBe(`Visita de ${alias} en la sede Prueba`);
     });
   });
 });

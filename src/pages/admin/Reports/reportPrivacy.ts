@@ -40,6 +40,24 @@ export function hiddenFromSettings(rs: any): HiddenNames {
   };
 }
 
+/**
+ * Site and station names inside FREE TEXT (incident location, title,
+ * description). Off for now (owner, 2026-11-02: «no ocultar por el momento»):
+ * whole-word matching also hid ordinary words that equal a place name — a
+ * site called «Prueba» turned every «prueba» into «Sede 21». Name columns
+ * (Sede, Puesto) are still pseudonymized and client names are still hidden
+ * in text. Set to true to hide place names in text again.
+ */
+export const HIDE_PLACE_NAMES_IN_TEXT = false;
+
+/** Kinds that name a place, not a person or a company. */
+const PLACE_KINDS: ReadonlySet<MaskedKind> = new Set<MaskedKind>(["siteName", "stationName"]);
+
+export interface NameMaskOptions {
+  /** Also hide site/station names inside free text. Default: HIDE_PLACE_NAMES_IN_TEXT. */
+  placeNamesInText?: boolean;
+}
+
 /** The screen shows every name as it is. */
 export const showName: NameMask = (_kind, name) => (name == null ? "" : String(name));
 
@@ -47,10 +65,10 @@ export const showName: NameMask = (_kind, name) => (name == null ? "" : String(n
 export type FileNameMask = NameMask & {
   /**
    * Replaces, inside free text, every hidden name this file knows by its
-   * alias. The guard app fills an incident's «Ubicación» — and so its
-   * «Título» — with the post name. Whole words only; case, accents and
-   * repeated spaces do not matter («Condominio Los Alamos», «GARITA
-   * PRINCIPAL», «Garita  Principal»); the original span is what is replaced.
+   * alias. Whole words only; case, accents and repeated spaces do not matter
+   * («Condominio Los Alamos», «Garita  Principal»); the original span is what
+   * is replaced. Site and station names only when `placeNamesInText` is on
+   * (see HIDE_PLACE_NAMES_IN_TEXT).
    */
   inText: (text: string) => string;
   /** Gives `name` the alias of `sameAs` (a station's call-sign «Alfa 1» is
@@ -115,6 +133,7 @@ export const recortar = (s: string, max?: number) =>
 export function createNameMask(
   hidden: HiddenNames,
   labels: Record<MaskedKind, string>,
+  { placeNamesInText = HIDE_PLACE_NAMES_IN_TEXT }: NameMaskOptions = {},
 ): FileNameMask {
   const aliases: Record<MaskedKind, Map<string, string>> = {
     clientName: new Map(),
@@ -142,7 +161,7 @@ export function createNameMask(
     const original = text == null ? "" : String(text);
     // Longest first, so «Garita Principal Norte» wins over «Garita Principal».
     const pairs = (Object.keys(aliases) as MaskedKind[])
-      .filter((k) => hidden[k])
+      .filter((k) => hidden[k] && (placeNamesInText || !PLACE_KINDS.has(k)))
       .flatMap((k) => Array.from(aliases[k], ([name, alias]) => [plegar(name), alias]))
       .filter(([name]) => name.length > 1)
       .sort((a, b) => b[0].length - a[0].length);
