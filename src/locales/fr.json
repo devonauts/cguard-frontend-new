@@ -8346,7 +8346,8 @@
       "departmentPlaceholder": "Département",
       "selectGuardsLabel": "Sélectionner des agents précis",
       "selectGuardsPlaceholder": "Sélectionner des agents…",
-      "searchGuardPlaceholder": "Rechercher un agent…"
+      "searchGuardPlaceholder": "Rechercher un agent…",
+      "editDialogTitle": "Modifier le document"
     },
     "notificationForm": {
       "checkInOutLabel": "Entrée / sortie de l'agent",
@@ -14888,7 +14889,17 @@
       "noPudimosGuardarElDocumento": "Impossible d'enregistrer le document.",
       "publicaElReglamentoInterno": "Publiez le règlement intérieur et vous saurez qui l'a signé.",
       "publicar": "Publier",
-      "reglamento": "Règlement"
+      "reglamento": "Règlement",
+      "estado": "Statut",
+      "publicada": "Publié",
+      "borrador": "Brouillon",
+      "ponleUnTitulo": "Donnez un titre au document.",
+      "algunosNoSePudieron": "{{failed}} sur {{total}} n'ont pas pu être modifiés : {{reason}}",
+      "documentosPublicados": "Documents publiés",
+      "documentosABorrador": "Documents repassés en brouillon",
+      "documentosEliminados": "Documents supprimés",
+      "confirmarEliminacion": "Confirmer la suppression",
+      "confirmarEliminacionTexto": "Supprimer {{count}} document(s) ? Les personnes qui devaient les signer ne les verront plus. Cette action est irréversible."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Glissez ou cliquez pour joindre",

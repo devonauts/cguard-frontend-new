@@ -8346,7 +8346,8 @@
       "departmentPlaceholder": "Abteilung",
       "selectGuardsLabel": "Bestimmte Wachkräfte auswählen",
       "selectGuardsPlaceholder": "Wachkräfte auswählen…",
-      "searchGuardPlaceholder": "Wachkraft suchen…"
+      "searchGuardPlaceholder": "Wachkraft suchen…",
+      "editDialogTitle": "Dokument bearbeiten"
     },
     "notificationForm": {
       "checkInOutLabel": "Wachkraft ein-/ausgestempelt",
@@ -14888,7 +14889,17 @@
       "noPudimosGuardarElDocumento": "Das Dokument konnte nicht gespeichert werden.",
       "publicaElReglamentoInterno": "Veröffentlichen Sie die Betriebsordnung und Sie sehen, wer sie unterschrieben hat.",
       "publicar": "Veröffentlichen",
-      "reglamento": "Ordnung"
+      "reglamento": "Ordnung",
+      "estado": "Status",
+      "publicada": "Veröffentlicht",
+      "borrador": "Entwurf",
+      "ponleUnTitulo": "Gib dem Dokument einen Titel.",
+      "algunosNoSePudieron": "{{failed}} von {{total}} konnten nicht geändert werden: {{reason}}",
+      "documentosPublicados": "Dokumente veröffentlicht",
+      "documentosABorrador": "Dokumente in Entwurf verschoben",
+      "documentosEliminados": "Dokumente gelöscht",
+      "confirmarEliminacion": "Löschen bestätigen",
+      "confirmarEliminacionTexto": "{{count}} Dokument(e) löschen? Wer sie unterschreiben musste, sieht sie nicht mehr. Das lässt sich nicht rückgängig machen."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Ziehen oder klicken zum Anhängen",

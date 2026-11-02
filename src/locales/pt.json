@@ -3454,7 +3454,8 @@
       "departmentPlaceholder": "Departamento",
       "selectGuardsLabel": "Selecionar Vigilantes Específicos",
       "selectGuardsPlaceholder": "Selecionar vigilantes…",
-      "searchGuardPlaceholder": "Buscar vigilante…"
+      "searchGuardPlaceholder": "Buscar vigilante…",
+      "editDialogTitle": "Editar documento"
     },
     "notificationForm": {
       "checkInOutLabel": "Entrada/saída do vigilante",
@@ -14348,7 +14349,17 @@
       "noPudimosGuardarElDocumento": "Não foi possível salvar o documento.",
       "publicaElReglamentoInterno": "Publique o regulamento interno e saiba quem já o assinou.",
       "publicar": "Publicar",
-      "reglamento": "Regulamento"
+      "reglamento": "Regulamento",
+      "estado": "Status",
+      "publicada": "Publicado",
+      "borrador": "Rascunho",
+      "ponleUnTitulo": "Dê um título ao documento.",
+      "algunosNoSePudieron": "{{failed}} de {{total}} não puderam ser alterados: {{reason}}",
+      "documentosPublicados": "Documentos publicados",
+      "documentosABorrador": "Documentos movidos para rascunho",
+      "documentosEliminados": "Documentos excluídos",
+      "confirmarEliminacion": "Confirmar exclusão",
+      "confirmarEliminacionTexto": "Excluir {{count}} documento(s)? Quem precisava assiná-los deixará de vê-los. Esta ação não pode ser desfeita."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Arraste ou clique para anexar",

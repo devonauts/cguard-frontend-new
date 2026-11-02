@@ -7839,7 +7839,8 @@
       "departmentPlaceholder": "Departamento",
       "selectGuardsLabel": "Seleccionar Vigilantes Específicos",
       "selectGuardsPlaceholder": "Seleccionar vigilantes…",
-      "searchGuardPlaceholder": "Buscar vigilante…"
+      "searchGuardPlaceholder": "Buscar vigilante…",
+      "editDialogTitle": "Editar documento"
     },
     "notificationForm": {
       "checkInOutLabel": "Vigilante registrado/salida",
@@ -14348,7 +14349,17 @@
       "noPudimosGuardarElDocumento": "No pudimos guardar el documento.",
       "publicaElReglamentoInterno": "Publica el reglamento interno y sabrás quién lo ha firmado.",
       "publicar": "Publicar",
-      "reglamento": "Reglamento"
+      "reglamento": "Reglamento",
+      "estado": "Estado",
+      "publicada": "Publicada",
+      "borrador": "Borrador",
+      "ponleUnTitulo": "Ponle un título al documento.",
+      "algunosNoSePudieron": "{{failed}} de {{total}} no se pudieron cambiar: {{reason}}",
+      "documentosPublicados": "Documentos publicados",
+      "documentosABorrador": "Documentos movidos a borrador",
+      "documentosEliminados": "Documentos eliminados",
+      "confirmarEliminacion": "Confirmar eliminación",
+      "confirmarEliminacionTexto": "¿Eliminar {{count}} documento(s)? Quien tenía que firmarlos dejará de verlos. Esta acción no se puede deshacer."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Arrastra o haz clic para adjuntar",

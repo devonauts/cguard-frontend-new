@@ -8360,7 +8360,8 @@
       "departmentPlaceholder": "Dział",
       "selectGuardsLabel": "Wybierz konkretnych pracowników ochrony",
       "selectGuardsPlaceholder": "Wybierz pracowników ochrony…",
-      "searchGuardPlaceholder": "Szukaj pracownika ochrony…"
+      "searchGuardPlaceholder": "Szukaj pracownika ochrony…",
+      "editDialogTitle": "Edytuj dokument"
     },
     "notificationForm": {
       "checkInOutLabel": "Wejście / wyjście pracownika ochrony",
@@ -15048,7 +15049,17 @@
       "noPudimosGuardarElDocumento": "Nie udało się zapisać dokumentu.",
       "publicaElReglamentoInterno": "Opublikuj regulamin wewnętrzny, a zobaczysz, kto go podpisał.",
       "publicar": "Opublikuj",
-      "reglamento": "Regulamin"
+      "reglamento": "Regulamin",
+      "estado": "Status",
+      "publicada": "Opublikowany",
+      "borrador": "Szkic",
+      "ponleUnTitulo": "Nadaj dokumentowi tytuł.",
+      "algunosNoSePudieron": "Nie udało się zmienić {{failed}} z {{total}}: {{reason}}",
+      "documentosPublicados": "Dokumenty opublikowane",
+      "documentosABorrador": "Dokumenty przeniesione do szkiców",
+      "documentosEliminados": "Dokumenty usunięte",
+      "confirmarEliminacion": "Potwierdź usunięcie",
+      "confirmarEliminacionTexto": "Usunąć {{count}} dokument(y)? Osoby, które miały je podpisać, przestaną je widzieć. Tej operacji nie można cofnąć."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Prosimy przeciągnąć lub kliknąć, aby załączyć",

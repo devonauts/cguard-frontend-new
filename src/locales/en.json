@@ -7839,7 +7839,8 @@
       "departmentPlaceholder": "Department",
       "selectGuardsLabel": "Select Specific Guards",
       "selectGuardsPlaceholder": "Select guards…",
-      "searchGuardPlaceholder": "Search guard…"
+      "searchGuardPlaceholder": "Search guard…",
+      "editDialogTitle": "Edit document"
     },
     "notificationForm": {
       "checkInOutLabel": "Guard check-in/out",
@@ -14348,7 +14349,17 @@
       "noPudimosGuardarElDocumento": "We couldn't save the document.",
       "publicaElReglamentoInterno": "Publish your internal rules and you'll see who has signed them.",
       "publicar": "Publish",
-      "reglamento": "Rules"
+      "reglamento": "Rules",
+      "estado": "Status",
+      "publicada": "Published",
+      "borrador": "Draft",
+      "ponleUnTitulo": "Give the document a title.",
+      "algunosNoSePudieron": "{{failed}} of {{total}} could not be changed: {{reason}}",
+      "documentosPublicados": "Documents published",
+      "documentosABorrador": "Documents moved to draft",
+      "documentosEliminados": "Documents deleted",
+      "confirmarEliminacion": "Confirm deletion",
+      "confirmarEliminacionTexto": "Delete {{count}} document(s)? The people who had to sign them will no longer see them. This cannot be undone."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Drag or click to attach",

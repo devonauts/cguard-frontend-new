@@ -8346,7 +8346,8 @@
       "departmentPlaceholder": "Reparto",
       "selectGuardsLabel": "Seleziona guardie specifiche",
       "selectGuardsPlaceholder": "Seleziona guardie…",
-      "searchGuardPlaceholder": "Cerca guardia…"
+      "searchGuardPlaceholder": "Cerca guardia…",
+      "editDialogTitle": "Modifica documento"
     },
     "notificationForm": {
       "checkInOutLabel": "Entrata/uscita della guardia",
@@ -14888,7 +14889,17 @@
       "noPudimosGuardarElDocumento": "Non è stato possibile salvare il documento.",
       "publicaElReglamentoInterno": "Pubblica il regolamento interno e saprai chi l'ha firmato.",
       "publicar": "Pubblica",
-      "reglamento": "Regolamento"
+      "reglamento": "Regolamento",
+      "estado": "Stato",
+      "publicada": "Pubblicato",
+      "borrador": "Bozza",
+      "ponleUnTitulo": "Dai un titolo al documento.",
+      "algunosNoSePudieron": "{{failed}} su {{total}} non sono stati modificati: {{reason}}",
+      "documentosPublicados": "Documenti pubblicati",
+      "documentosABorrador": "Documenti riportati in bozza",
+      "documentosEliminados": "Documenti eliminati",
+      "confirmarEliminacion": "Conferma eliminazione",
+      "confirmarEliminacionTexto": "Eliminare {{count}} documento/i? Chi doveva firmarli non li vedrà più. L'azione non può essere annullata."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Trascina o clicca per allegare",

@@ -8346,7 +8346,8 @@
       "departmentPlaceholder": "Afdeling",
       "selectGuardsLabel": "Specifieke beveiligers selecteren",
       "selectGuardsPlaceholder": "Beveiligers selecteren…",
-      "searchGuardPlaceholder": "Beveiliger zoeken…"
+      "searchGuardPlaceholder": "Beveiliger zoeken…",
+      "editDialogTitle": "Document bewerken"
     },
     "notificationForm": {
       "checkInOutLabel": "Beveiliger in-/uitgeklokt",
@@ -14888,7 +14889,17 @@
       "noPudimosGuardarElDocumento": "We konden het document niet opslaan.",
       "publicaElReglamentoInterno": "Publiceer het huishoudelijk reglement en je ziet wie het heeft ondertekend.",
       "publicar": "Publiceren",
-      "reglamento": "Reglement"
+      "reglamento": "Reglement",
+      "estado": "Status",
+      "publicada": "Gepubliceerd",
+      "borrador": "Concept",
+      "ponleUnTitulo": "Geef het document een titel.",
+      "algunosNoSePudieron": "{{failed}} van {{total}} konden niet worden gewijzigd: {{reason}}",
+      "documentosPublicados": "Documenten gepubliceerd",
+      "documentosABorrador": "Documenten teruggezet naar concept",
+      "documentosEliminados": "Documenten verwijderd",
+      "confirmarEliminacion": "Verwijderen bevestigen",
+      "confirmarEliminacionTexto": "{{count}} document(en) verwijderen? Wie ze moest ondertekenen, ziet ze niet meer. Dit kan niet ongedaan worden gemaakt."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Sleep hierheen of klik om bij te voegen",
