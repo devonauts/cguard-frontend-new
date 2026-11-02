@@ -1944,7 +1944,7 @@
         "statusPending": "In attesa"
       },
       "importDialog": {
-        "browsePlaceholder": "Sfoglia qui il tuo file Excel....",
+        "browsePlaceholder": "Sfoglia qui il tuo file Excel…",
         "clickToSelect": "Clicca per selezionare",
         "completed": "Importazione completata",
         "description": "Carica un file .xlsx/.xls/.csv per importare le guardie.",
@@ -16775,9 +16775,11 @@
       "filasNoImportadas_few": "{{count}} righe non sono state importate. Controlla i dettagli.",
       "filasNoImportadas_many": "{{count}} righe non sono state importate. Controlla i dettagli.",
       "errorAlImportar": "Errore durante l'importazione",
-      "camposObligatoriosVacios": "Alcuni campi obbligatori sono vuoti. Verifica: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Alcuni campi obbligatori sono vuoti. Verifica: name, address.",
       "importarClientesDesdeExcel": "Importa clienti da Excel",
-      "columnasOpcionales": "Colonne facoltative:"
+      "columnasOpcionales": "Colonne facoltative:",
+      "columnasPorNombre": "La prima riga contiene i nomi delle colonne; l’ordine non conta.",
+      "avisoInvitacion": "Ogni cliente importato con un’e-mail riceve subito l’invito di benvenuto all’app."
     },
     "CoBrowseAgent": {
       "soporte": "Supporto",

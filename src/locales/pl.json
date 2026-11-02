@@ -1944,7 +1944,7 @@
         "statusPending": "Oczekujący"
       },
       "importDialog": {
-        "browsePlaceholder": "Wskaż tutaj swój plik Excel....",
+        "browsePlaceholder": "Wskaż tutaj swój plik Excel…",
         "clickToSelect": "Kliknij, aby wybrać",
         "completed": "Import zakończony",
         "description": "Proszę wgrać plik .xlsx/.xls/.csv, aby zaimportować pracowników ochrony.",
@@ -16997,9 +16997,11 @@
       "filasNoImportadas_few": "Nie udało się zaimportować {{count}} wierszy. Sprawdź szczegóły.",
       "filasNoImportadas_many": "Nie udało się zaimportować {{count}} wierszy. Sprawdź szczegóły.",
       "errorAlImportar": "Błąd importu",
-      "camposObligatoriosVacios": "Niektóre wymagane pola są puste. Sprawdź: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Niektóre wymagane pola są puste. Sprawdź: name, address.",
       "importarClientesDesdeExcel": "Importuj klientów z Excela",
-      "columnasOpcionales": "Kolumny opcjonalne:"
+      "columnasOpcionales": "Kolumny opcjonalne:",
+      "columnasPorNombre": "Pierwszy wiersz zawiera nazwy kolumn; ich kolejność nie ma znaczenia.",
+      "avisoInvitacion": "Każdy zaimportowany klient z adresem e-mail od razu otrzymuje powitalne zaproszenie do aplikacji."
     },
     "CoBrowseAgent": {
       "soporte": "Wsparcie",

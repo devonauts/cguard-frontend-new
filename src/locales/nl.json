@@ -1944,7 +1944,7 @@
         "statusPending": "In behandeling"
       },
       "importDialog": {
-        "browsePlaceholder": "Blader hier naar je Excel-bestand....",
+        "browsePlaceholder": "Blader hier naar je Excel-bestand…",
         "clickToSelect": "Klik om te selecteren",
         "completed": "Import voltooid",
         "description": "Upload een .xlsx-, .xls- of .csv-bestand om beveiligers te importeren.",
@@ -16775,9 +16775,11 @@
       "filasNoImportadas_few": "{{count}} rijen konden niet worden geïmporteerd. Bekijk de details.",
       "filasNoImportadas_many": "{{count}} rijen konden niet worden geïmporteerd. Bekijk de details.",
       "errorAlImportar": "Importeren mislukt",
-      "camposObligatoriosVacios": "Sommige verplichte velden zijn leeg. Controleer: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Sommige verplichte velden zijn leeg. Controleer: name, address.",
       "importarClientesDesdeExcel": "Klanten importeren uit Excel",
-      "columnasOpcionales": "Optionele kolommen:"
+      "columnasOpcionales": "Optionele kolommen:",
+      "columnasPorNombre": "De eerste rij bevat de kolomnamen; de volgorde maakt niet uit.",
+      "avisoInvitacion": "Elke geïmporteerde klant met een e-mailadres krijgt meteen de welkomstuitnodiging voor de app."
     },
     "CoBrowseAgent": {
       "soporte": "Support",

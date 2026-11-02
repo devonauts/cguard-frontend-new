@@ -1944,7 +1944,7 @@
         "statusPending": "En attente"
       },
       "importDialog": {
-        "browsePlaceholder": "Parcourez votre fichier Excel ici....",
+        "browsePlaceholder": "Parcourez votre fichier Excel ici…",
         "clickToSelect": "Cliquez pour sélectionner",
         "completed": "Importation terminée",
         "description": "Envoyez un fichier .xlsx/.xls/.csv pour importer des agents.",
@@ -16775,9 +16775,11 @@
       "filasNoImportadas_few": "{{count}} lignes n'ont pas pu être importées. Consultez les détails.",
       "filasNoImportadas_many": "{{count}} lignes n'ont pas pu être importées. Consultez les détails.",
       "errorAlImportar": "Échec de l'importation",
-      "camposObligatoriosVacios": "Certains champs obligatoires sont vides. Vérifiez : name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Certains champs obligatoires sont vides. Vérifiez : name, address.",
       "importarClientesDesdeExcel": "Importer des clients depuis Excel",
-      "columnasOpcionales": "Colonnes facultatives :"
+      "columnasOpcionales": "Colonnes facultatives :",
+      "columnasPorNombre": "La première ligne contient les noms des colonnes ; leur ordre n’a pas d’importance.",
+      "avisoInvitacion": "Chaque client importé avec une adresse e-mail reçoit aussitôt l’invitation de bienvenue à l’application."
     },
     "CoBrowseAgent": {
       "soporte": "Support",

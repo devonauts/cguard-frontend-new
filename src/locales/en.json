@@ -2162,7 +2162,7 @@
         "statusPending": "Pending"
       },
       "importDialog": {
-        "browsePlaceholder": "Browse your Excel file here....",
+        "browsePlaceholder": "Browse your Excel file here…",
         "clickToSelect": "Click to select",
         "completed": "Import completed",
         "description": "Upload a .xlsx/.xls/.csv file to import guards.",
@@ -16235,9 +16235,11 @@
       "filasNoImportadas_few": "{{count}} rows could not be imported. Check the details.",
       "filasNoImportadas_many": "{{count}} rows could not be imported. Check the details.",
       "errorAlImportar": "Import failed",
-      "camposObligatoriosVacios": "Some required fields are empty. Check: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Some required fields are empty. Check: name, address.",
       "importarClientesDesdeExcel": "Import clients from Excel",
-      "columnasOpcionales": "Optional columns:"
+      "columnasOpcionales": "Optional columns:",
+      "columnasPorNombre": "The first row holds the column names; their order does not matter.",
+      "avisoInvitacion": "Every imported client with an e-mail receives the welcome invitation to the app right away."
     },
     "CoBrowseAgent": {
       "soporte": "Support",

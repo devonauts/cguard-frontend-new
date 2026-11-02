@@ -32,7 +32,9 @@ export function ImportDialog({
   function downloadTemplate() {
     // Prepend UTF-8 BOM so Excel opens accented characters correctly
     const bom = "\uFEFF";
-    const csvContent = `${bom}name,lastName,email,phoneNumber,address,addressLine2,zipCode,city,country,faxNumber,website,categoryName\nCliente Ejemplo 1,García,cliente1@ejemplo.com,+593987654321,Calle Principal 123,Edificio A - Piso 3,170123,Quito,Ecuador,+593987654322,https://ejemplo1.com,\nCliente Ejemplo 2,Rodríguez,cliente2@ejemplo.com,+12025551234,Av. Secundaria 456,Oficina 205,10001,New York,USA,,,`;
+    // Only columns the importer reads (see the server's clientImportColumns):
+    // `categoryName` was in the template but never imported.
+    const csvContent = `${bom}name,lastName,email,phoneNumber,address,addressLine2,zipCode,city,country,faxNumber,website\nCliente Ejemplo 1,García,cliente1@ejemplo.com,+593987654321,Calle Principal 123,Edificio A - Piso 3,170123,Quito,Ecuador,+593987654322,https://ejemplo1.com\nCliente Ejemplo 2,Rodríguez,cliente2@ejemplo.com,+12025551234,Av. Secundaria 456,Oficina 205,10001,New York,USA,,`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = window.URL.createObjectURL(blob);
@@ -62,26 +64,31 @@ export function ImportDialog({
     );
 
     try {
-      const result = await clientService.importExcel(file);
+      const result: any = await clientService.importExcel(file);
 
       toast.dismiss(toastId);
 
-      if (result.imported > 0) {
+      // The server answers { success, skipped, failed, errors } (possibly
+      // wrapped in `data`); `imported` never came, so a good import said nothing.
+      const body = result?.data ?? result ?? {};
+      const imported = Number(body.imported ?? body.success ?? 0);
+
+      if (imported > 0) {
         toast.success(
           t("ui.ImportDialog.clientesGuardados", {
             defaultValue:
               "{{count}} clientes guardados en la base de datos exitosamente",
-            count: result.imported,
+            count: imported,
           }),
         );
       }
 
-      if (result.errors && result.errors.length > 0) {
+      if (Array.isArray(body.errors) && body.errors.length > 0) {
         toast.error(
           t("ui.ImportDialog.filasNoImportadas", {
             defaultValue:
               "{{count}} filas no se pudieron importar. Revisa los detalles.",
-            count: result.errors.length,
+            count: body.errors.length,
           }),
         );
       }
@@ -123,7 +130,7 @@ export function ImportDialog({
         toast.error(
           t(
             "ui.ImportDialog.camposObligatoriosVacios",
-            "Algunos campos obligatorios están vacíos. Verifica: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+            "Algunos campos obligatorios están vacíos. Verifica: name, address.",
           ),
         );
       } else {
@@ -174,14 +181,26 @@ export function ImportDialog({
                     "Columnas obligatorias:",
                   )}
                 </strong>{" "}
-                name, lastName, email, phoneNumber, address, zipCode, city,
-                country
+                name, address
               </li>
               <li>
                 <strong>
                   {t("ui.ImportDialog.columnasOpcionales", "Columnas opcionales:")}
                 </strong>{" "}
-                addressLine2, faxNumber, website, categoryId
+                lastName, email, phoneNumber, addressLine2, zipCode, city,
+                country, faxNumber, website
+              </li>
+              <li>
+                {t(
+                  "ui.ImportDialog.columnasPorNombre",
+                  "La primera fila lleva los nombres de las columnas; el orden no importa.",
+                )}
+              </li>
+              <li>
+                {t(
+                  "ui.ImportDialog.avisoInvitacion",
+                  "Cada cliente importado con correo recibe en ese momento la invitación de bienvenida a la app.",
+                )}
               </li>
             </ul>
             <Button
@@ -211,7 +230,7 @@ export function ImportDialog({
                   ? file.name
                   : t(
                       "guards.list.importDialog.browsePlaceholder",
-                      "Explorar tu archivo Excel aquí....",
+                      "Selecciona tu archivo aquí…",
                     )}
               </p>
               <p className="text-xs text-muted-foreground mt-1">

@@ -4520,7 +4520,7 @@
       "filters": "Filtros",
       "import": "Importar",
       "importDialog": {
-        "browsePlaceholder": "Explore seu arquivo Excel aqui....",
+        "browsePlaceholder": "Explore seu arquivo Excel aqui…",
         "clickToSelect": "Clique para selecionar",
         "completed": "Importação concluída",
         "description": "Envie um arquivo .xlsx/.xls/.csv para importar vigilantes.",
@@ -16235,9 +16235,11 @@
       "filasNoImportadas_few": "{{count}} linhas não puderam ser importadas. Confira os detalhes.",
       "filasNoImportadas_many": "{{count}} linhas não puderam ser importadas. Confira os detalhes.",
       "errorAlImportar": "Erro ao importar",
-      "camposObligatoriosVacios": "Alguns campos obrigatórios estão vazios. Verifique: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Alguns campos obrigatórios estão vazios. Verifique: name, address.",
       "importarClientesDesdeExcel": "Importar clientes do Excel",
-      "columnasOpcionales": "Colunas opcionais:"
+      "columnasOpcionales": "Colunas opcionais:",
+      "columnasPorNombre": "A primeira linha traz os nomes das colunas; a ordem não importa.",
+      "avisoInvitacion": "Cada cliente importado com e-mail recebe na hora o convite de boas-vindas para o app."
     },
     "CoBrowseAgent": {
       "soporte": "Suporte",
