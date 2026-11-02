@@ -6,12 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { FileSpreadsheet, PowerOff } from "lucide-react";
+import { FileSpreadsheet, Lock, PowerOff } from "lucide-react";
 
 import { payrollAccessMode, type PayrollAccess } from "./access";
 
 import { Button } from "@/components/ui/button";
-import { InfoNote, Section, SkeletonCards } from "@/components/kit";
+import { EmptyState, InfoNote, Section, SkeletonCards } from "@/components/kit";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { faltaElModulo } from "@/lib/rostro";
 import { modulosAdicionalesService } from "@/lib/api/modulosAdicionalesService";
@@ -21,6 +21,11 @@ import type {
 } from "@/lib/api/payrollSlipsService";
 
 export const MODULO = "payroll_slips";
+
+/** The server said the role may not (403), not «the module is missing» (402). */
+export function sinPermiso(e: unknown): boolean {
+  return (e as { status?: number } | null)?.status === 403;
+}
 
 export type { PayrollAccess };
 
@@ -37,7 +42,8 @@ export type { PayrollAccess };
  * Call it BEFORE the page's queries: `full` enables the full-access endpoints,
  * `canRead` the read-only ones (sheets, slips, documents). Once the queries
  * answered, `resolve(gatedError, readError)` gives the final mode (a 402 on a
- * full endpoint → ask the store; a 402 on a read-only endpoint → none).
+ * full endpoint → ask the store; a 402 on a read-only endpoint → none; a 403
+ * on either → denied).
  */
 export function usePayrollAccess() {
   const entitled = useEntitlement(MODULO);
@@ -73,7 +79,12 @@ export function usePayrollAccess() {
     readOnly: mode === "readOnly",
     canRead: mode === "full" || mode === "readOnly",
     resolve: (gatedError?: unknown, readError?: unknown): PayrollAccess =>
-      payrollAccessMode({ ...base, gatedRefused: faltaElModulo(gatedError), readRefused: faltaElModulo(readError) }),
+      payrollAccessMode({
+        ...base,
+        gatedRefused: faltaElModulo(gatedError),
+        readRefused: faltaElModulo(readError),
+        forbidden: sinPermiso(gatedError) || sinPermiso(readError),
+      }),
   };
 }
 
@@ -268,6 +279,18 @@ export function PresentacionDelModulo({ modo }: { modo?: PayrollAccess } = {}) {
   const { t } = useTranslation();
 
   if (modo === "loading") return <SkeletonCards count={3} />;
+  if (modo === "denied") {
+    return (
+      <EmptyState
+        description={t(
+          "ui.RolesDePago.sinPermiso.desc",
+          "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Configuración › Roles.",
+        )}
+        icon={<Lock />}
+        title={t("ui.RolesDePago.sinPermiso.titulo", "Tu rol no puede abrir Roles de pago")}
+      />
+    );
+  }
   if (modo === "readOnly") {
     return (
       <div className="space-y-4">

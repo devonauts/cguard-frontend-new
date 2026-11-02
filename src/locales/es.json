@@ -17749,6 +17749,10 @@
         "vacio": "No hay planillas emitidas",
         "vacioDesc": "Mientras Roles de pago esté apagado solo se muestran las planillas publicadas.",
         "noEmitida": "Solo se pueden ver las planillas y los roles ya emitidos."
+      },
+      "sinPermiso": {
+        "titulo": "Tu rol no puede abrir Roles de pago",
+        "desc": "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Configuración › Roles."
       }
     },
     "ClientBillingContract": {

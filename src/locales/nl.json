@@ -18289,6 +18289,10 @@
         "vacio": "Geen uitgegeven loonlijsten",
         "vacioDesc": "Zolang Loonstroken uit staat, worden alleen gepubliceerde loonlijsten getoond.",
         "noEmitida": "Alleen al uitgegeven loonlijsten en loonstroken kunnen worden bekeken."
+      },
+      "sinPermiso": {
+        "titulo": "Uw rol kan Loonstroken niet openen",
+        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Instellingen › Rollen."
       }
     },
     "ClientBillingContract": {

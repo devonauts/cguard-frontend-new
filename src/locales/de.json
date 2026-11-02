@@ -18289,6 +18289,10 @@
         "vacio": "Keine ausgestellten Lohnlisten",
         "vacioDesc": "Solange Lohnabrechnungen ausgeschaltet ist, werden nur veröffentlichte Lohnlisten angezeigt.",
         "noEmitida": "Nur bereits ausgestellte Lohnlisten und Lohnabrechnungen können angesehen werden."
+      },
+      "sinPermiso": {
+        "titulo": "Ihre Rolle kann Lohnabrechnungen nicht öffnen",
+        "desc": "Ihrer Rolle fehlen die Berechtigungen für Lohnabrechnungen (Abrechnungen und Lohnprofile ansehen und bearbeiten). Eine Administratorin oder ein Administrator kann sie unter Einstellungen › Rollen vergeben."
       }
     },
     "ClientBillingContract": {

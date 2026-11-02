@@ -18577,6 +18577,10 @@
         "vacio": "Brak wystawionych list płac",
         "vacioDesc": "Dopóki Paski wypłaty są wyłączone, widać tylko opublikowane listy płac.",
         "noEmitida": "Można przeglądać tylko już wystawione listy płac i paski wypłaty."
+      },
+      "sinPermiso": {
+        "titulo": "Twoja rola nie może otworzyć Pasków wypłat",
+        "desc": "Twoja rola nie ma uprawnień do Pasków wypłat (przeglądanie i edycja pasków oraz profili płacowych). Administrator może je nadać w Ustawienia › Role."
       }
     },
     "ClientBillingContract": {

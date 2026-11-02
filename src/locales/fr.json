@@ -18289,6 +18289,10 @@
         "vacio": "Aucune feuille de paie émise",
         "vacioDesc": "Tant que Bulletins de paie est désactivé, seules les feuilles de paie publiées s’affichent.",
         "noEmitida": "Seules les feuilles de paie et les bulletins déjà émis peuvent être consultés."
+      },
+      "sinPermiso": {
+        "titulo": "Votre rôle ne peut pas ouvrir les bulletins de paie",
+        "desc": "Votre rôle n'a pas les autorisations des bulletins de paie (voir et modifier les bulletins et les profils de paie). Un administrateur peut les accorder dans Paramètres › Rôles."
       }
     },
     "ClientBillingContract": {

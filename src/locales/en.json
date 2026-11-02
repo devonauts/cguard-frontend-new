@@ -17749,6 +17749,10 @@
         "vacio": "No issued payroll sheets",
         "vacioDesc": "While Payslips is switched off, only published payroll sheets are shown.",
         "noEmitida": "Only payroll sheets and payslips already issued can be viewed."
+      },
+      "sinPermiso": {
+        "titulo": "Your role cannot open Payslips",
+        "desc": "Your role does not have the Payslips permissions (view and edit payslips and pay profiles). An administrator can grant them in Settings › Roles."
       }
     },
     "ClientBillingContract": {

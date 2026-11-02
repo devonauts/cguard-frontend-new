@@ -18289,6 +18289,10 @@
         "vacio": "Nessun foglio paga emesso",
         "vacioDesc": "Finché Buste paga è spento, si vedono solo i fogli paga pubblicati.",
         "noEmitida": "Si possono vedere solo i fogli paga e le buste paga già emessi."
+      },
+      "sinPermiso": {
+        "titulo": "Il tuo ruolo non può aprire Buste paga",
+        "desc": "Il tuo ruolo non ha i permessi di Buste paga (vedere e modificare buste paga e profili retributivi). Un amministratore può concederli in Impostazioni › Ruoli."
       }
     },
     "ClientBillingContract": {

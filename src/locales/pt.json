@@ -17749,6 +17749,10 @@
         "vacio": "Não há folhas de pagamento emitidas",
         "vacioDesc": "Enquanto Holerites estiver desligado, só aparecem as folhas de pagamento publicadas.",
         "noEmitida": "Só é possível ver as folhas de pagamento e os holerites já emitidos."
+      },
+      "sinPermiso": {
+        "titulo": "Seu perfil não pode abrir Holerites",
+        "desc": "Seu perfil não tem as permissões de Holerites (ver e editar holerites e perfis de pagamento). Um administrador pode concedê-las em Configurações › Perfis."
       }
     },
     "ClientBillingContract": {
