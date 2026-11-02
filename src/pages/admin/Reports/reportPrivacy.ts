@@ -43,6 +43,18 @@ export function hiddenFromSettings(rs: any): HiddenNames {
 /** The screen shows every name as it is. */
 export const showName: NameMask = (_kind, name) => (name == null ? "" : String(name));
 
+/** The mask of one file: names → aliases, plus the same aliases inside text. */
+export type FileNameMask = NameMask & {
+  /**
+   * Replaces, inside free text, every hidden name this file already knows
+   * (whole-word, case-insensitive, exact) by its alias. The guard app fills
+   * an incident's «Ubicación» — and so its «Título» — with the post name.
+   */
+  inText: (text: string) => string;
+};
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 /**
  * A mask for ONE file: the numbering starts at 1 per kind and follows the
  * order in which the names first appear, so the same name always gets the same
@@ -51,14 +63,14 @@ export const showName: NameMask = (_kind, name) => (name == null ? "" : String(n
 export function createNameMask(
   hidden: HiddenNames,
   labels: Record<MaskedKind, string>,
-): NameMask {
+): FileNameMask {
   const aliases: Record<MaskedKind, Map<string, string>> = {
     clientName: new Map(),
     siteName: new Map(),
     stationName: new Map(),
   };
 
-  return (kind, name) => {
+  const mask = (kind: MaskedKind, name: string | null | undefined) => {
     const raw = name == null ? "" : String(name);
 
     // Placeholders («—») and empty cells are not names.
@@ -73,10 +85,32 @@ export function createNameMask(
 
     return alias;
   };
+
+  const inText = (text: string) => {
+    let out = text == null ? "" : String(text);
+    // Longest first, so «Garita Principal Norte» wins over «Garita Principal».
+    const pairs = (Object.keys(aliases) as MaskedKind[])
+      .flatMap((k) => Array.from(aliases[k], ([name, alias]) => [name.trim(), alias]))
+      .filter(([name]) => name.length > 1)
+      .sort((a, b) => b[0].length - a[0].length);
+
+    for (const [name, alias] of pairs) {
+      out = out.replace(
+        new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(name)}(?![\\p{L}\\p{N}])`, "giu"),
+        alias,
+      );
+    }
+
+    return out;
+  };
+
+  return Object.assign(mask, { inText });
 }
 
 interface MarkedColumn<T> {
   privacy?: PrivacyMark;
+  /** Free text that may contain the row's names (see FileNameMask.inText). */
+  freeText?: boolean;
   value: (row: T, mask?: NameMask) => string;
 }
 
@@ -93,10 +127,25 @@ export function visibleColumns<C extends { privacy?: PrivacyMark }>(
  * is pseudonymized whole; a column that joins several names («Sede · Cliente»)
  * receives the mask and applies it to each part itself.
  */
-export function exportValue<T>(column: MarkedColumn<T>, row: T, mask: NameMask): string {
+export function exportValue<T>(column: MarkedColumn<T>, row: T, mask: FileNameMask): string {
   const kind = column.privacy;
 
   if (kind && kind !== "guardName") return mask(kind, column.value(row, showName));
+  if (column.freeText) return mask.inText(column.value(row, showName));
 
   return column.value(row, mask);
+}
+
+/**
+ * Teaches a file's mask every hidden name of its rows BEFORE any cell is
+ * written, so a name that only appears in free text — or appears there before
+ * its own column — still gets the same alias as in the name columns.
+ */
+export function learnNames<T>(
+  mask: FileNameMask,
+  rows: T[],
+  namesOf?: (row: T) => Array<[MaskedKind, string | null | undefined]>,
+): void {
+  if (!namesOf) return;
+  for (const row of rows) for (const [kind, name] of namesOf(row)) mask(kind, name);
 }

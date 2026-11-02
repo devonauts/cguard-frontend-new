@@ -20,10 +20,12 @@ import { plano } from "@/lib/buscadorGlobal";
 import {
   createNameMask,
   exportValue,
+  learnNames,
   hiddenFromSettings,
   NOTHING_HIDDEN,
   visibleColumns,
   type HiddenNames,
+  type MaskedKind,
   type NameMask,
   type PrivacyMark,
 } from "./reportPrivacy";
@@ -58,6 +60,9 @@ export interface ReportColumn<T> {
    * is pseudonymized in exported and printed files (see reportPrivacy.ts).
    */
   privacy?: PrivacyMark;
+  /** Free text (a title, a location): in files, the hidden names of the
+   *  report's rows that appear in it are replaced by their aliases. */
+  freeText?: boolean;
 }
 
 interface DataReportProps<T> {
@@ -116,6 +121,9 @@ interface DataReportProps<T> {
    * «Registrado sin señal · llegó 03:40». Una consulta por página visible.
    */
   idSinSenal?: (row: T) => string | null | undefined;
+  /** The client / site / station names of a row, so that `freeText` columns
+   *  can hide them (see reportPrivacy.learnNames). */
+  privateNames?: (row: T) => Array<[MaskedKind, string | null | undefined]>;
 }
 
 /**
@@ -177,6 +185,7 @@ export default function DataReport<T>({
   onRowClick,
   reloadRef,
   idSinSenal,
+  privateNames,
 }: DataReportProps<T>) {
   const { t } = useTranslation();
   const rotulo = (c: ReportColumn<T>) =>
@@ -382,6 +391,8 @@ export default function DataReport<T>({
     try {
       const mask = mascaraDeArchivo();
 
+      learnNames(mask, filtered, privateNames);
+
       await exportColumns(
         format,
         columns.map((c) => ({
@@ -415,6 +426,8 @@ export default function DataReport<T>({
   // del sistema) en vez de un azul marino a mano.
   const printableHtml = () => {
     const mask = mascaraDeArchivo();
+
+    learnNames(mask, filtered, privateNames);
     const head = columns
       .map((c) => `<th>${escapeHtml(rotulo(c))}</th>`)
       .join("");

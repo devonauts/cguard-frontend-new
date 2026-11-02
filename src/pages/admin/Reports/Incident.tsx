@@ -32,6 +32,7 @@ interface Incident {
   site?: { id?: string; companyName?: string } | null;
   postSiteId?: string | null;
   station?: { stationName?: string } | null;
+  client?: { name?: string | null; lastName?: string | null } | null;
   /** El caso del Centro de Emergencias que atiende este incidente, si lo hay
    *  (un pánico crea los dos). Lo adjunta el listado del servidor. */
   alarmCaseId?: string | null;
@@ -67,6 +68,8 @@ const columns: ReportColumn<Incident>[] = [
     label: "Título",
     labelKey: "reports.col.incident.title",
     value: (r) => r.title || "—",
+    // Built as «ubicación - descripción» by the guard app.
+    freeText: true,
   },
   {
     key: "priority",
@@ -100,12 +103,15 @@ const columns: ReportColumn<Incident>[] = [
     label: "Ubicación",
     labelKey: "reports.col.incident.location",
     value: (r) => r.location || "—",
+    // The guard app fills it with the post name.
+    freeText: true,
   },
   {
     key: "desc",
     label: "Descripción",
     labelKey: "reports.col.incident.desc",
     value: (r) => trim(r.description),
+    freeText: true,
   },
 ];
 
@@ -175,6 +181,12 @@ export default function Incident() {
       columns={columnas}
       // Incidentes reportados sin señal desde la app.
       idSinSenal={(r) => r.id}
+      privateNames={(r) => [
+        ["siteName", r.site?.companyName || r.postSite?.name],
+        ["stationName", r.station?.stationName],
+        ["clientName", [r.client?.name, r.client?.lastName].filter(Boolean).join(" ")],
+        ["clientName", r.client?.name],
+      ]}
       title={t("ui.Incident.informeDeIncidente", "Informe de Incidente")}
       // Un incidente de prioridad alta/crítica todavía abierto se señala en rojo.
       tone="bad"
