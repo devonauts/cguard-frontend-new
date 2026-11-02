@@ -19568,7 +19568,8 @@
       "horasSinTarifa": "{{horas}} without a rate",
       "liquidacion": "Settlement between brands",
       "liquidacionAyuda": "The client's company pays the company that provided the staff for the approved hours, at the rate in effect each day.",
-      "debeA": "{{cliente}} pays {{personal}}"
+      "debeA": "{{cliente}} pays {{personal}}",
+      "personalCliente": "Staff / Client"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "INV",

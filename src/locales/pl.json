@@ -20447,7 +20447,8 @@
       "horasSinTarifa": "{{horas}} bez stawki",
       "liquidacion": "Rozliczenie między markami",
       "liquidacionAyuda": "Firma klienta płaci firmie, która zapewniła personel, za zatwierdzone godziny według stawki obowiązującej danego dnia.",
-      "debeA": "{{cliente}} płaci firmie {{personal}}"
+      "debeA": "{{cliente}} płaci firmie {{personal}}",
+      "personalCliente": "Personel / Klient"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FV",

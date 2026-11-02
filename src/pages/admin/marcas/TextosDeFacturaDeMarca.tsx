@@ -12,7 +12,7 @@ import { FileText } from "lucide-react";
 import { LIMITES_DE_TEXTO, type MetodoBase, type TextosBorrador } from "./textosDeMarca";
 
 import { Switch } from "@/components/ui/switch";
-import { FIELD_CLS, FormField, Segmented } from "@/components/kit";
+import { FIELD_CLS, FormField } from "@/components/kit";
 import type { ClaveDeTexto } from "@/lib/api/marcasService";
 
 type Pestana = "facturas" | "cobro" | "cotizaciones" | "informes";
@@ -79,7 +79,7 @@ export default function TextosDeFacturaDeMarca({
 
   return (
     <div
-      className="space-y-3 rounded-xl border p-3"
+      className="min-w-0 space-y-3 rounded-xl border p-3"
       data-testid="textos-de-factura"
       style={{ borderColor: "var(--hairline)" }}
     >
@@ -101,17 +101,32 @@ export default function TextosDeFacturaDeMarca({
         </div>
       </div>
 
-      <Segmented
-        expandir
-        options={[
-          { value: "facturas", label: t("ui.TextosDeMarca.facturas", "Facturas") },
-          { value: "cobro", label: t("ui.TextosDeMarca.cobro", "Cobro") },
-          { value: "cotizaciones", label: t("ui.TextosDeMarca.cotizaciones", "Cotizaciones") },
-          { value: "informes", label: t("ui.TextosDeMarca.informes", "Informes") },
-        ]}
-        value={pestana}
-        onChange={(v) => setPestana(v as Pestana)}
-      />
+      {/* Tabs that wrap (2 × 2 on a phone): four labels never fit one row at 390 px. */}
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4" role="tablist">
+        {(
+          [
+            ["facturas", t("ui.TextosDeMarca.facturas", "Facturas")],
+            ["cobro", t("ui.TextosDeMarca.cobro", "Cobro")],
+            ["cotizaciones", t("ui.TextosDeMarca.cotizaciones", "Cotizaciones")],
+            ["informes", t("ui.TextosDeMarca.informes", "Informes")],
+          ] as Array<[Pestana, string]>
+        ).map(([v, etiqueta]) => (
+          <button
+            key={v}
+            aria-selected={pestana === v}
+            className="cg-focus min-w-0 truncate rounded-lg border px-2 py-1.5 text-xs font-semibold"
+            role="tab"
+            style={{
+              borderColor: pestana === v ? "var(--brand)" : "var(--hairline)",
+              background: pestana === v ? "color-mix(in oklab, var(--brand) 14%, var(--float))" : "var(--float)",
+            }}
+            type="button"
+            onClick={() => setPestana(v)}
+          >
+            {etiqueta}
+          </button>
+        ))}
+      </div>
 
       {pestana === "facturas" && (
         <div className="grid grid-cols-1 gap-3">

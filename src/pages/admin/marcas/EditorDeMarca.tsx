@@ -427,7 +427,7 @@ export function EditorDeMarca({
       }
       onOpenChange={(o) => !o && onCerrar()}
     >
-      <fieldset className="space-y-5" disabled={solo}>
+      <fieldset className="min-w-0 space-y-5" disabled={solo}>
         {/* ── How people know it ─────────────────────────────── */}
         <div className="flex items-start gap-4">
           <div className="flex flex-col items-center gap-2">
@@ -540,7 +540,7 @@ export function EditorDeMarca({
 
         {/* ── Legal identity (required: it is another company) ── */}
         <fieldset
-          className="space-y-3 rounded-xl border p-3"
+          className="min-w-0 space-y-3 rounded-xl border p-3"
           disabled={legalBloqueado}
           style={{ borderColor: "var(--hairline)" }}
         >

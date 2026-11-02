@@ -20127,7 +20127,8 @@
       "horasSinTarifa": "{{horas}} zonder tarief",
       "liquidacion": "Verrekening tussen merken",
       "liquidacionAyuda": "Het bedrijf van de klant betaalt het bedrijf dat het personeel leverde de goedgekeurde uren tegen het tarief dat die dag gold.",
-      "debeA": "{{cliente}} betaalt {{personal}}"
+      "debeA": "{{cliente}} betaalt {{personal}}",
+      "personalCliente": "Personeel / Klant"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",

@@ -130,6 +130,17 @@ export default function HorasEntreMarcasPage() {
   const etiqueta = useMemo(() => {
     const m = new Map<string, MarcaEtiqueta>();
 
+    // The report names every brand of its pairs: a brand admin's own list
+    // holds only theirs, and the other side of a pair needs a name too.
+    for (const b of q.data?.brands ?? [])
+      m.set(b.id, {
+        id: b.id,
+        nombre: b.name,
+        codigo: b.code,
+        color: b.color || "var(--brand)",
+        logoUrl: null,
+        principal: !!b.isPrincipal,
+      });
     for (const b of todas.length ? todas : marcas)
       m.set(b.id, {
         id: b.id,
@@ -141,7 +152,7 @@ export default function HorasEntreMarcasPage() {
       });
 
     return (id: string) => m.get(id) ?? null;
-  }, [todas, marcas]);
+  }, [todas, marcas, q.data]);
   const nombreDe = (id: string) => etiqueta(id)?.nombre ?? "—";
 
   const matriz = useMemo(
@@ -430,7 +441,7 @@ export default function HorasEntreMarcasPage() {
               />
             ) : (
               <>
-                <StatsStrip className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <StatsStrip className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <StatCard
                     flat
                     icon={<Clock />}
@@ -574,7 +585,7 @@ export default function HorasEntreMarcasPage() {
                         <thead>
                           <tr className="border-b" style={{ borderColor: "var(--hairline)" }}>
                             <th className="px-3 py-2 text-left text-xs font-semibold" style={{ color: "var(--ink-faint)" }}>
-                              {t("ui.HorasEntreMarcas.pagaTrabajaEn", "Paga / Trabajó en")}
+                              {t("ui.HorasEntreMarcas.personalCliente", "Personal / Cliente")}
                             </th>
                             {matriz.columnas.map((s) => (
                               <th key={s} className="px-3 py-2 text-right">

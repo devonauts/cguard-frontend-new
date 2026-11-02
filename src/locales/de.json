@@ -20127,7 +20127,8 @@
       "horasSinTarifa": "{{horas}} ohne Satz",
       "liquidacion": "Abrechnung zwischen Marken",
       "liquidacionAyuda": "Das Unternehmen des Kunden zahlt dem Unternehmen, das das Personal gestellt hat, die genehmigten Stunden zum jeweils gültigen Tagessatz.",
-      "debeA": "{{cliente}} zahlt an {{personal}}"
+      "debeA": "{{cliente}} zahlt an {{personal}}",
+      "personalCliente": "Personal / Kunde"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "RE",

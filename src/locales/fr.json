@@ -20127,7 +20127,8 @@
       "horasSinTarifa": "{{horas}} sans tarif",
       "liquidacion": "Règlement entre marques",
       "liquidacionAyuda": "L'entreprise du client paie à l'entreprise qui a fourni le personnel les heures approuvées, au tarif en vigueur chaque jour.",
-      "debeA": "{{cliente}} paie {{personal}}"
+      "debeA": "{{cliente}} paie {{personal}}",
+      "personalCliente": "Personnel / Client"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",

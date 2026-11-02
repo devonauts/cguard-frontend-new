@@ -19568,7 +19568,8 @@
       "horasSinTarifa": "{{horas}} sin tarifa",
       "liquidacion": "Liquidación entre marcas",
       "liquidacionAyuda": "La empresa del cliente le paga a la empresa que puso el personal las horas aprobadas por la tarifa vigente de cada día.",
-      "debeA": "{{cliente}} le paga a {{personal}}"
+      "debeA": "{{cliente}} le paga a {{personal}}",
+      "personalCliente": "Personal / Cliente"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",

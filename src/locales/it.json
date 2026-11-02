@@ -20127,7 +20127,8 @@
       "horasSinTarifa": "{{horas}} senza tariffa",
       "liquidacion": "Liquidazione tra marchi",
       "liquidacionAyuda": "L'azienda del cliente paga all'azienda che ha fornito il personale le ore approvate, alla tariffa in vigore ogni giorno.",
-      "debeA": "{{cliente}} paga {{personal}}"
+      "debeA": "{{cliente}} paga {{personal}}",
+      "personalCliente": "Personale / Cliente"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAT",

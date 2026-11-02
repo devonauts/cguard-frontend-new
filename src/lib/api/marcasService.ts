@@ -244,6 +244,11 @@ export interface HorasEntreMarcas {
   to: string;
   matrix: ParDeHoras[];
   rows: FilaDeHoras[];
+  /**
+   * Every brand the ids above refer to (the server sends them all: a brand
+   * admin's list of brands holds only theirs, the other side of a pair too).
+   */
+  brands?: Array<{ id: string; name: string; code: string | null; color: string | null; isPrincipal: boolean }>;
 }
 
 export interface FiltroDeHoras {

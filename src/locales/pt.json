@@ -19568,7 +19568,8 @@
       "horasSinTarifa": "{{horas}} sem tarifa",
       "liquidacion": "Acerto entre marcas",
       "liquidacionAyuda": "A empresa do cliente paga à empresa que forneceu o pessoal as horas aprovadas, pela tarifa vigente de cada dia.",
-      "debeA": "{{cliente}} paga a {{personal}}"
+      "debeA": "{{cliente}} paga a {{personal}}",
+      "personalCliente": "Pessoal / Cliente"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAT",
