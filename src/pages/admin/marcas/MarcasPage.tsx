@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import {
   AlertTriangle,
   Archive,
+  ArrowLeftRight,
   Building2,
   Layers,
   Lock,
@@ -85,11 +86,22 @@ export default function MarcasPage() {
       <PageContainer>
         <PageHeader
           actions={
-            activo && puedeEditar ? (
-              <Button type="button" variant="brand" onClick={nueva}>
-                <Plus className="mr-1.5 size-4" />
-                {t("ui.MarcasPage.nueva", "Nueva marca")}
-              </Button>
+            activo ? (
+              <div className="flex flex-wrap gap-2">
+                {/* Phase 4: hours people of one brand did at another's sites. */}
+                <Button asChild type="button" variant="outline">
+                  <Link to="/reports/horas-entre-marcas">
+                    <ArrowLeftRight className="mr-1.5 size-4" />
+                    {t("ui.HorasEntreMarcas.titulo", "Horas entre marcas")}
+                  </Link>
+                </Button>
+                {puedeEditar && (
+                  <Button type="button" variant="brand" onClick={nueva}>
+                    <Plus className="mr-1.5 size-4" />
+                    {t("ui.MarcasPage.nueva", "Nueva marca")}
+                  </Button>
+                )}
+              </div>
             ) : undefined
           }
           icon={<Layers />}

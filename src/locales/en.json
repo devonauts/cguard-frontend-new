@@ -120,7 +120,8 @@
       "dispatcher": "Dispatcher",
       "secretary": "Secretary / Receptionist",
       "securitySupervisor": "Security supervisor",
-      "branchManager": "Branch manager"
+      "branchManager": "Branch manager",
+      "brandAdmin": "Brand Administrator"
     },
     "rowActions": {
       "delete": "Delete",
@@ -6138,7 +6139,8 @@
       "atrasos": "Late arrivals this week"
     },
     "app-escritorio": "Desktop app",
-    "marcas": "Brands"
+    "marcas": "Brands",
+    "horas-entre-marcas": "Hours across brands"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -19343,7 +19345,8 @@
       "exito": "Done: you can now add another brand.",
       "mensaje": "A one-time payment of {{precio}} is charged to your subscription card. The brand stays available forever.",
       "mensajeSinPrecio": "A one-time payment is charged to your subscription card. The brand stays available forever.",
-      "titulo": "Add another brand?"
+      "titulo": "Add another brand?",
+      "solicitada": "Request sent to your provider. The brand is available as soon as they approve it."
     },
     "CotizacionEditor": {
       "faltaMarca": "Choose the brand issuing the quote.",
@@ -19390,7 +19393,22 @@
       "sinCuposMensajeSinPrecio": "Your plan includes the brands you already use. Each additional brand is a one-time payment.",
       "sinCuposTitulo": "You already use all your brands",
       "subirLogo": "Upload logo",
-      "telefono": "Phone"
+      "telefono": "Phone",
+      "webMala": "That web address doesn’t look valid.",
+      "prefijoMalo": "The prefix takes letters, digits and dashes (up to 12).",
+      "clientesTitulo": "How its clients see it",
+      "clientesAyuda": "Invoices, quotes, reports, e-mails and its clients’ portal go out with its logo, its colours and these details.",
+      "acento": "Accent colour",
+      "acentoIgual": "Same as the colour",
+      "otroAcento": "Another accent colour",
+      "estiloPdf": "Style of its PDFs",
+      "estiloEmpresa": "Like the company",
+      "remitenteAyuda": "The name its clients see on e-mails. Empty: the trading name.",
+      "remitente": "Sender name",
+      "prefijoPrincipal": "The principal brand uses the company’s series.",
+      "prefijoAyuda": "Its invoices have their own numbering. Empty: the company prefix and the brand code.",
+      "prefijo": "Invoice prefix",
+      "web": "Website"
     },
     "ElegirMarca": {
       "ahora": "You are here",
@@ -19400,7 +19418,8 @@
       "subtitulo": "Each brand is a company with its own clients. Choose one to see only what is theirs, or all of them at once.",
       "titulo": "Which brand are you working with now?",
       "todasDesc": "The clients and staff of every brand.",
-      "ultimaVez": "Last time"
+      "ultimaVez": "Last time",
+      "todasMiasDesc": "The clients and staff of the brands assigned to you."
     },
     "MarcasPage": {
       "abrir": "Open {{nombre}}",
@@ -19429,7 +19448,11 @@
       "titulo": "Brands",
       "vacio": "No brands yet",
       "vacioDesc": "The principal brand is created automatically when the module is switched on.",
-      "verArchivadas": "Show archived"
+      "verArchivadas": "Show archived",
+      "soloLecturaTitulo": "You see your brands; you don’t change them",
+      "excedidoTitulo": "You use {{usadas}} brands and have {{pagadas}} paid",
+      "excedidoDesc": "The payment for an extra brand was refunded. Your brands and their data stay as they are, but you can’t create or reactivate another until you add a brand or archive one you don’t use.",
+      "cuposExcedidos": "Add a brand or archive one to create again."
     },
     "Multimarca": {
       "principal": "Main"
@@ -19442,12 +19465,99 @@
     "SelectorDeMarca": {
       "elegir": "Choose the brand",
       "todas": "All brands",
-      "todasCorto": "Brands"
+      "todasCorto": "Brands",
+      "todasMias": "All my brands",
+      "todasMiasCorto": "My brands"
     },
     "TiendaMultimarca": {
       "consecuencia": "The brand selector and the «Brand» column disappear; the brands and their data stay.",
       "detalle": "(includes {{n}} brands) · {{extra}} for each additional brand",
       "incluye": "(includes {{n}} brands)"
+    },
+    "AccesoDeMarcaDePersona": {
+      "todas": "All",
+      "ninguna": "No brands"
+    },
+    "CampoAccesoDeMarca": {
+      "sinMarcas": "Tick at least one brand: with none, they would see nothing.",
+      "errorGuardar": "Everything else was saved, but not the brands they see. Try again.",
+      "titulo": "Brand access",
+      "adminVeTodas": "An administrator always sees every brand.",
+      "ayudaAdminDeMarca": "Runs only the brands you tick: their clients, quotes and invoices, and all the staff who work there (payroll included).",
+      "ayuda": "Choose «All brands» or limit what they see to some: only their clients, their sites and who works there."
+    },
+    "ChipDeMarca": {
+      "clienteDe": "Client of {{marca}}",
+      "registradoEn": "Registered in {{marca}}",
+      "registradoAyuda": "The brand whose payroll pays them, even when they work at another brand’s sites."
+    },
+    "FiltroDeMarcaEnMapa": {
+      "etiqueta": "Show on the map the brand"
+    },
+    "AccesoDeMarca": {
+      "reglaDeEmpresaDesc": "As a brand administrator you can see it, but it applies to every brand: a company administrator changes it.",
+      "soloEmpresaDesc": "As a brand administrator you run your brands, but payments, modules and the account are handled by a company administrator.",
+      "soloEmpresaTitulo": "The company’s administration does this",
+      "errores": {
+        "pago": "Payments, the store and extra brands are handled by a company administrator, not a brand’s.",
+        "cuenta": "The company account is handled by a general administrator.",
+        "estructura": "Creating, editing or archiving brands, or changing which brands each person sees, is done by a company administrator.",
+        "roles": "You can’t give the administrator, brand administrator or branch manager role, nor edit someone who has it.",
+        "empresa": "This setting applies to the whole company: a general administrator changes it.",
+        "fueraDeAlcance": "That belongs to a brand you are not assigned to.",
+        "general": "Your brand access doesn’t allow this. Ask a company administrator."
+      }
+    },
+    "HorasEntreMarcas": {
+      "archivo": "hours-across-brands",
+      "errorDescarga": "The file could not be prepared. Try again.",
+      "subtitulo": "Each person is paid by the brand they registered in. Here you see how many hours people of one brand worked at another brand’s sites, to settle them between the companies.",
+      "titulo": "Hours across brands",
+      "mesPasado": "Last month",
+      "esteMes": "This month",
+      "ultimos30": "30 days",
+      "otro": "Other",
+      "desde": "From",
+      "hasta": "To",
+      "empleadora": "Paying brand",
+      "cualquiera": "Any",
+      "marcaDelSitio": "Site brand",
+      "incluirPropias": "Include hours at the person’s own brand sites",
+      "periodoMalo": "Choose a valid period: the start date before the end date, up to one year.",
+      "restringido": "You see the hours where one of your brands pays or is the site’s brand.",
+      "vacioTodasDesc": "There are no worked hours recorded in this period with these filters.",
+      "vacioDesc": "Nobody worked at another brand’s sites in this period. Turn on «Include hours at the person’s own brand sites» to see them all.",
+      "vacio": "No hours across brands",
+      "totalHoras": "Hours",
+      "personas": "People",
+      "turnos": "Shifts",
+      "matriz": "Who worked where",
+      "matrizAyuda": "Rows: the brand that pays the person. Columns: the brand of the client where they worked. Period {{desde}} – {{hasta}}.",
+      "personasYTurnos": "{{personas}} people · {{turnos}} shifts",
+      "pagaTrabajaEn": "Pays / Worked at",
+      "total": "Total",
+      "buscar": "Search person, client or site",
+      "detalle": "Detail",
+      "sinCoincidencias": "Nothing matches the search.",
+      "nTurnos": "{{n}} shifts",
+      "persona": "Person",
+      "cliente": "Client",
+      "sitio": "Site"
+    },
+    "VistaDeMarca": {
+      "prefijoEmpresa": "INV",
+      "sinNombre": "Your brand",
+      "factura": "Invoice",
+      "titulo": "How its clients see this brand",
+      "principalAyuda": "It is the principal brand: its clients keep seeing the company as they do today.",
+      "ayuda": "Its invoices, quotes, reports and e-mails go out with these details. No client of this brand sees another brand’s name.",
+      "emite": "Issued by",
+      "cliente": "Client",
+      "concepto": "Item",
+      "total": "Total",
+      "correoDe": "E-mails come from",
+      "portal": "Client portal and app",
+      "direccionDelCorreo": "The sending address is the platform’s; the client sees the brand’s name."
     }
   },
   "map": {

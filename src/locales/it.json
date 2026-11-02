@@ -5665,7 +5665,8 @@
       "atrasos": "Ritardi della settimana"
     },
     "app-escritorio": "App desktop",
-    "marcas": "Marchi"
+    "marcas": "Marchi",
+    "horas-entre-marcas": "Ore tra marchi"
   },
   "siteTour": {
     "newTour": "Nuovo percorso",
@@ -5971,7 +5972,8 @@
       "dispatcher": "Operatore di centrale",
       "secretary": "Segreteria / reception",
       "securitySupervisor": "Supervisore della sicurezza",
-      "branchManager": "Responsabile di filiale"
+      "branchManager": "Responsabile di filiale",
+      "brandAdmin": "Amministratore di marchio"
     },
     "rowActions": {
       "delete": "Elimina",
@@ -19902,7 +19904,8 @@
       "exito": "Fatto: ora puoi aggiungere un altro marchio.",
       "mensaje": "Viene addebitato un pagamento unico di {{precio}} sulla carta del tuo abbonamento. Il marchio resta disponibile per sempre.",
       "mensajeSinPrecio": "Viene addebitato un pagamento unico sulla carta del tuo abbonamento. Il marchio resta disponibile per sempre.",
-      "titulo": "Aggiungere un altro marchio?"
+      "titulo": "Aggiungere un altro marchio?",
+      "solicitada": "Richiesta inviata al tuo fornitore. Il marchio sarà disponibile appena la approva."
     },
     "CotizacionEditor": {
       "faltaMarca": "Scegli il marchio che emette il preventivo.",
@@ -19949,7 +19952,22 @@
       "sinCuposMensajeSinPrecio": "Il tuo piano include i marchi che usi già. Ogni marchio aggiuntivo è un pagamento unico.",
       "sinCuposTitulo": "Usi già tutti i tuoi marchi",
       "subirLogo": "Carica logo",
-      "telefono": "Telefono"
+      "telefono": "Telefono",
+      "webMala": "Questo indirizzo web non sembra valido.",
+      "prefijoMalo": "Il prefisso accetta lettere, numeri e trattini (fino a 12).",
+      "clientesTitulo": "Come la vedono i suoi clienti",
+      "clientesAyuda": "Fatture, preventivi, report, email e portale dei clienti escono con il suo logo, i suoi colori e questi dati.",
+      "acento": "Colore di accento",
+      "acentoIgual": "Come il colore",
+      "otroAcento": "Altro colore di accento",
+      "estiloPdf": "Stile dei suoi PDF",
+      "estiloEmpresa": "Come l’azienda",
+      "remitenteAyuda": "Il nome che i clienti vedono nelle email. Vuoto: il nome commerciale.",
+      "remitente": "Nome del mittente",
+      "prefijoPrincipal": "Il marchio principale usa la serie dell’azienda.",
+      "prefijoAyuda": "Le sue fatture hanno una numerazione propria. Vuoto: il prefisso dell’azienda e il codice del marchio.",
+      "prefijo": "Prefisso delle fatture",
+      "web": "Sito web"
     },
     "ElegirMarca": {
       "ahora": "Sei qui",
@@ -19959,7 +19977,8 @@
       "subtitulo": "Ogni marchio è un'azienda con i propri clienti. Scegline uno per vedere solo ciò che è suo, o tutti insieme.",
       "titulo": "Con quale marchio lavori adesso?",
       "todasDesc": "I clienti e il personale di tutti i marchi.",
-      "ultimaVez": "L'ultima volta"
+      "ultimaVez": "L'ultima volta",
+      "todasMiasDesc": "I clienti e il personale dei marchi assegnati a te."
     },
     "MarcasPage": {
       "abrir": "Apri {{nombre}}",
@@ -19988,7 +20007,11 @@
       "titulo": "Marchi",
       "vacio": "Ancora nessun marchio",
       "vacioDesc": "Il marchio principale si crea da solo attivando il modulo.",
-      "verArchivadas": "Mostra archiviati"
+      "verArchivadas": "Mostra archiviati",
+      "soloLecturaTitulo": "Vedi i tuoi marchi, non li modifichi",
+      "excedidoTitulo": "Usi {{usadas}} marchi e ne hai {{pagadas}} pagati",
+      "excedidoDesc": "Il pagamento di un marchio aggiuntivo è stato rimborsato. I tuoi marchi e i loro dati restano invariati, ma non puoi crearne né riattivarne un altro finché non aggiungi un marchio o ne archivi uno che non usi.",
+      "cuposExcedidos": "Aggiungi un marchio o archiviane uno per poterne creare di nuovo."
     },
     "Multimarca": {
       "principal": "Principale"
@@ -20001,12 +20024,99 @@
     "SelectorDeMarca": {
       "elegir": "Scegli il marchio",
       "todas": "Tutti i marchi",
-      "todasCorto": "Marchi"
+      "todasCorto": "Marchi",
+      "todasMias": "Tutti i miei marchi",
+      "todasMiasCorto": "I miei marchi"
     },
     "TiendaMultimarca": {
       "consecuencia": "Il selettore del marchio e la colonna «Marchio» scompaiono; i marchi e i loro dati restano.",
       "detalle": "(include {{n}} marchi) · {{extra}} per ogni marchio aggiuntivo",
       "incluye": "(include {{n}} marchi)"
+    },
+    "AccesoDeMarcaDePersona": {
+      "todas": "Tutti",
+      "ninguna": "Nessun marchio"
+    },
+    "CampoAccesoDeMarca": {
+      "sinMarcas": "Seleziona almeno un marchio: senza nessuno non vedrebbe nulla.",
+      "errorGuardar": "Il resto è stato salvato, ma non i marchi che vede. Riprova.",
+      "titulo": "Accesso per marchio",
+      "adminVeTodas": "Un amministratore vede sempre tutti i marchi.",
+      "ayudaAdminDeMarca": "Gestisce solo i marchi selezionati: clienti, preventivi e fatture, e tutto il personale che vi lavora (buste paga incluse).",
+      "ayuda": "Scegli «Tutti i marchi» o limita la vista ad alcuni: solo i loro clienti, i loro siti e chi vi lavora."
+    },
+    "ChipDeMarca": {
+      "clienteDe": "Cliente di {{marca}}",
+      "registradoEn": "Registrato in {{marca}}",
+      "registradoAyuda": "Il marchio nella cui busta paga è pagato, anche se lavora nei siti di un altro."
+    },
+    "FiltroDeMarcaEnMapa": {
+      "etiqueta": "Mostra sulla mappa il marchio"
+    },
+    "AccesoDeMarca": {
+      "reglaDeEmpresaDesc": "Come amministratore di marchio puoi vederla, ma vale per tutti i marchi: la modifica un amministratore dell’azienda.",
+      "soloEmpresaDesc": "Come amministratore di marchio gestisci i tuoi marchi, ma pagamenti, moduli e account li gestisce un amministratore dell’azienda.",
+      "soloEmpresaTitulo": "Se ne occupa l’amministrazione dell’azienda",
+      "errores": {
+        "pago": "Pagamenti, negozio e marchi aggiuntivi li gestisce un amministratore dell’azienda, non quello di un marchio.",
+        "cuenta": "L’account dell’azienda lo gestisce un amministratore generale.",
+        "estructura": "Creare, modificare o archiviare marchi, o cambiare quali marchi vede ciascuno, spetta a un amministratore dell’azienda.",
+        "roles": "Non puoi assegnare il ruolo di amministratore, amministratore di marchio o responsabile di filiale, né modificare chi lo ha.",
+        "empresa": "Questa impostazione vale per tutta l’azienda: la modifica un amministratore generale.",
+        "fueraDeAlcance": "Appartiene a un marchio che non ti è assegnato.",
+        "general": "Il tuo accesso per marchio non lo consente. Chiedi a un amministratore dell’azienda."
+      }
+    },
+    "HorasEntreMarcas": {
+      "archivo": "ore-tra-marchi",
+      "errorDescarga": "Non è stato possibile preparare il file. Riprova.",
+      "subtitulo": "Ogni persona è pagata dal marchio in cui si è registrata. Qui vedi quante ore le persone di un marchio hanno lavorato nei siti di un altro, per regolarle tra le aziende.",
+      "titulo": "Ore tra marchi",
+      "mesPasado": "Mese scorso",
+      "esteMes": "Questo mese",
+      "ultimos30": "30 giorni",
+      "otro": "Altro",
+      "desde": "Dal",
+      "hasta": "Al",
+      "empleadora": "Marchio che paga",
+      "cualquiera": "Qualsiasi",
+      "marcaDelSitio": "Marchio del sito",
+      "incluirPropias": "Includi le ore nei siti del proprio marchio",
+      "periodoMalo": "Scegli un periodo valido: la data iniziale prima di quella finale, fino a un anno.",
+      "restringido": "Vedi le ore in cui uno dei tuoi marchi paga o è il marchio del sito.",
+      "vacioTodasDesc": "Non ci sono ore lavorate registrate in questo periodo con questi filtri.",
+      "vacioDesc": "Nessuno ha lavorato nei siti di un altro marchio in questo periodo. Attiva «Includi le ore nei siti del proprio marchio» per vederle tutte.",
+      "vacio": "Nessuna ora tra marchi",
+      "totalHoras": "Ore",
+      "personas": "Persone",
+      "turnos": "Turni",
+      "matriz": "Chi ha lavorato dove",
+      "matrizAyuda": "Righe: il marchio che paga la persona. Colonne: il marchio del cliente dove ha lavorato. Periodo {{desde}} – {{hasta}}.",
+      "personasYTurnos": "{{personas}} pers. · {{turnos}} turni",
+      "pagaTrabajaEn": "Paga / Ha lavorato in",
+      "total": "Totale",
+      "buscar": "Cerca persona, cliente o sito",
+      "detalle": "Dettaglio",
+      "sinCoincidencias": "Nessun risultato per la ricerca.",
+      "nTurnos": "{{n}} turni",
+      "persona": "Persona",
+      "cliente": "Cliente",
+      "sitio": "Sito"
+    },
+    "VistaDeMarca": {
+      "prefijoEmpresa": "FAT",
+      "sinNombre": "Il tuo marchio",
+      "factura": "Fattura",
+      "titulo": "Così il cliente vede questo marchio",
+      "principalAyuda": "È il marchio principale: i suoi clienti continuano a vedere l’azienda come finora.",
+      "ayuda": "Fatture, preventivi, report ed email escono con questi dati. Nessun cliente di questo marchio vede il nome di un altro.",
+      "emite": "Emittente",
+      "cliente": "Cliente",
+      "concepto": "Voce",
+      "total": "Totale",
+      "correoDe": "Le email arrivano da",
+      "portal": "Portale e app del cliente",
+      "direccionDelCorreo": "L’indirizzo di invio è quello della piattaforma; il cliente vede il nome del marchio."
     }
   },
   "visitantes": {

@@ -5677,7 +5677,8 @@
       "atrasos": "Spóźnienia w tygodniu"
     },
     "app-escritorio": "Aplikacja desktopowa",
-    "marcas": "Marki"
+    "marcas": "Marki",
+    "horas-entre-marcas": "Godziny między markami"
   },
   "siteTour": {
     "newTour": "Nowy obchód",
@@ -5983,7 +5984,8 @@
       "dispatcher": "Dyspozytor",
       "secretary": "Sekretariat / recepcja",
       "securitySupervisor": "Nadzorca ochrony",
-      "branchManager": "Kierownik oddziału"
+      "branchManager": "Kierownik oddziału",
+      "brandAdmin": "Administrator marki"
     },
     "rowActions": {
       "delete": "Usuń",
@@ -20218,7 +20220,8 @@
       "exito": "Gotowe: możesz teraz dodać kolejną markę.",
       "mensaje": "Jednorazowa opłata {{precio}} zostanie pobrana z karty Twojej subskrypcji. Marka pozostaje dostępna na zawsze.",
       "mensajeSinPrecio": "Jednorazowa opłata zostanie pobrana z karty Twojej subskrypcji. Marka pozostaje dostępna na zawsze.",
-      "titulo": "Dodać kolejną markę?"
+      "titulo": "Dodać kolejną markę?",
+      "solicitada": "Prośba wysłana do dostawcy. Marka będzie dostępna, gdy ją zatwierdzi."
     },
     "CotizacionEditor": {
       "faltaMarca": "Wybierz markę, która wystawia ofertę.",
@@ -20265,7 +20268,22 @@
       "sinCuposMensajeSinPrecio": "Twój plan obejmuje marki, których już używasz. Każda dodatkowa marka to jednorazowa opłata.",
       "sinCuposTitulo": "Używasz już wszystkich swoich marek",
       "subirLogo": "Prześlij logo",
-      "telefono": "Telefon"
+      "telefono": "Telefon",
+      "webMala": "Ten adres strony nie wygląda na prawidłowy.",
+      "prefijoMalo": "Prefiks może zawierać litery, cyfry i myślniki (do 12).",
+      "clientesTitulo": "Jak widzą ją klienci",
+      "clientesAyuda": "Faktury, oferty, raporty, e-maile i portal klientów mają jej logo, kolory i te dane.",
+      "acento": "Kolor akcentu",
+      "acentoIgual": "Jak kolor",
+      "otroAcento": "Inny kolor akcentu",
+      "estiloPdf": "Styl jej plików PDF",
+      "estiloEmpresa": "Jak firma",
+      "remitenteAyuda": "Nazwa, którą klienci widzą w e-mailach. Puste: nazwa handlowa.",
+      "remitente": "Nazwa nadawcy",
+      "prefijoPrincipal": "Marka główna używa serii firmy.",
+      "prefijoAyuda": "Jej faktury mają własną numerację. Puste: prefiks firmy i kod marki.",
+      "prefijo": "Prefiks faktur",
+      "web": "Strona internetowa"
     },
     "ElegirMarca": {
       "ahora": "Jesteś tutaj",
@@ -20275,7 +20293,8 @@
       "subtitulo": "Każda marka to firma z własnymi klientami. Wybierz jedną, aby widzieć tylko jej dane, albo wszystkie naraz.",
       "titulo": "Z którą marką teraz pracujesz?",
       "todasDesc": "Klienci i personel wszystkich marek.",
-      "ultimaVez": "Ostatnim razem"
+      "ultimaVez": "Ostatnim razem",
+      "todasMiasDesc": "Klienci i personel marek, które masz przypisane."
     },
     "MarcasPage": {
       "abrir": "Otwórz {{nombre}}",
@@ -20304,7 +20323,11 @@
       "titulo": "Marki",
       "vacio": "Brak marek",
       "vacioDesc": "Marka główna tworzy się sama po włączeniu modułu.",
-      "verArchivadas": "Pokaż zarchiwizowane"
+      "verArchivadas": "Pokaż zarchiwizowane",
+      "soloLecturaTitulo": "Widzisz swoje marki, ale ich nie zmieniasz",
+      "excedidoTitulo": "Używasz {{usadas}} marek, a opłacone masz {{pagadas}}",
+      "excedidoDesc": "Płatność za dodatkową markę została zwrócona. Twoje marki i ich dane pozostają bez zmian, ale nie możesz utworzyć ani ponownie aktywować kolejnej, dopóki nie dodasz marki lub nie zarchiwizujesz nieużywanej.",
+      "cuposExcedidos": "Dodaj markę lub zarchiwizuj jedną, aby znów móc tworzyć."
     },
     "Multimarca": {
       "principal": "Główna"
@@ -20317,12 +20340,99 @@
     "SelectorDeMarca": {
       "elegir": "Wybierz markę",
       "todas": "Wszystkie marki",
-      "todasCorto": "Marki"
+      "todasCorto": "Marki",
+      "todasMias": "Wszystkie moje marki",
+      "todasMiasCorto": "Moje marki"
     },
     "TiendaMultimarca": {
       "consecuencia": "Wybór marki i kolumna „Marka” znikają; marki i ich dane zostają.",
       "detalle": "(zawiera {{n}} marki) · {{extra}} za każdą dodatkową markę",
       "incluye": "(zawiera {{n}} marki)"
+    },
+    "AccesoDeMarcaDePersona": {
+      "todas": "Wszystkie",
+      "ninguna": "Brak marek"
+    },
+    "CampoAccesoDeMarca": {
+      "sinMarcas": "Zaznacz co najmniej jedną markę: bez żadnej ta osoba nic nie zobaczy.",
+      "errorGuardar": "Pozostałe dane zapisano, ale nie widoczne marki. Spróbuj ponownie.",
+      "titulo": "Dostęp według marki",
+      "adminVeTodas": "Administrator zawsze widzi wszystkie marki.",
+      "ayudaAdminDeMarca": "Zarządza tylko zaznaczonymi markami: ich klientami, ofertami i fakturami oraz całym pracującym tam personelem (wraz z płacami).",
+      "ayuda": "Wybierz „Wszystkie marki” lub ogranicz widok do niektórych: tylko ich klienci, obiekty i osoby tam pracujące."
+    },
+    "ChipDeMarca": {
+      "clienteDe": "Klient {{marca}}",
+      "registradoEn": "Zarejestrowany w {{marca}}",
+      "registradoAyuda": "Marka, z której listy płac otrzymuje wynagrodzenie, nawet gdy pracuje w obiektach innej."
+    },
+    "FiltroDeMarcaEnMapa": {
+      "etiqueta": "Pokaż na mapie markę"
+    },
+    "AccesoDeMarca": {
+      "reglaDeEmpresaDesc": "Jako administrator marki możesz to zobaczyć, ale dotyczy to wszystkich marek: zmienia to administrator firmy.",
+      "soloEmpresaDesc": "Jako administrator marki zarządzasz swoimi markami, ale płatnościami, modułami i kontem zarządza administrator firmy.",
+      "soloEmpresaTitulo": "Tym zajmuje się administracja firmy",
+      "errores": {
+        "pago": "Płatnościami, sklepem i dodatkowymi markami zarządza administrator firmy, a nie administrator marki.",
+        "cuenta": "Kontem firmy zarządza administrator ogólny.",
+        "estructura": "Tworzenie, edycję i archiwizację marek oraz zmianę tego, kto które marki widzi, wykonuje administrator firmy.",
+        "roles": "Nie możesz nadać roli administratora, administratora marki ani kierownika oddziału ani edytować osób, które ją mają.",
+        "empresa": "To ustawienie dotyczy całej firmy: zmienia je administrator ogólny.",
+        "fueraDeAlcance": "To należy do marki, która nie jest Ci przypisana.",
+        "general": "Twój dostęp według marki na to nie pozwala. Poproś administratora firmy."
+      }
+    },
+    "HorasEntreMarcas": {
+      "archivo": "godziny-miedzy-markami",
+      "errorDescarga": "Nie udało się przygotować pliku. Spróbuj ponownie.",
+      "subtitulo": "Każda osoba otrzymuje wynagrodzenie od marki, w której się zarejestrowała. Tu widać, ile godzin osoby z jednej marki przepracowały w obiektach innej, aby rozliczyć je między firmami.",
+      "titulo": "Godziny między markami",
+      "mesPasado": "Poprzedni miesiąc",
+      "esteMes": "Ten miesiąc",
+      "ultimos30": "30 dni",
+      "otro": "Inny",
+      "desde": "Od",
+      "hasta": "Do",
+      "empleadora": "Marka płacąca",
+      "cualquiera": "Dowolna",
+      "marcaDelSitio": "Marka obiektu",
+      "incluirPropias": "Uwzględnij godziny w obiektach własnej marki",
+      "periodoMalo": "Wybierz prawidłowy okres: data początkowa przed końcową, maksymalnie rok.",
+      "restringido": "Widzisz godziny, w których jedna z Twoich marek płaci lub jest marką obiektu.",
+      "vacioTodasDesc": "W tym okresie i przy tych filtrach nie ma zarejestrowanych przepracowanych godzin.",
+      "vacioDesc": "W tym okresie nikt nie pracował w obiektach innej marki. Włącz „Uwzględnij godziny w obiektach własnej marki”, aby zobaczyć wszystkie.",
+      "vacio": "Brak godzin między markami",
+      "totalHoras": "Godziny",
+      "personas": "Osoby",
+      "turnos": "Zmiany",
+      "matriz": "Kto gdzie pracował",
+      "matrizAyuda": "Wiersze: marka, która płaci osobie. Kolumny: marka klienta, u którego pracowała. Okres {{desde}} – {{hasta}}.",
+      "personasYTurnos": "{{personas}} os. · {{turnos}} zmian",
+      "pagaTrabajaEn": "Płaci / Pracował w",
+      "total": "Razem",
+      "buscar": "Szukaj osoby, klienta lub obiektu",
+      "detalle": "Szczegóły",
+      "sinCoincidencias": "Nic nie pasuje do wyszukiwania.",
+      "nTurnos": "{{n}} zmian",
+      "persona": "Osoba",
+      "cliente": "Klient",
+      "sitio": "Obiekt"
+    },
+    "VistaDeMarca": {
+      "prefijoEmpresa": "FV",
+      "sinNombre": "Twoja marka",
+      "factura": "Faktura",
+      "titulo": "Tak klient widzi tę markę",
+      "principalAyuda": "To marka główna: jej klienci nadal widzą firmę tak jak dotąd.",
+      "ayuda": "Jej faktury, oferty, raporty i e-maile mają te dane. Żaden klient tej marki nie widzi nazwy innej.",
+      "emite": "Wystawca",
+      "cliente": "Klient",
+      "concepto": "Pozycja",
+      "total": "Razem",
+      "correoDe": "E-maile przychodzą od",
+      "portal": "Portal i aplikacja klienta",
+      "direccionDelCorreo": "Adres nadawcy należy do platformy; klient widzi nazwę marki."
     }
   },
   "visitantes": {

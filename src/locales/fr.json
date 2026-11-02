@@ -5665,7 +5665,8 @@
       "atrasos": "Retards de la semaine"
     },
     "app-escritorio": "Application de bureau",
-    "marcas": "Marques"
+    "marcas": "Marques",
+    "horas-entre-marcas": "Heures entre marques"
   },
   "siteTour": {
     "newTour": "Nouvelle ronde",
@@ -5971,7 +5972,8 @@
       "dispatcher": "Répartiteur",
       "secretary": "Secrétaire / Réceptionniste",
       "securitySupervisor": "Superviseur de sécurité",
-      "branchManager": "Responsable d’agence"
+      "branchManager": "Responsable d’agence",
+      "brandAdmin": "Administrateur de marque"
     },
     "rowActions": {
       "delete": "Supprimer",
@@ -19902,7 +19904,8 @@
       "exito": "C'est fait : vous pouvez maintenant ajouter une autre marque.",
       "mensaje": "Un paiement unique de {{precio}} est débité sur la carte de votre abonnement. La marque reste disponible pour toujours.",
       "mensajeSinPrecio": "Un paiement unique est débité sur la carte de votre abonnement. La marque reste disponible pour toujours.",
-      "titulo": "Ajouter une autre marque ?"
+      "titulo": "Ajouter une autre marque ?",
+      "solicitada": "Demande envoyée à votre fournisseur. La marque sera disponible dès son approbation."
     },
     "CotizacionEditor": {
       "faltaMarca": "Choisissez la marque qui émet le devis.",
@@ -19949,7 +19952,22 @@
       "sinCuposMensajeSinPrecio": "Votre offre inclut les marques que vous utilisez déjà. Chaque marque supplémentaire est un paiement unique.",
       "sinCuposTitulo": "Vous utilisez déjà toutes vos marques",
       "subirLogo": "Importer le logo",
-      "telefono": "Téléphone"
+      "telefono": "Téléphone",
+      "webMala": "Cette adresse web ne semble pas valide.",
+      "prefijoMalo": "Le préfixe accepte lettres, chiffres et tirets (12 maximum).",
+      "clientesTitulo": "Comment ses clients la voient",
+      "clientesAyuda": "Factures, devis, rapports, e-mails et portail client sortent avec son logo, ses couleurs et ces informations.",
+      "acento": "Couleur d’accent",
+      "acentoIgual": "Comme la couleur",
+      "otroAcento": "Autre couleur d’accent",
+      "estiloPdf": "Style de ses PDF",
+      "estiloEmpresa": "Comme l’entreprise",
+      "remitenteAyuda": "Le nom que ses clients voient dans les e-mails. Vide : le nom commercial.",
+      "remitente": "Nom de l’expéditeur",
+      "prefijoPrincipal": "La marque principale utilise la série de l’entreprise.",
+      "prefijoAyuda": "Ses factures ont leur propre numérotation. Vide : le préfixe de l’entreprise et le code de la marque.",
+      "prefijo": "Préfixe des factures",
+      "web": "Site web"
     },
     "ElegirMarca": {
       "ahora": "Vous êtes ici",
@@ -19959,7 +19977,8 @@
       "subtitulo": "Chaque marque est une entreprise avec ses propres clients. Choisissez-en une pour ne voir que ce qui la concerne, ou toutes à la fois.",
       "titulo": "Avec quelle marque travaillez-vous maintenant ?",
       "todasDesc": "Les clients et le personnel de toutes les marques.",
-      "ultimaVez": "La dernière fois"
+      "ultimaVez": "La dernière fois",
+      "todasMiasDesc": "Les clients et le personnel des marques qui vous sont attribuées."
     },
     "MarcasPage": {
       "abrir": "Ouvrir {{nombre}}",
@@ -19988,7 +20007,11 @@
       "titulo": "Marques",
       "vacio": "Pas encore de marques",
       "vacioDesc": "La marque principale est créée automatiquement à l'activation du module.",
-      "verArchivadas": "Voir les archivées"
+      "verArchivadas": "Voir les archivées",
+      "soloLecturaTitulo": "Vous voyez vos marques, sans les modifier",
+      "excedidoTitulo": "Vous utilisez {{usadas}} marques et en avez {{pagadas}} payées",
+      "excedidoDesc": "Le paiement d’une marque supplémentaire a été remboursé. Vos marques et leurs données restent inchangées, mais vous ne pouvez ni en créer ni en réactiver une autre avant d’ajouter une marque ou d’en archiver une inutilisée.",
+      "cuposExcedidos": "Ajoutez une marque ou archivez-en une pour pouvoir en créer à nouveau."
     },
     "Multimarca": {
       "principal": "Principale"
@@ -20001,12 +20024,99 @@
     "SelectorDeMarca": {
       "elegir": "Choisir la marque",
       "todas": "Toutes les marques",
-      "todasCorto": "Marques"
+      "todasCorto": "Marques",
+      "todasMias": "Toutes mes marques",
+      "todasMiasCorto": "Mes marques"
     },
     "TiendaMultimarca": {
       "consecuencia": "Le sélecteur de marque et la colonne « Marque » disparaissent ; les marques et leurs données restent.",
       "detalle": "(inclut {{n}} marques) · {{extra}} par marque supplémentaire",
       "incluye": "(inclut {{n}} marques)"
+    },
+    "AccesoDeMarcaDePersona": {
+      "todas": "Toutes",
+      "ninguna": "Aucune marque"
+    },
+    "CampoAccesoDeMarca": {
+      "sinMarcas": "Cochez au moins une marque : sans aucune, cette personne ne verrait rien.",
+      "errorGuardar": "Le reste a été enregistré, mais pas les marques visibles. Réessayez.",
+      "titulo": "Accès par marque",
+      "adminVeTodas": "Un administrateur voit toujours toutes les marques.",
+      "ayudaAdminDeMarca": "Gère uniquement les marques cochées : leurs clients, devis et factures, et tout le personnel qui y travaille (paie comprise).",
+      "ayuda": "Choisissez « Toutes les marques » ou limitez à certaines : seulement leurs clients, leurs sites et les personnes qui y travaillent."
+    },
+    "ChipDeMarca": {
+      "clienteDe": "Client de {{marca}}",
+      "registradoEn": "Inscrit chez {{marca}}",
+      "registradoAyuda": "La marque dont la paie la rémunère, même si elle travaille sur les sites d’une autre."
+    },
+    "FiltroDeMarcaEnMapa": {
+      "etiqueta": "Afficher sur la carte la marque"
+    },
+    "AccesoDeMarca": {
+      "reglaDeEmpresaDesc": "En tant qu’administrateur de marque, vous pouvez la consulter, mais elle vaut pour toutes les marques : un administrateur de l’entreprise la modifie.",
+      "soloEmpresaDesc": "En tant qu’administrateur de marque, vous gérez vos marques, mais les paiements, les modules et le compte relèvent d’un administrateur de l’entreprise.",
+      "soloEmpresaTitulo": "C’est l’administration de l’entreprise qui s’en charge",
+      "errores": {
+        "pago": "Les paiements, la boutique et les marques supplémentaires relèvent d’un administrateur de l’entreprise, pas d’une marque.",
+        "cuenta": "Le compte de l’entreprise est géré par un administrateur général.",
+        "estructura": "Créer, modifier ou archiver des marques, ou changer les marques visibles par chacun, relève d’un administrateur de l’entreprise.",
+        "roles": "Vous ne pouvez pas attribuer le rôle d’administrateur, d’administrateur de marque ou de responsable d’agence, ni modifier qui l’a.",
+        "empresa": "Ce réglage vaut pour toute l’entreprise : un administrateur général le modifie.",
+        "fueraDeAlcance": "Cela appartient à une marque qui ne vous est pas attribuée.",
+        "general": "Votre accès par marque ne le permet pas. Demandez à un administrateur de l’entreprise."
+      }
+    },
+    "HorasEntreMarcas": {
+      "archivo": "heures-entre-marques",
+      "errorDescarga": "Le fichier n’a pas pu être préparé. Réessayez.",
+      "subtitulo": "Chaque personne est payée par la marque où elle s’est inscrite. Vous voyez ici combien d’heures des personnes d’une marque ont travaillé sur les sites d’une autre, pour les régler entre entreprises.",
+      "titulo": "Heures entre marques",
+      "mesPasado": "Mois dernier",
+      "esteMes": "Ce mois-ci",
+      "ultimos30": "30 jours",
+      "otro": "Autre",
+      "desde": "Du",
+      "hasta": "Au",
+      "empleadora": "Marque qui paie",
+      "cualquiera": "Toutes",
+      "marcaDelSitio": "Marque du site",
+      "incluirPropias": "Inclure les heures sur les sites de la propre marque",
+      "periodoMalo": "Choisissez une période valide : la date de début avant la date de fin, un an maximum.",
+      "restringido": "Vous voyez les heures où l’une de vos marques paie ou est la marque du site.",
+      "vacioTodasDesc": "Aucune heure travaillée enregistrée sur cette période avec ces filtres.",
+      "vacioDesc": "Personne n’a travaillé sur les sites d’une autre marque sur cette période. Activez « Inclure les heures sur les sites de la propre marque » pour tout voir.",
+      "vacio": "Aucune heure entre marques",
+      "totalHoras": "Heures",
+      "personas": "Personnes",
+      "turnos": "Services",
+      "matriz": "Qui a travaillé où",
+      "matrizAyuda": "Lignes : la marque qui paie la personne. Colonnes : la marque du client où elle a travaillé. Période {{desde}} – {{hasta}}.",
+      "personasYTurnos": "{{personas}} pers. · {{turnos}} services",
+      "pagaTrabajaEn": "Paie / A travaillé chez",
+      "total": "Total",
+      "buscar": "Rechercher une personne, un client ou un site",
+      "detalle": "Détail",
+      "sinCoincidencias": "Rien ne correspond à la recherche.",
+      "nTurnos": "{{n}} services",
+      "persona": "Personne",
+      "cliente": "Client",
+      "sitio": "Site"
+    },
+    "VistaDeMarca": {
+      "prefijoEmpresa": "FAC",
+      "sinNombre": "Votre marque",
+      "factura": "Facture",
+      "titulo": "Ce que voit le client de cette marque",
+      "principalAyuda": "C’est la marque principale : ses clients continuent de voir l’entreprise comme aujourd’hui.",
+      "ayuda": "Ses factures, devis, rapports et e-mails sortent avec ces informations. Aucun client de cette marque ne voit le nom d’une autre.",
+      "emite": "Émetteur",
+      "cliente": "Client",
+      "concepto": "Désignation",
+      "total": "Total",
+      "correoDe": "Les e-mails viennent de",
+      "portal": "Portail et appli client",
+      "direccionDelCorreo": "L’adresse d’envoi est celle de la plateforme ; le client voit le nom de la marque."
     }
   },
   "visitantes": {

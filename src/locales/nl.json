@@ -5665,7 +5665,8 @@
       "atrasos": "Te laat deze week"
     },
     "app-escritorio": "Desktop-app",
-    "marcas": "Merken"
+    "marcas": "Merken",
+    "horas-entre-marcas": "Uren tussen merken"
   },
   "siteTour": {
     "newTour": "Nieuwe ronde",
@@ -5971,7 +5972,8 @@
       "dispatcher": "Meldkamer",
       "secretary": "Secretariaat / receptie",
       "securitySupervisor": "Beveiligingssupervisor",
-      "branchManager": "Filiaalmanager"
+      "branchManager": "Filiaalmanager",
+      "brandAdmin": "Merkbeheerder"
     },
     "rowActions": {
       "delete": "Verwijderen",
@@ -19902,7 +19904,8 @@
       "exito": "Klaar: je kunt nu nog een merk toevoegen.",
       "mensaje": "Er wordt een eenmalige betaling van {{precio}} afgeschreven van de kaart van je abonnement. Het merk blijft voor altijd beschikbaar.",
       "mensajeSinPrecio": "Er wordt een eenmalige betaling afgeschreven van de kaart van je abonnement. Het merk blijft voor altijd beschikbaar.",
-      "titulo": "Nog een merk toevoegen?"
+      "titulo": "Nog een merk toevoegen?",
+      "solicitada": "Aanvraag verzonden naar je leverancier. Het merk is beschikbaar zodra die het goedkeurt."
     },
     "CotizacionEditor": {
       "faltaMarca": "Kies het merk dat de offerte uitbrengt.",
@@ -19949,7 +19952,22 @@
       "sinCuposMensajeSinPrecio": "Je abonnement omvat de merken die je al gebruikt. Elk extra merk is een eenmalige betaling.",
       "sinCuposTitulo": "Je gebruikt al je merken al",
       "subirLogo": "Logo uploaden",
-      "telefono": "Telefoon"
+      "telefono": "Telefoon",
+      "webMala": "Dat webadres lijkt niet geldig.",
+      "prefijoMalo": "Het voorvoegsel mag letters, cijfers en streepjes bevatten (maximaal 12).",
+      "clientesTitulo": "Hoe de klanten het merk zien",
+      "clientesAyuda": "Facturen, offertes, rapporten, e-mails en het klantenportaal gaan uit met het logo, de kleuren en deze gegevens.",
+      "acento": "Accentkleur",
+      "acentoIgual": "Gelijk aan de kleur",
+      "otroAcento": "Andere accentkleur",
+      "estiloPdf": "Stijl van de pdf’s",
+      "estiloEmpresa": "Zoals het bedrijf",
+      "remitenteAyuda": "De naam die klanten in e-mails zien. Leeg: de handelsnaam.",
+      "remitente": "Naam afzender",
+      "prefijoPrincipal": "Het hoofdmerk gebruikt de nummerreeks van het bedrijf.",
+      "prefijoAyuda": "De facturen hebben een eigen nummering. Leeg: het voorvoegsel van het bedrijf en de merkcode.",
+      "prefijo": "Factuurvoorvoegsel",
+      "web": "Website"
     },
     "ElegirMarca": {
       "ahora": "Je bent hier",
@@ -19959,7 +19977,8 @@
       "subtitulo": "Elk merk is een bedrijf met eigen klanten. Kies er één om alleen het zijne te zien, of allemaal tegelijk.",
       "titulo": "Met welk merk werk je nu?",
       "todasDesc": "De klanten en het personeel van alle merken.",
-      "ultimaVez": "De vorige keer"
+      "ultimaVez": "De vorige keer",
+      "todasMiasDesc": "De klanten en het personeel van de merken die aan jou zijn toegewezen."
     },
     "MarcasPage": {
       "abrir": "{{nombre}} openen",
@@ -19988,7 +20007,11 @@
       "titulo": "Merken",
       "vacio": "Nog geen merken",
       "vacioDesc": "Het hoofdmerk wordt automatisch aangemaakt als de module wordt ingeschakeld.",
-      "verArchivadas": "Gearchiveerde tonen"
+      "verArchivadas": "Gearchiveerde tonen",
+      "soloLecturaTitulo": "Je ziet je merken, maar wijzigt ze niet",
+      "excedidoTitulo": "Je gebruikt {{usadas}} merken en hebt er {{pagadas}} betaald",
+      "excedidoDesc": "De betaling voor een extra merk is terugbetaald. Je merken en hun gegevens blijven zoals ze zijn, maar je kunt geen nieuw merk aanmaken of heractiveren tot je een merk toevoegt of een ongebruikt merk archiveert.",
+      "cuposExcedidos": "Voeg een merk toe of archiveer er een om weer te kunnen aanmaken."
     },
     "Multimarca": {
       "principal": "Hoofdmerk"
@@ -20001,12 +20024,99 @@
     "SelectorDeMarca": {
       "elegir": "Merk kiezen",
       "todas": "Alle merken",
-      "todasCorto": "Merken"
+      "todasCorto": "Merken",
+      "todasMias": "Al mijn merken",
+      "todasMiasCorto": "Mijn merken"
     },
     "TiendaMultimarca": {
       "consecuencia": "De merkkiezer en de kolom ‘Merk’ verdwijnen; de merken en hun gegevens blijven.",
       "detalle": "(inclusief {{n}} merken) · {{extra}} per extra merk",
       "incluye": "(inclusief {{n}} merken)"
+    },
+    "AccesoDeMarcaDePersona": {
+      "todas": "Alle",
+      "ninguna": "Geen merken"
+    },
+    "CampoAccesoDeMarca": {
+      "sinMarcas": "Vink minstens één merk aan: zonder merk ziet deze persoon niets.",
+      "errorGuardar": "De rest is opgeslagen, maar niet de merken die deze persoon ziet. Probeer het opnieuw.",
+      "titulo": "Toegang per merk",
+      "adminVeTodas": "Een beheerder ziet altijd alle merken.",
+      "ayudaAdminDeMarca": "Beheert alleen de aangevinkte merken: hun klanten, offertes en facturen, en al het personeel dat er werkt (inclusief loon).",
+      "ayuda": "Kies „Alle merken” of beperk het tot enkele: alleen hun klanten, hun locaties en wie daar werkt."
+    },
+    "ChipDeMarca": {
+      "clienteDe": "Klant van {{marca}}",
+      "registradoEn": "Geregistreerd bij {{marca}}",
+      "registradoAyuda": "Het merk via wiens loonadministratie deze persoon betaald wordt, ook bij werk op locaties van een ander merk."
+    },
+    "FiltroDeMarcaEnMapa": {
+      "etiqueta": "Op de kaart het merk tonen"
+    },
+    "AccesoDeMarca": {
+      "reglaDeEmpresaDesc": "Als merkbeheerder kun je dit zien, maar het geldt voor alle merken: een beheerder van het bedrijf wijzigt het.",
+      "soloEmpresaDesc": "Als merkbeheerder beheer je je merken, maar betalingen, modules en het account beheert een beheerder van het bedrijf.",
+      "soloEmpresaTitulo": "Dit doet de administratie van het bedrijf",
+      "errores": {
+        "pago": "Betalingen, de winkel en extra merken beheert een beheerder van het bedrijf, niet die van een merk.",
+        "cuenta": "Het bedrijfsaccount beheert een algemeen beheerder.",
+        "estructura": "Merken aanmaken, bewerken of archiveren, of wijzigen wie welke merken ziet, doet een beheerder van het bedrijf.",
+        "roles": "Je kunt de rol beheerder, merkbeheerder of vestigingsmanager niet toekennen en niemand met die rol bewerken.",
+        "empresa": "Deze instelling geldt voor het hele bedrijf: een algemeen beheerder wijzigt haar.",
+        "fueraDeAlcance": "Dat hoort bij een merk dat niet aan jou is toegewezen.",
+        "general": "Je merktoegang staat dit niet toe. Vraag het aan een beheerder van het bedrijf."
+      }
+    },
+    "HorasEntreMarcas": {
+      "archivo": "uren-tussen-merken",
+      "errorDescarga": "Het bestand kon niet worden gemaakt. Probeer het opnieuw.",
+      "subtitulo": "Iedereen wordt betaald door het merk waar hij of zij geregistreerd is. Hier zie je hoeveel uur mensen van het ene merk op locaties van een ander werkten, om ze tussen de bedrijven te verrekenen.",
+      "titulo": "Uren tussen merken",
+      "mesPasado": "Vorige maand",
+      "esteMes": "Deze maand",
+      "ultimos30": "30 dagen",
+      "otro": "Anders",
+      "desde": "Van",
+      "hasta": "Tot",
+      "empleadora": "Betalend merk",
+      "cualquiera": "Alle",
+      "marcaDelSitio": "Merk van de locatie",
+      "incluirPropias": "Uren op locaties van het eigen merk meenemen",
+      "periodoMalo": "Kies een geldige periode: de begindatum vóór de einddatum, maximaal een jaar.",
+      "restringido": "Je ziet de uren waarin een van je merken betaalt of het merk van de locatie is.",
+      "vacioTodasDesc": "Er zijn in deze periode met deze filters geen gewerkte uren geregistreerd.",
+      "vacioDesc": "Niemand werkte in deze periode op locaties van een ander merk. Zet „Uren op locaties van het eigen merk meenemen” aan om alles te zien.",
+      "vacio": "Geen uren tussen merken",
+      "totalHoras": "Uren",
+      "personas": "Personen",
+      "turnos": "Diensten",
+      "matriz": "Wie werkte waar",
+      "matrizAyuda": "Rijen: het merk dat de persoon betaalt. Kolommen: het merk van de klant waar gewerkt is. Periode {{desde}} – {{hasta}}.",
+      "personasYTurnos": "{{personas}} pers. · {{turnos}} diensten",
+      "pagaTrabajaEn": "Betaalt / Werkte bij",
+      "total": "Totaal",
+      "buscar": "Zoek persoon, klant of locatie",
+      "detalle": "Details",
+      "sinCoincidencias": "Niets komt overeen met de zoekopdracht.",
+      "nTurnos": "{{n}} diensten",
+      "persona": "Persoon",
+      "cliente": "Klant",
+      "sitio": "Locatie"
+    },
+    "VistaDeMarca": {
+      "prefijoEmpresa": "FAC",
+      "sinNombre": "Je merk",
+      "factura": "Factuur",
+      "titulo": "Zo ziet de klant dit merk",
+      "principalAyuda": "Het is het hoofdmerk: de klanten blijven het bedrijf zien zoals nu.",
+      "ayuda": "De facturen, offertes, rapporten en e-mails gaan uit met deze gegevens. Geen klant van dit merk ziet de naam van een ander.",
+      "emite": "Uitgever",
+      "cliente": "Klant",
+      "concepto": "Omschrijving",
+      "total": "Totaal",
+      "correoDe": "E-mails komen van",
+      "portal": "Klantenportaal en app",
+      "direccionDelCorreo": "Het verzendadres is dat van het platform; de klant ziet de naam van het merk."
     }
   },
   "visitantes": {

@@ -2911,7 +2911,7 @@ export default function App() {
                                     <HorasEntreMarcasPage />
                                   </ProtectedRoute>
                                 }
-                                path="/nomina/horas-entre-marcas"
+                                path="/reports/horas-entre-marcas"
                               />
                               <Route
                                 element={

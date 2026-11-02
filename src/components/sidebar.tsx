@@ -69,6 +69,7 @@ import {
   ClipboardSignature,
   Puzzle,
   Layers,
+  ArrowLeftRight,
   type LucideIcon,
   Sparkles,
   MonitorDown,
@@ -155,6 +156,7 @@ const iconMap: Record<string, LucideIcon> = {
   ClipboardSignature,
   Puzzle,
   Layers,
+  ArrowLeftRight,
   Sparkles,
   MonitorDown,
 };
@@ -230,7 +232,7 @@ const GROUPS: GroupDef[] = [
     id: "analisis",
     label: "Análisis",
     icon: BarChart3,
-    ids: ["analiticas", "informes"],
+    ids: ["analiticas", "informes", "horas-entre-marcas"],
   },
   {
     id: "sistema",

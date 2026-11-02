@@ -293,16 +293,6 @@
         ]
       },
       {
-        "id": "horas-entre-marcas",
-        "name": "Horas entre marcas",
-        "path": "/nomina/horas-entre-marcas",
-        "modulo": "multimarca",
-        "permission": [
-          "payrollSlipRead",
-          "attendanceRead"
-        ]
-      },
-      {
         "id": "gusto",
         "name": "Gusto",
         "path": "/nomina/gusto",
@@ -545,6 +535,17 @@
     "name": "Informes",
     "icon": "FileText",
     "path": "/reports"
+  },
+  {
+    "id": "horas-entre-marcas",
+    "name": "Horas entre marcas",
+    "icon": "ArrowLeftRight",
+    "path": "/reports/horas-entre-marcas",
+    "modulo": "multimarca",
+    "permission": [
+      "payrollSlipRead",
+      "attendanceRead"
+    ]
   },
   {
     "id": "facturacion",

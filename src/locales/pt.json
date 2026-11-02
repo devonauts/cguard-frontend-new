@@ -2518,7 +2518,8 @@
       "atrasos": "Atrasos da semana"
     },
     "app-escritorio": "App para desktop",
-    "marcas": "Marcas"
+    "marcas": "Marcas",
+    "horas-entre-marcas": "Horas entre marcas"
   },
   "settings": {
     "configuracion": {
@@ -6808,7 +6809,8 @@
       "dispatcher": "Despachante",
       "secretary": "Secretária / Recepcionista",
       "securitySupervisor": "Supervisor de segurança",
-      "branchManager": "Gerente de filial"
+      "branchManager": "Gerente de filial",
+      "brandAdmin": "Administrador de marca"
     },
     "rowActions": {
       "delete": "Excluir",
@@ -19343,7 +19345,8 @@
       "exito": "Pronto: agora você pode adicionar outra marca.",
       "mensaje": "É cobrado um pagamento único de {{precio}} no cartão da sua assinatura. A marca fica disponível para sempre.",
       "mensajeSinPrecio": "É cobrado um pagamento único no cartão da sua assinatura. A marca fica disponível para sempre.",
-      "titulo": "Adicionar outra marca?"
+      "titulo": "Adicionar outra marca?",
+      "solicitada": "Pedido enviado ao seu fornecedor. A marca fica disponível assim que ele aprovar."
     },
     "CotizacionEditor": {
       "faltaMarca": "Escolha a marca que emite a cotação.",
@@ -19390,7 +19393,22 @@
       "sinCuposMensajeSinPrecio": "Seu plano inclui as marcas que você já usa. Cada marca adicional é um pagamento único.",
       "sinCuposTitulo": "Você já usa todas as suas marcas",
       "subirLogo": "Enviar logo",
-      "telefono": "Telefone"
+      "telefono": "Telefone",
+      "webMala": "Esse endereço web não parece válido.",
+      "prefijoMalo": "O prefixo aceita letras, números e hifens (até 12).",
+      "clientesTitulo": "Como seus clientes a veem",
+      "clientesAyuda": "Faturas, orçamentos, relatórios, e-mails e o portal dos clientes saem com seu logo, suas cores e estes dados.",
+      "acento": "Cor de destaque",
+      "acentoIgual": "Igual à cor",
+      "otroAcento": "Outra cor de destaque",
+      "estiloPdf": "Estilo dos seus PDF",
+      "estiloEmpresa": "Como a empresa",
+      "remitenteAyuda": "O nome que os clientes veem nos e-mails. Vazio: o nome comercial.",
+      "remitente": "Nome do remetente",
+      "prefijoPrincipal": "A marca principal usa a série da empresa.",
+      "prefijoAyuda": "Suas faturas têm numeração própria. Vazio: o prefixo da empresa e o código da marca.",
+      "prefijo": "Prefixo das faturas",
+      "web": "Site"
     },
     "ElegirMarca": {
       "ahora": "Você está aqui",
@@ -19400,7 +19418,8 @@
       "subtitulo": "Cada marca é uma empresa com seus próprios clientes. Escolha uma para ver só o que é dela, ou todas de uma vez.",
       "titulo": "Com qual marca você trabalha agora?",
       "todasDesc": "Os clientes e o pessoal de todas as marcas.",
-      "ultimaVez": "Da última vez"
+      "ultimaVez": "Da última vez",
+      "todasMiasDesc": "Os clientes e o pessoal das marcas atribuídas a você."
     },
     "MarcasPage": {
       "abrir": "Abrir {{nombre}}",
@@ -19429,7 +19448,11 @@
       "titulo": "Marcas",
       "vacio": "Ainda não há marcas",
       "vacioDesc": "A marca principal é criada sozinha ao ativar o módulo.",
-      "verArchivadas": "Ver arquivadas"
+      "verArchivadas": "Ver arquivadas",
+      "soloLecturaTitulo": "Você vê suas marcas, não as altera",
+      "excedidoTitulo": "Você usa {{usadas}} marcas e tem {{pagadas}} pagas",
+      "excedidoDesc": "O pagamento de uma marca adicional foi devolvido. Suas marcas e seus dados continuam iguais, mas você não pode criar nem reativar outra até adicionar uma marca ou arquivar uma que não use.",
+      "cuposExcedidos": "Adicione uma marca ou arquive uma para voltar a criar."
     },
     "Multimarca": {
       "principal": "Principal"
@@ -19442,12 +19465,99 @@
     "SelectorDeMarca": {
       "elegir": "Escolher a marca",
       "todas": "Todas as marcas",
-      "todasCorto": "Marcas"
+      "todasCorto": "Marcas",
+      "todasMias": "Todas as minhas marcas",
+      "todasMiasCorto": "Minhas marcas"
     },
     "TiendaMultimarca": {
       "consecuencia": "O seletor de marca e a coluna «Marca» desaparecem; as marcas e seus dados permanecem.",
       "detalle": "(inclui {{n}} marcas) · {{extra}} por cada marca adicional",
       "incluye": "(inclui {{n}} marcas)"
+    },
+    "AccesoDeMarcaDePersona": {
+      "todas": "Todas",
+      "ninguna": "Sem marcas"
+    },
+    "CampoAccesoDeMarca": {
+      "sinMarcas": "Marque pelo menos uma marca: sem nenhuma, não veria nada.",
+      "errorGuardar": "O resto foi salvo, mas não as marcas que vê. Tente de novo.",
+      "titulo": "Acesso por marca",
+      "adminVeTodas": "Um administrador sempre vê todas as marcas.",
+      "ayudaAdminDeMarca": "Administra só as marcas que marcar: seus clientes, orçamentos e faturas, e todo o pessoal que trabalha nelas (incluindo a folha).",
+      "ayuda": "Escolha «Todas as marcas» ou limite o que vê a algumas: só seus clientes, seus locais e quem trabalha neles."
+    },
+    "ChipDeMarca": {
+      "clienteDe": "Cliente de {{marca}}",
+      "registradoEn": "Registrado em {{marca}}",
+      "registradoAyuda": "A marca em cuja folha recebe, mesmo trabalhando em locais de outra."
+    },
+    "FiltroDeMarcaEnMapa": {
+      "etiqueta": "Ver no mapa a marca"
+    },
+    "AccesoDeMarca": {
+      "reglaDeEmpresaDesc": "Como administrador de marca você pode vê-la, mas vale para todas as marcas: quem a altera é um administrador da empresa.",
+      "soloEmpresaDesc": "Como administrador de marca você gerencia suas marcas, mas pagamentos, módulos e a conta são de um administrador da empresa.",
+      "soloEmpresaTitulo": "Isto é feito pela administração da empresa",
+      "errores": {
+        "pago": "Pagamentos, a loja e as marcas adicionais são de um administrador da empresa, não de uma marca.",
+        "cuenta": "A conta da empresa é gerenciada por um administrador geral.",
+        "estructura": "Criar, editar ou arquivar marcas, ou mudar quais marcas cada pessoa vê, é feito por um administrador da empresa.",
+        "roles": "Você não pode dar o papel de administrador, administrador de marca ou gerente de filial, nem editar quem o tem.",
+        "empresa": "Esta configuração vale para toda a empresa: quem a altera é um administrador geral.",
+        "fueraDeAlcance": "Isso pertence a uma marca que não está atribuída a você.",
+        "general": "Seu acesso por marca não permite isso. Peça a um administrador da empresa."
+      }
+    },
+    "HorasEntreMarcas": {
+      "archivo": "horas-entre-marcas",
+      "errorDescarga": "Não foi possível preparar o arquivo. Tente de novo.",
+      "subtitulo": "Cada pessoa recebe pela marca em que se registrou. Aqui você vê quantas horas pessoas de uma marca trabalharam em locais de outra, para acertá-las entre as empresas.",
+      "titulo": "Horas entre marcas",
+      "mesPasado": "Mês passado",
+      "esteMes": "Este mês",
+      "ultimos30": "30 dias",
+      "otro": "Outro",
+      "desde": "De",
+      "hasta": "Até",
+      "empleadora": "Marca que paga",
+      "cualquiera": "Qualquer",
+      "marcaDelSitio": "Marca do local",
+      "incluirPropias": "Incluir horas em locais da própria marca",
+      "periodoMalo": "Escolha um período válido: a data inicial antes da final, até um ano.",
+      "restringido": "Você vê as horas em que uma das suas marcas paga ou é a marca do local.",
+      "vacioTodasDesc": "Não há horas trabalhadas registradas neste período com estes filtros.",
+      "vacioDesc": "Ninguém trabalhou em locais de outra marca neste período. Ative «Incluir horas em locais da própria marca» para ver todas.",
+      "vacio": "Sem horas entre marcas",
+      "totalHoras": "Horas",
+      "personas": "Pessoas",
+      "turnos": "Turnos",
+      "matriz": "Quem trabalhou onde",
+      "matrizAyuda": "Linhas: a marca que paga a pessoa. Colunas: a marca do cliente onde trabalhou. Período {{desde}} – {{hasta}}.",
+      "personasYTurnos": "{{personas}} pess. · {{turnos}} turnos",
+      "pagaTrabajaEn": "Paga / Trabalhou em",
+      "total": "Total",
+      "buscar": "Buscar pessoa, cliente ou local",
+      "detalle": "Detalhe",
+      "sinCoincidencias": "Nada corresponde à busca.",
+      "nTurnos": "{{n}} turnos",
+      "persona": "Pessoa",
+      "cliente": "Cliente",
+      "sitio": "Local"
+    },
+    "VistaDeMarca": {
+      "prefijoEmpresa": "FAT",
+      "sinNombre": "Sua marca",
+      "factura": "Fatura",
+      "titulo": "Assim o cliente vê esta marca",
+      "principalAyuda": "É a marca principal: seus clientes continuam vendo a empresa como até agora.",
+      "ayuda": "Suas faturas, orçamentos, relatórios e e-mails saem com estes dados. Nenhum cliente desta marca vê o nome de outra.",
+      "emite": "Emite",
+      "cliente": "Cliente",
+      "concepto": "Descrição",
+      "total": "Total",
+      "correoDe": "Os e-mails chegam de",
+      "portal": "Portal e app do cliente",
+      "direccionDelCorreo": "O endereço de envio é o da plataforma; o cliente vê o nome da marca."
     }
   },
   "map": {

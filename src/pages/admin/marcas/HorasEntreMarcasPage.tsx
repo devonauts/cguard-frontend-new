@@ -447,7 +447,7 @@ export default function HorasEntreMarcasPage() {
                         <thead>
                           <tr className="border-b" style={{ borderColor: "var(--hairline)" }}>
                             <th className="px-3 py-2 text-left text-xs font-semibold" style={{ color: "var(--ink-faint)" }}>
-                              {t("ui.HorasEntreMarcas.pagaTrabajaEn", "Paga \\ Trabajó en")}
+                              {t("ui.HorasEntreMarcas.pagaTrabajaEn", "Paga / Trabajó en")}
                             </th>
                             {matriz.columnas.map((s) => (
                               <th key={s} className="px-3 py-2 text-right">
