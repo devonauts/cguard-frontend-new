@@ -43,6 +43,7 @@ import { stationService } from "@/lib/api/stationService";
 import { conEtiqueta } from "@/lib/i18nLabel";
 import { hoyEnLaEmpresa, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 /** `label` es una propiedad de acceso (`conEtiqueta`): la lista se construye al
  *  importar el módulo, así que el texto tiene que resolverse al pintarlo. */
@@ -374,8 +375,18 @@ export default function SupervisorPositionsPage() {
     }
   };
 
-  const removePos = async (posId: string) => {
-    if (!confirm(t("ui.SupervisorPositionsPage.eliminarEstePuesto", "¿Eliminar este puesto?"))) return;
+  const removePos = async (posId: string, nombre: string) => {
+    if (
+      !(await confirmDialog({
+        message: t("ui.SupervisorPositionsPage.eliminarElPuesto", {
+          defaultValue: "¿Eliminar el puesto «{{nombre}}»?",
+          nombre,
+        }),
+        confirmText: t("actions.delete", "Eliminar"),
+        tone: "danger",
+      }))
+    )
+      return;
     try {
       await supervisorPositionService.remove(posId);
       setRows((prev) => prev.filter((p) => p.id !== posId));
@@ -453,7 +464,7 @@ export default function SupervisorPositionsPage() {
                       className="cg-focus rounded-lg p-1.5 transition-colors"
                       style={{ color: "var(--ink-faint)" }}
                       title={t("actions.delete")}
-                      onClick={() => removePos(p.id)}
+                      onClick={() => removePos(p.id, p.name)}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.color = "var(--bad-text)";
                       }}

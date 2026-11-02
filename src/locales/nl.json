@@ -8522,7 +8522,8 @@
       "quitarAriaLabel": "Wij vieren {{name}} niet",
       "quitarTitle": "Uw bedrijf viert deze feestdag niet",
       "quitadosTitle": "Feestdagen die u niet viert",
-      "devolver": "Weer vieren"
+      "devolver": "Weer vieren",
+      "deleteConfirm": "De feestdag ‘{{name}}’ verwijderen?"
     },
     "userRoles": {
       "actionBtn": "Actie",
@@ -13148,7 +13149,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} van {{total}}",
       "sinEstacion": "Geen station",
       "sucediendoAhoraMismo": "Nu bezig",
-      "turnos": "Diensten"
+      "turnos": "Diensten",
+      "falta": "Afwezig"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -14277,7 +14279,8 @@
       "cicloDesdeMasN": "cyclus vanaf {{fecha}} +{{n}} d",
       "estacionesQueCubre_one": "Gedekte posten ({{count}})",
       "estacionesQueCubre_other": "Gedekte posten ({{count}})",
-      "estacionesQueCubre": "Gedekte posten ({{count}})"
+      "estacionesQueCubre": "Gedekte posten ({{count}})",
+      "eliminarElPuesto": "De post ‘{{nombre}}’ verwijderen?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",
@@ -15858,7 +15861,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Vrij (rechtsklik: deze dag dekken)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (dubbelklik om te bewerken)",
       "sinConfigurar": "Niet geconfigureerd",
-      "turnosDe12hRotativo": "Diensten van 12 u · D/N roterend"
+      "turnosDe12hRotativo": "Diensten van 12 u · D/N roterend",
+      "fueraDeSuAsignacion": "{{nombre}} — die dag niet aan deze post toegewezen"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Elke plaats met een eigen cyclus — de een doet 2 ochtenden en 3 middagen, de ander 3 en 2.",
@@ -17499,8 +17503,8 @@
       "publicar": "Publiceren",
       "borrador": "Concept tot je publiceert",
       "parecido": "Komt voor {{n}} % overeen met het echte rooster",
-      "unCambio": "1 wijziging in het concept",
-      "cambios": "{{n}} wijzigingen in het concept",
+      "unCambio": "1 bewerking",
+      "cambios": "{{n}} bewerkingen",
       "subtitulo": "Zeg wat elke post nodig heeft, geef iedereen zijn rotatie en laat de invallers de rest dekken.",
       "titulo": "Planner",
       "sinPuestos": "Nog geen posten om te plannen.",
@@ -19687,7 +19691,9 @@
       "sinRequisitoAyuda": "Hier verschijnen no-shows, lege plekken en verlof zonder vervanger. Om te weten wat ontbreekt, moet elke post aangeven hoeveel beveiligers hij nodig heeft.",
       "irAEstaciones": "Bezetting van een post instellen",
       "sinRequisitoTitulo": "Nog geen post met bezetting",
-      "ofrecido": "Aangeboden"
+      "ofrecido": "Aangeboden",
+      "sede": "Locatie",
+      "todasLasSedes": "Alle locaties"
     },
     "HorarioModos": {
       "modos": "Roostermodus",

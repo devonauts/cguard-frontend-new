@@ -8522,7 +8522,8 @@
       "quitarAriaLabel": "Nous ne chômons pas {{name}}",
       "quitarTitle": "Votre entreprise ne chôme pas ce jour",
       "quitadosTitle": "Jours fériés non chômés",
-      "devolver": "Le chômer à nouveau"
+      "devolver": "Le chômer à nouveau",
+      "deleteConfirm": "Supprimer le jour férié « {{name}} » ?"
     },
     "userRoles": {
       "actionBtn": "Action",
@@ -13148,7 +13149,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} sur {{total}}",
       "sinEstacion": "Sans station",
       "sucediendoAhoraMismo": "En cours en ce moment",
-      "turnos": "Postes"
+      "turnos": "Postes",
+      "falta": "Absence"
     },
     "ShiftTemplates": {
       "basico": "Basique",
@@ -14277,7 +14279,8 @@
       "cicloDesdeMasN": "cycle dès le {{fecha}} +{{n}} j",
       "estacionesQueCubre_one": "Stations couvertes ({{count}})",
       "estacionesQueCubre_other": "Stations couvertes ({{count}})",
-      "estacionesQueCubre": "Stations couvertes ({{count}})"
+      "estacionesQueCubre": "Stations couvertes ({{count}})",
+      "eliminarElPuesto": "Supprimer le poste « {{nombre}} » ?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nouveau superviseur",
@@ -15858,7 +15861,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Repos (clic droit : couvrir ce jour)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (double-clic pour modifier)",
       "sinConfigurar": "Non configuré",
-      "turnosDe12hRotativo": "Postes de 12 h · J/N en rotation"
+      "turnosDe12hRotativo": "Postes de 12 h · J/N en rotation",
+      "fueraDeSuAsignacion": "{{nombre}} — pas affecté à ce poste ce jour-là"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Chaque place avec son cycle — l'un fait 2 matins et 3 après-midi, l'autre 3 et 2.",
@@ -17499,8 +17503,8 @@
       "publicar": "Publier",
       "borrador": "Brouillon jusqu'à publication",
       "parecido": "Correspond au planning réel à {{n}} %",
-      "unCambio": "1 modification dans le brouillon",
-      "cambios": "{{n}} modifications dans le brouillon",
+      "unCambio": "1 retouche",
+      "cambios": "{{n}} retouches",
       "subtitulo": "Indiquez ce que demande chaque poste, donnez à chacun sa rotation et laissez les remplaçants couvrir le reste.",
       "titulo": "Planificateur",
       "sinPuestos": "Pas encore de postes à planifier.",
@@ -19687,7 +19691,9 @@
       "sinRequisitoAyuda": "Ici apparaissent les absences, les places vides et les congés sans remplaçant. Pour savoir ce qui manque, chaque poste doit dire combien d’agents il demande.",
       "irAEstaciones": "Définir le besoin d’un poste",
       "sinRequisitoTitulo": "Aucun poste n’a encore de besoin défini",
-      "ofrecido": "Proposée"
+      "ofrecido": "Proposée",
+      "sede": "Site",
+      "todasLasSedes": "Tous les sites"
     },
     "HorarioModos": {
       "modos": "Mode du planning",

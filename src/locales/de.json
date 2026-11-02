@@ -8522,7 +8522,8 @@
       "quitarAriaLabel": "Wir begehen {{name}} nicht",
       "quitarTitle": "Ihr Unternehmen begeht diesen Feiertag nicht",
       "quitadosTitle": "Nicht begangene Feiertage",
-      "devolver": "Wieder begehen"
+      "devolver": "Wieder begehen",
+      "deleteConfirm": "Feiertag „{{name}}“ löschen?"
     },
     "userRoles": {
       "actionBtn": "Aktion",
@@ -13148,7 +13149,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} von {{total}}",
       "sinEstacion": "Keine Station",
       "sucediendoAhoraMismo": "Findet gerade statt",
-      "turnos": "Schichten"
+      "turnos": "Schichten",
+      "falta": "Fehlzeit"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -14277,7 +14279,8 @@
       "cicloDesdeMasN": "Zyklus ab {{fecha}} +{{n}} T",
       "estacionesQueCubre_one": "Abgedeckte Standorte ({{count}})",
       "estacionesQueCubre_other": "Abgedeckte Standorte ({{count}})",
-      "estacionesQueCubre": "Abgedeckte Standorte ({{count}})"
+      "estacionesQueCubre": "Abgedeckte Standorte ({{count}})",
+      "eliminarElPuesto": "Posten „{{nombre}}“ löschen?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",
@@ -15858,7 +15861,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Frei (Rechtsklick: diesen Tag abdecken)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (Doppelklick zum Bearbeiten)",
       "sinConfigurar": "Nicht konfiguriert",
-      "turnosDe12hRotativo": "12-h-Schichten · T/N rotierend"
+      "turnosDe12hRotativo": "12-h-Schichten · T/N rotierend",
+      "fueraDeSuAsignacion": "{{nombre}} — an diesem Tag diesem Posten nicht zugewiesen"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Jeder Platz mit eigenem Zyklus — einer macht 2 Vormittage und 3 Nachmittage, ein anderer 3 und 2.",
@@ -17499,8 +17503,8 @@
       "publicar": "Veröffentlichen",
       "borrador": "Entwurf bis zur Veröffentlichung",
       "parecido": "Stimmt zu {{n}} % mit dem echten Dienstplan überein",
-      "unCambio": "1 Änderung im Entwurf",
-      "cambios": "{{n}} Änderungen im Entwurf",
+      "unCambio": "1 Bearbeitung",
+      "cambios": "{{n}} Bearbeitungen",
       "subtitulo": "Sagen Sie, was jeder Posten braucht, geben Sie jedem seine Rotation und lassen Sie die Springer den Rest abdecken.",
       "titulo": "Planer",
       "sinPuestos": "Noch keine Posten zu planen.",
@@ -19687,7 +19691,9 @@
       "sinRequisitoAyuda": "Hier erscheinen Fehlzeiten, leere Plätze und Abwesenheiten ohne Vertretung. Damit klar ist, was fehlt, muss jede Station sagen, wie viele Wachleute sie braucht.",
       "irAEstaciones": "Bedarf einer Station festlegen",
       "sinRequisitoTitulo": "Noch keine Station mit Bedarf",
-      "ofrecido": "Angeboten"
+      "ofrecido": "Angeboten",
+      "sede": "Standort",
+      "todasLasSedes": "Alle Standorte"
     },
     "HorarioModos": {
       "modos": "Dienstplanmodus",

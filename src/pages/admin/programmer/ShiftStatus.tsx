@@ -57,6 +57,7 @@ import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 import { localeActual } from "@/lib/localeActual";
 import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
 import { listarTodo } from "@/lib/listarCompleto";
+import { ESTADOS_ANULADOS, ESTADO_NOVEDAD } from "@/lib/shiftStatus";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -84,6 +85,11 @@ function formatTime(iso: string | null) {
 type ShiftStatusValue = "completed" | "in-progress" | "pending" | "cancelled";
 
 function computeStatus(row: ShiftRecord): ShiftStatusValue {
+  /* A voided shift (absent, cancelled, moved to another station) leaves the
+     post without that guard whatever the clock says: it was «Pendiente» and
+     later «Completado» (QA 2026-11-01). */
+  if ((ESTADOS_ANULADOS as readonly string[]).includes(String((row as any).status || "")))
+    return "cancelled";
   const now = new Date();
   const start = new Date(row.startTime);
   const end = new Date(row.endTime);
@@ -198,7 +204,11 @@ export default function ShiftStatus() {
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   // ── status badge ──────────────────────────────────────────────────────────
-  const getStatusBadge = (status: ShiftStatusValue) => {
+  const getStatusBadge = (status: ShiftStatusValue, shiftStatus?: string) => {
+    if (shiftStatus === ESTADO_NOVEDAD)
+      return (
+        <StatusBadge tone="bad">{t("ui.ShiftStatus.falta", "Falta")}</StatusBadge>
+      );
     switch (status) {
       case "pending":
         return <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>;
@@ -302,7 +312,7 @@ export default function ShiftStatus() {
                 </SelectItem>
                 <SelectItem value="pending">{t("comun.pendiente")}</SelectItem>
                 <SelectItem value="in-progress">
-                  {t("ui.ShiftStatus.enProgreso", "En Progreso")}
+                  {t("ui.ShiftStatus.enCurso", "En curso")}
                 </SelectItem>
                 <SelectItem value="completed">
                   {t("ui.ShiftStatus.completado", "Completado")}
@@ -477,7 +487,7 @@ export default function ShiftStatus() {
               {
                 key: "_status",
                 header: t("comun.estado"),
-                render: (_v: any, row: any) => getStatusBadge(row._status),
+                render: (_v: any, row: any) => getStatusBadge(row._status, row.status),
               },
             ]}
             containerless

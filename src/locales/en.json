@@ -8018,7 +8018,8 @@
       "quitarAriaLabel": "We don't observe {{name}}",
       "quitarTitle": "Your company does not observe this holiday",
       "quitadosTitle": "National holidays you don't observe",
-      "devolver": "Observe it again"
+      "devolver": "Observe it again",
+      "deleteConfirm": "Delete the holiday «{{name}}»?"
     },
     "userRoles": {
       "actionBtn": "Action",
@@ -12606,7 +12607,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} of {{total}}",
       "sinEstacion": "No station",
       "sucediendoAhoraMismo": "Happening right now",
-      "turnos": "Shifts"
+      "turnos": "Shifts",
+      "falta": "Absence"
     },
     "ShiftTemplates": {
       "basico": "Basic",
@@ -13735,7 +13737,8 @@
       "cicloDesdeMasN": "cycle from {{fecha}} +{{n}} d",
       "estacionesQueCubre_one": "Stations it covers ({{count}})",
       "estacionesQueCubre_other": "Stations it covers ({{count}})",
-      "estacionesQueCubre": "Stations it covers ({{count}})"
+      "estacionesQueCubre": "Stations it covers ({{count}})",
+      "eliminarElPuesto": "Delete the post «{{nombre}}»?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "New supervisor",
@@ -15316,7 +15319,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Off (right-click: cover this day)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (double-click to edit)",
       "sinConfigurar": "Not configured",
-      "turnosDe12hRotativo": "12h shifts · rotating D/N"
+      "turnosDe12hRotativo": "12h shifts · rotating D/N",
+      "fueraDeSuAsignacion": "{{nombre}} — not assigned to this post that day"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Each position with its own cycle — one does 2 mornings and 3 afternoons, another 3 and 2.",
@@ -16957,8 +16961,8 @@
       "publicar": "Publish",
       "borrador": "Draft until you publish",
       "parecido": "Matches the real schedule {{n}} %",
-      "unCambio": "1 change in the draft",
-      "cambios": "{{n}} changes in the draft",
+      "unCambio": "1 edit",
+      "cambios": "{{n}} edits",
       "subtitulo": "Say what each station needs, give everyone their rotation and let the relief guards cover what's missing.",
       "titulo": "Planner",
       "sinPuestos": "No stations to plan yet.",
@@ -19145,7 +19149,9 @@
       "sinRequisitoAyuda": "No-shows, empty positions and leave without a replacement show up here. To know what is missing, each station has to say how many guards it needs.",
       "irAEstaciones": "Set a station’s requirement",
       "sinRequisitoTitulo": "No station has a requirement yet",
-      "ofrecido": "Offered"
+      "ofrecido": "Offered",
+      "sede": "Site",
+      "todasLasSedes": "All sites"
     },
     "HorarioModos": {
       "modos": "Schedule mode",

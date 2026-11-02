@@ -8522,7 +8522,8 @@
       "quitarAriaLabel": "Non osserviamo {{name}}",
       "quitarTitle": "La tua azienda non osserva questa festività",
       "quitadosTitle": "Festività nazionali non osservate",
-      "devolver": "Osservarla di nuovo"
+      "devolver": "Osservarla di nuovo",
+      "deleteConfirm": "Eliminare la festività «{{name}}»?"
     },
     "userRoles": {
       "actionBtn": "Azione",
@@ -13148,7 +13149,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} di {{total}}",
       "sinEstacion": "Senza stazione",
       "sucediendoAhoraMismo": "In corso proprio ora",
-      "turnos": "Turni"
+      "turnos": "Turni",
+      "falta": "Assenza"
     },
     "ShiftTemplates": {
       "basico": "Base",
@@ -14277,7 +14279,8 @@
       "cicloDesdeMasN": "ciclo dal {{fecha}} +{{n}} g",
       "estacionesQueCubre_one": "Postazioni coperte ({{count}})",
       "estacionesQueCubre_other": "Postazioni coperte ({{count}})",
-      "estacionesQueCubre": "Postazioni coperte ({{count}})"
+      "estacionesQueCubre": "Postazioni coperte ({{count}})",
+      "eliminarElPuesto": "Eliminare la postazione «{{nombre}}»?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nuovo supervisore",
@@ -15858,7 +15861,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Riposo (clic destro: copri questo giorno)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (doppio clic per modificare)",
       "sinConfigurar": "Non configurato",
-      "turnosDe12hRotativo": "Turni di 12 h · G/N a rotazione"
+      "turnosDe12hRotativo": "Turni di 12 h · G/N a rotazione",
+      "fueraDeSuAsignacion": "{{nombre}} — non assegnato a questa postazione quel giorno"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Ogni posto con il suo ciclo — uno fa 2 mattine e 3 pomeriggi, un altro 3 e 2.",
@@ -17499,8 +17503,8 @@
       "publicar": "Pubblica",
       "borrador": "Bozza finché non pubblichi",
       "parecido": "Coincide con l'orario reale al {{n}} %",
-      "unCambio": "1 modifica nella bozza",
-      "cambios": "{{n}} modifiche nella bozza",
+      "unCambio": "1 intervento",
+      "cambios": "{{n}} interventi",
       "subtitulo": "Di' cosa chiede ogni postazione, da' a ognuno la sua rotazione e lascia che i jolly coprano ciò che manca.",
       "titulo": "Pianificatore",
       "sinPuestos": "Ancora nessuna postazione da pianificare.",
@@ -19687,7 +19691,9 @@
       "sinRequisitoAyuda": "Qui compaiono assenze, posti vuoti e permessi senza sostituto. Per sapere cosa manca, ogni postazione deve indicare quante guardie servono.",
       "irAEstaciones": "Definisci il fabbisogno di una postazione",
       "sinRequisitoTitulo": "Nessuna postazione ha ancora un fabbisogno",
-      "ofrecido": "Offerto"
+      "ofrecido": "Offerto",
+      "sede": "Sede",
+      "todasLasSedes": "Tutte le sedi"
     },
     "HorarioModos": {
       "modos": "Modalità del turnario",

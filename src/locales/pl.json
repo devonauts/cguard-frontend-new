@@ -8542,7 +8542,8 @@
       "quitarAriaLabel": "Nie obchodzimy: {{name}}",
       "quitarTitle": "Twoja firma nie obchodzi tego święta",
       "quitadosTitle": "Święta, których nie obchodzicie",
-      "devolver": "Przywróć"
+      "devolver": "Przywróć",
+      "deleteConfirm": "Usunąć święto „{{name}}”?"
     },
     "userRoles": {
       "actionBtn": "Akcja",
@@ -13258,7 +13259,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} z {{total}}",
       "sinEstacion": "Bez stacji",
       "sucediendoAhoraMismo": "Trwa w tej chwili",
-      "turnos": "Zmiany"
+      "turnos": "Zmiany",
+      "falta": "Nieobecność"
     },
     "ShiftTemplates": {
       "basico": "Podstawowy",
@@ -14417,7 +14419,8 @@
       "estacionesQueCubre_other": "Objęte stanowiska ({{count}})",
       "estacionesQueCubre": "Objęte stanowiska ({{count}})",
       "estacionesQueCubre_few": "Objęte stanowiska ({{count}})",
-      "estacionesQueCubre_many": "Objęte stanowiska ({{count}})"
+      "estacionesQueCubre_many": "Objęte stanowiska ({{count}})",
+      "eliminarElPuesto": "Usunąć stanowisko „{{nombre}}”?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nowy nadzorca",
@@ -16054,7 +16057,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Wolne (prawy przycisk: obsadź ten dzień)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (kliknij dwukrotnie, aby edytować)",
       "sinConfigurar": "Nieskonfigurowane",
-      "turnosDe12hRotativo": "Zmiany 12 h · D/N rotacyjnie"
+      "turnosDe12hRotativo": "Zmiany 12 h · D/N rotacyjnie",
+      "fueraDeSuAsignacion": "{{nombre}} — tego dnia nieprzypisany do tego posterunku"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Każde miejsce z własnym cyklem — jeden robi 2 poranki i 3 popołudnia, drugi 3 i 2.",
@@ -17739,8 +17743,8 @@
       "publicar": "Opublikuj",
       "borrador": "Szkic do czasu publikacji",
       "parecido": "Zgodność z rzeczywistym grafikiem: {{n}} %",
-      "unCambio": "1 zmiana w szkicu",
-      "cambios": "{{n}} zmian w szkicu",
+      "unCambio": "1 edycja",
+      "cambios": "edycje: {{n}}",
       "subtitulo": "Określ, czego potrzebuje każdy posterunek, nadaj każdemu rotację i pozwól zmiennikom obsadzić resztę.",
       "titulo": "Planer",
       "sinPuestos": "Brak posterunków do zaplanowania.",
@@ -19997,7 +20001,9 @@
       "sinRequisitoAyuda": "Tu pojawiają się nieobecności, wolne miejsca i urlopy bez zastępstwa. Aby wiedzieć, czego brakuje, każdy posterunek musi określić, ilu ochroniarzy potrzebuje.",
       "irAEstaciones": "Określ zapotrzebowanie posterunku",
       "sinRequisitoTitulo": "Żaden posterunek nie ma jeszcze zapotrzebowania",
-      "ofrecido": "Zaproponowano"
+      "ofrecido": "Zaproponowano",
+      "sede": "Obiekt",
+      "todasLasSedes": "Wszystkie obiekty"
     },
     "HorarioModos": {
       "modos": "Tryb grafiku",
