@@ -323,8 +323,12 @@ export function bubblePlacement(bubble: HTMLElement, currentLift: number): numbe
   const now = bubble.getBoundingClientRect();
 
   if (!now.width || !now.height) return 0;
-  // Where the bubble sits with no lift at all.
-  const base = { left: now.left, right: now.right, top: now.top + currentLift, bottom: now.bottom + currentLift };
+  // Where the bubble sits with no lift at all. A fixed element's offsetTop is its
+  // layout position, before `translate`; reading it instead of adding
+  // `currentLift` keeps the answer right while the lift is still animating
+  // (the bubble bounced up and down for ~3 s over «Guardar configuración»).
+  const shift = bubble.offsetParent === null ? now.top - bubble.offsetTop : -currentLift;
+  const base = { left: now.left, right: now.right, top: now.top - shift, bottom: now.bottom - shift };
   let lift = 0;
 
   for (let i = 0; i < 6; i++) {
