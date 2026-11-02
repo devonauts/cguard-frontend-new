@@ -20,7 +20,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { fechaYHora, soloFecha, soloFechaCivil, hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
 import clientBillingService, { balanceCents, BUILTIN_PAYMENT_METHODS, type Invoice, type InvoiceLine, type PaymentMethod } from "@/lib/api/clientBillingService";
-import { QK, dinero, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, mensajeDeError, conModuloDeFacturacion } from "./comun";
+import { QK, dinero, cantidad, nombreDelCliente, useEtiquetasDeFacturacion, conModuloDeFacturacion, avisarError } from "./comun";
 import { MetodosDeLaFactura, SelectorDeMetodos, mismosMetodos, useMetodosDeLaEmpresa, useNombreDeMetodo } from "./MetodosDePago";
 
 type Modal_ = null | "enviar" | "pago" | "credito" | "anular" | "disputa";
@@ -38,8 +38,16 @@ function FacturaDetallePage() {
   const [editando, setEditando] = useState(false);
   const [trabajando, setTrabajando] = useState(false);
 
-  const detalle = useQuery({ queryKey: [QK, "invoice", id], queryFn: () => clientBillingService.invoice(id), enabled: !!id });
-  const inv = detalle.data?.invoice;
+  const detalle = useQuery({
+    queryKey: [QK, "invoice", id],
+    queryFn: () => clientBillingService.invoice(id),
+    enabled: !!id,
+    retry: (n, e) => (e as { status?: number } | null)?.status !== 404 && n < 1,
+  });
+  // A 404 means it is gone (a deleted draft): never paint the copy the cache
+  // kept from before (QA 2026-11-01: «Eliminar borrador», reload, still there).
+  const noExiste = (detalle.error as { status?: number } | null)?.status === 404;
+  const inv = noExiste ? undefined : detalle.data?.invoice;
   const publicUrl = detalle.data?.publicUrl ?? null;
 
   const refrescar = async () => {
@@ -58,7 +66,7 @@ function FacturaDetallePage() {
 
       return true;
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
 
       return false;
     } finally {
@@ -79,10 +87,11 @@ function FacturaDetallePage() {
     try {
       await clientBillingService.deleteInvoice(inv.id);
       toast.success(t("ui.Facturacion.detalle.borradorEliminado", "Borrador eliminado"));
+      qc.removeQueries({ queryKey: [QK, "invoice", inv.id] });
       await qc.invalidateQueries({ queryKey: [QK, "invoices"] });
       navigate("/facturacion/facturas");
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setTrabajando(false);
     }
@@ -93,7 +102,7 @@ function FacturaDetallePage() {
     try {
       await clientBillingService.downloadPdf(inv, localeActual().slice(0, 2));
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.detalle.noSePudoDescargar", "No se pudo descargar el PDF")));
+      avisarError(e, t("ui.Facturacion.detalle.noSePudoDescargar", "No se pudo descargar el PDF"));
     }
   };
 
@@ -117,7 +126,7 @@ function FacturaDetallePage() {
     return (
       <AppLayout>
         <PageContainer>
-          {detalle.isError ? (
+          {detalle.isError || noExiste ? (
             <EmptyState icon={<Receipt />} title={t("ui.Facturacion.detalle.noEncontrada", "No se encontró la factura")} action={<Button variant="outline" onClick={() => navigate("/facturacion/facturas")}><ArrowLeft size={14} /> {t("ui.Facturacion.detalle.volver", "Volver a facturas")}</Button>} />
           ) : (
             <SkeletonCards count={4} />
@@ -371,7 +380,7 @@ function EditorDeBorrador({ inv, onClose, onSaved }: { inv: Invoice; onClose: ()
       toast.success(t("ui.Facturacion.detalle.borradorGuardado", "Borrador guardado"));
       await onSaved();
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }

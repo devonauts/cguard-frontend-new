@@ -9,10 +9,13 @@
  *              not call them.
  *   none     → never had it, or it was revoked: the module's presentation.
  *   loading  → not entitled and the store answer is still on its way.
+ *   denied   → the company has it, but the person's role lacks the payslip
+ *              permissions (the server answered 403): a no-access notice, not
+ *              an endless skeleton or a «Prohibido» toast.
  *
  * Pure, so the gate decision is tested on its own (`access.test.ts`).
  */
-export type PayrollAccess = "loading" | "full" | "readOnly" | "none";
+export type PayrollAccess = "loading" | "full" | "readOnly" | "none" | "denied";
 
 export interface PayrollAccessInput {
   /** The session's plan features include the module. */
@@ -28,10 +31,13 @@ export interface PayrollAccessInput {
    * server says the company neither has nor owns the module.
    */
   readRefused?: boolean;
+  /** A payslip endpoint answered 403: the role lacks the permission. */
+  forbidden?: boolean;
 }
 
 export function payrollAccessMode(i: PayrollAccessInput): PayrollAccess {
   if (i.readRefused) return "none";
+  if (i.forbidden) return "denied";
   if (i.entitled && !i.gatedRefused) return "full";
   if (i.store?.owned && i.store.paused) return "readOnly";
   if (i.storeLoading) return "loading";

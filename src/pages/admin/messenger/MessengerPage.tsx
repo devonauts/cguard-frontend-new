@@ -444,8 +444,10 @@ export default function MessengerPage({
         setPending((p) => [...p, att]);
       }
     } catch (e: any) {
+      // A network failure is a TypeError whose message is the browser's own,
+      // in English («Failed to fetch»): show ours instead.
       toast.error(
-        e?.message ||
+        (!(e instanceof TypeError) && (e?.data?.message || e?.message)) ||
           t(
             "ui.MessengerPage.noSePudoSubirElArchivo",
             "No se pudo subir el archivo",
@@ -1053,7 +1055,15 @@ function ComposeDialog({
         body: body.trim(),
       });
 
-      onSent(res?.conversation || res);
+      const conv = res?.conversation || res;
+
+      // The created conversation comes back without the display fields the
+      // list adds, so the header showed «?» and no name: give it the one picked.
+      onSent({
+        ...conv,
+        recipientType: conv?.recipientType || (isClient ? "client" : "guard"),
+        recipientName: conv?.recipientName || picked.label,
+      });
     } catch (e: any) {
       toast.error(
         e?.data?.message ||
@@ -1332,6 +1342,17 @@ function MembersPanel({
   useEffect(() => {
     load();
   }, [load]);
+
+  // Esc closes the slide-over, like the CRM's dialogs.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKey);
+
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   useEffect(() => {
     let active = true;

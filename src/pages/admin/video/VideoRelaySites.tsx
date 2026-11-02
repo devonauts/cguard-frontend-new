@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import {
   DeviceStatusBadge,
   healthTone,
@@ -172,6 +173,20 @@ export default function VideoRelaySites() {
   };
 
   const regenToken = async (s: RelaySite) => {
+    // The old key stops working at once and the relay at the site goes dark
+    // until the new bundle is installed: ask first.
+    if (
+      !(await confirmDialog({
+        title: t("ui.VideoRelaySites.regenerarClave", "Regenerar clave"),
+        message: t(
+          "ui.VideoRelaySites.regenerarClaveAviso",
+          "La clave actual deja de funcionar al instante: el relay de este sitio se desconecta hasta que instales el enlace nuevo.",
+        ),
+        confirmText: t("ui.VideoRelaySites.regenerarClave", "Regenerar clave"),
+      }))
+    ) {
+      return;
+    }
     try {
       await videoService.updateRelaySite(s.id, { regenToken: true });
       toast.success(t("ui.VideoRelaySites.tokenRegeneradoVuelveADescargar"));

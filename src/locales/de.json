@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Erstellt",
+      "read": "Gelesen",
+      "signal_runaway_suppressed": "Wiederholtes Signal unterdrückt",
+      "video_verification": "Videoverifizierung",
+      "escalate": "Eskaliert",
+      "close": "Geschlossen",
+      "resolve": "Gelöst",
+      "incident": "Vorfall erstellt",
+      "dispatch": "Einsatz",
+      "step": "Planschritt",
+      "ecv_call": "Anruf",
+      "note": "Notiz",
+      "acknowledge": "Bestätigt",
+      "event_appended": "Ereignis hinzugefügt",
+      "case_opened": "Fall eröffnet"
+    },
     "status": {
       "queued": "In Warteschlange",
       "acknowledged": "Bestätigt",
@@ -336,7 +353,10 @@
     "forgotNoMailboxHint": "Hat Ihr Konto keine E-Mail, bitten Sie Ihre Aufsicht oder das Büro um den Link.",
     "forgotSubtitleLoginId": "Geben Sie Ihre E-Mail oder Ihren Benutzernamen ein und wir senden Ihnen einen Link für ein neues Passwort.",
     "loginIdLabel": "E-Mail oder Benutzername",
-    "loginIdPlaceholder": "jmiranda oder sie@email.com"
+    "loginIdPlaceholder": "jmiranda oder sie@email.com",
+    "validation_symbol": "Muss ein Sonderzeichen enthalten",
+    "validation_same_as_old": "Das neue Passwort muss sich vom aktuellen unterscheiden",
+    "passwordChangedSignInAgain": "Du hast dein Passwort geändert. Melde dich mit dem neuen an."
   },
   "client": {
     "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig.",
@@ -662,7 +682,8 @@
         "Titleinput": "Titel der Notiz eingeben",
         "Titlenote": "Titel *",
         "NoFilesSelected": "Keine Dateien ausgewählt",
-        "selectDate": "Auswählen"
+        "selectDate": "Auswählen",
+        "editTitle": "Notiz bearbeiten"
       },
       "addedBy": "Hinzugefügt von",
       "detailsTitle": "Details der Notiz",
@@ -673,7 +694,8 @@
         "dateRequired": "Das Datum ist erforderlich",
         "descriptionRequired": "Die Beschreibung ist erforderlich",
         "titleRequired": "Der Titel ist erforderlich"
-      }
+      },
+      "description": "Beschreibung"
     },
     "pagination": {
       "itemsPerPage": "Einträge pro Seite",
@@ -1444,6 +1466,7 @@
     "ticket_summary": "Ticket-Übersicht",
     "view_details": "Details ansehen",
     "comment": {
+      "file_upload_failed_not_sent": "Die Datei konnte nicht hochgeladen werden; der Kommentar wurde nicht gesendet.",
       "add": "Hinzufügen",
       "add_failed": "Der Kommentar konnte nicht hinzugefügt werden",
       "added": "Kommentar hinzugefügt",
@@ -1655,7 +1678,15 @@
         "achieved": "Erreicht",
         "notAchieved": "Nicht erreicht"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Sicherheitskraft",
+        "postSite": "Objekt"
+      },
+      "errors": {
+        "frequencyRequired": "Wählen Sie die Häufigkeit.",
+        "descriptionRequired": "Geben Sie die Beschreibung ein."
+      }
     },
     "assignSites": {
       "assignButton": "Objekt zuweisen",
@@ -1796,7 +1827,9 @@
       },
       "empty": {
         "description": "Zu Ihrer Suche wurden<br />keine passenden<br />Einträge gefunden",
-        "title": "Keine Ergebnisse gefunden"
+        "title": "Keine Ergebnisse gefunden",
+        "none": "Noch keine Lizenzen",
+        "hint": "Fügen Sie die erste Lizenz oder den ersten Ausweis hinzu."
       },
       "form": {
         "backImageLabel": "Rückseite der Lizenz",
@@ -1857,7 +1890,13 @@
         "updated": "Lizenz aktualisiert"
       },
       "selected": "ausgewählt",
-      "untitled": "Lizenz"
+      "untitled": "Lizenz",
+      "errors": {
+        "typeRequired": "Wählen Sie die Art der Lizenz.",
+        "numberRequired": "Geben Sie die Lizenznummer ein."
+      },
+      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden.",
+      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors"
     },
     "list": {
       "applyFilters": "Filter anwenden",
@@ -1965,7 +2004,12 @@
           "excelValidationFailed": "Die Excel-Datei konnte vor dem Hochladen nicht geprüft werden. Bitte prüfen Sie das Format.",
           "missingColumns": "Es fehlen Pflichtspalten: {{columns}}",
           "selectFile": "Bitte wählen Sie eine Datei aus"
-        }
+        },
+        "summaryOk_one": "{{count}} Wachmann importiert",
+        "summaryOk_other": "{{count}} Wachleute importiert",
+        "summaryWithErrors": "Importiert: {{ok}} · Nicht importiert: {{fallidas}}",
+        "rowError": "Zeile {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Es wurden keine Einladungen verschickt: Senden Sie sie bei Bedarf aus der Liste."
       },
       "labels": {
         "name": "Name",
@@ -2160,7 +2204,8 @@
         "message": "Zu Ihrer Suche wurden<br />keine passenden<br />Einträge gefunden",
         "title": "Keine Ergebnisse gefunden",
         "hint": "Legen Sie die erste Notiz für diese Sicherheitskraft an.",
-        "none": "Noch keine Notizen"
+        "none": "Noch keine Notizen",
+        "hintSupervisor": "Legen Sie die erste Notiz für diesen Supervisor an."
       },
       "modal": {
         "cancel": "Abbrechen",
@@ -2205,7 +2250,12 @@
       "loadError": "Die Notizen konnten nicht geladen werden",
       "noteCreated": "Notiz erfolgreich angelegt",
       "noteDeleted": "Notiz gelöscht",
-      "sectionTitle": "Notizen"
+      "sectionTitle": "Notizen",
+      "errors": {
+        "titleRequired": "Geben Sie den Titel der Notiz ein.",
+        "descriptionRequired": "Geben Sie die Beschreibung der Notiz ein.",
+        "dateRequired": "Wählen Sie das Datum der Notiz."
+      }
     },
     "profile": {
       "noLicense": "Es wurde keine Lizenz gefunden",
@@ -2221,7 +2271,8 @@
         "statusNoAccess": "Kein Zugang eingerichtet",
         "statusPending": "Einladung ausstehend",
         "tokenExpired": "Der Einladungslink ist abgelaufen",
-        "tokenExpires": "Einladung gültig bis"
+        "tokenExpires": "Einladung gültig bis",
+        "alreadyActive": "Das Konto ist bereits aktiv: Keine Einladung nötig. Falls das Passwort vergessen wurde, verwenden Sie „Passwort zurücksetzen“ in der Liste der Sicherheitskräfte."
       },
       "actions": {
         "cancel": "Abbrechen",
@@ -2497,7 +2548,11 @@
       "locNoneBody": "{{sin}} der letzten {{total}} Buchungen kamen ganz ohne Koordinaten an. Die Buchung wird trotzdem erfasst — niemand wird blockiert — aber die Schicht hat keinen Nachweis des Orts.",
       "locCoarseBody": "{{n}} der letzten {{total}} Buchungen kamen mit einer Position gröber als {{suelo}} m an. Reicht zum Erfassen, nicht zum Bestätigen der Anwesenheit am Posten.",
       "locFix": "Üblicher Grund: Unter Android steht die Standortberechtigung auf „Ungefähr“. Sie muss in den Telefoneinstellungen auf „Genau“ gesetzt werden — Android lässt das die App nicht ändern, also muss jemand dieses Telefon in die Hand nehmen.",
-      "locLast": "Letzte Buchung ohne Standort: {{cuando}}"
+      "locLast": "Letzte Buchung ohne Standort: {{cuando}}",
+      "titleSupervisor": "Gerät des Supervisors",
+      "subtitleSupervisor": "Das erste Gerät, mit dem sich der Supervisor anmeldet, wird verknüpft. Meldet sich ein weiteres Gerät an, wird es als nicht erkannt markiert (aber nicht gesperrt). Setzen Sie die Verknüpfung zurück, wenn der Supervisor das Telefon gewechselt hat.",
+      "emptySupervisor": "Für diesen Supervisor wurde noch kein Gerät registriert.",
+      "resetDoneSupervisor": "Verknüpfung zurückgesetzt. Das nächste Gerät des Supervisors wird verknüpft."
     },
     "documents": {
       "deleteConfirm": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -2564,7 +2619,11 @@
       "deleted": "Mitteilung gelöscht",
       "pending": "Offen",
       "title": "Mitteilungen",
-      "total": "Mitteilungen"
+      "total": "Mitteilungen",
+      "count_one": "{{count}} Mitteilung",
+      "count_other": "{{count}} Mitteilungen",
+      "acceptedCount_one": "{{count}} angenommen",
+      "acceptedCount_other": "{{count}} angenommen"
     },
     "actionNotImplemented": "Aktion noch nicht verfügbar",
     "overview": {
@@ -2592,7 +2651,9 @@
       "loadError": "Die verfügbaren Rollen konnten nicht geladen werden.",
       "error": "Die Rolle konnte nicht gewechselt werden.",
       "hasBothRoles": "Aktuell bestehen beide Rollen. Mit der Auswahl bleibt nur die gewählte bestehen.",
-      "welcomeSent": "Wir haben eine Willkommens-E-Mail mit dem Link zum Herunterladen der Supervisor-App gesendet."
+      "welcomeSent": "Wir haben eine Willkommens-E-Mail mit dem Link zum Herunterladen der Supervisor-App gesendet.",
+      "inviteSent": "Es gab noch kein Passwort: Wir haben die Einladung gesendet, um eines zu erstellen und sich in der Supervisor-App anzumelden.",
+      "inviteLinkReady": "Noch kein Passwort und keine E-Mail: Teilen Sie den Zugangslink über das Supervisor-Profil („Einladung erneut senden“)."
     },
     "department": {
       "title": "Abteilung",
@@ -2737,7 +2798,8 @@
       "blood_required": "Die Blutgruppe ist erforderlich",
       "credentials_required": "Die Nachweise sind erforderlich",
       "address_required": "Die Adresse ist erforderlich",
-      "phone_required": "Die Telefonnummer ist erforderlich"
+      "phone_required": "Die Telefonnummer ist erforderlich",
+      "revisaEstosDatos": "Bitte prüfen Sie: {{campos}}"
     },
     "password": "Passwort",
     "password_min": "Mindestens 8 Zeichen",
@@ -2764,7 +2826,8 @@
         "university": "Hochschulabschluss",
         "universityStudies": "Hochschulstudium"
       },
-      "freeUnion": "Lebensgemeinschaft"
+      "freeUnion": "Lebensgemeinschaft",
+      "credentialsHint": "Nummer Ihres Dienstausweises oder Ihrer Lizenz"
     },
     "select": "Auswählen",
     "eyebrow_guard": "Einladung · Sicherheitsteam",
@@ -5968,6 +6031,16 @@
         "error": "Fehler beim Wiederherstellen des Benutzers",
         "success": "Benutzer wiederhergestellt",
         "title": "Benutzer wiederherstellen"
+      },
+      "suspend": {
+        "title": "Benutzer sperren",
+        "description": "{{user}} kann sich nicht mehr anmelden und wird unter Archiviert geführt. Du kannst die Person später wiederherstellen.",
+        "confirm": "Sperren"
+      },
+      "closeSessions": {
+        "title": "Sitzungen beenden",
+        "description": "{{user}} wird im Web und in den Apps auf allen Geräten abgemeldet und muss sich erneut anmelden.",
+        "confirm": "Sitzungen beenden"
       }
     },
     "editUser": {
@@ -6268,7 +6341,8 @@
     "free": {
       "title": "Kostenloser Tarif",
       "body": "{{marca}} stellt Ihrem Unternehmen den Dienst kostenlos zur Verfügung."
-    }
+    },
+    "invoicesEmptyDescActive": "Ihre erste Rechnung erscheint hier, sobald sie ausgestellt ist, und Sie können sie als PDF herunterladen."
   },
   "brand": {
     "tagline": "Intelligente Sicherheit"
@@ -6878,7 +6952,8 @@
     "deleted": "Notizen gelöscht",
     "loadError": "Die Notizen konnten nicht geladen werden",
     "saveError": "Die Notiz konnte nicht gespeichert werden",
-    "updated": "Notiz aktualisiert"
+    "updated": "Notiz aktualisiert",
+    "attachmentsFailed": "{{count}} Datei(en) konnten nicht hochgeladen werden"
   },
   "postSites": {
     "action": "Aktion",
@@ -6962,7 +7037,7 @@
       "guardsAssigned": "Zugewiesene Sicherheitskräfte",
       "hoursLogged": "Erfasste Stunden (letzte 7 Tage)",
       "incidentsReported": "Gemeldete Vorfälle (letzte 7 Tage)",
-      "kpiadded": "KPI hinzugefügt",
+      "kpiadded": "KPI hinzufügen",
       "kpisearch": "KPIs suchen",
       "tasksCompleted": "Erledigte Aufgaben (letzte 7 Tage)",
       "title": "KPI-Kennzahlen",
@@ -7004,6 +7079,11 @@
           "monthly": "Monatlich",
           "select": "Häufigkeit auswählen",
           "weekly": "Wöchentlich"
+        },
+        "errors": {
+          "frequencyRequired": "Wählen Sie die Häufigkeit",
+          "descriptionRequired": "Geben Sie eine Beschreibung ein",
+          "emailsRequired": "Fügen Sie mindestens eine E-Mail-Adresse für den Bericht hinzu"
         }
       },
       "status": {
@@ -7496,7 +7576,9 @@
       "computadoras": "Desktop-Computer",
       "computadoras.desc": "Geben Sie jeden Computer frei, der die Desktop-App nutzt, oder widerrufen Sie ihn.",
       "app-escritorio": "Desktop-App",
-      "app-escritorio.desc": "Laden Sie das Dashboard für Mac oder Windows herunter, im eigenen Fenster."
+      "app-escritorio.desc": "Laden Sie das Dashboard für Mac oder Windows herunter, im eigenen Fenster.",
+      "payroll-slips": "Lohnabrechnungen",
+      "payroll-slips.desc": "Land, Grundgehalt, Arbeitszeit, Doppelschichten, Einkommensteuer und Nummerierung der Lohnabrechnung."
     },
     "section": {
       "mi_cuenta": "Mein Konto",
@@ -7786,7 +7868,7 @@
       "certIconAlt": "Symbol der Zertifizierung",
       "noIcon": "Kein Symbol",
       "thisCert": "diese Zertifizierung",
-      "bannerDialogDesc": "Konfigurieren Sie das Banner, das im Modul MOBIL angezeigt wird.",
+      "bannerDialogDesc": "Richten Sie das Banner ein, das Ihre Kunden in ihrer App sehen.",
       "bannerTitlePlaceholder": "Titel des Banners",
       "bannerDescPlaceholder": "Beschreibung des Banners",
       "selectFileBtn": "Datei auswählen",
@@ -7875,7 +7957,10 @@
       "guardVisSaved": "Einstellung gespeichert.",
       "guardVisTitle": "Für den Auftraggeber sichtbare Daten der Sicherheitskraft",
       "tabContent": "Inhalt",
-      "tabGuard": "Datenschutz der Sicherheitskraft"
+      "tabGuard": "Datenschutz der Sicherheitskraft",
+      "serviceDescriptionRequired": "Gib eine Beschreibung des Dienstes ein.",
+      "certDatesRequired": "Gib das Erwerbsdatum und das Ablaufdatum an.",
+      "certDatesOrder": "Das Ablaufdatum darf nicht vor dem Erwerbsdatum liegen."
     },
     "mobileHub": {
       "loadError": "Die Einstellungen konnten nicht geladen werden.",
@@ -8097,7 +8182,7 @@
       "emailHeaderDesc": "Hintergrund des Streifens, in dem Ihr Logo steht. Ein dunkler Ton empfiehlt sich, damit der weiße Text lesbar ist.",
       "panelInfoBefore": "Und die Farbe des Dashboards? Die gehört Ihnen, nicht der Firma: Sie wird gewählt unter",
       "panelInfoStrong": "Mein Konto › Erscheinungsbild",
-      "panelInfoAfter": " und wird in Ihrem Browser gespeichert, wie der Dunkelmodus. Der Administrator entscheidet nicht, mit welchen Farben sein Team acht Stunden am Tag arbeitet.",
+      "panelInfoAfter": " und wird in Ihrem Konto gespeichert, wie der Dunkelmodus. Der Administrator entscheidet nicht, mit welchen Farben sein Team acht Stunden am Tag arbeitet.",
       "saveBtn": "Marke speichern"
     },
     "phoneField": {
@@ -8218,7 +8303,8 @@
       "platformHeading": "Schutzmaßnahmen der Plattform",
       "platformHint": "{{marca}} verwaltet sie für alle Firmen. Hier können Sie sehen, ob sie aktiv sind.",
       "statusActive": "Aktiv",
-      "statusInactive": "Inaktiv"
+      "statusInactive": "Inaktiv",
+      "minLengthOutOfRange": "Die Mindestlänge muss eine Zahl zwischen {{min}} und {{max}} sein."
     },
     "central": {
       "loadError": "Die Einstellungen konnten nicht geladen werden.",
@@ -8347,7 +8433,8 @@
       "departmentPlaceholder": "Abteilung",
       "selectGuardsLabel": "Bestimmte Wachkräfte auswählen",
       "selectGuardsPlaceholder": "Wachkräfte auswählen…",
-      "searchGuardPlaceholder": "Wachkraft suchen…"
+      "searchGuardPlaceholder": "Wachkraft suchen…",
+      "editDialogTitle": "Dokument bearbeiten"
     },
     "notificationForm": {
       "checkInOutLabel": "Wachkraft ein-/ausgestempelt",
@@ -8455,7 +8542,8 @@
       "quitarAriaLabel": "Wir begehen {{name}} nicht",
       "quitarTitle": "Ihr Unternehmen begeht diesen Feiertag nicht",
       "quitadosTitle": "Nicht begangene Feiertage",
-      "devolver": "Wieder begehen"
+      "devolver": "Wieder begehen",
+      "deleteConfirm": "Feiertag „{{name}}“ löschen?"
     },
     "userRoles": {
       "actionBtn": "Aktion",
@@ -8850,7 +8938,10 @@
       "bitacoraEmpty": "Keine Einträge im Logbuch",
       "bitacoraEmptyHint": "Notizen, die das Wachpersonal in der App erfasst, erscheinen hier.",
       "novedadAbierta": "Offen",
-      "novedadCerrada": "Geschlossen"
+      "novedadCerrada": "Geschlossen",
+      "needDays": "Wählen Sie mindestens einen Wochentag",
+      "needDayOfMonth": "Geben Sie den Tag des Monats an (1 bis 31)",
+      "needDate": "Geben Sie das Datum an"
     },
     "guards": {
       "added": "Zugewiesene Wachkraft",
@@ -8964,7 +9055,8 @@
         "truck": "Lkw",
         "van": "Transporter"
       },
-      "exportError": "Die Datei konnte nicht erstellt werden"
+      "exportError": "Die Datei konnte nicht erstellt werden",
+      "invalidNumber": "Kapazität und Verweildauer müssen 0 oder mehr sein (leer = ohne Limit)."
     },
     "patrolQr": {
       "empty": "Es gibt noch keine Kontrollpunkte. Legen Sie sie im Bereich „Sicherheitsrundgänge“ an und kehren Sie hierher zurück, um die QR-Codes zu erzeugen.",
@@ -8981,7 +9073,8 @@
       "verifyNote2": "Scans außerhalb der Reichweite werden als „außerhalb des Standorts“ erfasst.",
       "popupBlocked": "Der Browser hat das Druckfenster blockiert.",
       "printFailed": "Das Blatt konnte nicht vorbereitet werden",
-      "qrFailed": "Der Code konnte nicht erzeugt werden"
+      "qrFailed": "Der Code konnte nicht erzeugt werden",
+      "radiusPerPoint": "dem Radius des jeweiligen Punkts (bei jedem angegeben)"
     },
     "rondaHistory": {
       "empty": "Für dieses Objekt sind keine Rundgänge erfasst.",
@@ -9003,7 +9096,7 @@
       "deleteFailed": "Löschen nicht möglich",
       "desc": "Beschreibung",
       "empty": "Es gibt noch keine Rundgänge. Legen Sie den ersten mit „Neuer Rundgang“ an.",
-      "hint": "Legen Sie Rundgänge und ihre Kontrollpunkte an. Erzeugen Sie danach die QR-Codes im Reiter „QR-Codes für Rundgänge erzeugen“.",
+      "hint": "Legen Sie Rundgänge und ihre Kontrollpunkte an. Erzeugen Sie danach die QR-Codes im Reiter „{{tab}}“.",
       "name": "Name",
       "nameRequired": "Geben Sie einen Namen ein",
       "new": "Neuer Rundgang",
@@ -9043,7 +9136,8 @@
     "geofence": {
       "centerPinTitle": "Standort des Objekts (zum Anpassen ziehen)",
       "needThreePoints": "Fügen Sie mindestens 3 Punkte hinzu, um den Geofence zu schließen.",
-      "sizeOk": "Passende Größe zum Ein- und Ausstempeln."
+      "sizeOk": "Passende Größe zum Ein- und Ausstempeln.",
+      "radiusRange": "Der Geofence-Radius muss zwischen {{min}} und {{max}} {{unidad}} liegen."
     },
     "overview": {
       "locationSaveError": "Der Standort konnte nicht gespeichert werden",
@@ -9429,7 +9523,12 @@
       "nuevoCorreoCom": "neu@email.com",
       "perfilActualizadoCorrectamente": "Profil erfolgreich aktualisiert.",
       "esElNombreConEl": "Unter diesem Namen sieht dich der Rest des Teams.",
-      "verificado": "Verifiziert"
+      "verificado": "Verifiziert",
+      "codigoNoEntregado": "Wir konnten den Code nicht an diese Nummer senden. Prüfe die Nummer oder versuche es später erneut.",
+      "codigoDePrueba": "In dieser Umgebung gibt es keinen SMS-Anbieter. Testcode: {{code}}",
+      "escribeTuNumeroAntes": "Gib deine Handynummer ein, bevor du sie bestätigst.",
+      "correoNoValido": "Diese E-Mail-Adresse ist ungültig.",
+      "esTuCorreoActual": "Das ist bereits deine E-Mail-Adresse."
     },
     "Routes": {
       "turnoDia": "Tagschicht",
@@ -9720,7 +9819,10 @@
       "yaPuedesEntrar": "Sie können sich jetzt anmelden",
       "tuEmpresaTeAsignaraAUnPuesto": "Ihr Unternehmen weist Sie einem Posten zu.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Melden Sie sich mit Ihrem Benutzernamen und Passwort an.",
-      "cuentaListaDescargaLaApp": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die App herunter, um Ihren Sicherheitsdienst vom Telefon aus zu überwachen und zu verwalten."
+      "cuentaListaDescargaLaApp": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die App herunter, um Ihren Sicherheitsdienst vom Telefon aus zu überwachen und zu verwalten.",
+      "tuPuestoYTurnosEnLaApp": "Ihr Posten und Ihre Schichten erscheinen in der App.",
+      "iniciaConTuUsuario": "Melden Sie sich mit Ihrem Benutzernamen und Passwort an.",
+      "iniciaCuandoEsteActiva": "Melden Sie sich an, sobald Ihr Konto aktiv ist."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mein Standort",
@@ -9789,6 +9891,9 @@
       "reconocProm": "Ø Quitt."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "System",
+      "porActor": "von {{nombre}}",
       "descripcion": "Beschreibung",
       "disposicion": "Abschlussgrund",
       "sinEntradasDeAuditoria": "Keine Protokolleinträge",
@@ -9862,6 +9967,7 @@
       "guardarNota": "Notiz speichern"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Die Zonennummer ist erforderlich",
       "agenciaPsapPolicia": "Behörde / PSAP (Polizei)",
       "camara": "Kamera",
       "comunicacion": "Kommunikation",
@@ -10325,7 +10431,16 @@
       "nDocumentosSubidos_one": "{{count}} Dokument hochgeladen",
       "nDocumentosSubidos_other": "{{count}} Dokumente hochgeladen",
       "nDocumentosSubidos_few": "{{count}} Dokumente hochgeladen",
-      "nDocumentosSubidos_many": "{{count}} Dokumente hochgeladen"
+      "nDocumentosSubidos_many": "{{count}} Dokumente hochgeladen",
+      "agrupar": {
+        "creando": "Wird erstellt…",
+        "crear": "Ordner erstellen",
+        "resumen": "{{count}} Dokument(e) markiert. Der Ordner erscheint unter „Übergaben an den Auftraggeber“ und wird von dort in der App oder über einen privaten Link geteilt.",
+        "nombre": "Ordnername",
+        "desde": "Zeitraum von",
+        "hasta": "Zeitraum bis",
+        "nota": "Hinweis für den Auftraggeber (optional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Nach ID, Titel oder Standort suchen",
@@ -10573,7 +10688,8 @@
       "invitarAcceso": "Zugang einladen",
       "revocarAcceso": "Zugang widerrufen",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Webportal"
+      "portalWeb": "Webportal",
+      "nombreDeLaPersona": "Name der Person (optional)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Demodaten",
@@ -10788,7 +10904,8 @@
       "noSeEncontroElVigilante": "Der angeforderte Wachmann wurde nicht gefunden.",
       "errorGuardandoCambios": "Fehler beim Speichern der Änderungen: {{msg}}",
       "datosPersonales": "Persönliche Daten",
-      "guardarCambios": "Änderungen speichern"
+      "guardarCambios": "Änderungen speichern",
+      "cambiosGuardados": "Änderungen gespeichert"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adresse der Firma*",
@@ -11897,7 +12014,8 @@
       "notasPrivadasInstruccionesEspeciales": "Private Notizen, besondere Anweisungen…",
       "centroDeConvencionesQuito": "Kongresszentrum, Quito",
       "clienteRequerido": "Kunde erforderlich",
-      "fechasYLugar": "Daten und Ort"
+      "fechasYLugar": "Daten und Ort",
+      "finAntesDeInicio": "Das Enddatum darf nicht vor dem Startdatum liegen"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Noch keine IP-Funkgeräte",
@@ -12139,6 +12257,7 @@
       "sinDescansoElSupervisorTrabaja": "Ohne Ruhetag: Die Einsatzleitung arbeitet jeden Tag."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Keine Tage ausgewählt",
       "asignacion": "Zuweisung",
       "descripcion": "Beschreibung",
       "descripcionDeLaRuta": "Beschreibung der Route",
@@ -13069,7 +13188,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} von {{total}}",
       "sinEstacion": "Keine Station",
       "sucediendoAhoraMismo": "Findet gerade statt",
-      "turnos": "Schichten"
+      "turnos": "Schichten",
+      "falta": "Fehlzeit"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -13222,7 +13342,9 @@
       "eliminado": "Gelöscht.",
       "errorAlEliminar": "Fehler beim Löschen.",
       "lugar": "Ort",
-      "mostrandoRango": "{{desde}}–{{hasta}} von {{total}}"
+      "mostrandoRango": "{{desde}}–{{hasta}} von {{total}}",
+      "salidaAntesDeEntrada": "Der Ausgang kann nicht vor dem Eingang liegen.",
+      "fotoNoSubida": "Der Besuch wurde gespeichert, aber das Ausweisfoto konnte nicht hochgeladen werden. Fügen Sie es später im Eintrag hinzu."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Fortschritt der Einrichtung",
@@ -13283,7 +13405,8 @@
       "laZonaYLosPuestosQueCubre": "Die Zone und die Posten, die dieser Vorgesetzte abdeckt, sowie sein erstellter Dienstplan werden in eigenen Registerkarten angezeigt.",
       "limitaLoQueEsteSupervisorVe": "Begrenzt, was dieser Vorgesetzte in seiner App sieht: Anwesenheitsausnahmen und Stempelanfragen.",
       "nombres": "Vornamen",
-      "perfilActualizado": "Profil aktualisiert"
+      "perfilActualizado": "Profil aktualisiert",
+      "identidadDeLaCuenta": "Vor- und Nachnamen werden hier gespeichert. Die E-Mail gehört zum Anmeldekonto und wird nicht in diesem Profil geändert."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Noch keine Supervisor-Positionen",
@@ -13539,7 +13662,13 @@
       "calendario": "Kalender",
       "vacioAyuda": "Urlaub, Abwesenheiten und entschuldigte Fehlzeiten des ganzen Personals, ob hier, im Dienstplan oder in der App der Wache erfasst.",
       "registrarElPrimero": "Abwesenheit erfassen",
-      "vacioTitulo": "Noch keine Abwesenheiten oder Urlaube"
+      "vacioTitulo": "Noch keine Abwesenheiten oder Urlaube",
+      "aprobarTitulo": "Abwesenheit genehmigen",
+      "aprobarMensaje": "Die Abwesenheit von {{nombre}} wird genehmigt: Die Schichten an diesen Tagen werden zu Lücken in der Abdeckung, und die Person wird benachrichtigt.",
+      "rechazarTitulo": "Abwesenheit ablehnen",
+      "rechazarMensaje": "Die Abwesenheit von {{nombre}} wird abgelehnt, und die Person wird benachrichtigt. Du kannst den Grund angeben (optional).",
+      "rechazarMotivo": "Grund (optional)",
+      "solicitudEliminada": "Antrag gelöscht"
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -13855,6 +13984,7 @@
       "reintentar": "Erneut versuchen"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "Der aktuelle Schlüssel funktioniert sofort nicht mehr: Das Relay dieses Standorts trennt sich, bis Sie den neuen Link installieren.",
       "aunNoHaySitiosRemotos": "Noch keine externen Standorte",
       "direccionDeRecepcion": "Empfangsadresse:",
       "seGeneraraUnaClaveDe": "Es werden ein Standortschlüssel und ein Veröffentlichungs-Token (verschlüsselt) erzeugt.",
@@ -14189,7 +14319,8 @@
       "cicloDesdeMasN": "Zyklus ab {{fecha}} +{{n}} T",
       "estacionesQueCubre_one": "Abgedeckte Standorte ({{count}})",
       "estacionesQueCubre_other": "Abgedeckte Standorte ({{count}})",
-      "estacionesQueCubre": "Abgedeckte Standorte ({{count}})"
+      "estacionesQueCubre": "Abgedeckte Standorte ({{count}})",
+      "eliminarElPuesto": "Posten „{{nombre}}“ löschen?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",
@@ -14224,7 +14355,8 @@
       "viaPush": "Push",
       "invitacionReenviadaA": "Einladung erneut an {{email}} gesendet.",
       "invitacionYaEnviada": "Die Einladung wurde vor wenigen Minuten bereits an {{email}} gesendet. Bitten Sie die Person, Posteingang und Spam-Ordner zu prüfen. Sie können sie in {{faltan}} Min. erneut senden.",
-      "invitacionNoSalio": "Die E-Mail an {{email}} konnte nicht gesendet werden. Bitte versuchen Sie es in ein paar Minuten erneut."
+      "invitacionNoSalio": "Die E-Mail an {{email}} konnte nicht gesendet werden. Bitte versuchen Sie es in ein paar Minuten erneut.",
+      "correoDeRestablecimientoNoEnviado": "Die E-Mail zum Zurücksetzen an {{email}} konnte nicht gesendet werden. Bitte versuche es in einigen Minuten erneut."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Passen Sie die Suche an oder erfassen Sie einen neuen Besucher.",
@@ -14237,6 +14369,8 @@
       "enCurso": "Laufend"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "Der Vorfall existiert nicht oder ist nicht mehr verfügbar.",
+      "incidenteNoEncontrado": "Vorfall nicht gefunden",
       "escribeUnComentario": "Bitte schreiben Sie einen Kommentar",
       "noSePudoAgregarComentario": "Der Kommentar konnte nicht hinzugefügt werden",
       "noSePudieronCargarDetalles": "Die Details des Vorfalls konnten nicht geladen werden",
@@ -14264,6 +14398,7 @@
       "generarYCopiar": "Erstellen und kopieren"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Die Änderungen wurden gespeichert, aber diese Dateien konnten nicht hochgeladen werden: {{archivos}}.",
       "incidenteActualizado": "Vorfall aktualisiert",
       "errorAlActualizarIncidente": "Der Vorfall konnte nicht aktualisiert werden",
       "editarIncidente": "Vorfall bearbeiten",
@@ -14271,6 +14406,7 @@
       "asignarVigilante": "Wachkraft zuweisen"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Der Vorfall wurde erstellt, aber diese Dateien konnten nicht hochgeladen werden: {{archivos}}. Fügen Sie sie über Bearbeiten hinzu.",
       "errorAlCrearIncidente": "Der Vorfall konnte nicht erstellt werden",
       "nuevoIncidente": "Neuer Vorfall",
       "registraUnNuevoIncidenteY": "Erfassen Sie einen neuen Vorfall und benachrichtigen Sie die zuständige Wachkraft.",
@@ -14337,7 +14473,8 @@
       "asignarAEstacionNombre": "{{name}} einer Station zuweisen",
       "seAsignaraAlPrimerPuesto": "Wird dem ersten freien Posten der Station zugewiesen und erscheint im Dienstplan.",
       "asignando": "Wird zugewiesen...",
-      "asignar": "Zuweisen"
+      "asignar": "Zuweisen",
+      "correoDeRestablecimientoNoEnviado": "Die E-Mail zum Zurücksetzen an {{email}} konnte nicht gesendet werden. Bitte versuche es in einigen Minuten erneut."
     },
     "GuardHorarioPage": {
       "sinHorario": "Kein Dienstplan",
@@ -14391,7 +14528,9 @@
       "inscripciones": "Einschreibungen",
       "completaron": "Abgeschlossen",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lektionen"
+      "lecciones": "Lektionen",
+      "pistaParaTodos": "Allen zugewiesen: zählt, wer den Kurs geöffnet hat",
+      "nDeMCompletaronParaTodos": "Allen Wachkräften zugewiesen. Jede erscheint hier, sobald sie den Kurs öffnet: {{done}} von {{total}} haben ihn abgeschlossen."
     },
     "VehiclesPage": {
       "vehiculo": "Fahrzeug",
@@ -14614,7 +14753,8 @@
       "losPermisosYLicenciasQue": "Die Abwesenheiten und Zertifikate, die Ihr Personal beantragen oder nachweisen kann.",
       "tipoSDeLicenciaEliminado": "Ausweisart(en) gelöscht",
       "tipoDeLicenciaActualizado": "Ausweisart aktualisiert",
-      "tipoDeLicenciaCreado": "Ausweisart erstellt"
+      "tipoDeLicenciaCreado": "Ausweisart erstellt",
+      "confirmarEliminacionTexto": "{{count}} Lizenztyp(en) löschen? Das lässt sich nicht rückgängig machen."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Die Nutzung des Assistenten konnte nicht geladen werden.",
@@ -14888,7 +15028,17 @@
       "noPudimosGuardarElDocumento": "Das Dokument konnte nicht gespeichert werden.",
       "publicaElReglamentoInterno": "Veröffentlichen Sie die Betriebsordnung und Sie sehen, wer sie unterschrieben hat.",
       "publicar": "Veröffentlichen",
-      "reglamento": "Ordnung"
+      "reglamento": "Ordnung",
+      "estado": "Status",
+      "publicada": "Veröffentlicht",
+      "borrador": "Entwurf",
+      "ponleUnTitulo": "Gib dem Dokument einen Titel.",
+      "algunosNoSePudieron": "{{failed}} von {{total}} konnten nicht geändert werden: {{reason}}",
+      "documentosPublicados": "Dokumente veröffentlicht",
+      "documentosABorrador": "Dokumente in Entwurf verschoben",
+      "documentosEliminados": "Dokumente gelöscht",
+      "confirmarEliminacion": "Löschen bestätigen",
+      "confirmarEliminacionTexto": "{{count}} Dokument(e) löschen? Wer sie unterschreiben musste, sieht sie nicht mehr. Das lässt sich nicht rückgängig machen."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Ziehen oder klicken zum Anhängen",
@@ -14946,7 +15096,9 @@
     "Incident": {
       "informeDeIncidente": "Vorfallbericht",
       "sinCaso": "Zu diesem Vorfall gibt es keinen verknüpften Notfall.",
-      "descripcion": "Gemeldete Vorfälle: Priorität, Status, Ort und Beschreibung pro Posten."
+      "descripcion": "Gemeldete Vorfälle: Priorität, Status, Ort und Beschreibung pro Posten.",
+      "estadoAbierto": "Offen",
+      "estadoCerrado": "Geschlossen"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Dienstausweise und Lizenzen des Personals mit ihren Ablaufdaten.",
@@ -15249,7 +15401,12 @@
       "rangoRegistros_few": "Zeitraum: {{range}} · {{count}} Datensätze",
       "rangoRegistros_many": "Zeitraum: {{range}} · {{count}} Datensätze",
       "informeExportado": "Bericht exportiert",
-      "sinFilasParaExportar": "Keine Datensätze zum Exportieren"
+      "sinFilasParaExportar": "Keine Datensätze zum Exportieren",
+      "seudonimoCliente": "Kunde",
+      "seudonimoSede": "Standort",
+      "seudonimoPuesto": "Posten",
+      "sinCoincidencias": "Kein Eintrag passt zu „{{q}}“.",
+      "rangoInvalido": "Prüfe die Daten: „Von“ darf nicht nach „Bis“ liegen."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Nächstes Objekt mit Wachkraft",
@@ -15570,7 +15727,9 @@
       "inicio": "Start",
       "miCuenta": "Mein Konto",
       "vistaPreviaAppMiSeguridadCliente": "Vorschau · App {{app}} (Kunde)",
-      "seguridad": "Sicherheit"
+      "seguridad": "Sicherheit",
+      "nombreDeEjemplo": "Anna Schmidt",
+      "sitioDeEjemplo": "Zentralgebäude"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -15747,7 +15906,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Frei (Rechtsklick: diesen Tag abdecken)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (Doppelklick zum Bearbeiten)",
       "sinConfigurar": "Nicht konfiguriert",
-      "turnosDe12hRotativo": "12-h-Schichten · T/N rotierend"
+      "turnosDe12hRotativo": "12-h-Schichten · T/N rotierend",
+      "fueraDeSuAsignacion": "{{nombre}} — an diesem Tag diesem Posten nicht zugewiesen"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Jeder Platz mit eigenem Zyklus — einer macht 2 Vormittage und 3 Nachmittage, ein anderer 3 und 2.",
@@ -15932,7 +16092,14 @@
       "reabrirPeriodoMensaje": "Stempelungen, Schichten und Markierungen ab diesem Tag können wieder geändert werden. Bereits genehmigte oder exportierte Zeitkarten bleiben unverändert. Geben Sie den Grund an: Er wird protokolliert.",
       "reabrirPeriodoTitulo": "Abrechnung ab {{desde}} wieder öffnen?",
       "generarCerrado": "Dieser Zeitraum ist abgeschlossen. Öffne ihn erneut, um neu zu berechnen.",
-      "enviarAPago": "Zur Zahlung senden"
+      "enviarAPago": "Zur Zahlung senden",
+      "exportadaConRechazos": "Lohnliste exportiert ohne {{count}} Zeitkarte(n), die nicht ausgezahlt werden:",
+      "exportadaConRechazos_one": "Lohnliste exportiert ohne 1 Zeitkarte, die nicht ausgezahlt wird:",
+      "exportadaConRechazos_few": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "exportadaConRechazos_many": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "exportadaConRechazos_other": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
+      "tarifaInvalida": "Der Satz muss größer als null sein. Zum Entfernen das Feld leer lassen.",
+      "tarifaQuitada": "Satz von {{nombre}} entfernt. Erzeugen Sie die Periode neu, um es anzuwenden."
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",
@@ -16770,9 +16937,11 @@
       "filasNoImportadas_few": "{{count}} Zeilen konnten nicht importiert werden. Prüfe die Details.",
       "filasNoImportadas_many": "{{count}} Zeilen konnten nicht importiert werden. Prüfe die Details.",
       "errorAlImportar": "Import fehlgeschlagen",
-      "camposObligatoriosVacios": "Einige Pflichtfelder sind leer. Prüfe: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Einige Pflichtfelder sind leer. Prüfe: name, address.",
       "importarClientesDesdeExcel": "Kunden aus Excel importieren",
-      "columnasOpcionales": "Optionale Spalten:"
+      "columnasOpcionales": "Optionale Spalten:",
+      "columnasPorNombre": "Die erste Zeile enthält die Spaltennamen; die Reihenfolge spielt keine Rolle.",
+      "avisoInvitacion": "Jeder importierte Kunde mit E-Mail-Adresse erhält sofort die Willkommenseinladung zur App."
     },
     "CoBrowseAgent": {
       "soporte": "Support",
@@ -16792,7 +16961,8 @@
       "hintImprimir": "Öffnet die Druckansicht des Browsers",
       "enviarPorCorreo": "Per E-Mail senden",
       "hintEnviarPorCorreo": "Sendet den Bericht an einen Empfänger",
-      "exportando": "Wird exportiert…"
+      "exportando": "Wird exportiert…",
+      "descargarComo": "Herunterladen als"
     },
     "ExportarPeriodo": {
       "semana": "Woche",
@@ -16900,7 +17070,10 @@
       "tuEmpresa": "Ihr Unternehmen",
       "volver": "Zurück",
       "registrarse": "Registrieren",
-      "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv."
+      "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv.",
+      "invitacionYaUsada": "Diese Einladung wurde bereits verwendet: Ihr Konto ist aktiv.",
+      "entraEnLaApp": "Melden Sie sich in der App der Sicherheitskraft mit Benutzername und Passwort an. Wenn Sie das Passwort nicht mehr wissen, bitten Sie Ihr Unternehmen, es zurückzusetzen.",
+      "tuCuentaEstaLista": "Ihr Konto ist bereit."
     },
     "InspectionPreview": {
       "alerta": "Warnung",
@@ -17228,7 +17401,9 @@
       "cliente": "Kunde",
       "todosLosClientes": "Alle Kunden",
       "sede": "Standort",
-      "todasLasSedes": "Alle Standorte"
+      "todasLasSedes": "Alle Standorte",
+      "nHuecos_one": "{{count}} Lücke",
+      "nHuecos_other": "{{count}} Lücken"
     },
     "PuestaEnMarcha": {
       "titulo": "Einrichtung · {{hechos}} von {{total}}",
@@ -17375,8 +17550,8 @@
       "publicar": "Veröffentlichen",
       "borrador": "Entwurf bis zur Veröffentlichung",
       "parecido": "Stimmt zu {{n}} % mit dem echten Dienstplan überein",
-      "unCambio": "1 Änderung im Entwurf",
-      "cambios": "{{n}} Änderungen im Entwurf",
+      "unCambio": "1 Bearbeitung",
+      "cambios": "{{n}} Bearbeitungen",
       "subtitulo": "Sagen Sie, was jeder Posten braucht, geben Sie jedem seine Rotation und lassen Sie die Springer den Rest abdecken.",
       "titulo": "Planer",
       "sinPuestos": "Noch keine Posten zu planen.",
@@ -18294,6 +18469,10 @@
         "vacio": "Keine ausgestellten Lohnlisten",
         "vacioDesc": "Solange Lohnabrechnungen ausgeschaltet ist, werden nur veröffentlichte Lohnlisten angezeigt.",
         "noEmitida": "Nur bereits ausgestellte Lohnlisten und Lohnabrechnungen können angesehen werden."
+      },
+      "sinPermiso": {
+        "titulo": "Ihre Rolle kann Lohnabrechnungen nicht öffnen",
+        "desc": "Ihrer Rolle fehlen die Berechtigungen für Lohnabrechnungen (Abrechnungen und Lohnprofile ansehen und bearbeiten). Eine Administratorin oder ein Administrator kann sie unter Einstellungen › Rollen vergeben."
       }
     },
     "ClientBillingContract": {
@@ -18506,7 +18685,8 @@
         "contratoHint": "Optional: übernimmt Zahlungsziel und Steuerbefreiung.",
         "sinContrato": "Ohne Vertrag",
         "periodoDesde": "Zeitraum von",
-        "periodoHasta": "bis"
+        "periodoHasta": "bis",
+        "numeroInvalido": "Menge und Preis müssen Zahlen sein (zum Beispiel 1500 oder 12,50)."
       },
       "ajustes": {
         "si": "Ja",
@@ -18577,7 +18757,10 @@
         "validezCotizacion": "Gültigkeit des Angebots (Tage)",
         "validezCotizacionHint": "Ohne Unterschrift in dieser Frist läuft das Angebot von selbst ab.",
         "terminosCotizacion": "Standardbedingungen der Angebote",
-        "terminosCotizacionHint": "Werden in jedes neue Angebot übernommen; Sie können sie pro Angebot ändern."
+        "terminosCotizacionHint": "Werden in jedes neue Angebot übernommen; Sie können sie pro Angebot ändern.",
+        "fueraDeRango": "„{{campo}}“ muss zwischen {{min}} und {{max}} liegen.",
+        "recordatorioInvalido": "Erinnerungen: „{{valor}}“ ist keine ganze Zahl von Tagen zwischen -30 und 180.",
+        "demasiadosRecordatorios": "Höchstens {{max}} Erinnerungen."
       },
       "recargo": {
         "lastMinute": "Kurzfristige Abdeckung",
@@ -18664,7 +18847,8 @@
         "minutosFacturables": "Abrechenbare Minuten",
         "editarLinea": "Position bearbeiten",
         "minutosHint": "Geplant: {{p}} · gearbeitet: {{w}}",
-        "excluirDeLaFactura": "Von der Rechnung ausschließen"
+        "excluirDeLaFactura": "Von der Rechnung ausschließen",
+        "revisionLista": "Bereit zur Prüfung durch den Kunden. Es wird keine E-Mail versendet: Kopieren Sie den Link und teilen Sie ihn mit dem Kunden."
       },
       "regla": {
         "usarElDeLaEmpresa": "Firmenwert verwenden",
@@ -18933,7 +19117,8 @@
         "pestanaDiseno": "Dokumentdesign",
         "pestanaTextos": "Texte",
         "validezYTerminosMovidos": "Gültigkeit, Einleitung und Bedingungen der Angebote finden Sie jetzt unter Texte."
-      }
+      },
+      "periodoAlReves": "Der Zeitraum endet, bevor er beginnt."
     },
     "ClientInvoices": {
       "pagadoTotal": "Insgesamt bezahlt",
@@ -19017,7 +19202,8 @@
         "noSeEnvio": "Die E-Mail konnte nicht gesendet werden. Prüfen Sie die Empfänger.",
         "enviadaOk": "Angebot gesendet",
         "enviarDesc": "PDF und Link zur Online-Unterschrift werden gesendet. Das Angebot gilt als gesendet.",
-        "enviar": "Senden"
+        "enviar": "Senden",
+        "noCancelar": "Nein, behalten"
       },
       "volver": "Zurück zu den Angeboten",
       "revision": "Revision {{n}}",
@@ -19460,7 +19646,12 @@
       "estaciones": "Posten",
       "plazas": "Plätze mit diesem Zyklus",
       "personas": "Personen",
-      "historial": "Und {{count}} beendete Zuweisungen, die es in ihrem Verlauf behalten."
+      "historial": "Und {{count}} beendete Zuweisungen, die es in ihrem Verlauf behalten.",
+      "enUsoConteo": "Posten: {{estaciones}} · Plätze: {{plazas}} · Personen: {{personas}}",
+      "confirmarBorrarTitulo": "„{{name}}“ löschen?",
+      "confirmarArchivarTitulo": "„{{name}}“ archivieren?",
+      "confirmarBorrarTexto": "Niemand nutzt es. Es wird endgültig gelöscht und lässt sich nicht wiederherstellen.",
+      "confirmarArchivarTexto": "Es wird beim Erstellen von Dienstplänen nicht mehr angeboten. Wer es bereits nutzt, behält es, und du kannst es jederzeit wieder anbieten."
     },
     "HorarioDeOficina": {
       "pestana": "Arbeitszeit",
@@ -19547,7 +19738,9 @@
       "sinRequisitoAyuda": "Hier erscheinen Fehlzeiten, leere Plätze und Abwesenheiten ohne Vertretung. Damit klar ist, was fehlt, muss jede Station sagen, wie viele Wachleute sie braucht.",
       "irAEstaciones": "Bedarf einer Station festlegen",
       "sinRequisitoTitulo": "Noch keine Station mit Bedarf",
-      "ofrecido": "Angeboten"
+      "ofrecido": "Angeboten",
+      "sede": "Standort",
+      "todasLasSedes": "Alle Standorte"
     },
     "HorarioModos": {
       "modos": "Dienstplanmodus",
@@ -19682,6 +19875,17 @@
     "RutaConPermiso": {
       "titulo": "Kein Zugriff auf diese Seite",
       "descripcion": "Ihre Rolle kann diese Seite nicht sehen. Wenn Sie sie brauchen, fragen Sie einen Administrator."
+    },
+    "training": {
+      "puntajeFueraDeRango": "Die Bestehensgrenze muss eine ganze Zahl zwischen 1 und 100 sein.",
+      "puntosFueraDeRango": "Die Punkte müssen eine ganze Zahl zwischen 0 und 100000 sein."
+    },
+    "incidentPriority": {
+      "critical": "Kritisch",
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig",
+      "none": "Ohne Priorität"
     },
     "CampoDeMarca": {
       "elige": "Marke wählen",
@@ -19930,7 +20134,7 @@
     "tagLabel": "Kennzeichnung",
     "bitacorasImprimir": "Wachbücher – Drucken",
     "exportar": "Exportieren",
-    "sinVigilantesEnEstacion": "Dieser Station sind noch keine Wachleute zugewiesen. Weisen Sie auf der Seite des Objekts einen zu, um den Besuch erfassen zu können."
+    "sinVigilantesEnEstacion": "Dieser Station sind noch keine Wachleute zugewiesen."
   },
   "app": {
     "loading": "Wird geladen…",
@@ -20592,7 +20796,7 @@
       "mileageRequired": "Anfangskilometerstand erforderlich",
       "modelRequired": "Modell erforderlich",
       "plateRequired": "Kennzeichen erforderlich",
-      "vinAlphanumeric": "Ungültige VIN (muss genau 17 alphanumerische Zeichen haben)",
+      "vinAlphanumeric": "Ungültige VIN (muss genau 17 Buchstaben oder Ziffern haben; die Buchstaben I, O und Q kommen nicht vor)",
       "vinLength": "Ungültige VIN (muss genau 17 Zeichen haben)",
       "yearInvalid": "Ungültiges Jahr"
     }
@@ -21887,6 +22091,7 @@
       "cerrado_por_persona": "von einem Menschen geschlossen"
     },
     "ajustes": {
+      "topeAjustado": "Das Limit liegt zwischen {{min}} und {{max}} Nachrichten: gespeichert wurde {{valor}}.",
       "titulo": "Einstellungen der Nachverfolgung",
       "activo": "{{agente}} verfolgt nach",
       "activoHint": "Schreibt der Sicherheitskraft, sobald etwas nicht stimmt, und führt das Gespräch bis zum Abschluss.",

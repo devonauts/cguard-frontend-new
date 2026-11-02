@@ -640,6 +640,14 @@ function MonthStationBlockInner({
                   );
                 }
 
+                // Before the assignment starts (or after it ends) the day is
+                // not a rest day of this person here: «—», not «L» (QA 2026-11-01).
+                const fueraDeSuAsignacion =
+                  (!!assignment.startDate &&
+                    dateStr < String(assignment.startDate).slice(0, 10)) ||
+                  (!!assignment.endDate &&
+                    dateStr > String(assignment.endDate).slice(0, 10));
+
                 // Sin nadie que lo cubra: la «L» pelada. No hay nada que
                 // arrastrar aquí — lo arrastrable es la cobertura, y no la hay.
                 return (
@@ -648,11 +656,19 @@ function MonthStationBlockInner({
                     {...cartaProps}
                     className={`relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded${anillo}`}
                     style={{ background: "var(--glass-sunken)" }}
-                    title={t("ui.MonthStationBlock.libreClicDerechoCubrir", {
-                      defaultValue:
-                        "{{nombre}} — Libre (clic derecho: cubrir este día)",
-                      nombre: guardName,
-                    })}
+                    title={
+                      fueraDeSuAsignacion
+                        ? t("ui.MonthStationBlock.fueraDeSuAsignacion", {
+                            defaultValue:
+                              "{{nombre}} — sin asignación en este puesto ese día",
+                            nombre: guardName,
+                          })
+                        : t("ui.MonthStationBlock.libreClicDerechoCubrir", {
+                            defaultValue:
+                              "{{nombre}} — Libre (clic derecho: cubrir este día)",
+                            nombre: guardName,
+                          })
+                    }
                     onDoubleClick={() =>
                       h.setOverrideTarget({
                         guardId: assignment.guardId,
@@ -666,7 +682,7 @@ function MonthStationBlockInner({
                       className="text-[10px] font-bold"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      L
+                      {fueraDeSuAsignacion ? "—" : "L"}
                     </span>
                   </div>
                 );

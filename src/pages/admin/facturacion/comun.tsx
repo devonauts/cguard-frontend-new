@@ -208,6 +208,16 @@ export const mensajeDeError = (e: unknown, fallback: string): string => {
   return err?.message || fallback;
 };
 
+/**
+ * The error of a billing action, once. The API layer already toasts a failed
+ * request (`toastShown`); a second toast with the same text read as two
+ * errors («El pago supera el saldo pendiente…» twice, QA 2026-11-01).
+ */
+export const avisarError = (e: unknown, fallback: string): void => {
+  if ((e as { toastShown?: boolean } | null)?.toastShown) return;
+  toast.error(mensajeDeError(e, fallback));
+};
+
 /* ── Labels of the closed sets ────────────────────────────────────────────── */
 export function useEtiquetasDeFacturacion() {
   const { t } = useTranslation();
@@ -421,7 +431,7 @@ export function NuevaCorridaModal({
       await qc.invalidateQueries({ queryKey: [QK, "runs"] });
       onCreated(run);
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }
@@ -478,7 +488,11 @@ export function NuevaCorridaModal({
             <FormField label={t("ui.Facturacion.nuevaCorrida.desde", "El periodo empieza el")} required>
               <input className={FIELD_CLS} type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} />
             </FormField>
-            <FormField label={t("ui.Facturacion.nuevaCorrida.hasta", "y termina el")} required>
+            <FormField
+              error={periodStart && periodEnd && periodEnd < periodStart ? t("ui.Facturacion.periodoAlReves", "El periodo termina antes de empezar.") : undefined}
+              label={t("ui.Facturacion.nuevaCorrida.hasta", "y termina el")}
+              required
+            >
               <input className={FIELD_CLS} type="date" value={periodEnd} onChange={(e) => setPeriodEnd(e.target.value)} />
             </FormField>
           </>

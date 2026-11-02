@@ -342,8 +342,12 @@ export default function NominaRecords() {
     {
       key: "scheduledStart",
       header: t("ui.NominaRecords.programado", "Programado"),
+      // A day off from the Horario has no hours: its `scheduledStart` is the
+      // bare day, which read as «12:00 a. m. –» (QA 2026-11-01).
       render: (_v, r) =>
-        `${fmtTime(r.scheduledStart)} – ${fmtTime(r.scheduledEnd)}`,
+        r.esJornadaSinFichaje
+          ? "—"
+          : `${fmtTime(r.scheduledStart)} – ${fmtTime(r.scheduledEnd)}`,
     },
     {
       key: "punchInTime",
@@ -847,7 +851,7 @@ export default function NominaRecords() {
                   )}
                 </span>
               </span>
-              <span className="capitalize">{etiquetaDeRango(f.from, f.to)}</span>
+              <span>{etiquetaDeRango(f.from, f.to)}</span>
             </div>
           )}
           {errorCarga && (

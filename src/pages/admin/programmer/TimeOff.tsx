@@ -5,6 +5,7 @@ import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { promptDialog } from "@/components/ui/promptDialog";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,27 +78,25 @@ import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 import AusenciasCalendario from "./AusenciasCalendario";
 import { rangoDelMes } from "./ausenciasCalendario";
 
-import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { soloFecha, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { ErrorDeCarga } from "@/components/kit/ErrorDeCarga";
 import { listarTodo } from "@/lib/listarCompleto";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
+const FORMATO_DE_DIA: Intl.DateTimeFormatOptions = {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+};
+
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-  // startDate/endDate are DATEONLY strings: `new Date("2026-07-20")` is UTC
-  // midnight, which rendered vacations one day EARLY for anyone west of UTC.
-  // Anchor the calendar date locally instead.
-  const s = String(iso).slice(0, 10);
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-  const d = m
-    ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
-    : new Date(iso);
-  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  // startDate/endDate are DATEONLY strings: a calendar day, printed as written
+  // (a local-midnight Date shown in the company zone moved it a day for anyone
+  // whose browser is east of the company). requestDate is an instant.
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(iso))
+    ? soloFechaCivil(iso, FORMATO_DE_DIA)
+    : soloFecha(iso, FORMATO_DE_DIA);
 }
 
 // ── component ────────────────────────────────────────────────────────────────
@@ -361,9 +360,14 @@ export default function TimeOff() {
   const cambiarEstado = async (
     id: string,
     status: "approved" | "rejected" | "cancelled",
+    comment?: string,
   ) => {
     try {
-      const updated = await timeOffRequestService.updateStatus(id, status);
+      const updated = await timeOffRequestService.updateStatus(
+        id,
+        status,
+        comment,
+      );
 
       setRecords((prev) =>
         prev.map((r) => (r.id === id ? { ...r, ...updated, stations: r.stations } : r)),
@@ -374,8 +378,46 @@ export default function TimeOff() {
       console.error(`Failed to set ${status}`, err);
     }
   };
-  const handleApprove = (id: string) => cambiarEstado(id, "approved");
-  const handleReject = (id: string) => cambiarEstado(id, "rejected");
+  const nombreDeSolicitud = (id: string) => {
+    const r: any = records.find((x) => x.id === id);
+
+    return r?.guard?.fullName ?? r?.guardName ?? "";
+  };
+  // Approving changes the schedule (shifts become gaps in Coverage) and the
+  // person is notified: both ask first, like Cancelar and Eliminar.
+  const handleApprove = async (id: string) => {
+    if (
+      !(await confirmDialog({
+        title: t("ui.TimeOff.aprobarTitulo", "Aprobar el permiso"),
+        message: t("ui.TimeOff.aprobarMensaje", {
+          nombre: nombreDeSolicitud(id),
+          defaultValue:
+            "Se aprueba el permiso de {{nombre}}: sus turnos de esos días quedan como hueco en Cobertura y se le avisa.",
+        }),
+        confirmText: t("ui.TimeOff.aprobar", "Aprobar"),
+        cancelText: t("common.back", "Atrás"),
+      }))
+    )
+      return;
+    await cambiarEstado(id, "approved");
+  };
+  const handleReject = async (id: string) => {
+    // The reason is optional; it reaches the person with the notice.
+    const motivo = await promptDialog({
+      title: t("ui.TimeOff.rechazarTitulo", "Rechazar el permiso"),
+      message: t("ui.TimeOff.rechazarMensaje", {
+        nombre: nombreDeSolicitud(id),
+        defaultValue:
+          "Se rechaza el permiso de {{nombre}} y se le avisa. Puedes decirle por qué (opcional).",
+      }),
+      placeholder: t("ui.TimeOff.rechazarMotivo", "Motivo (opcional)"),
+      confirmText: t("ui.TimeOff.rechazar", "Rechazar"),
+      cancelText: t("common.back", "Atrás"),
+    });
+
+    if (motivo === null) return;
+    await cambiarEstado(id, "rejected", motivo.trim() || undefined);
+  };
   const handleCancel = async (id: string) => {
     if (
       !(await confirmDialog({
@@ -415,6 +457,8 @@ export default function TimeOff() {
 
       setRecords((prev) => prev.filter((x) => x.id !== id));
       setPicked(null);
+      if (!r?.scheduleEffect || r.scheduleEffect.action === "none")
+        toast.success(t("ui.TimeOff.solicitudEliminada", "Solicitud eliminada"));
       avisarEfecto(r?.scheduleEffect);
     } catch (err) {
       console.error("Failed to delete", err);
@@ -521,7 +565,9 @@ export default function TimeOff() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide">
+      {/* pb-28: room under the last rows so the floating VigIA bubble never
+          sits on their actions (same as the other long admin pages). */}
+      <PageContainer className="pb-28" width="wide">
         <PageHeader
           icon={<CalendarOff />}
           title={t("sidebar.personal.ausencias", "Ausencias y permisos")}
@@ -987,7 +1033,7 @@ export default function TimeOff() {
                 header: t("comun.desde"),
                 render: (_v: any, row: any) =>
                   row.startDate
-                    ? `${row.startDate}${row.startTime ? " " + row.startTime : ""}`
+                    ? `${formatDate(row.startDate)}${row.startTime ? " " + row.startTime : ""}`
                     : "—",
               },
               {
@@ -995,7 +1041,7 @@ export default function TimeOff() {
                 header: t("comun.hasta"),
                 render: (_v: any, row: any) =>
                   row.endDate
-                    ? `${row.endDate}${row.endTime ? " " + row.endTime : ""}`
+                    ? `${formatDate(row.endDate)}${row.endTime ? " " + row.endTime : ""}`
                     : "—",
               },
               {

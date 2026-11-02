@@ -358,6 +358,13 @@ describe("agregarPersona · request bodies", () => {
       clientIds: [],
       stationIds: [],
     });
+    // Invited by e-mail, the phone typed goes along (it was lost).
+    expect(
+      cuerpoDeVigilante(ana({ celular: " +593 99 000 0301 " })),
+    ).toMatchObject({
+      contact: "ana@empresa.com",
+      phoneNumber: "+593 99 000 0301",
+    });
     expect(
       cuerpoDeVigilante(
         ana({ correo: "", sinCorreo: true, celular: "0991234567" }),
@@ -414,6 +421,8 @@ describe("agregarPersona · request bodies", () => {
 
     expect(cuerpoDeOficina(ana({ rol: "r1" }), sedes)).toMatchObject({
       name: "Ana Pérez",
+      firstName: "Ana",
+      lastName: "Pérez",
       email: "ana@empresa.com",
       role: "r1",
       postSiteIds: [],

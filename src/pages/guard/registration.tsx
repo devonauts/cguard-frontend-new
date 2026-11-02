@@ -6,6 +6,7 @@ import { Eye, EyeOff, CheckCircle2, Smartphone, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 import GuardInviteLayout from "./GuardInviteLayout";
+import { camposConError, primerPasoConErrores } from "./registroPasos";
 
 import { Input } from "@/components/ui/input";
 import { ApiService } from "@/services/api/apiService";
@@ -17,6 +18,15 @@ import { InfoNote } from "@/components/kit";
 import { correoVisible } from "@/lib/correoVisible";
 import i18n from "@/i18n";
 import { GENDER_OPTIONS, type Gender } from "@/lib/validators/create-profile.schema";
+
+// Guard app store listings (the same ones the invitation email uses);
+// overridable via env.
+const GUARD_PLAY_URL =
+  (import.meta as any).env?.VITE_GUARD_PLAY_URL ||
+  "https://play.google.com/store/apps/details?id=com.cguardpro.operaciones";
+const GUARD_IOS_URL =
+  (import.meta as any).env?.VITE_GUARD_IOS_URL ||
+  "https://apps.apple.com/app/id6776068129";
 
 /** Same values the rest of the CRM (and the securityGuard model) accept. */
 const GENDER_LABEL_KEY: Record<Gender, string> = {
@@ -115,6 +125,11 @@ export default function GuardRegistration() {
   // What the server said about a link it could not open (used, expired,
   // already accepted), in the person's language (QA-135).
   const [inviteError, setInviteError] = useState<string | null>(null);
+  // The link was already used (account active): no form, just say so.
+  const [invitacionCerrada, setInvitacionCerrada] = useState(false);
+  const [empresaDeLaInvitacion, setEmpresaDeLaInvitacion] = useState<
+    string | null
+  >(null);
   // QA-99: the office already completed this profile («Crear perfil»). The
   // guard does not retype it: they only choose their password.
   const [passwordOnly, setPasswordOnly] = useState(false);
@@ -129,6 +144,27 @@ export default function GuardRegistration() {
 
   /* El filo de error con el token, para que el borde y el mensaje sean el MISMO
      rojo del sistema (y no dos rojos parecidos que no casan en oscuro). */
+  const etiquetaDeCampo: Record<string, string> = {
+    firstName: t("comun.nombre"),
+    lastName: t("invite.guard.lastname", "Apellido"),
+    email: t("ui.registration.correoElectronico", "Correo electrónico"),
+    governmentId: t("invite.guard.gov_id", "Documento de identidad"),
+    birthDate: t("comun.fechaDeNacimiento"),
+    birthPlace: t("invite.guard.birthplace", "Lugar de nacimiento"),
+    gender: t("ui.registration.genero", "Género"),
+    maritalStatus: t("comun.estadoCivil"),
+    academicInstruction: t(
+      "ui.registration.formacionAcademica",
+      "Formación académica",
+    ),
+    bloodType: t("ui.registration.grupoSanguineo", "Grupo sanguíneo"),
+    guardCredentials: t("invite.guard.credentials", "Credenciales"),
+    address: t("ui.registration.direccion", "Dirección"),
+    phone: t("ui.registration.telefonoMovil", "Teléfono móvil"),
+    password: t("ui.registration.contrasena", "Contraseña"),
+    confirm: t("ui.registration.confirmarContrasena", "Confirmar contraseña"),
+  };
+
   const errorStyle = (field: string): React.CSSProperties | undefined =>
     errors[field]
       ? {
@@ -381,6 +417,12 @@ export default function GuardRegistration() {
           return;
         }
 
+        if (err?.data?.messageCode === "server.user.invitationAlreadyAccepted") {
+          setEmpresaDeLaInvitacion(err?.data?.tenantName || null);
+          setInvitacionCerrada(true);
+
+          return;
+        }
         if (typeof err?.data?.message === "string" && err.data.message)
           setInviteError(err.data.message);
         setInviteNotFound(true);
@@ -421,8 +463,16 @@ export default function GuardRegistration() {
           );
       }
       if (stepNum === 2) {
-        if (!governmentId?.trim()) nextErrors.governmentId = " ";
-        if (!birthDate) nextErrors.birthDate = " ";
+        if (!governmentId?.trim())
+          nextErrors.governmentId = t(
+            "ui.GuardRegistration.elDocumentoDeIdentidadEsObligatorio",
+            "El documento de identidad es obligatorio",
+          );
+        if (!birthDate)
+          nextErrors.birthDate = t(
+            "ui.GuardRegistration.laFechaDeNacimientoEsObligatoria",
+            "La fecha de nacimiento es obligatoria",
+          );
         if (!birthPlace?.trim())
           nextErrors.birthPlace = t(
             "invite.val.birthplace_required",
@@ -679,7 +729,14 @@ export default function GuardRegistration() {
     const merged = { ...errors1, ...errors2, ...errors3 };
 
     setErrors(merged);
-    if (Object.keys(merged).length) return;
+    if (Object.keys(merged).length) {
+      // The missing field may be on an earlier step: go there.
+      const paso = primerPasoConErrores(merged);
+
+      if (paso) setStep(paso);
+
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -1088,16 +1145,22 @@ export default function GuardRegistration() {
     <GuardInviteLayout
       subtitle={
         done
-          ? t(
-              "ui.GuardRegistration.tuSolicitudFueEnviada",
-              "Tu solicitud fue enviada a tu empresa de seguridad.",
-            )
-          : t("guard.registration_subtitle", {
-              defaultValue: "Completa tus datos para activar tu cuenta.",
-            })
+          ? cuentaActiva
+            ? t("ui.GuardRegistration.tuCuentaEstaLista", "Tu cuenta está lista.")
+            : t(
+                "ui.GuardRegistration.tuSolicitudFueEnviada",
+                "Tu solicitud fue enviada a tu empresa de seguridad.",
+              )
+          : invitacionCerrada
+            ? undefined
+            : t("guard.registration_subtitle", {
+                defaultValue: "Completa tus datos para activar tu cuenta.",
+              })
       }
       tenantLogoUrl={fetched?.tenantLogoUrl}
-      tenantName={fetched?.tenantName || fetched?.tenant?.name}
+      tenantName={
+        fetched?.tenantName || fetched?.tenant?.name || empresaDeLaInvitacion
+      }
       title={
         done
           ? t("guard.registration_success", "¡Registro completado!")
@@ -1159,8 +1222,8 @@ export default function GuardRegistration() {
                 <p className="text-xs text-muted-foreground">
                   {cuentaActiva
                     ? t(
-                        "ui.registration.tuEmpresaTeAsignaraAUnPuesto",
-                        "Tu empresa te asignará a un puesto.",
+                        "ui.registration.tuPuestoYTurnosEnLaApp",
+                        "Tu puesto y tus turnos aparecerán en la app.",
                       )
                     : t(
                         "ui.registration.tuEmpresaActivaraTuCuenta",
@@ -1178,14 +1241,32 @@ export default function GuardRegistration() {
                 <p className="text-xs text-muted-foreground">
                   {cuentaActiva
                     ? t(
-                        "ui.registration.googlePlayAppStoreIniciaYa",
-                        "Google Play · App Store. Inicia sesión con tu usuario y contraseña.",
+                        "ui.registration.iniciaConTuUsuario",
+                        "Inicia sesión con tu usuario y contraseña.",
                       )
                     : t(
-                        "ui.registration.googlePlayAppStoreInicia",
-                        "Google Play · App Store. Inicia sesión cuando tu cuenta esté activa.",
+                        "ui.registration.iniciaCuandoEsteActiva",
+                        "Inicia sesión cuando tu cuenta esté activa.",
                       )}
                 </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a
+                    className="cg-btn-glass cg-focus inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold"
+                    href={GUARD_PLAY_URL}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Google Play
+                  </a>
+                  <a
+                    className="cg-btn-glass cg-focus inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold"
+                    href={GUARD_IOS_URL}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    App Store
+                  </a>
+                </div>
                 {sinBuzon && usuarioParaEntrar && (
                   <p className="mt-1 text-xs text-foreground">
                     {t("ui.registration.entraConTuUsuario", {
@@ -1199,6 +1280,24 @@ export default function GuardRegistration() {
           </div>
           <p className="mt-6 text-xs text-muted-foreground">
             {t("ui.registration.yaPuedesCerrarEstaVentana")}
+          </p>
+        </div>
+      ) : invitacionCerrada ? (
+        <div className="space-y-3 text-center">
+          <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-primary/12">
+            <CheckCircle2 className="h-9 w-9 text-primary" />
+          </div>
+          <p className="text-sm font-semibold text-foreground">
+            {t(
+              "ui.GuardRegistration.invitacionYaUsada",
+              "Esta invitación ya se usó: tu cuenta ya está activa.",
+            )}
+          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {t(
+              "ui.GuardRegistration.entraEnLaApp",
+              "Entra en la app del vigilante con tu usuario y contraseña. Si no recuerdas la contraseña, pide a tu empresa que te la restablezca.",
+            )}
           </p>
         </div>
       ) : (
@@ -1218,6 +1317,19 @@ export default function GuardRegistration() {
               {t("guard.profile_already_complete", {
                 defaultValue:
                   "Tu empresa ya cargó tus datos. Solo falta que elijas tu contraseña para entrar a la app.",
+              })}
+            </InfoNote>
+          )}
+
+          {/* Several fields (selects, credentials, address) only turn red:
+              say in words what is missing. */}
+          {camposConError(errors).length > 0 && (
+            <InfoNote tone="warn">
+              {t("invite.val.revisaEstosDatos", {
+                defaultValue: "Revisa estos datos: {{campos}}",
+                campos: camposConError(errors)
+                  .map((k) => etiquetaDeCampo[k] || k)
+                  .join(", "),
               })}
             </InfoNote>
           )}
@@ -1602,7 +1714,10 @@ export default function GuardRegistration() {
                 <Input
                   className={formControl}
                   disabled={isLoading}
-                  placeholder={t("invite.guard.credentials", "Credenciales")}
+                  placeholder={t(
+                    "invite.guard.credentialsHint",
+                    "N.º de tu credencial o licencia de guardia",
+                  )}
                   style={errorStyle("guardCredentials")}
                   value={guardCredentials}
                   onChange={(e: any) => setGuardCredentials(e.target.value)}

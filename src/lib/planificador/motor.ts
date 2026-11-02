@@ -109,6 +109,12 @@ export interface Plan {
   cubre: Record<string, string[]>;
   /** `puesto|franja|día|persona`: esa cobertura la puso solo el sacafranco fijo. */
   auto: Record<string, 1>;
+  /**
+   * `puesto|franja|día|persona`: that cover is a shift that already exists in
+   * the live schedule (an extension, a cover made in Horario or «Sin cubrir»).
+   * It is a fact, not a proposal: only the person editing removes it.
+   */
+  real?: Record<string, 1>;
   /** `puesto|franja|día`: la central dejó ese hueco sin cubrir a propósito. */
   no: Record<string, 1>;
   reglas: Reglas;
@@ -239,6 +245,7 @@ export function quitar(plan: Plan, k: string, id: string): void {
   if (i >= 0) lista.splice(i, 1);
   if (!lista.length) delete plan.cubre[k];
   delete plan.auto[`${k}|${id}`];
+  if (plan.real) delete plan.real[`${k}|${id}`];
   delete indice(plan)[`${id}|${partir(k).d}`];
 }
 
@@ -840,6 +847,16 @@ export function sanear(plan: Plan): void {
     if (i < 0 || !(plan.cubre[k] || []).includes(x.slice(i + 1)))
       delete plan.auto[x];
   }
+  if (plan.real !== undefined) {
+    plan.real = obj(plan.real);
+    for (const x of Object.keys(plan.real!)) {
+      const i = x.lastIndexOf("|");
+      const k = x.slice(0, i);
+
+      if (i < 0 || !(plan.cubre[k] || []).includes(x.slice(i + 1)))
+        delete plan.real![x];
+    }
+  }
   for (const k of Object.keys(plan.no)) if (!claveBuena(k)) delete plan.no[k];
   // Las coberturas pudieron cambiar por debajo: el índice se rehace.
   INDICES.delete(plan);
@@ -891,6 +908,12 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
       // un aviso (descanso corto, días seguidos…) es decisión suya: aquí se
       // podaba la noche real de un sacafranco porque al día siguiente tenía
       // su día en otra caseta, y la hoja proponía a otro.
+      //
+      // A cover that is already a live shift is not judged at all: the
+      // colleague who doubles (extension) «already works that day» and a
+      // sacafranco covering on his rest day «is on his rest day», and pruning
+      // them here made «Publicar» delete the real shift (QA 2026-11-01, G1).
+      if (plan.real?.[`${k}|${id}`]) continue;
       const juez = plan.auto[`${k}|${id}`]
         ? impedimentoSinContar
         : bloqueoSinContar;

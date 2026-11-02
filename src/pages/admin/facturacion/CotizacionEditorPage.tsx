@@ -34,7 +34,7 @@ import clientBillingService, {
   type QuoteProspect,
   type ShiftType,
 } from "@/lib/api/clientBillingService";
-import { QK, dinero, nombreDelCliente, useEtiquetasDeFacturacion, useClientesParaFacturar, mensajeDeError, conModuloDeFacturacion, FilaTotal } from "./comun";
+import { QK, dinero, nombreDelCliente, useEtiquetasDeFacturacion, useClientesParaFacturar, conModuloDeFacturacion, FilaTotal, avisarError } from "./comun";
 
 type Para = "prospecto" | "cliente";
 
@@ -249,7 +249,7 @@ function CotizacionEditorPage() {
       await qc.invalidateQueries({ queryKey: [QK, "quote", r.quote.id] });
       navigate(`/facturacion/cotizaciones/${r.quote.id}`, { replace: true });
     } catch (e) {
-      toast.error(mensajeDeError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar")));
+      avisarError(e, t("ui.Facturacion.errorAlGuardar", "No se pudo guardar"));
     } finally {
       setSaving(false);
     }

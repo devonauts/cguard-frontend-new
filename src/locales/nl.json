@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Aangemaakt",
+      "read": "Gelezen",
+      "signal_runaway_suppressed": "Herhaald signaal onderdrukt",
+      "video_verification": "Videoverificatie",
+      "escalate": "Geëscaleerd",
+      "close": "Gesloten",
+      "resolve": "Opgelost",
+      "incident": "Incident aangemaakt",
+      "dispatch": "Uitruk",
+      "step": "Planstap",
+      "ecv_call": "Oproep",
+      "note": "Notitie",
+      "acknowledge": "Aangenomen",
+      "event_appended": "Gebeurtenis toegevoegd",
+      "case_opened": "Melding geopend"
+    },
     "status": {
       "queued": "In wachtrij",
       "acknowledged": "Aangenomen",
@@ -336,7 +353,10 @@
     "forgotNoMailboxHint": "Heeft je account geen e-mail, vraag dan de link aan je leidinggevende of het kantoor.",
     "forgotSubtitleLoginId": "Vul je e-mail of gebruikersnaam in en we sturen je een link om een nieuw wachtwoord te maken.",
     "loginIdLabel": "E-mail of gebruikersnaam",
-    "loginIdPlaceholder": "jmiranda of jij@email.com"
+    "loginIdPlaceholder": "jmiranda of jij@email.com",
+    "validation_symbol": "Moet een speciaal teken bevatten",
+    "validation_same_as_old": "Het nieuwe wachtwoord moet anders zijn dan het huidige",
+    "passwordChangedSignInAgain": "Je hebt je wachtwoord gewijzigd. Meld je aan met het nieuwe."
   },
   "client": {
     "invite_not_found": "Uitnodiging niet gevonden of ongeldig.",
@@ -662,7 +682,8 @@
         "Titleinput": "Voer de titel van de notitie in",
         "Titlenote": "Titel *",
         "NoFilesSelected": "Geen bestanden gekozen",
-        "selectDate": "Selecteren"
+        "selectDate": "Selecteren",
+        "editTitle": "Notitie bewerken"
       },
       "addedBy": "Toegevoegd door",
       "detailsTitle": "Details van de notitie",
@@ -673,7 +694,8 @@
         "dateRequired": "De datum is verplicht",
         "descriptionRequired": "De omschrijving is verplicht",
         "titleRequired": "De titel is verplicht"
-      }
+      },
+      "description": "Omschrijving"
     },
     "pagination": {
       "itemsPerPage": "Items per pagina",
@@ -1444,6 +1466,7 @@
     "ticket_summary": "Samenvatting van het ticket",
     "view_details": "Details bekijken",
     "comment": {
+      "file_upload_failed_not_sent": "Het bestand kon niet worden geüpload; de opmerking is niet verzonden.",
       "add": "Toevoegen",
       "add_failed": "Opmerking toevoegen mislukt",
       "added": "Opmerking toegevoegd",
@@ -1655,7 +1678,15 @@
         "achieved": "Behaald",
         "notAchieved": "Niet behaald"
       },
-      "totalKpis": "KPI's"
+      "totalKpis": "KPI's",
+      "scope": {
+        "guard": "Beveiliger",
+        "postSite": "Locatie"
+      },
+      "errors": {
+        "frequencyRequired": "Kies de frequentie.",
+        "descriptionRequired": "Vul de omschrijving in."
+      }
     },
     "assignSites": {
       "assignButton": "Post toewijzen",
@@ -1796,7 +1827,9 @@
       },
       "empty": {
         "description": "We konden niets vinden<br />dat overeenkomt<br />met je zoekopdracht",
-        "title": "Geen resultaten gevonden"
+        "title": "Geen resultaten gevonden",
+        "none": "Nog geen vergunningen",
+        "hint": "Voeg de eerste vergunning of pas toe."
       },
       "form": {
         "backImageLabel": "Achterkant van de pas",
@@ -1857,7 +1890,13 @@
         "updated": "Vergunning bijgewerkt"
       },
       "selected": "geselecteerd",
-      "untitled": "Vergunning"
+      "untitled": "Vergunning",
+      "errors": {
+        "typeRequired": "Kies het soort vergunning.",
+        "numberRequired": "Vul het vergunningsnummer in."
+      },
+      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "subtitleSupervisor": "Documenten en pasjes van de supervisor"
     },
     "list": {
       "applyFilters": "Filters toepassen",
@@ -1943,7 +1982,7 @@
         "statusPending": "In behandeling"
       },
       "importDialog": {
-        "browsePlaceholder": "Blader hier naar je Excel-bestand....",
+        "browsePlaceholder": "Blader hier naar je Excel-bestand…",
         "clickToSelect": "Klik om te selecteren",
         "completed": "Import voltooid",
         "description": "Upload een .xlsx-, .xls- of .csv-bestand om beveiligers te importeren.",
@@ -1965,7 +2004,12 @@
           "excelValidationFailed": "Het Excel-bestand kon niet worden gecontroleerd vóór het uploaden. Controleer de opmaak.",
           "missingColumns": "Verplichte kolommen ontbreken: {{columns}}",
           "selectFile": "Selecteer een bestand"
-        }
+        },
+        "summaryOk_one": "{{count}} bewaker geïmporteerd",
+        "summaryOk_other": "{{count}} bewakers geïmporteerd",
+        "summaryWithErrors": "Geïmporteerd: {{ok}} · Niet geïmporteerd: {{fallidas}}",
+        "rowError": "Rij {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Er zijn geen uitnodigingen verstuurd: verstuur ze vanuit de lijst wanneer je wilt."
       },
       "labels": {
         "name": "Naam",
@@ -2160,7 +2204,8 @@
         "message": "We konden niets vinden<br />dat overeenkomt<br />met je zoekopdracht",
         "title": "Geen resultaten gevonden",
         "hint": "Maak de eerste notitie voor deze beveiliger.",
-        "none": "Nog geen notities"
+        "none": "Nog geen notities",
+        "hintSupervisor": "Maak de eerste notitie voor deze supervisor."
       },
       "modal": {
         "cancel": "Annuleren",
@@ -2205,7 +2250,12 @@
       "loadError": "De notities konden niet worden geladen",
       "noteCreated": "Notitie aangemaakt",
       "noteDeleted": "Notitie verwijderd",
-      "sectionTitle": "Notities"
+      "sectionTitle": "Notities",
+      "errors": {
+        "titleRequired": "Vul de titel van de notitie in.",
+        "descriptionRequired": "Vul de omschrijving van de notitie in.",
+        "dateRequired": "Kies de datum van de notitie."
+      }
     },
     "profile": {
       "noLicense": "Geen pas gevonden",
@@ -2221,7 +2271,8 @@
         "statusNoAccess": "Geen toegang ingesteld",
         "statusPending": "Uitnodiging in behandeling",
         "tokenExpired": "De uitnodigingslink is verlopen",
-        "tokenExpires": "Uitnodiging geldig tot"
+        "tokenExpires": "Uitnodiging geldig tot",
+        "alreadyActive": "Het account is al actief: geen uitnodiging nodig. Is het wachtwoord vergeten, gebruik dan „Wachtwoord resetten” in de lijst met beveiligers."
       },
       "actions": {
         "cancel": "Annuleren",
@@ -2497,7 +2548,11 @@
       "locNoneBody": "{{sin}} van de laatste {{total}} kloppingen kwamen binnen zonder enige coördinaat. De klopping wordt gewoon vastgelegd — niemand wordt geblokkeerd — maar de dienst heeft geen bewijs van de plek.",
       "locCoarseBody": "{{n}} van de laatste {{total}} kloppingen kwamen binnen met een positie grover dan {{suelo}} m. Goed genoeg om vast te leggen, niet om aanwezigheid op de post te bevestigen.",
       "locFix": "Gebruikelijke oorzaak: op Android staat de locatietoestemming op ‘Globaal’. Die moet in de telefooninstellingen op ‘Precies’ — Android laat de app dat niet wijzigen, dus iemand moet die telefoon zelf oppakken.",
-      "locLast": "Laatste klopping zonder locatie: {{cuando}}"
+      "locLast": "Laatste klopping zonder locatie: {{cuando}}",
+      "titleSupervisor": "Apparaat van de supervisor",
+      "subtitleSupervisor": "Het eerste apparaat waarmee de supervisor inlogt, wordt gekoppeld. Verschijnt er een ander apparaat, dan wordt dat gemarkeerd als niet herkend (het wordt niet geblokkeerd). Reset de koppeling als de supervisor een andere telefoon heeft.",
+      "emptySupervisor": "Er is nog geen apparaat vastgelegd voor deze supervisor.",
+      "resetDoneSupervisor": "Koppeling gereset. Het volgende apparaat van de supervisor wordt gekoppeld."
     },
     "documents": {
       "deleteConfirm": "\"{{name}}\" verwijderen? Dit kan niet ongedaan worden gemaakt.",
@@ -2564,7 +2619,11 @@
       "deleted": "Memo verwijderd",
       "pending": "In behandeling",
       "title": "Memo's",
-      "total": "memo's"
+      "total": "memo's",
+      "count_one": "{{count}} memo",
+      "count_other": "{{count}} memo's",
+      "acceptedCount_one": "{{count}} geaccepteerd",
+      "acceptedCount_other": "{{count}} geaccepteerd"
     },
     "actionNotImplemented": "Deze actie is nog niet beschikbaar",
     "overview": {
@@ -2592,7 +2651,9 @@
       "loadError": "De beschikbare rollen konden niet worden geladen.",
       "error": "De rol kon niet worden gewijzigd.",
       "hasBothRoles": "Hij heeft nu beide rollen. Kies je er één, dan houdt hij alleen die.",
-      "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden."
+      "welcomeSent": "We hebben hem een welkomstmail gestuurd met de link om de supervisorapp te downloaden.",
+      "inviteSent": "Er was nog geen wachtwoord: we hebben de uitnodiging gestuurd om er een aan te maken en in te loggen in de supervisor-app.",
+      "inviteLinkReady": "Nog geen wachtwoord en geen e-mail: deel de toegangslink vanuit het supervisorprofiel („Uitnodiging opnieuw sturen”)."
     },
     "department": {
       "title": "Afdeling",
@@ -2737,7 +2798,8 @@
       "blood_required": "De bloedgroep is verplicht",
       "credentials_required": "De pasgegevens zijn verplicht",
       "address_required": "Het adres is verplicht",
-      "phone_required": "Het telefoonnummer is verplicht"
+      "phone_required": "Het telefoonnummer is verplicht",
+      "revisaEstosDatos": "Controleer deze gegevens: {{campos}}"
     },
     "password": "Wachtwoord",
     "password_min": "Minimaal 8 tekens",
@@ -2764,7 +2826,8 @@
         "university": "Universiteit",
         "universityStudies": "Universitair"
       },
-      "freeUnion": "Samenwonend"
+      "freeUnion": "Samenwonend",
+      "credentialsHint": "Nummer van je beveiligerspas of -vergunning"
     },
     "select": "Selecteer",
     "eyebrow_guard": "Uitnodiging · Beveiligingsteam",
@@ -5968,6 +6031,16 @@
         "error": "Fout bij het herstellen van de gebruiker",
         "success": "Gebruiker hersteld",
         "title": "Gebruiker herstellen"
+      },
+      "suspend": {
+        "title": "Gebruiker schorsen",
+        "description": "{{user}} kan niet meer inloggen en gaat naar Gearchiveerd. Je kunt deze persoon later herstellen.",
+        "confirm": "Schorsen"
+      },
+      "closeSessions": {
+        "title": "Sessies afsluiten",
+        "description": "{{user}} wordt op alle apparaten uitgelogd van het web en de apps en moet opnieuw inloggen.",
+        "confirm": "Sessies afsluiten"
       }
     },
     "editUser": {
@@ -6268,7 +6341,8 @@
     "free": {
       "title": "Gratis abonnement",
       "body": "{{marca}} levert de dienst kosteloos aan uw bedrijf."
-    }
+    },
+    "invoicesEmptyDescActive": "Uw eerste factuur verschijnt hier zodra die is uitgegeven, en u kunt die als pdf downloaden."
   },
   "brand": {
     "tagline": "Intelligente beveiliging"
@@ -6878,7 +6952,8 @@
     "deleted": "Notities verwijderd",
     "loadError": "De notities konden niet worden geladen",
     "saveError": "De notitie kon niet worden opgeslagen",
-    "updated": "Notitie bijgewerkt"
+    "updated": "Notitie bijgewerkt",
+    "attachmentsFailed": "{{count}} bestand(en) konden niet worden geüpload"
   },
   "postSites": {
     "action": "Actie",
@@ -6962,7 +7037,7 @@
       "guardsAssigned": "Toegewezen beveiligers",
       "hoursLogged": "Geregistreerde uren (laatste 7 dagen)",
       "incidentsReported": "Gemelde incidenten (laatste 7 dagen)",
-      "kpiadded": "KPI toegevoegd",
+      "kpiadded": "KPI toevoegen",
       "kpisearch": "KPI's zoeken",
       "tasksCompleted": "Afgeronde taken (laatste 7 dagen)",
       "title": "KPI-indicatoren",
@@ -7004,6 +7079,11 @@
           "monthly": "Maandelijks",
           "select": "Frequentie selecteren",
           "weekly": "Wekelijks"
+        },
+        "errors": {
+          "frequencyRequired": "Kies de frequentie",
+          "descriptionRequired": "Voer een beschrijving in",
+          "emailsRequired": "Voeg minstens één e-mailadres toe om het rapport naar te sturen"
         }
       },
       "status": {
@@ -7496,7 +7576,9 @@
       "computadoras": "Desktopcomputers",
       "computadoras.desc": "Keur elke computer goed die de desktop-app gebruikt, of trek hem in.",
       "app-escritorio": "Desktop-app",
-      "app-escritorio.desc": "Download het dashboard voor Mac of Windows, in een eigen venster."
+      "app-escritorio.desc": "Download het dashboard voor Mac of Windows, in een eigen venster.",
+      "payroll-slips": "Loonstroken",
+      "payroll-slips.desc": "Land, basissalaris, arbeidstijd, dubbele diensten, inkomstenbelasting en nummering van de loonstrook."
     },
     "section": {
       "mi_cuenta": "Mijn account",
@@ -7786,7 +7868,7 @@
       "certIconAlt": "Pictogram certificering",
       "noIcon": "Geen pictogram",
       "thisCert": "deze certificering",
-      "bannerDialogDesc": "Stel de banner in die in de MOBIL-module wordt getoond.",
+      "bannerDialogDesc": "Stel de banner in die uw klanten in hun app zien.",
       "bannerTitlePlaceholder": "Titel van de banner",
       "bannerDescPlaceholder": "Omschrijving van de banner",
       "selectFileBtn": "Bestand selecteren",
@@ -7875,7 +7957,10 @@
       "guardVisSaved": "Voorkeur opgeslagen.",
       "guardVisTitle": "Gegevens van de beveiliger zichtbaar voor de opdrachtgever",
       "tabContent": "Inhoud",
-      "tabGuard": "Privacy van de beveiliger"
+      "tabGuard": "Privacy van de beveiliger",
+      "serviceDescriptionRequired": "Schrijf een beschrijving van de dienst.",
+      "certDatesRequired": "Vul de verkrijgingsdatum en de vervaldatum in.",
+      "certDatesOrder": "De vervaldatum kan niet vóór de verkrijgingsdatum liggen."
     },
     "mobileHub": {
       "loadError": "De instellingen konden niet worden geladen.",
@@ -8097,7 +8182,7 @@
       "emailHeaderDesc": "Achtergrond van de balk waarin uw logo staat. Een donkere tint werkt het best, zodat de witte tekst leesbaar is.",
       "panelInfoBefore": "De kleur van het panel? Die is van u, niet van het bedrijf: die kiest u bij",
       "panelInfoStrong": "Mijn account › Weergave",
-      "panelInfoAfter": " en die wordt in uw browser opgeslagen, net als de donkere modus. De beheerder bepaalt niet met welke kleuren zijn team acht uur per dag werkt.",
+      "panelInfoAfter": " en die wordt in uw account opgeslagen, net als de donkere modus. De beheerder bepaalt niet met welke kleuren zijn team acht uur per dag werkt.",
       "saveBtn": "Huisstijl opslaan"
     },
     "phoneField": {
@@ -8218,7 +8303,8 @@
       "platformHeading": "Beveiliging van het platform",
       "platformHint": "{{marca}} beheert deze voor alle bedrijven. Hier ziet u of ze actief zijn.",
       "statusActive": "Actief",
-      "statusInactive": "Inactief"
+      "statusInactive": "Inactief",
+      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn."
     },
     "central": {
       "loadError": "De instellingen konden niet worden geladen.",
@@ -8347,7 +8433,8 @@
       "departmentPlaceholder": "Afdeling",
       "selectGuardsLabel": "Specifieke beveiligers selecteren",
       "selectGuardsPlaceholder": "Beveiligers selecteren…",
-      "searchGuardPlaceholder": "Beveiliger zoeken…"
+      "searchGuardPlaceholder": "Beveiliger zoeken…",
+      "editDialogTitle": "Document bewerken"
     },
     "notificationForm": {
       "checkInOutLabel": "Beveiliger in-/uitgeklokt",
@@ -8455,7 +8542,8 @@
       "quitarAriaLabel": "Wij vieren {{name}} niet",
       "quitarTitle": "Uw bedrijf viert deze feestdag niet",
       "quitadosTitle": "Feestdagen die u niet viert",
-      "devolver": "Weer vieren"
+      "devolver": "Weer vieren",
+      "deleteConfirm": "De feestdag ‘{{name}}’ verwijderen?"
     },
     "userRoles": {
       "actionBtn": "Actie",
@@ -8850,7 +8938,10 @@
       "bitacoraEmpty": "Geen meldingen in het logboek",
       "bitacoraEmptyHint": "Meldingen die bewakers in de app noteren verschijnen hier.",
       "novedadAbierta": "Open",
-      "novedadCerrada": "Gesloten"
+      "novedadCerrada": "Gesloten",
+      "needDays": "Kies minstens één dag van de week",
+      "needDayOfMonth": "Geef de dag van de maand op (1 tot 31)",
+      "needDate": "Geef de datum op"
     },
     "guards": {
       "added": "Toegewezen beveiliger",
@@ -8964,7 +9055,8 @@
         "truck": "Vrachtwagen",
         "van": "Bestelbus"
       },
-      "exportError": "Het bestand kon niet worden gemaakt"
+      "exportError": "Het bestand kon niet worden gemaakt",
+      "invalidNumber": "Capaciteit en verblijfsduur moeten 0 of meer zijn (leeg = geen limiet)."
     },
     "patrolQr": {
       "empty": "Er zijn nog geen controlepunten. Maak ze aan bij \"Beveiligingsrondes\" en kom hier terug om hun QR-codes te genereren.",
@@ -8981,7 +9073,8 @@
       "verifyNote2": "Scans buiten bereik worden vastgelegd als \"buiten de positie\".",
       "popupBlocked": "De browser blokkeerde het afdrukvenster.",
       "printFailed": "Kan het blad niet voorbereiden",
-      "qrFailed": "Kan de code niet genereren"
+      "qrFailed": "Kan de code niet genereren",
+      "radiusPerPoint": "de straal van elk punt (bij elk punt vermeld)"
     },
     "rondaHistory": {
       "empty": "Er zijn geen rondes vastgelegd op deze post.",
@@ -9003,7 +9096,7 @@
       "deleteFailed": "Verwijderen mislukt",
       "desc": "Omschrijving",
       "empty": "Er zijn nog geen rondes. Maak de eerste aan met \"Nieuwe ronde\".",
-      "hint": "Maak rondes en hun controlepunten aan. Genereer daarna de QR-codes op het tabblad \"QR-codes voor rondes genereren\".",
+      "hint": "Maak rondes en hun controlepunten aan. Genereer daarna de QR-codes op het tabblad \"{{tab}}\".",
       "name": "Naam",
       "nameRequired": "Voer een naam in",
       "new": "Nieuwe ronde",
@@ -9043,7 +9136,8 @@
     "geofence": {
       "centerPinTitle": "Positie van de post (sleep om bij te stellen)",
       "needThreePoints": "Voeg minstens 3 punten toe om de geofence te sluiten.",
-      "sizeOk": "Geschikte grootte om in en uit te klokken."
+      "sizeOk": "Geschikte grootte om in en uit te klokken.",
+      "radiusRange": "De straal van de geofence moet tussen {{min}} en {{max}} {{unidad}} liggen."
     },
     "overview": {
       "locationSaveError": "De positie kon niet worden opgeslagen",
@@ -9429,7 +9523,12 @@
       "nuevoCorreoCom": "nieuw@email.com",
       "perfilActualizadoCorrectamente": "Profiel succesvol bijgewerkt.",
       "esElNombreConEl": "Dit is de naam waaronder de rest van het team je ziet.",
-      "verificado": "Geverifieerd"
+      "verificado": "Geverifieerd",
+      "codigoNoEntregado": "We konden de code niet naar dat nummer sturen. Controleer het nummer of probeer het later opnieuw.",
+      "codigoDePrueba": "Er is geen sms-provider in deze omgeving. Testcode: {{code}}",
+      "escribeTuNumeroAntes": "Vul je mobiele nummer in voordat je het bevestigt.",
+      "correoNoValido": "Dat e-mailadres is niet geldig.",
+      "esTuCorreoActual": "Dat is al je e-mailadres."
     },
     "Routes": {
       "turnoDia": "Dagdienst",
@@ -9720,7 +9819,10 @@
       "yaPuedesEntrar": "Je kunt nu inloggen",
       "tuEmpresaTeAsignaraAUnPuesto": "Je bedrijf wijst je een post toe.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Log in met je gebruikersnaam en wachtwoord.",
-      "cuentaListaDescargaLaApp": "Je account bij <b>{{empresa}}</b> is klaar. Download de app om je beveiligingsdienst vanaf je telefoon te volgen en te beheren."
+      "cuentaListaDescargaLaApp": "Je account bij <b>{{empresa}}</b> is klaar. Download de app om je beveiligingsdienst vanaf je telefoon te volgen en te beheren.",
+      "tuPuestoYTurnosEnLaApp": "Je post en je diensten verschijnen in de app.",
+      "iniciaConTuUsuario": "Log in met je gebruikersnaam en wachtwoord.",
+      "iniciaCuandoEsteActiva": "Log in zodra je account actief is."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Mijn positie",
@@ -9789,6 +9891,9 @@
       "reconocProm": "Gem. bevest."
     },
     "AlarmCaseDetail": {
+      "operador": "Operator",
+      "sistema": "Systeem",
+      "porActor": "door {{nombre}}",
       "descripcion": "Omschrijving",
       "disposicion": "Afhandeling",
       "sinEntradasDeAuditoria": "Geen auditregels",
@@ -9862,6 +9967,7 @@
       "guardarNota": "Notitie opslaan"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Het zonenummer is verplicht",
       "agenciaPsapPolicia": "Instantie / meldkamer (politie)",
       "camara": "Camera",
       "comunicacion": "Communicatie",
@@ -10325,7 +10431,16 @@
       "nDocumentosSubidos_one": "{{count}} document geüpload",
       "nDocumentosSubidos_other": "{{count}} documenten geüpload",
       "nDocumentosSubidos_few": "{{count}} documenten geüpload",
-      "nDocumentosSubidos_many": "{{count}} documenten geüpload"
+      "nDocumentosSubidos_many": "{{count}} documenten geüpload",
+      "agrupar": {
+        "creando": "Bezig met aanmaken…",
+        "crear": "Map aanmaken",
+        "resumen": "{{count}} document(en) gemarkeerd. De map verschijnt onder „Leveringen aan de opdrachtgever”, vanwaar je hem deelt in de app of via een privélink.",
+        "nombre": "Mapnaam",
+        "desde": "Periode van",
+        "hasta": "Periode tot",
+        "nota": "Notitie voor de opdrachtgever (optioneel)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Zoeken op ID, titel of locatie",
@@ -10573,7 +10688,8 @@
       "invitarAcceso": "Toegang uitnodigen",
       "revocarAcceso": "Toegang intrekken",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Webportaal"
+      "portalWeb": "Webportaal",
+      "nombreDeLaPersona": "Naam van de persoon (optioneel)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Demogegevens",
@@ -10788,7 +10904,8 @@
       "noSeEncontroElVigilante": "De gevraagde bewaker is niet gevonden.",
       "errorGuardandoCambios": "Fout bij opslaan van wijzigingen: {{msg}}",
       "datosPersonales": "Persoonsgegevens",
-      "guardarCambios": "Wijzigingen opslaan"
+      "guardarCambios": "Wijzigingen opslaan",
+      "cambiosGuardados": "Wijzigingen opgeslagen"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Adres van het bedrijf*",
@@ -11897,7 +12014,8 @@
       "notasPrivadasInstruccionesEspeciales": "Privénotities, bijzondere instructies…",
       "centroDeConvencionesQuito": "Congrescentrum, Amsterdam",
       "clienteRequerido": "Klant vereist",
-      "fechasYLugar": "Datums en locatie"
+      "fechasYLugar": "Datums en locatie",
+      "finAntesDeInicio": "De einddatum mag niet vóór de begindatum liggen"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Nog geen IP-portofoons",
@@ -12139,6 +12257,7 @@
       "sinDescansoElSupervisorTrabaja": "Zonder rustdag: de supervisor werkt elke dag."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Geen dagen geselecteerd",
       "asignacion": "Toewijzing",
       "descripcion": "Omschrijving",
       "descripcionDeLaRuta": "Omschrijving van de route",
@@ -13069,7 +13188,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} van {{total}}",
       "sinEstacion": "Geen station",
       "sucediendoAhoraMismo": "Nu bezig",
-      "turnos": "Diensten"
+      "turnos": "Diensten",
+      "falta": "Afwezig"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -13222,7 +13342,9 @@
       "eliminado": "Verwijderd.",
       "errorAlEliminar": "Fout bij het verwijderen.",
       "lugar": "Plaats",
-      "mostrandoRango": "{{desde}}–{{hasta}} van {{total}}"
+      "mostrandoRango": "{{desde}}–{{hasta}} van {{total}}",
+      "salidaAntesDeEntrada": "Het vertrek kan niet vóór de aankomst liggen.",
+      "fotoNoSubida": "Het bezoek is opgeslagen, maar de foto van het identiteitsbewijs kon niet worden geüpload. Voeg die later toe via de registratie."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Voortgang van de inrichting",
@@ -13283,7 +13405,8 @@
       "laZonaYLosPuestosQueCubre": "De zone en posten die deze supervisor dekt, en zijn gegenereerde rooster, staan op de eigen tabbladen.",
       "limitaLoQueEsteSupervisorVe": "Beperkt wat deze supervisor in zijn app ziet: aanwezigheidsuitzonderingen en klokverzoeken.",
       "nombres": "Voornamen",
-      "perfilActualizado": "Profiel bijgewerkt"
+      "perfilActualizado": "Profiel bijgewerkt",
+      "identidadDeLaCuenta": "Voor- en achternamen worden hier opgeslagen. Het e-mailadres hoort bij het inlogaccount en wordt niet via dit profiel gewijzigd."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Nog geen supervisorposten",
@@ -13539,7 +13662,13 @@
       "calendario": "Kalender",
       "vacioAyuda": "Vakantie, verlof en gemelde afwezigheid van al het personeel, ingevoerd hier, in het Rooster of in de app van de beveiliger.",
       "registrarElPrimero": "Verlof registreren",
-      "vacioTitulo": "Nog geen verlof of vakantie"
+      "vacioTitulo": "Nog geen verlof of vakantie",
+      "aprobarTitulo": "Verlof goedkeuren",
+      "aprobarMensaje": "Het verlof van {{nombre}} wordt goedgekeurd: de diensten op die dagen worden gaten in Dekking en de persoon krijgt bericht.",
+      "rechazarTitulo": "Verlof afwijzen",
+      "rechazarMensaje": "Het verlof van {{nombre}} wordt afgewezen en de persoon krijgt bericht. Je kunt de reden opgeven (optioneel).",
+      "rechazarMotivo": "Reden (optioneel)",
+      "solicitudEliminada": "Aanvraag verwijderd"
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -13855,6 +13984,7 @@
       "reintentar": "Opnieuw proberen"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "De huidige sleutel werkt meteen niet meer: de relay van deze locatie verbreekt de verbinding tot je de nieuwe link installeert.",
       "aunNoHaySitiosRemotos": "Nog geen locaties op afstand",
       "direccionDeRecepcion": "Ontvangstadres:",
       "seGeneraraUnaClaveDe": "Er worden een locatiesleutel en een publicatietoken (versleuteld) aangemaakt.",
@@ -14189,7 +14319,8 @@
       "cicloDesdeMasN": "cyclus vanaf {{fecha}} +{{n}} d",
       "estacionesQueCubre_one": "Gedekte posten ({{count}})",
       "estacionesQueCubre_other": "Gedekte posten ({{count}})",
-      "estacionesQueCubre": "Gedekte posten ({{count}})"
+      "estacionesQueCubre": "Gedekte posten ({{count}})",
+      "eliminarElPuesto": "De post ‘{{nombre}}’ verwijderen?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",
@@ -14224,7 +14355,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Uitnodiging opnieuw verzonden naar {{email}}.",
       "invitacionYaEnviada": "De uitnodiging is een paar minuten geleden al naar {{email}} verzonden. Vraag om de inbox en de spammap te controleren. Je kunt haar over {{faltan}} min. opnieuw verzenden.",
-      "invitacionNoSalio": "We konden de e-mail naar {{email}} niet verzenden. Probeer het over een paar minuten opnieuw."
+      "invitacionNoSalio": "We konden de e-mail naar {{email}} niet verzenden. Probeer het over een paar minuten opnieuw.",
+      "correoDeRestablecimientoNoEnviado": "De resetmail naar {{email}} kon niet worden verzonden. Probeer het over een paar minuten opnieuw."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Pas uw zoekopdracht aan of registreer een nieuwe bezoeker.",
@@ -14237,6 +14369,8 @@
       "enCurso": "Bezig"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "Het incident bestaat niet of is niet meer beschikbaar.",
+      "incidenteNoEncontrado": "Incident niet gevonden",
       "escribeUnComentario": "Schrijf een opmerking",
       "noSePudoAgregarComentario": "De opmerking kon niet worden toegevoegd",
       "noSePudieronCargarDetalles": "De gegevens van het incident konden niet worden geladen",
@@ -14264,6 +14398,7 @@
       "generarYCopiar": "Genereren en kopiëren"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "De wijzigingen zijn opgeslagen, maar deze bestanden konden niet worden geüpload: {{archivos}}.",
       "incidenteActualizado": "Incident bijgewerkt",
       "errorAlActualizarIncidente": "Het incident kon niet worden bijgewerkt",
       "editarIncidente": "Incident bewerken",
@@ -14271,6 +14406,7 @@
       "asignarVigilante": "Beveiliger toewijzen"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Het incident is aangemaakt, maar deze bestanden konden niet worden geüpload: {{archivos}}. Voeg ze toe via Bewerken.",
       "errorAlCrearIncidente": "Het incident kon niet worden aangemaakt",
       "nuevoIncidente": "Nieuw incident",
       "registraUnNuevoIncidenteY": "Leg een nieuw incident vast en informeer de betrokken beveiliger.",
@@ -14337,7 +14473,8 @@
       "asignarAEstacionNombre": "{{name}} aan een station toewijzen",
       "seAsignaraAlPrimerPuesto": "Wordt toegewezen aan de eerste beschikbare post van het station en verschijnt in het Rooster.",
       "asignando": "Toewijzen...",
-      "asignar": "Toewijzen"
+      "asignar": "Toewijzen",
+      "correoDeRestablecimientoNoEnviado": "De resetmail naar {{email}} kon niet worden verzonden. Probeer het over een paar minuten opnieuw."
     },
     "GuardHorarioPage": {
       "sinHorario": "Geen rooster",
@@ -14391,7 +14528,9 @@
       "inscripciones": "Inschrijvingen",
       "completaron": "Voltooid",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lessen"
+      "lecciones": "Lessen",
+      "pistaParaTodos": "Aan iedereen toegewezen: telt wie de cursus heeft geopend",
+      "nDeMCompletaronParaTodos": "Aan alle beveiligers toegewezen. Iedereen verschijnt hier zodra die de cursus opent: {{done}} van {{total}} hebben hem afgerond."
     },
     "VehiclesPage": {
       "vehiculo": "voertuig",
@@ -14614,7 +14753,8 @@
       "losPermisosYLicenciasQue": "Het verlof en de vergunningen die uw personeel kan aanvragen of moet aantonen.",
       "tipoSDeLicenciaEliminado": "Vergunningssoort(en) verwijderd",
       "tipoDeLicenciaActualizado": "Vergunningssoort bijgewerkt",
-      "tipoDeLicenciaCreado": "Vergunningssoort aangemaakt"
+      "tipoDeLicenciaCreado": "Vergunningssoort aangemaakt",
+      "confirmarEliminacionTexto": "{{count}} licentietype(s) verwijderen? Dit kan niet ongedaan worden gemaakt."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Het gebruik van de assistent kon niet worden geladen.",
@@ -14888,7 +15028,17 @@
       "noPudimosGuardarElDocumento": "We konden het document niet opslaan.",
       "publicaElReglamentoInterno": "Publiceer het huishoudelijk reglement en je ziet wie het heeft ondertekend.",
       "publicar": "Publiceren",
-      "reglamento": "Reglement"
+      "reglamento": "Reglement",
+      "estado": "Status",
+      "publicada": "Gepubliceerd",
+      "borrador": "Concept",
+      "ponleUnTitulo": "Geef het document een titel.",
+      "algunosNoSePudieron": "{{failed}} van {{total}} konden niet worden gewijzigd: {{reason}}",
+      "documentosPublicados": "Documenten gepubliceerd",
+      "documentosABorrador": "Documenten teruggezet naar concept",
+      "documentosEliminados": "Documenten verwijderd",
+      "confirmarEliminacion": "Verwijderen bevestigen",
+      "confirmarEliminacionTexto": "{{count}} document(en) verwijderen? Wie ze moest ondertekenen, ziet ze niet meer. Dit kan niet ongedaan worden gemaakt."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Sleep hierheen of klik om bij te voegen",
@@ -14946,7 +15096,9 @@
     "Incident": {
       "informeDeIncidente": "Incidentmelding",
       "sinCaso": "Bij dit incident hoort geen noodgeval.",
-      "descripcion": "Gemelde incidenten: prioriteit, status, locatie en beschrijving per post."
+      "descripcion": "Gemelde incidenten: prioriteit, status, locatie en beschrijving per post.",
+      "estadoAbierto": "Open",
+      "estadoCerrado": "Gesloten"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Pasjes en vergunningen van het personeel, met hun vervaldatums.",
@@ -15249,7 +15401,12 @@
       "rangoRegistros_few": "Periode: {{range}} · {{count}} records",
       "rangoRegistros_many": "Periode: {{range}} · {{count}} records",
       "informeExportado": "Rapport geëxporteerd",
-      "sinFilasParaExportar": "Er zijn geen records om te exporteren"
+      "sinFilasParaExportar": "Er zijn geen records om te exporteren",
+      "seudonimoCliente": "Klant",
+      "seudonimoSede": "Locatie",
+      "seudonimoPuesto": "Post",
+      "sinCoincidencias": "Geen record komt overeen met ‘{{q}}’.",
+      "rangoInvalido": "Controleer de datums: ‘Van’ mag niet na ‘Tot’ liggen."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Dichtstbij met beveiliger",
@@ -15570,7 +15727,9 @@
       "inicio": "Home",
       "miCuenta": "Mijn account",
       "vistaPreviaAppMiSeguridadCliente": "Voorbeeld · app {{app}} (klant)",
-      "seguridad": "Beveiliging"
+      "seguridad": "Beveiliging",
+      "nombreDeEjemplo": "Anna de Vries",
+      "sitioDeEjemplo": "Centraal gebouw"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -15747,7 +15906,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Vrij (rechtsklik: deze dag dekken)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (dubbelklik om te bewerken)",
       "sinConfigurar": "Niet geconfigureerd",
-      "turnosDe12hRotativo": "Diensten van 12 u · D/N roterend"
+      "turnosDe12hRotativo": "Diensten van 12 u · D/N roterend",
+      "fueraDeSuAsignacion": "{{nombre}} — die dag niet aan deze post toegewezen"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Elke plaats met een eigen cyclus — de een doet 2 ochtenden en 3 middagen, de ander 3 en 2.",
@@ -15932,7 +16092,14 @@
       "reabrirPeriodoMensaje": "Prikkingen, diensten en markeringen vanaf die dag kunnen weer worden gewijzigd. Al goedgekeurde of geëxporteerde tijdkaarten blijven ongewijzigd. Geef de reden op: die komt in het logboek.",
       "reabrirPeriodoTitulo": "Loonadministratie heropenen vanaf {{desde}}?",
       "generarCerrado": "Deze periode is afgesloten. Heropen hem om opnieuw te berekenen.",
-      "enviarAPago": "Naar betaling sturen"
+      "enviarAPago": "Naar betaling sturen",
+      "exportadaConRechazos": "Loonlijst geëxporteerd zonder {{count}} urenkaart(en), die niet worden uitbetaald:",
+      "exportadaConRechazos_one": "Loonlijst geëxporteerd zonder 1 urenkaart, die niet wordt uitbetaald:",
+      "exportadaConRechazos_few": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
+      "exportadaConRechazos_many": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
+      "exportadaConRechazos_other": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
+      "tarifaInvalida": "Het tarief moet groter dan nul zijn. Laat het veld leeg om het te verwijderen.",
+      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",
@@ -16770,9 +16937,11 @@
       "filasNoImportadas_few": "{{count}} rijen konden niet worden geïmporteerd. Bekijk de details.",
       "filasNoImportadas_many": "{{count}} rijen konden niet worden geïmporteerd. Bekijk de details.",
       "errorAlImportar": "Importeren mislukt",
-      "camposObligatoriosVacios": "Sommige verplichte velden zijn leeg. Controleer: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Sommige verplichte velden zijn leeg. Controleer: name, address.",
       "importarClientesDesdeExcel": "Klanten importeren uit Excel",
-      "columnasOpcionales": "Optionele kolommen:"
+      "columnasOpcionales": "Optionele kolommen:",
+      "columnasPorNombre": "De eerste rij bevat de kolomnamen; de volgorde maakt niet uit.",
+      "avisoInvitacion": "Elke geïmporteerde klant met een e-mailadres krijgt meteen de welkomstuitnodiging voor de app."
     },
     "CoBrowseAgent": {
       "soporte": "Support",
@@ -16792,7 +16961,8 @@
       "hintImprimir": "Opent het afdrukvoorbeeld van de browser",
       "enviarPorCorreo": "Per e-mail verzenden",
       "hintEnviarPorCorreo": "Stuurt het rapport naar een ontvanger",
-      "exportando": "Exporteren…"
+      "exportando": "Exporteren…",
+      "descargarComo": "Downloaden als"
     },
     "ExportarPeriodo": {
       "semana": "Week",
@@ -16900,7 +17070,10 @@
       "tuEmpresa": "je bedrijf",
       "volver": "Terug",
       "registrarse": "Registreren",
-      "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief."
+      "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief.",
+      "invitacionYaUsada": "Deze uitnodiging is al gebruikt: je account is actief.",
+      "entraEnLaApp": "Log in op de beveiligersapp met je gebruikersnaam en wachtwoord. Weet je het wachtwoord niet meer, vraag je bedrijf dan om het te resetten.",
+      "tuCuentaEstaLista": "Je account is klaar."
     },
     "InspectionPreview": {
       "alerta": "Waarschuwing",
@@ -17228,7 +17401,9 @@
       "cliente": "Klant",
       "todosLosClientes": "Alle klanten",
       "sede": "Locatie",
-      "todasLasSedes": "Alle locaties"
+      "todasLasSedes": "Alle locaties",
+      "nHuecos_one": "{{count}} gat",
+      "nHuecos_other": "{{count}} gaten"
     },
     "PuestaEnMarcha": {
       "titulo": "Aan de slag · {{hechos}} van {{total}}",
@@ -17375,8 +17550,8 @@
       "publicar": "Publiceren",
       "borrador": "Concept tot je publiceert",
       "parecido": "Komt voor {{n}} % overeen met het echte rooster",
-      "unCambio": "1 wijziging in het concept",
-      "cambios": "{{n}} wijzigingen in het concept",
+      "unCambio": "1 bewerking",
+      "cambios": "{{n}} bewerkingen",
       "subtitulo": "Zeg wat elke post nodig heeft, geef iedereen zijn rotatie en laat de invallers de rest dekken.",
       "titulo": "Planner",
       "sinPuestos": "Nog geen posten om te plannen.",
@@ -18294,6 +18469,10 @@
         "vacio": "Geen uitgegeven loonlijsten",
         "vacioDesc": "Zolang Loonstroken uit staat, worden alleen gepubliceerde loonlijsten getoond.",
         "noEmitida": "Alleen al uitgegeven loonlijsten en loonstroken kunnen worden bekeken."
+      },
+      "sinPermiso": {
+        "titulo": "Uw rol kan Loonstroken niet openen",
+        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Instellingen › Rollen."
       }
     },
     "ClientBillingContract": {
@@ -18506,7 +18685,8 @@
         "contratoHint": "Optioneel: neemt de betalingstermijn en belastingvrijstelling over.",
         "sinContrato": "Geen contract",
         "periodoDesde": "Periode van",
-        "periodoHasta": "tot"
+        "periodoHasta": "tot",
+        "numeroInvalido": "Aantal en prijs moeten getallen zijn (bijvoorbeeld 1500 of 12,50)."
       },
       "ajustes": {
         "si": "Ja",
@@ -18577,7 +18757,10 @@
         "validezCotizacion": "Geldigheid van de offerte (dagen)",
         "validezCotizacionHint": "Zonder handtekening binnen deze termijn verloopt de offerte vanzelf.",
         "terminosCotizacion": "Standaardvoorwaarden van offertes",
-        "terminosCotizacionHint": "Worden in elke nieuwe offerte overgenomen; je kunt ze per offerte aanpassen."
+        "terminosCotizacionHint": "Worden in elke nieuwe offerte overgenomen; je kunt ze per offerte aanpassen.",
+        "fueraDeRango": "‘{{campo}}’ moet tussen {{min}} en {{max}} liggen.",
+        "recordatorioInvalido": "Herinneringen: ‘{{valor}}’ is geen geheel aantal dagen tussen -30 en 180.",
+        "demasiadosRecordatorios": "Maximaal {{max}} herinneringen."
       },
       "recargo": {
         "lastMinute": "Last-minute dekking",
@@ -18664,7 +18847,8 @@
         "minutosFacturables": "Factureerbare minuten",
         "editarLinea": "Regel bewerken",
         "minutosHint": "Gepland: {{p}} · gewerkt: {{w}}",
-        "excluirDeLaFactura": "Uitsluiten van de factuur"
+        "excluirDeLaFactura": "Uitsluiten van de factuur",
+        "revisionLista": "Klaar voor controle door de klant. Er wordt geen e-mail verstuurd: kopieer de link en deel die met de klant."
       },
       "regla": {
         "usarElDeLaEmpresa": "Bedrijfswaarde gebruiken",
@@ -18933,7 +19117,8 @@
         "pestanaDiseno": "Documentontwerp",
         "pestanaTextos": "Teksten",
         "validezYTerminosMovidos": "Geldigheid, inleiding en voorwaarden van offertes staan nu bij Teksten."
-      }
+      },
+      "periodoAlReves": "De periode eindigt voordat ze begint."
     },
     "ClientInvoices": {
       "pagadoTotal": "Totaal betaald",
@@ -19017,7 +19202,8 @@
         "noSeEnvio": "De e-mail kon niet worden verzonden. Controleer de ontvangers.",
         "enviadaOk": "Offerte verzonden",
         "enviarDesc": "De pdf en de link om online te tekenen worden verstuurd. De offerte staat dan op verzonden.",
-        "enviar": "Versturen"
+        "enviar": "Versturen",
+        "noCancelar": "Nee, behouden"
       },
       "volver": "Terug naar offertes",
       "revision": "Revisie {{n}}",
@@ -19460,7 +19646,12 @@
       "estaciones": "Posten",
       "plazas": "Plaatsen met deze cyclus",
       "personas": "Personen",
-      "historial": "En {{count}} beëindigde toewijzingen die het in hun geschiedenis houden."
+      "historial": "En {{count}} beëindigde toewijzingen die het in hun geschiedenis houden.",
+      "enUsoConteo": "Posten: {{estaciones}} · Plaatsen: {{plazas}} · Personen: {{personas}}",
+      "confirmarBorrarTitulo": "«{{name}}» verwijderen?",
+      "confirmarArchivarTitulo": "«{{name}}» archiveren?",
+      "confirmarBorrarTexto": "Niemand gebruikt het. Het wordt definitief verwijderd en dat kan niet ongedaan worden gemaakt.",
+      "confirmarArchivarTexto": "Het wordt niet meer aangeboden bij het maken van roosters. Wie het al gebruikt, houdt het, en je kunt het altijd opnieuw aanbieden."
     },
     "HorarioDeOficina": {
       "pestana": "Rooster",
@@ -19547,7 +19738,9 @@
       "sinRequisitoAyuda": "Hier verschijnen no-shows, lege plekken en verlof zonder vervanger. Om te weten wat ontbreekt, moet elke post aangeven hoeveel beveiligers hij nodig heeft.",
       "irAEstaciones": "Bezetting van een post instellen",
       "sinRequisitoTitulo": "Nog geen post met bezetting",
-      "ofrecido": "Aangeboden"
+      "ofrecido": "Aangeboden",
+      "sede": "Locatie",
+      "todasLasSedes": "Alle locaties"
     },
     "HorarioModos": {
       "modos": "Roostermodus",
@@ -19682,6 +19875,17 @@
     "RutaConPermiso": {
       "titulo": "Geen toegang tot deze pagina",
       "descripcion": "Je rol kan deze pagina niet zien. Heb je hem nodig, vraag het een beheerder."
+    },
+    "training": {
+      "puntajeFueraDeRango": "De slaagscore moet een geheel getal tussen 1 en 100 zijn.",
+      "puntosFueraDeRango": "De punten moeten een geheel getal tussen 0 en 100000 zijn."
+    },
+    "incidentPriority": {
+      "critical": "Kritiek",
+      "high": "Hoog",
+      "medium": "Gemiddeld",
+      "low": "Laag",
+      "none": "Geen prioriteit"
     },
     "CampoDeMarca": {
       "elige": "Kies het merk",
@@ -19930,7 +20134,7 @@
     "tagLabel": "Label",
     "bitacorasImprimir": "Logboeken - Afdrukken",
     "exportar": "Exporteren",
-    "sinVigilantesEnEstacion": "Aan dit station zijn nog geen beveiligers toegewezen. Wijs er een toe via de pagina van de post om het bezoek te kunnen registreren."
+    "sinVigilantesEnEstacion": "Aan dit station zijn nog geen beveiligers toegewezen."
   },
   "app": {
     "loading": "Laden…",
@@ -20592,7 +20796,7 @@
       "mileageRequired": "Beginstand van de kilometerteller is verplicht",
       "modelRequired": "Model is verplicht",
       "plateRequired": "Kenteken is verplicht",
-      "vinAlphanumeric": "Ongeldig VIN (moet precies 17 alfanumerieke tekens hebben)",
+      "vinAlphanumeric": "Ongeldig VIN (moet precies 17 letters of cijfers hebben; de letters I, O en Q worden niet gebruikt)",
       "vinLength": "Ongeldig VIN (moet precies 17 tekens hebben)",
       "yearInvalid": "Ongeldig bouwjaar"
     }
@@ -21887,6 +22091,7 @@
       "cerrado_por_persona": "gesloten door een mens"
     },
     "ajustes": {
+      "topeAjustado": "Het maximum ligt tussen {{min}} en {{max}} berichten: {{valor}} is opgeslagen.",
       "titulo": "Instellingen van de opvolging",
       "activo": "{{agente}} volgt op",
       "activoHint": "Schrijft de beveiliger zodra er iets niet klopt en voert het gesprek tot het is afgesloten.",

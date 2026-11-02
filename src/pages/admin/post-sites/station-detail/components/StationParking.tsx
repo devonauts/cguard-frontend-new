@@ -4,6 +4,7 @@ import { Car, Settings2, AlarmClock, Ban } from "lucide-react";
 import { visitorLogService } from "@/lib/api/visitorLogService";
 import {
   vehicleControlService,
+  parseBays,
   type Ocupacion,
   type ReglasVehiculo,
 } from "@/lib/api/vehicleControlService";
@@ -183,6 +184,13 @@ export default function StationParking({ stationId }: Props) {
     maxStayMinutes: null,
     blacklistEnabled: false,
   });
+  // The bays field is edited as free text and only split on save: deriving
+  // the input value from the parsed array ate every comma as it was typed.
+  const [baysText, setBaysText] = useState("");
+  const editarReglas = (reglas: ReglasVehiculo) => {
+    setBorrador(reglas);
+    setBaysText((reglas.bays || []).join(", "));
+  };
 
   useEffect(() => {
     if (!stationId) return;
@@ -206,7 +214,7 @@ export default function StationParking({ stationId }: Props) {
           const o = await vehicleControlService.ocupacion(stationId);
           if (mounted) {
             setOcup(o);
-            setBorrador(o.reglas);
+            editarReglas(o.reglas);
           }
         } catch {
           /* sin reglas, la tabla funciona igual */
@@ -477,16 +485,8 @@ export default function StationParking({ stationId }: Props) {
                   {t("station.parking.bays", "Cajones (opcional)")}
                 </label>
                 <input
-                  value={borrador.bays.join(", ")}
-                  onChange={(e) =>
-                    setBorrador({
-                      ...borrador,
-                      bays: e.target.value
-                        .split(",")
-                        .map((x) => x.trim())
-                        .filter(Boolean),
-                    })
-                  }
+                  value={baysText}
+                  onChange={(e) => setBaysText(e.target.value)}
                   placeholder="A-01, A-02, B-01…"
                   className="cg-input cg-focus w-full px-3 py-2 text-sm"
                 />
@@ -546,7 +546,7 @@ export default function StationParking({ stationId }: Props) {
             <button
               type="button"
               onClick={() => {
-                setBorrador(ocup?.reglas ?? borrador);
+                editarReglas(ocup?.reglas ?? borrador);
                 setAjustes(false);
               }}
               className="cg-btn-ghost cg-focus min-h-9 rounded-full px-4 text-sm font-semibold"
@@ -557,14 +557,28 @@ export default function StationParking({ stationId }: Props) {
               type="button"
               disabled={guardando}
               onClick={async () => {
+                const negativo = (n: number | null) =>
+                  n != null && (!Number.isFinite(n) || n < 0);
+                if (
+                  negativo(borrador.capacity) ||
+                  negativo(borrador.maxStayMinutes)
+                ) {
+                  toast.error(
+                    t(
+                      "station.parking.invalidNumber",
+                      "El cupo y la permanencia deben ser 0 o más (vacío = sin límite).",
+                    ),
+                  );
+                  return;
+                }
                 setGuardando(true);
                 try {
                   const o = await vehicleControlService.guardarReglas(
                     stationId,
-                    borrador,
+                    { ...borrador, bays: parseBays(baysText) },
                   );
                   setOcup(o);
-                  setBorrador(o.reglas);
+                  editarReglas(o.reglas);
                   setAjustes(false);
                   toast.success(t("station.parking.saved", "Reglas guardadas"));
                 } catch (e: any) {

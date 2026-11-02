@@ -40,7 +40,6 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import { stationLabel, stationShort } from "@/lib/stationName";
 import { localeActual } from "@/lib/localeActual";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 /**
  * Semana/Día timeline for Programador › Horario, Google-Calendar style with a
  * PUESTO sub-axis: DAYS are the top-level COLUMNS and inside each day there is
@@ -1104,7 +1103,8 @@ export default function ScheduleTimeline({
                           className="font-normal"
                           style={{ color: "var(--ink-faint)" }}
                         >
-                          {day.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+                          {/* tz: civil day built at local midnight (a calendar date, not an instant). */}
+                          {day.toLocaleDateString(localeActual(), {
                             month: "short",
                           })}
                         </span>

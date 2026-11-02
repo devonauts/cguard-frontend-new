@@ -242,6 +242,11 @@ export default function EditSecurityGuardPage() {
 
         await securityGuardService.update(id!, payload);
         await marcaDeRegistro.guardar();
+        toast.success(
+          t("ui.EditSecurityGuard.cambiosGuardados", {
+            defaultValue: "Cambios guardados",
+          }),
+        );
         navigate("/security-guards");
       } catch (err: any) {
         const msg = err?.message || String(err);

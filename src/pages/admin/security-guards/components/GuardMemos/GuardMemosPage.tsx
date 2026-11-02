@@ -227,12 +227,17 @@ export default function GuardMemosPage() {
             badges={
               <>
                 <StatusBadge dot={false} tone="neutral">
-                  <FileText size={12} /> {memos.length}{" "}
-                  {t("guards.memos.total", { defaultValue: "memos" })}
+                  <FileText size={12} />{" "}
+                  {t("guards.memos.count", {
+                    count: memos.length,
+                    defaultValue: "{{count}} memos",
+                  })}
                 </StatusBadge>
                 <StatusBadge tone="ok">
-                  {acceptedCount}{" "}
-                  {t("guards.memos.accepted", { defaultValue: "Aceptado" })}
+                  {t("guards.memos.acceptedCount", {
+                    count: acceptedCount,
+                    defaultValue: "{{count}} aceptados",
+                  })}
                 </StatusBadge>
                 <StatusBadge tone="warn">
                   {pendingCount}{" "}

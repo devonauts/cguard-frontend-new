@@ -513,6 +513,20 @@ function VisitorFormModal({
       toast.error(t("ui.StationVisitors.nombreYApellidoSonObligatorios"));
       return;
     }
+    if (
+      form.visitDate &&
+      form.exitTime &&
+      new Date(desdeInputFechaHora(form.exitTime)).getTime() <
+        new Date(desdeInputFechaHora(form.visitDate)).getTime()
+    ) {
+      toast.error(
+        t(
+          "ui.StationVisitors.salidaAntesDeEntrada",
+          "La salida no puede ser anterior a la entrada.",
+        ),
+      );
+      return;
+    }
     setSaving(true);
     try {
       let idPhotoMeta: any[] | undefined;
@@ -556,9 +570,20 @@ function VisitorFormModal({
         stationId,
       };
       if (idPhotoMeta) payload.idPhoto = idPhotoMeta;
+      // The photo upload failed but the visit was saved online: say so (the
+      // inventory form already does), or the ID photo is lost without a word.
+      const avisarFotoPerdida = () =>
+        toast.warning(
+          t(
+            "ui.StationVisitors.fotoNoSubida",
+            "La visita se guardó, pero la foto del documento no se pudo subir. Agrégala después desde el registro.",
+          ),
+          { duration: 9000 },
+        );
       if (isEdit) {
         await visitorLogService.update(initialData.id, payload);
         toast.success(t("ui.StationVisitors.registroActualizado", "Registro actualizado."));
+        if (photoDroppedOffline) avisarFotoPerdida();
       } else {
         // Sin red: a la cola offline; se registra solo al reconectar.
         const { queued } = await runOrQueue(
@@ -580,7 +605,10 @@ function VisitorFormModal({
                 ),
             { duration: 9000 },
           );
-        else toast.success(t("ui.StationVisitors.visitanteRegistrado", "Visitante registrado."));
+        else {
+          toast.success(t("ui.StationVisitors.visitanteRegistrado", "Visitante registrado."));
+          if (photoDroppedOffline) avisarFotoPerdida();
+        }
       }
       onSaved();
       onClose();

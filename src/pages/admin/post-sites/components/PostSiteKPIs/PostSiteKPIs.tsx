@@ -301,6 +301,53 @@ export default function PostSiteKPIs({ site }: Props) {
     const toNumber = (v: any) =>
       v === "" || v === null || v === undefined ? null : Number(v);
 
+    // Frequency and description are marked as required in the form, and the
+    // emailed report needs at least one recipient: an address typed but not
+    // added with «Agregar» is taken as long as it is valid.
+    if (!formData.frequency) {
+      toast.error(
+        t(
+          "postSites.KPI.modal.errors.frequencyRequired",
+          "Selecciona la frecuencia",
+        ),
+      );
+      return;
+    }
+    if (!String(formData.description || "").trim()) {
+      toast.error(
+        t(
+          "postSites.KPI.modal.errors.descriptionRequired",
+          "Escribe una descripción",
+        ),
+      );
+      return;
+    }
+    let emails = formData.emails || [];
+    if (formData.emailNotification) {
+      const pending = currentEmail.trim();
+      if (pending) {
+        if (!validateEmail(pending)) {
+          setEmailError(
+            t(
+              "guards.KPI.modal.errors.emailInvalid",
+              "Correo electrónico no válido",
+            ),
+          );
+          return;
+        }
+        if (!emails.includes(pending)) emails = [...emails, pending];
+      }
+      if (!emails.length) {
+        setEmailError(
+          t(
+            "postSites.KPI.modal.errors.emailsRequired",
+            "Agrega al menos un correo para enviar el informe",
+          ),
+        );
+        return;
+      }
+    }
+
     const payload: any = {
       scope: "postSite",
       postSiteId: site?.id,
@@ -317,7 +364,7 @@ export default function PostSiteKPIs({ site }: Props) {
       verificationReports: !!formData.verificationReports,
       verificationReportsNumber: toNumber(formData.verificationReportsNumber),
       emailNotification: !!formData.emailNotification,
-      emails: formData.emails || [],
+      emails: formData.emailNotification ? emails : formData.emails || [],
     };
 
     try {
@@ -335,6 +382,8 @@ export default function PostSiteKPIs({ site }: Props) {
       await loadKpis();
       setShowModal(false);
       setEditingId(null);
+      setCurrentEmail("");
+      setEmailError("");
       setFormData({
         frequency: "",
         description: "",
@@ -592,7 +641,7 @@ export default function PostSiteKPIs({ site }: Props) {
                   />
                 </th>
                 <th className="cg-eyebrow px-2 py-2">
-                  {t("postSites.KPI.kpitable.kpitype", "Tipo")}
+                  {t("postSites.KPI.modal.description", "Descripción")}
                 </th>
                 <th className="cg-eyebrow px-2 py-2">
                   {t("postSites.KPI.kpitable.kpidate", "Fecha/Hora")}
@@ -649,9 +698,7 @@ export default function PostSiteKPIs({ site }: Props) {
                         />
                       </td>
                       <td className="px-2 py-2.5 text-sm text-foreground">
-                        {typeof kpi.type === "object"
-                          ? kpi.type?.name || "-"
-                          : kpi.type || "-"}
+                        {kpi.description || "-"}
                       </td>
                       <td className="px-2 py-2.5 text-sm text-foreground">
                         {formatDate(kpi.dateTime)}

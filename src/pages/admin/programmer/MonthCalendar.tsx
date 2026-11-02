@@ -7,7 +7,6 @@ import { localeActual } from "@/lib/localeActual";
 import { nombreDeVigilante } from "@/lib/guardName";
 import { stationShort } from "@/lib/stationName";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -147,7 +146,8 @@ function MonthCalendarInner({
       const d = new Date(base);
 
       d.setDate(d.getDate() + i);
-      const corto = d.toLocaleDateString(locale, { timeZone: zonaDeLaEmpresa(),
+      // tz: civil day built at local midnight (a calendar date, not an instant).
+      const corto = d.toLocaleDateString(locale, {
         weekday: estrecha ? "narrow" : "short",
       });
 

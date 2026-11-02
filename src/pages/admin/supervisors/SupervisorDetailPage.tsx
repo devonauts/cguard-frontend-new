@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 
 import { toast } from "sonner";
 import {
@@ -344,6 +344,7 @@ export default function SupervisorDetailPage() {
       // El nombre vive en la cuenta: se guarda aparte (ver `save`).
       firstName: s.firstName ?? "",
       lastName: s.lastName ?? "",
+      phoneNumber: s.phoneNumber ?? "",
       governmentId: s.governmentId ?? "",
       birthDate: toDateInput(s.birthDate),
       birthPlace: s.birthPlace ?? "",
@@ -380,6 +381,19 @@ export default function SupervisorDetailPage() {
     if (sup) hydrate(sup);
     setEditing(true);
   };
+
+  // «Editar» in the sheet header lands here with `?editar=1`.
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (!sup || !searchParams.get("editar")) return;
+    beginEdit();
+    const rest = new URLSearchParams(searchParams);
+
+    rest.delete("editar");
+    setSearchParams(rest, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sup, searchParams]);
   const cancelEdit = () => {
     if (sup) hydrate(sup);
     setEditing(false);
@@ -391,9 +405,16 @@ export default function SupervisorDetailPage() {
       const body: Record<string, string | null> = {};
 
       for (const k of Object.keys(form)) {
-        if (k === "firstName" || k === "lastName") continue;
+        if (k === "firstName" || k === "lastName" || k === "phoneNumber")
+          continue;
         body[k] = form[k] === "" ? null : form[k];
       }
+      // The phone is on the sign-in account: sent only when it changed (an
+      // account shared with another company refuses the change).
+      const telefono = String(form.phoneNumber || "").trim();
+
+      if (sup && telefono !== String(sup.phoneNumber || "").trim())
+        body.phoneNumber = telefono || null;
 
       /* EL NOMBRE, APARTE (nombres y apellidos separados): vive en la cuenta y
          antes no se podía cambiar desde aquí. */
@@ -499,8 +520,8 @@ export default function SupervisorDetailPage() {
                   }}
                 >
                   {t(
-                    "ui.SupervisorDetail.elNombreElCorreoYElTelefono",
-                    "El nombre, el correo y el teléfono son la identidad del supervisor y se gestionan desde la invitación de acceso (Usuarios de administración).",
+                    "ui.SupervisorDetail.identidadDeLaCuenta",
+                    "Nombres y apellidos se guardan aquí. El correo es el de su cuenta de acceso y no se cambia desde esta ficha.",
                   )}
                 </div>
               )}
@@ -556,6 +577,12 @@ export default function SupervisorDetailPage() {
                             value={form.lastName}
                             onChange={(v) => setField("lastName", v)}
                           />
+                          <EditText
+                            label={t("guards.profile.fields.mobile", "Número móvil")}
+                            type="tel"
+                            value={form.phoneNumber}
+                            onChange={(v) => setField("phoneNumber", v)}
+                          />
                         </>
                       ) : (
                         <>
@@ -565,6 +592,9 @@ export default function SupervisorDetailPage() {
                           <ReadField
                             label={t("guards.list.details.fields.lastName", "Apellidos")}
                             value={sup.lastName} />
+                          <ReadField
+                            label={t("guards.profile.fields.mobile", "Número móvil")}
+                            value={sup.phoneNumber} />
                         </>
                       )}
                       {editing ? (

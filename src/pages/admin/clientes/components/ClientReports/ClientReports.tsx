@@ -57,7 +57,12 @@ import { CHART_VARS, alphaVar, rampVar } from "@/lib/chartColors";
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  hoyEnLaEmpresa,
+  soloFechaCivil,
+  sumaDias,
+  zonaDeLaEmpresa,
+} from "@/lib/horaDeLaEmpresa";
 // ── Shape of GET /client-account/:id/reports (clientAccountReports.ts) ──
 interface ReportKpi {
   key: string;
@@ -160,8 +165,6 @@ const QUICK_ICON: Record<string, LucideIcon> = {
   coverage: MapPin,
   "guard-activity": Users,
 };
-const ymd = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const fmtDT = (iso: string) => {
   const d = new Date(iso);
 
@@ -175,18 +178,11 @@ const fmtDT = (iso: string) => {
         minute: "2-digit",
       });
 };
-const fmtD = (iso: string) => {
-  const d = new Date(iso);
-
-  return Number.isNaN(d.getTime())
-    ? ""
-    : d.toLocaleDateString(localeActual(), {
-        timeZone: zonaDeLaEmpresa(),
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-};
+/* The period fields hold civil days («2026-10-02»). Parsing one as an instant
+   (UTC midnight) and printing it in the company's zone showed the day before
+   west of Greenwich: the fields said 02/10–01/11 and «Filtros aplicados»
+   01/10–31/10 (QA G8). */
+const fmtD = (dia: string) => soloFechaCivil(dia, {}, "");
 
 /** Actividad diaria — la serie temporal de la pestaña. */
 function ActividadChart({
@@ -306,11 +302,10 @@ export default function ClientReports({
 
   useScrollToTopOnMount(containerRef);
 
-  const today = useMemo(() => new Date(), []);
-  const [from, setFrom] = useState(
-    ymd(new Date(today.getTime() - 30 * 24 * 3600 * 1000)),
-  );
-  const [to, setTo] = useState(ymd(today));
+  // «Today» is the company's day, like the server's range (tenantDayRange).
+  const today = useMemo(() => hoyEnLaEmpresa(), []);
+  const [from, setFrom] = useState(sumaDias(today, -30));
+  const [to, setTo] = useState(today);
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 8;

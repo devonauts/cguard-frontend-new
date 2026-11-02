@@ -496,6 +496,8 @@ export function cuerpoDeVigilante(d: Datos) {
     inviteBy: "Correo Electrónico",
     contact: limpio(d.correo),
     email: limpio(d.correo),
+    // Invited by e-mail, the phone still belongs on their record.
+    ...(opcional(d.celular) ? { phoneNumber: limpio(d.celular) } : {}),
     clientIds: [],
     stationIds: [],
   };
@@ -532,6 +534,10 @@ export function cuerpoDeOficina(
 
   return {
     name: `${limpio(d.nombres)} ${limpio(d.apellidos)}`.trim(),
+    // Given and family names as typed: from `name` alone the server splits at
+    // the first space («QA personal» + «Oficina Uno» → «QA» / «personal Oficina Uno»).
+    firstName: limpio(d.nombres),
+    lastName: limpio(d.apellidos),
     email: limpio(d.correo),
     role: d.rol,
     postSiteIds: acotado ? [...d.sedes] : [],

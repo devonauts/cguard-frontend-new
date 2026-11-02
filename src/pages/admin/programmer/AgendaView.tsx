@@ -7,7 +7,6 @@ import { localeActual } from "@/lib/localeActual";
 import { nombreDeVigilante } from "@/lib/guardName";
 import { stationLabel } from "@/lib/stationName";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -138,7 +137,8 @@ function AgendaViewInner({
                 style={{ color: hoy ? "var(--brand-text)" : undefined }}
               >
                 {date
-                  .toLocaleDateString(locale, { timeZone: zonaDeLaEmpresa(),
+                  // tz: civil day built at local midnight (a calendar date, not an instant).
+                  .toLocaleDateString(locale, {
                     weekday: "long",
                     day: "numeric",
                     month: "long",

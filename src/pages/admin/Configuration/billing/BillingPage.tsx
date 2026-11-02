@@ -57,6 +57,7 @@ import {
 } from "@/lib/api/partnerBillingService";
 import { CODIGO_PAGO_DE_EMPRESA } from "@/lib/pagoRequerido";
 import { localeActual } from "@/lib/localeActual";
+import { roleDisplayName } from "@/config/roleLabels";
 
 function money(cents: number, currency = "USD") {
   // en-US → dot as decimal separator (e.g. $12.50), comma as thousands.
@@ -694,7 +695,7 @@ function BillingPageDeLaPrincipal() {
                                   color: "var(--ink-soft)",
                                 }}
                               >
-                                {u.roles[0]}
+                                {roleDisplayName(u.roles[0])}
                               </span>
                             )}
                             <span
@@ -850,10 +851,18 @@ function BillingPageDeLaPrincipal() {
             >
               {visibleInvoices.length === 0 ? (
                 <EmptyState
-                  description={t("billing.invoicesEmptyDesc", {
-                    defaultValue:
-                      "Cuando actives tu suscripción, tus facturas aparecerán aquí y podrás descargarlas en PDF.",
-                  })}
+                  description={
+                    // Active already: «cuando actives tu suscripción» contradicted the card above.
+                    isActive
+                      ? t("billing.invoicesEmptyDescActive", {
+                          defaultValue:
+                            "Tu primera factura aparecerá aquí cuando se emita, y podrás descargarla en PDF.",
+                        })
+                      : t("billing.invoicesEmptyDesc", {
+                          defaultValue:
+                            "Cuando actives tu suscripción, tus facturas aparecerán aquí y podrás descargarlas en PDF.",
+                        })
+                  }
                   icon={<FileText />}
                   title={t("billing.invoicesEmptyTitle", {
                     defaultValue: "Aún no hay facturas",

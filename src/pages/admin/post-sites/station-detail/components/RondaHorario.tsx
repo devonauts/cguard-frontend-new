@@ -7,6 +7,7 @@ import { ApiService } from "@/services/api/apiService";
 import { Button } from "@/components/ui/button";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { apartarDelWidget } from "@/lib/apartarDelWidget";
+import { leerDias } from "@/lib/diasDeRonda";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -48,26 +49,7 @@ const DIAS: Array<{ n: number; corta: string; k: string }> = [
   { n: 0, corta: "D", k: "ui.RondaHorario.diaCortoDom" },
 ];
 
-/** Tolerante con lo que haya en la columna: array, JSON en texto, o lista. */
-export function leerDias(raw: unknown): number[] {
-  let bruto: any = raw;
-
-  if (typeof bruto === "string") {
-    const s = bruto.trim();
-
-    if (!s) return [];
-    try {
-      bruto = JSON.parse(s);
-    } catch {
-      bruto = s.split(/[,;|]/);
-    }
-  }
-  if (!Array.isArray(bruto)) return [];
-
-  return bruto
-    .map((d: any) => Number(d))
-    .filter((n: number) => Number.isFinite(n) && n >= 0 && n <= 6);
-}
+export { leerDias };
 
 /** Igual de tolerante con las horas fijas. */
 export function leerHoras(raw: unknown): string[] {

@@ -497,6 +497,9 @@ export default function Visitors() {
   };
 
   const markExit = async (id: string) => {
+    // Never overwrite an exit that is already recorded: the menu item is only
+    // greyed out, and Radix still runs onClick on a disabled item.
+    if (salidaDe(logs.find((l) => String(l.id) === String(id)))) return;
     try {
       const now = new Date().toISOString();
 
@@ -959,7 +962,9 @@ export default function Visitors() {
 
     if (!newVisitor.client) missing.push(t("visitantes.client") || "Cliente");
     if (!newVisitor.site) missing.push(t("visitantes.site") || "Sitio");
-    if (!newVisitor.guard) missing.push(t("visitantes.guard") || "Vigilante");
+    // The guard is NOT required: the visitor log has no guard column (the
+    // API drops `guardId`; «who registered» is the signed-in user), and a
+    // station without guards made the form impossible to save.
     if (!newVisitor.firstName)
       missing.push(t("visitantes.form.name") || "Nombre");
     if (!newVisitor.lastName)
@@ -994,10 +999,12 @@ export default function Visitors() {
         stationId: newVisitor.station || undefined,
         guardId: newVisitor.guard,
         // combine type and value into a single string, e.g. "DEPARTAMENTO - 24"
+        // Same «Kind - detail» shape and spelling as the station tab, so the
+        // station table can translate it (it was «CASA - 24» from here).
         placeType:
           newVisitor.placeTypeKind && newVisitor.placeTypeValue
-            ? `${newVisitor.placeTypeKind.toUpperCase()} - ${newVisitor.placeTypeValue}`
-            : newVisitor.placeTypeValue || undefined,
+            ? `${newVisitor.placeTypeKind} - ${newVisitor.placeTypeValue}`
+            : newVisitor.placeTypeKind || newVisitor.placeTypeValue || undefined,
       };
 
       // Sin red, la visita queda en cola y sale sola al reconectar; la
@@ -1500,8 +1507,8 @@ export default function Visitors() {
                                     {t("actions.viewDetails") || "Ver detalles"}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
-                                    onClick={() => markExit(r.id)}
-                                    disabled={!!r.exitTime}
+                                    onSelect={() => markExit(r.id)}
+                                    disabled={!!salidaDe(r)}
                                   >
                                     {t("visitantes.markExit") ||
                                       "Marcar salida"}
@@ -1621,7 +1628,7 @@ export default function Visitors() {
                           size="sm"
                           variant="ghost"
                           onClick={() => markExit(r.id)}
-                          disabled={!!r.exitTime}
+                          disabled={!!salidaDe(r)}
                         >
                           {t("visitantes.markExit") || "Salida"}
                         </Button>
@@ -1943,10 +1950,8 @@ export default function Visitors() {
                 <div className="space-y-1.5">
                   <Label>
                     {t("visitantes.guard") || "Vigilante"}
-                    <span style={{ color: "var(--bad-text)" }}>*</span>
                   </Label>
                   <Select
-                    aria-required="true"
                                 disabled={!newVisitor.station || guardsForNewVisitor.length === 0}
                                 value={newVisitor.guard}
                                 onValueChange={(v) =>
@@ -1980,7 +1985,7 @@ export default function Visitors() {
                     >
                       {t(
                         "visitantes.sinVigilantesEnEstacion",
-                        "Esta estación todavía no tiene vigilantes asignados. Asígnale uno desde la ficha del puesto para poder registrar la visita.",
+                        "Esta estación todavía no tiene vigilantes asignados.",
                       )}
                     </p>
                   )}
@@ -2005,15 +2010,21 @@ export default function Visitors() {
                         />
                       </SelectTrigger>
                       <SelectContent>
+                        {/* Same list as the station's visitor form. */}
                         <SelectItem value="Casa">
                           {t("visitantes.placeType.house") || "Casa"}
                         </SelectItem>
                         <SelectItem value="Departamento">
-                          {t("visitantes.placeType.apartment") ||
-                            "Departamento"}
+                          {t("ui.StationVisitors.departamento", "Departamento")}
                         </SelectItem>
                         <SelectItem value="Oficina">
                           {t("visitantes.placeType.office") || "Oficina"}
+                        </SelectItem>
+                        <SelectItem value="Parking">
+                          {t("ui.StationVisitors.parking", "Parking")}
+                        </SelectItem>
+                        <SelectItem value="Otro">
+                          {t("coverage.reason.otro", "Otro")}
                         </SelectItem>
                       </SelectContent>
                     </Select>

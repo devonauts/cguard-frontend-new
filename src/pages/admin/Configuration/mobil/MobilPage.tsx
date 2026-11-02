@@ -437,6 +437,17 @@ export default function MobilPage() {
       toast.error(t('settings.mobil.certFieldsRequired', { defaultValue: 'Título, código y descripción son obligatorios.' }));
       return;
     }
+    // Both dates are required by the server, which answered with the column
+    // names («…requeridos: acquisitionDate, expirationDate»).
+    if (!certForm.acquisitionDate || !certForm.expirationDate) {
+      toast.error(t('settings.mobil.certDatesRequired', { defaultValue: 'Indica la fecha de adquisición y la de vencimiento.' }));
+      return;
+    }
+    // YYYY-MM-DD strings compare in date order.
+    if (certForm.expirationDate < certForm.acquisitionDate) {
+      toast.error(t('settings.mobil.certDatesOrder', { defaultValue: 'La fecha de vencimiento no puede ser anterior a la de adquisición.' }));
+      return;
+    }
 
     setLoading(true);
     try {
@@ -717,7 +728,7 @@ export default function MobilPage() {
                         <Input value={serviceForm.title} onChange={(e) => setServiceForm({ ...serviceForm, title: e.target.value })} placeholder={t('settings.mobil.serviceTitlePlaceholder', { defaultValue: 'Título del servicio' })} />
                       </div>
                       <div>
-                        <Label>{t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}</Label>
+                        <Label>{t('settings.mobil.descriptionRequiredLabel', { defaultValue: 'Descripción*' })}</Label>
                         <Textarea value={serviceForm.description} onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })} rows={4} />
                       </div>
                       <div>
@@ -802,6 +813,12 @@ export default function MobilPage() {
                     <DialogFooter className="mt-6 flex justify-end gap-2">
                       <Button variant="outline" onClick={() => setServiceDialogOpen(false)}>{t('settings.mobil.cancelBtn', { defaultValue: 'Cancelar' })}</Button>
                       <Button variant="brand" onClick={async () => {
+                        // The server refuses a service without description and
+                        // answered with the column name («…requeridos: description»).
+                        if (!serviceForm.description.trim()) {
+                          toast.error(t('settings.mobil.serviceDescriptionRequired', { defaultValue: 'Escribe una descripción del servicio.' }));
+                          return;
+                        }
                         try {
                           // Upload any newly selected images, then keep existing + new.
                           const uploadedImages: UploadedFile[] = [];
@@ -1105,7 +1122,7 @@ export default function MobilPage() {
           <DialogContent className="max-h-[90vh] max-w-[calc(100%-2rem)] overflow-y-auto sm:max-w-2xl">
             <DialogHeader className="text-center">
               <DialogTitle className="mx-auto">{bannerTitle}</DialogTitle>
-              <DialogDescription>{t('settings.mobil.bannerDialogDesc', { defaultValue: 'Configura el banner que se mostrará en el módulo MOBIL.' })}</DialogDescription>
+              <DialogDescription>{t('settings.mobil.bannerDialogDesc', { defaultValue: 'Configura el banner que verán tus clientes en su app.' })}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div>
@@ -1203,16 +1220,19 @@ export default function MobilPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label>{t('settings.mobil.acquisitionDateLabel', { defaultValue: 'Fecha de adquisición' })}</Label>
+                  <Label>{t('settings.mobil.acquisitionDateLabel', { defaultValue: 'Fecha de adquisición' })}*</Label>
                   <Input
+                    required
                     type="date"
                     value={certForm.acquisitionDate}
                     onChange={(e) => setCertForm({ ...certForm, acquisitionDate: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label>{t('settings.mobil.expirationDateLabel', { defaultValue: 'Fecha de expiración' })}</Label>
+                  <Label>{t('settings.mobil.expirationDateLabel', { defaultValue: 'Fecha de expiración' })}*</Label>
                   <Input
+                    min={certForm.acquisitionDate || undefined}
+                    required
                     type="date"
                     value={certForm.expirationDate}
                     onChange={(e) => setCertForm({ ...certForm, expirationDate: e.target.value })}

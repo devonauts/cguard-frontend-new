@@ -15,6 +15,7 @@ import { esFacturadaPorSocio, finDePruebaDelSocio } from "@/lib/avisosDelSocio";
 import { esDiaCivil } from "@/pages/admin/Configuration/billing/cobroDelSocio";
 import { soloFecha, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePuede } from "@/hooks/usePuede";
 import {
   isFreeTierPartnerBilling,
   isFreeTierSummary,
@@ -58,13 +59,15 @@ export default function TrialBanner() {
   /* Free tier («Plan gratis»): CGuard Pro never bills this company, so there
      is no trial, no «activate» and no payment banner — nothing is fetched. */
   const freeTier = isFreeTierUser(user);
+  // The summary is for management (settingsRead + level 90 on the server).
+  const { puede: puedeVerResumen } = usePuede("suscripcion.verResumen");
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [cobroDelSocio, setCobroDelSocio] = useState<CobroDelSocio | null>(
     null,
   );
 
   useEffect(() => {
-    if (freeTier) return;
+    if (freeTier || !puedeVerResumen) return;
     let mounted = true;
 
     // Use a fresh cached value if available.
@@ -88,7 +91,7 @@ export default function TrialBanner() {
     return () => {
       mounted = false;
     };
-  }, [freeTier]);
+  }, [freeTier, puedeVerResumen]);
 
   /* A partner-billed company: its trial is with the PARTNER, and the only
      thing worth saying is when it ends and that a card is needed. */

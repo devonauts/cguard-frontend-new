@@ -38,6 +38,7 @@ import {
   SkeletonCards,
   IconTile,
   SearchInput,
+  SmartImage,
 } from "@/components/kit";
 import {
   Select,
@@ -46,8 +47,10 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { localeActual } from "@/lib/localeActual";
-import { soloFechaCivil, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
+import { confirmDialog } from "@/components/ui/confirmDialog";
+import { enlaceDeImagen, licenciaIncompleta } from "./licencias";
+
 /** Payload for creating/updating a guard license. */
 type LicensePayload = {
   licenseTypeId?: string;
@@ -349,16 +352,55 @@ export default function GuardLicenses({
     setShowModal(true);
   };
 
-  const downloadRow = async (row: GuardLicense) => {
-    try {
-      if (row.frontImage?.[0]?.privateUrl)
-        window.open(row.frontImage[0].privateUrl);
-      else if (row.frontImage?.[0]?.publicUrl)
-        window.open(row.frontImage[0].publicUrl);
-    } catch {}
+  const abrirPrimeraImagen = (row: GuardLicense): boolean => {
+    const href = enlaceDeImagen(row.frontImage?.[0] || row.backImage?.[0]);
+
+    if (!href) return false;
+    window.open(href, "_blank", "noopener,noreferrer");
+
+    return true;
   };
 
+  // «Descargar» on the card and in the details: the license PDF (it carries
+  // both images). Where there is no PDF (supervisors) the image opens instead.
+  const downloadRow = async (row: GuardLicense) => {
+    try {
+      const blob = await api.download(row.id);
+      const url = window.URL.createObjectURL(
+        new Blob([blob], { type: "application/pdf" }),
+      );
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = `license-${row.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      if (abrirPrimeraImagen(row)) return;
+      console.error("Error downloading report", err);
+      toast.error(
+        t("guards.licenses.toasts.downloadError", {
+          defaultValue: "No se pudo descargar la licencia",
+        }),
+      );
+    }
+  };
+
+  const confirmarBorrado = (count: number) =>
+    confirmDialog({
+      message: t("guards.licenses.confirmDelete", {
+        count,
+        defaultValue:
+          "¿Eliminar {{count}} licencia(s)? Esta acción no se puede deshacer.",
+      }),
+      confirmText: t("actions.delete", { defaultValue: "Eliminar" }),
+      tone: "danger",
+    });
+
   const deleteRow = async (row: GuardLicense) => {
+    if (!(await confirmarBorrado(1))) return;
     try {
       await api.remove([row.id]);
       toast.success(
@@ -376,6 +418,7 @@ export default function GuardLicenses({
 
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
+    if (!(await confirmarBorrado(selectedIds.length))) return;
     try {
       await api.remove(selectedIds);
       toast.success(
@@ -393,6 +436,21 @@ export default function GuardLicenses({
   };
 
   const handleSubmitLicense = async () => {
+    const falta = licenciaIncompleta(formData);
+
+    if (falta) {
+      toast.error(
+        falta === "tipo"
+          ? t("guards.licenses.errors.typeRequired", {
+              defaultValue: "Elige el tipo de licencia.",
+            })
+          : t("guards.licenses.errors.numberRequired", {
+              defaultValue: "Escribe el número de la licencia.",
+            }),
+      );
+
+      return;
+    }
     try {
       const payload: LicensePayload = {};
 
@@ -504,9 +562,15 @@ export default function GuardLicenses({
               </>
             }
             icon={<IdCard />}
-            subtitle={t("guards.licenses.subtitle", {
-              defaultValue: "Documentos y credenciales del vigilante",
-            })}
+            subtitle={
+              navKey === "supervisors"
+                ? t("guards.licenses.subtitleSupervisor", {
+                    defaultValue: "Documentos y credenciales del supervisor",
+                  })
+                : t("guards.licenses.subtitle", {
+                    defaultValue: "Documentos y credenciales del vigilante",
+                  })
+            }
             title={t("guards.nav.licencias") || "Licencias"}
           />
 
@@ -553,14 +617,26 @@ export default function GuardLicenses({
                 </Button>
               }
               description={
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: t("guards.licenses.empty.description"),
-                  }}
-                />
+                searchQuery.trim() ? (
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: t("guards.licenses.empty.description"),
+                    }}
+                  />
+                ) : (
+                  t("guards.licenses.empty.hint", {
+                    defaultValue: "Agrega la primera licencia o credencial.",
+                  })
+                )
               }
               icon={<IdCard />}
-              title={t("guards.licenses.empty.title")}
+              title={
+                searchQuery.trim()
+                  ? t("guards.licenses.empty.title")
+                  : t("guards.licenses.empty.none", {
+                      defaultValue: "Sin licencias todavía",
+                    })
+              }
             />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -713,7 +789,8 @@ export default function GuardLicenses({
               </div>
 
               <div>
-                {page} – {totalPages}
+                {page} {t("clients.pagination.of", { defaultValue: "de" })}{" "}
+                {totalPages}
               </div>
 
               <div className="flex gap-2">
@@ -840,11 +917,6 @@ export default function GuardLicenses({
                           />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="__empty">
-                            {t("guards.licenses.form.selectLicenseType", {
-                              defaultValue: "Selecciona tipo",
-                            })}
-                          </SelectItem>
                           {licenseTypes.map((lt: LicenseTypeOption) => (
                             <SelectItem key={lt.id} value={lt.id}>
                               {lt.name}
@@ -1194,9 +1266,7 @@ export default function GuardLicenses({
                         })}
                         value={
                           detailsData.issueDate
-                            ? new Date(
-                                detailsData.issueDate,
-                              ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+                            ? soloFechaCivil(detailsData.issueDate, {}, "")
                             : null
                         }
                       />
@@ -1206,9 +1276,7 @@ export default function GuardLicenses({
                         })}
                         value={
                           detailsData.expiryDate
-                            ? new Date(
-                                detailsData.expiryDate,
-                              ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+                            ? soloFechaCivil(detailsData.expiryDate, {}, "")
                             : null
                         }
                       />
@@ -1238,8 +1306,8 @@ export default function GuardLicenses({
                             (f: FileDescriptor, idx: number) => (
                               <a
                                 key={idx}
-                                className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]"
-                                href={f.privateUrl ?? f.publicUrl ?? undefined}
+                                className="inline-flex items-center gap-2 rounded-xl border p-1.5 pr-3 text-xs font-medium transition hover:[border-color:var(--brand-line)]"
+                                href={enlaceDeImagen(f) ?? undefined}
                                 rel="noreferrer"
                                 style={{
                                   background: "var(--glass-sunken)",
@@ -1247,7 +1315,17 @@ export default function GuardLicenses({
                                 }}
                                 target="_blank"
                               >
-                                <Paperclip className="h-3.5 w-3.5" />
+                                <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+                                  <SmartImage
+                                    alt={f.name || ""}
+                                    className="h-full w-full"
+                                    fallback={
+                                      <Paperclip className="h-3.5 w-3.5" />
+                                    }
+                                    rounded="rounded-lg"
+                                    src={enlaceDeImagen(f)}
+                                  />
+                                </span>
                                 {f.name ||
                                   (f.publicUrl
                                     ? t("actions.view", { defaultValue: "Ver" })
@@ -1279,8 +1357,8 @@ export default function GuardLicenses({
                             (f: FileDescriptor, idx: number) => (
                               <a
                                 key={idx}
-                                className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]"
-                                href={f.privateUrl ?? f.publicUrl ?? undefined}
+                                className="inline-flex items-center gap-2 rounded-xl border p-1.5 pr-3 text-xs font-medium transition hover:[border-color:var(--brand-line)]"
+                                href={enlaceDeImagen(f) ?? undefined}
                                 rel="noreferrer"
                                 style={{
                                   background: "var(--glass-sunken)",
@@ -1288,7 +1366,17 @@ export default function GuardLicenses({
                                 }}
                                 target="_blank"
                               >
-                                <Paperclip className="h-3.5 w-3.5" />
+                                <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+                                  <SmartImage
+                                    alt={f.name || ""}
+                                    className="h-full w-full"
+                                    fallback={
+                                      <Paperclip className="h-3.5 w-3.5" />
+                                    }
+                                    rounded="rounded-lg"
+                                    src={enlaceDeImagen(f)}
+                                  />
+                                </span>
                                 {f.name ||
                                   (f.publicUrl
                                     ? t("actions.view", { defaultValue: "Ver" })
@@ -1322,29 +1410,8 @@ export default function GuardLicenses({
               >
                 <button
                   className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition"
-                  onClick={async () => {
-                    if (!detailsData) return;
-                    try {
-                      const blob = await api.download(detailsData.id);
-                      const url = window.URL.createObjectURL(
-                        new Blob([blob], { type: "application/pdf" }),
-                      );
-                      const a = document.createElement("a");
-
-                      a.href = url;
-                      a.download = `license-${detailsData.id}.pdf`;
-                      document.body.appendChild(a);
-                      a.click();
-                      a.remove();
-                      window.URL.revokeObjectURL(url);
-                    } catch (err) {
-                      console.error("Error downloading report", err);
-                      toast.error(
-                        t("guards.licenses.toasts.downloadError", {
-                          defaultValue: "Could not download report",
-                        }),
-                      );
-                    }
+                  onClick={() => {
+                    if (detailsData) downloadRow(detailsData);
                   }}
                 >
                   <FileDown className="h-4 w-4" />

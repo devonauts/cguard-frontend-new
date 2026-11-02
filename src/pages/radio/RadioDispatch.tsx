@@ -591,13 +591,13 @@ export default function RadioDispatch() {
           </div>
         )}
 
-        <RecentSessions />
+        <RecentSessions reloadKey={running?.id || ""} />
       </PageContainer>
     </AppLayout>
   );
 }
 
-function RecentSessions() {
+function RecentSessions({ reloadKey = "" }: { reloadKey?: string }) {
   const { t } = useTranslation();
   const { version } = useRadioRealtime();
   const [rows, setRows] = useState<any[]>([]);
@@ -609,7 +609,9 @@ function RecentSessions() {
       .listSessions(10)
       .then((r) => setRows(r?.rows || []))
       .catch(() => {});
-  }, [version]);
+    // Also when the running pass changes: without the realtime push a pass
+    // ended here stayed «En curso, 0✓ 0✕» until the page was reloaded.
+  }, [version, reloadKey]);
   const open = async (id: string) => {
     if (openId === id) {
       setOpenId(null);

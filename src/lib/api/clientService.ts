@@ -1023,9 +1023,9 @@ export const clientService = {
      * Works even when the client doesn't have a linked user yet — the backend
      * will create one from the client's email address automatically.
      */
-    async sendClientPortalInvitation(clientAccountId: string, email?: string): Promise<{ sent: boolean; recipient: string }> {
+    async sendClientPortalInvitation(clientAccountId: string, email?: string, name?: string): Promise<{ sent: boolean; recipient: string }> {
         const tenantId = getTenantId();
-        const body = email ? { email } : {};
+        const body = email ? { email, ...(name ? { name } : {}) } : {};
         const { data } = await api.post<{ sent: boolean; recipient: string; data?: { sent: boolean; recipient: string } }>(`/tenant/${tenantId}/client-account/${clientAccountId}/send-portal-invitation`, body);
         return data?.data || data;
     },
@@ -1034,9 +1034,9 @@ export const clientService = {
      * Send the "Invitar a la app" Mi Seguridad app-download invitation to a
      * client. Separate from the welcome/portal invitation.
      */
-    async sendClientAppInvitation(clientAccountId: string, email?: string): Promise<{ sent: boolean; recipient: string }> {
+    async sendClientAppInvitation(clientAccountId: string, email?: string, name?: string): Promise<{ sent: boolean; recipient: string }> {
         const tenantId = getTenantId();
-        const body = email ? { email } : {};
+        const body = email ? { email, ...(name ? { name } : {}) } : {};
         const { data } = await api.post<{ sent: boolean; recipient: string; data?: { sent: boolean; recipient: string } }>(`/tenant/${tenantId}/client-account/${clientAccountId}/send-app-invitation`, body);
         return data?.data || data;
     },

@@ -136,7 +136,10 @@ export default function OpenShifts() {
 
   const [desde, setDesde] = useState(hoy);
   const [hasta, setHasta] = useState(() => sumaDias(hoy, 13));
-  const [stationId, setStationId] = useState("");
+  /* The list below is of SITES (`/post-site`): it filters by `postSiteId`.
+     It sent the site id as `stationId` and always answered «nothing
+     uncovered» (QA 2026-11-01). */
+  const [postSiteId, setPostSiteId] = useState("");
   const [pestana, setPestana] = useState<Pestana>("all");
   const [terminados, setTerminados] = useState(false);
   const [page, setPage] = useState(1);
@@ -167,7 +170,7 @@ export default function OpenShifts() {
       const r = await gapService.list({
         from: desde,
         to: hasta,
-        stationId: stationId || undefined,
+        postSiteId: postSiteId || undefined,
         kinds: pestana === "all" ? undefined : [pestana],
         includeEnded: terminados,
         page,
@@ -187,7 +190,7 @@ export default function OpenShifts() {
   }, [
     desde,
     hasta,
-    stationId,
+    postSiteId,
     pestana,
     terminados,
     page,
@@ -310,11 +313,11 @@ export default function OpenShifts() {
             />
           </div>
           <div className="grid min-w-[200px] gap-1">
-            <Label>{t("comun.puesto", "Estación")}</Label>
+            <Label>{t("ui.SinCubrir.sede", "Sede")}</Label>
             <Select
-              value={stationId || "__todas"}
+              value={postSiteId || "__todas"}
               onValueChange={(v) => {
-                setStationId(v === "__todas" ? "" : v);
+                setPostSiteId(v === "__todas" ? "" : v);
                 setPage(1);
               }}
             >
@@ -323,7 +326,7 @@ export default function OpenShifts() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__todas">
-                  {t("ui.SinCubrir.todasLasEstaciones", "Todas las estaciones")}
+                  {t("ui.SinCubrir.todasLasSedes", "Todas las sedes")}
                 </SelectItem>
                 {estaciones.map((s) => (
                   <SelectItem key={s.id} value={s.id}>

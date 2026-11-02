@@ -226,16 +226,24 @@ export default function SupervisorsPage() {
         .filter(Boolean)
         .join(" + ");
 
-      toast.success(
-        via
-          ? t("ui.SupervisorsPage.enlaceDeRestablecimientoEnviado", {
-              via,
-              defaultValue: "Enlace de restablecimiento enviado por {{via}}",
-            })
-          : t(
-              "ui.SupervisorsPage.enlaceDeRestablecimientoCopiado",
-              "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
-            ),
+      if (via) {
+        toast.success(
+          t("ui.SupervisorsPage.enlaceDeRestablecimientoEnviado", {
+            via,
+            defaultValue: "Enlace de restablecimiento enviado por {{via}}",
+          }),
+        );
+
+        return;
+      }
+      // Without a mailbox the server answers with the link (handled above), so
+      // here the person HAS an e-mail and sending it failed.
+      toast.error(
+        t("ui.SupervisorsPage.correoDeRestablecimientoNoEnviado", {
+          email: r?.email || s.email || "",
+          defaultValue:
+            "No se pudo enviar el correo de restablecimiento a {{email}}. Inténtalo de nuevo en unos minutos.",
+        }),
       );
     } catch (e: any) {
       toast.error(

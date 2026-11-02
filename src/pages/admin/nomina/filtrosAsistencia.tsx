@@ -85,14 +85,21 @@ export function useOpcionesDeFiltro(): OpcionesDeFiltro {
   return v;
 }
 
-/** «2 – 8 nov 2026» in the company zone. */
+/**
+ * «2 – 8 nov 2026» in the company zone, first letter in capitals («Dom, 26 oct
+ * 2026»). The capital is put here, not with CSS `capitalize`: that one turned
+ * the picker into «26-Oct – 01 Nov» while the table title read «26 oct – 01 nov».
+ */
 export function etiquetaDeRango(from: string, to: string): string {
   const fmt = (ymd: string, o: Intl.DateTimeFormatOptions) =>
     new Date(`${ymd}T12:00:00Z`).toLocaleDateString(localeActual(), { timeZone: "UTC", ...o });
-  if (from === to) return fmt(from, { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
   const mismoMes = from.slice(0, 7) === to.slice(0, 7);
+  const texto =
+    from === to
+      ? fmt(from, { weekday: "short", day: "2-digit", month: "short", year: "numeric" })
+      : `${fmt(from, { day: "2-digit", month: mismoMes ? undefined : "short" })} – ${fmt(to, { day: "2-digit", month: "short", year: "numeric" })}`;
 
-  return `${fmt(from, { day: "2-digit", month: mismoMes ? undefined : "short" })} – ${fmt(to, { day: "2-digit", month: "short", year: "numeric" })}`;
+  return texto.charAt(0).toLocaleUpperCase(localeActual()) + texto.slice(1);
 }
 
 /** Day / week / month switch, previous/next and «today», in company days. */
@@ -128,7 +135,7 @@ export function RangoDeAsistencia({
           <ChevronLeft className="size-4" />
         </button>
         <button
-          className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium capitalize"
+          className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium"
           title={t("ui.NominaRecords.irAHoy", "Ir a hoy")}
           type="button"
           onClick={() => onChange(rangoDe(periodo === "custom" ? "week" : periodo, hoy))}

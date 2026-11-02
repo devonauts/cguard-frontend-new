@@ -17,8 +17,8 @@ import { toast } from "sonner";
 import { clientDisplayName } from "@/lib/clientName";
 import AppLayout from "@/layouts/app-layout";
 import {
-  dispatchCreateSchema,
-  type DispatchCreateSchema,
+  dispatchEditSchema,
+  type DispatchEditSchema,
 } from "@/lib/validators/dispatch-create.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +44,7 @@ import IncidentTypesService from "@/services/incident-types.service";
 import api from "@/lib/api";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { diaDeLaEmpresa, horaDeLaEmpresa, desdeInputFechaHora} from "@/lib/horaDeLaEmpresa";
+import { uploadIncidentAttachments } from "./incidentAttachments";
 
 // `id` is the API value; `labelKey` + `name` are only for display.
 const prioridades = [
@@ -121,11 +122,10 @@ export default function EditDispatchPage() {
 
         if (!tenantId) return;
 
+        // The guard list lives at /security-guard; the camelCase guesses
+        // tried first only answered 404 on every load.
         const tryPaths = [
-          `/tenant/${tenantId}/securityGuard?limit=100&offset=0`,
           `/tenant/${tenantId}/security-guard?limit=100&offset=0`,
-          `/tenant/${tenantId}/securityGuards?limit=100&offset=0`,
-          `/tenant/${tenantId}/security-guards?limit=100&offset=0`,
           `/tenant/${tenantId}/user?limit=100&offset=0&role=guard`,
         ];
 
@@ -208,11 +208,12 @@ export default function EditDispatchPage() {
     })();
   }, []);
 
-  const form = useForm<DispatchCreateSchema>({
-    resolver: zodResolver(dispatchCreateSchema),
+  const form = useForm<DispatchEditSchema>({
+    resolver: zodResolver(dispatchEditSchema),
     defaultValues: {
       clientId: "",
       siteId: "",
+      stationId: "",
       guardId: "",
       priority: "media",
       callerType: "",
@@ -296,6 +297,7 @@ export default function EditDispatchPage() {
         // Derive guard id and display name from multiple possible response shapes
         const deriveGuard = (d: any) => {
           const maybeId =
+            d.guardNameId ||
             d.guardId ||
             d.guard_id ||
             d.guard?.id ||
@@ -324,15 +326,26 @@ export default function EditDispatchPage() {
 
         const derivedGuard = deriveGuard(data);
 
+        // Incidents keep the site as `postSiteId` (relation `site`): reading
+        // only `siteId` left «Sede» empty, and saving then cleared the site.
+        const savedSiteId =
+          data.postSiteId || data.siteId || data.site?.id || "";
+        const savedClientId = data.clientId || data.client?.id || "";
         const prefill: any = {
-          clientId: data.clientId ? String(data.clientId) : "",
-          siteId: data.siteId ? String(data.siteId) : "",
+          clientId: savedClientId ? String(savedClientId) : "",
+          siteId: savedSiteId ? String(savedSiteId) : "",
+          stationId: data.stationId ? String(data.stationId) : "",
           guardId: derivedGuard.id || "",
           priority: data.priority || "media",
           callerType: data.callerType || "",
           callerName: data.callerName || "",
           location: data.location || "",
-          incidentType: data.incidentTypeId || data.incidentType || "",
+          incidentType:
+            data.incidentTypeId ||
+            (typeof data.incidentType === "string"
+              ? data.incidentType
+              : data.incidentType?.id) ||
+            "",
           incidentDate,
           incidentTime,
           incidentDetails: data.content || "",
@@ -352,6 +365,12 @@ export default function EditDispatchPage() {
             prefill.guardId ? String(prefill.guardId) : "",
           );
         } catch (err) {}
+
+        const siteName =
+          (typeof data.site === "string"
+            ? data.site
+            : data.site?.companyName || data.site?.name) ||
+          t("dispatcher.header_post_site", "Sitio");
 
         // Try to load the actual sitios for the client so the select contains the
         // saved site option. If that fails, fall back to a single option using the
@@ -373,18 +392,18 @@ export default function EditDispatchPage() {
               );
             } else if (prefill.siteId) {
               setSitios([
-                { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
+                { id: String(prefill.siteId), name: siteName },
               ]);
             }
           } else if (prefill.siteId) {
             setSitios([
-              { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
+              { id: String(prefill.siteId), name: siteName },
             ]);
           }
         } catch (err) {
           if (prefill.siteId)
             setSitios([
-              { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
+              { id: String(prefill.siteId), name: siteName },
             ]);
         }
 
@@ -398,7 +417,7 @@ export default function EditDispatchPage() {
             if (exists) return prev;
 
             return [
-              { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
+              { id: String(prefill.siteId), name: siteName },
               ...(prev || []),
             ];
           });
@@ -442,7 +461,7 @@ export default function EditDispatchPage() {
     })();
   }, [editId]);
 
-  const onSubmit = async (data: DispatchCreateSchema) => {
+  const onSubmit = async (data: DispatchEditSchema) => {
     const incidentAt =
       data.incidentDate && data.incidentTime
         // «14:30» en el formulario son las 14:30 DEL PUESTO. `new Date("…T14:30:00")`
@@ -468,7 +487,7 @@ export default function EditDispatchPage() {
       actionsTaken: data.actionsTaken || null,
       internalNotes: data.internalNotes || null,
       subject:
-        (data as DispatchCreateSchema & { subject?: string }).subject ||
+        (data as DispatchEditSchema & { subject?: string }).subject ||
         `${data.location || ""}${data.incidentDetails ? " - " + String(data.incidentDetails).slice(0, 80) : ""}`,
     };
 
@@ -481,6 +500,25 @@ export default function EditDispatchPage() {
       // Backend controller expects `req.body.data` so wrap payload accordingly
       await api.put(`/tenant/${tenantId}/request/${editId}`, { data: payload });
       toast.success(t("ui.EditDispatchPage.incidenteActualizado"));
+      // The files chosen here were dropped on the floor: upload and link them.
+      if (attachments.length > 0) {
+        const { failed } = await uploadIncidentAttachments(
+          tenantId,
+          editId,
+          attachments,
+        );
+
+        if (failed.length > 0) {
+          toast.error(
+            t("ui.EditDispatchPage.adjuntosNoSubidos", {
+              defaultValue:
+                "Los cambios se guardaron, pero no se pudieron subir estos archivos: {{archivos}}.",
+              archivos: failed.join(", "),
+            }),
+            { duration: 10000 },
+          );
+        }
+      }
       setAttachments([]);
       navigate("/dispatch-tickets");
     } catch (error) {

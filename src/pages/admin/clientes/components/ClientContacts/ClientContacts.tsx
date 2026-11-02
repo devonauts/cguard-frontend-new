@@ -16,6 +16,7 @@ import { parsePhoneNumberFromString } from "libphonenumber-js";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { clientService } from "@/lib/api/clientService";
 import { PhoneInput } from "@/components/phone/PhoneInput";
+import { getTenantCountry } from "@/utils/tenantLocation";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { EmptyState, Modal } from "@/components/kit";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,11 @@ export default function ClientContacts({
   client: Client & { contacts?: Contact[]; postSites?: PostSiteRaw[] };
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [phoneCountry, setPhoneCountry] = useState<string>("us");
+  // The company's country, like the client form (it started at 🇺🇸 +1 while
+  // the client form starts at the company's prefix — QA M12).
+  const [phoneCountry, setPhoneCountry] = useState<string>(() =>
+    (getTenantCountry() || "us").toLowerCase(),
+  );
   const initial: Contact[] = Array.isArray(client?.contacts)
     ? client.contacts
     : [];
@@ -278,7 +283,7 @@ export default function ClientContacts({
 
   function handleOpenAdd() {
     setForm({});
-    setPhoneCountry("us");
+    setPhoneCountry((getTenantCountry() || "us").toLowerCase());
     setShowAdd(true);
   }
 

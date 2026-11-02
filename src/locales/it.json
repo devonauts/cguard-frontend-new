@@ -40,6 +40,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Creato",
+      "read": "Letto",
+      "signal_runaway_suppressed": "Segnale ripetuto soppresso",
+      "video_verification": "Verifica video",
+      "escalate": "Escalato",
+      "close": "Chiuso",
+      "resolve": "Risolto",
+      "incident": "Incidente creato",
+      "dispatch": "Intervento",
+      "step": "Passo del piano",
+      "ecv_call": "Chiamata",
+      "note": "Nota",
+      "acknowledge": "Preso in carico",
+      "event_appended": "Evento aggiunto",
+      "case_opened": "Caso aperto"
+    },
     "status": {
       "queued": "In coda",
       "acknowledged": "Presa in carico",
@@ -336,7 +353,10 @@
     "forgotNoMailboxHint": "Se il tuo account non ha e-mail, chiedi il link al tuo supervisore o all'ufficio.",
     "forgotSubtitleLoginId": "Inserisci la tua e-mail o il tuo nome utente e ti invieremo un link per crearne una nuova.",
     "loginIdLabel": "E-mail o nome utente",
-    "loginIdPlaceholder": "jmiranda o tu@email.com"
+    "loginIdPlaceholder": "jmiranda o tu@email.com",
+    "validation_symbol": "Deve includere un carattere speciale",
+    "validation_same_as_old": "La nuova password deve essere diversa da quella attuale",
+    "passwordChangedSignInAgain": "Hai cambiato la password. Accedi con quella nuova."
   },
   "client": {
     "invite_not_found": "Invito non trovato o non valido.",
@@ -662,7 +682,8 @@
         "Titleinput": "Inserisci il titolo della nota",
         "Titlenote": "Titolo *",
         "NoFilesSelected": "Nessun file selezionato",
-        "selectDate": "Seleziona"
+        "selectDate": "Seleziona",
+        "editTitle": "Modifica nota"
       },
       "addedBy": "Aggiunto da",
       "detailsTitle": "Dettaglio della nota",
@@ -673,7 +694,8 @@
         "dateRequired": "La data è obbligatoria",
         "descriptionRequired": "La descrizione è obbligatoria",
         "titleRequired": "Il titolo è obbligatorio"
-      }
+      },
+      "description": "Descrizione"
     },
     "pagination": {
       "itemsPerPage": "Elementi per pagina",
@@ -1444,6 +1466,7 @@
     "ticket_summary": "Riepilogo del ticket",
     "view_details": "Vedi dettagli",
     "comment": {
+      "file_upload_failed_not_sent": "Impossibile caricare il file; il commento non è stato inviato.",
       "add": "Aggiungi",
       "add_failed": "Impossibile aggiungere il commento",
       "added": "Commento aggiunto",
@@ -1655,7 +1678,15 @@
         "achieved": "Raggiunto",
         "notAchieved": "Non raggiunto"
       },
-      "totalKpis": "KPI"
+      "totalKpis": "KPI",
+      "scope": {
+        "guard": "Guardia",
+        "postSite": "Sede"
+      },
+      "errors": {
+        "frequencyRequired": "Scegli la frequenza.",
+        "descriptionRequired": "Inserisci la descrizione."
+      }
     },
     "assignSites": {
       "assignButton": "Assegna postazione",
@@ -1796,7 +1827,9 @@
       },
       "empty": {
         "description": "Non abbiamo trovato<br />elementi corrispondenti<br />alla tua ricerca",
-        "title": "Nessun risultato trovato"
+        "title": "Nessun risultato trovato",
+        "none": "Ancora nessuna licenza",
+        "hint": "Aggiungi la prima licenza o tessera."
       },
       "form": {
         "backImageLabel": "Immagine del retro della licenza",
@@ -1857,7 +1890,13 @@
         "updated": "Licenza aggiornata"
       },
       "selected": "selezionate",
-      "untitled": "Licenza"
+      "untitled": "Licenza",
+      "errors": {
+        "typeRequired": "Scegli il tipo di licenza.",
+        "numberRequired": "Inserisci il numero della licenza."
+      },
+      "confirmDelete": "Eliminare {{count}} licenza/e? Questa azione non può essere annullata.",
+      "subtitleSupervisor": "Documenti e credenziali del supervisore"
     },
     "list": {
       "applyFilters": "Applica filtri",
@@ -1943,7 +1982,7 @@
         "statusPending": "In attesa"
       },
       "importDialog": {
-        "browsePlaceholder": "Sfoglia qui il tuo file Excel....",
+        "browsePlaceholder": "Sfoglia qui il tuo file Excel…",
         "clickToSelect": "Clicca per selezionare",
         "completed": "Importazione completata",
         "description": "Carica un file .xlsx/.xls/.csv per importare le guardie.",
@@ -1965,7 +2004,12 @@
           "excelValidationFailed": "Impossibile validare il file Excel prima del caricamento. Verifica il formato.",
           "missingColumns": "Mancano colonne obbligatorie: {{columns}}",
           "selectFile": "Seleziona un file"
-        }
+        },
+        "summaryOk_one": "{{count}} guardia importata",
+        "summaryOk_other": "{{count}} guardie importate",
+        "summaryWithErrors": "Importate: {{ok}} · Non importate: {{fallidas}}",
+        "rowError": "Riga {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Non è stato inviato nessun invito: inviali dall'elenco quando vuoi."
       },
       "labels": {
         "name": "Nome",
@@ -2160,7 +2204,8 @@
         "message": "Non abbiamo trovato<br />elementi corrispondenti<br />alla tua ricerca",
         "title": "Nessun risultato trovato",
         "hint": "Crea la prima nota per questa guardia.",
-        "none": "Ancora nessuna nota"
+        "none": "Ancora nessuna nota",
+        "hintSupervisor": "Crea la prima nota per questo supervisore."
       },
       "modal": {
         "cancel": "Annulla",
@@ -2205,7 +2250,12 @@
       "loadError": "Errore durante il caricamento delle note",
       "noteCreated": "Nota creata correttamente",
       "noteDeleted": "Nota eliminata",
-      "sectionTitle": "Note"
+      "sectionTitle": "Note",
+      "errors": {
+        "titleRequired": "Inserisci il titolo della nota.",
+        "descriptionRequired": "Inserisci la descrizione della nota.",
+        "dateRequired": "Scegli la data della nota."
+      }
     },
     "profile": {
       "noLicense": "Nessuna licenza trovata",
@@ -2221,7 +2271,8 @@
         "statusNoAccess": "Nessun accesso configurato",
         "statusPending": "Invito in attesa",
         "tokenExpired": "Il link dell'invito è scaduto",
-        "tokenExpires": "Invito valido fino al"
+        "tokenExpires": "Invito valido fino al",
+        "alreadyActive": "L'account è già attivo: non serve un invito. Se ha dimenticato la password, usa «Reimposta password» nell'elenco delle guardie."
       },
       "actions": {
         "cancel": "Annulla",
@@ -2497,7 +2548,11 @@
       "locNoneBody": "{{sin}} delle sue ultime {{total}} timbrature sono arrivate senza alcuna coordinata. La timbratura viene comunque registrata — non viene mai bloccato — ma il turno resta senza prova di dove fosse.",
       "locCoarseBody": "{{n}} delle sue ultime {{total}} timbrature sono arrivate con una posizione più grossolana di {{suelo}} m. Va bene per registrare, non per confermare che era in postazione.",
       "locFix": "Causa abituale: su Android il permesso di posizione è rimasto su «Approssimativa». Va portato su «Precisa» nelle impostazioni del telefono — Android non permette all'app di cambiarlo, quindi qualcuno deve mettere mano a quel telefono.",
-      "locLast": "Ultima timbratura senza posizione: {{cuando}}"
+      "locLast": "Ultima timbratura senza posizione: {{cuando}}",
+      "titleSupervisor": "Dispositivo del supervisore",
+      "subtitleSupervisor": "Il primo dispositivo da cui il supervisore accede resta abbinato. Se compare un altro dispositivo, viene segnalato come non riconosciuto (non viene bloccato). Reimposta l'abbinamento se il supervisore ha cambiato telefono.",
+      "emptySupervisor": "Non è ancora stato registrato nessun dispositivo per questo supervisore.",
+      "resetDoneSupervisor": "Abbinamento reimpostato. Il prossimo dispositivo del supervisore sarà quello abbinato."
     },
     "documents": {
       "deleteConfirm": "Vuoi davvero eliminare \"{{name}}\"? L'operazione non può essere annullata.",
@@ -2564,7 +2619,11 @@
       "deleted": "Comunicazione eliminata",
       "pending": "In attesa",
       "title": "Comunicazioni",
-      "total": "comunicazioni"
+      "total": "comunicazioni",
+      "count_one": "{{count}} comunicazione",
+      "count_other": "{{count}} comunicazioni",
+      "acceptedCount_one": "{{count}} accettata",
+      "acceptedCount_other": "{{count}} accettate"
     },
     "actionNotImplemented": "Azione non ancora disponibile",
     "overview": {
@@ -2592,7 +2651,9 @@
       "loadError": "Impossibile caricare i ruoli disponibili.",
       "error": "Impossibile cambiare il ruolo.",
       "hasBothRoles": "Al momento ricopre entrambi i ruoli. Scegliendone uno, resterà solo con quello.",
-      "welcomeSent": "Gli abbiamo inviato un'email di benvenuto con il link per scaricare l'app supervisore."
+      "welcomeSent": "Gli abbiamo inviato un'email di benvenuto con il link per scaricare l'app supervisore.",
+      "inviteSent": "Non aveva ancora una password: gli abbiamo inviato l’invito per crearla ed entrare nell’app supervisore.",
+      "inviteLinkReady": "Non ha ancora password né e-mail: condividi il link di accesso dalla sua scheda supervisore («Reinvia invito»)."
     },
     "department": {
       "title": "Reparto",
@@ -2737,7 +2798,8 @@
       "blood_required": "Il gruppo sanguigno è obbligatorio",
       "credentials_required": "Le credenziali sono obbligatorie",
       "address_required": "L'indirizzo è obbligatorio",
-      "phone_required": "Il telefono è obbligatorio"
+      "phone_required": "Il telefono è obbligatorio",
+      "revisaEstosDatos": "Controlla questi dati: {{campos}}"
     },
     "password": "Password",
     "password_min": "Minimo 8 caratteri",
@@ -2764,7 +2826,8 @@
         "university": "Laurea",
         "universityStudies": "Studi universitari"
       },
-      "freeUnion": "Convivenza"
+      "freeUnion": "Convivenza",
+      "credentialsHint": "N. del tuo tesserino o della tua licenza di guardia"
     },
     "select": "Seleziona",
     "eyebrow_guard": "Invito · Squadra di sicurezza",
@@ -5968,6 +6031,16 @@
         "error": "Errore durante il ripristino dell'utente",
         "success": "Utente ripristinato",
         "title": "Ripristina utente"
+      },
+      "suspend": {
+        "title": "Sospendi utente",
+        "description": "{{user}} non potrà più accedere e passerà in Archiviati. Potrai ripristinarlo in seguito.",
+        "confirm": "Sospendi"
+      },
+      "closeSessions": {
+        "title": "Chiudi le sessioni",
+        "description": "{{user}} verrà disconnesso dal web e dalle app su tutti i dispositivi e dovrà accedere di nuovo.",
+        "confirm": "Chiudi le sessioni"
       }
     },
     "editUser": {
@@ -6268,7 +6341,8 @@
     "free": {
       "title": "Piano gratuito",
       "body": "{{marca}} offre il servizio alla tua azienda senza alcun costo."
-    }
+    },
+    "invoicesEmptyDescActive": "La tua prima fattura apparirà qui appena emessa, e potrai scaricarla in PDF."
   },
   "brand": {
     "tagline": "Sicurezza Intelligente"
@@ -6878,7 +6952,8 @@
     "deleted": "Note eliminate",
     "loadError": "Impossibile caricare le note",
     "saveError": "Impossibile salvare la nota",
-    "updated": "Nota aggiornata"
+    "updated": "Nota aggiornata",
+    "attachmentsFailed": "{{count}} file non sono stati caricati"
   },
   "postSites": {
     "action": "Azione",
@@ -6962,7 +7037,7 @@
       "guardsAssigned": "Guardie assegnate",
       "hoursLogged": "Ore registrate (ultimi 7 giorni)",
       "incidentsReported": "Incidenti segnalati (ultimi 7 giorni)",
-      "kpiadded": "KPI aggiunto",
+      "kpiadded": "Aggiungi KPI",
       "kpisearch": "Cerca KPI",
       "tasksCompleted": "Attività completate (ultimi 7 giorni)",
       "title": "Indicatori KPI",
@@ -7004,6 +7079,11 @@
           "monthly": "Mensile",
           "select": "Seleziona la frequenza",
           "weekly": "Settimanale"
+        },
+        "errors": {
+          "frequencyRequired": "Seleziona la frequenza",
+          "descriptionRequired": "Inserisci una descrizione",
+          "emailsRequired": "Aggiungi almeno un'email a cui inviare il report"
         }
       },
       "status": {
@@ -7496,7 +7576,9 @@
       "computadoras": "Computer desktop",
       "computadoras.desc": "Approva o revoca ogni computer che usa l’app desktop.",
       "app-escritorio": "App desktop",
-      "app-escritorio.desc": "Scarica il pannello per Mac o Windows, in una finestra tutta sua."
+      "app-escritorio.desc": "Scarica il pannello per Mac o Windows, in una finestra tutta sua.",
+      "payroll-slips": "Buste paga",
+      "payroll-slips.desc": "Paese, stipendio base, orario, doppi turni, imposta sul reddito e numerazione della busta paga."
     },
     "section": {
       "mi_cuenta": "Il mio account",
@@ -7786,7 +7868,7 @@
       "certIconAlt": "Icona certificazione",
       "noIcon": "Nessuna icona",
       "thisCert": "questa certificazione",
-      "bannerDialogDesc": "Configura il banner che verrà mostrato nel modulo MOBIL.",
+      "bannerDialogDesc": "Configura il banner che i tuoi clienti vedranno nella loro app.",
       "bannerTitlePlaceholder": "Titolo del banner",
       "bannerDescPlaceholder": "Descrizione del banner",
       "selectFileBtn": "Seleziona file",
@@ -7875,7 +7957,10 @@
       "guardVisSaved": "Preferenza salvata.",
       "guardVisTitle": "Dati della guardia visibili al committente",
       "tabContent": "Contenuti",
-      "tabGuard": "Privacy della guardia"
+      "tabGuard": "Privacy della guardia",
+      "serviceDescriptionRequired": "Scrivi una descrizione del servizio.",
+      "certDatesRequired": "Indica la data di conseguimento e quella di scadenza.",
+      "certDatesOrder": "La data di scadenza non può essere precedente a quella di conseguimento."
     },
     "mobileHub": {
       "loadError": "Impossibile caricare le impostazioni.",
@@ -8097,7 +8182,7 @@
       "emailHeaderDesc": "Sfondo della fascia dove va il tuo logo. Conviene una tonalità scura perché il testo bianco resti leggibile.",
       "panelInfoBefore": "E il colore del pannello? Quello è tuo, non dell'azienda: si sceglie in",
       "panelInfoStrong": "Il mio account › Aspetto",
-      "panelInfoAfter": " e resta salvato nel tuo browser, come il tema scuro. L'amministratore non decide con quali colori il suo team lavora otto ore al giorno.",
+      "panelInfoAfter": " e resta salvato nel tuo account, come il tema scuro. L'amministratore non decide con quali colori il suo team lavora otto ore al giorno.",
       "saveBtn": "Salva identità visiva"
     },
     "phoneField": {
@@ -8218,7 +8303,8 @@
       "platformHeading": "Protezioni della piattaforma",
       "platformHint": "Le gestisce {{marca}} per tutte le aziende. Qui puoi vedere se sono attive.",
       "statusActive": "Attiva",
-      "statusInactive": "Inattiva"
+      "statusInactive": "Inattiva",
+      "minLengthOutOfRange": "La lunghezza minima deve essere un numero tra {{min}} e {{max}}."
     },
     "central": {
       "loadError": "Impossibile caricare le impostazioni.",
@@ -8347,7 +8433,8 @@
       "departmentPlaceholder": "Reparto",
       "selectGuardsLabel": "Seleziona guardie specifiche",
       "selectGuardsPlaceholder": "Seleziona guardie…",
-      "searchGuardPlaceholder": "Cerca guardia…"
+      "searchGuardPlaceholder": "Cerca guardia…",
+      "editDialogTitle": "Modifica documento"
     },
     "notificationForm": {
       "checkInOutLabel": "Entrata/uscita della guardia",
@@ -8455,7 +8542,8 @@
       "quitarAriaLabel": "Non osserviamo {{name}}",
       "quitarTitle": "La tua azienda non osserva questa festività",
       "quitadosTitle": "Festività nazionali non osservate",
-      "devolver": "Osservarla di nuovo"
+      "devolver": "Osservarla di nuovo",
+      "deleteConfirm": "Eliminare la festività «{{name}}»?"
     },
     "userRoles": {
       "actionBtn": "Azione",
@@ -8850,7 +8938,10 @@
       "bitacoraEmpty": "Nessuna novità nel registro",
       "bitacoraEmptyHint": "Le novità annotate dalle guardie nell'app appariranno qui.",
       "novedadAbierta": "Aperta",
-      "novedadCerrada": "Chiusa"
+      "novedadCerrada": "Chiusa",
+      "needDays": "Scegli almeno un giorno della settimana",
+      "needDayOfMonth": "Indica il giorno del mese (da 1 a 31)",
+      "needDate": "Indica la data"
     },
     "guards": {
       "added": "Guardia assegnata",
@@ -8964,7 +9055,8 @@
         "truck": "Camion",
         "van": "Furgone"
       },
-      "exportError": "Impossibile generare il file"
+      "exportError": "Impossibile generare il file",
+      "invalidNumber": "Capienza e permanenza devono essere 0 o più (vuoto = nessun limite)."
     },
     "patrolQr": {
       "empty": "Non ci sono ancora punti di controllo. Creali nella sezione \"Ronde di sicurezza\" e torna qui per generare i loro QR.",
@@ -8981,7 +9073,8 @@
       "verifyNote2": "Le scansioni fuori raggio restano registrate come \"fuori posizione\".",
       "popupBlocked": "Il browser ha bloccato la finestra di stampa.",
       "printFailed": "Impossibile preparare il foglio",
-      "qrFailed": "Impossibile generare il codice"
+      "qrFailed": "Impossibile generare il codice",
+      "radiusPerPoint": "il raggio di ciascun punto (indicato su ognuno)"
     },
     "rondaHistory": {
       "empty": "Nessuna ronda registrata in questo posto.",
@@ -9003,7 +9096,7 @@
       "deleteFailed": "Impossibile eliminare",
       "desc": "Descrizione",
       "empty": "Non ci sono ancora ronde. Crea la prima con \"Nuova ronda\".",
-      "hint": "Crea le ronde e i loro punti di controllo. Poi genera i QR nella scheda \"Genera QR delle ronde\".",
+      "hint": "Crea le ronde e i loro punti di controllo. Poi genera i QR nella scheda \"{{tab}}\".",
       "name": "Nome",
       "nameRequired": "Scrivi un nome",
       "new": "Nuova ronda",
@@ -9043,7 +9136,8 @@
     "geofence": {
       "centerPinTitle": "Posizione del posto (trascina per regolare)",
       "needThreePoints": "Aggiungi almeno 3 punti per chiudere il geofence.",
-      "sizeOk": "Dimensione adeguata per timbrare entrata e uscita."
+      "sizeOk": "Dimensione adeguata per timbrare entrata e uscita.",
+      "radiusRange": "Il raggio del geofence deve essere compreso tra {{min}} e {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Errore durante il salvataggio della posizione",
@@ -9429,7 +9523,12 @@
       "nuevoCorreoCom": "nuova@email.com",
       "perfilActualizadoCorrectamente": "Profilo aggiornato correttamente.",
       "esElNombreConEl": "È il nome con cui ti vede il resto del team.",
-      "verificado": "Verificato"
+      "verificado": "Verificato",
+      "codigoNoEntregado": "Non siamo riusciti a inviare il codice a quel numero. Controlla il numero o riprova più tardi.",
+      "codigoDePrueba": "In questo ambiente non c'è un provider SMS. Codice di prova: {{code}}",
+      "escribeTuNumeroAntes": "Inserisci il tuo numero di cellulare prima di confermarlo.",
+      "correoNoValido": "Questo indirizzo email non è valido.",
+      "esTuCorreoActual": "Questo è già il tuo indirizzo email."
     },
     "Routes": {
       "turnoDia": "Turno giorno",
@@ -9720,7 +9819,10 @@
       "yaPuedesEntrar": "Puoi già accedere",
       "tuEmpresaTeAsignaraAUnPuesto": "La tua azienda ti assegnerà a una postazione.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Accedi con il tuo nome utente e la tua password.",
-      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono."
+      "cuentaListaDescargaLaApp": "Il tuo account con <b>{{empresa}}</b> è pronto. Scarica l'app per monitorare e gestire il tuo servizio di sicurezza dal telefono.",
+      "tuPuestoYTurnosEnLaApp": "La tua postazione e i tuoi turni compariranno nell'app.",
+      "iniciaConTuUsuario": "Accedi con il tuo nome utente e la tua password.",
+      "iniciaCuandoEsteActiva": "Accedi quando il tuo account sarà attivo."
     },
     "AddressAutocomplete": {
       "miUbicacion": "La mia posizione",
@@ -9789,6 +9891,9 @@
       "reconocProm": "Presa in c. media"
     },
     "AlarmCaseDetail": {
+      "operador": "Operatore",
+      "sistema": "Sistema",
+      "porActor": "da {{nombre}}",
       "descripcion": "Descrizione",
       "disposicion": "Esito",
       "sinEntradasDeAuditoria": "Nessuna voce di verifica",
@@ -9862,6 +9967,7 @@
       "guardarNota": "Salva nota"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "Il numero di zona è obbligatorio",
       "agenciaPsapPolicia": "Ente / PSAP (forze dell'ordine)",
       "camara": "Fotocamera",
       "comunicacion": "Comunicazione",
@@ -10325,7 +10431,16 @@
       "nDocumentosSubidos_one": "{{count}} documento caricato",
       "nDocumentosSubidos_other": "{{count}} documenti caricati",
       "nDocumentosSubidos_few": "{{count}} documenti caricati",
-      "nDocumentosSubidos_many": "{{count}} documenti caricati"
+      "nDocumentosSubidos_many": "{{count}} documenti caricati",
+      "agrupar": {
+        "creando": "Creazione…",
+        "crear": "Crea cartella",
+        "resumen": "{{count}} documento/i selezionato/i. La cartella compare in «Consegne al committente», da dove si condivide nell’app o con un link privato.",
+        "nombre": "Nome della cartella",
+        "desde": "Periodo dal",
+        "hasta": "Periodo al",
+        "nota": "Nota per il committente (facoltativa)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Cerca per ID, titolo o posizione",
@@ -10573,7 +10688,8 @@
       "invitarAcceso": "Invita accesso",
       "revocarAcceso": "Revoca accesso",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Portale web"
+      "portalWeb": "Portale web",
+      "nombreDeLaPersona": "Nome della persona (facoltativo)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Dati dimostrativi",
@@ -10788,7 +10904,8 @@
       "noSeEncontroElVigilante": "La guardia richiesta non è stata trovata.",
       "errorGuardandoCambios": "Errore nel salvataggio delle modifiche: {{msg}}",
       "datosPersonales": "Dati personali",
-      "guardarCambios": "Salva modifiche"
+      "guardarCambios": "Salva modifiche",
+      "cambiosGuardados": "Modifiche salvate"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Indirizzo dell'azienda*",
@@ -11897,7 +12014,8 @@
       "notasPrivadasInstruccionesEspeciales": "Note riservate, istruzioni particolari…",
       "centroDeConvencionesQuito": "Centro congressi, Milano",
       "clienteRequerido": "Cliente obbligatorio",
-      "fechasYLugar": "Date e luogo"
+      "fechasYLugar": "Date e luogo",
+      "finAntesDeInicio": "La data di fine non può essere precedente a quella di inizio"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Ancora nessuna radio IP",
@@ -12139,6 +12257,7 @@
       "sinDescansoElSupervisorTrabaja": "Senza riposo: il supervisore lavora tutti i giorni."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Nessun giorno selezionato",
       "asignacion": "Assegnazione",
       "descripcion": "Descrizione",
       "descripcionDeLaRuta": "Descrizione del percorso",
@@ -13069,7 +13188,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} di {{total}}",
       "sinEstacion": "Senza stazione",
       "sucediendoAhoraMismo": "In corso proprio ora",
-      "turnos": "Turni"
+      "turnos": "Turni",
+      "falta": "Assenza"
     },
     "ShiftTemplates": {
       "basico": "Base",
@@ -13222,7 +13342,9 @@
       "eliminado": "Eliminato.",
       "errorAlEliminar": "Errore durante l'eliminazione.",
       "lugar": "Luogo",
-      "mostrandoRango": "Visualizzazione {{desde}}–{{hasta}} di {{total}}"
+      "mostrandoRango": "Visualizzazione {{desde}}–{{hasta}} di {{total}}",
+      "salidaAntesDeEntrada": "L'uscita non può essere precedente all'ingresso.",
+      "fotoNoSubida": "La visita è stata salvata, ma la foto del documento non è stata caricata. Aggiungila più tardi dalla scheda."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Avanzamento della configurazione",
@@ -13283,7 +13405,8 @@
       "laZonaYLosPuestosQueCubre": "La zona e le postazioni coperte da questo supervisore, e il suo orario generato, si vedono nelle schede dedicate.",
       "limitaLoQueEsteSupervisorVe": "Limita ciò che questo supervisore vede nella sua app: eccezioni di presenza e richieste di timbratura.",
       "nombres": "Nomi",
-      "perfilActualizado": "Profilo aggiornato"
+      "perfilActualizado": "Profilo aggiornato",
+      "identidadDeLaCuenta": "Nomi e cognomi si salvano qui. L'e-mail è quella del suo account di accesso e non si modifica da questa scheda."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ancora nessun posto da supervisore",
@@ -13539,7 +13662,13 @@
       "calendario": "Calendario",
       "vacioAyuda": "Ferie, permessi e assenze giustificate di tutto il personale, da qui, dall’Orario o dall’app della guardia.",
       "registrarElPrimero": "Registra un permesso",
-      "vacioTitulo": "Ancora nessun permesso né ferie"
+      "vacioTitulo": "Ancora nessun permesso né ferie",
+      "aprobarTitulo": "Approva il permesso",
+      "aprobarMensaje": "Il permesso di {{nombre}} viene approvato: i suoi turni di quei giorni diventano buchi in Copertura e la persona viene avvisata.",
+      "rechazarTitulo": "Rifiuta il permesso",
+      "rechazarMensaje": "Il permesso di {{nombre}} viene rifiutato e la persona viene avvisata. Puoi indicare il motivo (facoltativo).",
+      "rechazarMotivo": "Motivo (facoltativo)",
+      "solicitudEliminada": "Richiesta eliminata"
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",
@@ -13855,6 +13984,7 @@
       "reintentar": "Riprova"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "La chiave attuale smette subito di funzionare: il relay di questo sito si disconnette finché non installi il nuovo link.",
       "aunNoHaySitiosRemotos": "Ancora nessun sito remoto",
       "direccionDeRecepcion": "Indirizzo di ricezione:",
       "seGeneraraUnaClaveDe": "Verranno generati una chiave di sito e un token di pubblicazione (cifrato).",
@@ -14189,7 +14319,8 @@
       "cicloDesdeMasN": "ciclo dal {{fecha}} +{{n}} g",
       "estacionesQueCubre_one": "Postazioni coperte ({{count}})",
       "estacionesQueCubre_other": "Postazioni coperte ({{count}})",
-      "estacionesQueCubre": "Postazioni coperte ({{count}})"
+      "estacionesQueCubre": "Postazioni coperte ({{count}})",
+      "eliminarElPuesto": "Eliminare la postazione «{{nombre}}»?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nuovo supervisore",
@@ -14224,7 +14355,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Invito reinviato a {{email}}.",
       "invitacionYaEnviada": "L'invito è già stato inviato a {{email}} pochi minuti fa. Chiedigli di controllare la posta in arrivo e lo spam. Potrai reinviarlo tra {{faltan}} min.",
-      "invitacionNoSalio": "Non siamo riusciti a inviare l'e-mail a {{email}}. Riprova tra qualche minuto."
+      "invitacionNoSalio": "Non siamo riusciti a inviare l'e-mail a {{email}}. Riprova tra qualche minuto.",
+      "correoDeRestablecimientoNoEnviado": "Non è stato possibile inviare l’e-mail di reimpostazione a {{email}}. Riprova tra qualche minuto."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Modifica la ricerca o registra un nuovo visitatore.",
@@ -14237,6 +14369,8 @@
       "enCurso": "In corso"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "L'incidente non esiste o non è più disponibile.",
+      "incidenteNoEncontrado": "Incidente non trovato",
       "escribeUnComentario": "Scrivi un commento",
       "noSePudoAgregarComentario": "Impossibile aggiungere il commento",
       "noSePudieronCargarDetalles": "Impossibile caricare i dettagli dell'incidente",
@@ -14264,6 +14398,7 @@
       "generarYCopiar": "Genera e copia"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "Le modifiche sono state salvate, ma non è stato possibile caricare questi file: {{archivos}}.",
       "incidenteActualizado": "Incidente aggiornato",
       "errorAlActualizarIncidente": "Errore durante l'aggiornamento dell'incidente",
       "editarIncidente": "Modifica incidente",
@@ -14271,6 +14406,7 @@
       "asignarVigilante": "Assegna guardia"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "L'incidente è stato creato, ma non è stato possibile caricare questi file: {{archivos}}. Aggiungili da Modifica.",
       "errorAlCrearIncidente": "Errore durante la creazione dell'incidente",
       "nuevoIncidente": "Nuovo incidente",
       "registraUnNuevoIncidenteY": "Registra un nuovo incidente e avvisa la guardia interessata.",
@@ -14337,7 +14473,8 @@
       "asignarAEstacionNombre": "Assegna {{name}} a una stazione",
       "seAsignaraAlPrimerPuesto": "Verrà assegnato alla prima postazione disponibile della stazione e comparirà nell'Orario.",
       "asignando": "Assegnazione...",
-      "asignar": "Assegna"
+      "asignar": "Assegna",
+      "correoDeRestablecimientoNoEnviado": "Non è stato possibile inviare l’e-mail di reimpostazione a {{email}}. Riprova tra qualche minuto."
     },
     "GuardHorarioPage": {
       "sinHorario": "Nessun orario",
@@ -14391,7 +14528,9 @@
       "inscripciones": "Iscrizioni",
       "completaron": "Hanno completato",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lezioni"
+      "lecciones": "Lezioni",
+      "pistaParaTodos": "Assegnato a tutti: conta chi ha già aperto il corso",
+      "nDeMCompletaronParaTodos": "Assegnato a tutte le guardie. Ognuna appare qui quando apre il corso: {{done}} su {{total}} lo hanno completato."
     },
     "VehiclesPage": {
       "vehiculo": "veicolo",
@@ -14614,7 +14753,8 @@
       "losPermisosYLicenciasQue": "I permessi e le licenze che il tuo personale può richiedere o presentare.",
       "tipoSDeLicenciaEliminado": "Tipo/i di licenza eliminato/i",
       "tipoDeLicenciaActualizado": "Tipo di licenza aggiornato",
-      "tipoDeLicenciaCreado": "Tipo di licenza creato"
+      "tipoDeLicenciaCreado": "Tipo di licenza creato",
+      "confirmarEliminacionTexto": "Eliminare {{count}} tipo/i di licenza? L'azione non può essere annullata."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Impossibile caricare l'utilizzo dell'assistente.",
@@ -14888,7 +15028,17 @@
       "noPudimosGuardarElDocumento": "Non è stato possibile salvare il documento.",
       "publicaElReglamentoInterno": "Pubblica il regolamento interno e saprai chi l'ha firmato.",
       "publicar": "Pubblica",
-      "reglamento": "Regolamento"
+      "reglamento": "Regolamento",
+      "estado": "Stato",
+      "publicada": "Pubblicato",
+      "borrador": "Bozza",
+      "ponleUnTitulo": "Dai un titolo al documento.",
+      "algunosNoSePudieron": "{{failed}} su {{total}} non sono stati modificati: {{reason}}",
+      "documentosPublicados": "Documenti pubblicati",
+      "documentosABorrador": "Documenti riportati in bozza",
+      "documentosEliminados": "Documenti eliminati",
+      "confirmarEliminacion": "Conferma eliminazione",
+      "confirmarEliminacionTexto": "Eliminare {{count}} documento/i? Chi doveva firmarli non li vedrà più. L'azione non può essere annullata."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Trascina o clicca per allegare",
@@ -14946,7 +15096,9 @@
     "Incident": {
       "informeDeIncidente": "Report dell'incidente",
       "sinCaso": "Questo incidente non ha un caso di emergenza collegato.",
-      "descripcion": "Incidenti segnalati: priorità, stato, posizione e descrizione per postazione."
+      "descripcion": "Incidenti segnalati: priorità, stato, posizione e descrizione per postazione.",
+      "estadoAbierto": "Aperto",
+      "estadoCerrado": "Chiuso"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Tesserini e licenze del personale, con le date di scadenza.",
@@ -15249,7 +15401,12 @@
       "rangoRegistros_few": "Intervallo: {{range}} · {{count}} record",
       "rangoRegistros_many": "Intervallo: {{range}} · {{count}} record",
       "informeExportado": "Report esportato",
-      "sinFilasParaExportar": "Nessun record da esportare"
+      "sinFilasParaExportar": "Nessun record da esportare",
+      "seudonimoCliente": "Cliente",
+      "seudonimoSede": "Sede",
+      "seudonimoPuesto": "Postazione",
+      "sinCoincidencias": "Nessun record corrisponde a «{{q}}».",
+      "rangoInvalido": "Controlla le date: «Dal» non può essere successiva ad «Al»."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Il più vicino con guardia",
@@ -15570,7 +15727,9 @@
       "inicio": "Home",
       "miCuenta": "Il mio account",
       "vistaPreviaAppMiSeguridadCliente": "Anteprima · app {{app}} (cliente)",
-      "seguridad": "Sicurezza"
+      "seguridad": "Sicurezza",
+      "nombreDeEjemplo": "Anna Rossi",
+      "sitioDeEjemplo": "Edificio Centrale"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -15747,7 +15906,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Riposo (clic destro: copri questo giorno)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (doppio clic per modificare)",
       "sinConfigurar": "Non configurato",
-      "turnosDe12hRotativo": "Turni di 12 h · G/N a rotazione"
+      "turnosDe12hRotativo": "Turni di 12 h · G/N a rotazione",
+      "fueraDeSuAsignacion": "{{nombre}} — non assegnato a questa postazione quel giorno"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Ogni posto con il suo ciclo — uno fa 2 mattine e 3 pomeriggi, un altro 3 e 2.",
@@ -15932,7 +16092,14 @@
       "reabrirPeriodoMensaje": "Timbrature, turni e segni da quel giorno potranno essere di nuovo modificati. Le schede già approvate o esportate non vengono toccate. Scrivi il motivo: resta nel registro.",
       "reabrirPeriodoTitulo": "Riaprire le paghe dal {{desde}}?",
       "generarCerrado": "Questo periodo è chiuso. Riaprilo per ricalcolarlo.",
-      "enviarAPago": "Invia al pagamento"
+      "enviarAPago": "Invia al pagamento",
+      "exportadaConRechazos": "Paghe esportate senza {{count}} scheda/e, che non vanno in pagamento:",
+      "exportadaConRechazos_one": "Paghe esportate senza 1 scheda, che non va in pagamento:",
+      "exportadaConRechazos_few": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "exportadaConRechazos_many": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "exportadaConRechazos_other": "Paghe esportate senza {{count}} schede, che non vanno in pagamento:",
+      "tarifaInvalida": "La tariffa deve essere maggiore di zero. Per toglierla, lascia il campo vuoto.",
+      "tarifaQuitada": "Tariffa di {{nombre}} tolta. Genera di nuovo il periodo per applicarlo."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenze",
@@ -16770,9 +16937,11 @@
       "filasNoImportadas_few": "{{count}} righe non sono state importate. Controlla i dettagli.",
       "filasNoImportadas_many": "{{count}} righe non sono state importate. Controlla i dettagli.",
       "errorAlImportar": "Errore durante l'importazione",
-      "camposObligatoriosVacios": "Alcuni campi obbligatori sono vuoti. Verifica: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Alcuni campi obbligatori sono vuoti. Verifica: name, address.",
       "importarClientesDesdeExcel": "Importa clienti da Excel",
-      "columnasOpcionales": "Colonne facoltative:"
+      "columnasOpcionales": "Colonne facoltative:",
+      "columnasPorNombre": "La prima riga contiene i nomi delle colonne; l’ordine non conta.",
+      "avisoInvitacion": "Ogni cliente importato con un’e-mail riceve subito l’invito di benvenuto all’app."
     },
     "CoBrowseAgent": {
       "soporte": "Supporto",
@@ -16792,7 +16961,8 @@
       "hintImprimir": "Apre l'anteprima di stampa del browser",
       "enviarPorCorreo": "Invia per email",
       "hintEnviarPorCorreo": "Invia il report a un destinatario",
-      "exportando": "Esportazione…"
+      "exportando": "Esportazione…",
+      "descargarComo": "Scarica come"
     },
     "ExportarPeriodo": {
       "semana": "Settimana",
@@ -16900,7 +17070,10 @@
       "tuEmpresa": "la tua azienda",
       "volver": "Indietro",
       "registrarse": "Registrati",
-      "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo."
+      "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo.",
+      "invitacionYaUsada": "Questo invito è già stato usato: il tuo account è attivo.",
+      "entraEnLaApp": "Accedi all'app della guardia con il tuo nome utente e la tua password. Se non ricordi la password, chiedi alla tua azienda di reimpostarla.",
+      "tuCuentaEstaLista": "Il tuo account è pronto."
     },
     "InspectionPreview": {
       "alerta": "Allerta",
@@ -17228,7 +17401,9 @@
       "cliente": "Cliente",
       "todosLosClientes": "Tutti i clienti",
       "sede": "Sede",
-      "todasLasSedes": "Tutte le sedi"
+      "todasLasSedes": "Tutte le sedi",
+      "nHuecos_one": "{{count}} buco",
+      "nHuecos_other": "{{count}} buchi"
     },
     "PuestaEnMarcha": {
       "titulo": "Avvio · {{hechos}} di {{total}}",
@@ -17375,8 +17550,8 @@
       "publicar": "Pubblica",
       "borrador": "Bozza finché non pubblichi",
       "parecido": "Coincide con l'orario reale al {{n}} %",
-      "unCambio": "1 modifica nella bozza",
-      "cambios": "{{n}} modifiche nella bozza",
+      "unCambio": "1 intervento",
+      "cambios": "{{n}} interventi",
       "subtitulo": "Di' cosa chiede ogni postazione, da' a ognuno la sua rotazione e lascia che i jolly coprano ciò che manca.",
       "titulo": "Pianificatore",
       "sinPuestos": "Ancora nessuna postazione da pianificare.",
@@ -18294,6 +18469,10 @@
         "vacio": "Nessun foglio paga emesso",
         "vacioDesc": "Finché Buste paga è spento, si vedono solo i fogli paga pubblicati.",
         "noEmitida": "Si possono vedere solo i fogli paga e le buste paga già emessi."
+      },
+      "sinPermiso": {
+        "titulo": "Il tuo ruolo non può aprire Buste paga",
+        "desc": "Il tuo ruolo non ha i permessi di Buste paga (vedere e modificare buste paga e profili retributivi). Un amministratore può concederli in Impostazioni › Ruoli."
       }
     },
     "ClientBillingContract": {
@@ -18506,7 +18685,8 @@
         "contratoHint": "Facoltativo: prende i suoi termini di pagamento e l’esenzione fiscale.",
         "sinContrato": "Senza contratto",
         "periodoDesde": "Periodo dal",
-        "periodoHasta": "al"
+        "periodoHasta": "al",
+        "numeroInvalido": "Quantità e prezzo devono essere numeri (per esempio 1500 o 12,50)."
       },
       "ajustes": {
         "si": "Sì",
@@ -18577,7 +18757,10 @@
         "validezCotizacion": "Validità del preventivo (giorni)",
         "validezCotizacionHint": "Trascorso questo termine senza firma, il preventivo scade da solo.",
         "terminosCotizacion": "Termini predefiniti dei preventivi",
-        "terminosCotizacionHint": "Vengono copiati in ogni nuovo preventivo; puoi modificarli in ciascuno."
+        "terminosCotizacionHint": "Vengono copiati in ogni nuovo preventivo; puoi modificarli in ciascuno.",
+        "fueraDeRango": "«{{campo}}» deve essere compreso tra {{min}} e {{max}}.",
+        "recordatorioInvalido": "Promemoria: «{{valor}}» non è un numero intero di giorni tra -30 e 180.",
+        "demasiadosRecordatorios": "Al massimo {{max}} promemoria."
       },
       "recargo": {
         "lastMinute": "Copertura dell’ultimo minuto",
@@ -18664,7 +18847,8 @@
         "minutosFacturables": "Minuti fatturabili",
         "editarLinea": "Modifica riga",
         "minutosHint": "Programmati: {{p}} · lavorati: {{w}}",
-        "excluirDeLaFactura": "Escludi dalla fattura"
+        "excluirDeLaFactura": "Escludi dalla fattura",
+        "revisionLista": "Pronta per la revisione del cliente. Non viene inviata alcuna e-mail: copia il link e condividilo con lui."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usa il valore aziendale",
@@ -18933,7 +19117,8 @@
         "pestanaDiseno": "Design dei documenti",
         "pestanaTextos": "Testi",
         "validezYTerminosMovidos": "Validità, introduzione e termini dei preventivi ora sono in Testi."
-      }
+      },
+      "periodoAlReves": "Il periodo finisce prima di cominciare."
     },
     "ClientInvoices": {
       "pagadoTotal": "Pagato in totale",
@@ -19017,7 +19202,8 @@
         "noSeEnvio": "Impossibile inviare l'e-mail. Controlla i destinatari.",
         "enviadaOk": "Preventivo inviato",
         "enviarDesc": "Vengono inviati il PDF e il link per firmare online. Il preventivo risulta inviato.",
-        "enviar": "Invia"
+        "enviar": "Invia",
+        "noCancelar": "No, mantienila"
       },
       "volver": "Torna ai preventivi",
       "revision": "Revisione {{n}}",
@@ -19460,7 +19646,12 @@
       "estaciones": "Postazioni",
       "plazas": "Posti con questo ciclo",
       "personas": "Persone",
-      "historial": "E {{count}} assegnazioni concluse che lo conservano nello storico."
+      "historial": "E {{count}} assegnazioni concluse che lo conservano nello storico.",
+      "enUsoConteo": "Postazioni: {{estaciones}} · Posti: {{plazas}} · Persone: {{personas}}",
+      "confirmarBorrarTitulo": "Eliminare «{{name}}»?",
+      "confirmarArchivarTitulo": "Archiviare «{{name}}»?",
+      "confirmarBorrarTexto": "Nessuno lo usa. Viene eliminato definitivamente e non si può annullare.",
+      "confirmarArchivarTexto": "Non viene più proposto quando si creano i turni. Chi lo usa già lo mantiene, e puoi riproporlo quando vuoi."
     },
     "HorarioDeOficina": {
       "pestana": "Orario",
@@ -19547,7 +19738,9 @@
       "sinRequisitoAyuda": "Qui compaiono assenze, posti vuoti e permessi senza sostituto. Per sapere cosa manca, ogni postazione deve indicare quante guardie servono.",
       "irAEstaciones": "Definisci il fabbisogno di una postazione",
       "sinRequisitoTitulo": "Nessuna postazione ha ancora un fabbisogno",
-      "ofrecido": "Offerto"
+      "ofrecido": "Offerto",
+      "sede": "Sede",
+      "todasLasSedes": "Tutte le sedi"
     },
     "HorarioModos": {
       "modos": "Modalità del turnario",
@@ -19682,6 +19875,17 @@
     "RutaConPermiso": {
       "titulo": "Nessun accesso a questa pagina",
       "descripcion": "Il tuo ruolo non può vedere questa pagina. Se ti serve, chiedila a un amministratore."
+    },
+    "training": {
+      "puntajeFueraDeRango": "Il punteggio minimo deve essere un numero intero tra 1 e 100.",
+      "puntosFueraDeRango": "I punti devono essere un numero intero tra 0 e 100000."
+    },
+    "incidentPriority": {
+      "critical": "Critica",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Bassa",
+      "none": "Senza priorità"
     },
     "CampoDeMarca": {
       "elige": "Scegli il marchio",
@@ -19848,7 +20052,7 @@
     "selectStation": "Seleziona una postazione",
     "selectTag": "Seleziona un tag",
     "showArchived": "Mostra dati archiviati",
-    "site": "posto di servizio",
+    "site": "Posto di servizio",
     "station": "Postazione",
     "title": "Visitatori",
     "updated": "Visitatore aggiornato",
@@ -19930,7 +20134,7 @@
     "tagLabel": "Tag",
     "bitacorasImprimir": "Registri di servizio - Stampa",
     "exportar": "Esporta",
-    "sinVigilantesEnEstacion": "Questa stazione non ha ancora guardie assegnate. Assegnane una dalla scheda del posto per poter registrare la visita."
+    "sinVigilantesEnEstacion": "Questa stazione non ha ancora guardie assegnate."
   },
   "app": {
     "loading": "Caricamento…",
@@ -20592,7 +20796,7 @@
       "mileageRequired": "Chilometraggio iniziale obbligatorio",
       "modelRequired": "Modello obbligatorio",
       "plateRequired": "Targa obbligatoria",
-      "vinAlphanumeric": "Numero di telaio non valido (deve avere esattamente 17 caratteri alfanumerici)",
+      "vinAlphanumeric": "Numero di telaio non valido (deve avere esattamente 17 lettere o cifre; le lettere I, O e Q non si usano)",
       "vinLength": "Numero di telaio non valido (deve avere esattamente 17 caratteri)",
       "yearInvalid": "Anno non valido"
     }
@@ -21887,6 +22091,7 @@
       "cerrado_por_persona": "chiuso da una persona"
     },
     "ajustes": {
+      "topeAjustado": "Il limite va da {{min}} a {{max}} messaggi: è stato salvato {{valor}}.",
       "titulo": "Impostazioni del monitoraggio",
       "activo": "{{agente}} fa il monitoraggio",
       "activoHint": "Scrive alla guardia appena qualcosa non va e porta avanti la conversazione fino a chiuderla.",

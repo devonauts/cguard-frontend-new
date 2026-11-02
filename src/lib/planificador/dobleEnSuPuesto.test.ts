@@ -6,7 +6,8 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { falta } from "./motor";
+import { copiar, falta, limpiar, quitar } from "./motor";
+import { planificarPublicacion } from "./publicar";
 import { planDesdeHorarioReal } from "./real";
 
 const BASE = "2026-10-05"; // lunes
@@ -55,5 +56,65 @@ describe("lector · doblar en el propio puesto", () => {
 
   it("la extensión del compañero cubre esa noche", () => {
     expect(nocheSinCubrir(true)).toBe(0);
+  });
+});
+
+/* QA 2026-11-01 (G1): the screen runs `limpiar` on every read and every edit.
+   It pruned the extension («Mathias already works that day») and «Publicar»
+   then deleted the real extension shift, leaving the night with nobody. */
+describe("borrador · una extensión real no se pierde al publicar", () => {
+  const ctx = {
+    tenantId: "T",
+    base: BASE,
+    hoy: 1,
+    dias: 13,
+    fechaDe: (d: number) => new Date(Date.UTC(2026, 9, 5 + d)).toISOString().slice(0, 10),
+    instanteDe: (d: number, min: number) =>
+      new Date(Date.UTC(2026, 9, 5 + d, Math.floor(min / 60), min % 60)).toISOString(),
+  };
+  const leer = () => {
+    const r = planDesdeHorarioReal(overview(true), [], BASE, "UTC", 14);
+
+    limpiar(r.plan, -7, 21);
+
+    return r;
+  };
+  const noche = (plan: any) => plan.puestos[0].franjas.find((f: string) => plan.franjas[f].ini === 19 * 60)!;
+
+  it("la noche sigue cubierta tras limpiar, como la abre la pantalla", () => {
+    const { plan } = leer();
+
+    expect(falta(plan, plan.puestos[0], noche(plan), DIA_FALTA)).toBe(0);
+  });
+
+  it("recién abierto no hay nada que publicar", () => {
+    const { plan, enlace } = leer();
+    const pub = planificarPublicacion(plan, copiar(plan), enlace, ctx);
+
+    expect(pub.cambios.map((c) => c.texto)).toEqual([]);
+  });
+
+  it("otro cambio del borrador no borra el turno de la extensión", () => {
+    const { plan, enlace } = leer();
+    const b = copiar(plan);
+
+    b.personas.find((p) => p.nombre === "Israel")!.manual[10] = "F";
+    limpiar(b, -7, 21);
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+    const borrados = pub.cambios.flatMap((c) => c.llamadas).filter((l) => l.metodo === "delete");
+
+    expect(borrados.map((l) => l.ruta)).not.toContain("/tenant/T/shift/ext");
+  });
+
+  it("quitarla a mano en el borrador sí la retira", () => {
+    const { plan, enlace } = leer();
+    const b = copiar(plan);
+    const k = `${b.puestos[0].id}|${noche(b)}|${DIA_FALTA}`;
+
+    quitar(b, k, b.cubre[k][0]);
+    limpiar(b, -7, 21);
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+
+    expect(pub.cambios.flatMap((c) => c.llamadas).map((l) => l.ruta)).toContain("/tenant/T/shift/ext");
   });
 });

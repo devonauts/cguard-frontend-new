@@ -75,6 +75,7 @@ export default function SiteTour() {
         key: "station",
         label: t("ui.SiteTour.estacion", "Estación"),
         value: (r) => r.station?.stationName || "—",
+        privacy: "stationName",
       },
       {
         key: "valid",

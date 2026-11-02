@@ -23,6 +23,10 @@ const getTenantId = (): string => {
 
 const unwrap = <T,>(r: unknown): T => ((r as { data?: T })?.data ?? (r as T));
 
+// The screens turn a 403 into a no-access notice (roles/comun usePayrollAccess):
+// one «Prohibido» toast per request on top of it was noise (QA 2026-11-01).
+const sin403 = { toast: { silentStatuses: [403] } };
+
 export type PayFrequency = "weekly" | "biweekly" | "semimonthly" | "monthly";
 export type DoubleShiftMode = "overtime" | "normal_plus_advance" | "double" | "bonus";
 export type ConceptKind = "earning" | "deduction" | "employer" | "info";
@@ -306,11 +310,11 @@ const base = () => `/tenant/${getTenantId()}/payroll/slips`;
 
 const payrollSlipsService = {
   async setup(): Promise<SetupStatus> {
-    return unwrap(await api.get(`${base()}/setup`));
+    return unwrap(await api.get(`${base()}/setup`, sin403));
   },
 
   async settings(): Promise<SlipSettingsView> {
-    return unwrap(await api.get(`${base()}/settings`));
+    return unwrap(await api.get(`${base()}/settings`, sin403));
   },
 
   async saveSettings(parcial: Partial<SlipSettings>): Promise<{ settings: SlipSettings }> {
@@ -326,7 +330,7 @@ const payrollSlipsService = {
   },
 
   async concepts(all = true): Promise<{ rows: PayrollConcept[]; count: number }> {
-    return unwrap(await api.get(`${base()}/concepts${all ? "?all=1" : ""}`));
+    return unwrap(await api.get(`${base()}/concepts${all ? "?all=1" : ""}`, sin403));
   },
 
   async createConcept(c: Partial<PayrollConcept>): Promise<PayrollConcept> {
@@ -356,7 +360,7 @@ const payrollSlipsService = {
     if (filtro.missing) q.set("missing", "1");
     const qs = q.toString();
 
-    return unwrap(await api.get(`${base()}/profiles${qs ? `?${qs}` : ""}`));
+    return unwrap(await api.get(`${base()}/profiles${qs ? `?${qs}` : ""}`, sin403));
   },
 
   async profile(userId: string): Promise<PersonWithProfile | null> {
@@ -380,7 +384,7 @@ const payrollSlipsService = {
     if (filtro.runId) q.set("runId", filtro.runId);
     const qs = q.toString();
 
-    return unwrap(await api.get(`${base()}/adjustments${qs ? `?${qs}` : ""}`));
+    return unwrap(await api.get(`${base()}/adjustments${qs ? `?${qs}` : ""}`, sin403));
   },
 
   async createAdjustment(a: Partial<PayrollAdjustment>): Promise<PayrollAdjustment> {
@@ -402,7 +406,7 @@ const payrollSlipsService = {
     if (filtro.status) q.set("status", filtro.status);
     const qs = q.toString();
 
-    return unwrap(await api.get(`${base()}/loans${qs ? `?${qs}` : ""}`));
+    return unwrap(await api.get(`${base()}/loans${qs ? `?${qs}` : ""}`, sin403));
   },
 
   async createLoan(l: Partial<PayrollLoan>): Promise<PayrollLoan> {
@@ -415,7 +419,7 @@ const payrollSlipsService = {
 
   // ── Corridas y roles ──────────────────────────────────────────────────────
   async runs(): Promise<{ rows: PayrollRun[]; count: number }> {
-    return unwrap(await api.get(`${base()}/runs`));
+    return unwrap(await api.get(`${base()}/runs`, sin403));
   },
 
   async createRun(body: { from: string; to?: string; populations?: Population[]; userIds?: string[]; branchIds?: string[]; brandId?: string }): Promise<PayrollRun> {
@@ -423,7 +427,7 @@ const payrollSlipsService = {
   },
 
   async run(id: string): Promise<{ run: PayrollRun; slips: PayrollSlipRow[]; unapprovedTimecards?: number; listoParaCalcular?: boolean }> {
-    return unwrap(await api.get(`${base()}/runs/${encodeURIComponent(id)}`));
+    return unwrap(await api.get(`${base()}/runs/${encodeURIComponent(id)}`, sin403));
   },
 
   async recompute(id: string): Promise<{ run: PayrollRun; slips: PayrollSlipRow[] }> {
@@ -443,7 +447,7 @@ const payrollSlipsService = {
   },
 
   async slip(id: string): Promise<{ slip: PayrollSlipRow; run: PayrollRun | null }> {
-    return unwrap(await api.get(`${base()}/slips/${encodeURIComponent(id)}`));
+    return unwrap(await api.get(`${base()}/slips/${encodeURIComponent(id)}`, sin403));
   },
 
   async slipsOf(userId: string, all = false): Promise<{ rows: PayrollSlipRow[]; count: number }> {

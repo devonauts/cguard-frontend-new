@@ -1326,6 +1326,9 @@ export default function PostSiteWizard({
 
   // ── step validation ──────────────────────────────────────────────────────────
   const canGoNext = () => {
+    // In the guided setup there is no «continue without type» link on
+    // purpose, but «Siguiente» skipped the type anyway and ticked the step.
+    if (step === 1 && enPuesta) return !!serviceType;
     if (step === 2)
       return !!address.trim() && !errorVigencia && !faltaNombreEvento;
 
@@ -2354,11 +2357,15 @@ export default function PostSiteWizard({
                       </div>
                     </div>
                   )}
-                  <CampoSucursalDeSede
-                    ciudad={city}
-                    value={branchId}
-                    onChange={setBranchId}
-                  />
+                  {/* Padded like the address panel above: flush, the field
+                      touched the card edges and its hint was cut. */}
+                  <div className="px-4 pb-4">
+                    <CampoSucursalDeSede
+                      ciudad={city}
+                      value={branchId}
+                      onChange={setBranchId}
+                    />
+                  </div>
                 </div>
               )}
 

@@ -110,9 +110,11 @@ export function targetForNotification(n: PlatformNotification): string {
     return runId ? `/vehicle-patrol/runs/${runId}` : "/vehicle-patrol";
   }
 
-  // ── Incidents → the incident report detail.
+  // ── Incidents → that incident's detail. `/reports/incident/:id` is the
+  // GENERAL incident report (it ignores the id): the click landed on a list of
+  // every incident instead of the one in the notice.
   if (type.startsWith("incident"))
-    return id ? `/reports/incident/${id}` : "/activities";
+    return id ? `/dispatch-tickets/${id}` : "/activities";
 
   // ── Clock-in/out + every attendance event (late, no-show, geofence, etc.) → the
   // Nómina attendance records, focused on that day's row.

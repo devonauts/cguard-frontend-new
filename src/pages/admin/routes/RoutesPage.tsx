@@ -504,7 +504,13 @@ export default function RoutesPage() {
             </div>
 
             <div>
-              {page} – {Math.max(1, Math.ceil(totalCount / limit))}
+              {/* Rows shown out of the total; «page – pages» read «1 – 1» for 9 rows. */}
+              {t("ui.CatalogTable.rangoDeTotal", {
+                defaultValue: "{{from}} – {{to}} de {{total}}",
+                from: totalCount ? (page - 1) * limit + 1 : 0,
+                to: Math.min(page * limit, totalCount),
+                total: totalCount,
+              })}
             </div>
 
             <div className="flex gap-2">

@@ -2,7 +2,7 @@
 
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -52,6 +52,7 @@ import {
   IconTile,
 } from "@/components/kit";
 import { roleDisplayDescription, roleDisplayName } from "@/config/roleLabels";
+import { rolesDeOficina } from "@/lib/agregarPersona";
 import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import CampoMarcaDeRegistro, {
   useMarcaDeRegistro,
@@ -127,6 +128,20 @@ export default function EditAdminUserPage() {
     roleOptions.find((r) => String(r.id) === String(watchedAccessLevel))
       ?.slug || ""
   ).toLowerCase();
+  /* Office roles only, as in «Agregar persona»: guard, customer, security
+     supervisor and central operator have their own flows (they showed here
+     with their raw keys). The person's current role stays listed so the form
+     never loses it. */
+  const opcionesDeRol = useMemo(() => {
+    const deOficina = rolesDeOficina(roleOptions);
+    const actual = roleOptions.find(
+      (r) => String(r.id) === String(watchedAccessLevel),
+    );
+
+    return actual && !deOficina.includes(actual)
+      ? [actual, ...deOficina]
+      : deOficina;
+  }, [roleOptions, watchedAccessLevel]);
 
   // Load the inherited permissions of the selected role so the override panel can
   // show what is granted by the role vs by an explicit override.
@@ -950,7 +965,7 @@ export default function EditAdminUserPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {roleOptions.map((r) => (
+                            {opcionesDeRol.map((r) => (
                               <SelectItem key={r.id} value={r.id}>
                                 {getRoleDisplayName(r)}
                               </SelectItem>

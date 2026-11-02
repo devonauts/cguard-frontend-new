@@ -520,10 +520,11 @@ export default function StationSiteTours({
         }
       >
         <p className="px-6 -mt-2 mb-3 text-xs text-muted-foreground">
-          {t(
-            "station.siteTours.hint",
-            'Crea rondas y sus puntos de control. Luego genera los QR en la pestaña "Generar QR de Rondas".',
-          )}
+          {t("station.siteTours.hint", {
+            defaultValue:
+              'Crea rondas y sus puntos de control. Luego genera los QR en la pestaña «{{tab}}».',
+            tab: t("station.details.patrolQr", "QR de Rondas"),
+          })}
         </p>
 
         {loading ? (
@@ -836,8 +837,10 @@ export default function StationSiteTours({
                                       <ChevronDown size={15} />
                                     </button>
                                     <button
+                                      aria-label={t("common.delete", "Eliminar")}
                                       className="cg-focus rounded p-1.5"
                                       style={{ color: "var(--bad-text)" }}
+                                      title={t("common.delete", "Eliminar")}
                                       onClick={() => deleteCheckpoint(id, c.id)}
                                     >
                                       <Trash2 size={15} />

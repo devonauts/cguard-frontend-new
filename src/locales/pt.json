@@ -2604,7 +2604,9 @@
       "computadoras": "Computadores desktop",
       "computadoras.desc": "Aprove ou revogue cada computador que usa o app para desktop.",
       "app-escritorio": "App para desktop",
-      "app-escritorio.desc": "Baixe o painel para Mac ou Windows, em uma janela própria."
+      "app-escritorio.desc": "Baixe o painel para Mac ou Windows, em uma janela própria.",
+      "payroll-slips": "Holerites",
+      "payroll-slips.desc": "País, salário base, jornada, dobras de turno, imposto de renda e numeração do holerite."
     },
     "section": {
       "apps_y_portales": "Apps e portais",
@@ -2894,7 +2896,7 @@
       "certIconAlt": "Ícone da certificação",
       "noIcon": "Sem ícone",
       "thisCert": "esta certificação",
-      "bannerDialogDesc": "Configure o banner que será exibido no módulo MOBIL.",
+      "bannerDialogDesc": "Configure o banner que seus clientes verão no app.",
       "bannerTitlePlaceholder": "Título do banner",
       "bannerDescPlaceholder": "Descrição do banner",
       "selectFileBtn": "Selecionar arquivo",
@@ -2983,7 +2985,10 @@
       "guardVisSaved": "Preferência salva.",
       "guardVisTitle": "Dados do vigilante visíveis para o cliente",
       "tabContent": "Conteúdo",
-      "tabGuard": "Privacidade do vigilante"
+      "tabGuard": "Privacidade do vigilante",
+      "serviceDescriptionRequired": "Escreva uma descrição do serviço.",
+      "certDatesRequired": "Informe a data de aquisição e a de vencimento.",
+      "certDatesOrder": "A data de vencimento não pode ser anterior à de aquisição."
     },
     "mobileHub": {
       "loadError": "Não foi possível carregar as configurações.",
@@ -3205,7 +3210,7 @@
       "emailHeaderDesc": "Fundo da faixa onde fica o seu logotipo. Convém um tom escuro para que o texto branco seja legível.",
       "panelInfoBefore": "A cor do painel? Essa é sua, não da empresa: escolhe-se em",
       "panelInfoStrong": "Minha conta › Aparência",
-      "panelInfoAfter": " e fica salva no seu navegador, como o modo escuro. O administrador não decide com quais cores a sua equipe trabalha oito horas por dia.",
+      "panelInfoAfter": " e fica salva na sua conta, como o modo escuro. O administrador não decide com quais cores a sua equipe trabalha oito horas por dia.",
       "saveBtn": "Salvar marca"
     },
     "phoneField": {
@@ -3326,7 +3331,8 @@
       "platformHeading": "Proteções da plataforma",
       "platformHint": "A {{marca}} as gerencia para todas as empresas. Aqui você pode ver se estão ativas.",
       "statusActive": "Ativa",
-      "statusInactive": "Inativa"
+      "statusInactive": "Inativa",
+      "minLengthOutOfRange": "O comprimento mínimo deve ser um número entre {{min}} e {{max}}."
     },
     "central": {
       "loadError": "Não foi possível carregar as configurações.",
@@ -3455,7 +3461,8 @@
       "departmentPlaceholder": "Departamento",
       "selectGuardsLabel": "Selecionar Vigilantes Específicos",
       "selectGuardsPlaceholder": "Selecionar vigilantes…",
-      "searchGuardPlaceholder": "Buscar vigilante…"
+      "searchGuardPlaceholder": "Buscar vigilante…",
+      "editDialogTitle": "Editar documento"
     },
     "notificationForm": {
       "checkInOutLabel": "Entrada/saída do vigilante",
@@ -3563,7 +3570,8 @@
       "quitarAriaLabel": "Não guardamos {{name}}",
       "quitarTitle": "A sua empresa não guarda este feriado",
       "quitadosTitle": "Feriados nacionais que não guardam",
-      "devolver": "Voltar a guardá-lo"
+      "devolver": "Voltar a guardá-lo",
+      "deleteConfirm": "Excluir o feriado «{{name}}»?"
     },
     "userRoles": {
       "actionBtn": "Ação",
@@ -3920,7 +3928,8 @@
         "statusNoAccess": "Sem acesso configurado",
         "statusPending": "Convite pendente",
         "tokenExpired": "O link do convite expirou",
-        "tokenExpires": "Convite válido até"
+        "tokenExpires": "Convite válido até",
+        "alreadyActive": "A conta já está ativa: não precisa de convite. Se esqueceu a senha, use «Redefinir senha» na lista de vigilantes."
       },
       "editHint": "O e-mail e o telefone são a identidade do vigilante e se gerenciam pelo convite de acesso.",
       "nav": "Perfil",
@@ -4322,7 +4331,15 @@
         "achieved": "Atingido",
         "notAchieved": "Não atingido"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Vigilante",
+        "postSite": "Local"
+      },
+      "errors": {
+        "frequencyRequired": "Escolha a frequência.",
+        "descriptionRequired": "Digite a descrição."
+      }
     },
     "created": "KPI criado com sucesso",
     "deleteError": "Erro ao excluir KPI(s)",
@@ -4341,7 +4358,9 @@
       },
       "empty": {
         "description": "Não encontramos<br />itens que correspondam<br />à sua busca",
-        "title": "Nenhum resultado encontrado"
+        "title": "Nenhum resultado encontrado",
+        "none": "Nenhuma licença ainda",
+        "hint": "Adicione a primeira licença ou credencial."
       },
       "form": {
         "backImageLabel": "Imagem do verso da licença",
@@ -4404,7 +4423,13 @@
         "updated": "Licença atualizada"
       },
       "selected": "selecionadas",
-      "untitled": "Licença"
+      "untitled": "Licença",
+      "errors": {
+        "typeRequired": "Escolha o tipo de licença.",
+        "numberRequired": "Digite o número da licença."
+      },
+      "confirmDelete": "Excluir {{count}} licença(s)? Esta ação não pode ser desfeita.",
+      "subtitleSupervisor": "Documentos e credenciais do supervisor"
     },
     "list": {
       "actions": {
@@ -4521,7 +4546,7 @@
       "filters": "Filtros",
       "import": "Importar",
       "importDialog": {
-        "browsePlaceholder": "Explore seu arquivo Excel aqui....",
+        "browsePlaceholder": "Explore seu arquivo Excel aqui…",
         "clickToSelect": "Clique para selecionar",
         "completed": "Importação concluída",
         "description": "Envie um arquivo .xlsx/.xls/.csv para importar vigilantes.",
@@ -4543,7 +4568,12 @@
         "requiredColumns": "Nome, E-mail, Telefone, Status, Documento, Data Contrato, Gênero, Tipo Sanguíneo, Credenciais, Data Nasc., Local Nasc., Est. Civil, Escolaridade, Endereço",
         "requiredColumnsLabel": "Colunas obrigatórias:",
         "templateDownloaded": "Modelo baixado",
-        "title": "Importar Vigilantes do Excel"
+        "title": "Importar Vigilantes do Excel",
+        "summaryOk_one": "{{count}} vigilante importado",
+        "summaryOk_other": "{{count}} vigilantes importados",
+        "summaryWithErrors": "Importados: {{ok}} · Não importados: {{fallidas}}",
+        "rowError": "Linha {{fila}} ({{nombre}}): {{error}}",
+        "invitationsNotSent": "Nenhum convite foi enviado: envie pela lista quando quiser."
       },
       "labels": {
         "name": "Nome",
@@ -4614,7 +4644,8 @@
         "message": "Não encontramos<br />itens que correspondam<br />à sua busca",
         "title": "Nenhum resultado encontrado",
         "hint": "Crie a primeira nota para este vigilante.",
-        "none": "Sem notas ainda"
+        "none": "Sem notas ainda",
+        "hintSupervisor": "Crie a primeira nota para este supervisor."
       },
       "form": {
         "attachments": {
@@ -4660,7 +4691,12 @@
       "loadError": "Erro ao carregar as notas",
       "noteCreated": "Nota criada com sucesso",
       "noteDeleted": "Nota excluída",
-      "sectionTitle": "Notas"
+      "sectionTitle": "Notas",
+      "errors": {
+        "titleRequired": "Digite o título da nota.",
+        "descriptionRequired": "Digite a descrição da nota.",
+        "dateRequired": "Escolha a data da nota."
+      }
     },
     "pdfError": "Não foi possível gerar/obter o PDF",
     "pdfGenerated": "PDF gerado",
@@ -4776,7 +4812,11 @@
       "locNoneBody": "{{sin}} das suas últimas {{total}} marcações entraram sem qualquer coordenada. A marcação regista-se na mesma — não é bloqueado — mas o turno fica sem prova de onde estava.",
       "locCoarseBody": "{{n}} das suas últimas {{total}} marcações chegaram com uma posição mais grosseira do que {{suelo}} m. Serve para registar, não para confirmar que estava no posto.",
       "locFix": "Causa habitual: no Android a permissão de localização ficou em «Aproximada». Tem de passar a «Precisa» nas definições do telemóvel — o Android não deixa alterá-la pela aplicação, por isso alguém tem de mexer nesse telemóvel.",
-      "locLast": "Última marcação sem localização: {{cuando}}"
+      "locLast": "Última marcação sem localização: {{cuando}}",
+      "titleSupervisor": "Dispositivo do supervisor",
+      "subtitleSupervisor": "O primeiro dispositivo em que o supervisor faz login fica vinculado. Se aparecer outro, ele é marcado como não reconhecido (não é bloqueado). Redefina o vínculo se o supervisor trocou de celular.",
+      "emptySupervisor": "Ainda não há dispositivo registrado para este supervisor.",
+      "resetDoneSupervisor": "Vínculo redefinido. O próximo dispositivo do supervisor será vinculado."
     },
     "documents": {
       "deleteConfirm": "Excluir \"{{name}}\"? Esta ação não pode ser desfeita.",
@@ -4843,7 +4883,11 @@
       "deleted": "Memorando excluído",
       "pending": "Pendente",
       "title": "Memorandos",
-      "total": "memorandos"
+      "total": "memorandos",
+      "count_one": "{{count}} memorando",
+      "count_other": "{{count}} memorandos",
+      "acceptedCount_one": "{{count}} aceito",
+      "acceptedCount_other": "{{count}} aceitos"
     },
     "actionNotImplemented": "Ação ainda não disponível",
     "overview": {
@@ -4871,7 +4915,9 @@
       "loadError": "Não foi possível carregar as funções disponíveis.",
       "error": "Não foi possível mudar a função.",
       "hasBothRoles": "Atualmente tem os dois papéis. Ao escolher um, ficará apenas com esse.",
-      "welcomeSent": "Enviámos-lhe um email de boas-vindas com a ligação para descarregar a app de supervisor."
+      "welcomeSent": "Enviámos-lhe um email de boas-vindas com a ligação para descarregar a app de supervisor.",
+      "inviteSent": "Ainda não tinha senha: enviamos o convite para criá-la e entrar no app de supervisor.",
+      "inviteLinkReady": "Ainda não tem senha nem e-mail: compartilhe o link de acesso pela ficha de supervisor («Reenviar convite»)."
     },
     "department": {
       "title": "Departamento",
@@ -5328,7 +5374,8 @@
         "Titleinput": "Insira o título da nota",
         "Titlenote": "Título *",
         "NoFilesSelected": "Nenhum arquivo selecionado",
-        "selectDate": "Selecionar"
+        "selectDate": "Selecionar",
+        "editTitle": "Editar nota"
       },
       "noteCreateFailed": "Não foi possível criar a nota",
       "noteCreated": "Nota criada com sucesso",
@@ -5345,13 +5392,14 @@
         "dateRequired": "A data é obrigatória",
         "descriptionRequired": "A descrição é obrigatória",
         "titleRequired": "O título é obrigatório"
-      }
+      },
+      "description": "Descrição"
     },
     "sourcePivot": "pivot",
     "stations": {
       "add": "Adicionar estação",
       "cancel": "Cancelar",
-      "confirmRemovalDesc": "Tem certeza de que deseja excluir este posto? Esta ação não pode ser desfeita.",
+      "confirmRemovalDesc": "Tem certeza de que deseja excluir esta estação? Esta ação não pode ser desfeita.",
       "confirmRemovalTitle": "Confirmar exclusão",
       "create": "Criar",
       "createFailed": "Erro ao criar a estação",
@@ -5654,6 +5702,7 @@
     "close": "Fechar",
     "close_ticket": "Fechar ticket",
     "comment": {
+      "file_upload_failed_not_sent": "Não foi possível enviar o arquivo; o comentário não foi enviado.",
       "add": "Adicionar",
       "add_failed": "Não foi possível adicionar o comentário",
       "added": "Comentário adicionado",
@@ -5958,7 +6007,7 @@
     "selectStation": "Selecione uma estação",
     "selectTag": "Selecione uma etiqueta",
     "showArchived": "Mostrar dados arquivados",
-    "site": "posto de vigilância",
+    "site": "Posto de vigilância",
     "station": "Estação",
     "table": {
       "company": "Empresa",
@@ -5990,7 +6039,7 @@
     "tagLabel": "Etiqueta",
     "bitacorasImprimir": "Registros - Imprimir",
     "exportar": "Exportar",
-    "sinVigilantesEnEstacion": "Esta estação ainda não tem vigilantes atribuídos. Atribua um na ficha do posto para poder registrar a visita."
+    "sinVigilantesEnEstacion": "Esta estação ainda não tem vigilantes atribuídos."
   },
   "kit": {
     "pagination": {
@@ -6095,7 +6144,7 @@
       "guardsAssigned": "Vigilantes atribuídos",
       "hoursLogged": "Horas registradas (últimos 7 dias)",
       "incidentsReported": "Incidentes reportados (últimos 7 dias)",
-      "kpiadded": "KPI adicionado",
+      "kpiadded": "Adicionar KPI",
       "kpisearch": "Buscar KPIs",
       "kpitable": {
         "kpicreatedfor": "Criado por",
@@ -6129,7 +6178,12 @@
         "standardReports": "Relatórios padrão",
         "taskReports": "Relatórios de tarefas",
         "title": "Adicionar novos KPIs (Indicadores-chave de desempenho)",
-        "verificationReports": "Relatórios de verificação"
+        "verificationReports": "Relatórios de verificação",
+        "errors": {
+          "frequencyRequired": "Selecione a frequência",
+          "descriptionRequired": "Escreva uma descrição",
+          "emailsRequired": "Adicione pelo menos um e-mail para enviar o relatório"
+        }
       },
       "status": {
         "achieved": "Alcançado",
@@ -6616,6 +6670,16 @@
         "error": "Erro ao restaurar usuário",
         "success": "Usuário restaurado",
         "title": "Restaurar usuário"
+      },
+      "suspend": {
+        "title": "Suspender usuário",
+        "description": "{{user}} não poderá mais entrar e passará para Arquivados. Você pode restaurá-lo depois.",
+        "confirm": "Suspender"
+      },
+      "closeSessions": {
+        "title": "Encerrar sessões",
+        "description": "{{user}} sairá da web e dos apps em todos os dispositivos e terá que entrar novamente.",
+        "confirm": "Encerrar sessões"
       }
     },
     "editUser": {
@@ -7042,7 +7106,10 @@
     "forgotNoMailboxHint": "Se sua conta não tem e-mail, peça o link ao seu supervisor ou ao escritório.",
     "forgotSubtitleLoginId": "Digite seu e-mail ou usuário e enviaremos um link para criar uma nova.",
     "loginIdLabel": "E-mail ou usuário",
-    "loginIdPlaceholder": "jmiranda ou voce@email.com"
+    "loginIdPlaceholder": "jmiranda ou voce@email.com",
+    "validation_symbol": "Deve incluir um caractere especial",
+    "validation_same_as_old": "A nova senha precisa ser diferente da atual",
+    "passwordChangedSignInAgain": "Você alterou sua senha. Entre com a nova."
   },
   "billing": {
     "activate": "Ativar assinatura",
@@ -7241,7 +7308,8 @@
     "free": {
       "title": "Plano gratuito",
       "body": "{{marca}} oferece o serviço à sua empresa sem custo."
-    }
+    },
+    "invoicesEmptyDescActive": "Sua primeira fatura aparecerá aqui quando for emitida, e você poderá baixá-la em PDF."
   },
   "suscripcion": {
     "detalle": "Detalhes da assinatura",
@@ -7527,7 +7595,10 @@
       "bitacoraEmpty": "Sem ocorrências no diário",
       "bitacoraEmptyHint": "As ocorrências que os vigilantes registrarem no app aparecerão aqui.",
       "novedadAbierta": "Aberta",
-      "novedadCerrada": "Fechada"
+      "novedadCerrada": "Fechada",
+      "needDays": "Escolha pelo menos um dia da semana",
+      "needDayOfMonth": "Indique o dia do mês (1 a 31)",
+      "needDate": "Indique a data"
     },
     "guards": {
       "added": "Vigilante atribuído",
@@ -7641,7 +7712,8 @@
         "truck": "Caminhão",
         "van": "Furgão"
       },
-      "exportError": "Não foi possível gerar o arquivo"
+      "exportError": "Não foi possível gerar o arquivo",
+      "invalidNumber": "A capacidade e a permanência devem ser 0 ou mais (vazio = sem limite)."
     },
     "patrolQr": {
       "empty": "Ainda não há pontos de controle. Crie-os em \"Rondas de segurança\" e volte aqui para gerar os QR.",
@@ -7658,7 +7730,8 @@
       "verifyNote2": "Escaneamentos fora do alcance ficam registrados como \"fora de localização\".",
       "qrFailed": "Não foi possível gerar o código",
       "printFailed": "Não foi possível preparar a folha",
-      "popupBlocked": "O navegador bloqueou a janela de impressão."
+      "popupBlocked": "O navegador bloqueou a janela de impressão.",
+      "radiusPerPoint": "o raio de cada ponto (indicado em cada um)"
     },
     "rondaHistory": {
       "empty": "Não há rondas registradas neste posto.",
@@ -7680,7 +7753,7 @@
       "deleteFailed": "Não foi possível excluir",
       "desc": "Descrição",
       "empty": "Ainda não há rondas. Crie a primeira com \"Nova ronda\".",
-      "hint": "Crie rondas e seus pontos de controle. Depois gere os QR na aba \"Gerar QR de rondas\".",
+      "hint": "Crie rondas e seus pontos de controle. Depois gere os QR na aba \"{{tab}}\".",
       "name": "Nome",
       "nameRequired": "Escreva um nome",
       "new": "Nova ronda",
@@ -7720,7 +7793,8 @@
     "geofence": {
       "centerPinTitle": "Localização do posto (arraste para ajustar)",
       "needThreePoints": "Adicione pelo menos 3 pontos para fechar a geocerca.",
-      "sizeOk": "Tamanho adequado para marcar entrada e saída."
+      "sizeOk": "Tamanho adequado para marcar entrada e saída.",
+      "radiusRange": "O raio da cerca virtual deve estar entre {{min}} e {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Erro ao salvar a localização",
@@ -8597,7 +8671,8 @@
     "deleted": "Notas excluídas",
     "loadError": "Não foi possível carregar as notas",
     "saveError": "Não foi possível salvar a nota",
-    "updated": "Nota atualizada"
+    "updated": "Nota atualizada",
+    "attachmentsFailed": "{{count}} arquivo(s) não puderam ser enviados"
   },
   "postsite": {
     "Details": {
@@ -8889,7 +8964,12 @@
       "nuevoCorreoCom": "novo@email.com",
       "perfilActualizadoCorrectamente": "Perfil atualizado com sucesso.",
       "esElNombreConEl": "É o nome com que o resto da equipe vê você.",
-      "verificado": "Verificado"
+      "verificado": "Verificado",
+      "codigoNoEntregado": "Não conseguimos enviar o código para esse número. Confira o número ou tente mais tarde.",
+      "codigoDePrueba": "Não há provedor de SMS neste ambiente. Código de teste: {{code}}",
+      "escribeTuNumeroAntes": "Digite seu número de celular antes de confirmá-lo.",
+      "correoNoValido": "Esse e-mail não é válido.",
+      "esTuCorreoActual": "Esse já é o seu e-mail."
     },
     "Routes": {
       "turnoDia": "Turno diurno",
@@ -9180,7 +9260,10 @@
       "yaPuedesEntrar": "Você já pode entrar",
       "tuEmpresaTeAsignaraAUnPuesto": "Sua empresa vai atribuir você a um posto.",
       "googlePlayAppStoreIniciaYa": "Google Play · App Store. Entre com seu usuário e senha.",
-      "cuentaListaDescargaLaApp": "Sua conta com <b>{{empresa}}</b> está pronta. Baixe o app para monitorar e gerenciar seu serviço de segurança pelo celular."
+      "cuentaListaDescargaLaApp": "Sua conta com <b>{{empresa}}</b> está pronta. Baixe o app para monitorar e gerenciar seu serviço de segurança pelo celular.",
+      "tuPuestoYTurnosEnLaApp": "Seu posto e seus turnos aparecerão no app.",
+      "iniciaConTuUsuario": "Entre com seu usuário e senha.",
+      "iniciaCuandoEsteActiva": "Entre quando sua conta estiver ativa."
     },
     "AddressAutocomplete": {
       "miUbicacion": "Minha localização",
@@ -9249,6 +9332,9 @@
       "reconocProm": "Reconh. méd."
     },
     "AlarmCaseDetail": {
+      "operador": "Operador",
+      "sistema": "Sistema",
+      "porActor": "por {{nombre}}",
       "descripcion": "Descrição",
       "disposicion": "Disposição",
       "sinEntradasDeAuditoria": "Sem entradas de auditoria",
@@ -9322,6 +9408,7 @@
       "guardarNota": "Salvar nota"
     },
     "AlarmPanels": {
+      "elNumeroDeZonaEs": "O número da zona é obrigatório",
       "agenciaPsapPolicia": "Agência / PSAP (polícia)",
       "camara": "Câmera",
       "comunicacion": "Comunicação",
@@ -9785,7 +9872,16 @@
       "nDocumentosSubidos_one": "{{count}} documento enviado",
       "nDocumentosSubidos_other": "{{count}} documentos enviados",
       "nDocumentosSubidos_few": "{{count}} documentos enviados",
-      "nDocumentosSubidos_many": "{{count}} documentos enviados"
+      "nDocumentosSubidos_many": "{{count}} documentos enviados",
+      "agrupar": {
+        "creando": "Criando…",
+        "crear": "Criar pasta",
+        "resumen": "{{count}} documento(s) marcado(s). A pasta aparece em «Entregas ao cliente», de onde é compartilhada no app ou por um link privado.",
+        "nombre": "Nome da pasta",
+        "desde": "Período de",
+        "hasta": "Período até",
+        "nota": "Nota para o cliente (opcional)"
+      }
     },
     "ClientIncidents": {
       "buscarPorIdTituloO": "Buscar por ID, título ou localização",
@@ -10033,7 +10129,8 @@
       "invitarAcceso": "Convidar acesso",
       "revocarAcceso": "Revogar acesso",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Portal web"
+      "portalWeb": "Portal web",
+      "nombreDeLaPersona": "Nome da pessoa (opcional)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Dados de demonstração",
@@ -10248,7 +10345,8 @@
       "noSeEncontroElVigilante": "O vigilante solicitado não foi encontrado.",
       "errorGuardandoCambios": "Erro ao salvar alterações: {{msg}}",
       "datosPersonales": "Dados pessoais",
-      "guardarCambios": "Salvar alterações"
+      "guardarCambios": "Salvar alterações",
+      "cambiosGuardados": "Alterações salvas"
     },
     "EmpresaDireccionForm": {
       "direccionDeLaEmpresa": "Endereço da empresa*",
@@ -11357,7 +11455,8 @@
       "notasPrivadasInstruccionesEspeciales": "Notas privadas, instruções especiais…",
       "centroDeConvencionesQuito": "Centro de convenções, Quito",
       "clienteRequerido": "Cliente obrigatório",
-      "fechasYLugar": "Datas e local"
+      "fechasYLugar": "Datas e local",
+      "finAntesDeInicio": "A data de término não pode ser anterior à de início"
     },
     "RadioDevices": {
       "aunNoHayRadiosIp": "Ainda não há rádios IP",
@@ -11599,6 +11698,7 @@
       "sinDescansoElSupervisorTrabaja": "Sem folga: o supervisor trabalha todos os dias."
     },
     "RouteForm": {
+      "ningunDiaElegido": "Nenhum dia selecionado",
       "asignacion": "Atribuição",
       "descripcion": "Descrição",
       "descripcionDeLaRuta": "Descrição da rota",
@@ -12529,7 +12629,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} de {{total}}",
       "sinEstacion": "Sem estação",
       "sucediendoAhoraMismo": "Acontecendo agora mesmo",
-      "turnos": "Turnos"
+      "turnos": "Turnos",
+      "falta": "Falta"
     },
     "ShiftTemplates": {
       "basico": "Básico",
@@ -12682,7 +12783,9 @@
       "eliminado": "Excluído.",
       "errorAlEliminar": "Erro ao excluir.",
       "lugar": "Local",
-      "mostrandoRango": "Mostrando {{desde}}–{{hasta}} de {{total}}"
+      "mostrandoRango": "Mostrando {{desde}}–{{hasta}} de {{total}}",
+      "salidaAntesDeEntrada": "A saída não pode ser anterior à entrada.",
+      "fotoNoSubida": "A visita foi salva, mas a foto do documento não pôde ser enviada. Adicione-a depois pelo registro."
     },
     "StepIndicator": {
       "progresoDeConfiguracion": "Progresso da configuração",
@@ -12743,7 +12846,8 @@
       "laZonaYLosPuestosQueCubre": "A zona e os postos que este supervisor cobre, e sua escala gerada, aparecem nas abas dedicadas.",
       "limitaLoQueEsteSupervisorVe": "Limita o que este supervisor vê no app: exceções de presença e solicitações de ponto.",
       "nombres": "Nomes",
-      "perfilActualizado": "Perfil atualizado"
+      "perfilActualizado": "Perfil atualizado",
+      "identidadDeLaCuenta": "Nomes e sobrenomes são salvos aqui. O e-mail é o da conta de acesso e não é alterado nesta ficha."
     },
     "SupervisorPositions": {
       "aunNoHayPuestosDe": "Ainda não há postos de supervisor",
@@ -12999,7 +13103,13 @@
       "calendario": "Calendário",
       "vacioAyuda": "Férias, licenças e faltas justificadas de todo o pessoal, venham daqui, da Escala ou do app do vigilante.",
       "registrarElPrimero": "Registrar uma licença",
-      "vacioTitulo": "Ainda não há licenças nem férias"
+      "vacioTitulo": "Ainda não há licenças nem férias",
+      "aprobarTitulo": "Aprovar a ausência",
+      "aprobarMensaje": "A ausência de {{nombre}} é aprovada: os turnos desses dias ficam como vaga em Cobertura e a pessoa é avisada.",
+      "rechazarTitulo": "Recusar a ausência",
+      "rechazarMensaje": "A ausência de {{nombre}} é recusada e a pessoa é avisada. Você pode dizer o motivo (opcional).",
+      "rechazarMotivo": "Motivo (opcional)",
+      "solicitudEliminada": "Solicitação excluída"
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -13315,6 +13425,7 @@
       "reintentar": "Tentar novamente"
     },
     "VideoRelaySites": {
+      "regenerarClaveAviso": "A chave atual deixa de funcionar na hora: o relay deste local se desconecta até você instalar o novo link.",
       "aunNoHaySitiosRemotos": "Ainda não há sites remotos",
       "direccionDeRecepcion": "Endereço de recepção:",
       "seGeneraraUnaClaveDe": "Serão gerados uma chave de site e um token de publicação (criptografado).",
@@ -13649,7 +13760,8 @@
       "cicloDesdeMasN": "ciclo desde {{fecha}} +{{n}} d",
       "estacionesQueCubre_one": "Estações que cobre ({{count}})",
       "estacionesQueCubre_other": "Estações que cobre ({{count}})",
-      "estacionesQueCubre": "Estações que cobre ({{count}})"
+      "estacionesQueCubre": "Estações que cobre ({{count}})",
+      "eliminarElPuesto": "Excluir o posto «{{nombre}}»?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Novo supervisor",
@@ -13684,7 +13796,8 @@
       "viaPush": "push",
       "invitacionReenviadaA": "Convite reenviado para {{email}}.",
       "invitacionYaEnviada": "O convite já foi enviado para {{email}} há poucos minutos. Peça que verifique a caixa de entrada e a pasta de spam. Você poderá reenviá-lo em {{faltan}} min.",
-      "invitacionNoSalio": "Não conseguimos enviar o e-mail para {{email}}. Tente de novo em alguns minutos."
+      "invitacionNoSalio": "Não conseguimos enviar o e-mail para {{email}}. Tente de novo em alguns minutos.",
+      "correoDeRestablecimientoNoEnviado": "Não foi possível enviar o e-mail de redefinição para {{email}}. Tente novamente em alguns minutos."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajuste a busca ou registre um novo visitante.",
@@ -13697,6 +13810,8 @@
       "enCurso": "Em andamento"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "O incidente não existe ou não está mais disponível.",
+      "incidenteNoEncontrado": "Incidente não encontrado",
       "escribeUnComentario": "Escreva um comentário",
       "noSePudoAgregarComentario": "Não foi possível adicionar o comentário",
       "noSePudieronCargarDetalles": "Não foi possível carregar os detalhes do incidente",
@@ -13724,6 +13839,7 @@
       "generarYCopiar": "Gerar e copiar"
     },
     "EditDispatchPage": {
+      "adjuntosNoSubidos": "As alterações foram salvas, mas não foi possível enviar estes arquivos: {{archivos}}.",
       "incidenteActualizado": "Incidente atualizado",
       "errorAlActualizarIncidente": "Não foi possível atualizar o incidente",
       "editarIncidente": "Editar incidente",
@@ -13731,6 +13847,7 @@
       "asignarVigilante": "Designar vigilante"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "O incidente foi criado, mas não foi possível enviar estes arquivos: {{archivos}}. Adicione-os em Editar.",
       "errorAlCrearIncidente": "Não foi possível criar o incidente",
       "nuevoIncidente": "Novo incidente",
       "registraUnNuevoIncidenteY": "Registre um novo incidente e avise o vigilante correspondente.",
@@ -13797,7 +13914,8 @@
       "asignarAEstacionNombre": "Atribuir {{name}} a uma estação",
       "seAsignaraAlPrimerPuesto": "Será atribuído ao primeiro posto disponível da estação e aparecerá na Escala.",
       "asignando": "Atribuindo...",
-      "asignar": "Atribuir"
+      "asignar": "Atribuir",
+      "correoDeRestablecimientoNoEnviado": "Não foi possível enviar o e-mail de redefinição para {{email}}. Tente novamente em alguns minutos."
     },
     "GuardHorarioPage": {
       "sinHorario": "Sem horário",
@@ -13851,7 +13969,9 @@
       "inscripciones": "Inscrições",
       "completaron": "Concluíram",
       "cuestionarioDosPuntos": "Questionário:",
-      "lecciones": "Lições"
+      "lecciones": "Lições",
+      "pistaParaTodos": "Atribuído a todos: conta quem já abriu o curso",
+      "nDeMCompletaronParaTodos": "Atribuído a todos os vigilantes. Cada um aparece aqui ao abrir o curso: {{done}} de {{total}} o concluíram."
     },
     "VehiclesPage": {
       "vehiculo": "veículo",
@@ -14074,7 +14194,8 @@
       "losPermisosYLicenciasQue": "As licenças e permissões que sua equipe pode solicitar ou comprovar.",
       "tipoSDeLicenciaEliminado": "Tipo(s) de licença excluído(s)",
       "tipoDeLicenciaActualizado": "Tipo de licença atualizado",
-      "tipoDeLicenciaCreado": "Tipo de licença criado"
+      "tipoDeLicenciaCreado": "Tipo de licença criado",
+      "confirmarEliminacionTexto": "Excluir {{count}} tipo(s) de licença? Esta ação não pode ser desfeita."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Não foi possível carregar o uso do assistente.",
@@ -14348,7 +14469,17 @@
       "noPudimosGuardarElDocumento": "Não foi possível salvar o documento.",
       "publicaElReglamentoInterno": "Publique o regulamento interno e saiba quem já o assinou.",
       "publicar": "Publicar",
-      "reglamento": "Regulamento"
+      "reglamento": "Regulamento",
+      "estado": "Status",
+      "publicada": "Publicado",
+      "borrador": "Rascunho",
+      "ponleUnTitulo": "Dê um título ao documento.",
+      "algunosNoSePudieron": "{{failed}} de {{total}} não puderam ser alterados: {{reason}}",
+      "documentosPublicados": "Documentos publicados",
+      "documentosABorrador": "Documentos movidos para rascunho",
+      "documentosEliminados": "Documentos excluídos",
+      "confirmarEliminacion": "Confirmar exclusão",
+      "confirmarEliminacionTexto": "Excluir {{count}} documento(s)? Quem precisava assiná-los deixará de vê-los. Esta ação não pode ser desfeita."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Arraste ou clique para anexar",
@@ -14406,7 +14537,9 @@
     "Incident": {
       "informeDeIncidente": "Relatório de Incidente",
       "sinCaso": "Este incidente não tem um caso de emergência associado.",
-      "descripcion": "Incidentes reportados: prioridade, status, localização e descrição por posto."
+      "descripcion": "Incidentes reportados: prioridade, status, localização e descrição por posto.",
+      "estadoAbierto": "Aberto",
+      "estadoCerrado": "Fechado"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Credenciais e licenças da equipe, com suas datas de vencimento.",
@@ -14709,7 +14842,12 @@
       "rangoRegistros_few": "Período: {{range}} · {{count}} registros",
       "rangoRegistros_many": "Período: {{range}} · {{count}} registros",
       "informeExportado": "Relatório exportado",
-      "sinFilasParaExportar": "Não há registros para exportar"
+      "sinFilasParaExportar": "Não há registros para exportar",
+      "seudonimoCliente": "Cliente",
+      "seudonimoSede": "Local",
+      "seudonimoPuesto": "Posto",
+      "sinCoincidencias": "Nenhum registro corresponde a “{{q}}”.",
+      "rangoInvalido": "Verifique as datas: “De” não pode ser posterior a “Até”."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Mais próximo com vigilante",
@@ -15030,7 +15168,9 @@
       "inicio": "Início",
       "miCuenta": "Minha conta",
       "vistaPreviaAppMiSeguridadCliente": "Pré-visualização · app {{app}} (cliente)",
-      "seguridad": "Segurança"
+      "seguridad": "Segurança",
+      "nombreDeEjemplo": "Ana Souza",
+      "sitioDeEjemplo": "Edifício Central"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -15207,7 +15347,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Folga (clique direito: cobrir este dia)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (clique duas vezes para editar)",
       "sinConfigurar": "Não configurado",
-      "turnosDe12hRotativo": "Turnos de 12h · D/N rotativo"
+      "turnosDe12hRotativo": "Turnos de 12h · D/N rotativo",
+      "fueraDeSuAsignacion": "{{nombre}} — sem atribuição neste posto nesse dia"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Cada vaga com seu ciclo — um faz 2 manhãs e 3 tardes, outro 3 e 2.",
@@ -15392,7 +15533,14 @@
       "reabrirPeriodoMensaje": "Batidas, turnos e marcações a partir desse dia poderão ser alterados de novo. Cartões já aprovados ou exportados não são alterados. Escreva o motivo: fica no registro.",
       "reabrirPeriodoTitulo": "Reabrir a folha a partir de {{desde}}?",
       "generarCerrado": "Este período está fechado. Reabra-o para recalcular.",
-      "enviarAPago": "Enviar para pagamento"
+      "enviarAPago": "Enviar para pagamento",
+      "exportadaConRechazos": "Folha exportada sem {{count}} cartão(ões), que não vão para pagamento:",
+      "exportadaConRechazos_one": "Folha exportada sem 1 cartão, que não vai para pagamento:",
+      "exportadaConRechazos_few": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
+      "exportadaConRechazos_many": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
+      "exportadaConRechazos_other": "Folha exportada sem {{count}} cartões, que não vão para pagamento:",
+      "tarifaInvalida": "A tarifa tem de ser maior que zero. Para removê-la, deixe o campo vazio.",
+      "tarifaQuitada": "Tarifa de {{nombre}} removida. Gere o período novamente para aplicar."
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenças",
@@ -16230,9 +16378,11 @@
       "filasNoImportadas_few": "{{count}} linhas não puderam ser importadas. Confira os detalhes.",
       "filasNoImportadas_many": "{{count}} linhas não puderam ser importadas. Confira os detalhes.",
       "errorAlImportar": "Erro ao importar",
-      "camposObligatoriosVacios": "Alguns campos obrigatórios estão vazios. Verifique: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+      "camposObligatoriosVacios": "Alguns campos obrigatórios estão vazios. Verifique: name, address.",
       "importarClientesDesdeExcel": "Importar clientes do Excel",
-      "columnasOpcionales": "Colunas opcionais:"
+      "columnasOpcionales": "Colunas opcionais:",
+      "columnasPorNombre": "A primeira linha traz os nomes das colunas; a ordem não importa.",
+      "avisoInvitacion": "Cada cliente importado com e-mail recebe na hora o convite de boas-vindas para o app."
     },
     "CoBrowseAgent": {
       "soporte": "Suporte",
@@ -16252,7 +16402,8 @@
       "hintImprimir": "Abre a visualização de impressão do navegador",
       "enviarPorCorreo": "Enviar por e-mail",
       "hintEnviarPorCorreo": "Envia o relatório para um destinatário",
-      "exportando": "Exportando…"
+      "exportando": "Exportando…",
+      "descargarComo": "Baixar como"
     },
     "ExportarPeriodo": {
       "semana": "Semana",
@@ -16360,7 +16511,10 @@
       "tuEmpresa": "sua empresa",
       "volver": "Voltar",
       "registrarse": "Cadastrar-se",
-      "tuCuentaYaEstaActiva": "Sua conta em <b>{{empresa}}</b> já está ativa."
+      "tuCuentaYaEstaActiva": "Sua conta em <b>{{empresa}}</b> já está ativa.",
+      "invitacionYaUsada": "Este convite já foi usado: sua conta já está ativa.",
+      "entraEnLaApp": "Entre no app do vigilante com seu usuário e senha. Se não lembrar a senha, peça à sua empresa para redefini-la.",
+      "tuCuentaEstaLista": "Sua conta está pronta."
     },
     "InspectionPreview": {
       "alerta": "Alerta",
@@ -16688,7 +16842,9 @@
       "cliente": "Cliente",
       "todosLosClientes": "Todos os clientes",
       "sede": "Unidade",
-      "todasLasSedes": "Todas as unidades"
+      "todasLasSedes": "Todas as unidades",
+      "nHuecos_one": "{{count}} lacuna",
+      "nHuecos_other": "{{count}} lacunas"
     },
     "PuestaEnMarcha": {
       "titulo": "Primeiros passos · {{hechos}} de {{total}}",
@@ -16835,8 +16991,8 @@
       "publicar": "Publicar",
       "borrador": "Rascunho até publicar",
       "parecido": "Parece-se com a escala real em {{n}} %",
-      "unCambio": "1 alteração no rascunho",
-      "cambios": "{{n}} alterações no rascunho",
+      "unCambio": "1 edição",
+      "cambios": "{{n}} edições",
       "subtitulo": "Diga o que cada posto pede, dê a cada um sua rotação e deixe os folguistas cobrirem o que falta.",
       "titulo": "Planejador",
       "sinPuestos": "Ainda não há postos para planejar.",
@@ -17754,6 +17910,10 @@
         "vacio": "Não há folhas de pagamento emitidas",
         "vacioDesc": "Enquanto Holerites estiver desligado, só aparecem as folhas de pagamento publicadas.",
         "noEmitida": "Só é possível ver as folhas de pagamento e os holerites já emitidos."
+      },
+      "sinPermiso": {
+        "titulo": "Seu perfil não pode abrir Holerites",
+        "desc": "Seu perfil não tem as permissões de Holerites (ver e editar holerites e perfis de pagamento). Um administrador pode concedê-las em Configurações › Perfis."
       }
     },
     "ClientBillingContract": {
@@ -17966,7 +18126,8 @@
         "contratoHint": "Opcional: usa seus prazos de pagamento e isenção fiscal.",
         "sinContrato": "Sem contrato",
         "periodoDesde": "Período de",
-        "periodoHasta": "até"
+        "periodoHasta": "até",
+        "numeroInvalido": "A quantidade e o preço têm de ser números (por exemplo 1500 ou 12,50)."
       },
       "ajustes": {
         "si": "Sim",
@@ -18037,7 +18198,10 @@
         "validezCotizacion": "Validade da cotação (dias)",
         "validezCotizacionHint": "Passado esse prazo sem assinatura, a cotação vence sozinha.",
         "terminosCotizacion": "Termos padrão das cotações",
-        "terminosCotizacionHint": "São copiados em cada nova cotação; você pode alterá-los em cada uma."
+        "terminosCotizacionHint": "São copiados em cada nova cotação; você pode alterá-los em cada uma.",
+        "fueraDeRango": "«{{campo}}» tem de estar entre {{min}} e {{max}}.",
+        "recordatorioInvalido": "Lembretes: «{{valor}}» não é um número inteiro de dias entre -30 e 180.",
+        "demasiadosRecordatorios": "No máximo {{max}} lembretes."
       },
       "recargo": {
         "lastMinute": "Cobertura de última hora",
@@ -18124,7 +18288,8 @@
         "minutosFacturables": "Minutos faturáveis",
         "editarLinea": "Editar linha",
         "minutosHint": "Programados: {{p}} · trabalhados: {{w}}",
-        "excluirDeLaFactura": "Excluir da fatura"
+        "excluirDeLaFactura": "Excluir da fatura",
+        "revisionLista": "Pronta para a revisão do cliente. Nenhum e-mail é enviado: copie o link e compartilhe com ele."
       },
       "regla": {
         "usarElDeLaEmpresa": "Usar o valor da empresa",
@@ -18393,7 +18558,8 @@
         "pestanaDiseno": "Design dos documentos",
         "pestanaTextos": "Textos",
         "validezYTerminosMovidos": "A validade, a introdução e os termos dos orçamentos agora estão em Textos."
-      }
+      },
+      "periodoAlReves": "O período termina antes de começar."
     },
     "ClientInvoices": {
       "pagadoTotal": "Pago no total",
@@ -18477,7 +18643,8 @@
         "noSeEnvio": "Não foi possível enviar o e-mail. Verifique os destinatários.",
         "enviadaOk": "Cotação enviada",
         "enviarDesc": "São enviados o PDF e o link para assinar on-line. A cotação fica como enviada.",
-        "enviar": "Enviar"
+        "enviar": "Enviar",
+        "noCancelar": "Não, mantê-la"
       },
       "volver": "Voltar às cotações",
       "revision": "Revisão {{n}}",
@@ -18920,7 +19087,12 @@
       "estaciones": "Estações",
       "plazas": "Vagas com este ciclo",
       "personas": "Pessoas",
-      "historial": "E {{count}} atribuições encerradas que o mantêm no histórico."
+      "historial": "E {{count}} atribuições encerradas que o mantêm no histórico.",
+      "enUsoConteo": "Estações: {{estaciones}} · Vagas: {{plazas}} · Pessoas: {{personas}}",
+      "confirmarBorrarTitulo": "Excluir «{{name}}»?",
+      "confirmarArchivarTitulo": "Arquivar «{{name}}»?",
+      "confirmarBorrarTexto": "Ninguém o usa. Ele é excluído de vez e não pode ser desfeito.",
+      "confirmarArchivarTexto": "Deixa de ser oferecido ao montar escalas. Quem já o usa continua com ele, e você pode voltar a oferecê-lo quando quiser."
     },
     "HorarioDeOficina": {
       "pestana": "Horário",
@@ -19007,7 +19179,9 @@
       "sinRequisitoAyuda": "Aqui aparecem as faltas, as vagas vazias e as licenças sem substituto. Para saber o que falta cobrir, cada estação precisa dizer quantos vigilantes pede.",
       "irAEstaciones": "Definir o requisito de uma estação",
       "sinRequisitoTitulo": "Ainda não há estações com requisito",
-      "ofrecido": "Oferecida"
+      "ofrecido": "Oferecida",
+      "sede": "Unidade",
+      "todasLasSedes": "Todas as unidades"
     },
     "HorarioModos": {
       "modos": "Modo da escala",
@@ -19142,6 +19316,17 @@
     "RutaConPermiso": {
       "titulo": "Sem acesso a esta página",
       "descripcion": "Sua função não pode ver esta página. Se precisar dela, peça a um administrador."
+    },
+    "training": {
+      "puntajeFueraDeRango": "A nota para aprovação deve ser um número inteiro entre 1 e 100.",
+      "puntosFueraDeRango": "Os pontos devem ser um número inteiro entre 0 e 100000."
+    },
+    "incidentPriority": {
+      "critical": "Crítica",
+      "high": "Alta",
+      "medium": "Média",
+      "low": "Baixa",
+      "none": "Sem prioridade"
     },
     "CampoDeMarca": {
       "elige": "Escolha a marca",
@@ -19280,6 +19465,23 @@
     }
   },
   "alarm": {
+    "auditAction": {
+      "create": "Criado",
+      "read": "Lido",
+      "signal_runaway_suppressed": "Sinal repetido suprimido",
+      "video_verification": "Verificação por vídeo",
+      "escalate": "Escalonado",
+      "close": "Fechado",
+      "resolve": "Resolvido",
+      "incident": "Incidente criado",
+      "dispatch": "Despacho",
+      "step": "Etapa do plano",
+      "ecv_call": "Chamada",
+      "note": "Nota",
+      "acknowledge": "Reconhecido",
+      "event_appended": "Evento adicionado",
+      "case_opened": "Caso aberto"
+    },
     "status": {
       "queued": "Na fila",
       "acknowledged": "Reconhecida",
@@ -19799,7 +20001,8 @@
       "blood_required": "O tipo sanguíneo é obrigatório",
       "credentials_required": "As credenciais são obrigatórias",
       "address_required": "O endereço é obrigatório",
-      "phone_required": "O telefone é obrigatório"
+      "phone_required": "O telefone é obrigatório",
+      "revisaEstosDatos": "Revise estes dados: {{campos}}"
     },
     "password": "Senha",
     "password_min": "Mínimo de 8 caracteres",
@@ -19826,7 +20029,8 @@
         "university": "Universidade",
         "universityStudies": "Ensino superior"
       },
-      "freeUnion": "União estável"
+      "freeUnion": "União estável",
+      "credentialsHint": "N.º da sua credencial ou licença de vigilante"
     },
     "select": "Selecione",
     "eyebrow_guard": "Convite · Equipe de segurança",
@@ -20592,7 +20796,7 @@
       "mileageRequired": "Quilometragem inicial obrigatória",
       "modelRequired": "Modelo obrigatório",
       "plateRequired": "Placa obrigatória",
-      "vinAlphanumeric": "VIN inválido (deve ter exatamente 17 caracteres alfanuméricos)",
+      "vinAlphanumeric": "VIN inválido (deve ter exatamente 17 letras ou números; as letras I, O e Q não são usadas)",
       "vinLength": "VIN inválido (deve ter exatamente 17 caracteres)",
       "yearInvalid": "Ano inválido"
     }
@@ -21887,6 +22091,7 @@
       "cerrado_por_persona": "encerrado por uma pessoa"
     },
     "ajustes": {
+      "topeAjustado": "O limite vai de {{min}} a {{max}} mensagens: foi salvo {{valor}}.",
       "titulo": "Ajustes do acompanhamento",
       "activo": "{{agente}} faz o acompanhamento",
       "activoHint": "Escreve ao vigilante assim que algo não bate e segue a conversa até fechá-la.",

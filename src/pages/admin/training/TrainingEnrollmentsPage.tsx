@@ -132,6 +132,18 @@ export default function TrainingEnrollmentsPage() {
   const realEnrollments = rows.filter(
     (r) => r.guardId || r.assignmentType === "individual",
   );
+  // «All guards» is ONE template row; each guard gets their own row when they
+  // open the course. Without saying so, the page read «0 de 0 vigilantes» and
+  // «Inscripciones 0» right above the «Todos los vigilantes» row.
+  const paraTodos = rows.some(
+    (r) => r.assignmentType === "all_guards" && !r.guardId,
+  );
+  const pistaParaTodos = paraTodos
+    ? t(
+        "ui.TrainingEnrollmentsPage.pistaParaTodos",
+        "Asignado a todos: cuenta quien ya abrió el curso",
+      )
+    : undefined;
 
   /* Las columnas van a `DataTable` en vez de a un `<table>` a mano: es lo que
      da las cabeceras `cg-eyebrow`, los filos de pelo, el esqueleto de carga y
@@ -259,11 +271,20 @@ export default function TrainingEnrollmentsPage() {
             </>
           }
           icon={<GraduationCap />}
-          subtitle={t("ui.TrainingEnrollmentsPage.nDeMCompletaron", {
-            defaultValue: "{{done}} de {{total}} vigilantes completaron el curso.",
-            done: completedCount,
-            total: realEnrollments.length,
-          })}
+          subtitle={
+            paraTodos
+              ? t("ui.TrainingEnrollmentsPage.nDeMCompletaronParaTodos", {
+                  defaultValue:
+                    "Asignado a todos los vigilantes. Cada uno aparece aquí al abrir el curso: {{done}} de {{total}} lo completaron.",
+                  done: completedCount,
+                  total: realEnrollments.length,
+                })
+              : t("ui.TrainingEnrollmentsPage.nDeMCompletaron", {
+                  defaultValue: "{{done}} de {{total}} vigilantes completaron el curso.",
+                  done: completedCount,
+                  total: realEnrollments.length,
+                })
+          }
           title={
             course?.title ??
             t("training.enrollments.title", "Progreso del curso")
@@ -274,6 +295,7 @@ export default function TrainingEnrollmentsPage() {
           <StatCard
             accent="info"
             icon={<Users />}
+            hint={pistaParaTodos}
             label={t("ui.TrainingEnrollmentsPage.inscripciones", "Inscripciones")}
             value={realEnrollments.length}
           />

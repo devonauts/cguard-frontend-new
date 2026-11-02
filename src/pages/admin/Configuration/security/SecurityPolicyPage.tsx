@@ -95,7 +95,29 @@ export default function SecurityPolicyPage() {
     })();
   }, []);
 
+  const minFloor = Number(limites.passwordMinLength ?? 8);
+  const minCeiling = Number(limites.passwordMaxLength ?? 128);
+  const minLengthValid =
+    !!password &&
+    Number.isInteger(password.minLength) &&
+    password.minLength >= minFloor &&
+    password.minLength <= minCeiling;
+
   const save = async () => {
+    // The server clamps an out-of-range length (5 → 8, 200 → 128) and answers
+    // «Política guardada»: say it here instead of saving something else.
+    if (!minLengthValid) {
+      toast.error(
+        t("settings.security.minLengthOutOfRange", {
+          defaultValue:
+            "La longitud mínima tiene que ser un número entre {{min}} y {{max}}.",
+          min: minFloor,
+          max: minCeiling,
+        }),
+      );
+
+      return;
+    }
     setSaving(true);
     try {
       const { data } = await api.put(
@@ -159,9 +181,11 @@ export default function SecurityPolicyPage() {
                 })}
               </Label>
               <Input
+                aria-invalid={!minLengthValid}
                 disabled={disabled}
-                max={limites.passwordMaxLength ?? 128}
-                min={limites.passwordMinLength ?? 8}
+                max={minCeiling}
+                min={minFloor}
+                step={1}
                 type="number"
                 value={password.minLength}
                 onChange={(e) =>
@@ -170,6 +194,16 @@ export default function SecurityPolicyPage() {
                   )
                 }
               />
+              {!minLengthValid && (
+                <p className="mt-1 text-xs" style={{ color: "var(--bad-text)" }}>
+                  {t("settings.security.minLengthOutOfRange", {
+                    defaultValue:
+                      "La longitud mínima tiene que ser un número entre {{min}} y {{max}}.",
+                    min: minFloor,
+                    max: minCeiling,
+                  })}
+                </p>
+              )}
             </div>
             <div className="space-y-1">
               <ToggleRow

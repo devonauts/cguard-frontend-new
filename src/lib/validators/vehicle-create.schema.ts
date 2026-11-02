@@ -55,7 +55,7 @@ export const vehicleCreateSchema = z.object({
     .refine((v) => /^[A-HJ-NPR-Z0-9]{17}$/i.test(v), {
       error: msj(
         "validation.vehicle.vinAlphanumeric",
-        "VIN inválido (debe tener exactamente 17 caracteres alfanuméricos)",
+        "VIN inválido (debe tener exactamente 17 letras o números; las letras I, O y Q no se usan)",
       ),
     }),
   description: z.string().optional(),

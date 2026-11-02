@@ -1,15 +1,17 @@
 import type { ExportFormat } from "@/lib/export/reportExport";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ShieldCheck, AlertTriangle, RefreshCw, Inbox } from "lucide-react";
 
+import { useInfiniteAuditList } from "./useInfiniteAuditList";
 import {
   AuditRow as AuditTr,
   AuditSearch,
   AuditSkeleton,
   AuditTable,
+  InfiniteFooter,
   SeverityRail,
   fmtStamp,
   metaFor,
@@ -25,7 +27,6 @@ import {
   StatusBadge,
   EmptyState,
 } from "@/components/kit";
-import { ApiService } from "@/services/api/apiService";
 import ExportMenu from "@/components/reports/ExportMenu";
 import { descargarInforme } from "@/lib/export/serverDownload";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -46,10 +47,8 @@ type AuditRow = {
 
 export default function AuditLogs() {
   const { t } = useTranslation();
-  const [rows, setRows] = useState<AuditRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [bajando, setBajando] = useState(false);
   const tid = () => localStorage.getItem("tenantId") || "";
 
@@ -86,26 +85,45 @@ export default function AuditLogs() {
     }
   };
 
-  const load = () => {
-    setLoading(true);
-    setError(false);
-    ApiService.get(`/tenant/${tid()}/security/audit-logs?limit=300`)
-      .then((r: any) => setRows(Array.isArray(r) ? r : (r?.rows ?? [])))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  };
-
   useEffect(() => {
-    load();
-  }, []);
+    const h = setTimeout(() => setDebouncedQ(q), 350);
 
-  const filtered = rows.filter((r) => {
-    if (!q.trim()) return true;
-    const blob =
-      `${r.event} ${r.email || ""} ${r.ip || ""} ${r.platform || ""} ${r.detail || ""}`.toLowerCase();
+    return () => clearTimeout(h);
+  }, [q]);
 
-    return blob.includes(q.toLowerCase());
+  /* Paged from the server, like the access history: it used to load the
+     newest 300 rows once, say «300 eventos» when there were 317, and leave the
+     older ones out of reach. The search goes to the server too (same filter
+     as the export), so it also finds what is not loaded yet. */
+  const buildParams = useCallback(
+    (offset: number, limit: number) => {
+      const params = new URLSearchParams({
+        limit: String(limit),
+        offset: String(offset),
+      });
+
+      if (debouncedQ.trim()) params.set("search", debouncedQ.trim());
+
+      return params;
+    },
+    [debouncedQ],
+  );
+  const {
+    items: filtered,
+    total,
+    loading: cargando,
+    error,
+    hasMore,
+    load: cargar,
+    sentinelRef,
+  } = useInfiniteAuditList<AuditRow>({
+    endpoint: `/tenant/${tid()}/security/audit-logs`,
+    pageSize: 100,
+    buildParams,
+    deps: [debouncedQ],
   });
+  const loading = cargando && filtered.length === 0;
+  const load = () => cargar(true);
 
   // Un fallo de acceso es lo que se busca aquí: se cuenta aparte.
   const fallidos = filtered.filter((r) => r.event === "login_failed").length;
@@ -118,10 +136,16 @@ export default function AuditLogs() {
             !loading && !error ? (
               <>
                 <StatusBadge dot={false} tone="neutral">
-                  {t("ui.AuditLogs.nEventos", {
-                    defaultValue: "{{count}} eventos",
-                    count: filtered.length,
-                  })}
+                  {total > filtered.length
+                    ? t("ui.LoginHistory.nDeTotalEventos", {
+                        defaultValue: "{{count}} de {{total}} eventos",
+                        count: filtered.length,
+                        total,
+                      })
+                    : t("ui.AuditLogs.nEventos", {
+                        defaultValue: "{{count}} eventos",
+                        count: filtered.length,
+                      })}
                 </StatusBadge>
                 {fallidos > 0 && (
                   <StatusBadge tone="bad">
@@ -275,6 +299,16 @@ export default function AuditLogs() {
                 );
               })}
             </AuditTable>
+          )}
+
+          {!error && (
+            <InfiniteFooter
+              count={filtered.length}
+              endLabel={t("ui.LoginHistory.finDelHistorial", "Fin del historial")}
+              hasMore={hasMore}
+              loading={cargando}
+              sentinelRef={sentinelRef}
+            />
           )}
         </Section>
       </PageContainer>

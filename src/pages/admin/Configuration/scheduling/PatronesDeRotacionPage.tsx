@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
+  AlertTriangle,
   Archive,
   ArchiveRestore,
   Check,
@@ -89,6 +90,12 @@ export default function PatronesDeRotacionPage() {
   const [uso, setUso] = useState<{ patron: Patron; uso: Uso | null } | null>(
     null,
   );
+  // Archiving or deleting a company pattern asks first: one stray click used to
+  // archive the company's «5-2» on the spot.
+  const [confirmar, setConfirmar] = useState<{
+    patron: Patron;
+    tipo: "archivar" | "borrar";
+  } | null>(null);
 
   const cargar = useCallback(async () => {
     try {
@@ -133,6 +140,28 @@ export default function PatronesDeRotacionPage() {
       setUso(null);
     }
   };
+
+  const archivar = (p: Patron, archived: boolean) =>
+    accion(
+      p.id,
+      () =>
+        ApiService.post(`/tenant/${tenant()}/rotation-style/${p.id}/archive`, {
+          data: { archived },
+        }),
+      archived
+        ? t(
+            "ui.Patrones.archivadoOk",
+            "Archivado: ya no se ofrece, y quien lo usa lo conserva",
+          )
+        : t("ui.Patrones.restaurado", "El patrón se vuelve a ofrecer"),
+    );
+
+  const borrar = (p: Patron) =>
+    accion(
+      p.id,
+      () => ApiService.delete(`/tenant/${tenant()}/rotation-style/${p.id}`),
+      t("ui.Patrones.borrado", "Patrón borrado"),
+    );
 
   const propios = (filas || []).filter((p) => !p.isSystem && p.tenantId);
   const sistema = (filas || []).filter((p) => p.isSystem || !p.tenantId);
@@ -179,9 +208,9 @@ export default function PatronesDeRotacionPage() {
           onClick={() => verUso(p)}
         >
           {usado
-            ? t("ui.Patrones.enUso", {
+            ? t("ui.Patrones.enUsoConteo", {
                 defaultValue:
-                  "{{estaciones}} estaciones · {{plazas}} puestos · {{personas}} personas",
+                  "Estaciones: {{estaciones}} · Puestos: {{plazas}} · Personas: {{personas}}",
                 estaciones: p.usage?.stations ?? 0,
                 plazas: p.usage?.positions ?? 0,
                 personas: p.usage?.assignments ?? 0,
@@ -241,23 +270,9 @@ export default function PatronesDeRotacionPage() {
                   size="sm"
                   variant="outline"
                   onClick={() =>
-                    accion(
-                      p.id,
-                      () =>
-                        ApiService.post(
-                          `/tenant/${tenant()}/rotation-style/${p.id}/archive`,
-                          { data: { archived: !archivado } },
-                        ),
-                      archivado
-                        ? t(
-                            "ui.Patrones.restaurado",
-                            "El patrón se vuelve a ofrecer",
-                          )
-                        : t(
-                            "ui.Patrones.archivadoOk",
-                            "Archivado: ya no se ofrece, y quien lo usa lo conserva",
-                          ),
-                    )
+                    archivado
+                      ? void archivar(p, false)
+                      : setConfirmar({ patron: p, tipo: "archivar" })
                   }
                 >
                   {archivado ? (
@@ -272,16 +287,7 @@ export default function PatronesDeRotacionPage() {
                     disabled={trabajando === p.id}
                     size="sm"
                     variant="outline"
-                    onClick={() =>
-                      accion(
-                        p.id,
-                        () =>
-                          ApiService.delete(
-                            `/tenant/${tenant()}/rotation-style/${p.id}`,
-                          ),
-                        t("ui.Patrones.borrado", "Patrón borrado"),
-                      )
-                    }
+                    onClick={() => setConfirmar({ patron: p, tipo: "borrar" })}
                   >
                     {trabajando === p.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -363,6 +369,57 @@ export default function PatronesDeRotacionPage() {
           )}
         </PageContainer>
       </SettingsLayout>
+      {confirmar && (
+        <Modal
+          open
+          footer={
+            <>
+              <Button variant="outline" onClick={() => setConfirmar(null)}>
+                {t("actions.cancel", "Cancelar")}
+              </Button>
+              <Button
+                variant={confirmar.tipo === "borrar" ? "destructive" : "brand"}
+                onClick={() => {
+                  const { patron, tipo } = confirmar;
+
+                  setConfirmar(null);
+                  void (tipo === "borrar" ? borrar(patron) : archivar(patron, true));
+                }}
+              >
+                {confirmar.tipo === "borrar"
+                  ? t("ui.Patrones.borrar", "Borrar")
+                  : t("ui.Patrones.archivar", "Archivar")}
+              </Button>
+            </>
+          }
+          icon={<AlertTriangle />}
+          size="sm"
+          title={
+            confirmar.tipo === "borrar"
+              ? t("ui.Patrones.confirmarBorrarTitulo", {
+                  defaultValue: "¿Borrar «{{name}}»?",
+                  name: confirmar.patron.name,
+                })
+              : t("ui.Patrones.confirmarArchivarTitulo", {
+                  defaultValue: "¿Archivar «{{name}}»?",
+                  name: confirmar.patron.name,
+                })
+          }
+          onOpenChange={(o) => !o && setConfirmar(null)}
+        >
+          <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+            {confirmar.tipo === "borrar"
+              ? t(
+                  "ui.Patrones.confirmarBorrarTexto",
+                  "Nadie lo usa. Se borra del todo y no se puede deshacer.",
+                )
+              : t(
+                  "ui.Patrones.confirmarArchivarTexto",
+                  "Deja de ofrecerse al crear horarios. Quien ya lo usa lo conserva, y puedes volver a ofrecerlo cuando quieras.",
+                )}
+          </p>
+        </Modal>
+      )}
       {uso && (
         <Modal
           open

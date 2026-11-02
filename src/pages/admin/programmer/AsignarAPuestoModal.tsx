@@ -69,8 +69,9 @@ export function plazasElegibles(
     .sort(
       (a, b) =>
         Number(b.libres > 0) - Number(a.libres > 0) ||
-        a.puesto.localeCompare(b.puesto) ||
-        a.plaza.localeCompare(b.plaza),
+        // Numeric: «Fijo 2» before «Fijo 10» (QA: Fijo 1, Fijo 10, Fijo 100…).
+        a.puesto.localeCompare(b.puesto, undefined, { numeric: true }) ||
+        a.plaza.localeCompare(b.plaza, undefined, { numeric: true }),
     );
 }
 

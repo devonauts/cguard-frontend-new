@@ -478,8 +478,10 @@ export default function PatrullaBoardPage() {
                           ? t("revision.deshacer", "Deshacer")
                           : t("ui.PatrullaBoard.marcarCompletada", "Marcar completada")}
                       </Button>
+                      {/* Reordering needs two stops at least: with one the
+                          server could only answer 400. */}
                       <Button
-                        disabled={busyId === route.id}
+                        disabled={busyId === route.id || stops < 2}
                         size="sm"
                         variant="outline"
                         onClick={() => optimize(route)}

@@ -497,15 +497,17 @@ export default function ClientRegistration() {
             )}
           </p>
         </FadeIn>
+      ) : inviteNotFound || !inviteToken ? (
+        /* A used, expired or revoked invitation (or none at all): there is
+           nothing to activate. The full form with «Activar mi cuenta» stayed
+           on screen under the warning (QA M13). */
+        <InfoNote tone="warn" icon={<AlertTriangle />}>
+          {t("client.invite_not_found", {
+            defaultValue: "Invitación no encontrada o inválida.",
+          })}
+        </InfoNote>
       ) : (
         <form className="space-y-5" onSubmit={handleSubmit}>
-          {inviteNotFound && (
-            <InfoNote tone="warn" icon={<AlertTriangle />}>
-              {t("client.invite_not_found", {
-                defaultValue: "Invitación no encontrada o inválida.",
-              })}
-            </InfoNote>
-          )}
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div>

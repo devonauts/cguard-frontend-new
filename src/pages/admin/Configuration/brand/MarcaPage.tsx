@@ -19,7 +19,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Palette, Loader2, Save, Info, Mail, Smartphone } from "lucide-react";
+import { Palette, Loader2, Save, Mail, Smartphone } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
@@ -189,21 +189,6 @@ export default function MarcaPage() {
             <SkeletonCards count={2} />
           ) : (
             <div className="space-y-5">
-              <InfoNote icon={<Info />} tone="info">
-                {t("settings.marca.infoBefore", {
-                  defaultValue: "Este color se elegía en ",
-                })}
-                <strong>
-                  {t("settings.marca.infoStrong", {
-                    defaultValue: "dos pantallas distintas",
-                  })}
-                </strong>
-                {t("settings.marca.infoAfter", {
-                  defaultValue:
-                    " y con dorados diferentes, así que el correo y la app no coincidían. Ahora se elige una vez y se aplica a los dos.",
-                })}
-              </InfoNote>
-
               <Section
                 icon={<Palette />}
                 title={t("settings.marca.companyColorSection", {
@@ -285,7 +270,7 @@ export default function MarcaPage() {
                 </strong>
                 {t("settings.marca.panelInfoAfter", {
                   defaultValue:
-                    " y se guarda en tu navegador, como el modo oscuro. El administrador no decide con qué colores trabaja su equipo ocho horas al día.",
+                    " y se guarda en tu cuenta, como el modo oscuro. El administrador no decide con qué colores trabaja su equipo ocho horas al día.",
                 })}
               </InfoNote>
 

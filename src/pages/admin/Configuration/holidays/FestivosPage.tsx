@@ -35,6 +35,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 type Festivo = {
   id: string;
@@ -233,7 +234,18 @@ export default function FestivosPage() {
     }
   };
 
-  const borrar = async (id: string) => {
+  const borrar = async (id: string, name: string) => {
+    if (
+      !(await confirmDialog({
+        message: t("settings.festivos.deleteConfirm", {
+          defaultValue: "¿Borrar el festivo «{{name}}»?",
+          name,
+        }),
+        confirmText: t("actions.delete", "Eliminar"),
+        tone: "danger",
+      }))
+    )
+      return;
     try {
       await api.delete(`/tenant/${tenantId()}/holiday/${id}`);
       await cargar();
@@ -557,7 +569,7 @@ export default function FestivosPage() {
                             : undefined
                         }
                         type="button"
-                        onClick={() => (f.source === "country" ? quitar(f) : borrar(f.id))}
+                        onClick={() => (f.source === "country" ? quitar(f) : borrar(f.id, f.name))}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

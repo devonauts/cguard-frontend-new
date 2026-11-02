@@ -838,6 +838,14 @@ export default function AddressAutocomplete({
               t("ui.AddressAutocomplete.buscarDireccion", "Buscar dirección...")
             }
             type="text"
+            onKeyDown={(e) => {
+              // Enter picks the highlighted suggestion (Google listens on the
+              // node itself, before this). Inside a <form> it ALSO submitted
+              // the whole form before the place details arrived: the client
+              // was saved with the typed address and no city, country or
+              // coordinates (QA M18).
+              if (e.key === "Enter") e.preventDefault();
+            }}
             onChange={(e) => {
               // Sin `setState` en cada tecla: sólo se recuerda lo tecleado
               // para que el resto del componente lo pueda leer.

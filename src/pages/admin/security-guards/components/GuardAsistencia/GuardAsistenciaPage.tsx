@@ -76,11 +76,16 @@ function shiftAnchor(period: Period, anchor: Date, dir: number): Date {
 function rangeLabel(period: Period, anchor: Date): string {
   const [s, e] = rangeFor(period, anchor);
 
-  if (period === "month")
-    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+  if (period === "month") {
+    const mes = s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       month: "long",
       year: "numeric",
     });
+
+    // Only the first letter: «noviembre de 2026» → «Noviembre de 2026» (CSS
+    // `capitalize` made it «Noviembre De 2026»).
+    return mes.charAt(0).toUpperCase() + mes.slice(1);
+  }
   const sameMonth = s.getMonth() === e.getMonth();
 
   return `${s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: "short", year: "numeric" })}`;
@@ -294,19 +299,23 @@ export default function GuardAsistenciaPage() {
               {/* Navegador de rango */}
               <div className="flex items-center gap-1 rounded-xl border border-border bg-background px-2 py-1">
                 <Button
+                  aria-label={t("clients.pagination.prev", "Anterior")}
                   className="h-7 w-7"
                   size="icon"
+                  title={t("clients.pagination.prev", "Anterior")}
                   variant="ghost"
                   onClick={() => setAnchor((a) => shiftAnchor(period, a, -1))}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="min-w-[150px] text-center text-sm font-medium capitalize">
+                <span className="min-w-[150px] text-center text-sm font-medium">
                   {rangeLabel(period, anchor)}
                 </span>
                 <Button
+                  aria-label={t("clients.pagination.next", "Siguiente")}
                   className="h-7 w-7"
                   size="icon"
+                  title={t("clients.pagination.next", "Siguiente")}
                   variant="ghost"
                   onClick={() => setAnchor((a) => shiftAnchor(period, a, 1))}
                 >

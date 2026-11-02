@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
+import i18n from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -107,6 +108,15 @@ type AlarmCaseWithEcv = AlarmCase & {
   ecvSatisfied?: boolean;
   calls?: unknown[];
 };
+
+/** An audit row's code (`acknowledge`, `case.opened`…) in words; the code itself
+ *  when it is one we do not know. The timeline printed «acknowledgeReconocido…». */
+function auditActionLabel(code?: string | null): string {
+  if (!code) return "";
+  const key = `alarm.auditAction.${code.replace(/\./g, "_")}`;
+
+  return i18n.exists(key) ? i18n.t(key) : code;
+}
 
 const DISPOSITIONS: {
   value: AlarmCaseDisposition;
@@ -242,6 +252,15 @@ export default function AlarmCaseDetail() {
       setDTarget("");
       setDNote("");
     }
+  };
+
+  // Cancelling discards what was typed: reopening «Despachar» still showed the
+  // cancelled dispatch, and «Enviar» then sent it.
+  const closeDispatch = () => {
+    setDispatchOpen(false);
+    setDType("guard");
+    setDTarget("");
+    setDNote("");
   };
 
   const onClose = async () => {
@@ -744,7 +763,7 @@ export default function AlarmCaseDetail() {
                   >
                     <div className="min-w-0">
                       <span className="font-medium">
-                        {a.action || t("actions.action", "Acción")}
+                        {auditActionLabel(a.action) || t("actions.action", "Acción")}
                       </span>
                       {a.detail ? (
                         <span className="ml-2 text-sm text-muted-foreground">
@@ -753,7 +772,14 @@ export default function AlarmCaseDetail() {
                       ) : null}
                     </div>
                     <span className="shrink-0 text-xs text-muted-foreground">
-                      {formatWhen(a.at || a.createdAt)}
+                      {formatWhen(a.at || a.createdAt)} ·{" "}
+                      {a.actorId
+                        ? t("ui.AlarmCaseDetail.porActor", {
+                            defaultValue: "por {{nombre}}",
+                            nombre:
+                              a.actorName || t("ui.AlarmCaseDetail.operador", "Operador"),
+                          })
+                        : t("ui.AlarmCaseDetail.sistema", "Sistema")}
                     </span>
                   </li>
                 ))}
@@ -771,13 +797,13 @@ export default function AlarmCaseDetail() {
         title={t("ui.AlarmCaseDetail.despachar", "Despachar")}
         icon={<Radio className="size-4" />}
         onOpenChange={(o) => {
-          if (!o) setDispatchOpen(false);
+          if (!o) closeDispatch();
         }}
         footer={
           <>
             <Button
               variant="outline"
-              onClick={() => setDispatchOpen(false)}
+              onClick={closeDispatch}
               disabled={busy}
             >
               {t("actions.cancel", "Cancelar")}

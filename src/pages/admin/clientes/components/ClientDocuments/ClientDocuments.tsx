@@ -1027,6 +1027,87 @@ export default function ClientDocuments({ client }: { client: Client }) {
           )}
         </div>
       </Modal>
+
+      {/* «Agrupar y entregar»: the marked documents become a delivery folder
+          (DocumentPackets). The state and `crearCarpeta` existed but the
+          dialog was never rendered, so the button did nothing (QA G7). */}
+      <Modal
+        footer={
+          <>
+            <Button
+              disabled={creando}
+              variant="outline"
+              onClick={() => setAgruparOpen(false)}
+            >
+              {t("actions.cancel")}
+            </Button>
+            <Button
+              disabled={creando || !gNombre.trim() || !marcadosIds.length}
+              variant="brand"
+              onClick={crearCarpeta}
+            >
+              {creando
+                ? t("ui.ClientDocuments.agrupar.creando", "Creando…")
+                : t("ui.ClientDocuments.agrupar.crear", "Crear carpeta")}
+            </Button>
+          </>
+        }
+        icon={<FolderPlus className="h-5 w-5" />}
+        open={agruparOpen}
+        title={t("ui.ClientDocuments.agruparYEntregar", "Agrupar y entregar")}
+        onOpenChange={(o) => {
+          if (!creando) setAgruparOpen(o);
+        }}
+      >
+        <div className="space-y-3">
+          <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+            {t("ui.ClientDocuments.agrupar.resumen", {
+              defaultValue:
+                "{{count}} documento(s) marcados. La carpeta aparece en «Entregas al cliente», desde donde se comparte en la app o por un enlace privado.",
+              count: marcadosIds.length,
+            })}
+          </p>
+          <LabeledField
+            label={t("ui.ClientDocuments.agrupar.nombre", "Nombre de la carpeta")}
+          >
+            <input
+              className={FIELD_CLS}
+              maxLength={200}
+              type="text"
+              value={gNombre}
+              onChange={(e) => setGNombre(e.target.value)}
+            />
+          </LabeledField>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <LabeledField label={t("ui.ClientDocuments.agrupar.desde", "Periodo desde")}>
+              <input
+                className={FIELD_CLS}
+                type="date"
+                value={gDesde}
+                onChange={(e) => setGDesde(e.target.value)}
+              />
+            </LabeledField>
+            <LabeledField label={t("ui.ClientDocuments.agrupar.hasta", "Periodo hasta")}>
+              <input
+                className={FIELD_CLS}
+                min={gDesde || undefined}
+                type="date"
+                value={gHasta}
+                onChange={(e) => setGHasta(e.target.value)}
+              />
+            </LabeledField>
+          </div>
+          <LabeledField label={t("ui.ClientDocuments.agrupar.nota", "Nota para el cliente (opcional)")}>
+            <textarea
+              className={`${FIELD_CLS} h-auto resize-none py-2`}
+              maxLength={2000}
+              rows={3}
+              value={gNota}
+              onChange={(e) => setGNota(e.target.value)}
+            />
+          </LabeledField>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -19,6 +19,10 @@ import {
   TRAINING_LEVELS,
   categoryLabel,
   levelLabel,
+  courseScoreProblem,
+  PASSING_SCORE_MAX,
+  PASSING_SCORE_MIN,
+  POINTS_VALUE_MAX,
 } from "./trainingConstants";
 
 import AppLayout from "@/layouts/app-layout";
@@ -132,6 +136,13 @@ export default function TrainingCoursesPage() {
 
       return;
     }
+    const scoreProblem = courseScoreProblem(form);
+
+    if (scoreProblem) {
+      toast.error(scoreProblem);
+
+      return;
+    }
     setSaving(true);
     try {
       const created = await trainingCourseService.create(form);
@@ -186,7 +197,7 @@ export default function TrainingCoursesPage() {
             <span className="truncate font-medium">{c.title}</span>
             {c.isAddon && (
               <StatusBadge className="shrink-0" dot={false} tone="neutral">
-                <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Addon")}
+                <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Complementario")}
               </StatusBadge>
             )}
           </div>
@@ -466,7 +477,9 @@ export default function TrainingCoursesPage() {
                   {t("ui.TrainingCourseDetailPage.puntosAlCompletar", "Puntos al completar")}
                 </Label>
                 <Input
+                  max={POINTS_VALUE_MAX}
                   min={0}
+                  step={1}
                   type="number"
                   value={form.pointsValue ?? 0}
                   onChange={(e) =>
@@ -477,8 +490,9 @@ export default function TrainingCoursesPage() {
               <div className="space-y-2">
                 <Label>{t("comun.puntajeParaAprobar")}</Label>
                 <Input
-                  max={100}
-                  min={0}
+                  max={PASSING_SCORE_MAX}
+                  min={PASSING_SCORE_MIN}
+                  step={1}
                   type="number"
                   value={form.passingScore ?? 70}
                   onChange={(e) =>

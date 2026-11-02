@@ -41,6 +41,7 @@ import {
 } from "@/components/kit";
 import RegistroDeIntentos from "@/components/RegistroDeIntentos";
 import HorarioDeOficina from "./HorarioDeOficina";
+import { nombreDeRolRef } from "./nombreDeRol";
 import { UsuarioDeAccesoEditable } from "@/components/usuarioDeAcceso/UsuarioDeAccesoEditable";
 import { usePermissions } from "@/hooks/usePermissions";
 import { localeActual } from "@/lib/localeActual";
@@ -155,7 +156,7 @@ export default function AdminUserDetailPage() {
   const statusKey = String(user?.status || "active").toLowerCase();
   const status = STATUS_META[statusKey] || STATUS_META.active;
 
-  const roleName = (() => {
+  const roleRef = (() => {
     const r = tenantEntry?.roles;
     const first = Array.isArray(r)
       ? r[0]
@@ -164,12 +165,9 @@ export default function AdminUserDetailPage() {
         user?.role ||
         (Array.isArray(user?.roles) ? user.roles[0] : user?.roles);
 
-    if (!first) return null;
-
-    return typeof first === "object"
-      ? first.name || first.slug || first.id
-      : String(first);
+    return first || null;
   })();
+  const roleName = nombreDeRolRef(roleRef, t);
 
   const overrides = (() => {
     const ov = tenantEntry?.permissionOverrides;
@@ -180,7 +178,11 @@ export default function AdminUserDetailPage() {
     };
   })();
 
-  const isSupervisor = String(roleName || "")
+  const isSupervisor = String(
+    (roleRef && typeof roleRef === "object"
+      ? roleRef.slug || roleRef.name || roleRef.id
+      : roleRef) || "",
+  )
     .toLowerCase()
     .includes("supervisor");
 

@@ -884,6 +884,7 @@ export function planDesdeHorarioReal(
 
         if (fr && falta(plan, pu, fr, d) > 0) {
           poner(plan, clave(pu.id, fr, d), p.id, false);
+          (plan.real = plan.real || {})[`${clave(pu.id, fr, d)}|${p.id}`] = 1;
           enlace.cargadas[`${p.id}|${d}`] = t.id;
         }
       }

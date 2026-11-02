@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useParams,
 } from "react-router-dom";
 import RutaConPermiso from "@/components/RutaConPermiso";
 import { useEffect, lazy, Suspense } from "react";
@@ -619,6 +620,9 @@ const NO_CHROME_PREFIXES = [
   // El enlace privado de documentación: quien lo abre no tiene cuenta, así que
   // la barra lateral del CRM no le sirve de nada y le confundiría.
   "/d/",
+  // Shared dispatch link: whoever it was sent to sees the sheet, not the CRM
+  // (opened with a session it rendered inside the side menu).
+  "/public/",
 ];
 
 function isNoChromePath(pathname: string): boolean {
@@ -627,6 +631,8 @@ function isNoChromePath(pathname: string): boolean {
   // must NOT get the admin shell. Match /guard and /guard/* but NOT /guards/*
   // (the admin guard-management pages, which DO want the admin shell).
   if (pathname === "/guard" || pathname.startsWith("/guard/")) return true;
+  // The printable incident sheet is what goes on paper: no CRM chrome.
+  if (/^\/dispatch-tickets\/[^/]+\/print\/?$/.test(pathname)) return true;
 
   return NO_CHROME_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(p),
@@ -677,6 +683,28 @@ function IrAlPanelDePlataforma() {
   }, []);
 
   return null;
+}
+
+/**
+ * `/reports/incident/:id` is where the control center, the map popup, the
+ * route-run detail and incident notifications send ONE incident — but it
+ * rendered the whole incident list and ignored the id. The incident's own
+ * page is the dispatch detail (`resource=incident`), the same one the post-site
+ * incident list opens.
+ */
+function IncidenteDelInforme() {
+  const { id } = useParams();
+
+  return (
+    <Navigate
+      replace
+      to={
+        id
+          ? `/dispatch-tickets/${encodeURIComponent(id)}?resource=incident`
+          : "/reports/incidents"
+      }
+    />
+  );
 }
 
 export default function App() {
@@ -1805,7 +1833,7 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <Incident />
+                                    <IncidenteDelInforme />
                                   </ProtectedRoute>
                                 }
                                 path="/reports/incident/:id"
@@ -1937,7 +1965,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaRecords />
+                                    <RutaConPermiso permisos={["attendanceRead"]}>
+                                      <NominaRecords />
+                                    </RutaConPermiso>
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/records"
@@ -2101,7 +2131,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaTimecards />
+                                    <RutaConPermiso permisos={["attendanceRead"]}>
+                                      <NominaTimecards />
+                                    </RutaConPermiso>
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/timecards"

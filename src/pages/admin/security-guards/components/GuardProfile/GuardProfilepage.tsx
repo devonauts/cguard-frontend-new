@@ -346,6 +346,44 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
     }
   };
 
+  // ── Licenses: they live in their own table, not on the guard record, so
+  // `data.licenses` was always empty and the card said «none» next to a
+  // license on the Licencias tab.
+  const [licencias, setLicencias] = useState<ProfileLicense[]>([]);
+
+  useEffect(() => {
+    if (!id) return;
+    let vivo = true;
+
+    securityGuardService
+      .getSecurityGuardLicenses(id, { limit: 10, offset: 0 })
+      .then((resp: any) => {
+        if (!vivo) return;
+        const rows: any[] = Array.isArray(resp?.rows)
+          ? resp.rows
+          : Array.isArray(resp)
+            ? resp
+            : [];
+
+        setLicencias(
+          rows.map((l) => ({
+            type: l?.licenseType?.name || l?.customName || undefined,
+            number: l?.number || undefined,
+            expiryDate: l?.expiryDate || undefined,
+          })),
+        );
+      })
+      .catch(() => {
+        /* the card just stays empty */
+      });
+
+    return () => {
+      vivo = false;
+    };
+  }, [id]);
+  const licenciasDelPerfil =
+    data?.licenses && data.licenses.length > 0 ? data.licenses : licencias;
+
   // ── Attendance (read-only history) ──────────────────────────────────────────
   const [guardShifts, setGuardShifts] = useState<GuardShiftRow[]>([]);
   const [loadingShifts, setLoadingShifts] = useState(false);
@@ -728,9 +766,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                         )}
                         value={
                           data?.hiringContractDate
-                            ? new Date(
-                                data.hiringContractDate,
-                              ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+                            ? soloFechaCivil(data.hiringContractDate, {}, "")
                             : null
                         }
                       />
@@ -998,24 +1034,35 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                       </div>
                     )
                   )}
-                  {(correoGuardia || data?.guard?.id) && (
-                    <Button
-                      className="mt-1 w-full"
-                      disabled={sendingInvite}
-                      variant="brand"
-                      onClick={handleSendAppAccess}
+                  {/* An active account needs no invitation: its link only
+                      says «ya aceptó la invitación» (the server refuses it too). */}
+                  {isActivated ? (
+                    <div
+                      className="text-xs"
+                      style={{ color: "var(--ink-soft)" }}
                     >
-                      {sendingInvite ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Mail className="h-4 w-4" />
+                      {t(
+                        "guards.profile.access.alreadyActive",
+                        "Ya activó su cuenta: no necesita invitación. Si olvidó la contraseña, usa «Restablecer contraseña» en la lista de vigilantes.",
                       )}
-                      {isActivated
-                        ? t("guards.profile.access.resendInvite") ||
-                          "Reenviar invitación"
-                        : t("guards.profile.access.sendInvite") ||
+                    </div>
+                  ) : (
+                    (correoGuardia || data?.guard?.id) && (
+                      <Button
+                        className="mt-1 w-full"
+                        disabled={sendingInvite}
+                        variant="brand"
+                        onClick={handleSendAppAccess}
+                      >
+                        {sendingInvite ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Mail className="h-4 w-4" />
+                        )}
+                        {t("guards.profile.access.sendInvite") ||
                           "Enviar acceso"}
-                    </Button>
+                      </Button>
+                    )
                   )}
                 </div>
               </Section>
@@ -1050,9 +1097,9 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
               <Section
                 title={t("guards.profile.cards.licenseDetails") || "Licencias"}
               >
-                {data?.licenses && data.licenses.length > 0 ? (
+                {licenciasDelPerfil.length > 0 ? (
                   <div className="space-y-3">
-                    {data.licenses.map((lic: ProfileLicense, idx: number) => (
+                    {licenciasDelPerfil.map((lic: ProfileLicense, idx: number) => (
                       /* Se repite → cristal plano. */
                       <div key={idx} className="glass-flat p-3">
                         <div className="grid grid-cols-2 gap-2">

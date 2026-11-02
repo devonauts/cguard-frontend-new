@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePuede } from "@/hooks/usePuede";
 import { radioCheckService } from "@/lib/api/radioCheckService";
 import { useFileUrl } from "@/lib/fileUrl";
 import { radioDenied, playTalkPermit, playRoger } from "@/lib/radioTones";
@@ -70,12 +71,14 @@ import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 export default function RadioPasePopup() {
   const pase = useSyncExternalStore(subscribePase, getPaseSnapshot);
   const { lastEvent } = useRadioRealtime();
+  const { puede: puedeVerConsola } = usePuede("radio.verConsola");
 
   // Una vez por carga: ¿hay un pase en curso que este operador pueda seguir?
   // Cubre la recarga de la pestaña y al compañero que abre el CRM a mitad de
   // pase. Sin permiso de radio la consola responde 403 y no se enseña nada.
   useEffect(() => {
-    if (yaSeComprobo()) return;
+    // Without radio permission there is no roll call to follow: no request.
+    if (!puedeVerConsola || yaSeComprobo()) return;
     radioCheckService
       .getConsole({ silent: true })
       .then((c: any) => {
@@ -86,7 +89,7 @@ export default function RadioPasePopup() {
       .catch(() => {
         /* sin permiso o sin red: no hay panel */
       });
-  }, []);
+  }, [puedeVerConsola]);
 
   // Un pase que arranca otro (el automático, o un compañero) entra recogido.
   useEffect(() => {

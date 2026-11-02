@@ -5,6 +5,7 @@ import { X, Loader2, Copy, Server } from "lucide-react";
 import { toast } from "sonner";
 
 import { videoService, type Device } from "@/lib/api/videoService";
+import { maskStreamPasswords } from "./maskStreamPasswords";
 
 /**
  * Configure the media gateway (go2rtc) for a device so its cameras play live in
@@ -230,7 +231,7 @@ export default function VideoGatewayModal({
                   color: "var(--ink-soft)",
                 }}
               >
-                {yaml ||
+                {maskStreamPasswords(yaml) ||
                   t(
                     "ui.VideoGatewayModal.sincronizaLasCamarasPrimero",
                     "Sincroniza las cámaras del dispositivo primero.",

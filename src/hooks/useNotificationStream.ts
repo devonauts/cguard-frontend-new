@@ -158,7 +158,14 @@ function leerHistorial(
     lector = crearLecturaCompartida<any[]>(
       () =>
         fetch(`${API_URL}/${tenantId}/events?limit=${MAX_STORED}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          // The server re-renders each stored event in the request's language.
+          // A bare fetch sent the BROWSER's Accept-Language, so with the CRM in
+          // Spanish on an English browser the dashboard's «Parte de novedades»
+          // came in English («… asks to approve a computer»).
+          headers: {
+            "Accept-Language": idiomaElegido(),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         })
           .then((r) => (r.ok ? r.json() : { rows: [] }))
           .then((data) => (data?.rows || []) as any[]),

@@ -369,7 +369,17 @@ export default function TrackingHistoryPage() {
         >
           <div className="mt-1 flex h-[520px] overflow-hidden rounded-2xl border">
             <div className="flex-[2] bg-muted">
-              {loaded ? (
+              {loaded && points.length === 0 ? (
+                // Searched and nothing came back: say so here, not only in a
+                // toast (the panel kept asking to pick a guard and a range).
+                <div className="flex h-full items-center justify-center">
+                  <EmptyState
+                    className="border-none py-0"
+                    icon={<MapIcon />}
+                    title={t("ui.TrackingHistory.sinRecorridoRegistradoEnEse")}
+                  />
+                </div>
+              ) : loaded ? (
                 <TrailMap
                   focusIndex={focus}
                   mapType={mapType}
