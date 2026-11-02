@@ -384,12 +384,43 @@ export default function VigiaWidget() {
   useEffect(() => {
     if (open) return;
     let temporizador: ReturnType<typeof setTimeout> | undefined;
+    let slideFrame = 0;
     const alDesplazar = () => {
       setDesplazando(true);
       if (temporizador) clearTimeout(temporizador);
+      cancelAnimationFrame(slideFrame);
       // 420 ms: lo justo para que un desplazamiento con inercia no la haga
       // parpadear entre empujón y empujón.
-      temporizador = setTimeout(() => setDesplazando(false), 420);
+      temporizador = setTimeout(() => {
+        // Find the clear spot BEFORE the bubble takes clicks again, and stay
+        // click-through while it slides there (.22 s): coming back first and
+        // re-checking later left it over «Guardar configuración» for ~1.5 s.
+        const b = burbujaRef.current;
+
+        if (!b) {
+          setDesplazando(false);
+
+          return;
+        }
+        const place = bubblePlacement(b, liftRef.current);
+        const next = place === "hide" ? 0 : place;
+        // Where it will be once the slide ends: the slide can take longer than
+        // its .22 s on a busy page, so wait until it gets there (1.2 s at most).
+        const target = b.getBoundingClientRect().top - (next - liftRef.current);
+        const startedAt = performance.now();
+
+        liftRef.current = next;
+        setLift(next);
+        setTapaControl(place === "hide");
+        const waitForSlide = () => {
+          const arrived = Math.abs(b.getBoundingClientRect().top - target) < 2;
+
+          if (arrived || performance.now() - startedAt > 1200) setDesplazando(false);
+          else slideFrame = requestAnimationFrame(waitForSlide);
+        };
+
+        slideFrame = requestAnimationFrame(waitForSlide);
+      }, 420);
     };
 
     // Any scroller, not only <main>: settings pages scroll their own panel, so
@@ -399,6 +430,7 @@ export default function VigiaWidget() {
 
     return () => {
       document.removeEventListener("scroll", alDesplazar, { capture: true });
+      cancelAnimationFrame(slideFrame);
       if (temporizador) clearTimeout(temporizador);
     };
   }, [open]);
