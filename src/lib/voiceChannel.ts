@@ -27,6 +27,7 @@ import {
 import { radioDeviceId, usuarioDeIdentidad } from "./radioDevice";
 
 import i18n from "@/i18n";
+import { idiomaElegido } from "@/lib/idiomaElegido";
 
 // Quiet the LiveKit SDK's default `info` chatter (it narrates every connection
 // state change / signal connect / "connected to Livekit Server" — ~5 lines per
@@ -50,6 +51,27 @@ function esTactil(): boolean {
     return window.matchMedia("(pointer: coarse)").matches;
   } catch {
     return false;
+  }
+}
+
+
+/** The `message` of an API error response (JSON or plain text), or "". */
+async function serverMessage(resp: Response): Promise<string> {
+  try {
+    const text = (await resp.text()).trim();
+
+    if (!text || text.startsWith("<")) return "";
+    try {
+      const j = JSON.parse(text);
+
+      if (typeof j === "string") return j;
+
+      return typeof j?.message === "string" ? j.message : "";
+    } catch {
+      return text.length <= 300 ? text : "";
+    }
+  } catch {
+    return "";
   }
 }
 
@@ -138,6 +160,8 @@ export class VoiceChannel {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            // The refusal comes back as text for a person: in THEIR language.
+            "Accept-Language": idiomaElegido(),
             Authorization: `Bearer ${opts.token}`,
           },
           body: JSON.stringify({
@@ -163,11 +187,17 @@ export class VoiceChannel {
           );
         }
         if (resp.status === 400) {
+          // A 400 is not always a missing channel: «La radio no está
+          // configurada en este entorno» also comes as a 400, and the screen
+          // said «Ese canal ya no existe». Say what the server said.
+          const said = await serverMessage(resp);
+
           throw new Error(
-            i18n.t(
-              "radio.voice.channelMissing",
-              "Ese canal de radio ya no existe. Actualiza la lista de canales.",
-            ),
+            said ||
+              i18n.t(
+                "radio.voice.channelMissing",
+                "Ese canal de radio ya no existe. Actualiza la lista de canales.",
+              ),
           );
         }
         throw new Error(`radio token ${resp.status}`);
