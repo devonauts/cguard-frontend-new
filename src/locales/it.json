@@ -13589,10 +13589,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Richieste di ferie, malattia e permessi del personale.",
       "buscarVigilanteTipoOMotivo": "Cerca guardia, tipo o motivo",
       "nuevaSolicitudDeTiempoLibre": "Nuova richiesta di permesso",
-      "tipo": "Tipo*",
-      "desde": "Dal*",
-      "hasta": "Al*",
-      "motivo": "Motivo*",
+      "tipo": "Tipo",
+      "desde": "Dal",
+      "hasta": "Al",
+      "motivo": "Motivo",
       "describeElMotivo": "Descrivi il motivo…",
       "solicitudesDeTiempoLibre": "Richieste di permesso",
       "aprobadas": "Approvate",
@@ -13664,7 +13664,11 @@
       "rechazarTitulo": "Rifiuta il permesso",
       "rechazarMensaje": "Il permesso di {{nombre}} viene rifiutato e la persona viene avvisata. Puoi indicare il motivo (facoltativo).",
       "rechazarMotivo": "Motivo (facoltativo)",
-      "solicitudEliminada": "Richiesta eliminata"
+      "solicitudEliminada": "Richiesta eliminata",
+      "agregarSolicitud": "Aggiungi richiesta",
+      "opcional": "facoltativo",
+      "horaOpcional": "L'ora è facoltativa: senza ora conta l'intera giornata.",
+      "formIntro": "Ferie, malattia o permessi. Una volta approvata, i suoi turni in quelle date restano scoperti finché qualcuno non li copre."
     },
     "TrackingHistory": {
       "hibrido": "Ibrido",
@@ -14316,7 +14320,9 @@
       "estacionesQueCubre_one": "Postazioni coperte ({{count}})",
       "estacionesQueCubre_other": "Postazioni coperte ({{count}})",
       "estacionesQueCubre": "Postazioni coperte ({{count}})",
-      "eliminarElPuesto": "Eliminare la postazione «{{nombre}}»?"
+      "eliminarElPuesto": "Eliminare la postazione «{{nombre}}»?",
+      "estacionSinNombre": "Stazione senza nome",
+      "estacionEliminada": "{{nombre}} (eliminata)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nuovo supervisore",

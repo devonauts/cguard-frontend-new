@@ -43,6 +43,8 @@ export interface SupervisorPosition {
   guardsNeeded: number;
   mobileStationId: string | null;
   stationIds: string[];
+  /** Names resolved by the server (deleted stations included). */
+  stations?: { id: string; name: string; postSiteName: string | null; deleted: boolean }[];
   isActive: boolean;
   assignments: PositionAssignment[];
 }

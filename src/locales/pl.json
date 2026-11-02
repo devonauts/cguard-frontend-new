@@ -13707,10 +13707,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Wnioski personelu o urlop, zwolnienia chorobowe i dni wolne.",
       "buscarVigilanteTipoOMotivo": "Szukaj pracownika ochrony, typu lub powodu",
       "nuevaSolicitudDeTiempoLibre": "Nowy wniosek o czas wolny",
-      "tipo": "Typ*",
-      "desde": "Od*",
-      "hasta": "Do*",
-      "motivo": "Powód*",
+      "tipo": "Typ",
+      "desde": "Od",
+      "hasta": "Do",
+      "motivo": "Powód",
       "describeElMotivo": "Prosimy opisać powód…",
       "solicitudesDeTiempoLibre": "Wnioski urlopowe",
       "aprobadas": "Zatwierdzone",
@@ -13782,7 +13782,11 @@
       "rechazarTitulo": "Odrzuć nieobecność",
       "rechazarMensaje": "Nieobecność osoby {{nombre}} zostaje odrzucona, a osoba dostaje powiadomienie. Możesz podać powód (opcjonalnie).",
       "rechazarMotivo": "Powód (opcjonalnie)",
-      "solicitudEliminada": "Wniosek usunięty"
+      "solicitudEliminada": "Wniosek usunięty",
+      "agregarSolicitud": "Dodaj wniosek",
+      "opcional": "opcjonalnie",
+      "horaOpcional": "Godzina jest opcjonalna: bez niej liczy się cały dzień.",
+      "formIntro": "Urlop, choroba lub wolne. Po zatwierdzeniu zmiany w tych dniach stają się lukami do obsadzenia."
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",
@@ -14456,7 +14460,9 @@
       "estacionesQueCubre": "Objęte stanowiska ({{count}})",
       "estacionesQueCubre_few": "Objęte stanowiska ({{count}})",
       "estacionesQueCubre_many": "Objęte stanowiska ({{count}})",
-      "eliminarElPuesto": "Usunąć stanowisko „{{nombre}}”?"
+      "eliminarElPuesto": "Usunąć stanowisko „{{nombre}}”?",
+      "estacionSinNombre": "Stanowisko bez nazwy",
+      "estacionEliminada": "{{nombre}} (usunięte)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nowy nadzorca",

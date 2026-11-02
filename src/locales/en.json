@@ -13030,10 +13030,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Vacation, sick and leave requests from staff.",
       "buscarVigilanteTipoOMotivo": "Search by guard, type or reason",
       "nuevaSolicitudDeTiempoLibre": "New time-off request",
-      "tipo": "Type*",
-      "desde": "From*",
-      "hasta": "To*",
-      "motivo": "Reason*",
+      "tipo": "Type",
+      "desde": "From",
+      "hasta": "To",
+      "motivo": "Reason",
       "describeElMotivo": "Describe the reason…",
       "solicitudesDeTiempoLibre": "Absence requests",
       "aprobadas": "Approved",
@@ -13105,7 +13105,11 @@
       "rechazarTitulo": "Reject the leave",
       "rechazarMensaje": "The leave of {{nombre}} is rejected and they are notified. You can tell them why (optional).",
       "rechazarMotivo": "Reason (optional)",
-      "solicitudEliminada": "Request deleted"
+      "solicitudEliminada": "Request deleted",
+      "agregarSolicitud": "Add request",
+      "opcional": "optional",
+      "horaOpcional": "The time is optional: without one, the whole day counts.",
+      "formIntro": "Vacation, sick leave or personal time. Once you approve it, their shifts on those dates become open gaps for someone to cover."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -13757,7 +13761,9 @@
       "estacionesQueCubre_one": "Stations it covers ({{count}})",
       "estacionesQueCubre_other": "Stations it covers ({{count}})",
       "estacionesQueCubre": "Stations it covers ({{count}})",
-      "eliminarElPuesto": "Delete the post «{{nombre}}»?"
+      "eliminarElPuesto": "Delete the post «{{nombre}}»?",
+      "estacionSinNombre": "Unnamed station",
+      "estacionEliminada": "{{nombre}} (deleted)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "New supervisor",

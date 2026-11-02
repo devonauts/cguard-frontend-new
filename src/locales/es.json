@@ -13030,10 +13030,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Solicitudes de vacaciones, enfermedad y permisos del personal.",
       "buscarVigilanteTipoOMotivo": "Buscar vigilante, tipo o motivo",
       "nuevaSolicitudDeTiempoLibre": "Nueva solicitud de tiempo libre",
-      "tipo": "Tipo*",
-      "desde": "Desde*",
-      "hasta": "Hasta*",
-      "motivo": "Motivo*",
+      "tipo": "Tipo",
+      "desde": "Desde",
+      "hasta": "Hasta",
+      "motivo": "Motivo",
       "describeElMotivo": "Describe el motivo…",
       "solicitudesDeTiempoLibre": "Solicitudes de ausencia",
       "aprobadas": "Aprobadas",
@@ -13105,7 +13105,11 @@
       "rechazarTitulo": "Rechazar el permiso",
       "rechazarMensaje": "Se rechaza el permiso de {{nombre}} y se le avisa. Puedes decirle por qué (opcional).",
       "rechazarMotivo": "Motivo (opcional)",
-      "solicitudEliminada": "Solicitud eliminada"
+      "solicitudEliminada": "Solicitud eliminada",
+      "agregarSolicitud": "Agregar solicitud",
+      "opcional": "opcional",
+      "horaOpcional": "La hora es opcional: sin hora, cuenta el día completo.",
+      "formIntro": "Vacaciones, enfermedad o permisos. Cuando la apruebes, sus turnos de esas fechas quedan como hueco para que alguien los cubra."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -13757,7 +13761,9 @@
       "estacionesQueCubre_one": "Estaciones que cubre ({{count}})",
       "estacionesQueCubre_other": "Estaciones que cubre ({{count}})",
       "estacionesQueCubre": "Estaciones que cubre ({{count}})",
-      "eliminarElPuesto": "¿Eliminar el puesto «{{nombre}}»?"
+      "eliminarElPuesto": "¿Eliminar el puesto «{{nombre}}»?",
+      "estacionSinNombre": "Estación sin nombre",
+      "estacionEliminada": "{{nombre}} (eliminada)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nuevo supervisor",

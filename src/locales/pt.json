@@ -13030,10 +13030,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Solicitações de férias, doença e licenças da equipe.",
       "buscarVigilanteTipoOMotivo": "Buscar vigilante, tipo ou motivo",
       "nuevaSolicitudDeTiempoLibre": "Nova solicitação de folga",
-      "tipo": "Tipo*",
-      "desde": "De*",
-      "hasta": "Até*",
-      "motivo": "Motivo*",
+      "tipo": "Tipo",
+      "desde": "De",
+      "hasta": "Até",
+      "motivo": "Motivo",
       "describeElMotivo": "Descreva o motivo…",
       "solicitudesDeTiempoLibre": "Solicitações de folga",
       "aprobadas": "Aprovadas",
@@ -13105,7 +13105,11 @@
       "rechazarTitulo": "Recusar a ausência",
       "rechazarMensaje": "A ausência de {{nombre}} é recusada e a pessoa é avisada. Você pode dizer o motivo (opcional).",
       "rechazarMotivo": "Motivo (opcional)",
-      "solicitudEliminada": "Solicitação excluída"
+      "solicitudEliminada": "Solicitação excluída",
+      "agregarSolicitud": "Adicionar solicitação",
+      "opcional": "opcional",
+      "horaOpcional": "A hora é opcional: sem hora, conta o dia inteiro.",
+      "formIntro": "Férias, doença ou folga. Ao aprovar, os turnos dessas datas ficam como vagas para alguém cobrir."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",
@@ -13757,7 +13761,9 @@
       "estacionesQueCubre_one": "Estações que cobre ({{count}})",
       "estacionesQueCubre_other": "Estações que cobre ({{count}})",
       "estacionesQueCubre": "Estações que cobre ({{count}})",
-      "eliminarElPuesto": "Excluir o posto «{{nombre}}»?"
+      "eliminarElPuesto": "Excluir o posto «{{nombre}}»?",
+      "estacionSinNombre": "Estação sem nome",
+      "estacionEliminada": "{{nombre}} (excluída)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Novo supervisor",

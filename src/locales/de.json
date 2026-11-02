@@ -13589,10 +13589,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Anträge auf Urlaub, Krankheit und Freistellung des Personals.",
       "buscarVigilanteTipoOMotivo": "Kraft, Art oder Grund suchen",
       "nuevaSolicitudDeTiempoLibre": "Neuer Abwesenheitsantrag",
-      "tipo": "Art*",
-      "desde": "Von*",
-      "hasta": "Bis*",
-      "motivo": "Grund*",
+      "tipo": "Art",
+      "desde": "Von",
+      "hasta": "Bis",
+      "motivo": "Grund",
       "describeElMotivo": "Beschreiben Sie den Grund…",
       "solicitudesDeTiempoLibre": "Abwesenheitsanträge",
       "aprobadas": "Genehmigt",
@@ -13664,7 +13664,11 @@
       "rechazarTitulo": "Abwesenheit ablehnen",
       "rechazarMensaje": "Die Abwesenheit von {{nombre}} wird abgelehnt, und die Person wird benachrichtigt. Du kannst den Grund angeben (optional).",
       "rechazarMotivo": "Grund (optional)",
-      "solicitudEliminada": "Antrag gelöscht"
+      "solicitudEliminada": "Antrag gelöscht",
+      "agregarSolicitud": "Antrag hinzufügen",
+      "opcional": "optional",
+      "horaOpcional": "Die Uhrzeit ist optional: ohne Uhrzeit zählt der ganze Tag.",
+      "formIntro": "Urlaub, Krankheit oder Freistellung. Nach der Genehmigung werden die Schichten an diesen Tagen zu offenen Lücken, die jemand übernehmen muss."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -14316,7 +14320,9 @@
       "estacionesQueCubre_one": "Abgedeckte Standorte ({{count}})",
       "estacionesQueCubre_other": "Abgedeckte Standorte ({{count}})",
       "estacionesQueCubre": "Abgedeckte Standorte ({{count}})",
-      "eliminarElPuesto": "Posten „{{nombre}}“ löschen?"
+      "eliminarElPuesto": "Posten „{{nombre}}“ löschen?",
+      "estacionSinNombre": "Station ohne Namen",
+      "estacionEliminada": "{{nombre}} (gelöscht)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",

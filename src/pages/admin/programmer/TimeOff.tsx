@@ -30,6 +30,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
   SheetFooter,
 } from "@/components/ui/sheet";
@@ -661,140 +662,58 @@ export default function TimeOff() {
                 <SheetTrigger asChild>
                   <Button variant="brand">
                     <Plus className="h-4 w-4 mr-1" />{" "}
-                    {t("ui.TimeOff.nuevaEntrada", "Nueva entrada")}
+                    {t("ui.TimeOff.agregarSolicitud", "Agregar solicitud")}
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
-                  <SheetHeader className="relative">
+                <SheetContent className="flex w-full flex-col gap-0 p-0 sm:w-[520px]">
+                  {/* The sheet brings its own close button (top right). */}
+                  <SheetHeader className="space-y-1.5 border-b px-6 pb-5 pt-6 pr-14" style={{ borderColor: "var(--hairline)" }}>
                     <SheetTitle>
                       {t("ui.TimeOff.nuevaSolicitudDeTiempoLibre")}
                     </SheetTitle>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0"
-                      onClick={() => setIsNewRequestOpen(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    <SheetDescription>
+                      {t(
+                        "ui.TimeOff.formIntro",
+                        "Vacaciones, enfermedad o permisos. Cuando la apruebes, sus turnos de esas fechas quedan como hueco para que alguien los cubra.",
+                      )}
+                    </SheetDescription>
                   </SheetHeader>
-                  <div className="grid gap-6 py-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label>
-                          {t("comun.vigilante")}
-                          <span aria-hidden className="ml-0.5">*</span>
-                        </Label>
-                        <GuardTypeahead
-                          value={guardPick}
-                          onSelect={setGuardPick}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>{t("ui.TimeOff.tipo")}</Label>
-                        <Select
-                          value={form.type}
-                          /* Paid or not is the TYPE's for vacation, sickness and
-                             training (the company decides in its pay rules);
-                             only a personal permission asks. */
-                          onValueChange={(v) => setForm({ ...form, type: v, isPaid: v === "personal" ? form.isPaid : true })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={t("kit.select.placeholder")}
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="vacation">
-                              {tipoLabel("vacation")}
-                            </SelectItem>
-                            <SelectItem value="sick">
-                              {tipoLabel("sick")}
-                            </SelectItem>
-                            <SelectItem value="personal">
-                              {tipoLabel("personal")}
-                            </SelectItem>
-                            <SelectItem value="training">
-                              {t("ui.TimeOff.capacitacion", "Capacitación")}
-                            </SelectItem>
-                            <SelectItem value="other">
-                              {tipoLabel("other")}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label>{t("ui.TimeOff.desde")}</Label>
-                        <Input
-                          type="date"
-                          value={form.startDate}
-                          onChange={(e) =>
-                            setForm({ ...form, startDate: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>{t("comun.hora")}</Label>
-                        <Input
-                          type="time"
-                          value={form.startTime}
-                          onChange={(e) =>
-                            setForm({ ...form, startTime: e.target.value })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label>{t("ui.TimeOff.hasta")}</Label>
-                        <Input
-                          type="date"
-                          value={form.endDate}
-                          onChange={(e) =>
-                            setForm({ ...form, endDate: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label>{t("comun.hora")}</Label>
-                        <Input
-                          type="time"
-                          value={form.endTime}
-                          onChange={(e) =>
-                            setForm({ ...form, endTime: e.target.value })
-                          }
-                        />
-                      </div>
-                    </div>
-
+                  <div className="flex-1 space-y-6 overflow-y-auto px-6 py-6">
                     <div className="grid gap-2">
-                      <Label>{t("ui.TimeOff.motivo")}</Label>
-                      <Input
-                        placeholder={t("ui.TimeOff.describeElMotivo")}
-                        value={form.reason}
-                        onChange={(e) =>
-                          setForm({ ...form, reason: e.target.value })
-                        }
+                      <Label>{t("comun.vigilante")}</Label>
+                      <GuardTypeahead
+                        value={guardPick}
+                        onSelect={setGuardPick}
                       />
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>{t("ui.TimeOff.comentario", "Comentario")}</Label>
-                      <Textarea
-                        rows={3}
-                        value={form.comment}
-                        onChange={(e) =>
-                          setForm({ ...form, comment: e.target.value })
-                        }
-                        placeholder={t(
-                          "ui.TimeOff.comentarioAdicional",
-                          "Comentario adicional…",
-                        )}
-                      />
+                      <Label id="timeoff-tipo">{t("ui.TimeOff.tipo")}</Label>
+                      {/* Paid or not is the TYPE's for vacation, sickness and
+                          training (the company decides in its pay rules);
+                          only a personal permission asks. */}
+                      <div role="radiogroup" aria-labelledby="timeoff-tipo" className="flex flex-wrap gap-2">
+                        {(["vacation", "sick", "personal", "training", "other"] as const).map((v) => {
+                          const on = form.type === v;
+                          return (
+                            <button
+                              key={v}
+                              type="button"
+                              role="radio"
+                              aria-checked={on}
+                              onClick={() => setForm({ ...form, type: v, isPaid: v === "personal" ? form.isPaid : true })}
+                              className="cg-focus rounded-full border px-3.5 py-1.5 text-sm transition-colors"
+                              style={
+                                on
+                                  ? { background: "var(--brand)", borderColor: "var(--brand)", color: "var(--brand-ink)" }
+                                  : { borderColor: "var(--hairline)", color: "var(--ink)" }
+                              }
+                            >
+                              {v === "training" ? t("ui.TimeOff.capacitacion", "Capacitación") : tipoLabel(v)}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {form.type === "personal" && (
@@ -814,11 +733,80 @@ export default function TimeOff() {
                         </Label>
                       </div>
                     )}
+
+                    {([
+                      ["start", t("ui.TimeOff.desde"), form.startDate, form.startTime],
+                      ["end", t("ui.TimeOff.hasta"), form.endDate, form.endTime],
+                    ] as const).map(([k, label, fecha, hora]) => (
+                      <div key={k} className="grid gap-2">
+                        <Label htmlFor={`timeoff-${k}-fecha`}>{label}</Label>
+                        <div className="grid grid-cols-[minmax(0,1fr)_8.5rem] gap-3">
+                          <Input
+                            id={`timeoff-${k}-fecha`}
+                            type="date"
+                            value={fecha}
+                            min={k === "end" ? form.startDate || undefined : undefined}
+                            onChange={(e) =>
+                              setForm(k === "start" ? { ...form, startDate: e.target.value } : { ...form, endDate: e.target.value })
+                            }
+                          />
+                          <Input
+                            aria-label={`${label} · ${t("comun.hora")} (${t("ui.TimeOff.opcional", "opcional")})`}
+                            type="time"
+                            value={hora}
+                            onChange={(e) =>
+                              setForm(k === "start" ? { ...form, startTime: e.target.value } : { ...form, endTime: e.target.value })
+                            }
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <p className="-mt-3 text-xs" style={{ color: "var(--ink-soft)" }}>
+                      {t("ui.TimeOff.horaOpcional", "La hora es opcional: sin hora, cuenta el día completo.")}
+                    </p>
+
+                    <div className="grid gap-2">
+                      <Label htmlFor="timeoff-motivo">{t("ui.TimeOff.motivo")}</Label>
+                      <Input
+                        id="timeoff-motivo"
+                        placeholder={t("ui.TimeOff.describeElMotivo")}
+                        value={form.reason}
+                        onChange={(e) =>
+                          setForm({ ...form, reason: e.target.value })
+                        }
+                      />
+                    </div>
+
+                    <div className="grid gap-2">
+                      <Label htmlFor="timeoff-comentario">
+                        {t("ui.TimeOff.comentario", "Comentario")}{" "}
+                        <span className="font-normal" style={{ color: "var(--ink-soft)" }}>
+                          ({t("ui.TimeOff.opcional", "opcional")})
+                        </span>
+                      </Label>
+                      <Textarea
+                        id="timeoff-comentario"
+                        rows={3}
+                        value={form.comment}
+                        onChange={(e) =>
+                          setForm({ ...form, comment: e.target.value })
+                        }
+                        placeholder={t(
+                          "ui.TimeOff.comentarioAdicional",
+                          "Comentario adicional…",
+                        )}
+                      />
+                    </div>
                   </div>
-                  <SheetFooter>
+                  <SheetFooter className="gap-2 border-t px-6 py-4 sm:justify-end" style={{ borderColor: "var(--hairline)" }}>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setIsNewRequestOpen(false)}
+                    >
+                      {t("comun.cancelar", "Cancelar")}
+                    </Button>
                     <Button
                       variant="brand"
-                      className="w-full sm:w-auto"
                       disabled={saving}
                       onClick={handleCreate}
                     >

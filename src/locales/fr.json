@@ -13589,10 +13589,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Demandes de vacances, d'arrêt maladie et de congés du personnel.",
       "buscarVigilanteTipoOMotivo": "Rechercher un agent, un type ou un motif",
       "nuevaSolicitudDeTiempoLibre": "Nouvelle demande de congé",
-      "tipo": "Type*",
-      "desde": "Du*",
-      "hasta": "Au*",
-      "motivo": "Motif*",
+      "tipo": "Type",
+      "desde": "Du",
+      "hasta": "Au",
+      "motivo": "Motif",
       "describeElMotivo": "Décrivez le motif…",
       "solicitudesDeTiempoLibre": "Demandes de congé",
       "aprobadas": "Approuvées",
@@ -13664,7 +13664,11 @@
       "rechazarTitulo": "Refuser l’absence",
       "rechazarMensaje": "L’absence de {{nombre}} est refusée et la personne est prévenue. Vous pouvez indiquer pourquoi (facultatif).",
       "rechazarMotivo": "Motif (facultatif)",
-      "solicitudEliminada": "Demande supprimée"
+      "solicitudEliminada": "Demande supprimée",
+      "agregarSolicitud": "Ajouter une demande",
+      "opcional": "facultatif",
+      "horaOpcional": "L'heure est facultative : sans heure, la journée entière compte.",
+      "formIntro": "Congés, maladie ou permission. Une fois la demande approuvée, ses services à ces dates deviennent des trous à couvrir."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -14316,7 +14320,9 @@
       "estacionesQueCubre_one": "Stations couvertes ({{count}})",
       "estacionesQueCubre_other": "Stations couvertes ({{count}})",
       "estacionesQueCubre": "Stations couvertes ({{count}})",
-      "eliminarElPuesto": "Supprimer le poste « {{nombre}} » ?"
+      "eliminarElPuesto": "Supprimer le poste « {{nombre}} » ?",
+      "estacionSinNombre": "Station sans nom",
+      "estacionEliminada": "{{nombre}} (supprimée)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nouveau superviseur",

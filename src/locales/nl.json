@@ -13589,10 +13589,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Aanvragen voor vakantie, ziekte en verlof van het personeel.",
       "buscarVigilanteTipoOMotivo": "Zoeken op beveiliger, soort of reden",
       "nuevaSolicitudDeTiempoLibre": "Nieuwe verlofaanvraag",
-      "tipo": "Soort*",
-      "desde": "Van*",
-      "hasta": "Tot*",
-      "motivo": "Reden*",
+      "tipo": "Soort",
+      "desde": "Van",
+      "hasta": "Tot",
+      "motivo": "Reden",
       "describeElMotivo": "Beschrijf de reden…",
       "solicitudesDeTiempoLibre": "Verlofaanvragen",
       "aprobadas": "Goedgekeurd",
@@ -13664,7 +13664,11 @@
       "rechazarTitulo": "Verlof afwijzen",
       "rechazarMensaje": "Het verlof van {{nombre}} wordt afgewezen en de persoon krijgt bericht. Je kunt de reden opgeven (optioneel).",
       "rechazarMotivo": "Reden (optioneel)",
-      "solicitudEliminada": "Aanvraag verwijderd"
+      "solicitudEliminada": "Aanvraag verwijderd",
+      "agregarSolicitud": "Aanvraag toevoegen",
+      "opcional": "optioneel",
+      "horaOpcional": "De tijd is optioneel: zonder tijd telt de hele dag.",
+      "formIntro": "Vakantie, ziekte of verlof. Zodra je het goedkeurt, worden de diensten op die dagen open plekken die iemand moet invullen."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -14316,7 +14320,9 @@
       "estacionesQueCubre_one": "Gedekte posten ({{count}})",
       "estacionesQueCubre_other": "Gedekte posten ({{count}})",
       "estacionesQueCubre": "Gedekte posten ({{count}})",
-      "eliminarElPuesto": "De post ‘{{nombre}}’ verwijderen?"
+      "eliminarElPuesto": "De post ‘{{nombre}}’ verwijderen?",
+      "estacionSinNombre": "Station zonder naam",
+      "estacionEliminada": "{{nombre}} (verwijderd)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",
