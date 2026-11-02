@@ -1679,6 +1679,7 @@
     "ticket_summary": "Resumen del ticket",
     "view_details": "Ver detalles",
     "comment": {
+      "file_upload_failed_not_sent": "No se pudo subir el archivo; el comentario no se envió.",
       "add": "Agregar",
       "add_failed": "No se pudo agregar comentario",
       "added": "Comentario agregado",
@@ -13693,6 +13694,8 @@
       "enCurso": "En curso"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "El incidente no existe o ya no está disponible.",
+      "incidenteNoEncontrado": "Incidente no encontrado",
       "escribeUnComentario": "Escribe un comentario",
       "noSePudoAgregarComentario": "No se pudo agregar comentario",
       "noSePudieronCargarDetalles": "No se pudieron cargar detalles del Incidente",

@@ -1444,6 +1444,7 @@
     "ticket_summary": "Podsumowanie zgłoszenia",
     "view_details": "Zobacz szczegóły",
     "comment": {
+      "file_upload_failed_not_sent": "Nie udało się przesłać pliku; komentarz nie został wysłany.",
       "add": "Dodaj",
       "add_failed": "Nie udało się dodać komentarza",
       "added": "Komentarz dodany",
@@ -14369,6 +14370,8 @@
       "enCurso": "W toku"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "Incydent nie istnieje lub nie jest już dostępny.",
+      "incidenteNoEncontrado": "Nie znaleziono incydentu",
       "escribeUnComentario": "Proszę wpisać komentarz",
       "noSePudoAgregarComentario": "Nie udało się dodać komentarza",
       "noSePudieronCargarDetalles": "Nie udało się wczytać szczegółów zdarzenia",

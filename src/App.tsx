@@ -626,6 +626,8 @@ function isNoChromePath(pathname: string): boolean {
   // must NOT get the admin shell. Match /guard and /guard/* but NOT /guards/*
   // (the admin guard-management pages, which DO want the admin shell).
   if (pathname === "/guard" || pathname.startsWith("/guard/")) return true;
+  // The printable incident sheet is what goes on paper: no CRM chrome.
+  if (/^\/dispatch-tickets\/[^/]+\/print\/?$/.test(pathname)) return true;
 
   return NO_CHROME_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(p),

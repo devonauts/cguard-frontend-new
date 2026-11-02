@@ -5653,6 +5653,7 @@
     "close": "Fechar",
     "close_ticket": "Fechar ticket",
     "comment": {
+      "file_upload_failed_not_sent": "Não foi possível enviar o arquivo; o comentário não foi enviado.",
       "add": "Adicionar",
       "add_failed": "Não foi possível adicionar o comentário",
       "added": "Comentário adicionado",
@@ -13693,6 +13694,8 @@
       "enCurso": "Em andamento"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "O incidente não existe ou não está mais disponível.",
+      "incidenteNoEncontrado": "Incidente não encontrado",
       "escribeUnComentario": "Escreva um comentário",
       "noSePudoAgregarComentario": "Não foi possível adicionar o comentário",
       "noSePudieronCargarDetalles": "Não foi possível carregar os detalhes do incidente",

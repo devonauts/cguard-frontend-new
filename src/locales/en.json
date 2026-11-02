@@ -1679,6 +1679,7 @@
     "ticket_summary": "Ticket Summary",
     "view_details": "View details",
     "comment": {
+      "file_upload_failed_not_sent": "The file could not be uploaded; the comment was not sent.",
       "add": "Add",
       "add_failed": "Could not add comment",
       "added": "Comment added",
@@ -13693,6 +13694,8 @@
       "enCurso": "In progress"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "The incident does not exist or is no longer available.",
+      "incidenteNoEncontrado": "Incident not found",
       "escribeUnComentario": "Please write a comment",
       "noSePudoAgregarComentario": "Could not add comment",
       "noSePudieronCargarDetalles": "The incident details could not be loaded",

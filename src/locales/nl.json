@@ -1444,6 +1444,7 @@
     "ticket_summary": "Samenvatting van het ticket",
     "view_details": "Details bekijken",
     "comment": {
+      "file_upload_failed_not_sent": "Het bestand kon niet worden geüpload; de opmerking is niet verzonden.",
       "add": "Toevoegen",
       "add_failed": "Opmerking toevoegen mislukt",
       "added": "Opmerking toegevoegd",
@@ -14233,6 +14234,8 @@
       "enCurso": "Bezig"
     },
     "DispatchDetailsPage": {
+      "elIncidenteNoExiste": "Het incident bestaat niet of is niet meer beschikbaar.",
+      "incidenteNoEncontrado": "Incident niet gevonden",
       "escribeUnComentario": "Schrijf een opmerking",
       "noSePudoAgregarComentario": "De opmerking kon niet worden toegevoegd",
       "noSePudieronCargarDetalles": "De gegevens van het incident konden niet worden geladen",

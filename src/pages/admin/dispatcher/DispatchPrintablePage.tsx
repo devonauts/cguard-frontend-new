@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { clientDisplayName } from "@/lib/clientName";
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
-import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +20,8 @@ import IncidentMap from "@/components/IncidentMap/IncidentMap";
 // El acta impresa se queda con el mapa PLANO a propósito (nadie despacha desde
 // un papel); lo que se comparte es la sonda de coordenadas.
 import { coordDeSitio } from "./DispatchIncidentMap";
+import DispatchFiles from "./DispatchFiles";
+import { uploadCommentAttachment, uploadErrorText } from "./commentAttachment";
 import { toast } from "sonner";
 import {
   PageContainer,
@@ -29,7 +30,7 @@ import {
   StatusBadge,
   Avatar,
 } from "@/components/kit";
-import { Printer, MessageSquarePlus } from "lucide-react";
+import { ArrowLeft, Printer, MessageSquarePlus } from "lucide-react";
 import type {
   DirectoryOption,
   NamedEntity,
@@ -86,49 +87,22 @@ export function DispatchDetailsContent({
       const api = (await import("@/lib/api")).default;
 
       let attachment: CommentAttachment | null = null;
+
       if (selectedFile) {
         try {
           setFileUploading(true);
-          const credsResp = await api.get(
-            `/tenant/${tenantId}/file/credentials?filename=${encodeURIComponent(selectedFile.name)}&storageId=localhost`,
-          );
-          const creds =
-            credsResp && (credsResp.data || credsResp)
-              ? credsResp.data || credsResp
-              : credsResp;
-          const uploadUrl =
-            creds?.uploadCredentials?.url ||
-            creds?.url ||
-            (creds?.uploadCredentials && creds.uploadCredentials.url);
-          if (!uploadUrl) throw new Error("No upload URL");
-
-          const form = new FormData();
-          form.append("filename", selectedFile.name);
-          form.append("file", selectedFile);
-
-          const uploadResp = await fetch(uploadUrl, {
-            method: "POST",
-            body: form,
-          });
-          let downloadUrl: unknown = null;
-          try {
-            const json = await uploadResp.json();
-            downloadUrl = json?.downloadUrl || json?.url || json;
-          } catch (e) {
-            downloadUrl = await uploadResp.text();
-          }
-          if (typeof downloadUrl === "object" && downloadUrl !== null)
-            downloadUrl = JSON.stringify(downloadUrl);
-          attachment = {
-            url: downloadUrl == null ? undefined : String(downloadUrl),
-            name: selectedFile.name,
-          };
+          attachment = await uploadCommentAttachment(tenantId, selectedFile);
         } catch (err) {
-          console.error("File upload failed", err);
+          // Not sent: the comment keeps its text and its file, so the person
+          // can retry. It used to go out without the file, with «Comentario
+          // agregado» and the error toast at the same time.
+          const msg = uploadErrorText(err);
+
           toast.error(
-            t("dispatcher.comment.file_upload_failed") ||
-              "No se pudo subir el archivo, comentario enviado sin adjunto",
+            `${t("dispatcher.comment.file_upload_failed_not_sent", "No se pudo subir el archivo; el comentario no se envió.")}${msg ? ` ${msg}` : ""}`,
           );
+
+          return;
         } finally {
           setFileUploading(false);
         }
@@ -529,7 +503,7 @@ export function DispatchDetailsContent({
           <div className="bg-card border rounded-md overflow-hidden">
             <div className="bg-muted px-4 py-2 text-sm font-semibold flex items-center justify-between">
               <div>{t("dispatcher.basic_details") || "Basic Details"}</div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 print:hidden">
                 <Button variant="brand" size="sm" asChild>
                   <Link to={`/dispatch-tickets/${requestId}/edit`}>
                     {t("dispatcher.edit") || "Editar"}
@@ -788,18 +762,7 @@ export function DispatchDetailsContent({
             {t("dispatcher.files") || "Files"}
           </div>
           <div className="p-4 text-sm">
-            {requestPayload?.requestDocumentPDF &&
-            requestPayload.requestDocumentPDF.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {requestPayload.requestDocumentPDF.map((f: any, i: number) => (
-                  <li key={i} className="truncate">
-                    {f.name || f.fileName || f}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="text-sm text-muted-foreground">-</div>
-            )}
+            <DispatchFiles payload={requestPayload} />
             {/* Debug: show raw payload when ?debugPayload=1 is present */}
             {typeof window !== "undefined" &&
               new URLSearchParams(window.location.search).has("debugPayload") &&
@@ -918,7 +881,7 @@ export function DispatchDetailsContent({
       </div>
       <Button
         variant="brand"
-        className="text-sm"
+        className="text-sm print:hidden"
         onClick={() => setShowCommentModal((s) => !s)}
       >
         {showCommentModal
@@ -932,19 +895,30 @@ export function DispatchDetailsContent({
 export default function DispatchDetailsPage() {
   const { id } = useParams();
 
+  // No CRM chrome here (App.tsx renders this route bare): the sheet is what
+  // goes on paper. Only the toolbar is screen-only.
   return (
-    <AppLayout>
-
-      <PageContainer width="wide" className="pt-4">
-        <PageHeader
-          icon={<Printer />}
-          title={i18n.t("comun.detalleDelIncidente")}
-          subtitle={i18n.t(
-            "ui.DispatchPrintablePage.vistaImprimibleDelIncidente",
-          )}
-        />
-        <DispatchDetailsContent requestId={id ?? null} />
-      </PageContainer>
-    </AppLayout>
+    <PageContainer width="wide" className="pt-4">
+      <div className="mb-3 flex items-center justify-between gap-2 print:hidden">
+        <Button asChild size="sm" variant="outline">
+          <Link to={`/dispatch-tickets/${id ?? ""}`}>
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
+            {i18n.t("comun.detalleDelIncidente")}
+          </Link>
+        </Button>
+        <Button size="sm" variant="brand" onClick={() => window.print()}>
+          <Printer className="mr-1.5 h-4 w-4" />
+          {i18n.t("dispatcher.print")}
+        </Button>
+      </div>
+      <PageHeader
+        icon={<Printer />}
+        title={i18n.t("comun.detalleDelIncidente")}
+        subtitle={i18n.t(
+          "ui.DispatchPrintablePage.vistaImprimibleDelIncidente",
+        )}
+      />
+      <DispatchDetailsContent requestId={id ?? null} />
+    </PageContainer>
   );
 }
