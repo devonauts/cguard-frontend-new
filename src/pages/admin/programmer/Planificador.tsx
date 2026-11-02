@@ -1215,12 +1215,15 @@ export default function Planificador() {
                   })}
                 </StatusBadge>
               )}
+              {/* How many EDITS were made, not how many changes «Publicar»
+                  sends (that one also counts the sacafrancos' automatic
+                  covers): both said «cambios» with different numbers. */}
               {cambios > 0 && (
                 <StatusBadge tone="slate">
                   {cambios === 1
-                    ? t("ui.Planificador.unCambio", "1 cambio en el borrador")
+                    ? t("ui.Planificador.unCambio", "1 edición")
                     : t("ui.Planificador.cambios", {
-                        defaultValue: "{{n}} cambios en el borrador",
+                        defaultValue: "{{n}} ediciones",
                         n: cambios,
                       })}
                 </StatusBadge>
