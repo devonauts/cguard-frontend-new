@@ -618,6 +618,9 @@ const NO_CHROME_PREFIXES = [
   // El enlace privado de documentación: quien lo abre no tiene cuenta, así que
   // la barra lateral del CRM no le sirve de nada y le confundiría.
   "/d/",
+  // Shared dispatch link: whoever it was sent to sees the sheet, not the CRM
+  // (opened with a session it rendered inside the side menu).
+  "/public/",
 ];
 
 function isNoChromePath(pathname: string): boolean {
