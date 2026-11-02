@@ -7,6 +7,11 @@ import { useTranslation } from 'react-i18next';
 import MobileCardList from '@/components/responsive/MobileCardList';
 import { EmptyState, Modal } from '@/components/kit';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ApiService } from '@/services/api/apiService';
 import { toast } from 'sonner';
 import useScrollToTopOnMount from '@/hooks/useScrollToTopOnMount';
@@ -1254,19 +1259,22 @@ export default function PostSiteTours({
                           {translateTimeMode(tour.timeMode)}
                         </td>
                         <td className="px-2 py-2.5 text-right">
-                          <div className="relative inline-block">
-                            <button
-                              onClick={() =>
-                                setRowActionOpenId(
-                                  rowActionOpenId === tid ? null : tid,
-                                )
-                              }
-                              className="p-2 rounded-full hover:bg-muted"
-                            >
-                              <EllipsisVertical size={16} />
-                            </button>
-                            {rowActionOpenId === tid && (
-                              <div className="glass-raised absolute right-0 z-20 mt-2 w-40">
+                          {/* Radix renders the menu in a portal: the old
+                              absolutely-positioned menu was clipped by the
+                              table's scroll box (same fix as Contacts). */}
+                          <DropdownMenu
+                            open={rowActionOpenId === tid}
+                            onOpenChange={(o) => setRowActionOpenId(o ? tid : null)}
+                          >
+                            <DropdownMenuTrigger asChild>
+                              <button
+                                className="p-2 rounded-full hover:bg-muted"
+                                aria-label={t("actions.action", "Acción")}
+                              >
+                                <EllipsisVertical size={16} />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
                                 <button
                                   className="block w-full text-left px-4 py-2 text-sm hover:bg-muted/30"
                                   onClick={async () => {
@@ -1439,9 +1447,8 @@ export default function PostSiteTours({
                                     </span>
                                   </div>
                                 </button>
-                              </div>
-                            )}
-                          </div>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </td>
                       </tr>
                     );
