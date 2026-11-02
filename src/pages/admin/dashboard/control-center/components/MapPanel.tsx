@@ -16,6 +16,10 @@ import { Maximize2, Map as MapIcon } from "lucide-react";
 import { OperationsMap } from "./OperationsMap";
 import { Panel } from "./Panel";
 
+import FiltroDeMarcaEnMapa, {
+  useFiltroDeMarcaEnMapa,
+} from "@/components/multimarca/FiltroDeMarcaEnMapa";
+
 export function MapPanel({
   entities,
   prefs,
@@ -34,7 +38,10 @@ export function MapPanel({
   className?: string;
 }) {
   const { t } = useTranslation();
-  const enMapa = entities.length;
+  // Multimarca: under «Todas las marcas», narrow the map to one brand.
+  const porMarca = useFiltroDeMarcaEnMapa(entities);
+  const visibles = porMarca.filtradas;
+  const enMapa = visibles.length;
 
   return (
     <Panel
@@ -63,6 +70,7 @@ export function MapPanel({
       }
       title={t("dashboard.map.title")}
     >
+      <FiltroDeMarcaEnMapa className="pt-3" filtro={porMarca} />
       <div
         className="relative flex-1 overflow-hidden pt-3"
         style={{ minHeight: height }}
@@ -76,7 +84,7 @@ export function MapPanel({
         <div className="absolute inset-x-0 bottom-0 top-3 [&>div]:!h-full">
           <OperationsMap
             defaultCenter={defaultCenter}
-            entities={entities}
+            entities={visibles}
             height={height}
             prefs={prefs}
           />

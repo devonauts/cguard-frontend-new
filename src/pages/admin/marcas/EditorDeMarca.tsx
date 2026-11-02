@@ -9,16 +9,30 @@
  * Archiving is refused by the server for the principal brand and for a brand
  * that still has clients; both reasons are explained in plain words.
  * Unarchiving takes a slot back; with none free it offers to buy one.
+ *
+ * Phase 3 — how the brand faces ITS clients: logo (uploaded through the
+ * brand route), accent colour, PDF layout, the sender name of its mails, its
+ * own invoice prefix and website, with a live preview «Así ve esta marca su
+ * cliente».
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Archive, ArchiveRestore, ImageUp, Layers, Loader2 } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  ImageUp,
+  Layers,
+  Loader2,
+  Palette,
+} from "lucide-react";
 
 import { mensajeDeMarca } from "./mensajesDeMarca";
 import { revisarMarca } from "./reglasDeMarca";
 import { useComprarCupoDeMarca } from "./comprarCupoDeMarca";
+import { prefijoValido, webValida } from "./identidadDeMarca";
+import VistaDeMarcaParaElCliente from "./VistaDeMarcaParaElCliente";
 
 import LogoDeMarca from "@/components/multimarca/LogoDeMarca";
 import { Button } from "@/components/ui/button";
@@ -26,6 +40,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import { FIELD_CLS, FormField, Modal } from "@/components/kit";
 import {
   codigoDeError,
+  ESTILOS_PDF,
   marcasService,
   subirLogoDeMarca,
   type DatosDeMarca,
@@ -57,6 +72,13 @@ interface Borrador {
   email: string;
   phone: string;
   establishmentCode: string;
+  // Phase 3 — how its clients see it.
+  accentColor: string;
+  /** "" = the company's layout. */
+  pdfTheme: string;
+  senderName: string;
+  invoicePrefix: string;
+  website: string;
 }
 
 const borradorDe = (m: Marca | null, pais: string): Borrador => ({
@@ -71,6 +93,11 @@ const borradorDe = (m: Marca | null, pais: string): Borrador => ({
   email: m?.email || "",
   phone: m?.phone || "",
   establishmentCode: m?.establishmentCode || "",
+  accentColor: m?.accentColor || "",
+  pdfTheme: m?.pdfTheme || "",
+  senderName: m?.senderName || "",
+  invoicePrefix: m?.invoicePrefix || "",
+  website: m?.website || "",
 });
 
 export function EditorDeMarca({
@@ -107,6 +134,8 @@ export function EditorDeMarca({
   }, [abierto, marca, paisDeLaEmpresa]);
 
   const errores = revisarMarca(b);
+  const webMala = !webValida(b.website);
+  const prefijoMalo = !prefijoValido(b.invoicePrefix);
   const ver = (k: keyof typeof errores) => (intento ? errores[k] : undefined);
   const poner =
     (k: keyof Borrador) =>
@@ -120,7 +149,18 @@ export function EditorDeMarca({
     if (!f) return;
     setSubiendo(true);
     try {
-      const url = await subirLogoDeMarca(f);
+      // An existing brand: its own route (phase 3). A new one has no id yet:
+      // the company-logo storage, as before; the URL is saved with the brand.
+      let url: string;
+
+      if (marca) {
+        try {
+          url = (await marcasService.subirLogo(marca.id, f)).logoUrl;
+        } catch (e: any) {
+          if (![404, 405].includes(Number(e?.status))) throw e;
+          url = await subirLogoDeMarca(f);
+        }
+      } else url = await subirLogoDeMarca(f);
 
       setB((x) => ({ ...x, logoUrl: url }));
     } catch {
@@ -145,10 +185,27 @@ export function EditorDeMarca({
     email: b.email.trim() || null,
     phone: b.phone.trim() || null,
     establishmentCode: b.establishmentCode.trim() || null,
+    accentColor: /^#[0-9a-f]{6}$/i.test(b.accentColor) ? b.accentColor : null,
+    pdfTheme: b.pdfTheme || null,
+    senderName: b.senderName.trim() || null,
+    invoicePrefix: b.invoicePrefix.trim().toUpperCase() || null,
+    website: b.website.trim() || null,
   });
 
   const guardar = async () => {
     setIntento(true);
+    if (webMala || prefijoMalo) {
+      toast.error(
+        webMala
+          ? t("ui.EditorDeMarca.webMala", "Esa dirección web no parece válida.")
+          : t(
+              "ui.EditorDeMarca.prefijoMalo",
+              "El prefijo admite letras, números y guiones (hasta 12).",
+            ),
+      );
+
+      return;
+    }
     if (Object.keys(errores).length) {
       toast.error(
         errores.taxId === "malo"
@@ -570,6 +627,186 @@ export function EditorDeMarca({
             </FormField>
           </div>
         </div>
+
+        {/* ── Phase 3: how its clients see it ───────────────────── */}
+        <div
+          className="space-y-3 rounded-xl border p-3"
+          style={{ borderColor: "var(--hairline)" }}
+        >
+          <div className="flex items-start gap-2">
+            <Palette className="mt-0.5 size-4 shrink-0" style={{ color: "var(--ink-soft)" }} />
+            <div>
+              <div className="text-sm font-medium">
+                {t("ui.EditorDeMarca.clientesTitulo", "Cómo la ven sus clientes")}
+              </div>
+              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                {t(
+                  "ui.EditorDeMarca.clientesAyuda",
+                  "Facturas, cotizaciones, informes, correos y el portal de sus clientes salen con su logo, sus colores y estos datos.",
+                )}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-sm font-medium">
+              {t("ui.EditorDeMarca.acento", "Color de acento")}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                aria-pressed={!b.accentColor}
+                className="cg-focus inline-flex h-7 items-center rounded-full border px-2.5 text-xs"
+                style={{
+                  borderColor: !b.accentColor ? "var(--ink)" : "var(--hairline)",
+                }}
+                type="button"
+                onClick={() => setB((x) => ({ ...x, accentColor: "" }))}
+              >
+                {t("ui.EditorDeMarca.acentoIgual", "Igual que el color")}
+              </button>
+              {COLORES_DE_MARCA.map((c) => (
+                <button
+                  key={c}
+                  aria-label={c}
+                  aria-pressed={b.accentColor === c}
+                  className="size-7 rounded-full border-2 transition-transform hover:scale-110"
+                  style={{
+                    background: c,
+                    borderColor: b.accentColor === c ? "var(--ink)" : "transparent",
+                  }}
+                  type="button"
+                  onClick={() => setB((x) => ({ ...x, accentColor: c }))}
+                />
+              ))}
+              <input
+                aria-label={t("ui.EditorDeMarca.otroAcento", "Otro color de acento")}
+                className="h-7 w-10 cursor-pointer rounded border-0 bg-transparent p-0"
+                type="color"
+                value={/^#[0-9a-f]{6}$/i.test(b.accentColor) ? b.accentColor : "#0d5c63"}
+                onChange={poner("accentColor")}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-sm font-medium">
+              {t("ui.EditorDeMarca.estiloPdf", "Estilo de sus PDF")}
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {(["", ...ESTILOS_PDF] as string[]).map((e) => {
+                const activo = b.pdfTheme === e;
+                const etiqueta =
+                  e === "band"
+                    ? t("ui.Facturacion.diseno.banda", "Banda de color")
+                    : e === "minimal"
+                      ? t("ui.Facturacion.diseno.minimalista", "Minimalista")
+                      : e === "classic"
+                        ? t("ui.Facturacion.diseno.clasico", "Clásico")
+                        : t("ui.EditorDeMarca.estiloEmpresa", "Como la empresa");
+
+                return (
+                  <button
+                    key={e || "empresa"}
+                    aria-pressed={activo}
+                    className="cg-focus rounded-lg border px-2.5 py-2 text-left text-xs font-medium"
+                    style={{
+                      borderColor: activo ? "var(--brand)" : "var(--hairline)",
+                      background: activo
+                        ? "color-mix(in oklab, var(--brand) 10%, var(--float))"
+                        : "var(--float)",
+                    }}
+                    type="button"
+                    onClick={() => setB((x) => ({ ...x, pdfTheme: e }))}
+                  >
+                    {etiqueta}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <FormField
+              hint={t(
+                "ui.EditorDeMarca.remitenteAyuda",
+                "El nombre que ven sus clientes en los correos. Vacío: el nombre comercial.",
+              )}
+              htmlFor="marca-remitente"
+              label={t("ui.EditorDeMarca.remitente", "Nombre del remitente")}
+            >
+              <input
+                className={FIELD_CLS}
+                id="marca-remitente"
+                maxLength={120}
+                placeholder={b.name || undefined}
+                value={b.senderName}
+                onChange={poner("senderName")}
+              />
+            </FormField>
+            <FormField
+              error={
+                intento && prefijoMalo
+                  ? t(
+                      "ui.EditorDeMarca.prefijoMalo",
+                      "El prefijo admite letras, números y guiones (hasta 12).",
+                    )
+                  : undefined
+              }
+              hint={
+                marca?.isPrincipal
+                  ? t(
+                      "ui.EditorDeMarca.prefijoPrincipal",
+                      "La marca principal usa la serie de la empresa.",
+                    )
+                  : t(
+                      "ui.EditorDeMarca.prefijoAyuda",
+                      "Sus facturas llevan su propia numeración. Vacío: el prefijo de la empresa y el código de la marca.",
+                    )
+              }
+              htmlFor="marca-prefijo"
+              label={t("ui.EditorDeMarca.prefijo", "Prefijo de sus facturas")}
+            >
+              <input
+                aria-invalid={(intento && prefijoMalo) || undefined}
+                className={`${FIELD_CLS} font-mono uppercase`}
+                disabled={!!marca?.isPrincipal}
+                id="marca-prefijo"
+                maxLength={12}
+                placeholder={b.code ? `FAC-${b.code}` : "FAC-AND"}
+                value={b.invoicePrefix}
+                onChange={(e) =>
+                  setB((x) => ({ ...x, invoicePrefix: e.target.value.toUpperCase() }))
+                }
+              />
+            </FormField>
+            <FormField
+              className="sm:col-span-2"
+              error={
+                intento && webMala
+                  ? t("ui.EditorDeMarca.webMala", "Esa dirección web no parece válida.")
+                  : undefined
+              }
+              htmlFor="marca-web"
+              label={t("ui.EditorDeMarca.web", "Sitio web")}
+            >
+              <input
+                aria-invalid={(intento && webMala) || undefined}
+                className={FIELD_CLS}
+                id="marca-web"
+                inputMode="url"
+                maxLength={255}
+                placeholder="www.andinaseguridad.com"
+                value={b.website}
+                onChange={poner("website")}
+              />
+            </FormField>
+          </div>
+        </div>
+
+        <VistaDeMarcaParaElCliente
+          b={{ ...b, isPrincipal: !!marca?.isPrincipal }}
+          idioma={i18n.language}
+        />
       </fieldset>
     </Modal>
   );

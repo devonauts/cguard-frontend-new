@@ -190,6 +190,9 @@ const ModulosAdicionalesPage = lazy(
   () => import("./pages/admin/modulos/ModulosAdicionalesPage"),
 );
 const MarcasPage = lazy(() => import("./pages/admin/marcas/MarcasPage"));
+const HorasEntreMarcasPage = lazy(
+  () => import("./pages/admin/marcas/HorasEntreMarcasPage"),
+);
 const ActivitiesPage = lazy(
   () => import("./pages/admin/actividades/ActivitiesPage"),
 );
@@ -2900,6 +2903,15 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/marcas"
+                              />
+                              {/* Multimarca phase 4: hours people of one brand worked at another's sites. */}
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <HorasEntreMarcasPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/nomina/horas-entre-marcas"
                               />
                               <Route
                                 element={

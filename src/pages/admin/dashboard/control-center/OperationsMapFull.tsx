@@ -7,6 +7,9 @@ import { loadPrefs } from "./prefs";
 import { OperationsMap } from "./components/OperationsMap";
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
+import FiltroDeMarcaEnMapa, {
+  useFiltroDeMarcaEnMapa,
+} from "@/components/multimarca/FiltroDeMarcaEnMapa";
 import "./control-center.css";
 
 /**
@@ -21,6 +24,8 @@ export default function OperationsMapFull() {
     prefs.liveTracking ? prefs.locationIntervalSec : 3600,
   );
   const data = live;
+  // Multimarca: under «Todas las marcas», narrow the map to one brand.
+  const porMarca = useFiltroDeMarcaEnMapa(data.entities);
 
   const [h, setH] = useState(() =>
     typeof window !== "undefined" ? window.innerHeight : 800,
@@ -81,11 +86,12 @@ export default function OperationsMapFull() {
           />
           <span className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
             {t("ui.OperationsMapFull.elementosFiltrosYLeyenda", {
-              count: data.entities.length,
+              count: porMarca.filtradas.length,
               defaultValue:
                 "{{count}} elementos · filtros y leyenda sobre el mapa",
             })}
           </span>
+          <FiltroDeMarcaEnMapa className="max-w-full" filtro={porMarca} />
           {/* ── SIN LEYENDA AQUÍ ───────────────────────────────────────────────
               Había una con un punto de color por tipo sacado de «Personalizar».
               Mentía: sobre el mapa, un puesto se pinta por su COBERTURA (verde /
@@ -122,7 +128,7 @@ export default function OperationsMapFull() {
 
       <OperationsMap
         defaultCenter={data.defaultCenter}
-        entities={data.entities}
+        entities={porMarca.filtradas}
         height={h}
         prefs={prefs}
       />

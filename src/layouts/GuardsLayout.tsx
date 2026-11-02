@@ -18,6 +18,7 @@ import { PromoteDialog } from "@/pages/admin/security-guards/components/PromoteD
 import { Avatar, StatusBadge, TabNav } from "@/components/kit";
 import GuardRatingLevel from "@/pages/admin/security-guards/GuardRatingLevel";
 import { useDatosDeFicha, useFichaPersona } from "@/layouts/FichaPersona";
+import ChipDeMarca, { useMarcaDePersona } from "@/components/multimarca/ChipDeMarca";
 
 type Props = {
   navKey: string;
@@ -68,6 +69,11 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
      presenta a un supervisor como si siguiera siendo vigilante, con pestañas
      que ya no le corresponden. */
   const { entity, rating, rolMovido } = deLaRuta ?? propios;
+  // Multimarca: the brand whose payroll pays this person.
+  const marcaDeLaPersona = useMarcaDePersona(
+    (entity as any)?.userId ?? null,
+    (entity as any)?.homeBrandId ?? null,
+  );
 
   const resolvePath = (path: string) =>
     id && path.includes(":id") ? path.replace(":id", id) : path;
@@ -202,6 +208,7 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
                     ? t("guards.summary.onDuty", "En servicio")
                     : t("guards.summary.offDuty", "Fuera de servicio")}
                 </StatusBadge>
+                <ChipDeMarca marcaId={marcaDeLaPersona} tipo="persona" />
                 {entity?.zone && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 font-medium text-muted-foreground">
                     <MapPin className="h-3 w-3" /> {entity.zone}

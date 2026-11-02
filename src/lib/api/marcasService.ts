@@ -213,9 +213,12 @@ export function consultaDeHoras(
 export const horasEntreMarcasService = {
   leer: (f: FiltroDeHoras): Promise<HorasEntreMarcas> =>
     ApiService.get(`${base()}/cross-hours?${consultaDeHoras(f)}`),
-  /** The same report as a file (csv, xlsx or pdf), in the reader's language. */
-  descargar: (f: FiltroDeHoras, format: "csv" | "xlsx" | "pdf"): Promise<Blob> =>
-    ApiService.getBlob(`${base()}/cross-hours?${consultaDeHoras(f, format)}`),
+  /**
+   * The same report as a file (csv, xlsx or pdf) built by the server, in the
+   * reader's language: the URL for `descargarInforme`.
+   */
+  urlDeDescarga: (f: FiltroDeHoras, format: "csv" | "xlsx" | "pdf"): string =>
+    `${base()}/cross-hours?${consultaDeHoras(f, format)}`,
 };
 
 /** The brand workspace saved in the account (the top-bar choice). */

@@ -293,6 +293,16 @@
         ]
       },
       {
+        "id": "horas-entre-marcas",
+        "name": "Horas entre marcas",
+        "path": "/nomina/horas-entre-marcas",
+        "modulo": "multimarca",
+        "permission": [
+          "payrollSlipRead",
+          "attendanceRead"
+        ]
+      },
+      {
         "id": "gusto",
         "name": "Gusto",
         "path": "/nomina/gusto",

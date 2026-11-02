@@ -62,6 +62,7 @@ const TAB_ICONS: Record<string, any> = {
 
 import { Button } from "@/components/ui/button";
 import { StatusBadge, SmartImage } from "@/components/kit";
+import ChipDeMarca from "@/components/multimarca/ChipDeMarca";
 import { clientService } from "@/lib/api/clientService";
 import { useAuth } from "@/contexts/AuthContext";
 import { hasFeature } from "@/lib/entitlements";
@@ -434,6 +435,8 @@ export default function ClientsLayout({
                       : t("clients.individual", "Cliente particular")}
                   </StatusBadge>
                 )}
+                {/* Multimarca: the brand (legal company) this client belongs to. */}
+                <ChipDeMarca marcaId={client?.brandId} tipo="cliente" />
                 {client?.code && (
                   <span style={{ color: "var(--ink-soft)" }}>
                     {t("clients.code", "Código")}:{" "}
