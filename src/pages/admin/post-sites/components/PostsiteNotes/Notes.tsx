@@ -17,6 +17,7 @@ import {
   FIELD_CLS_LG,
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -574,32 +575,30 @@ export default function PostSiteNotes({ site }: Props) {
         </div>
       </div>
 
-      {showModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center"
-          onClick={handleCloseModal}
+      {/* A Sheet like the CRM's other side panels: it renders at the body, so
+          it covers the whole screen (the hand-made overlay stayed inside the
+          tab card, under the header and the VigIA bubble), and Esc, the X
+          and «Cancelar» close it without saving. */}
+      <Sheet
+        open={showModal}
+        onOpenChange={(o) => {
+          if (!o) handleCloseModal();
+        }}
+      >
+        <SheetContent
+          aria-describedby={undefined}
+          className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-sm"
+          side="right"
         >
-          <div
-            className="absolute inset-0"
-            style={{ background: "oklch(0 0 0 / 0.45)" }}
-            onClick={handleCloseModal}
-          />
-
-          {/* Sin tope de altura el `overflow-y-auto` no llega a activarse: el
-              panel crecía por encima del borde superior de la pantalla. */}
-          <div
-            className="glass-raised max-h-[90vh] w-full overflow-y-auto sm:ml-auto sm:w-96"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="sticky top-0 flex items-center justify-between border-b p-6">
-              <h2 className="text-lg font-semibold text-foreground">
+            <div className="flex shrink-0 items-center justify-between border-b p-6 pr-14">
+              <SheetTitle className="text-lg font-semibold text-foreground">
                 {formData.id
                   ? t("clients.notes.form.editTitle", "Editar nota")
                   : t("clients.notes.form.Title", "Agregar nueva nota")}
-              </h2>
+              </SheetTitle>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   {t("clients.notes.form.Titlenote", "Title *")}{" "}
@@ -715,7 +714,10 @@ export default function PostSiteNotes({ site }: Props) {
               </div>
             </div>
 
-            <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t p-6">
+            <div className="flex shrink-0 items-center justify-end gap-3 border-t p-6">
+              <Button onClick={handleCloseModal} variant="outline">
+                {t("actions.cancel", "Cancelar")}
+              </Button>
               <button
                 onClick={handleSubmitNote}
                 disabled={!isFormValid || saving}
@@ -724,9 +726,8 @@ export default function PostSiteNotes({ site }: Props) {
                 {t("actions.save", "Save")}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
 
       <Modal
         open={confirmDeleteIds.length > 0}
