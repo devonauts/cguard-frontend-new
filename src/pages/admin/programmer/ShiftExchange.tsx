@@ -222,9 +222,16 @@ function ListaDeReglas({
   );
 }
 
+/**
+ * The body of a failed call. `lib/api` rejects with a normalized error that
+ * keeps the body in `details`; reading only `response.data` (the raw axios
+ * shape) turned every refusal into «Algo salió mal» (QA 2026-11-01).
+ */
+const cuerpoDeError = (e: any): any => e?.response?.data || e?.details || {};
+
 /** The server's 409 carries `requirements`: show them, not a generic error. */
 function mensajeDeError(e: any, t: any, texto: (f: SwapFinding) => string) {
-  const d = e?.response?.data || {};
+  const d = cuerpoDeError(e);
   const reqs: SwapFinding[] = Array.isArray(d.requirements) ? d.requirements : [];
 
   if (reqs.length) return `${d.message || ""} ${reqs.map(texto).join(" · ")}`.trim();
@@ -603,8 +610,10 @@ function Detalle({
       toast.success(ok);
     } catch (e: any) {
       toast.error(mensajeDeError(e, t, texto));
-      if (Array.isArray(e?.response?.data?.requirements)) {
-        setChecks({ blocks: e.response.data.requirements, warnings: checks?.warnings || [] });
+      const reqs = cuerpoDeError(e).requirements;
+
+      if (Array.isArray(reqs)) {
+        setChecks({ blocks: reqs, warnings: checks?.warnings || [] });
       }
     } finally {
       setTrabajando(null);
@@ -771,7 +780,6 @@ function NuevaSolicitud({
   puedeDecidir: boolean;
 }) {
   const { t } = useTranslation();
-  const texto = useTextoDeRegla(null);
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [tipo, setTipo] = useState<"swap" | "giveaway">("swap");
   const [de, setDe] = useState("");
@@ -784,6 +792,15 @@ function NuevaSolicitud({
   const [acordado, setAcordado] = useState(true);
   const [aprobarYa, setAprobarYa] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const nombreDe = (id: string) =>
+    personas.find((p) => p.userId === id)?.fullName || null;
+  // The rules name the two people chosen here («X is not active»).
+  const texto = useTextoDeRegla({
+    fromGuardId: de,
+    toGuardId: con,
+    fromGuard: { name: nombreDe(de) },
+    toGuard: { name: nombreDe(con) },
+  } as unknown as ShiftExchangeRecord);
 
   useEffect(() => {
     if (!open) return;
