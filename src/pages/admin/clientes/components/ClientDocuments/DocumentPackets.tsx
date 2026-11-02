@@ -157,6 +157,10 @@ const VIA: Record<string, string> = {
   link: "ui.DocumentPackets.viaLink",
 };
 
+// History details are stored as text and older rows carry raw ISO timestamps
+// («caduca 2026-11-05T05:35:03.204Z»); show them in company time like the cards.
+const ISO_DATE_TIME = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z/g;
+
 const fmtDT = (iso?: string | null) => {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -978,7 +982,7 @@ export default function DocumentPackets({
                       className="truncate text-xs"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      {e.detail}
+                      {e.detail.replace(ISO_DATE_TIME, (m) => fmtDT(m))}
                     </div>
                   )}
                 </div>
