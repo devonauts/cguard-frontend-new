@@ -6273,7 +6273,8 @@
     "free": {
       "title": "Plan bezpłatny",
       "body": "{{marca}} zapewnia Twojej firmie usługę bez opłat."
-    }
+    },
+    "invoicesEmptyDescActive": "Twoja pierwsza faktura pojawi się tutaj po wystawieniu i będzie można ją pobrać w PDF."
   },
   "brand": {
     "tagline": "Inteligentna ochrona"

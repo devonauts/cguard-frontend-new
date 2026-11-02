@@ -6267,7 +6267,8 @@
     "free": {
       "title": "Gratis abonnement",
       "body": "{{marca}} levert de dienst kosteloos aan uw bedrijf."
-    }
+    },
+    "invoicesEmptyDescActive": "Uw eerste factuur verschijnt hier zodra die is uitgegeven, en u kunt die als pdf downloaden."
   },
   "brand": {
     "tagline": "Intelligente beveiliging"

@@ -7240,7 +7240,8 @@
     "free": {
       "title": "Plano gratuito",
       "body": "{{marca}} oferece o serviço à sua empresa sem custo."
-    }
+    },
+    "invoicesEmptyDescActive": "Sua primeira fatura aparecerá aqui quando for emitida, e você poderá baixá-la em PDF."
   },
   "suscripcion": {
     "detalle": "Detalhes da assinatura",

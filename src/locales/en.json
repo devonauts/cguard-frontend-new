@@ -666,7 +666,8 @@
     "free": {
       "title": "Free plan",
       "body": "{{marca}} provides the service to your company at no cost."
-    }
+    },
+    "invoicesEmptyDescActive": "Your first invoice will appear here once it is issued, and you can download it as a PDF."
   },
   "categories": {
     "Understood": "Understood",

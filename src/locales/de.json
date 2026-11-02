@@ -6267,7 +6267,8 @@
     "free": {
       "title": "Kostenloser Tarif",
       "body": "{{marca}} stellt Ihrem Unternehmen den Dienst kostenlos zur Verfügung."
-    }
+    },
+    "invoicesEmptyDescActive": "Ihre erste Rechnung erscheint hier, sobald sie ausgestellt ist, und Sie können sie als PDF herunterladen."
   },
   "brand": {
     "tagline": "Intelligente Sicherheit"

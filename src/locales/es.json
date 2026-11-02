@@ -666,7 +666,8 @@
     "free": {
       "title": "Plan gratis",
       "body": "{{marca}} le da el servicio sin costo a tu empresa."
-    }
+    },
+    "invoicesEmptyDescActive": "Tu primera factura aparecerá aquí cuando se emita, y podrás descargarla en PDF."
   },
   "categories": {
     "Understood": "Entendido",

@@ -6267,7 +6267,8 @@
     "free": {
       "title": "Piano gratuito",
       "body": "{{marca}} offre il servizio alla tua azienda senza alcun costo."
-    }
+    },
+    "invoicesEmptyDescActive": "La tua prima fattura apparirà qui appena emessa, e potrai scaricarla in PDF."
   },
   "brand": {
     "tagline": "Sicurezza Intelligente"

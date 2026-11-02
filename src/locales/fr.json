@@ -6267,7 +6267,8 @@
     "free": {
       "title": "Formule gratuite",
       "body": "{{marca}} fournit le service à votre entreprise gratuitement."
-    }
+    },
+    "invoicesEmptyDescActive": "Votre première facture apparaîtra ici dès son émission, et vous pourrez la télécharger en PDF."
   },
   "brand": {
     "tagline": "Sécurité intelligente"
