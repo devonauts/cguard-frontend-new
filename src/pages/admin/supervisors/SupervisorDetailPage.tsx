@@ -344,6 +344,7 @@ export default function SupervisorDetailPage() {
       // El nombre vive en la cuenta: se guarda aparte (ver `save`).
       firstName: s.firstName ?? "",
       lastName: s.lastName ?? "",
+      phoneNumber: s.phoneNumber ?? "",
       governmentId: s.governmentId ?? "",
       birthDate: toDateInput(s.birthDate),
       birthPlace: s.birthPlace ?? "",
@@ -404,9 +405,16 @@ export default function SupervisorDetailPage() {
       const body: Record<string, string | null> = {};
 
       for (const k of Object.keys(form)) {
-        if (k === "firstName" || k === "lastName") continue;
+        if (k === "firstName" || k === "lastName" || k === "phoneNumber")
+          continue;
         body[k] = form[k] === "" ? null : form[k];
       }
+      // The phone is on the sign-in account: sent only when it changed (an
+      // account shared with another company refuses the change).
+      const telefono = String(form.phoneNumber || "").trim();
+
+      if (sup && telefono !== String(sup.phoneNumber || "").trim())
+        body.phoneNumber = telefono || null;
 
       /* EL NOMBRE, APARTE (nombres y apellidos separados): vive en la cuenta y
          antes no se podía cambiar desde aquí. */
@@ -569,6 +577,12 @@ export default function SupervisorDetailPage() {
                             value={form.lastName}
                             onChange={(v) => setField("lastName", v)}
                           />
+                          <EditText
+                            label={t("guards.profile.fields.mobile", "Número móvil")}
+                            type="tel"
+                            value={form.phoneNumber}
+                            onChange={(v) => setField("phoneNumber", v)}
+                          />
                         </>
                       ) : (
                         <>
@@ -578,6 +592,9 @@ export default function SupervisorDetailPage() {
                           <ReadField
                             label={t("guards.list.details.fields.lastName", "Apellidos")}
                             value={sup.lastName} />
+                          <ReadField
+                            label={t("guards.profile.fields.mobile", "Número móvil")}
+                            value={sup.phoneNumber} />
                         </>
                       )}
                       {editing ? (
