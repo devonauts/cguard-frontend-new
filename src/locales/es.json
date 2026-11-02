@@ -467,7 +467,10 @@
     "forgotNoMailboxHint": "Si tu cuenta no tiene correo, pide el enlace a tu supervisor o a la oficina.",
     "forgotSubtitleLoginId": "Escribe tu correo o tu usuario y te enviamos un enlace para crear una nueva.",
     "loginIdLabel": "Correo o usuario",
-    "loginIdPlaceholder": "jmiranda o tu@correo.com"
+    "loginIdPlaceholder": "jmiranda o tu@correo.com",
+    "validation_symbol": "Debe incluir un carácter especial",
+    "validation_same_as_old": "La nueva contraseña tiene que ser distinta de la actual",
+    "passwordChangedSignInAgain": "Cambiaste tu contraseña. Inicia sesión con la nueva."
   },
   "billing": {
     "title": "Estado de la suscripción",
@@ -7000,7 +7003,9 @@
       "computadoras": "Computadoras de escritorio",
       "computadoras.desc": "Aprueba o revoca cada computadora que usa la app de escritorio.",
       "app-escritorio": "App de escritorio",
-      "app-escritorio.desc": "Descarga el panel para Mac o Windows, en su propia ventana."
+      "app-escritorio.desc": "Descarga el panel para Mac o Windows, en su propia ventana.",
+      "payroll-slips": "Roles de pago",
+      "payroll-slips.desc": "País, sueldo base, jornada, dobladas, renta y numeración del rol de pago."
     },
     "section": {
       "mi_cuenta": "Mi cuenta",
@@ -7290,7 +7295,7 @@
       "certIconAlt": "Icono certificación",
       "noIcon": "Sin icono",
       "thisCert": "esta certificación",
-      "bannerDialogDesc": "Configura el banner que se mostrará en el módulo MOBIL.",
+      "bannerDialogDesc": "Configura el banner que verán tus clientes en su app.",
       "bannerTitlePlaceholder": "Título del banner",
       "bannerDescPlaceholder": "Descripción del banner",
       "selectFileBtn": "Seleccionar archivo",
@@ -7379,7 +7384,10 @@
       "guardVisSaved": "Preferencia guardada.",
       "guardVisTitle": "Datos del vigilante visibles para el cliente",
       "tabContent": "Contenido",
-      "tabGuard": "Privacidad del vigilante"
+      "tabGuard": "Privacidad del vigilante",
+      "serviceDescriptionRequired": "Escribe una descripción del servicio.",
+      "certDatesRequired": "Indica la fecha de adquisición y la de vencimiento.",
+      "certDatesOrder": "La fecha de vencimiento no puede ser anterior a la de adquisición."
     },
     "mobileHub": {
       "loadError": "No se pudo cargar la configuración.",
@@ -7601,7 +7609,7 @@
       "emailHeaderDesc": "Fondo de la franja donde va tu logotipo. Conviene un tono oscuro para que el texto blanco se lea.",
       "panelInfoBefore": "¿El color del panel? Ése es tuyo, no de la empresa: se elige en",
       "panelInfoStrong": "Mi cuenta › Apariencia",
-      "panelInfoAfter": " y se guarda en tu navegador, como el modo oscuro. El administrador no decide con qué colores trabaja su equipo ocho horas al día.",
+      "panelInfoAfter": " y se guarda en tu cuenta, como el modo oscuro. El administrador no decide con qué colores trabaja su equipo ocho horas al día.",
       "saveBtn": "Guardar marca"
     },
     "phoneField": {
@@ -7722,7 +7730,8 @@
       "platformHeading": "Protecciones de la plataforma",
       "platformHint": "Las administra {{marca}} para todas las empresas. Aquí puedes ver si están activas.",
       "statusActive": "Activa",
-      "statusInactive": "Inactiva"
+      "statusInactive": "Inactiva",
+      "minLengthOutOfRange": "La longitud mínima tiene que ser un número entre {{min}} y {{max}}."
     },
     "central": {
       "loadError": "No se pudo cargar la configuración.",
@@ -7851,7 +7860,8 @@
       "departmentPlaceholder": "Departamento",
       "selectGuardsLabel": "Seleccionar Vigilantes Específicos",
       "selectGuardsPlaceholder": "Seleccionar vigilantes…",
-      "searchGuardPlaceholder": "Buscar vigilante…"
+      "searchGuardPlaceholder": "Buscar vigilante…",
+      "editDialogTitle": "Editar documento"
     },
     "notificationForm": {
       "checkInOutLabel": "Vigilante registrado/salida",
@@ -8898,7 +8908,12 @@
       "nuevoCorreoCom": "nuevo@correo.com",
       "perfilActualizadoCorrectamente": "Perfil actualizado correctamente.",
       "esElNombreConEl": "Es el nombre con el que te ve el resto del equipo.",
-      "verificado": "Verificado"
+      "verificado": "Verificado",
+      "codigoNoEntregado": "No pudimos enviar el código a ese número. Revisa el número o inténtalo más tarde.",
+      "codigoDePrueba": "No hay proveedor de SMS en este entorno. Código de prueba: {{code}}",
+      "escribeTuNumeroAntes": "Escribe tu número móvil antes de confirmarlo.",
+      "correoNoValido": "Ese correo no es válido.",
+      "esTuCorreoActual": "Ese ya es tu correo."
     },
     "Routes": {
       "turnoDia": "Turno día",
@@ -14086,7 +14101,8 @@
       "losPermisosYLicenciasQue": "Los permisos y licencias que tu personal puede solicitar o acreditar.",
       "tipoSDeLicenciaEliminado": "Tipo(s) de licencia eliminado(s)",
       "tipoDeLicenciaActualizado": "Tipo de licencia actualizado",
-      "tipoDeLicenciaCreado": "Tipo de licencia creado"
+      "tipoDeLicenciaCreado": "Tipo de licencia creado",
+      "confirmarEliminacionTexto": "¿Eliminar {{count}} tipo(s) de licencia? Esta acción no se puede deshacer."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "No se pudo cargar el uso del asistente.",
@@ -14360,7 +14376,17 @@
       "noPudimosGuardarElDocumento": "No pudimos guardar el documento.",
       "publicaElReglamentoInterno": "Publica el reglamento interno y sabrás quién lo ha firmado.",
       "publicar": "Publicar",
-      "reglamento": "Reglamento"
+      "reglamento": "Reglamento",
+      "estado": "Estado",
+      "publicada": "Publicada",
+      "borrador": "Borrador",
+      "ponleUnTitulo": "Ponle un título al documento.",
+      "algunosNoSePudieron": "{{failed}} de {{total}} no se pudieron cambiar: {{reason}}",
+      "documentosPublicados": "Documentos publicados",
+      "documentosABorrador": "Documentos movidos a borrador",
+      "documentosEliminados": "Documentos eliminados",
+      "confirmarEliminacion": "Confirmar eliminación",
+      "confirmarEliminacionTexto": "¿Eliminar {{count}} documento(s)? Quien tenía que firmarlos dejará de verlos. Esta acción no se puede deshacer."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Arrastra o haz clic para adjuntar",
@@ -15049,7 +15075,9 @@
       "inicio": "Inicio",
       "miCuenta": "Mi Cuenta",
       "vistaPreviaAppMiSeguridadCliente": "Vista previa · app {{app}} (cliente)",
-      "seguridad": "Seguridad"
+      "seguridad": "Seguridad",
+      "nombreDeEjemplo": "Ana Pérez",
+      "sitioDeEjemplo": "Edificio Central"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -18942,7 +18970,12 @@
       "estaciones": "Estaciones",
       "plazas": "Puestos con este ciclo",
       "personas": "Personas",
-      "historial": "Y {{count}} asignaciones terminadas que lo conservan en su historial."
+      "historial": "Y {{count}} asignaciones terminadas que lo conservan en su historial.",
+      "enUsoConteo": "Estaciones: {{estaciones}} · Puestos: {{plazas}} · Personas: {{personas}}",
+      "confirmarBorrarTitulo": "¿Borrar «{{name}}»?",
+      "confirmarArchivarTitulo": "¿Archivar «{{name}}»?",
+      "confirmarBorrarTexto": "Nadie lo usa. Se borra del todo y no se puede deshacer.",
+      "confirmarArchivarTexto": "Deja de ofrecerse al crear horarios. Quien ya lo usa lo conserva, y puedes volver a ofrecerlo cuando quieras."
     },
     "HorarioDeOficina": {
       "pestana": "Horario",

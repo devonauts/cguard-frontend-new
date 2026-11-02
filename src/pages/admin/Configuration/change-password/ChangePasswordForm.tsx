@@ -45,7 +45,12 @@ export default function ChangePasswordForm({
       .min(8, t("auth.validation_min8"))
       .regex(/[A-Z]/, t("auth.validation_uppercase"))
       .regex(/[a-z]/, t("auth.validation_lowercase"))
-      .regex(/\d/, t("auth.validation_number")),
+      .regex(/\d/, t("auth.validation_number"))
+      // The platform floor (backend isStrongPassword) always asks for one.
+      .regex(
+        /[^A-Za-z0-9]/,
+        t("auth.validation_symbol", "Debe incluir un carácter especial"),
+      ),
     confirmPassword: z.string().min(1, t("auth.validation_confirm_required")),
   };
 
@@ -58,6 +63,13 @@ export default function ChangePasswordForm({
     .refine((v: any) => v.newPassword === v.confirmPassword, {
       path: ["confirmPassword"],
       message: t("auth.validation_passwords_not_match"),
+    })
+    .refine((v: any) => !showOldField || v.newPassword !== v.oldPassword, {
+      path: ["newPassword"],
+      message: t(
+        "auth.validation_same_as_old",
+        "La nueva contraseña tiene que ser distinta de la actual",
+      ),
     });
 
   const form = useForm<ChangePasswordValues>({
@@ -84,6 +96,10 @@ export default function ChangePasswordForm({
     { ok: /[A-Z]/.test(nueva), texto: t("auth.validation_uppercase") },
     { ok: /[a-z]/.test(nueva), texto: t("auth.validation_lowercase") },
     { ok: /\d/.test(nueva), texto: t("auth.validation_number") },
+    {
+      ok: /[^A-Za-z0-9]/.test(nueva),
+      texto: t("auth.validation_symbol", "Debe incluir un carácter especial"),
+    },
   ];
   const coinciden = nueva.length > 0 && nueva === confirma;
 

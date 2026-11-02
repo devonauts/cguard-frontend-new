@@ -336,7 +336,10 @@
     "forgotNoMailboxHint": "Se il tuo account non ha e-mail, chiedi il link al tuo supervisore o all'ufficio.",
     "forgotSubtitleLoginId": "Inserisci la tua e-mail o il tuo nome utente e ti invieremo un link per crearne una nuova.",
     "loginIdLabel": "E-mail o nome utente",
-    "loginIdPlaceholder": "jmiranda o tu@email.com"
+    "loginIdPlaceholder": "jmiranda o tu@email.com",
+    "validation_symbol": "Deve includere un carattere speciale",
+    "validation_same_as_old": "La nuova password deve essere diversa da quella attuale",
+    "passwordChangedSignInAgain": "Hai cambiato la password. Accedi con quella nuova."
   },
   "client": {
     "invite_not_found": "Invito non trovato o non valido.",
@@ -7502,7 +7505,9 @@
       "computadoras": "Computer desktop",
       "computadoras.desc": "Approva o revoca ogni computer che usa l’app desktop.",
       "app-escritorio": "App desktop",
-      "app-escritorio.desc": "Scarica il pannello per Mac o Windows, in una finestra tutta sua."
+      "app-escritorio.desc": "Scarica il pannello per Mac o Windows, in una finestra tutta sua.",
+      "payroll-slips": "Buste paga",
+      "payroll-slips.desc": "Paese, stipendio base, orario, doppi turni, imposta sul reddito e numerazione della busta paga."
     },
     "section": {
       "mi_cuenta": "Il mio account",
@@ -7792,7 +7797,7 @@
       "certIconAlt": "Icona certificazione",
       "noIcon": "Nessuna icona",
       "thisCert": "questa certificazione",
-      "bannerDialogDesc": "Configura il banner che verrà mostrato nel modulo MOBIL.",
+      "bannerDialogDesc": "Configura il banner che i tuoi clienti vedranno nella loro app.",
       "bannerTitlePlaceholder": "Titolo del banner",
       "bannerDescPlaceholder": "Descrizione del banner",
       "selectFileBtn": "Seleziona file",
@@ -7881,7 +7886,10 @@
       "guardVisSaved": "Preferenza salvata.",
       "guardVisTitle": "Dati della guardia visibili al committente",
       "tabContent": "Contenuti",
-      "tabGuard": "Privacy della guardia"
+      "tabGuard": "Privacy della guardia",
+      "serviceDescriptionRequired": "Scrivi una descrizione del servizio.",
+      "certDatesRequired": "Indica la data di conseguimento e quella di scadenza.",
+      "certDatesOrder": "La data di scadenza non può essere precedente a quella di conseguimento."
     },
     "mobileHub": {
       "loadError": "Impossibile caricare le impostazioni.",
@@ -8103,7 +8111,7 @@
       "emailHeaderDesc": "Sfondo della fascia dove va il tuo logo. Conviene una tonalità scura perché il testo bianco resti leggibile.",
       "panelInfoBefore": "E il colore del pannello? Quello è tuo, non dell'azienda: si sceglie in",
       "panelInfoStrong": "Il mio account › Aspetto",
-      "panelInfoAfter": " e resta salvato nel tuo browser, come il tema scuro. L'amministratore non decide con quali colori il suo team lavora otto ore al giorno.",
+      "panelInfoAfter": " e resta salvato nel tuo account, come il tema scuro. L'amministratore non decide con quali colori il suo team lavora otto ore al giorno.",
       "saveBtn": "Salva identità visiva"
     },
     "phoneField": {
@@ -8224,7 +8232,8 @@
       "platformHeading": "Protezioni della piattaforma",
       "platformHint": "Le gestisce {{marca}} per tutte le aziende. Qui puoi vedere se sono attive.",
       "statusActive": "Attiva",
-      "statusInactive": "Inattiva"
+      "statusInactive": "Inattiva",
+      "minLengthOutOfRange": "La lunghezza minima deve essere un numero tra {{min}} e {{max}}."
     },
     "central": {
       "loadError": "Impossibile caricare le impostazioni.",
@@ -8353,7 +8362,8 @@
       "departmentPlaceholder": "Reparto",
       "selectGuardsLabel": "Seleziona guardie specifiche",
       "selectGuardsPlaceholder": "Seleziona guardie…",
-      "searchGuardPlaceholder": "Cerca guardia…"
+      "searchGuardPlaceholder": "Cerca guardia…",
+      "editDialogTitle": "Modifica documento"
     },
     "notificationForm": {
       "checkInOutLabel": "Entrata/uscita della guardia",
@@ -9438,7 +9448,12 @@
       "nuevoCorreoCom": "nuova@email.com",
       "perfilActualizadoCorrectamente": "Profilo aggiornato correttamente.",
       "esElNombreConEl": "È il nome con cui ti vede il resto del team.",
-      "verificado": "Verificato"
+      "verificado": "Verificato",
+      "codigoNoEntregado": "Non siamo riusciti a inviare il codice a quel numero. Controlla il numero o riprova più tardi.",
+      "codigoDePrueba": "In questo ambiente non c'è un provider SMS. Codice di prova: {{code}}",
+      "escribeTuNumeroAntes": "Inserisci il tuo numero di cellulare prima di confermarlo.",
+      "correoNoValido": "Questo indirizzo email non è valido.",
+      "esTuCorreoActual": "Questo è già il tuo indirizzo email."
     },
     "Routes": {
       "turnoDia": "Turno giorno",
@@ -14626,7 +14641,8 @@
       "losPermisosYLicenciasQue": "I permessi e le licenze che il tuo personale può richiedere o presentare.",
       "tipoSDeLicenciaEliminado": "Tipo/i di licenza eliminato/i",
       "tipoDeLicenciaActualizado": "Tipo di licenza aggiornato",
-      "tipoDeLicenciaCreado": "Tipo di licenza creato"
+      "tipoDeLicenciaCreado": "Tipo di licenza creato",
+      "confirmarEliminacionTexto": "Eliminare {{count}} tipo/i di licenza? L'azione non può essere annullata."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Impossibile caricare l'utilizzo dell'assistente.",
@@ -14900,7 +14916,17 @@
       "noPudimosGuardarElDocumento": "Non è stato possibile salvare il documento.",
       "publicaElReglamentoInterno": "Pubblica il regolamento interno e saprai chi l'ha firmato.",
       "publicar": "Pubblica",
-      "reglamento": "Regolamento"
+      "reglamento": "Regolamento",
+      "estado": "Stato",
+      "publicada": "Pubblicato",
+      "borrador": "Bozza",
+      "ponleUnTitulo": "Dai un titolo al documento.",
+      "algunosNoSePudieron": "{{failed}} su {{total}} non sono stati modificati: {{reason}}",
+      "documentosPublicados": "Documenti pubblicati",
+      "documentosABorrador": "Documenti riportati in bozza",
+      "documentosEliminados": "Documenti eliminati",
+      "confirmarEliminacion": "Conferma eliminazione",
+      "confirmarEliminacionTexto": "Eliminare {{count}} documento/i? Chi doveva firmarli non li vedrà più. L'azione non può essere annullata."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Trascina o clicca per allegare",
@@ -15589,7 +15615,9 @@
       "inicio": "Home",
       "miCuenta": "Il mio account",
       "vistaPreviaAppMiSeguridadCliente": "Anteprima · app {{app}} (cliente)",
-      "seguridad": "Sicurezza"
+      "seguridad": "Sicurezza",
+      "nombreDeEjemplo": "Anna Rossi",
+      "sitioDeEjemplo": "Edificio Centrale"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -19482,7 +19510,12 @@
       "estaciones": "Postazioni",
       "plazas": "Posti con questo ciclo",
       "personas": "Persone",
-      "historial": "E {{count}} assegnazioni concluse che lo conservano nello storico."
+      "historial": "E {{count}} assegnazioni concluse che lo conservano nello storico.",
+      "enUsoConteo": "Postazioni: {{estaciones}} · Posti: {{plazas}} · Persone: {{personas}}",
+      "confirmarBorrarTitulo": "Eliminare «{{name}}»?",
+      "confirmarArchivarTitulo": "Archiviare «{{name}}»?",
+      "confirmarBorrarTexto": "Nessuno lo usa. Viene eliminato definitivamente e non si può annullare.",
+      "confirmarArchivarTexto": "Non viene più proposto quando si creano i turni. Chi lo usa già lo mantiene, e puoi riproporlo quando vuoi."
     },
     "HorarioDeOficina": {
       "pestana": "Orario",

@@ -336,7 +336,10 @@
     "forgotNoMailboxHint": "Si votre compte n'a pas d'e-mail, demandez le lien à votre superviseur ou au bureau.",
     "forgotSubtitleLoginId": "Saisissez votre e-mail ou votre identifiant et nous vous enverrons un lien pour en créer un nouveau.",
     "loginIdLabel": "E-mail ou identifiant",
-    "loginIdPlaceholder": "jmiranda ou vous@email.com"
+    "loginIdPlaceholder": "jmiranda ou vous@email.com",
+    "validation_symbol": "Doit contenir un caractère spécial",
+    "validation_same_as_old": "Le nouveau mot de passe doit être différent de l'actuel",
+    "passwordChangedSignInAgain": "Vous avez changé votre mot de passe. Connectez-vous avec le nouveau."
   },
   "client": {
     "invite_not_found": "Invitation introuvable ou non valide.",
@@ -7502,7 +7505,9 @@
       "computadoras": "Ordinateurs de bureau",
       "computadoras.desc": "Approuvez ou révoquez chaque ordinateur qui utilise l’application de bureau.",
       "app-escritorio": "Application de bureau",
-      "app-escritorio.desc": "Téléchargez le tableau de bord pour Mac ou Windows, dans sa propre fenêtre."
+      "app-escritorio.desc": "Téléchargez le tableau de bord pour Mac ou Windows, dans sa propre fenêtre.",
+      "payroll-slips": "Bulletins de paie",
+      "payroll-slips.desc": "Pays, salaire de base, durée du travail, doubles postes, impôt et numérotation du bulletin de paie."
     },
     "section": {
       "mi_cuenta": "Mon compte",
@@ -7792,7 +7797,7 @@
       "certIconAlt": "Icône de la certification",
       "noIcon": "Sans icône",
       "thisCert": "cette certification",
-      "bannerDialogDesc": "Configurez la bannière qui s'affichera dans le module MOBIL.",
+      "bannerDialogDesc": "Configurez la bannière que vos clients verront dans leur application.",
       "bannerTitlePlaceholder": "Titre de la bannière",
       "bannerDescPlaceholder": "Description de la bannière",
       "selectFileBtn": "Sélectionner un fichier",
@@ -7881,7 +7886,10 @@
       "guardVisSaved": "Préférence enregistrée.",
       "guardVisTitle": "Informations sur l'agent visibles par le client",
       "tabContent": "Contenu",
-      "tabGuard": "Confidentialité de l'agent"
+      "tabGuard": "Confidentialité de l'agent",
+      "serviceDescriptionRequired": "Rédigez une description du service.",
+      "certDatesRequired": "Indiquez la date d'obtention et la date d'expiration.",
+      "certDatesOrder": "La date d'expiration ne peut pas être antérieure à la date d'obtention."
     },
     "mobileHub": {
       "loadError": "Impossible de charger les paramètres.",
@@ -8103,7 +8111,7 @@
       "emailHeaderDesc": "Fond du bandeau où figure votre logo. Un ton foncé convient mieux pour que le texte blanc reste lisible.",
       "panelInfoBefore": "La couleur du panneau ? Celle-là est la vôtre, pas celle de l'entreprise : elle se choisit dans",
       "panelInfoStrong": "Mon compte › Apparence",
-      "panelInfoAfter": " et elle est enregistrée dans votre navigateur, comme le mode sombre. L'administrateur ne décide pas avec quelles couleurs son équipe travaille huit heures par jour.",
+      "panelInfoAfter": " et elle est enregistrée dans votre compte, comme le mode sombre. L'administrateur ne décide pas avec quelles couleurs son équipe travaille huit heures par jour.",
       "saveBtn": "Enregistrer"
     },
     "phoneField": {
@@ -8224,7 +8232,8 @@
       "platformHeading": "Protections de la plateforme",
       "platformHint": "{{marca}} les gère pour toutes les entreprises. Vous pouvez voir ici si elles sont actives.",
       "statusActive": "Active",
-      "statusInactive": "Inactive"
+      "statusInactive": "Inactive",
+      "minLengthOutOfRange": "La longueur minimale doit être un nombre entre {{min}} et {{max}}."
     },
     "central": {
       "loadError": "Impossible de charger les paramètres.",
@@ -8353,7 +8362,8 @@
       "departmentPlaceholder": "Département",
       "selectGuardsLabel": "Sélectionner des agents précis",
       "selectGuardsPlaceholder": "Sélectionner des agents…",
-      "searchGuardPlaceholder": "Rechercher un agent…"
+      "searchGuardPlaceholder": "Rechercher un agent…",
+      "editDialogTitle": "Modifier le document"
     },
     "notificationForm": {
       "checkInOutLabel": "Entrée / sortie de l'agent",
@@ -9438,7 +9448,12 @@
       "nuevoCorreoCom": "nouveau@courriel.com",
       "perfilActualizadoCorrectamente": "Profil mis à jour avec succès.",
       "esElNombreConEl": "C'est le nom sous lequel le reste de l'équipe vous voit.",
-      "verificado": "Vérifié"
+      "verificado": "Vérifié",
+      "codigoNoEntregado": "Nous n'avons pas pu envoyer le code à ce numéro. Vérifiez le numéro ou réessayez plus tard.",
+      "codigoDePrueba": "Aucun fournisseur SMS dans cet environnement. Code de test : {{code}}",
+      "escribeTuNumeroAntes": "Saisissez votre numéro de mobile avant de le confirmer.",
+      "correoNoValido": "Cette adresse e-mail n'est pas valide.",
+      "esTuCorreoActual": "C'est déjà votre adresse e-mail."
     },
     "Routes": {
       "turnoDia": "Vacation de jour",
@@ -14626,7 +14641,8 @@
       "losPermisosYLicenciasQue": "Les congés et absences que votre personnel peut demander ou justifier.",
       "tipoSDeLicenciaEliminado": "Type(s) de congé supprimé(s)",
       "tipoDeLicenciaActualizado": "Type de congé mis à jour",
-      "tipoDeLicenciaCreado": "Type de congé créé"
+      "tipoDeLicenciaCreado": "Type de congé créé",
+      "confirmarEliminacionTexto": "Supprimer {{count}} type(s) de licence ? Cette action est irréversible."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Impossible de charger l'utilisation de l'assistant.",
@@ -14900,7 +14916,17 @@
       "noPudimosGuardarElDocumento": "Impossible d'enregistrer le document.",
       "publicaElReglamentoInterno": "Publiez le règlement intérieur et vous saurez qui l'a signé.",
       "publicar": "Publier",
-      "reglamento": "Règlement"
+      "reglamento": "Règlement",
+      "estado": "Statut",
+      "publicada": "Publié",
+      "borrador": "Brouillon",
+      "ponleUnTitulo": "Donnez un titre au document.",
+      "algunosNoSePudieron": "{{failed}} sur {{total}} n'ont pas pu être modifiés : {{reason}}",
+      "documentosPublicados": "Documents publiés",
+      "documentosABorrador": "Documents repassés en brouillon",
+      "documentosEliminados": "Documents supprimés",
+      "confirmarEliminacion": "Confirmer la suppression",
+      "confirmarEliminacionTexto": "Supprimer {{count}} document(s) ? Les personnes qui devaient les signer ne les verront plus. Cette action est irréversible."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Glissez ou cliquez pour joindre",
@@ -15589,7 +15615,9 @@
       "inicio": "Accueil",
       "miCuenta": "Mon compte",
       "vistaPreviaAppMiSeguridadCliente": "Aperçu · app {{app}} (client)",
-      "seguridad": "Sécurité"
+      "seguridad": "Sécurité",
+      "nombreDeEjemplo": "Claire Martin",
+      "sitioDeEjemplo": "Bâtiment central"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -19482,7 +19510,12 @@
       "estaciones": "Postes",
       "plazas": "Places avec ce cycle",
       "personas": "Personnes",
-      "historial": "Et {{count}} affectations terminées qui le gardent dans leur historique."
+      "historial": "Et {{count}} affectations terminées qui le gardent dans leur historique.",
+      "enUsoConteo": "Postes : {{estaciones}} · Places : {{plazas}} · Personnes : {{personas}}",
+      "confirmarBorrarTitulo": "Supprimer « {{name}} » ?",
+      "confirmarArchivarTitulo": "Archiver « {{name}} » ?",
+      "confirmarBorrarTexto": "Personne ne l'utilise. Il est supprimé définitivement, sans retour possible.",
+      "confirmarArchivarTexto": "Il n'est plus proposé lors de la création des plannings. Ceux qui l'utilisent déjà le conservent, et vous pouvez le proposer de nouveau à tout moment."
     },
     "HorarioDeOficina": {
       "pestana": "Horaires",

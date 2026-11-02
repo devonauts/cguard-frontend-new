@@ -242,7 +242,7 @@ export default function CustomerAppPreview({
                     {tr("ui.CustomerAppPreview.buenasNoches", "Buenas noches")} 🌙
                   </div>
                   <div className="text-lg font-bold leading-tight">
-                    Michael Urresta
+                    {tr("ui.CustomerAppPreview.nombreDeEjemplo", "Ana Pérez")}
                   </div>
                 </div>
                 <div className="relative">
@@ -267,7 +267,7 @@ export default function CustomerAppPreview({
                   <ShieldCheck className="size-5 text-emerald-500" />
                 </div>
                 <div className="mt-2 text-[15px] font-bold leading-snug">
-                  Innovation Grounds ·{" "}
+                  {tr("ui.CustomerAppPreview.sitioDeEjemplo", "Edificio Central")} ·{" "}
                   {tr("ui.CustomerAppPreview.puertaPrincipal", "Puerta principal")}
                 </div>
                 <div className={`mt-0.5 text-xs ${t.sub}`}>

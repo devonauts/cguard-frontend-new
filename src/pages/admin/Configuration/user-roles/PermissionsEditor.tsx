@@ -278,6 +278,7 @@ export default function PermissionsEditor({
                           }
                         >
                           <Checkbox
+                            aria-label={formatPermissionLabel(p)}
                             checked={concedido}
                             className="mt-0.5"
                             disabled={readOnly || bloqueado}

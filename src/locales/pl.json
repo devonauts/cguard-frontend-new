@@ -336,7 +336,10 @@
     "forgotNoMailboxHint": "Jeśli Twoje konto nie ma e-maila, poproś przełożonego lub biuro o link.",
     "forgotSubtitleLoginId": "Wpisz swój e-mail lub nazwę użytkownika, a wyślemy Ci link do utworzenia nowego hasła.",
     "loginIdLabel": "E-mail lub nazwa użytkownika",
-    "loginIdPlaceholder": "jmiranda lub ty@email.com"
+    "loginIdPlaceholder": "jmiranda lub ty@email.com",
+    "validation_symbol": "Musi zawierać znak specjalny",
+    "validation_same_as_old": "Nowe hasło musi się różnić od obecnego",
+    "passwordChangedSignInAgain": "Zmieniłeś hasło. Zaloguj się nowym hasłem."
   },
   "client": {
     "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieprawidłowe.",
@@ -7516,7 +7519,9 @@
       "computadoras": "Komputery z aplikacją desktopową",
       "computadoras.desc": "Zatwierdzaj lub unieważniaj komputery, na których działa aplikacja desktopowa.",
       "app-escritorio": "Aplikacja desktopowa",
-      "app-escritorio.desc": "Pobierz panel na Maca lub Windows, we własnym oknie."
+      "app-escritorio.desc": "Pobierz panel na Maca lub Windows, we własnym oknie.",
+      "payroll-slips": "Paski wypłaty",
+      "payroll-slips.desc": "Kraj, wynagrodzenie bazowe, czas pracy, podwójne zmiany, podatek dochodowy i numeracja paska wypłaty."
     },
     "section": {
       "mi_cuenta": "Moje konto",
@@ -7806,7 +7811,7 @@
       "certIconAlt": "Ikona certyfikatu",
       "noIcon": "Brak ikony",
       "thisCert": "ten certyfikat",
-      "bannerDialogDesc": "Prosimy skonfigurować baner wyświetlany w module MOBIL.",
+      "bannerDialogDesc": "Skonfiguruj baner, który klienci zobaczą w swojej aplikacji.",
       "bannerTitlePlaceholder": "Tytuł banera",
       "bannerDescPlaceholder": "Opis banera",
       "selectFileBtn": "Wybierz plik",
@@ -7895,7 +7900,10 @@
       "guardVisSaved": "Ustawienie zapisane.",
       "guardVisTitle": "Dane ochroniarza widoczne dla zleceniodawcy",
       "tabContent": "Treść",
-      "tabGuard": "Prywatność ochroniarza"
+      "tabGuard": "Prywatność ochroniarza",
+      "serviceDescriptionRequired": "Wpisz opis usługi.",
+      "certDatesRequired": "Podaj datę uzyskania i datę wygaśnięcia.",
+      "certDatesOrder": "Data wygaśnięcia nie może być wcześniejsza niż data uzyskania."
     },
     "mobileHub": {
       "loadError": "Nie udało się wczytać ustawień.",
@@ -8117,7 +8125,7 @@
       "emailHeaderDesc": "Tło paska, na którym umieszczony jest logotyp. Zalecany ciemny odcień, aby biały tekst był czytelny.",
       "panelInfoBefore": "A kolor panelu? Ten należy do Państwa, nie do firmy: wybiera się go w",
       "panelInfoStrong": "Moje konto › Wygląd",
-      "panelInfoAfter": " i zapisuje w przeglądarce, tak jak tryb ciemny. Administrator nie decyduje, w jakich kolorach jego zespół pracuje osiem godzin dziennie.",
+      "panelInfoAfter": " i zapisuje się na twoim koncie, tak jak tryb ciemny. Administrator nie decyduje, w jakich kolorach jego zespół pracuje osiem godzin dziennie.",
       "saveBtn": "Zapisz markę"
     },
     "phoneField": {
@@ -8238,7 +8246,8 @@
       "platformHeading": "Zabezpieczenia systemu",
       "platformHint": "Zarządza nimi {{marca}} dla wszystkich firm. Tutaj widać, czy są aktywne.",
       "statusActive": "Aktywne",
-      "statusInactive": "Nieaktywne"
+      "statusInactive": "Nieaktywne",
+      "minLengthOutOfRange": "Minimalna długość musi być liczbą od {{min}} do {{max}}."
     },
     "central": {
       "loadError": "Nie udało się wczytać ustawień.",
@@ -8367,7 +8376,8 @@
       "departmentPlaceholder": "Dział",
       "selectGuardsLabel": "Wybierz konkretnych pracowników ochrony",
       "selectGuardsPlaceholder": "Wybierz pracowników ochrony…",
-      "searchGuardPlaceholder": "Szukaj pracownika ochrony…"
+      "searchGuardPlaceholder": "Szukaj pracownika ochrony…",
+      "editDialogTitle": "Edytuj dokument"
     },
     "notificationForm": {
       "checkInOutLabel": "Wejście / wyjście pracownika ochrony",
@@ -9454,7 +9464,12 @@
       "nuevoCorreoCom": "nowy@adres.pl",
       "perfilActualizadoCorrectamente": "Profil został zaktualizowany.",
       "esElNombreConEl": "To imię i nazwisko widzi reszta zespołu.",
-      "verificado": "Zweryfikowany"
+      "verificado": "Zweryfikowany",
+      "codigoNoEntregado": "Nie udało się wysłać kodu na ten numer. Sprawdź numer lub spróbuj później.",
+      "codigoDePrueba": "W tym środowisku nie ma dostawcy SMS. Kod testowy: {{code}}",
+      "escribeTuNumeroAntes": "Wpisz swój numer komórkowy, zanim go potwierdzisz.",
+      "correoNoValido": "Ten adres e-mail jest nieprawidłowy.",
+      "esTuCorreoActual": "To już jest twój adres e-mail."
     },
     "Routes": {
       "turnoDia": "Zmiana dzienna",
@@ -14774,7 +14789,8 @@
       "losPermisosYLicenciasQue": "Uprawnienia i licencje, o które personel może wnioskować lub które może wykazać.",
       "tipoSDeLicenciaEliminado": "Typy licencji usunięte",
       "tipoDeLicenciaActualizado": "Typ licencji zaktualizowany",
-      "tipoDeLicenciaCreado": "Typ licencji utworzony"
+      "tipoDeLicenciaCreado": "Typ licencji utworzony",
+      "confirmarEliminacionTexto": "Usunąć typy licencji ({{count}})? Tej operacji nie można cofnąć."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "Nie udało się wczytać danych o użyciu asystenta.",
@@ -15060,7 +15076,17 @@
       "noPudimosGuardarElDocumento": "Nie udało się zapisać dokumentu.",
       "publicaElReglamentoInterno": "Opublikuj regulamin wewnętrzny, a zobaczysz, kto go podpisał.",
       "publicar": "Opublikuj",
-      "reglamento": "Regulamin"
+      "reglamento": "Regulamin",
+      "estado": "Status",
+      "publicada": "Opublikowany",
+      "borrador": "Szkic",
+      "ponleUnTitulo": "Nadaj dokumentowi tytuł.",
+      "algunosNoSePudieron": "Nie udało się zmienić {{failed}} z {{total}}: {{reason}}",
+      "documentosPublicados": "Dokumenty opublikowane",
+      "documentosABorrador": "Dokumenty przeniesione do szkiców",
+      "documentosEliminados": "Dokumenty usunięte",
+      "confirmarEliminacion": "Potwierdź usunięcie",
+      "confirmarEliminacionTexto": "Usunąć {{count}} dokument(y)? Osoby, które miały je podpisać, przestaną je widzieć. Tej operacji nie można cofnąć."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Prosimy przeciągnąć lub kliknąć, aby załączyć",
@@ -15765,7 +15791,9 @@
       "inicio": "Start",
       "miCuenta": "Moje konto",
       "vistaPreviaAppMiSeguridadCliente": "Podgląd · aplikacja {{app}} (klient)",
-      "seguridad": "Bezpieczeństwo"
+      "seguridad": "Bezpieczeństwo",
+      "nombreDeEjemplo": "Anna Kowalska",
+      "sitioDeEjemplo": "Budynek główny"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -19786,7 +19814,12 @@
       "estaciones": "Posterunki",
       "plazas": "Miejsca z tym cyklem",
       "personas": "Osoby",
-      "historial": "I {{count}} zakończone przydziały, które zachowują go w historii."
+      "historial": "I {{count}} zakończone przydziały, które zachowują go w historii.",
+      "enUsoConteo": "Posterunki: {{estaciones}} · Miejsca: {{plazas}} · Osoby: {{personas}}",
+      "confirmarBorrarTitulo": "Usunąć „{{name}}”?",
+      "confirmarArchivarTitulo": "Zarchiwizować „{{name}}”?",
+      "confirmarBorrarTexto": "Nikt go nie używa. Zostanie usunięty na stałe i nie można tego cofnąć.",
+      "confirmarArchivarTexto": "Przestanie być proponowany przy tworzeniu grafików. Kto już go używa, zachowa go, a w każdej chwili możesz go znowu udostępnić."
     },
     "HorarioDeOficina": {
       "pestana": "Grafik",

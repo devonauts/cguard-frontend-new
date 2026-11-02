@@ -57,17 +57,29 @@ export default function PolicyDialog({
   onOpenChange,
   onSubmit,
   onDraft,
+  initial,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onSubmit: (data: PolicyForm) => void;
   onDraft: (data: PolicyForm) => void;
+  /** An existing document to edit; without it the dialog creates a new one. */
+  initial?: Partial<PolicyForm> | null;
 }) {
   const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [dept, setDept] = useState<string | undefined>();
   const [guards, setGuards] = useState<string[]>([]);
+
+  // Each opening starts from the document being edited (or empty).
+  useEffect(() => {
+    if (!open) return;
+    setTitle(initial?.title ?? "");
+    setContent(initial?.content ?? "");
+    setDept(initial?.departmentId || undefined);
+    setGuards(initial?.guards ?? []);
+  }, [open, initial]);
 
   /* Vigilantes y departamentos REALES. Antes eran dos listas inventadas en este
      archivo («Juan Pérez», «Operaciones»): la política se asignaba a gente que
@@ -143,6 +155,7 @@ export default function PolicyDialog({
             {t("settings.companyPolicies.closeBtn", { defaultValue: "Cerrar" })}
           </Button>
           <Button
+            disabled={!title.trim()}
             type="button"
             variant="outline"
             onClick={() => onDraft(payload)}
@@ -164,9 +177,15 @@ export default function PolicyDialog({
       icon={<FileText />}
       open={open}
       size="lg"
-      title={t("settings.companyPolicies.dialogTitle", {
-        defaultValue: "Agregar Política de Empresa",
-      })}
+      title={
+        initial
+          ? t("settings.companyPolicies.editDialogTitle", {
+              defaultValue: "Editar documento",
+            })
+          : t("settings.companyPolicies.dialogTitle", {
+              defaultValue: "Agregar Política de Empresa",
+            })
+      }
       onOpenChange={(v) => {
         onOpenChange(v);
         if (!v) reset();

@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { AlertTriangle, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/kit";
+import { Modal, StatusBadge } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 import { CatalogTable, type CatalogColumn } from "../components/CatalogTable";
 import PolicyDialog, { PolicyForm } from "./PolicyDialog";
+import { firstDepartmentId, policyBody } from "./policyBody";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { getServerErrorMessage } from "@/lib/utils";
 
 type Policy = {
   id: string;
   title: string;
+  content?: string | null;
+  departmentIds?: string[] | string | null;
   createdAt: string;
   status: "published" | "draft";
   version?: number;
@@ -40,6 +44,20 @@ export default function CompanyPoliciesTable() {
   const columns: CatalogColumn<Policy>[] = useMemo(
     () => [
       { key: "title", header: t("settings.policies.colTitle", "Título") },
+      {
+        key: "status",
+        header: t("ui.CompanyPoliciesTable.estado", "Estado"),
+        render: (v) =>
+          v === "published" ? (
+            <StatusBadge tone="ok">
+              {t("ui.CompanyPoliciesTable.publicada", "Publicada")}
+            </StatusBadge>
+          ) : (
+            <StatusBadge tone="neutral">
+              {t("ui.CompanyPoliciesTable.borrador", "Borrador")}
+            </StatusBadge>
+          ),
+      },
       {
         key: "kindLabel",
         header: t("dashboard.table.headers.type", "Tipo"),
@@ -71,14 +89,31 @@ export default function CompanyPoliciesTable() {
   );
   const [query, setQuery] = useState("");
   const [openNew, setOpenNew] = useState(false);
+  const [editing, setEditing] = useState<Policy | null>(null);
+  const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [policies, setPolicies] = useState<Policy[]>([]);
+  const [deleteIds, setDeleteIds] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return policies;
     return policies.filter((p) => p.title.toLowerCase().includes(q));
   }, [query, policies]);
+
+  // The list comes whole from the server (max 200): pages are cut here.
+  const maxPage = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, maxPage);
+  const visibleRows = useMemo(
+    () =>
+      filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [filtered, currentPage, pageSize],
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, pageSize]);
 
   const cargar = useCallback(async () => {
     try {
@@ -114,27 +149,43 @@ export default function CompanyPoliciesTable() {
   }, [cargar]);
 
   const guardar = async (data: PolicyForm, status: "published" | "draft") => {
+    if (!data.title.trim()) {
+      toast.error(
+        t("ui.CompanyPoliciesTable.ponleUnTitulo", "Ponle un título al documento."),
+      );
+
+      return;
+    }
     try {
-      await ApiService.post(`/tenant/${tenantId()}/company-policy`, {
-        ...data,
-        status,
-      });
+      const body = policyBody(data, status);
+
+      if (editing) {
+        await ApiService.put(
+          `/tenant/${tenantId()}/company-policy/${editing.id}`,
+          body,
+        );
+      } else {
+        await ApiService.post(`/tenant/${tenantId()}/company-policy`, body);
+      }
       toast.success(
         status === "published"
           ? t("ui.CompanyPoliciesTable.documentoPublicado", "Documento publicado")
           : t("ui.CompanyPoliciesTable.borradorGuardado", "Borrador guardado"),
       );
       setOpenNew(false);
+      setEditing(null);
       await cargar();
     } catch (e: any) {
       // Se dice QUÉ falló y el diálogo se queda abierto con lo escrito dentro:
       // cerrar y perder el texto es lo que hace que nadie vuelva a intentarlo.
       toast.error(
-        e?.response?.data?.message ||
+        getServerErrorMessage(
+          e,
           t(
             "ui.CompanyPoliciesTable.noPudimosGuardarElDocumento",
             "No pudimos guardar el documento.",
           ),
+        ),
       );
     }
   };
@@ -142,38 +193,134 @@ export default function CompanyPoliciesTable() {
   const handleCreate = (data: PolicyForm) => void guardar(data, "published");
   const handleDraft = (data: PolicyForm) => void guardar(data, "draft");
 
+  /** Runs one request per selected document and says how many failed. */
+  const enLote = async (
+    ids: string[],
+    run: (id: string) => Promise<unknown>,
+    okText: string,
+  ) => {
+    if (!ids.length || busy) return;
+    setBusy(true);
+    const results = await Promise.allSettled(ids.map((id) => run(id)));
+    const failed = results.filter((r) => r.status === "rejected");
+
+    if (failed.length === 0) {
+      toast.success(okText);
+    } else {
+      toast.error(
+        t("ui.CompanyPoliciesTable.algunosNoSePudieron", {
+          defaultValue: "{{failed}} de {{total}} no se pudieron cambiar: {{reason}}",
+          failed: failed.length,
+          total: ids.length,
+          reason: getServerErrorMessage(
+            (failed[0] as PromiseRejectedResult).reason,
+            "",
+          ),
+        }),
+      );
+    }
+    setBusy(false);
+    await cargar();
+  };
+
+  const cambiarEstado = (ids: string[], status: "published" | "draft") =>
+    enLote(
+      ids,
+      (id) =>
+        ApiService.put(`/tenant/${tenantId()}/company-policy/${id}`, { status }),
+      status === "published"
+        ? t("ui.CompanyPoliciesTable.documentosPublicados", "Documentos publicados")
+        : t("ui.CompanyPoliciesTable.documentosABorrador", "Documentos movidos a borrador"),
+    );
+
+  const eliminar = async () => {
+    const ids = deleteIds;
+
+    setDeleteIds([]);
+    await enLote(
+      ids,
+      (id) => ApiService.delete(`/tenant/${tenantId()}/company-policy/${id}`),
+      t("ui.CompanyPoliciesTable.documentosEliminados", "Documentos eliminados"),
+    );
+  };
+
+  const abrirParaEditar = (p: Policy) => {
+    setEditing(p);
+    setOpenNew(true);
+  };
+
+  const initial = useMemo<Partial<PolicyForm> | null>(
+    () =>
+      editing
+        ? {
+            title: editing.title,
+            content: editing.content ?? "",
+            departmentId: firstDepartmentId(editing.departmentIds),
+          }
+        : null,
+    [editing],
+  );
+
   return (
     <>
       <CatalogTable<Policy>
-        rows={filtered}
+        rows={visibleRows}
         columns={columns}
         canEdit
+        loading={busy}
+        onRowClick={abrirParaEditar}
+        rowActions={(r) => [
+          {
+            label: t("actions.edit", "Editar"),
+            onClick: () => abrirParaEditar(r),
+          },
+          r.status === "published"
+            ? {
+                label: t("ui.CompanyPoliciesTable.moverABorrador", "Mover a borrador"),
+                onClick: () => void cambiarEstado([r.id], "draft"),
+              }
+            : {
+                label: t("ui.CompanyPoliciesTable.publicar", "Publicar"),
+                onClick: () => void cambiarEstado([r.id], "published"),
+              },
+          {
+            label: t("actions.delete", "Eliminar"),
+            destructive: true,
+            onClick: () => setDeleteIds([r.id]),
+          },
+        ]}
         query={query}
         onQueryChange={setQuery}
         searchPlaceholder={t(
           "ui.CompanyPoliciesTable.buscarPoliticaDeEmpresa",
           "Buscar política de empresa",
         )}
-        page={1}
+        page={currentPage}
         pageSize={pageSize}
         total={filtered.length}
-        onPageChange={() => {}}
+        onPageChange={setPage}
         onPageSizeChange={setPageSize}
         bulkActions={[
           {
             label: t("actions.delete", "Eliminar"),
             destructive: true,
-            onRun: () => {},
+            onRun: (ids) => setDeleteIds(ids),
           },
-          { label: t("ui.CompanyPoliciesTable.publicar", "Publicar"), onRun: () => {} },
+          {
+            label: t("ui.CompanyPoliciesTable.publicar", "Publicar"),
+            onRun: (ids) => void cambiarEstado(ids, "published"),
+          },
           {
             label: t("ui.CompanyPoliciesTable.moverABorrador", "Mover a borrador"),
-            onRun: () => {},
+            onRun: (ids) => void cambiarEstado(ids, "draft"),
           },
         ]}
         toolbarExtra={
           <Button
-            onClick={() => setOpenNew(true)}
+            onClick={() => {
+              setEditing(null);
+              setOpenNew(true);
+            }}
             variant="brand"
             className="whitespace-nowrap"
           >
@@ -198,11 +345,43 @@ export default function CompanyPoliciesTable() {
       />
 
       <PolicyDialog
+        initial={initial}
         open={openNew}
-        onOpenChange={setOpenNew}
+        onOpenChange={(v) => {
+          setOpenNew(v);
+          if (!v) setEditing(null);
+        }}
         onSubmit={handleCreate}
         onDraft={handleDraft}
       />
+
+      <Modal
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setDeleteIds([])}>
+              {t("actions.cancel", "Cancelar")}
+            </Button>
+            <Button variant="destructive" onClick={() => void eliminar()}>
+              {t("actions.delete", "Eliminar")}
+            </Button>
+          </>
+        }
+        icon={<AlertTriangle />}
+        open={deleteIds.length > 0}
+        size="sm"
+        title={t("ui.CompanyPoliciesTable.confirmarEliminacion", "Confirmar eliminación")}
+        onOpenChange={(v) => {
+          if (!v) setDeleteIds([]);
+        }}
+      >
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {t("ui.CompanyPoliciesTable.confirmarEliminacionTexto", {
+            defaultValue:
+              "¿Eliminar {{count}} documento(s)? Quien tenía que firmarlos dejará de verlos. Esta acción no se puede deshacer.",
+            count: deleteIds.length,
+          })}
+        </p>
+      </Modal>
     </>
   );
 }

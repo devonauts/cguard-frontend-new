@@ -1167,7 +1167,7 @@ export default function CommunicationsPage() {
                                 <TableCell className="text-sm">
                                   {channelLabel(row.channel)}
                                   <span
-                                    className="ml-1 text-xs"
+                                    className="block text-xs"
                                     style={{ color: "var(--ink-faint)" }}
                                   >
                                     {row.provider}
@@ -1180,7 +1180,7 @@ export default function CommunicationsPage() {
                                   className="max-w-[160px] truncate text-xs"
                                   title={row.recipient}
                                 >
-                                  {row.recipient}
+                                  {row.recipientName || row.recipient}
                                 </TableCell>
                                 <TableCell>
                                   <span title={row.errorMessage || undefined}>

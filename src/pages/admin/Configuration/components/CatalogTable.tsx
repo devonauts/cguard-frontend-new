@@ -172,6 +172,8 @@ export type CatalogTableProps<T extends { id: string }> = {
   onPageSizeChange: (n: number) => void;
 
   rowActions?: (row: T) => RowAction[];
+  /** Clic en la fila (p. ej. abrir para editar). */
+  onRowClick?: (row: T) => void;
 
   /** Sin acciones en lote no se dibuja la columna de casillas. */
   bulkActions?: BulkAction[];
@@ -200,6 +202,7 @@ export function CatalogTable<T extends { id: string }>({
   onPageChange,
   onPageSizeChange,
   rowActions,
+  onRowClick,
   bulkActions,
   canEdit = true,
   empty,
@@ -281,6 +284,7 @@ export function CatalogTable<T extends { id: string }>({
         }
         loading={loading}
         rowActions={canEdit ? rowActions : undefined}
+        onRowClick={canEdit ? onRowClick : undefined}
         selectedIds={seleccionable ? marcados : undefined}
         onSelectAll={
           seleccionable

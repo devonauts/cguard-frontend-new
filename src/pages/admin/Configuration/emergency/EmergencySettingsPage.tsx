@@ -30,6 +30,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 import { tablaDeEtiquetas } from "@/lib/i18nLabel";
+import { roleDisplayName } from "@/config/roleLabels";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -106,9 +107,15 @@ export default function EmergencySettingsPage() {
           if (["securityGuard", "customer", "superadmin"].includes(slug))
             continue;
           vistos.add(slug);
+          // Built-in roles outside ETIQUETA_ROL (branchManager, secretary…)
+          // came back from the API named by their slug and showed raw keys.
+          const builtIn = roleDisplayName(slug);
+
           lista.push({
             slug,
-            label: ETIQUETA_ROL[slug] || r.label || r.name || slug,
+            label:
+              ETIQUETA_ROL[slug] ||
+              (builtIn !== slug ? builtIn : r.label || r.name || slug),
           });
         }
         // Si el endpoint de roles falla, al menos los del sistema.

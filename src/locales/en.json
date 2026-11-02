@@ -467,7 +467,10 @@
     "forgotNoMailboxHint": "If your account has no email, ask your supervisor or the office for the link.",
     "forgotSubtitleLoginId": "Enter your email or username and we'll send you a link to create a new one.",
     "loginIdLabel": "Email or username",
-    "loginIdPlaceholder": "jmiranda or you@email.com"
+    "loginIdPlaceholder": "jmiranda or you@email.com",
+    "validation_symbol": "Must include a special character",
+    "validation_same_as_old": "The new password must be different from the current one",
+    "passwordChangedSignInAgain": "You changed your password. Sign in with the new one."
   },
   "billing": {
     "title": "Subscription status",
@@ -7000,7 +7003,9 @@
       "computadoras": "Desktop computers",
       "computadoras.desc": "Approve or revoke each computer that uses the desktop app.",
       "app-escritorio": "Desktop app",
-      "app-escritorio.desc": "Download the dashboard for Mac or Windows, in its own window."
+      "app-escritorio.desc": "Download the dashboard for Mac or Windows, in its own window.",
+      "payroll-slips": "Payslips",
+      "payroll-slips.desc": "Country, base salary, working hours, double shifts, income tax and payslip numbering."
     },
     "section": {
       "mi_cuenta": "My account",
@@ -7290,7 +7295,7 @@
       "certIconAlt": "Certification icon",
       "noIcon": "No icon",
       "thisCert": "this certification",
-      "bannerDialogDesc": "Configure the banner that will be shown in the MOBIL module.",
+      "bannerDialogDesc": "Set up the banner your clients will see in their app.",
       "bannerTitlePlaceholder": "Banner title",
       "bannerDescPlaceholder": "Banner description",
       "selectFileBtn": "Select file",
@@ -7379,7 +7384,10 @@
       "guardVisSaved": "Preference saved.",
       "guardVisTitle": "Guard details visible to the client",
       "tabContent": "Content",
-      "tabGuard": "Guard privacy"
+      "tabGuard": "Guard privacy",
+      "serviceDescriptionRequired": "Write a description of the service.",
+      "certDatesRequired": "Enter the acquisition date and the expiration date.",
+      "certDatesOrder": "The expiration date cannot be earlier than the acquisition date."
     },
     "mobileHub": {
       "loadError": "The settings could not be loaded.",
@@ -7601,7 +7609,7 @@
       "emailHeaderDesc": "Background of the band where your logo goes. A dark tone works best so the white text is readable.",
       "panelInfoBefore": "The panel color? That one is yours, not the company's: it's chosen in",
       "panelInfoStrong": "My account › Appearance",
-      "panelInfoAfter": " and is saved in your browser, like dark mode. The administrator doesn't decide which colors their team works with eight hours a day.",
+      "panelInfoAfter": " and is saved to your account, like dark mode. The administrator doesn't decide which colors their team works with eight hours a day.",
       "saveBtn": "Save branding"
     },
     "phoneField": {
@@ -7722,7 +7730,8 @@
       "platformHeading": "Platform protections",
       "platformHint": "{{marca}} manages them for all companies. Here you can see whether they're active.",
       "statusActive": "Active",
-      "statusInactive": "Inactive"
+      "statusInactive": "Inactive",
+      "minLengthOutOfRange": "The minimum length must be a number between {{min}} and {{max}}."
     },
     "central": {
       "loadError": "The settings could not be loaded.",
@@ -7851,7 +7860,8 @@
       "departmentPlaceholder": "Department",
       "selectGuardsLabel": "Select Specific Guards",
       "selectGuardsPlaceholder": "Select guards…",
-      "searchGuardPlaceholder": "Search guard…"
+      "searchGuardPlaceholder": "Search guard…",
+      "editDialogTitle": "Edit document"
     },
     "notificationForm": {
       "checkInOutLabel": "Guard check-in/out",
@@ -8898,7 +8908,12 @@
       "nuevoCorreoCom": "new@email.com",
       "perfilActualizadoCorrectamente": "Profile updated successfully.",
       "esElNombreConEl": "This is the name the rest of the team sees.",
-      "verificado": "Verified"
+      "verificado": "Verified",
+      "codigoNoEntregado": "We couldn't send the code to that number. Check the number or try again later.",
+      "codigoDePrueba": "There is no SMS provider in this environment. Test code: {{code}}",
+      "escribeTuNumeroAntes": "Enter your mobile number before confirming it.",
+      "correoNoValido": "That email address is not valid.",
+      "esTuCorreoActual": "That is already your email address."
     },
     "Routes": {
       "turnoDia": "Day shift",
@@ -14086,7 +14101,8 @@
       "losPermisosYLicenciasQue": "The leave types and licences your staff can request or hold.",
       "tipoSDeLicenciaEliminado": "Licence type(s) deleted",
       "tipoDeLicenciaActualizado": "Licence type updated",
-      "tipoDeLicenciaCreado": "Licence type created"
+      "tipoDeLicenciaCreado": "Licence type created",
+      "confirmarEliminacionTexto": "Delete {{count}} license type(s)? This cannot be undone."
     },
     "VigiaUsagePage": {
       "noSePudoCargarEl": "The assistant's usage could not be loaded.",
@@ -14360,7 +14376,17 @@
       "noPudimosGuardarElDocumento": "We couldn't save the document.",
       "publicaElReglamentoInterno": "Publish your internal rules and you'll see who has signed them.",
       "publicar": "Publish",
-      "reglamento": "Rules"
+      "reglamento": "Rules",
+      "estado": "Status",
+      "publicada": "Published",
+      "borrador": "Draft",
+      "ponleUnTitulo": "Give the document a title.",
+      "algunosNoSePudieron": "{{failed}} of {{total}} could not be changed: {{reason}}",
+      "documentosPublicados": "Documents published",
+      "documentosABorrador": "Documents moved to draft",
+      "documentosEliminados": "Documents deleted",
+      "confirmarEliminacion": "Confirm deletion",
+      "confirmarEliminacionTexto": "Delete {{count}} document(s)? The people who had to sign them will no longer see them. This cannot be undone."
     },
     "DocumentUpload": {
       "arrastraOHazClicParaAdjuntar": "Drag or click to attach",
@@ -15049,7 +15075,9 @@
       "inicio": "Home",
       "miCuenta": "My Account",
       "vistaPreviaAppMiSeguridadCliente": "Preview · {{app}} app (client)",
-      "seguridad": "Security"
+      "seguridad": "Security",
+      "nombreDeEjemplo": "Jane Smith",
+      "sitioDeEjemplo": "Central Building"
     },
     "MobilPage": {
       "serviceTemplateDesc": {
@@ -18942,7 +18970,12 @@
       "estaciones": "Stations",
       "plazas": "Positions with this cycle",
       "personas": "People",
-      "historial": "And {{count}} ended assignments that keep it in their history."
+      "historial": "And {{count}} ended assignments that keep it in their history.",
+      "enUsoConteo": "Stations: {{estaciones}} · Positions: {{plazas}} · People: {{personas}}",
+      "confirmarBorrarTitulo": "Delete «{{name}}»?",
+      "confirmarArchivarTitulo": "Archive «{{name}}»?",
+      "confirmarBorrarTexto": "Nobody uses it. It is deleted for good and cannot be undone.",
+      "confirmarArchivarTexto": "It stops being offered when building schedules. Whoever already uses it keeps it, and you can offer it again at any time."
     },
     "HorarioDeOficina": {
       "pestana": "Schedule",

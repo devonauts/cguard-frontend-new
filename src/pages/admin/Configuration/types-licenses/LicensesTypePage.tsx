@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { IdCard, Plus } from "lucide-react";
+import { AlertTriangle, IdCard, Plus } from "lucide-react";
 
 import SettingsPageShell from "../components/SettingsPageShell";
 
@@ -12,7 +12,7 @@ import LicenseTypeDialog, {
 
 import licenseTypeService from "@/lib/api/licenseTypeService";
 import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/kit";
+import { Modal, StatusBadge } from "@/components/kit";
 
 export default function LicenseTypePage() {
   const { t } = useTranslation();
@@ -24,6 +24,8 @@ export default function LicenseTypePage() {
   const [rows, setRows] = useState<LicenseTypeRow[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  // Delete asks first, like the other catalogs (incident types, departments, roles).
+  const [deleteIds, setDeleteIds] = useState<string[]>([]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -102,17 +104,8 @@ export default function LicenseTypePage() {
         query={query}
         rows={rows}
         total={total}
-        onBulkDelete={async (ids: string[]) => {
-          if (!ids?.length) return;
-          try {
-            await licenseTypeService.destroy(ids);
-            toast.success(t("ui.LicensesTypePage.tipoSDeLicenciaEliminado"));
-            await fetchData();
-          } catch (e: any) {
-            toast.error(
-              e?.message || t("clients.errorDelete", "Error al eliminar"),
-            );
-          }
+        onBulkDelete={(ids: string[]) => {
+          if (ids?.length) setDeleteIds(ids);
         }}
         onEdit={(r: LicenseTypeRow) => {
           setEdit(r);
@@ -171,6 +164,53 @@ export default function LicenseTypePage() {
           }
         }}
       />
+      <Modal
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setDeleteIds([])}>
+              {t("actions.cancel", "Cancelar")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                const ids = deleteIds;
+
+                setDeleteIds([]);
+                try {
+                  await licenseTypeService.destroy(ids);
+                  toast.success(
+                    t("ui.LicensesTypePage.tipoSDeLicenciaEliminado"),
+                  );
+                  await fetchData();
+                } catch (e: any) {
+                  toast.error(
+                    e?.message || t("clients.errorDelete", "Error al eliminar"),
+                  );
+                }
+              }}
+            >
+              {t("actions.delete", "Eliminar")}
+            </Button>
+          </>
+        }
+        icon={<AlertTriangle />}
+        open={deleteIds.length > 0}
+        size="sm"
+        title={t("settings.incidentTypes.confirmDeleteTitle", {
+          defaultValue: "Confirmar eliminación",
+        })}
+        onOpenChange={(v) => {
+          if (!v) setDeleteIds([]);
+        }}
+      >
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {t("ui.LicensesTypePage.confirmarEliminacionTexto", {
+            defaultValue:
+              "¿Eliminar {{count}} tipo(s) de licencia? Esta acción no se puede deshacer.",
+            count: deleteIds.length,
+          })}
+        </p>
+      </Modal>
     </SettingsPageShell>
   );
 }
