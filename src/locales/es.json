@@ -13105,7 +13105,8 @@
       "rechazarTitulo": "Rechazar el permiso",
       "rechazarMensaje": "Se rechaza el permiso de {{nombre}} y se le avisa. Puedes decirle por qué (opcional).",
       "rechazarMotivo": "Motivo (opcional)",
-      "solicitudEliminada": "Solicitud eliminada"
+      "solicitudEliminada": "Solicitud eliminada",
+      "rechazadoOk": "Permiso rechazado. Se le avisó a {{nombre}}."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",

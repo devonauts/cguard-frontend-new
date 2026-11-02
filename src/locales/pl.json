@@ -13782,7 +13782,8 @@
       "rechazarTitulo": "Odrzuć nieobecność",
       "rechazarMensaje": "Nieobecność osoby {{nombre}} zostaje odrzucona, a osoba dostaje powiadomienie. Możesz podać powód (opcjonalnie).",
       "rechazarMotivo": "Powód (opcjonalnie)",
-      "solicitudEliminada": "Wniosek usunięty"
+      "solicitudEliminada": "Wniosek usunięty",
+      "rechazadoOk": "Nieobecność odrzucona. {{nombre}} otrzymał powiadomienie."
     },
     "TrackingHistory": {
       "hibrido": "Hybrydowa",

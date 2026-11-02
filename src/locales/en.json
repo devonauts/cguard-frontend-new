@@ -13105,7 +13105,8 @@
       "rechazarTitulo": "Reject the leave",
       "rechazarMensaje": "The leave of {{nombre}} is rejected and they are notified. You can tell them why (optional).",
       "rechazarMotivo": "Reason (optional)",
-      "solicitudEliminada": "Request deleted"
+      "solicitudEliminada": "Request deleted",
+      "rechazadoOk": "Time off rejected. {{nombre}} has been notified."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",

@@ -13105,7 +13105,8 @@
       "rechazarTitulo": "Recusar a ausência",
       "rechazarMensaje": "A ausência de {{nombre}} é recusada e a pessoa é avisada. Você pode dizer o motivo (opcional).",
       "rechazarMotivo": "Motivo (opcional)",
-      "solicitudEliminada": "Solicitação excluída"
+      "solicitudEliminada": "Solicitação excluída",
+      "rechazadoOk": "Folga recusada. {{nombre}} foi avisado."
     },
     "TrackingHistory": {
       "hibrido": "Híbrido",

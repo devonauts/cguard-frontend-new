@@ -13664,7 +13664,8 @@
       "rechazarTitulo": "Abwesenheit ablehnen",
       "rechazarMensaje": "Die Abwesenheit von {{nombre}} wird abgelehnt, und die Person wird benachrichtigt. Du kannst den Grund angeben (optional).",
       "rechazarMotivo": "Grund (optional)",
-      "solicitudEliminada": "Antrag gelöscht"
+      "solicitudEliminada": "Antrag gelöscht",
+      "rechazadoOk": "Abwesenheit abgelehnt. {{nombre}} wurde benachrichtigt."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",

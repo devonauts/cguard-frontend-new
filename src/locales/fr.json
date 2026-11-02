@@ -13664,7 +13664,8 @@
       "rechazarTitulo": "Refuser l’absence",
       "rechazarMensaje": "L’absence de {{nombre}} est refusée et la personne est prévenue. Vous pouvez indiquer pourquoi (facultatif).",
       "rechazarMotivo": "Motif (facultatif)",
-      "solicitudEliminada": "Demande supprimée"
+      "solicitudEliminada": "Demande supprimée",
+      "rechazadoOk": "Absence refusée. {{nombre}} a été prévenu."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",

@@ -13664,7 +13664,8 @@
       "rechazarTitulo": "Verlof afwijzen",
       "rechazarMensaje": "Het verlof van {{nombre}} wordt afgewezen en de persoon krijgt bericht. Je kunt de reden opgeven (optioneel).",
       "rechazarMotivo": "Reden (optioneel)",
-      "solicitudEliminada": "Aanvraag verwijderd"
+      "solicitudEliminada": "Aanvraag verwijderd",
+      "rechazadoOk": "Verlof afgewezen. {{nombre}} is op de hoogte gebracht."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
