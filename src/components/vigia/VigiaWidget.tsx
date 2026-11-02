@@ -389,7 +389,22 @@ export default function VigiaWidget() {
       if (temporizador) clearTimeout(temporizador);
       // 420 ms: lo justo para que un desplazamiento con inercia no la haga
       // parpadear entre empujón y empujón.
-      temporizador = setTimeout(() => setDesplazando(false), 420);
+      temporizador = setTimeout(() => {
+        // Find the clear spot BEFORE the bubble takes clicks again, and stay
+        // click-through while it slides there (.22 s): coming back first and
+        // re-checking later left it over «Guardar configuración» for ~1.5 s.
+        const b = burbujaRef.current;
+
+        if (b) {
+          const place = bubblePlacement(b, liftRef.current);
+          const next = place === "hide" ? 0 : place;
+
+          liftRef.current = next;
+          setLift(next);
+          setTapaControl(place === "hide");
+        }
+        temporizador = setTimeout(() => setDesplazando(false), 260);
+      }, 420);
     };
 
     // Any scroller, not only <main>: settings pages scroll their own panel, so
