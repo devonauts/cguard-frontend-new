@@ -52,3 +52,15 @@ describe("collectDispatchFiles", () => {
     expect(collectDispatchFiles({})).toEqual([]);
   });
 });
+
+describe("collectDispatchFiles · public share", () => {
+  it("reads the signed files the share sends", () => {
+    const files = collectDispatchFiles({
+      files: [{ name: "foto.jpg", mimeType: "image/jpeg", url: "https://api.x/api/file/download?fileToken=v2.a" }],
+      requestDocumentPDF: [{ name: "acta.pdf" }],
+    });
+
+    expect(files.map((f) => f.name)).toEqual(["acta.pdf", "foto.jpg"]);
+    expect(files[1]).toMatchObject({ isImage: true, url: "https://api.x/api/file/download?fileToken=v2.a" });
+  });
+});
