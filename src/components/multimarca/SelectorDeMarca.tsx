@@ -56,7 +56,13 @@ export default function SelectorDeMarca({
         aria-label={
           puede ? t("ui.SelectorDeMarca.elegir", "Elegir la marca") : etiqueta
         }
-        className="cg-focus inline-flex h-9 max-w-[7.5rem] items-center gap-1.5 rounded-full border px-2.5 text-xs font-semibold"
+        className={`cg-focus inline-flex h-9 items-center gap-1.5 rounded-full border text-xs font-semibold ${
+          compacto && actual.todas
+            ? "w-9 justify-center"
+            : compacto
+              ? "max-w-[5.5rem] px-2.5"
+              : "max-w-[14rem] px-3"
+        }`}
         disabled={!puede}
         style={{
           borderColor: `color-mix(in oklab, ${color} 45%, var(--hairline))`,
@@ -75,12 +81,17 @@ export default function SelectorDeMarca({
             style={{ background: color }}
           />
         )}
-        <span className="truncate">
+        {/* On a phone the bar has no room for words next to six buttons
+            (390 px): «all» is the layers icon alone (its name stays for
+            screen readers and in the title), a brand is its code. */}
+        <span className={compacto && actual.todas ? "sr-only" : "truncate"}>
           {actual.todas
             ? restringido
               ? t("ui.SelectorDeMarca.todasMiasCorto", "Mis marcas")
               : t("ui.SelectorDeMarca.todasCorto", "Marcas")
-            : actual.codigo || actual.nombre}
+            : compacto
+              ? actual.codigo || actual.nombre
+              : actual.nombre}
         </span>
       </button>
     );

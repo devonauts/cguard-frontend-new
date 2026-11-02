@@ -233,7 +233,8 @@ export default function MarcasPage() {
                         {cupo.motivo ? ` ${cupo.motivo}` : ""}
                       </p>
                     </div>
-                    {puedeEditar && cupo.puede && (
+                    {/* Over the limit, the banner above already offers it. */}
+                    {puedeEditar && cupo.puede && !excedido && (
                       <Button
                         disabled={cupo.comprando}
                         type="button"
