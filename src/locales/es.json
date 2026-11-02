@@ -7783,7 +7783,9 @@
       "platformHint": "Las administra {{marca}} para todas las empresas. Aquí puedes ver si están activas.",
       "statusActive": "Activa",
       "statusInactive": "Inactiva",
-      "minLengthOutOfRange": "La longitud mínima tiene que ser un número entre {{min}} y {{max}}."
+      "minLengthOutOfRange": "La longitud mínima tiene que ser un número entre {{min}} y {{max}}.",
+      "savedCorrected": "Política guardada, pero lo que la plataforma exige se quedó como estaba. Revisa los valores en pantalla.",
+      "requiredByPlatform": "Lo exige la plataforma: no se puede apagar."
     },
     "central": {
       "loadError": "No se pudo cargar la configuración.",
@@ -8966,7 +8968,8 @@
       "codigoDePrueba": "No hay proveedor de SMS en este entorno. Código de prueba: {{code}}",
       "escribeTuNumeroAntes": "Escribe tu número móvil antes de confirmarlo.",
       "correoNoValido": "Ese correo no es válido.",
-      "esTuCorreoActual": "Ese ya es tu correo."
+      "esTuCorreoActual": "Ese ya es tu correo.",
+      "telefonoNoValido": "Ese teléfono no parece válido. Revisa el país y el número."
     },
     "Routes": {
       "turnoDia": "Turno día",

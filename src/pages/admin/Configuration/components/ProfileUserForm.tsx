@@ -24,7 +24,11 @@ import {
 import { ejemploDeTelefono } from "@/lib/telefonoDeLaEmpresa";
 import { reducirFoto } from "@/lib/reducirFoto";
 import { getServerErrorMessage } from "@/lib/utils";
-import { EMAIL_PATTERN, phoneForServer } from "./profile/contactFields";
+import {
+  EMAIL_PATTERN,
+  isValidPhone,
+  phoneForServer,
+} from "./profile/contactFields";
 
 type MeTenantSetting = { theme?: string; logoUrl?: string | null };
 type MeTenant = { name?: string; phone?: string; settings?: MeTenantSetting[] };
@@ -161,6 +165,8 @@ export default function ProfileUserForm() {
   // only says «Verificado» while the field still shows that same number.
   const [verifiedPhone, setVerifiedPhone] = useState("");
   const [sendingCode, setSendingCode] = useState(false);
+  // The number as loaded, to tell a number typed now from a stored one.
+  const phoneAtLoad = useRef<string | null>(null);
   const [verifyingCode, setVerifyingCode] = useState(false);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -286,6 +292,12 @@ export default function ProfileUserForm() {
     };
   }, [authLoading]);
 
+  useEffect(() => {
+    if (!loading && phoneAtLoad.current === null) {
+      phoneAtLoad.current = `${phoneCode}|${phoneNumber}`;
+    }
+  }, [loading]);
+
   const handleAvatarChange = (file: File | null) => {
     setAvatarFile(file);
     // Revoke any previously created object URL before replacing the preview.
@@ -314,6 +326,23 @@ export default function ProfileUserForm() {
   }, []);
 
   const handleSave = async () => {
+    // «Confirmar número» refused a number the profile had just saved. Only a
+    // number typed now is checked: an old stored one must not block saving
+    // the name or the photo.
+    const phoneTouched =
+      phoneAtLoad.current !== null &&
+      phoneAtLoad.current !== `${phoneCode}|${phoneNumber}`;
+
+    if (phoneTouched && !isValidPhone(phoneCode, phoneNumber)) {
+      toast.error(
+        t(
+          "ui.ProfileUserForm.telefonoNoValido",
+          "Ese teléfono no parece válido. Revisa el país y el número.",
+        ),
+      );
+
+      return;
+    }
     setSaving(true);
     try {
       const { firstName, lastName } = splitFullName(fullName);
@@ -377,6 +406,7 @@ export default function ProfileUserForm() {
         }
       }
       if (didUpdate) {
+        phoneAtLoad.current = `${phoneCode}|${phoneNumber}`;
         // Saving another number drops its verification (server side too).
         if (payload.phoneNumber && payload.phoneNumber !== verifiedPhone) {
           setVerifiedPhone("");

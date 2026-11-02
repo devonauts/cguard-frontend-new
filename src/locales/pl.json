@@ -8324,7 +8324,9 @@
       "platformHint": "Zarządza nimi {{marca}} dla wszystkich firm. Tutaj widać, czy są aktywne.",
       "statusActive": "Aktywne",
       "statusInactive": "Nieaktywne",
-      "minLengthOutOfRange": "Minimalna długość musi być liczbą od {{min}} do {{max}}."
+      "minLengthOutOfRange": "Minimalna długość musi być liczbą od {{min}} do {{max}}.",
+      "savedCorrected": "Zasady zapisane, ale to, czego wymaga platforma, pozostało bez zmian. Sprawdź wartości na ekranie.",
+      "requiredByPlatform": "Wymagane przez platformę: nie można wyłączyć."
     },
     "central": {
       "loadError": "Nie udało się wczytać ustawień.",
@@ -9547,7 +9549,8 @@
       "codigoDePrueba": "W tym środowisku nie ma dostawcy SMS. Kod testowy: {{code}}",
       "escribeTuNumeroAntes": "Wpisz swój numer komórkowy, zanim go potwierdzisz.",
       "correoNoValido": "Ten adres e-mail jest nieprawidłowy.",
-      "esTuCorreoActual": "To już jest twój adres e-mail."
+      "esTuCorreoActual": "To już jest twój adres e-mail.",
+      "telefonoNoValido": "Ten numer telefonu nie wygląda na prawidłowy. Sprawdź kraj i numer."
     },
     "Routes": {
       "turnoDia": "Zmiana dzienna",

@@ -7783,7 +7783,9 @@
       "platformHint": "{{marca}} manages them for all companies. Here you can see whether they're active.",
       "statusActive": "Active",
       "statusInactive": "Inactive",
-      "minLengthOutOfRange": "The minimum length must be a number between {{min}} and {{max}}."
+      "minLengthOutOfRange": "The minimum length must be a number between {{min}} and {{max}}.",
+      "savedCorrected": "Policy saved, but what the platform requires stayed as it was. Check the values on screen.",
+      "requiredByPlatform": "Required by the platform: it cannot be turned off."
     },
     "central": {
       "loadError": "The settings could not be loaded.",
@@ -8966,7 +8968,8 @@
       "codigoDePrueba": "There is no SMS provider in this environment. Test code: {{code}}",
       "escribeTuNumeroAntes": "Enter your mobile number before confirming it.",
       "correoNoValido": "That email address is not valid.",
-      "esTuCorreoActual": "That is already your email address."
+      "esTuCorreoActual": "That is already your email address.",
+      "telefonoNoValido": "That phone number doesn't look valid. Check the country and the number."
     },
     "Routes": {
       "turnoDia": "Day shift",

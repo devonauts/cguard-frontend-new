@@ -8304,7 +8304,9 @@
       "platformHint": "{{marca}} beheert deze voor alle bedrijven. Hier ziet u of ze actief zijn.",
       "statusActive": "Actief",
       "statusInactive": "Inactief",
-      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn."
+      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn.",
+      "savedCorrected": "Beleid opgeslagen, maar wat het platform vereist is gebleven zoals het was. Controleer de waarden op het scherm.",
+      "requiredByPlatform": "Vereist door het platform: kan niet worden uitgeschakeld."
     },
     "central": {
       "loadError": "De instellingen konden niet worden geladen.",
@@ -9525,7 +9527,8 @@
       "codigoDePrueba": "Er is geen sms-provider in deze omgeving. Testcode: {{code}}",
       "escribeTuNumeroAntes": "Vul je mobiele nummer in voordat je het bevestigt.",
       "correoNoValido": "Dat e-mailadres is niet geldig.",
-      "esTuCorreoActual": "Dat is al je e-mailadres."
+      "esTuCorreoActual": "Dat is al je e-mailadres.",
+      "telefonoNoValido": "Dat telefoonnummer lijkt niet geldig. Controleer het land en het nummer."
     },
     "Routes": {
       "turnoDia": "Dagdienst",

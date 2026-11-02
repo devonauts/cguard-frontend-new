@@ -8304,7 +8304,9 @@
       "platformHint": "{{marca}} les gère pour toutes les entreprises. Vous pouvez voir ici si elles sont actives.",
       "statusActive": "Active",
       "statusInactive": "Inactive",
-      "minLengthOutOfRange": "La longueur minimale doit être un nombre entre {{min}} et {{max}}."
+      "minLengthOutOfRange": "La longueur minimale doit être un nombre entre {{min}} et {{max}}.",
+      "savedCorrected": "Politique enregistrée, mais ce que la plateforme exige est resté inchangé. Vérifiez les valeurs à l'écran.",
+      "requiredByPlatform": "Exigé par la plateforme : impossible de le désactiver."
     },
     "central": {
       "loadError": "Impossible de charger les paramètres.",
@@ -9525,7 +9527,8 @@
       "codigoDePrueba": "Aucun fournisseur SMS dans cet environnement. Code de test : {{code}}",
       "escribeTuNumeroAntes": "Saisissez votre numéro de mobile avant de le confirmer.",
       "correoNoValido": "Cette adresse e-mail n'est pas valide.",
-      "esTuCorreoActual": "C'est déjà votre adresse e-mail."
+      "esTuCorreoActual": "C'est déjà votre adresse e-mail.",
+      "telefonoNoValido": "Ce numéro ne semble pas valide. Vérifiez le pays et le numéro."
     },
     "Routes": {
       "turnoDia": "Vacation de jour",

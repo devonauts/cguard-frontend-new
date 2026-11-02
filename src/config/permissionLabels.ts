@@ -335,9 +335,108 @@ const SPECIAL_PERMISSION_LABELS: Record<string, Localized3> = {
     en: 'Edit each person’s pay profile (salary)',
     pt: 'Editar o perfil de pagamento (salário) de cada pessoa',
   },
+  assistantUse: {
+    es: 'Usar el asistente de IA',
+    en: 'Use the AI assistant',
+    pt: 'Usar o assistente de IA',
+    de: 'Den KI-Assistenten nutzen',
+    fr: 'Utiliser l’assistant IA',
+    it: 'Usare l’assistente IA',
+    nl: 'De AI-assistent gebruiken',
+    pl: 'Korzystać z asystenta AI',
+  },
+  routeDispatch: {
+    es: 'Modificar una ruta en curso desde la central',
+    en: 'Change a route in progress from dispatch',
+    pt: 'Alterar uma rota em andamento pela central',
+    de: 'Eine laufende Route von der Zentrale aus ändern',
+    fr: 'Modifier un itinéraire en cours depuis le centre',
+    it: 'Modificare un percorso in corso dalla centrale',
+    nl: 'Een lopende route vanuit de meldkamer wijzigen',
+    pl: 'Zmieniać trasę w toku z centrali',
+  },
+  routeOverrideGeofence: {
+    es: 'Registrar una llegada fuera de la geocerca',
+    en: 'Record an arrival outside the geofence',
+    pt: 'Registrar uma chegada fora da cerca geográfica',
+    de: 'Eine Ankunft außerhalb des Geofence erfassen',
+    fr: 'Enregistrer une arrivée hors de la zone géographique',
+    it: 'Registrare un arrivo fuori dal geofence',
+    nl: 'Een aankomst buiten de geofence registreren',
+    pl: 'Rejestrować przybycie poza geostrefą',
+  },
+  coverageTransfer: {
+    es: 'Trasladar personal entre estaciones para cubrir',
+    en: 'Move staff between stations to cover',
+    pt: 'Transferir pessoal entre estações para cobrir',
+    de: 'Personal zur Abdeckung zwischen Standorten verlegen',
+    fr: 'Déplacer du personnel entre postes pour couvrir',
+    it: 'Spostare personale tra postazioni per coprire',
+    nl: 'Personeel tussen posten verplaatsen om te dekken',
+    pl: 'Przenosić personel między posterunkami, by zapewnić obsadę',
+  },
+  estimateConvert: {
+    es: 'Convertir una cotización en contrato o factura',
+    en: 'Turn a quote into a contract or invoice',
+    pt: 'Converter um orçamento em contrato ou fatura',
+    de: 'Ein Angebot in Vertrag oder Rechnung umwandeln',
+    fr: 'Convertir un devis en contrat ou facture',
+    it: 'Convertire un preventivo in contratto o fattura',
+    nl: 'Een offerte omzetten in contract of factuur',
+    pl: 'Zamieniać ofertę w umowę lub fakturę',
+  },
+  estimateDownload: {
+    es: 'Descargar cotizaciones (PDF)',
+    en: 'Download quotes (PDF)',
+    pt: 'Baixar orçamentos (PDF)',
+    de: 'Angebote herunterladen (PDF)',
+    fr: 'Télécharger les devis (PDF)',
+    it: 'Scaricare i preventivi (PDF)',
+    nl: 'Offertes downloaden (pdf)',
+    pl: 'Pobierać oferty (PDF)',
+  },
 };
 
-type Localized3 = { es: string; en: string; pt: string };
+type Localized3 = { es: string; en: string; pt: string } & Partial<
+  Record<"de" | "fr" | "it" | "nl" | "pl", string>
+>;
+
+/* ── LABELS IN ALL EIGHT LANGUAGES (QA re-test 2026-11-01, N5) ─────────────
+   The role editor showed raw ids for these groups and permissions
+   («assistantUse», «Ver performanceSettings», «Agregar invoice»). They are
+   written in the eight interface languages; a resource here also brings the
+   action words in that language (ACTION_LABELS_I18N), so a German screen never
+   mixes «View» with a German noun. Resources not yet here keep the es/en/pt
+   matrix with English as the fallback. */
+type Lang8 = "es" | "en" | "pt" | "de" | "fr" | "it" | "nl" | "pl";
+type Localized8 = Record<Lang8, string>;
+
+const RESOURCE_LABELS_I18N: Record<string, Localized8> = {
+  assistant: { es: "Asistente IA", en: "AI assistant", pt: "Assistente de IA", de: "KI-Assistent", fr: "Assistant IA", it: "Assistente IA", nl: "AI-assistent", pl: "Asystent AI" },
+  billing: { es: "Facturación de la cuenta", en: "Account billing", pt: "Faturamento da conta", de: "Kontoabrechnung", fr: "Facturation du compte", it: "Fatturazione dell'account", nl: "Accountfacturering", pl: "Rozliczenia konta" },
+  coverage: { es: "Cobertura de puestos", en: "Post coverage", pt: "Cobertura de postos", de: "Postenabdeckung", fr: "Couverture des postes", it: "Copertura delle postazioni", nl: "Postdekking", pl: "Obsada posterunków" },
+  dobletes: { es: "Dobletes", en: "Double shifts", pt: "Dobras de turno", de: "Doppelschichten", fr: "Doubles postes", it: "Doppi turni", nl: "Dubbele diensten", pl: "Podwójne zmiany" },
+  estimate: { es: "Cotizaciones", en: "Quotes", pt: "Orçamentos", de: "Angebote", fr: "Devis", it: "Preventivi", nl: "Offertes", pl: "Oferty" },
+  invoice: { es: "Facturas a clientes", en: "Client invoices", pt: "Faturas a clientes", de: "Kundenrechnungen", fr: "Factures clients", it: "Fatture ai clienti", nl: "Klantfacturen", pl: "Faktury dla klientów" },
+  payrollIntegration: { es: "Nómina externa (Gusto)", en: "External payroll (Gusto)", pt: "Folha externa (Gusto)", de: "Externe Lohnabrechnung (Gusto)", fr: "Paie externe (Gusto)", it: "Paghe esterne (Gusto)", nl: "Externe salarisadministratie (Gusto)", pl: "Zewnętrzne płace (Gusto)" },
+  payrollProfile: { es: "Perfiles de pago", en: "Pay profiles", pt: "Perfis de pagamento", de: "Vergütungsprofile", fr: "Profils de rémunération", it: "Profili retributivi", nl: "Loonprofielen", pl: "Profile płacowe" },
+  payrollSlip: { es: "Roles de pago", en: "Payslips", pt: "Holerites", de: "Lohnabrechnungen", fr: "Bulletins de paie", it: "Buste paga", nl: "Loonstroken", pl: "Paski wypłaty" },
+  performanceSettings: { es: "Ajustes de desempeño", en: "Performance settings", pt: "Configurações de desempenho", de: "Leistungseinstellungen", fr: "Paramètres de performance", it: "Impostazioni delle prestazioni", nl: "Prestatie-instellingen", pl: "Ustawienia wyników" },
+  plan: { es: "Plan de suscripción", en: "Subscription plan", pt: "Plano de assinatura", de: "Abonnement", fr: "Formule d'abonnement", it: "Piano di abbonamento", nl: "Abonnement", pl: "Plan subskrypcji" },
+  routeExecution: { es: "Rutas en curso", en: "Routes in progress", pt: "Rotas em andamento", de: "Laufende Routen", fr: "Itinéraires en cours", it: "Percorsi in corso", nl: "Lopende routes", pl: "Trasy w toku" },
+  routeTemplate: { es: "Plantillas de ruta", en: "Route templates", pt: "Modelos de rota", de: "Routenvorlagen", fr: "Modèles d'itinéraire", it: "Modelli di percorso", nl: "Routesjablonen", pl: "Szablony tras" },
+  tax: { es: "Impuestos", en: "Taxes", pt: "Impostos", de: "Steuern", fr: "Taxes", it: "Imposte", nl: "Belastingen", pl: "Podatki" },
+  tenant: { es: "Empresa", en: "Company", pt: "Empresa", de: "Unternehmen", fr: "Entreprise", it: "Azienda", nl: "Bedrijf", pl: "Firma" },
+};
+
+const ACTION_LABELS_I18N: Record<"de" | "fr" | "it" | "nl" | "pl", Record<string, string>> = {
+  de: { Import: "Importieren:", Create: "Anlegen:", Edit: "Bearbeiten:", Destroy: "Löschen:", Read: "Ansehen:", Autocomplete: "Autovervollständigen:", Export: "Exportieren:", Restore: "Wiederherstellen:", Archive: "Archivieren:", Approve: "Genehmigen:", Correct: "Korrigieren:", Send: "Senden:", Manage: "Verwalten:", Reply: "Antworten:", Complete: "Abschließen:", Attempt: "Ablegen:", Confirm: "Bestätigen:", Volunteer: "Freiwillig melden:" },
+  fr: { Import: "Importer", Create: "Ajouter", Edit: "Modifier", Destroy: "Supprimer", Read: "Voir", Autocomplete: "Saisie automatique", Export: "Exporter", Restore: "Restaurer", Archive: "Archiver", Approve: "Approuver", Correct: "Corriger", Send: "Envoyer", Manage: "Gérer", Reply: "Répondre à", Complete: "Terminer", Attempt: "Passer", Confirm: "Confirmer", Volunteer: "Se porter volontaire pour" },
+  it: { Import: "Importare", Create: "Aggiungere", Edit: "Modificare", Destroy: "Eliminare", Read: "Vedere", Autocomplete: "Completamento automatico", Export: "Esportare", Restore: "Ripristinare", Archive: "Archiviare", Approve: "Approvare", Correct: "Correggere", Send: "Inviare", Manage: "Gestire", Reply: "Rispondere a", Complete: "Completare", Attempt: "Sostenere", Confirm: "Confermare", Volunteer: "Offrirsi per" },
+  nl: { Import: "Importeren:", Create: "Toevoegen:", Edit: "Bewerken:", Destroy: "Verwijderen:", Read: "Bekijken:", Autocomplete: "Automatisch aanvullen:", Export: "Exporteren:", Restore: "Herstellen:", Archive: "Archiveren:", Approve: "Goedkeuren:", Correct: "Corrigeren:", Send: "Versturen:", Manage: "Beheren:", Reply: "Beantwoorden:", Complete: "Voltooien:", Attempt: "Afleggen:", Confirm: "Bevestigen:", Volunteer: "Aanmelden voor:" },
+  pl: { Import: "Importuj:", Create: "Dodaj:", Edit: "Edytuj:", Destroy: "Usuń:", Read: "Wyświetl:", Autocomplete: "Autouzupełnianie:", Export: "Eksportuj:", Restore: "Przywróć:", Archive: "Archiwizuj:", Approve: "Zatwierdź:", Correct: "Popraw:", Send: "Wyślij:", Manage: "Zarządzaj:", Reply: "Odpowiedz:", Complete: "Ukończ:", Attempt: "Podejdź:", Confirm: "Potwierdź:", Volunteer: "Zgłoś się:" },
+};
+
 
 // La matriz de permisos sólo existe en es/en/pt. Para los idiomas europeos el
 // respaldo es el INGLÉS, no el español: a un alemán o a un polaco le sirve
@@ -359,25 +458,35 @@ function actionMap(): Record<string, string> {
 /** Etiqueta especial en el idioma actual, con el inglés como respaldo. */
 function especialEnIdioma(e: Localized3): string {
   const l = uiLang();
-  return (l === 'es' || l === 'en' || l === 'pt') ? e[l] : e.en;
+  return e[l] ?? e.en;
 }
 
 /** Locale-aware group/resource label (falls back to the raw key). */
 export function getResourceLabel(resourceKey: string): string {
+  const all = RESOURCE_LABELS_I18N[resourceKey];
+  if (all) return all[uiLang() as Lang8] ?? all.en;
   return resourceMap()[resourceKey] ?? RESOURCE_LABELS[resourceKey] ?? resourceKey;
+}
+
+/** Action words in the language a resource label was written in. */
+function actionMapFor(resourceKey: string): Record<string, string> {
+  const l = uiLang();
+  if (RESOURCE_LABELS_I18N[resourceKey] && l in ACTION_LABELS_I18N) {
+    return ACTION_LABELS_I18N[l as keyof typeof ACTION_LABELS_I18N];
+  }
+  return actionMap();
 }
 
 export function formatPermissionLabel(permission: string) {
   const special = SPECIAL_PERMISSION_LABELS[permission];
   if (special) return especialEnIdioma(special);
   // split suffix from resource
-  const actions = actionMap();
   const suffixes = Object.keys(ACTION_LABELS).sort((a, b) => b.length - a.length);
   for (const s of suffixes) {
     if (permission.endsWith(s)) {
       const resourceKey = permission.slice(0, -s.length);
       const resource = getResourceLabel(resourceKey);
-      const action = actions[s] ?? s;
+      const action = actionMapFor(resourceKey)[s] ?? s;
       return `${action} ${resource}`;
     }
   }
