@@ -197,6 +197,24 @@ export function buildCsv(
 /* ── Excel ───────────────────────────────────────────────────────────────── */
 
 /**
+ * A valid worksheet name: at most 31 characters, none of `: \ / ? * [ ]`, and
+ * no apostrophe at either end. SheetJS THROWS on anything else — that is how
+ * «Informe de Entrada/Salida» lost its Excel export while every other report
+ * had one.
+ */
+export function sheetName(title: string, fallback = "Informe"): string {
+  const clean = String(title || "")
+    .replace(/[:\\/?*[\]]/g, "-")
+    .replace(/^'+|'+$/g, "")
+    .trim()
+    .slice(0, 31)
+    .replace(/^'+|'+$/g, "")
+    .trim();
+
+  return clean || fallback;
+}
+
+/**
  * Un `.xlsx` de verdad: título, subtítulo, cabecera, datos, anchos calculados
  * y autofiltro sobre la cabecera.
  *
@@ -289,7 +307,11 @@ async function buildXlsxBlob(
 
   // El nombre de la hoja tiene tope duro de 31 caracteres en el formato; pasarse
   // genera un archivo que Excel se niega a abrir.
-  XLSX.utils.book_append_sheet(wb, ws, meta.title.slice(0, 31) || i18n.t("ui.reportExport.informe", "Informe"));
+  XLSX.utils.book_append_sheet(
+    wb,
+    ws,
+    sheetName(meta.title, i18n.t("ui.reportExport.informe", "Informe")),
+  );
   const out = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
   return new Blob([out], {
