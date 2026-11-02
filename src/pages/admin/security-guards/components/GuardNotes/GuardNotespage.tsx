@@ -491,8 +491,12 @@ export default function GuardNotes({
                             <div className="mt-3 flex flex-wrap gap-2">
                               {attachments.map(
                                 (att: NoteAttachment, ai: number) => {
-                                  // `privateUrl` is a storage path, not a link.
+                                  // Never the bare `privateUrl`: it is a storage
+                                  // path, not a link (it opened the CRM). The
+                                  // signed downloadUrl first; older rows go
+                                  // through /file/download (fileUrlFromFile).
                                   const href =
+                                    att?.downloadUrl ||
                                     att?.publicUrl ||
                                     fileUrlFromFile(att) ||
                                     "";
