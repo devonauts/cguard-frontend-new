@@ -3562,7 +3562,8 @@
       "quitarAriaLabel": "Não guardamos {{name}}",
       "quitarTitle": "A sua empresa não guarda este feriado",
       "quitadosTitle": "Feriados nacionais que não guardam",
-      "devolver": "Voltar a guardá-lo"
+      "devolver": "Voltar a guardá-lo",
+      "deleteConfirm": "Excluir o feriado «{{name}}»?"
     },
     "userRoles": {
       "actionBtn": "Ação",
@@ -13646,7 +13647,8 @@
       "cicloDesdeMasN": "ciclo desde {{fecha}} +{{n}} d",
       "estacionesQueCubre_one": "Estações que cobre ({{count}})",
       "estacionesQueCubre_other": "Estações que cobre ({{count}})",
-      "estacionesQueCubre": "Estações que cobre ({{count}})"
+      "estacionesQueCubre": "Estações que cobre ({{count}})",
+      "eliminarElPuesto": "Excluir o posto «{{nombre}}»?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Novo supervisor",

@@ -8468,7 +8468,8 @@
       "quitarAriaLabel": "Nie obchodzimy: {{name}}",
       "quitarTitle": "Twoja firma nie obchodzi tego święta",
       "quitadosTitle": "Święta, których nie obchodzicie",
-      "devolver": "Przywróć"
+      "devolver": "Przywróć",
+      "deleteConfirm": "Usunąć święto „{{name}}”?"
     },
     "userRoles": {
       "actionBtn": "Akcja",
@@ -14320,7 +14321,8 @@
       "estacionesQueCubre_other": "Objęte stanowiska ({{count}})",
       "estacionesQueCubre": "Objęte stanowiska ({{count}})",
       "estacionesQueCubre_few": "Objęte stanowiska ({{count}})",
-      "estacionesQueCubre_many": "Objęte stanowiska ({{count}})"
+      "estacionesQueCubre_many": "Objęte stanowiska ({{count}})",
+      "eliminarElPuesto": "Usunąć stanowisko „{{nombre}}”?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nowy nadzorca",

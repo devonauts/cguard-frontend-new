@@ -8454,7 +8454,8 @@
       "quitarAriaLabel": "Non osserviamo {{name}}",
       "quitarTitle": "La tua azienda non osserva questa festività",
       "quitadosTitle": "Festività nazionali non osservate",
-      "devolver": "Osservarla di nuovo"
+      "devolver": "Osservarla di nuovo",
+      "deleteConfirm": "Eliminare la festività «{{name}}»?"
     },
     "userRoles": {
       "actionBtn": "Azione",
@@ -14186,7 +14187,8 @@
       "cicloDesdeMasN": "ciclo dal {{fecha}} +{{n}} g",
       "estacionesQueCubre_one": "Postazioni coperte ({{count}})",
       "estacionesQueCubre_other": "Postazioni coperte ({{count}})",
-      "estacionesQueCubre": "Postazioni coperte ({{count}})"
+      "estacionesQueCubre": "Postazioni coperte ({{count}})",
+      "eliminarElPuesto": "Eliminare la postazione «{{nombre}}»?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nuovo supervisore",

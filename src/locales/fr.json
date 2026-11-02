@@ -8454,7 +8454,8 @@
       "quitarAriaLabel": "Nous ne chômons pas {{name}}",
       "quitarTitle": "Votre entreprise ne chôme pas ce jour",
       "quitadosTitle": "Jours fériés non chômés",
-      "devolver": "Le chômer à nouveau"
+      "devolver": "Le chômer à nouveau",
+      "deleteConfirm": "Supprimer le jour férié « {{name}} » ?"
     },
     "userRoles": {
       "actionBtn": "Action",
@@ -14186,7 +14187,8 @@
       "cicloDesdeMasN": "cycle dès le {{fecha}} +{{n}} j",
       "estacionesQueCubre_one": "Stations couvertes ({{count}})",
       "estacionesQueCubre_other": "Stations couvertes ({{count}})",
-      "estacionesQueCubre": "Stations couvertes ({{count}})"
+      "estacionesQueCubre": "Stations couvertes ({{count}})",
+      "eliminarElPuesto": "Supprimer le poste « {{nombre}} » ?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nouveau superviseur",

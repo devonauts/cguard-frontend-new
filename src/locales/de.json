@@ -8454,7 +8454,8 @@
       "quitarAriaLabel": "Wir begehen {{name}} nicht",
       "quitarTitle": "Ihr Unternehmen begeht diesen Feiertag nicht",
       "quitadosTitle": "Nicht begangene Feiertage",
-      "devolver": "Wieder begehen"
+      "devolver": "Wieder begehen",
+      "deleteConfirm": "Feiertag „{{name}}“ löschen?"
     },
     "userRoles": {
       "actionBtn": "Aktion",
@@ -14186,7 +14187,8 @@
       "cicloDesdeMasN": "Zyklus ab {{fecha}} +{{n}} T",
       "estacionesQueCubre_one": "Abgedeckte Standorte ({{count}})",
       "estacionesQueCubre_other": "Abgedeckte Standorte ({{count}})",
-      "estacionesQueCubre": "Abgedeckte Standorte ({{count}})"
+      "estacionesQueCubre": "Abgedeckte Standorte ({{count}})",
+      "eliminarElPuesto": "Posten „{{nombre}}“ löschen?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",

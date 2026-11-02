@@ -7947,7 +7947,8 @@
       "quitarAriaLabel": "We don't observe {{name}}",
       "quitarTitle": "Your company does not observe this holiday",
       "quitadosTitle": "National holidays you don't observe",
-      "devolver": "Observe it again"
+      "devolver": "Observe it again",
+      "deleteConfirm": "Delete the holiday «{{name}}»?"
     },
     "userRoles": {
       "actionBtn": "Action",
@@ -13646,7 +13647,8 @@
       "cicloDesdeMasN": "cycle from {{fecha}} +{{n}} d",
       "estacionesQueCubre_one": "Stations it covers ({{count}})",
       "estacionesQueCubre_other": "Stations it covers ({{count}})",
-      "estacionesQueCubre": "Stations it covers ({{count}})"
+      "estacionesQueCubre": "Stations it covers ({{count}})",
+      "eliminarElPuesto": "Delete the post «{{nombre}}»?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "New supervisor",

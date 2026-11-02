@@ -8454,7 +8454,8 @@
       "quitarAriaLabel": "Wij vieren {{name}} niet",
       "quitarTitle": "Uw bedrijf viert deze feestdag niet",
       "quitadosTitle": "Feestdagen die u niet viert",
-      "devolver": "Weer vieren"
+      "devolver": "Weer vieren",
+      "deleteConfirm": "De feestdag ‘{{name}}’ verwijderen?"
     },
     "userRoles": {
       "actionBtn": "Actie",
@@ -14186,7 +14187,8 @@
       "cicloDesdeMasN": "cyclus vanaf {{fecha}} +{{n}} d",
       "estacionesQueCubre_one": "Gedekte posten ({{count}})",
       "estacionesQueCubre_other": "Gedekte posten ({{count}})",
-      "estacionesQueCubre": "Gedekte posten ({{count}})"
+      "estacionesQueCubre": "Gedekte posten ({{count}})",
+      "eliminarElPuesto": "De post ‘{{nombre}}’ verwijderen?"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",
