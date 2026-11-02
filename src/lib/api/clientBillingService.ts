@@ -896,8 +896,9 @@ const clientBillingService = {
     return unwrap(await api.post(`${base()}/invoices`, { data: body }));
   },
 
+  /** A 404 is the page's «No se encontró la factura» (a deleted draft): no toast on top. */
   async invoice(id: string): Promise<InvoiceDetail> {
-    return unwrap(await api.get(`${base()}/invoices/${enc(id)}`));
+    return unwrap(await api.get(`${base()}/invoices/${enc(id)}`, { toast: { silentStatuses: [404] } }));
   },
 
   /** Draft only. */
