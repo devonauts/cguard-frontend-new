@@ -830,13 +830,12 @@ function ComprarNumero({
   return (
     <Modal
       open
+      description={t("ui.RemitentesDeMarca.paraLaMarca", "Para {{marca}}", {
+        marca,
+      })}
       icon={<ShoppingCart />}
       size="md"
-      title={t(
-        "ui.RemitentesDeMarca.comprarPara",
-        "Comprar un número para {{marca}}",
-        { marca },
-      )}
+      title={t("ui.RemitentesDeMarca.comprar", "Comprar un número")}
       onOpenChange={(o) => !o && onCerrar()}
     >
       <div className="space-y-3">
@@ -911,6 +910,7 @@ function ComprarNumero({
                   </div>
                 </div>
                 <Button
+                  className="shrink-0"
                   disabled={!!comprando}
                   size="sm"
                   type="button"

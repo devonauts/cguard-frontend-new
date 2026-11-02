@@ -20488,7 +20488,6 @@
       "faltaTelefono": "Wpisz numer telefonu, na który wysłać test.",
       "pruebaEnviada": "Test wysłany",
       "pruebaNoSalio": "Test nie wyszedł: {{motivo}}",
-      "comprarPara": "Kup numer dla {{marca}}",
       "pais": "Kraj",
       "codigoDeArea": "Numer kierunkowy",
       "buscar": "Szukaj",
@@ -20505,7 +20504,8 @@
         "sinWaEmpresa": "Firma nie połączyła jeszcze swojego WhatsApp Business.",
         "sinSaldo": "Za mało środków, aby kupić numer.",
         "generico": "Nie udało się. Spróbuj ponownie."
-      }
+      },
+      "paraLaMarca": "Dla {{marca}}"
     }
   },
   "visitantes": {

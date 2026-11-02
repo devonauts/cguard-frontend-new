@@ -20168,7 +20168,6 @@
       "faltaTelefono": "Scrivi il telefono a cui inviare la prova.",
       "pruebaEnviada": "Prova inviata",
       "pruebaNoSalio": "La prova non è partita: {{motivo}}",
-      "comprarPara": "Acquista un numero per {{marca}}",
       "pais": "Paese",
       "codigoDeArea": "Prefisso",
       "buscar": "Cerca",
@@ -20185,7 +20184,8 @@
         "sinWaEmpresa": "L'azienda non ha ancora collegato il suo WhatsApp Business.",
         "sinSaldo": "Credito insufficiente per acquistare il numero.",
         "generico": "Non è stato possibile completare. Riprova."
-      }
+      },
+      "paraLaMarca": "Per {{marca}}"
     }
   },
   "visitantes": {

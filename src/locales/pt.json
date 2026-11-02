@@ -19609,7 +19609,6 @@
       "faltaTelefono": "Digite o telefone para o qual enviar o teste.",
       "pruebaEnviada": "Teste enviado",
       "pruebaNoSalio": "O teste não saiu: {{motivo}}",
-      "comprarPara": "Comprar um número para {{marca}}",
       "pais": "País",
       "codigoDeArea": "Código de área",
       "buscar": "Buscar",
@@ -19626,7 +19625,8 @@
         "sinWaEmpresa": "A empresa ainda não conectou o seu WhatsApp Business.",
         "sinSaldo": "Saldo insuficiente para comprar o número.",
         "generico": "Não foi possível concluir. Tente novamente."
-      }
+      },
+      "paraLaMarca": "Para {{marca}}"
     }
   },
   "map": {

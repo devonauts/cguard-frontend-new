@@ -20168,7 +20168,6 @@
       "faltaTelefono": "Saisissez le numéro auquel envoyer le test.",
       "pruebaEnviada": "Test envoyé",
       "pruebaNoSalio": "Le test n'est pas parti : {{motivo}}",
-      "comprarPara": "Acheter un numéro pour {{marca}}",
       "pais": "Pays",
       "codigoDeArea": "Indicatif régional",
       "buscar": "Rechercher",
@@ -20185,7 +20184,8 @@
         "sinWaEmpresa": "L'entreprise n'a pas encore connecté son WhatsApp Business.",
         "sinSaldo": "Solde insuffisant pour acheter le numéro.",
         "generico": "Impossible de terminer. Réessayez."
-      }
+      },
+      "paraLaMarca": "Pour {{marca}}"
     }
   },
   "visitantes": {
