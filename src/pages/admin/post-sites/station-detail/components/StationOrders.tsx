@@ -41,6 +41,7 @@ import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 import { resolveApiBase } from "@/lib/apiBase";
+import { consignaIncompleta } from "@/lib/consignaIncompleta";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
 type Recurrence =
@@ -173,6 +174,11 @@ export default function StationOrders({ stationId }: Props) {
       toast.error(
         t("station.orders.titleRequired", "El título es obligatorio"),
       );
+      return;
+    }
+    const falta = consignaIncompleta(modal);
+    if (falta) {
+      toast.error(t(falta.key, falta.texto));
       return;
     }
     setSaving(true);

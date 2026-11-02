@@ -8856,7 +8856,10 @@
       "bitacoraEmpty": "Nessuna novità nel registro",
       "bitacoraEmptyHint": "Le novità annotate dalle guardie nell'app appariranno qui.",
       "novedadAbierta": "Aperta",
-      "novedadCerrada": "Chiusa"
+      "novedadCerrada": "Chiusa",
+      "needDays": "Scegli almeno un giorno della settimana",
+      "needDayOfMonth": "Indica il giorno del mese (da 1 a 31)",
+      "needDate": "Indica la data"
     },
     "guards": {
       "added": "Guardia assegnata",

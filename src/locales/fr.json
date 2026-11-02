@@ -8856,7 +8856,10 @@
       "bitacoraEmpty": "Aucune note dans la main courante",
       "bitacoraEmptyHint": "Les notes saisies par les agents dans l'application apparaîtront ici.",
       "novedadAbierta": "Ouverte",
-      "novedadCerrada": "Fermée"
+      "novedadCerrada": "Fermée",
+      "needDays": "Choisissez au moins un jour de la semaine",
+      "needDayOfMonth": "Indiquez le jour du mois (1 à 31)",
+      "needDate": "Indiquez la date"
     },
     "guards": {
       "added": "Agent affecté",

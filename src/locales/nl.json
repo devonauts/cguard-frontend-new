@@ -8856,7 +8856,10 @@
       "bitacoraEmpty": "Geen meldingen in het logboek",
       "bitacoraEmptyHint": "Meldingen die bewakers in de app noteren verschijnen hier.",
       "novedadAbierta": "Open",
-      "novedadCerrada": "Gesloten"
+      "novedadCerrada": "Gesloten",
+      "needDays": "Kies minstens één dag van de week",
+      "needDayOfMonth": "Geef de dag van de maand op (1 tot 31)",
+      "needDate": "Geef de datum op"
     },
     "guards": {
       "added": "Toegewezen beveiliger",

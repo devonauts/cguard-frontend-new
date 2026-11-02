@@ -6661,7 +6661,10 @@
       "bitacoraEmpty": "Sin novedades en la bitácora",
       "bitacoraEmptyHint": "Las novedades que anoten los vigilantes desde la app aparecerán aquí.",
       "novedadAbierta": "Abierta",
-      "novedadCerrada": "Cerrada"
+      "novedadCerrada": "Cerrada",
+      "needDays": "Elige al menos un día de la semana",
+      "needDayOfMonth": "Indica el día del mes (1 a 31)",
+      "needDate": "Indica la fecha"
     },
     "guards": {
       "added": "Vigilante asignado",

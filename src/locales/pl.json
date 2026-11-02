@@ -8870,7 +8870,10 @@
       "bitacoraEmpty": "Brak wpisów w dzienniku",
       "bitacoraEmptyHint": "Wpisy dodane przez ochroniarzy w aplikacji pojawią się tutaj.",
       "novedadAbierta": "Otwarta",
-      "novedadCerrada": "Zamknięta"
+      "novedadCerrada": "Zamknięta",
+      "needDays": "Wybierz co najmniej jeden dzień tygodnia",
+      "needDayOfMonth": "Podaj dzień miesiąca (od 1 do 31)",
+      "needDate": "Podaj datę"
     },
     "guards": {
       "added": "Pracownik ochrony przypisany",

@@ -6661,7 +6661,10 @@
       "bitacoraEmpty": "No logbook entries",
       "bitacoraEmptyHint": "Notes guards log from the app will appear here.",
       "novedadAbierta": "Open",
-      "novedadCerrada": "Closed"
+      "novedadCerrada": "Closed",
+      "needDays": "Pick at least one day of the week",
+      "needDayOfMonth": "Enter the day of the month (1 to 31)",
+      "needDate": "Enter the date"
     },
     "guards": {
       "added": "Guard assigned",

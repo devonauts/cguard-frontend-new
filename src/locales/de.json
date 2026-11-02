@@ -8856,7 +8856,10 @@
       "bitacoraEmpty": "Keine Einträge im Logbuch",
       "bitacoraEmptyHint": "Notizen, die das Wachpersonal in der App erfasst, erscheinen hier.",
       "novedadAbierta": "Offen",
-      "novedadCerrada": "Geschlossen"
+      "novedadCerrada": "Geschlossen",
+      "needDays": "Wählen Sie mindestens einen Wochentag",
+      "needDayOfMonth": "Geben Sie den Tag des Monats an (1 bis 31)",
+      "needDate": "Geben Sie das Datum an"
     },
     "guards": {
       "added": "Zugewiesene Wachkraft",

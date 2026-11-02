@@ -7532,7 +7532,10 @@
       "bitacoraEmpty": "Sem ocorrências no diário",
       "bitacoraEmptyHint": "As ocorrências que os vigilantes registrarem no app aparecerão aqui.",
       "novedadAbierta": "Aberta",
-      "novedadCerrada": "Fechada"
+      "novedadCerrada": "Fechada",
+      "needDays": "Escolha pelo menos um dia da semana",
+      "needDayOfMonth": "Indique o dia do mês (1 a 31)",
+      "needDate": "Indique a data"
     },
     "guards": {
       "added": "Vigilante atribuído",
