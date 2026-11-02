@@ -1404,7 +1404,7 @@
     "print": "Imprimir",
     "private": "Privado",
     "saving": "Guardando…",
-    "yes": "Yes",
+    "yes": "Sí",
     "back": "Atrás",
     "moveDown": "Bajar",
     "moveUp": "Subir",
@@ -3268,7 +3268,7 @@
         "companyPolicy": "Política de la empresa",
         "dispatch": "Incidente",
         "exchangeShift": "Intercambio de turno",
-        "geoFence": "Geo Fence",
+        "geoFence": "Geocerca",
         "guardAvailability": "Disponibilidad de vigilante",
         "guardDeviceFall": "Fallo vigilante/dispositivo",
         "guardIdle": "Vigilante inactivo",
@@ -3335,7 +3335,7 @@
         "title": "Más información"
       },
       "rateSaveError": "No se pudo guardar la tarifa",
-      "rateSaved": "Rate saved"
+      "rateSaved": "Tarifa guardada"
     },
     "stations": {
       "action": "Acción",
@@ -3383,7 +3383,7 @@
       "tags": "etiquetas",
       "nTags_one": "{{count}} etiqueta",
       "nTags_other": "{{count}} etiquetas",
-      "tenantId": "Tenant ID",
+      "tenantId": "ID de la empresa",
       "view": "Ver detalles",
       "form": {
         "description": "Descripción",
@@ -3406,11 +3406,11 @@
         "withSf": "Sacafranco cubre los descansos",
         "endTime": "Fin",
         "geofenceRadius": "Radio geovalla (metros)",
-        "guard": "Guard",
+        "guard": "Vigilante",
         "nickname": "Nominativo",
         "selectGuard": "Selecciona un vigilante",
         "shiftEnd": "End",
-        "shiftStart": "Start"
+        "shiftStart": "Inicio"
       },
       "table": {
         "description": "Descripción",
@@ -3424,17 +3424,17 @@
       "noResults": "Sin resultados para la búsqueda.",
       "provideCustomTimes": "Define la hora de inicio y fin",
       "backToStations": "Estaciones",
-      "createShift": "Create shift",
+      "createShift": "Crear turno",
       "editShift": "Editar turno",
       "guards": "vigilante(s)",
       "nGuards_one": "{{count}} vigilante",
       "nGuards_other": "{{count}} vigilantes",
       "placeholderNickname": "Apodo / nominativo interno",
-      "provideName": "Provide a name",
+      "provideName": "Escribe un nombre",
       "selectStationFirst": "Primero selecciona una estación",
-      "shiftCreated": "Shift created",
+      "shiftCreated": "Turno creado",
       "shiftSaveFailed": "No se pudo guardar el turno",
-      "shiftUpdated": "Shift updated"
+      "shiftUpdated": "Turno actualizado"
     },
     "tasks": {
       "action": "Acción",
@@ -5485,7 +5485,7 @@
           "companyPolicy": "Política de la empresa",
           "dispatch": "Incidente",
           "exchangeShift": "Intercambio de turno",
-          "geoFence": "Geo Fence",
+          "geoFence": "Geocerca",
           "guardAvailability": "Disponibilidad de vigilante",
           "guardDeviceFall": "Fallo vigilante/dispositivo",
           "guardIdle": "Vigilante inactivo",
@@ -6145,7 +6145,7 @@
         "any": "Cualquier hora",
         "specific": "Hora específica"
       },
-      "noPostSiteId": "No post site selected",
+      "noPostSiteId": "No hay una sede seleccionada",
       "scheduledDaysPlaceholder": "Selecciona los días...",
       "validation": {
         "scheduledDaysRequired": "Selecciona al menos un día",
@@ -6156,7 +6156,7 @@
       "errorCreating": "Error al crear la ronda",
       "errorLoadingGuards": "Error al cargar los vigilantes",
       "errorLoadingTours": "Error al cargar las rondas",
-      "openTimePicker": "Open time picker"
+      "openTimePicker": "Abrir selector de hora"
     },
     "menu": {
       "action": "Acción",
@@ -6191,21 +6191,21 @@
       "duration": "Duración",
       "name": "Nombre del Recorrido",
       "type": "Tipo",
-      "station": "Station"
+      "station": "Estación"
     },
     "detail": {
       "title": "Detalles del recorrido"
     },
     "field": {
       "active": "Activa",
-      "assignedGuard": "Assigned Guard",
-      "continuous": "Continuous",
-      "description": "Description",
-      "maxDuration": "Max Duration",
-      "scheduledDays": "Scheduled Days",
+      "assignedGuard": "Vigilante asignado",
+      "continuous": "Continuo",
+      "description": "Descripción",
+      "maxDuration": "Duración máxima",
+      "scheduledDays": "Días programados",
       "selectTime": "Selecciona la hora",
-      "station": "Station",
-      "timeMode": "Time Mode"
+      "station": "Estación",
+      "timeMode": "Modo de horario"
     },
     "list": {
       "selectAllAria": "Seleccionar todo",
