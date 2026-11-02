@@ -21,6 +21,7 @@ import IncidentMap from "@/components/IncidentMap/IncidentMap";
 // un papel); lo que se comparte es la sonda de coordenadas.
 import { coordDeSitio } from "./DispatchIncidentMap";
 import DispatchFiles from "./DispatchFiles";
+import { callerTypeLabel, personName } from "./dispatchLabels";
 import { uploadCommentAttachment, uploadErrorText } from "./commentAttachment";
 import { toast } from "sonner";
 import {
@@ -309,6 +310,23 @@ export function DispatchDetailsContent({
   // prepare guard rows to avoid complex nested JSX/ternary
   const guardRows: React.JSX.Element[] = [];
   if (requestPayload) {
+    // «Despachar a supervisor» assigns the incident to that supervisor; the
+    // card only knew the guard, so the dispatch never showed here.
+    if (requestPayload.assignedTo && personName(requestPayload.assignedTo)) {
+      guardRows.push(
+        <tr key="supervisor-dispatch" className="border-t">
+          <td className="py-2 px-3">
+            {personName(requestPayload.assignedTo)} ·{" "}
+            {t("adminOfficeUsers.roleNames.supervisor", "Supervisor")}
+          </td>
+          <td className="py-2 px-3">
+            {requestPayload.dispatchedAt
+              ? new Date(requestPayload.dispatchedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
+              : "-"}
+          </td>
+        </tr>,
+      );
+    }
     if (requestPayload.guardName) {
       guardRows.push(
         <tr key="guard-main" className="border-t">
@@ -584,7 +602,7 @@ export function DispatchDetailsContent({
                       {t("dispatcher.caller_type") || "Caller Type"}
                     </td>
                     <td className="py-3 px-4 text-sm text-foreground">
-                      {requestPayload.callerType || "-"}
+                      {callerTypeLabel(requestPayload.callerType) || "-"}
                     </td>
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
                       {t("dispatcher.caller_name") || "Caller Name"}
@@ -628,10 +646,8 @@ export function DispatchDetailsContent({
                       {t("dispatcher.dispatcher_label") || "Dispatcher"}
                     </td>
                     <td className="py-3 px-4 text-sm text-foreground">
-                      {(typeof requestPayload.guardName === "string"
-                        ? requestPayload.guardName
-                        : requestPayload.guardName?.fullName ||
-                          requestPayload.guardName?.name) || "-"}
+                      {/* Who filed the dispatch (this cell showed the guard). */}
+                      {personName(requestPayload.createdBy) || "-"}
                     </td>
                   </tr>
                 </tbody>
