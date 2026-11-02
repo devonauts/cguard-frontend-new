@@ -50,12 +50,6 @@ const incidentStatusLabel = (s?: string | null) => {
   return s || "—";
 };
 
-const trim = (s?: string | null, n = 80) => {
-  const v = (s || "").trim();
-
-  return v.length > n ? `${v.slice(0, n)}…` : v || "—";
-};
-
 const columns: ReportColumn<Incident>[] = [
   {
     key: "created",
@@ -110,7 +104,9 @@ const columns: ReportColumn<Incident>[] = [
     key: "desc",
     label: "Descripción",
     labelKey: "reports.col.incident.desc",
-    value: (r) => trim(r.description),
+    // Cut AFTER masking (maxChars): cut first, «Garita Pr…» stayed half shown.
+    value: (r) => (r.description || "").trim() || "—",
+    maxChars: 80,
     freeText: true,
   },
 ];
@@ -185,7 +181,12 @@ export default function Incident() {
         ["siteName", r.site?.companyName || r.postSite?.name],
         ["stationName", r.station?.stationName],
         ["clientName", [r.client?.name, r.client?.lastName].filter(Boolean).join(" ")],
-        ["clientName", r.client?.name],
+        // The bare name hides as the same «Cliente N» as the full one.
+        [
+          "clientName",
+          r.client?.name,
+          [r.client?.name, r.client?.lastName].filter(Boolean).join(" "),
+        ],
       ]}
       title={t("ui.Incident.informeDeIncidente", "Informe de Incidente")}
       // Un incidente de prioridad alta/crítica todavía abierto se señala en rojo.

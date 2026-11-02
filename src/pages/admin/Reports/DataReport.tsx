@@ -21,7 +21,10 @@ import { hoyEnLaEmpresa, soloFechaCivil, sumaDias } from "@/lib/horaDeLaEmpresa"
 import {
   createNameMask,
   exportValue,
+  learnCompanyNames,
   learnNames,
+  recortar,
+  type CompanyNames,
   hiddenFromSettings,
   NOTHING_HIDDEN,
   visibleColumns,
@@ -64,6 +67,8 @@ export interface ReportColumn<T> {
   /** Free text (a title, a location): in files, the hidden names of the
    *  report's rows that appear in it are replaced by their aliases. */
   freeText?: boolean;
+  /** Characters shown before «…» — on screen and in files, AFTER masking. */
+  maxChars?: number;
 }
 
 interface DataReportProps<T> {
@@ -124,7 +129,7 @@ interface DataReportProps<T> {
   idSinSenal?: (row: T) => string | null | undefined;
   /** The client / site / station names of a row, so that `freeText` columns
    *  can hide them (see reportPrivacy.learnNames). */
-  privateNames?: (row: T) => Array<[MaskedKind, string | null | undefined]>;
+  privateNames?: (row: T) => Array<[MaskedKind, string | null | undefined, string?]>;
 }
 
 /**
@@ -213,6 +218,37 @@ export default function DataReport<T>({
     () => visibleColumns(columnsProp, ocultos),
     [columnsProp, ocultos],
   );
+  /* The company's whole list of client / site / station names, asked once
+     and only when a file has free text and a name switch is on: free text
+     can name a post that has no row in the file. Fails open to the rows'
+     own names. */
+  const nombresDeLaEmpresa = useRef<Promise<CompanyNames | null> | null>(null);
+  const conTextoLibre = columnsProp.some((c) => c.freeText);
+  const pedirNombresDeLaEmpresa = (): Promise<CompanyNames | null> => {
+    if (!conTextoLibre || !(ocultos.clientName || ocultos.siteName || ocultos.stationName))
+      return Promise.resolve(null);
+    if (!nombresDeLaEmpresa.current) {
+      nombresDeLaEmpresa.current = (async () => {
+        try {
+          const tenantId = localStorage.getItem("tenantId");
+
+          if (!tenantId) return null;
+          const api = (await import("@/lib/api")).default;
+          const { data } = await api.get(`/tenant/${tenantId}/report/private-names`, {
+            toast: { silentError: true },
+          } as any);
+
+          return (data ?? null) as CompanyNames | null;
+        } catch {
+          nombresDeLaEmpresa.current = null;
+
+          return null;
+        }
+      })();
+    }
+
+    return nombresDeLaEmpresa.current;
+  };
   /** A fresh mask per file, so each file numbers its pseudonyms from 1. */
   const mascaraDeArchivo = () =>
     createNameMask(ocultos, {
@@ -391,6 +427,7 @@ export default function DataReport<T>({
     try {
       const mask = mascaraDeArchivo();
 
+      learnCompanyNames(mask, await pedirNombresDeLaEmpresa());
       learnNames(mask, filtered, privateNames);
 
       await exportColumns(
@@ -424,9 +461,10 @@ export default function DataReport<T>({
   // El documento impreso es una página aparte: no hereda las variables del CRM,
   // así que sus neutros van escritos en oklch (los mismos valores acromáticos
   // del sistema) en vez de un azul marino a mano.
-  const printableHtml = () => {
+  const printableHtml = (nombres: CompanyNames | null) => {
     const mask = mascaraDeArchivo();
 
+    learnCompanyNames(mask, nombres);
     learnNames(mask, filtered, privateNames);
     const head = columns
       .map((c) => `<th>${escapeHtml(rotulo(c))}</th>`)
@@ -455,7 +493,8 @@ export default function DataReport<T>({
       </body></html>`;
   };
 
-  const openPrint = (autoPrint: boolean) => {
+  const openPrint = async (autoPrint: boolean) => {
+    // Opened inside the click (popup blockers); filled once the names are in.
     const w = window.open("", "_blank");
 
     if (!w) {
@@ -468,7 +507,7 @@ export default function DataReport<T>({
 
       return;
     }
-    w.document.write(printableHtml());
+    w.document.write(printableHtml(await pedirNombresDeLaEmpresa()));
     w.document.close();
     if (autoPrint) {
       w.focus();
@@ -605,7 +644,7 @@ export default function DataReport<T>({
                 {resto.length > 0 && (
                   <dl className="mt-1.5 grid gap-1.5 text-xs">
                     {resto.map((c) => {
-                      const v = c.value(row);
+                      const v = recortar(c.value(row), c.maxChars);
 
                       if (!v || v === "—" || v === "-") return null;
 
@@ -703,7 +742,7 @@ export default function DataReport<T>({
                             }}
                           />
                         )}
-                        {c.value(row)}
+                        {recortar(c.value(row), c.maxChars)}
                         {ci === 0 && idSinSenal && (
                           <EtiquetaSinSenal fila={row} marca={marcasSinSenal[String(idSinSenal(row) ?? "")]} />
                         )}
