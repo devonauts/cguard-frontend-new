@@ -11530,7 +11530,8 @@
       "nocheSegunReglas": "Noc i jej dodatek pochodzą z zasad płacy powyżej: szacunek używa tego, co się płaci.",
       "descansoEnJornada": "Odpoczynek między zmianami i godziny z rzędu ustawiasz w Czas pracy i odpoczynek.",
       "irAJornada": "Czas pracy i odpoczynek",
-      "monedaUnica": "To waluta całej firmy: także pasków płacowych."
+      "monedaUnica": "To waluta całej firmy: także pasków płacowych.",
+      "campoVacio": "„{{campo}}” jest puste: wpisz liczbę przed zapisaniem."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Gdzie odbędzie się służba?",

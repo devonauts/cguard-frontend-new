@@ -10919,7 +10919,8 @@
       "nocheSegunReglas": "La noche y su recargo salen de las reglas de pago de arriba: la estimación usa lo mismo que se paga.",
       "descansoEnJornada": "El descanso entre turnos y las horas seguidas se definen en Jornada y descanso.",
       "irAJornada": "Jornada y descanso",
-      "monedaUnica": "Es la moneda de toda la empresa: también la de los roles de pago."
+      "monedaUnica": "Es la moneda de toda la empresa: también la de los roles de pago.",
+      "campoVacio": "«{{campo}}» está vacío: escribe un número antes de guardar."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "¿Dónde vas a trabajar?",

@@ -11478,7 +11478,8 @@
       "nocheSegunReglas": "De nacht en de toeslag komen uit de loonregels hierboven: de schatting gebruikt wat echt wordt betaald.",
       "descansoEnJornada": "Rust tussen diensten en uren achter elkaar stelt u in bij Werktijd en rust.",
       "irAJornada": "Werktijd en rust",
-      "monedaUnica": "Dit is de valuta van het hele bedrijf: ook voor loonstroken."
+      "monedaUnica": "Dit is de valuta van het hele bedrijf: ook voor loonstroken.",
+      "campoVacio": "‘{{campo}}’ is leeg: vul een getal in voordat u opslaat."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",

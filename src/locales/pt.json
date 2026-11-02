@@ -10919,7 +10919,8 @@
       "nocheSegunReglas": "A noite e o seu adicional vêm das regras de pagamento acima: a estimativa usa o mesmo que se paga.",
       "descansoEnJornada": "O descanso entre turnos e as horas seguidas definem-se em Jornada e descanso.",
       "irAJornada": "Jornada e descanso",
-      "monedaUnica": "É a moeda de toda a empresa: também a dos recibos."
+      "monedaUnica": "É a moeda de toda a empresa: também a dos recibos.",
+      "campoVacio": "«{{campo}}» está vazio: digite um número antes de salvar."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",

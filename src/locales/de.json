@@ -11478,7 +11478,8 @@
       "nocheSegunReglas": "Nachtzeit und Zuschlag kommen aus den Lohnregeln oben: Die Schätzung nutzt, was tatsächlich gezahlt wird.",
       "descansoEnJornada": "Ruhezeit zwischen Schichten und Stunden am Stück legen Sie unter Arbeitszeit und Ruhe fest.",
       "irAJornada": "Arbeitszeit und Ruhe",
-      "monedaUnica": "Das ist die Währung des ganzen Unternehmens – auch für Lohnzettel."
+      "monedaUnica": "Das ist die Währung des ganzen Unternehmens – auch für Lohnzettel.",
+      "campoVacio": "„{{campo}}“ ist leer: Geben Sie vor dem Speichern eine Zahl ein."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",

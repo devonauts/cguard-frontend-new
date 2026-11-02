@@ -11478,7 +11478,8 @@
       "nocheSegunReglas": "La notte e la sua maggiorazione vengono dalle regole di paga qui sopra: la stima usa ciò che si paga.",
       "descansoEnJornada": "Il riposo tra turni e le ore consecutive si impostano in Orario e riposo.",
       "irAJornada": "Orario e riposo",
-      "monedaUnica": "È la valuta di tutta l’azienda: anche quella delle buste paga."
+      "monedaUnica": "È la valuta di tutta l’azienda: anche quella delle buste paga.",
+      "campoVacio": "«{{campo}}» è vuoto: scrivi un numero prima di salvare."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Dove vai a lavorare?",

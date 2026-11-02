@@ -11478,7 +11478,8 @@
       "nocheSegunReglas": "La nuit et sa majoration viennent des règles de paie ci-dessus : l’estimation utilise ce qui est payé.",
       "descansoEnJornada": "Le repos entre services et les heures consécutives se règlent dans Temps de travail et repos.",
       "irAJornada": "Temps de travail et repos",
-      "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des bulletins."
+      "monedaUnica": "C’est la devise de toute l’entreprise : aussi celle des bulletins.",
+      "campoVacio": "« {{campo}} » est vide : saisissez un nombre avant d'enregistrer."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
