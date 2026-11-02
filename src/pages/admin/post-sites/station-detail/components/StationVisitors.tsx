@@ -2,7 +2,6 @@ import type { TFunction } from "i18next";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { localeActual } from "@/lib/localeActual";
 import {
   Camera,
   Check,
@@ -50,7 +49,11 @@ import ExportarPeriodo, {
 } from "@/components/reports/ExportarPeriodo";
 import type { ExportFormat } from "@/lib/export/reportExport";
 import type { Station } from "@/types";
-import { desdeInputFechaHora, paraInputFechaHora } from "@/lib/horaDeLaEmpresa";
+import {
+  desdeInputFechaHora,
+  fechaYHora,
+  paraInputFechaHora,
+} from "@/lib/horaDeLaEmpresa";
 
 type Props = { station: Station; stationId: string; postSiteId: string };
 
@@ -109,16 +112,10 @@ function lugarLegible(t: TFunction, v?: string | null): string {
   return [label, rest.join(" - ")].filter(Boolean).join(" - ");
 }
 
+/** Entry/exit time in the COMPANY time zone, like /visitors (it used the
+ *  viewer's clock, so the same visit showed two different times). */
 function fmt(v: any) {
-  if (!v) return "-";
-  try {
-    return new Intl.DateTimeFormat(localeActual(), {
-      dateStyle: "short",
-      timeStyle: "short",
-    }).format(new Date(v));
-  } catch {
-    return String(v);
-  }
+  return fechaYHora(v, {}, "-");
 }
 
 /**
