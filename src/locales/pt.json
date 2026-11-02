@@ -11614,7 +11614,8 @@
       "subtitulo_one": "{{count}} relatório operacional, de incidentes, tempo e folha de pagamento — tudo em um só lugar.",
       "subtitulo_other": "{{count}} relatórios operacionais, de incidentes, tempo e folha de pagamento — tudo em um só lugar.",
       "subtitulo_few": "{{count}} relatórios operacionais, de incidentes, tempo e folha de pagamento — tudo em um só lugar.",
-      "subtitulo_many": "{{count}} relatórios operacionais, de incidentes, tempo e folha de pagamento — tudo em um só lugar."
+      "subtitulo_many": "{{count}} relatórios operacionais, de incidentes, tempo e folha de pagamento — tudo em um só lugar.",
+      "horasEntreMarcasDesc": "Horas aprovadas de uma marca em locais de outra, com o valor a acertar entre empresas."
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Padrão de rotação",
@@ -19408,7 +19409,12 @@
       "prefijoPrincipal": "A marca principal usa a série da empresa.",
       "prefijoAyuda": "Suas faturas têm numeração própria. Vazio: o prefixo da empresa e o código da marca.",
       "prefijo": "Prefixo das faturas",
-      "web": "Site"
+      "web": "Site",
+      "pdfError": "Não foi possível preparar o PDF de exemplo. Tente de novo.",
+      "legalSoloAdmin": "Os dados legais da marca principal são alterados por um administrador da empresa.",
+      "prefijoAyudaSerie": "Seus documentos têm numeração própria: {{ejemplo}}. Vazio: o código da marca.",
+      "pdfFactura": "Ver fatura de exemplo (PDF)",
+      "pdfCotizacion": "Ver cotação de exemplo (PDF)"
     },
     "ElegirMarca": {
       "ahora": "Você está aqui",
@@ -19437,7 +19443,10 @@
         "identificadorMalo": "O identificador fiscal não é válido para o país escolhido.",
         "sinCupos": "Você já usa todas as marcas que tem. Adicione outra para continuar.",
         "sinModulo": "O módulo Multimarca não está ativo.",
-        "tieneClientes": "Esta marca ainda tem clientes. Passe-os para outra marca e tente de novo."
+        "tieneClientes": "Esta marca ainda tem clientes. Passe-os para outra marca e tente de novo.",
+        "textoMalo": "Revise os textos de fatura da marca.",
+        "tarifaMala": "Revise a tarifa: duas empresas, um valor por hora e a data a partir da qual vale.",
+        "tarifaMoneda": "Este par de marcas já tem tarifas em outra moeda."
       },
       "irALaTienda": "Ver em Módulos adicionais",
       "nueva": "Nova marca",
@@ -19452,7 +19461,8 @@
       "soloLecturaTitulo": "Você vê suas marcas, não as altera",
       "excedidoTitulo": "Você usa {{usadas}} marcas e tem {{pagadas}} pagas",
       "excedidoDesc": "O pagamento de uma marca adicional foi devolvido. Suas marcas e seus dados continuam iguais, mas você não pode criar nem reativar outra até adicionar uma marca ou arquivar uma que não use.",
-      "cuposExcedidos": "Adicione uma marca ou arquive uma para voltar a criar."
+      "cuposExcedidos": "Adicione uma marca ou arquive uma para voltar a criar.",
+      "adminDeMarcaTitulo": "Você edita a identidade e os textos da sua marca"
     },
     "Multimarca": {
       "principal": "Principal"
@@ -19502,7 +19512,7 @@
       "errores": {
         "pago": "Pagamentos, a loja e as marcas adicionais são de um administrador da empresa, não de uma marca.",
         "cuenta": "A conta da empresa é gerenciada por um administrador geral.",
-        "estructura": "Criar, editar ou arquivar marcas, ou mudar quais marcas cada pessoa vê, é feito por um administrador da empresa.",
+        "estructura": "Criar ou arquivar marcas, alterar os dados legais da marca principal ou quais marcas cada pessoa vê é feito por um administrador da empresa.",
         "roles": "Você não pode dar o papel de administrador, administrador de marca ou gerente de filial, nem editar quem o tem.",
         "empresa": "Esta configuração vale para toda a empresa: quem a altera é um administrador geral.",
         "fueraDeAlcance": "Isso pertence a uma marca que não está atribuída a você.",
@@ -19512,7 +19522,7 @@
     "HorasEntreMarcas": {
       "archivo": "horas-entre-marcas",
       "errorDescarga": "Não foi possível preparar o arquivo. Tente de novo.",
-      "subtitulo": "Cada pessoa recebe pela marca em que se registrou. Aqui você vê quantas horas pessoas de uma marca trabalharam em locais de outra, para acertá-las entre as empresas.",
+      "subtitulo": "Cada pessoa recebe pela marca em que foi registrada. Aqui você vê as horas aprovadas que pessoas de uma empresa trabalharam em locais de outra, e quanto uma deve à outra.",
       "titulo": "Horas entre marcas",
       "mesPasado": "Mês passado",
       "esteMes": "Este mês",
@@ -19533,7 +19543,7 @@
       "personas": "Pessoas",
       "turnos": "Turnos",
       "matriz": "Quem trabalhou onde",
-      "matrizAyuda": "Linhas: a marca que paga a pessoa. Colunas: a marca do cliente onde trabalhou. Período {{desde}} – {{hasta}}.",
+      "matrizAyuda": "Linhas: a empresa que fornece o pessoal. Colunas: a empresa do cliente onde trabalhou. Período {{desde}} – {{hasta}}.",
       "pagaTrabajaEn": "Paga / Trabalhou em",
       "total": "Total",
       "buscar": "Buscar pessoa, cliente ou local",
@@ -19545,7 +19555,20 @@
       "personasYTurnos_one": "{{personas}} pess. · {{count}} turno",
       "nTurnos_one": "{{count}} turno",
       "personasYTurnos_other": "{{personas}} pess. · {{count}} turnos",
-      "nTurnos_other": "{{count}} turnos"
+      "nTurnos_other": "{{count}} turnos",
+      "empresaPersonal": "Empresa que fornece o pessoal",
+      "empresaCliente": "Empresa do cliente",
+      "empresaPersonalCorta": "Fornece o pessoal",
+      "empresaClienteCorta": "Empresa do cliente",
+      "sinTarifa": "Sem tarifa",
+      "ponerTarifa": "Definir tarifa",
+      "tarifas": "Tarifas",
+      "horasAprobadas": "Horas aprovadas",
+      "importe": "Valor",
+      "horasSinTarifa": "{{horas}} sem tarifa",
+      "liquidacion": "Acerto entre marcas",
+      "liquidacionAyuda": "A empresa do cliente paga à empresa que forneceu o pessoal as horas aprovadas, pela tarifa vigente de cada dia.",
+      "debeA": "{{cliente}} paga a {{personal}}"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAT",
@@ -19560,7 +19583,64 @@
       "total": "Total",
       "correoDe": "Os e-mails chegam de",
       "portal": "Portal e app do cliente",
-      "direccionDelCorreo": "O endereço de envio é o da plataforma; o cliente vê o nome da marca."
+      "direccionDelCorreo": "O endereço de envio é o da plataforma; o cliente vê o nome da marca.",
+      "prefijoFactura": "INV",
+      "textoDeLaEmpresa": "Texto da empresa",
+      "comoPagar": "Como pagar",
+      "pago": "Pagamento",
+      "condiciones": "Condições"
+    },
+    "TarifasEntreMarcas": {
+      "titulo": "Tarifas por hora entre marcas",
+      "ayuda": "A empresa do cliente paga à empresa que fornece o pessoal esta tarifa por hora aprovada. Cada tarifa vale a partir da sua data; as horas anteriores mantêm a sua.",
+      "porHora": "Tarifa por hora",
+      "desde": "Vale a partir de",
+      "guardar": "Salvar tarifa",
+      "guardada": "Tarifa salva",
+      "elige": "Escolha",
+      "faltanMarcas": "Escolha as duas empresas.",
+      "mismaMarca": "A tarifa é entre duas empresas diferentes.",
+      "montoMalo": "Informe um valor por hora (0 ou mais).",
+      "fechaMala": "Escolha a partir de que dia vale.",
+      "quitarTitulo": "Remover esta tarifa?",
+      "quitarMensaje": "As horas desde {{desde}} voltam à tarifa anterior, ou ficam sem tarifa.",
+      "quitar": "Remover",
+      "soloLectura": "As tarifas são definidas pela administração da empresa.",
+      "vacio": "Ainda não há tarifas",
+      "vacioDesc": "Sem tarifa, o relatório mostra as horas mas não o valor.",
+      "desdeEl": "Desde {{fecha}}",
+      "vigente": "Vigente",
+      "porHoraValor": "{{monto}} / h"
+    },
+    "TextosDeMarca": {
+      "titulo": "Textos de fatura",
+      "ayudaPrincipal": "O que você escrever aqui substitui o texto da empresa nos documentos da marca principal. Vazio: usa-se o de Faturamento › Design de documentos.",
+      "ayudaMarca": "Suas faturas, cotações, e-mails e relatórios imprimem só estes textos. Um texto vazio não aparece: o da empresa principal nunca é usado.",
+      "vacioPrincipal": "Vazio: o texto da empresa",
+      "vacioMarca": "Vazio: não é impresso",
+      "facturas": "Faturas",
+      "cobro": "Cobrança",
+      "cotizaciones": "Cotações",
+      "informes": "Relatórios",
+      "invoiceTitle": "Título da fatura",
+      "invoiceDefaultNotes": "Notas com que começa cada fatura",
+      "invoiceTerms": "Condições",
+      "invoiceFooter": "Rodapé",
+      "paymentInstructions": "Instruções de pagamento",
+      "paymentInstructionsAyuda": "São impressas quando a fatura não oferece formas de pagamento.",
+      "metodos": "Formas de pagamento e dados bancários",
+      "metodosAyudaPrincipal": "Sem nenhuma marcada, usam-se as da empresa.",
+      "metodosAyudaMarca": "Sem nenhuma marcada, suas faturas oferecem as formas de pagamento da empresa sem dados bancários.",
+      "datosDe": "Dados de {{metodo}}",
+      "datosEjemplo": "Banco, conta, titular…",
+      "notaDe": "Nota de {{metodo}}",
+      "notaEjemplo": "Ex.: escreva o número da fatura na referência",
+      "quoteTitle": "Título da cotação",
+      "quoteDefaultIntro": "Apresentação",
+      "quoteTerms": "Termos e condições",
+      "quoteClosing": "Encerramento",
+      "quoteFooter": "Rodapé",
+      "reportFooterText": "Rodapé dos relatórios aos seus clientes"
     }
   },
   "map": {

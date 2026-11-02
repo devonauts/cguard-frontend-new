@@ -6,12 +6,18 @@
  * real PDF: the server prints that one with the same data.
  *
  * Paper is white on purpose, in light and dark themes: it shows a document.
+ *
+ * Phase 5: the brand's own texts are drawn too (title, how to pay with its
+ * bank details, terms, footer). A non-principal brand's empty text is simply
+ * not there — exactly like the PDF; the principal's says «texto de la
+ * empresa» (it falls back to the company's).
  */
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Globe, Mail, MonitorSmartphone, Info } from "lucide-react";
 
 import { serieDeFactura, tintaSobre, webLegible } from "./identidadDeMarca";
+import type { TextosBorrador } from "./textosDeMarca";
 
 import { terminosFiscales } from "@/lib/paisDeLaEmpresa";
 
@@ -32,6 +38,8 @@ export interface IdentidadEnVista {
   senderName: string;
   invoicePrefix: string;
   isPrincipal: boolean;
+  /** Phase 5: its own texts (empty strings = none). */
+  textos?: TextosBorrador;
 }
 
 const PAPEL_TINTA = "#0f172a";
@@ -86,14 +94,48 @@ export default function VistaDeMarcaParaElCliente({
   });
   const serie = serieDeFactura(
     { invoicePrefix: b.invoicePrefix, code: b.code, isPrincipal: b.isPrincipal },
-    t("ui.VistaDeMarca.prefijoEmpresa", "FAC"),
+    t("ui.VistaDeMarca.prefijoFactura", "INV"),
   );
   const nombreVisible = b.name || t("ui.VistaDeMarca.sinNombre", "Tu marca");
   const emisor = b.legalName || nombreVisible;
   const remitente = b.senderName || nombreVisible;
   const web = webLegible(b.website);
-  const titulo = t("ui.VistaDeMarca.factura", "Factura");
-  const numero = `${serie}-000124`;
+  const tx = b.textos;
+  const titulo = tx?.invoiceTitle.trim() || t("ui.VistaDeMarca.factura", "Factura");
+  const numero = `${serie}-${new Date().getFullYear()}-00124`;
+  const nombreDeMetodo: Record<string, string> = {
+    transfer: t("ui.Facturacion.metodoPago.transfer", "Transferencia bancaria"),
+    directDeposit: t("ui.Facturacion.metodoPago.directDeposit", "Depósito directo (ACH)"),
+    wire: t("ui.Facturacion.metodoPago.wire", "Transferencia electrónica (wire)"),
+    check: t("ui.Facturacion.metodoPago.check", "Cheque"),
+    card: t("ui.Facturacion.metodoPago.card", "Tarjeta de crédito"),
+    cash: t("ui.Facturacion.metodoPago.cash", "Efectivo"),
+  };
+  const metodos = (tx?.metodos ?? []).filter((m) => m.enabled);
+  const deLaEmpresa = (
+    <span className="italic" style={{ color: PAPEL_SUAVE }}>
+      {t("ui.VistaDeMarca.textoDeLaEmpresa", "Texto de la empresa")}
+    </span>
+  );
+  /** A text block of the paper: the brand's text, the company's (principal) or nothing. */
+  const bloque = (etiqueta: string, texto: string | undefined, testid: string) => {
+    const v = String(texto || "").trim();
+
+    if (!v && !b.isPrincipal) return null;
+
+    return (
+      <div className="space-y-0.5" data-testid={testid}>
+        {etiqueta && (
+          <div className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: PAPEL_SUAVE }}>
+            {etiqueta}
+          </div>
+        )}
+        <div className="whitespace-pre-line text-[10px] leading-snug" style={{ color: PAPEL_TINTA }}>
+          {v || deLaEmpresa}
+        </div>
+      </div>
+    );
+  };
 
   const bloqueLegal = (
     <div className="space-y-0.5 text-[10px] leading-snug" style={{ color: PAPEL_SUAVE }}>
@@ -237,6 +279,40 @@ export default function VistaDeMarcaParaElCliente({
             </div>
           ))}
         </div>
+        {tx && (
+          <div className="space-y-2 px-4 pb-4" data-testid="vista-textos">
+            {metodos.length ? (
+              <div className="space-y-1" data-testid="vista-como-pagar">
+                <div className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: PAPEL_SUAVE }}>
+                  {t("ui.VistaDeMarca.comoPagar", "Cómo pagar")}
+                </div>
+                {metodos.map((m) => (
+                  <div key={m.method} className="text-[10px] leading-snug" style={{ color: PAPEL_TINTA }}>
+                    <span className="font-semibold">{nombreDeMetodo[m.method] || m.label || m.method}</span>
+                    {m.description ? <div className="whitespace-pre-line">{m.description}</div> : null}
+                    {m.note ? (
+                      <div className="whitespace-pre-line italic" style={{ color: PAPEL_SUAVE }}>
+                        {m.note}
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              bloque(t("ui.VistaDeMarca.pago", "Pago"), tx.paymentInstructions, "vista-pago")
+            )}
+            {bloque(t("ui.VistaDeMarca.condiciones", "Condiciones"), tx.invoiceTerms, "vista-condiciones")}
+            {(tx.invoiceFooter.trim() || b.isPrincipal) && (
+              <div
+                className="border-t pt-1.5 text-center text-[9px]"
+                data-testid="vista-pie"
+                style={{ borderColor: PAPEL_LINEA, color: PAPEL_SUAVE }}
+              >
+                {tx.invoiceFooter.trim() || deLaEmpresa}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── Mail and portal ──────────────────────────────────────── */}

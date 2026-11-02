@@ -16,10 +16,10 @@ describe("the series a brand's invoices carry", () => {
     );
   });
 
-  it("its own prefix, else company prefix + code", () => {
-    expect(serieDeFactura({ invoicePrefix: "BG", code: "BETA" }, "FAC")).toBe("BG");
-    expect(serieDeFactura({ invoicePrefix: "", code: "BETA" }, "FAC")).toBe("FAC-BETA");
-    expect(serieDeFactura({ code: null }, "FAC")).toBe("FAC");
+  it("phase-5 default: <its prefix, else its code>-<company prefix>", () => {
+    expect(serieDeFactura({ invoicePrefix: "BG", code: "BETA" }, "INV")).toBe("BG-INV");
+    expect(serieDeFactura({ invoicePrefix: "", code: "beta" }, "INV")).toBe("BETA-INV");
+    expect(serieDeFactura({ code: null }, "INV")).toBe("INV");
   });
 });
 

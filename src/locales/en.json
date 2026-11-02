@@ -11614,7 +11614,8 @@
       "subtitulo_one": "{{count}} operations, incident, time and payroll report — all in one place.",
       "subtitulo_other": "{{count}} operations, incident, time and payroll reports — all in one place.",
       "subtitulo_few": "{{count}} operations, incident, time and payroll reports — all in one place.",
-      "subtitulo_many": "{{count}} operations, incident, time and payroll reports — all in one place."
+      "subtitulo_many": "{{count}} operations, incident, time and payroll reports — all in one place.",
+      "horasEntreMarcasDesc": "Approved hours of one brand at another's sites, with the amount to settle between the companies."
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Rotation pattern",
@@ -19408,7 +19409,12 @@
       "prefijoPrincipal": "The principal brand uses the company’s series.",
       "prefijoAyuda": "Its invoices have their own numbering. Empty: the company prefix and the brand code.",
       "prefijo": "Invoice prefix",
-      "web": "Website"
+      "web": "Website",
+      "pdfError": "The sample PDF could not be prepared. Try again.",
+      "legalSoloAdmin": "The principal brand's legal data is changed by a company administrator.",
+      "prefijoAyudaSerie": "Its documents have their own numbering: {{ejemplo}}. Empty: the brand code.",
+      "pdfFactura": "See a sample invoice (PDF)",
+      "pdfCotizacion": "See a sample quote (PDF)"
     },
     "ElegirMarca": {
       "ahora": "You are here",
@@ -19437,7 +19443,10 @@
         "identificadorMalo": "The tax ID is not valid for the chosen country.",
         "sinCupos": "You already use all the brands you have. Add another one to continue.",
         "sinModulo": "The Multibrand module is not active.",
-        "tieneClientes": "This brand still has clients. Move them to another brand and try again."
+        "tieneClientes": "This brand still has clients. Move them to another brand and try again.",
+        "textoMalo": "Check the brand's invoice texts.",
+        "tarifaMala": "Check the rate: two companies, an hourly amount and the date it applies from.",
+        "tarifaMoneda": "This brand pair already has rates in another currency."
       },
       "irALaTienda": "See it in Add-on modules",
       "nueva": "New brand",
@@ -19452,7 +19461,8 @@
       "soloLecturaTitulo": "You see your brands; you don’t change them",
       "excedidoTitulo": "You use {{usadas}} brands and have {{pagadas}} paid",
       "excedidoDesc": "The payment for an extra brand was refunded. Your brands and their data stay as they are, but you can’t create or reactivate another until you add a brand or archive one you don’t use.",
-      "cuposExcedidos": "Add a brand or archive one to create again."
+      "cuposExcedidos": "Add a brand or archive one to create again.",
+      "adminDeMarcaTitulo": "You edit your brand's identity and texts"
     },
     "Multimarca": {
       "principal": "Main"
@@ -19502,7 +19512,7 @@
       "errores": {
         "pago": "Payments, the store and extra brands are handled by a company administrator, not a brand’s.",
         "cuenta": "The company account is handled by a general administrator.",
-        "estructura": "Creating, editing or archiving brands, or changing which brands each person sees, is done by a company administrator.",
+        "estructura": "Creating or archiving brands, changing the principal brand's legal data or which brands each person sees is done by a company administrator.",
         "roles": "You can’t give the administrator, brand administrator or branch manager role, nor edit someone who has it.",
         "empresa": "This setting applies to the whole company: a general administrator changes it.",
         "fueraDeAlcance": "That belongs to a brand you are not assigned to.",
@@ -19512,7 +19522,7 @@
     "HorasEntreMarcas": {
       "archivo": "hours-across-brands",
       "errorDescarga": "The file could not be prepared. Try again.",
-      "subtitulo": "Each person is paid by the brand they registered in. Here you see how many hours people of one brand worked at another brand’s sites, to settle them between the companies.",
+      "subtitulo": "Each person is paid by the brand they registered in. Here you see the approved hours people of one company worked at another's sites, and what one owes the other.",
       "titulo": "Hours across brands",
       "mesPasado": "Last month",
       "esteMes": "This month",
@@ -19533,7 +19543,7 @@
       "personas": "People",
       "turnos": "Shifts",
       "matriz": "Who worked where",
-      "matrizAyuda": "Rows: the brand that pays the person. Columns: the brand of the client where they worked. Period {{desde}} – {{hasta}}.",
+      "matrizAyuda": "Rows: the company providing the staff. Columns: the client's company where they worked. Period {{desde}} – {{hasta}}.",
       "pagaTrabajaEn": "Pays / Worked at",
       "total": "Total",
       "buscar": "Search person, client or site",
@@ -19545,7 +19555,20 @@
       "personasYTurnos_one": "{{personas}} people · {{count}} shift",
       "nTurnos_one": "{{count}} shift",
       "personasYTurnos_other": "{{personas}} people · {{count}} shifts",
-      "nTurnos_other": "{{count}} shifts"
+      "nTurnos_other": "{{count}} shifts",
+      "empresaPersonal": "Company providing the staff",
+      "empresaCliente": "Client's company",
+      "empresaPersonalCorta": "Provides staff",
+      "empresaClienteCorta": "Client's company",
+      "sinTarifa": "No rate",
+      "ponerTarifa": "Set a rate",
+      "tarifas": "Rates",
+      "horasAprobadas": "Approved hours",
+      "importe": "Amount",
+      "horasSinTarifa": "{{horas}} without a rate",
+      "liquidacion": "Settlement between brands",
+      "liquidacionAyuda": "The client's company pays the company that provided the staff for the approved hours, at the rate in effect each day.",
+      "debeA": "{{cliente}} pays {{personal}}"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "INV",
@@ -19560,7 +19583,64 @@
       "total": "Total",
       "correoDe": "E-mails come from",
       "portal": "Client portal and app",
-      "direccionDelCorreo": "The sending address is the platform’s; the client sees the brand’s name."
+      "direccionDelCorreo": "The sending address is the platform’s; the client sees the brand’s name.",
+      "prefijoFactura": "INV",
+      "textoDeLaEmpresa": "The company's text",
+      "comoPagar": "How to pay",
+      "pago": "Payment",
+      "condiciones": "Terms"
+    },
+    "TarifasEntreMarcas": {
+      "titulo": "Hourly rates between brands",
+      "ayuda": "The client's company pays the company providing the staff this rate for each approved hour. Each rate applies from its date; earlier hours keep theirs.",
+      "porHora": "Hourly rate",
+      "desde": "Effective from",
+      "guardar": "Save rate",
+      "guardada": "Rate saved",
+      "elige": "Choose",
+      "faltanMarcas": "Choose both companies.",
+      "mismaMarca": "A rate is between two different companies.",
+      "montoMalo": "Enter an hourly amount (0 or more).",
+      "fechaMala": "Choose the day it applies from.",
+      "quitarTitulo": "Remove this rate?",
+      "quitarMensaje": "Hours from {{desde}} go back to the previous rate, or are left without one.",
+      "quitar": "Remove",
+      "soloLectura": "The rates are set by the company's administration.",
+      "vacio": "No rates yet",
+      "vacioDesc": "Without a rate, the report shows the hours but not the amount.",
+      "desdeEl": "From {{fecha}}",
+      "vigente": "Current",
+      "porHoraValor": "{{monto}} / h"
+    },
+    "TextosDeMarca": {
+      "titulo": "Invoice texts",
+      "ayudaPrincipal": "What you write here replaces the company's text on the principal brand's documents. Empty: the one in Billing › Document design is used.",
+      "ayudaMarca": "Its invoices, quotes, e-mails and reports print only these texts. An empty text does not appear: the principal company's is never used.",
+      "vacioPrincipal": "Empty: the company's text",
+      "vacioMarca": "Empty: not printed",
+      "facturas": "Invoices",
+      "cobro": "Payment",
+      "cotizaciones": "Quotes",
+      "informes": "Reports",
+      "invoiceTitle": "Invoice title",
+      "invoiceDefaultNotes": "Notes every invoice starts with",
+      "invoiceTerms": "Terms",
+      "invoiceFooter": "Footer",
+      "paymentInstructions": "Payment instructions",
+      "paymentInstructionsAyuda": "Printed when the invoice offers no payment methods.",
+      "metodos": "Payment methods and bank details",
+      "metodosAyudaPrincipal": "With none ticked, the company's are used.",
+      "metodosAyudaMarca": "With none ticked, its invoices offer the company's payment methods without bank details.",
+      "datosDe": "Details for {{metodo}}",
+      "datosEjemplo": "Bank, account, holder…",
+      "notaDe": "Note for {{metodo}}",
+      "notaEjemplo": "E.g. write the invoice number in the reference",
+      "quoteTitle": "Quote title",
+      "quoteDefaultIntro": "Opening",
+      "quoteTerms": "Terms and conditions",
+      "quoteClosing": "Closing",
+      "quoteFooter": "Footer",
+      "reportFooterText": "Footer of the reports to its clients"
     }
   },
   "map": {

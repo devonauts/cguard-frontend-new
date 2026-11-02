@@ -12251,7 +12251,8 @@
       "subtitulo_one": "{{count}} raport operacyjny, o incydentach, czasie pracy i płacach — wszystko w jednym miejscu.",
       "subtitulo_other": "{{count}} raportów operacyjnych, o incydentach, czasie pracy i płacach — wszystko w jednym miejscu.",
       "subtitulo_few": "{{count}} raporty operacyjne, o incydentach, czasie pracy i płacach — wszystko w jednym miejscu.",
-      "subtitulo_many": "{{count}} raportów operacyjnych, o incydentach, czasie pracy i płacach — wszystko w jednym miejscu."
+      "subtitulo_many": "{{count}} raportów operacyjnych, o incydentach, czasie pracy i płacach — wszystko w jednym miejscu.",
+      "horasEntreMarcasDesc": "Zatwierdzone godziny jednej marki w obiektach innej, z kwotą do rozliczenia między firmami."
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Wzorzec rotacji",
@@ -20283,7 +20284,12 @@
       "prefijoPrincipal": "Marka główna używa serii firmy.",
       "prefijoAyuda": "Jej faktury mają własną numerację. Puste: prefiks firmy i kod marki.",
       "prefijo": "Prefiks faktur",
-      "web": "Strona internetowa"
+      "web": "Strona internetowa",
+      "pdfError": "Nie udało się przygotować przykładowego PDF. Spróbuj ponownie.",
+      "legalSoloAdmin": "Dane prawne marki głównej zmienia administrator firmy.",
+      "prefijoAyudaSerie": "Jej dokumenty mają własną numerację: {{ejemplo}}. Puste: kod marki.",
+      "pdfFactura": "Zobacz przykładową fakturę (PDF)",
+      "pdfCotizacion": "Zobacz przykładową ofertę (PDF)"
     },
     "ElegirMarca": {
       "ahora": "Jesteś tutaj",
@@ -20312,7 +20318,10 @@
         "identificadorMalo": "Identyfikator podatkowy nie jest poprawny dla wybranego kraju.",
         "sinCupos": "Używasz już wszystkich swoich marek. Dodaj kolejną, aby kontynuować.",
         "sinModulo": "Moduł Wielomarkowość nie jest aktywny.",
-        "tieneClientes": "Ta marka wciąż ma klientów. Przenieś ich do innej marki i spróbuj ponownie."
+        "tieneClientes": "Ta marka wciąż ma klientów. Przenieś ich do innej marki i spróbuj ponownie.",
+        "textoMalo": "Sprawdź teksty faktur marki.",
+        "tarifaMala": "Sprawdź stawkę: dwie firmy, kwota za godzinę i data, od której obowiązuje.",
+        "tarifaMoneda": "Ta para marek ma już stawki w innej walucie."
       },
       "irALaTienda": "Zobacz w Modułach dodatkowych",
       "nueva": "Nowa marka",
@@ -20327,7 +20336,8 @@
       "soloLecturaTitulo": "Widzisz swoje marki, ale ich nie zmieniasz",
       "excedidoTitulo": "Używasz {{usadas}} marek, a opłacone masz {{pagadas}}",
       "excedidoDesc": "Płatność za dodatkową markę została zwrócona. Twoje marki i ich dane pozostają bez zmian, ale nie możesz utworzyć ani ponownie aktywować kolejnej, dopóki nie dodasz marki lub nie zarchiwizujesz nieużywanej.",
-      "cuposExcedidos": "Dodaj markę lub zarchiwizuj jedną, aby znów móc tworzyć."
+      "cuposExcedidos": "Dodaj markę lub zarchiwizuj jedną, aby znów móc tworzyć.",
+      "adminDeMarcaTitulo": "Edytujesz tożsamość i teksty swojej marki"
     },
     "Multimarca": {
       "principal": "Główna"
@@ -20377,7 +20387,7 @@
       "errores": {
         "pago": "Płatnościami, sklepem i dodatkowymi markami zarządza administrator firmy, a nie administrator marki.",
         "cuenta": "Kontem firmy zarządza administrator ogólny.",
-        "estructura": "Tworzenie, edycję i archiwizację marek oraz zmianę tego, kto które marki widzi, wykonuje administrator firmy.",
+        "estructura": "Tworzenie lub archiwizowanie marek, zmiana danych prawnych marki głównej lub tego, które marki widzi każda osoba, należy do administratora firmy.",
         "roles": "Nie możesz nadać roli administratora, administratora marki ani kierownika oddziału ani edytować osób, które ją mają.",
         "empresa": "To ustawienie dotyczy całej firmy: zmienia je administrator ogólny.",
         "fueraDeAlcance": "To należy do marki, która nie jest Ci przypisana.",
@@ -20387,7 +20397,7 @@
     "HorasEntreMarcas": {
       "archivo": "godziny-miedzy-markami",
       "errorDescarga": "Nie udało się przygotować pliku. Spróbuj ponownie.",
-      "subtitulo": "Każda osoba otrzymuje wynagrodzenie od marki, w której się zarejestrowała. Tu widać, ile godzin osoby z jednej marki przepracowały w obiektach innej, aby rozliczyć je między firmami.",
+      "subtitulo": "Każda osoba otrzymuje wynagrodzenie od marki, w której jest zarejestrowana. Tutaj widzisz zatwierdzone godziny, które ludzie jednej firmy przepracowali w obiektach innej, i ile jedna jest winna drugiej.",
       "titulo": "Godziny między markami",
       "mesPasado": "Poprzedni miesiąc",
       "esteMes": "Ten miesiąc",
@@ -20408,7 +20418,7 @@
       "personas": "Osoby",
       "turnos": "Zmiany",
       "matriz": "Kto gdzie pracował",
-      "matrizAyuda": "Wiersze: marka, która płaci osobie. Kolumny: marka klienta, u którego pracowała. Okres {{desde}} – {{hasta}}.",
+      "matrizAyuda": "Wiersze: firma zapewniająca personel. Kolumny: firma klienta, w której pracowano. Okres {{desde}} – {{hasta}}.",
       "pagaTrabajaEn": "Płaci / Pracował w",
       "total": "Razem",
       "buscar": "Szukaj osoby, klienta lub obiektu",
@@ -20424,7 +20434,20 @@
       "personasYTurnos_many": "{{personas}} os. · {{count}} zmian",
       "nTurnos_many": "{{count}} zmian",
       "personasYTurnos_other": "{{personas}} os. · {{count}} zmiany",
-      "nTurnos_other": "{{count}} zmiany"
+      "nTurnos_other": "{{count}} zmiany",
+      "empresaPersonal": "Firma zapewniająca personel",
+      "empresaCliente": "Firma klienta",
+      "empresaPersonalCorta": "Zapewnia personel",
+      "empresaClienteCorta": "Firma klienta",
+      "sinTarifa": "Brak stawki",
+      "ponerTarifa": "Ustaw stawkę",
+      "tarifas": "Stawki",
+      "horasAprobadas": "Zatwierdzone godziny",
+      "importe": "Kwota",
+      "horasSinTarifa": "{{horas}} bez stawki",
+      "liquidacion": "Rozliczenie między markami",
+      "liquidacionAyuda": "Firma klienta płaci firmie, która zapewniła personel, za zatwierdzone godziny według stawki obowiązującej danego dnia.",
+      "debeA": "{{cliente}} płaci firmie {{personal}}"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FV",
@@ -20439,7 +20462,64 @@
       "total": "Razem",
       "correoDe": "E-maile przychodzą od",
       "portal": "Portal i aplikacja klienta",
-      "direccionDelCorreo": "Adres nadawcy należy do platformy; klient widzi nazwę marki."
+      "direccionDelCorreo": "Adres nadawcy należy do platformy; klient widzi nazwę marki.",
+      "prefijoFactura": "INV",
+      "textoDeLaEmpresa": "Tekst firmy",
+      "comoPagar": "Jak zapłacić",
+      "pago": "Płatność",
+      "condiciones": "Warunki"
+    },
+    "TarifasEntreMarcas": {
+      "titulo": "Stawki godzinowe między markami",
+      "ayuda": "Firma klienta płaci firmie zapewniającej personel tę stawkę za każdą zatwierdzoną godzinę. Każda stawka obowiązuje od swojej daty; wcześniejsze godziny zachowują swoją.",
+      "porHora": "Stawka godzinowa",
+      "desde": "Obowiązuje od",
+      "guardar": "Zapisz stawkę",
+      "guardada": "Stawka zapisana",
+      "elige": "Wybierz",
+      "faltanMarcas": "Wybierz obie firmy.",
+      "mismaMarca": "Stawka dotyczy dwóch różnych firm.",
+      "montoMalo": "Wpisz kwotę za godzinę (0 lub więcej).",
+      "fechaMala": "Wybierz, od którego dnia obowiązuje.",
+      "quitarTitulo": "Usunąć tę stawkę?",
+      "quitarMensaje": "Godziny od {{desde}} wracają do poprzedniej stawki lub zostają bez stawki.",
+      "quitar": "Usuń",
+      "soloLectura": "Stawki ustala administracja firmy.",
+      "vacio": "Brak stawek",
+      "vacioDesc": "Bez stawki raport pokazuje godziny, ale nie kwotę.",
+      "desdeEl": "Od {{fecha}}",
+      "vigente": "Obowiązująca",
+      "porHoraValor": "{{monto}} / h"
+    },
+    "TextosDeMarca": {
+      "titulo": "Teksty faktur",
+      "ayudaPrincipal": "To, co tu wpiszesz, zastępuje tekst firmy w dokumentach marki głównej. Puste: używany jest tekst z Fakturowanie › Wygląd dokumentów.",
+      "ayudaMarca": "Jej faktury, oferty, e-maile i raporty drukują tylko te teksty. Pusty tekst się nie pojawia: tekst firmy głównej nigdy nie jest używany.",
+      "vacioPrincipal": "Puste: tekst firmy",
+      "vacioMarca": "Puste: nie jest drukowane",
+      "facturas": "Faktury",
+      "cobro": "Płatność",
+      "cotizaciones": "Oferty",
+      "informes": "Raporty",
+      "invoiceTitle": "Tytuł faktury",
+      "invoiceDefaultNotes": "Uwagi, od których zaczyna się każda faktura",
+      "invoiceTerms": "Warunki",
+      "invoiceFooter": "Stopka",
+      "paymentInstructions": "Instrukcje płatności",
+      "paymentInstructionsAyuda": "Drukowane, gdy faktura nie oferuje form płatności.",
+      "metodos": "Formy płatności i dane bankowe",
+      "metodosAyudaPrincipal": "Jeśli żadna nie jest zaznaczona, używane są formy firmy.",
+      "metodosAyudaMarca": "Jeśli żadna nie jest zaznaczona, jej faktury oferują formy płatności firmy bez danych bankowych.",
+      "datosDe": "Dane dla {{metodo}}",
+      "datosEjemplo": "Bank, konto, właściciel…",
+      "notaDe": "Uwaga dla {{metodo}}",
+      "notaEjemplo": "Np. wpisz numer faktury w tytule przelewu",
+      "quoteTitle": "Tytuł oferty",
+      "quoteDefaultIntro": "Wstęp",
+      "quoteTerms": "Warunki",
+      "quoteClosing": "Zakończenie",
+      "quoteFooter": "Stopka",
+      "reportFooterText": "Stopka raportów dla jej klientów"
     }
   },
   "visitantes": {

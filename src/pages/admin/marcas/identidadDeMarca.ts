@@ -7,8 +7,8 @@
  *   · the principal brand changes nothing (the company prints as today);
  *   · any other brand IS the legal issuer: its legal name, tax id, address
  *     and e-mail replace the company's;
- *   · its invoices have their own series: `invoicePrefix`, else
- *     `<company prefix>-<code>`;
+ *   · its invoices have their own series (phase-5 default):
+ *     `<invoicePrefix or code>-<company prefix>` — BETA-INV, BETA-CN, BETA-QUO;
  *   · the mail From NAME is `senderName` (else the brand name); the address
  *     stays the platform's.
  */
@@ -46,12 +46,9 @@ export function serieDeFactura(
   prefijoEmpresa: string,
 ): string {
   if (b.isPrincipal) return prefijoEmpresa;
-  const propio = String(b.invoicePrefix || "").trim();
+  const propio = String(b.invoicePrefix || "").trim() || String(b.code || "").trim();
 
-  if (propio) return propio;
-  const code = String(b.code || "").trim();
-
-  return code ? `${prefijoEmpresa}-${code}` : prefijoEmpresa;
+  return propio ? `${propio.toUpperCase()}-${prefijoEmpresa}` : prefijoEmpresa;
 }
 
 /** A website as people read it: no scheme, no trailing slash. */

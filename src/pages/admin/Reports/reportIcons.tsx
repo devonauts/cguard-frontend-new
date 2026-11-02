@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 import {
+  ArrowLeftRight,
   FileText,
   AlertTriangle,
   ClipboardList,
@@ -67,6 +68,7 @@ const DANGER_ID =
   /panic|pánico|panico|fire|incendio|break-in|robo|vandalism|trespass|police|fall|caída|caida|suspicious|incident/;
 
 const ID_ICON: Array<[RegExp, LucideIcon]> = [
+  [/cross-brand/, ArrowLeftRight],
   [/coverage-absences|ausencia|cobertura/, UserX],
   [/entry-exit|check.?in|check.?out/, LogIn],
   [/site-tour|tour|checkpoint|recorrido/, Route],

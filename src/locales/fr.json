@@ -12173,7 +12173,8 @@
       "subtitulo_one": "{{count}} rapport d'exploitation, d'incidents, de temps et de paie — tout au même endroit.",
       "subtitulo_other": "{{count}} rapports d'exploitation, d'incidents, de temps et de paie — tout au même endroit.",
       "subtitulo_few": "{{count}} rapports d'exploitation, d'incidents, de temps et de paie — tout au même endroit.",
-      "subtitulo_many": "{{count}} rapports d'exploitation, d'incidents, de temps et de paie — tout au même endroit."
+      "subtitulo_many": "{{count}} rapports d'exploitation, d'incidents, de temps et de paie — tout au même endroit.",
+      "horasEntreMarcasDesc": "Heures approuvées d'une marque sur les sites d'une autre, avec le montant à régler entre entreprises."
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Modèle de rotation",
@@ -19967,7 +19968,12 @@
       "prefijoPrincipal": "La marque principale utilise la série de l’entreprise.",
       "prefijoAyuda": "Ses factures ont leur propre numérotation. Vide : le préfixe de l’entreprise et le code de la marque.",
       "prefijo": "Préfixe des factures",
-      "web": "Site web"
+      "web": "Site web",
+      "pdfError": "Impossible de préparer le PDF d'exemple. Réessayez.",
+      "legalSoloAdmin": "Les données légales de la marque principale sont modifiées par un administrateur de l'entreprise.",
+      "prefijoAyudaSerie": "Ses documents ont leur propre numérotation : {{ejemplo}}. Vide : le code de la marque.",
+      "pdfFactura": "Voir une facture d'exemple (PDF)",
+      "pdfCotizacion": "Voir un devis d'exemple (PDF)"
     },
     "ElegirMarca": {
       "ahora": "Vous êtes ici",
@@ -19996,7 +20002,10 @@
         "identificadorMalo": "L'identifiant fiscal n'est pas valide pour le pays choisi.",
         "sinCupos": "Vous utilisez déjà toutes vos marques. Ajoutez-en une autre pour continuer.",
         "sinModulo": "Le module Multimarque n'est pas actif.",
-        "tieneClientes": "Cette marque a encore des clients. Transférez-les vers une autre marque et réessayez."
+        "tieneClientes": "Cette marque a encore des clients. Transférez-les vers une autre marque et réessayez.",
+        "textoMalo": "Vérifiez les textes de facture de la marque.",
+        "tarifaMala": "Vérifiez le tarif : deux entreprises, un montant horaire et la date d'entrée en vigueur.",
+        "tarifaMoneda": "Cette paire de marques a déjà des tarifs dans une autre devise."
       },
       "irALaTienda": "Voir dans Modules complémentaires",
       "nueva": "Nouvelle marque",
@@ -20011,7 +20020,8 @@
       "soloLecturaTitulo": "Vous voyez vos marques, sans les modifier",
       "excedidoTitulo": "Vous utilisez {{usadas}} marques et en avez {{pagadas}} payées",
       "excedidoDesc": "Le paiement d’une marque supplémentaire a été remboursé. Vos marques et leurs données restent inchangées, mais vous ne pouvez ni en créer ni en réactiver une autre avant d’ajouter une marque ou d’en archiver une inutilisée.",
-      "cuposExcedidos": "Ajoutez une marque ou archivez-en une pour pouvoir en créer à nouveau."
+      "cuposExcedidos": "Ajoutez une marque ou archivez-en une pour pouvoir en créer à nouveau.",
+      "adminDeMarcaTitulo": "Vous modifiez l'identité et les textes de votre marque"
     },
     "Multimarca": {
       "principal": "Principale"
@@ -20061,7 +20071,7 @@
       "errores": {
         "pago": "Les paiements, la boutique et les marques supplémentaires relèvent d’un administrateur de l’entreprise, pas d’une marque.",
         "cuenta": "Le compte de l’entreprise est géré par un administrateur général.",
-        "estructura": "Créer, modifier ou archiver des marques, ou changer les marques visibles par chacun, relève d’un administrateur de l’entreprise.",
+        "estructura": "Créer ou archiver des marques, modifier les données légales de la marque principale ou les marques que voit chaque personne relève d'un administrateur de l'entreprise.",
         "roles": "Vous ne pouvez pas attribuer le rôle d’administrateur, d’administrateur de marque ou de responsable d’agence, ni modifier qui l’a.",
         "empresa": "Ce réglage vaut pour toute l’entreprise : un administrateur général le modifie.",
         "fueraDeAlcance": "Cela appartient à une marque qui ne vous est pas attribuée.",
@@ -20071,7 +20081,7 @@
     "HorasEntreMarcas": {
       "archivo": "heures-entre-marques",
       "errorDescarga": "Le fichier n’a pas pu être préparé. Réessayez.",
-      "subtitulo": "Chaque personne est payée par la marque où elle s’est inscrite. Vous voyez ici combien d’heures des personnes d’une marque ont travaillé sur les sites d’une autre, pour les régler entre entreprises.",
+      "subtitulo": "Chaque personne est payée par la marque où elle a été enregistrée. Ici, vous voyez les heures approuvées que le personnel d'une entreprise a travaillées sur les sites d'une autre, et ce que l'une doit à l'autre.",
       "titulo": "Heures entre marques",
       "mesPasado": "Mois dernier",
       "esteMes": "Ce mois-ci",
@@ -20092,7 +20102,7 @@
       "personas": "Personnes",
       "turnos": "Services",
       "matriz": "Qui a travaillé où",
-      "matrizAyuda": "Lignes : la marque qui paie la personne. Colonnes : la marque du client où elle a travaillé. Période {{desde}} – {{hasta}}.",
+      "matrizAyuda": "Lignes : l'entreprise qui fournit le personnel. Colonnes : l'entreprise du client où il a travaillé. Période {{desde}} – {{hasta}}.",
       "pagaTrabajaEn": "Paie / A travaillé chez",
       "total": "Total",
       "buscar": "Rechercher une personne, un client ou un site",
@@ -20104,7 +20114,20 @@
       "personasYTurnos_one": "{{personas}} pers. · {{count}} service",
       "nTurnos_one": "{{count}} service",
       "personasYTurnos_other": "{{personas}} pers. · {{count}} services",
-      "nTurnos_other": "{{count}} services"
+      "nTurnos_other": "{{count}} services",
+      "empresaPersonal": "Entreprise qui fournit le personnel",
+      "empresaCliente": "Entreprise du client",
+      "empresaPersonalCorta": "Fournit le personnel",
+      "empresaClienteCorta": "Entreprise du client",
+      "sinTarifa": "Sans tarif",
+      "ponerTarifa": "Fixer un tarif",
+      "tarifas": "Tarifs",
+      "horasAprobadas": "Heures approuvées",
+      "importe": "Montant",
+      "horasSinTarifa": "{{horas}} sans tarif",
+      "liquidacion": "Règlement entre marques",
+      "liquidacionAyuda": "L'entreprise du client paie à l'entreprise qui a fourni le personnel les heures approuvées, au tarif en vigueur chaque jour.",
+      "debeA": "{{cliente}} paie {{personal}}"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "FAC",
@@ -20119,7 +20142,64 @@
       "total": "Total",
       "correoDe": "Les e-mails viennent de",
       "portal": "Portail et appli client",
-      "direccionDelCorreo": "L’adresse d’envoi est celle de la plateforme ; le client voit le nom de la marque."
+      "direccionDelCorreo": "L’adresse d’envoi est celle de la plateforme ; le client voit le nom de la marque.",
+      "prefijoFactura": "INV",
+      "textoDeLaEmpresa": "Texte de l'entreprise",
+      "comoPagar": "Comment payer",
+      "pago": "Paiement",
+      "condiciones": "Conditions"
+    },
+    "TarifasEntreMarcas": {
+      "titulo": "Tarifs horaires entre marques",
+      "ayuda": "L'entreprise du client paie à l'entreprise qui fournit le personnel ce tarif pour chaque heure approuvée. Chaque tarif s'applique à partir de sa date ; les heures antérieures gardent le leur.",
+      "porHora": "Tarif horaire",
+      "desde": "En vigueur depuis",
+      "guardar": "Enregistrer le tarif",
+      "guardada": "Tarif enregistré",
+      "elige": "Choisir",
+      "faltanMarcas": "Choisissez les deux entreprises.",
+      "mismaMarca": "Un tarif concerne deux entreprises différentes.",
+      "montoMalo": "Saisissez un montant horaire (0 ou plus).",
+      "fechaMala": "Choisissez à partir de quel jour il s'applique.",
+      "quitarTitulo": "Supprimer ce tarif ?",
+      "quitarMensaje": "Les heures depuis le {{desde}} reprennent le tarif précédent, ou restent sans tarif.",
+      "quitar": "Supprimer",
+      "soloLectura": "Les tarifs sont fixés par l'administration de l'entreprise.",
+      "vacio": "Aucun tarif pour l'instant",
+      "vacioDesc": "Sans tarif, le rapport affiche les heures mais pas le montant.",
+      "desdeEl": "Depuis le {{fecha}}",
+      "vigente": "En vigueur",
+      "porHoraValor": "{{monto}} / h"
+    },
+    "TextosDeMarca": {
+      "titulo": "Textes de facture",
+      "ayudaPrincipal": "Ce que vous écrivez ici remplace le texte de l'entreprise dans les documents de la marque principale. Vide : celui de Facturation › Design des documents est utilisé.",
+      "ayudaMarca": "Ses factures, devis, e-mails et rapports n'impriment que ces textes. Un texte vide n'apparaît pas : celui de l'entreprise principale n'est jamais utilisé.",
+      "vacioPrincipal": "Vide : le texte de l'entreprise",
+      "vacioMarca": "Vide : non imprimé",
+      "facturas": "Factures",
+      "cobro": "Paiement",
+      "cotizaciones": "Devis",
+      "informes": "Rapports",
+      "invoiceTitle": "Titre de la facture",
+      "invoiceDefaultNotes": "Notes par défaut de chaque facture",
+      "invoiceTerms": "Conditions",
+      "invoiceFooter": "Pied de page",
+      "paymentInstructions": "Instructions de paiement",
+      "paymentInstructionsAyuda": "Imprimées lorsque la facture ne propose aucun moyen de paiement.",
+      "metodos": "Moyens de paiement et coordonnées bancaires",
+      "metodosAyudaPrincipal": "Si aucun n'est coché, ceux de l'entreprise sont utilisés.",
+      "metodosAyudaMarca": "Si aucun n'est coché, ses factures proposent les moyens de paiement de l'entreprise sans coordonnées bancaires.",
+      "datosDe": "Coordonnées pour {{metodo}}",
+      "datosEjemplo": "Banque, compte, titulaire…",
+      "notaDe": "Note pour {{metodo}}",
+      "notaEjemplo": "Ex. : indiquez le numéro de facture en référence",
+      "quoteTitle": "Titre du devis",
+      "quoteDefaultIntro": "Introduction",
+      "quoteTerms": "Conditions générales",
+      "quoteClosing": "Formule de clôture",
+      "quoteFooter": "Pied de page",
+      "reportFooterText": "Pied des rapports à ses clients"
     }
   },
   "visitantes": {

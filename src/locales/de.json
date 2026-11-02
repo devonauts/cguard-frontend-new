@@ -12173,7 +12173,8 @@
       "subtitulo_one": "{{count}} Bericht zu Betrieb, Vorfällen, Zeit und Lohnabrechnung – alles an einem Ort.",
       "subtitulo_other": "{{count}} Berichte zu Betrieb, Vorfällen, Zeit und Lohnabrechnung – alles an einem Ort.",
       "subtitulo_few": "{{count}} Berichte zu Betrieb, Vorfällen, Zeit und Lohnabrechnung – alles an einem Ort.",
-      "subtitulo_many": "{{count}} Berichte zu Betrieb, Vorfällen, Zeit und Lohnabrechnung – alles an einem Ort."
+      "subtitulo_many": "{{count}} Berichte zu Betrieb, Vorfällen, Zeit und Lohnabrechnung – alles an einem Ort.",
+      "horasEntreMarcasDesc": "Genehmigte Stunden einer Marke an Standorten einer anderen, mit dem zwischen den Unternehmen abzurechnenden Betrag."
     },
     "RotationStyleSelect": {
       "patronDeRotacion": "Rotationsmuster",
@@ -19967,7 +19968,12 @@
       "prefijoPrincipal": "Die Hauptmarke verwendet die Nummernfolge des Unternehmens.",
       "prefijoAyuda": "Ihre Rechnungen haben eine eigene Nummerierung. Leer: Präfix des Unternehmens und Markencode.",
       "prefijo": "Rechnungspräfix",
-      "web": "Website"
+      "web": "Website",
+      "pdfError": "Das Beispiel-PDF konnte nicht erstellt werden. Versuche es erneut.",
+      "legalSoloAdmin": "Die rechtlichen Daten der Hauptmarke ändert ein Administrator des Unternehmens.",
+      "prefijoAyudaSerie": "Ihre Dokumente haben eine eigene Nummerierung: {{ejemplo}}. Leer: der Markencode.",
+      "pdfFactura": "Beispielrechnung ansehen (PDF)",
+      "pdfCotizacion": "Beispielangebot ansehen (PDF)"
     },
     "ElegirMarca": {
       "ahora": "Sie sind hier",
@@ -19996,7 +20002,10 @@
         "identificadorMalo": "Die Steuernummer ist für das gewählte Land nicht gültig.",
         "sinCupos": "Sie nutzen bereits alle Ihre Marken. Fügen Sie eine weitere hinzu, um fortzufahren.",
         "sinModulo": "Das Modul Multimarke ist nicht aktiv.",
-        "tieneClientes": "Diese Marke hat noch Kunden. Verschieben Sie sie in eine andere Marke und versuchen Sie es erneut."
+        "tieneClientes": "Diese Marke hat noch Kunden. Verschieben Sie sie in eine andere Marke und versuchen Sie es erneut.",
+        "textoMalo": "Prüfe die Rechnungstexte der Marke.",
+        "tarifaMala": "Prüfe den Satz: zwei Unternehmen, ein Stundenbetrag und das Gültigkeitsdatum.",
+        "tarifaMoneda": "Dieses Markenpaar hat bereits Sätze in einer anderen Währung."
       },
       "irALaTienda": "In Zusatzmodulen ansehen",
       "nueva": "Neue Marke",
@@ -20011,7 +20020,8 @@
       "soloLecturaTitulo": "Sie sehen Ihre Marken, ändern sie aber nicht",
       "excedidoTitulo": "Sie nutzen {{usadas}} Marken und haben {{pagadas}} bezahlt",
       "excedidoDesc": "Die Zahlung für eine zusätzliche Marke wurde erstattet. Ihre Marken und deren Daten bleiben unverändert, aber Sie können keine weitere anlegen oder reaktivieren, bis Sie eine Marke hinzufügen oder eine ungenutzte archivieren.",
-      "cuposExcedidos": "Fügen Sie eine Marke hinzu oder archivieren Sie eine, um wieder anlegen zu können."
+      "cuposExcedidos": "Fügen Sie eine Marke hinzu oder archivieren Sie eine, um wieder anlegen zu können.",
+      "adminDeMarcaTitulo": "Du bearbeitest Identität und Texte deiner Marke"
     },
     "Multimarca": {
       "principal": "Hauptmarke"
@@ -20061,7 +20071,7 @@
       "errores": {
         "pago": "Zahlungen, der Shop und zusätzliche Marken werden von einem Administrator des Unternehmens verwaltet, nicht von dem einer Marke.",
         "cuenta": "Das Unternehmenskonto verwaltet ein allgemeiner Administrator.",
-        "estructura": "Marken anlegen, bearbeiten oder archivieren oder ändern, wer welche Marken sieht, erledigt ein Administrator des Unternehmens.",
+        "estructura": "Marken anlegen oder archivieren, die rechtlichen Daten der Hauptmarke oder die Marken, die jede Person sieht, ändern – das macht ein Administrator des Unternehmens.",
         "roles": "Sie können die Rolle Administrator, Markenadministrator oder Niederlassungsleitung nicht vergeben und niemanden mit dieser Rolle bearbeiten.",
         "empresa": "Diese Einstellung gilt für das ganze Unternehmen: Ändern kann sie ein allgemeiner Administrator.",
         "fueraDeAlcance": "Das gehört zu einer Marke, die Ihnen nicht zugewiesen ist.",
@@ -20071,7 +20081,7 @@
     "HorasEntreMarcas": {
       "archivo": "stunden-zwischen-marken",
       "errorDescarga": "Die Datei konnte nicht erstellt werden. Bitte erneut versuchen.",
-      "subtitulo": "Jede Person wird von der Marke bezahlt, bei der sie angestellt ist. Hier sehen Sie, wie viele Stunden Personal einer Marke an Standorten einer anderen gearbeitet hat, um sie zwischen den Unternehmen abzurechnen.",
+      "subtitulo": "Jede Person wird von der Marke bezahlt, bei der sie registriert ist. Hier siehst du die genehmigten Stunden, die Personal eines Unternehmens an Standorten eines anderen gearbeitet hat, und was das eine dem anderen schuldet.",
       "titulo": "Stunden zwischen Marken",
       "mesPasado": "Letzter Monat",
       "esteMes": "Dieser Monat",
@@ -20092,7 +20102,7 @@
       "personas": "Personen",
       "turnos": "Schichten",
       "matriz": "Wer wo gearbeitet hat",
-      "matrizAyuda": "Zeilen: die Marke, die die Person bezahlt. Spalten: die Marke des Kunden, bei dem sie gearbeitet hat. Zeitraum {{desde}} – {{hasta}}.",
+      "matrizAyuda": "Zeilen: das Unternehmen, das das Personal stellt. Spalten: das Unternehmen des Kunden, bei dem gearbeitet wurde. Zeitraum {{desde}} – {{hasta}}.",
       "pagaTrabajaEn": "Zahlt / Gearbeitet bei",
       "total": "Gesamt",
       "buscar": "Person, Kunde oder Standort suchen",
@@ -20104,7 +20114,20 @@
       "personasYTurnos_one": "{{personas}} Pers. · {{count}} Schicht",
       "nTurnos_one": "{{count}} Schicht",
       "personasYTurnos_other": "{{personas}} Pers. · {{count}} Schichten",
-      "nTurnos_other": "{{count}} Schichten"
+      "nTurnos_other": "{{count}} Schichten",
+      "empresaPersonal": "Unternehmen, das das Personal stellt",
+      "empresaCliente": "Unternehmen des Kunden",
+      "empresaPersonalCorta": "Stellt Personal",
+      "empresaClienteCorta": "Unternehmen des Kunden",
+      "sinTarifa": "Kein Satz",
+      "ponerTarifa": "Satz festlegen",
+      "tarifas": "Sätze",
+      "horasAprobadas": "Genehmigte Stunden",
+      "importe": "Betrag",
+      "horasSinTarifa": "{{horas}} ohne Satz",
+      "liquidacion": "Abrechnung zwischen Marken",
+      "liquidacionAyuda": "Das Unternehmen des Kunden zahlt dem Unternehmen, das das Personal gestellt hat, die genehmigten Stunden zum jeweils gültigen Tagessatz.",
+      "debeA": "{{cliente}} zahlt an {{personal}}"
     },
     "VistaDeMarca": {
       "prefijoEmpresa": "RE",
@@ -20119,7 +20142,64 @@
       "total": "Gesamt",
       "correoDe": "E-Mails kommen von",
       "portal": "Kundenportal und App",
-      "direccionDelCorreo": "Die Absenderadresse ist die der Plattform; der Kunde sieht den Namen der Marke."
+      "direccionDelCorreo": "Die Absenderadresse ist die der Plattform; der Kunde sieht den Namen der Marke.",
+      "prefijoFactura": "INV",
+      "textoDeLaEmpresa": "Text des Unternehmens",
+      "comoPagar": "So bezahlen Sie",
+      "pago": "Zahlung",
+      "condiciones": "Bedingungen"
+    },
+    "TarifasEntreMarcas": {
+      "titulo": "Stundensätze zwischen Marken",
+      "ayuda": "Das Unternehmen des Kunden zahlt dem Unternehmen, das das Personal stellt, diesen Satz pro genehmigter Stunde. Jeder Satz gilt ab seinem Datum; frühere Stunden behalten ihren.",
+      "porHora": "Stundensatz",
+      "desde": "Gültig ab",
+      "guardar": "Satz speichern",
+      "guardada": "Satz gespeichert",
+      "elige": "Auswählen",
+      "faltanMarcas": "Wähle beide Unternehmen.",
+      "mismaMarca": "Ein Satz gilt zwischen zwei verschiedenen Unternehmen.",
+      "montoMalo": "Gib einen Stundenbetrag ein (0 oder mehr).",
+      "fechaMala": "Wähle, ab welchem Tag er gilt.",
+      "quitarTitulo": "Diesen Satz entfernen?",
+      "quitarMensaje": "Stunden ab {{desde}} fallen auf den vorherigen Satz zurück oder bleiben ohne Satz.",
+      "quitar": "Entfernen",
+      "soloLectura": "Die Sätze legt die Verwaltung des Unternehmens fest.",
+      "vacio": "Noch keine Sätze",
+      "vacioDesc": "Ohne Satz zeigt der Bericht die Stunden, aber keinen Betrag.",
+      "desdeEl": "Ab {{fecha}}",
+      "vigente": "Gültig",
+      "porHoraValor": "{{monto}} / Std."
+    },
+    "TextosDeMarca": {
+      "titulo": "Rechnungstexte",
+      "ayudaPrincipal": "Was du hier schreibst, ersetzt den Text des Unternehmens in den Dokumenten der Hauptmarke. Leer: Es gilt der aus Abrechnung › Dokumentdesign.",
+      "ayudaMarca": "Ihre Rechnungen, Angebote, E-Mails und Berichte drucken nur diese Texte. Ein leerer Text erscheint nicht: Der des Hauptunternehmens wird nie verwendet.",
+      "vacioPrincipal": "Leer: der Text des Unternehmens",
+      "vacioMarca": "Leer: wird nicht gedruckt",
+      "facturas": "Rechnungen",
+      "cobro": "Zahlung",
+      "cotizaciones": "Angebote",
+      "informes": "Berichte",
+      "invoiceTitle": "Rechnungstitel",
+      "invoiceDefaultNotes": "Notizen, mit denen jede Rechnung beginnt",
+      "invoiceTerms": "Bedingungen",
+      "invoiceFooter": "Fußzeile",
+      "paymentInstructions": "Zahlungsanweisungen",
+      "paymentInstructionsAyuda": "Werden gedruckt, wenn die Rechnung keine Zahlungsarten anbietet.",
+      "metodos": "Zahlungsarten und Bankdaten",
+      "metodosAyudaPrincipal": "Ist keine angehakt, gelten die des Unternehmens.",
+      "metodosAyudaMarca": "Ist keine angehakt, bieten ihre Rechnungen die Zahlungsarten des Unternehmens ohne Bankdaten an.",
+      "datosDe": "Angaben zu {{metodo}}",
+      "datosEjemplo": "Bank, Konto, Inhaber…",
+      "notaDe": "Hinweis zu {{metodo}}",
+      "notaEjemplo": "Z. B.: Rechnungsnummer im Verwendungszweck angeben",
+      "quoteTitle": "Angebotstitel",
+      "quoteDefaultIntro": "Einleitung",
+      "quoteTerms": "Geschäftsbedingungen",
+      "quoteClosing": "Schlussformel",
+      "quoteFooter": "Fußzeile",
+      "reportFooterText": "Fußzeile der Berichte an ihre Kunden"
     }
   },
   "visitantes": {

@@ -13,6 +13,8 @@
  * Phase 2: someone limited to some brands (brand admin) sees only theirs and
  * cannot create, edit, archive or buy (`marca_estructura` / `marca_pago`):
  * the page says so instead of offering buttons the server would refuse.
+ * Phase 5: a brand admin edits their OWN brand's identity and texts (not
+ * the principal's legal data); creating, archiving and buying stay closed.
  * Phase 4: after a refunded slot the company may use more brands than it
  * paid for (`slots.overLimit`): a banner says what that blocks and offers
  * the slot.
@@ -62,8 +64,10 @@ export default function MarcasPage() {
   const { t, i18n } = useTranslation();
   const { hasPermission } = usePermissions();
   // Phase 2: only the company's administration changes the brands.
-  const { restringido } = useAccesoDeMarca();
+  const { restringido, esAdminDeMarca } = useAccesoDeMarca();
   const puedeEditar = hasPermission("tenantEdit") && !restringido;
+  // Phase 5: the brand admin sees only their brands, and edits those.
+  const puedeEditarIdentidad = restringido && esAdminDeMarca;
   const [verArchivadas, setVerArchivadas] = useState(false);
   const { activo, lista, todas, marcas, cupos } = useMarcas({
     archivadas: verArchivadas,
@@ -137,10 +141,11 @@ export default function MarcasPage() {
             {restringido && (
               <InfoNote
                 icon={<Lock />}
-                title={t(
-                  "ui.MarcasPage.soloLecturaTitulo",
-                  "Ves tus marcas, no las cambias",
-                )}
+                title={
+                  puedeEditarIdentidad
+                    ? t("ui.MarcasPage.adminDeMarcaTitulo", "Editas la identidad y los textos de tu marca")
+                    : t("ui.MarcasPage.soloLecturaTitulo", "Ves tus marcas, no las cambias")
+                }
                 tone="neutral"
               >
                 {mensajeDeAccesoDeMarca("marca_estructura")}
@@ -302,6 +307,7 @@ export default function MarcasPage() {
           abierto={creando || !!editando}
           marca={editando}
           puedeEditar={puedeEditar}
+          puedeEditarIdentidad={puedeEditarIdentidad}
           onCerrar={() => {
             setCreando(false);
             setEditando(null);
