@@ -18845,7 +18845,9 @@
         "editarLinea": "Modifier la ligne",
         "minutosHint": "Prévu : {{p}} · travaillé : {{w}}",
         "excluirDeLaFactura": "Exclure de la facture",
-        "revisionLista": "Prête pour la vérification du client. Aucun e-mail n'est envoyé : copiez le lien et partagez-le avec lui."
+        "revisionLista": "Prête pour la vérification du client. Aucun e-mail n'est envoyé : copiez le lien et partagez-le avec lui.",
+        "nuevaRevision": "Nouvelle vérification du client",
+        "nuevaRevisionConfirm": "Une nouvelle série s'ouvre avec un autre lien : l'ancien lien ne fonctionne plus et l'approbation précédente ne compte plus. Les objections en attente restent à résoudre."
       },
       "regla": {
         "usarElDeLaEmpresa": "Utiliser la valeur de l’entreprise",

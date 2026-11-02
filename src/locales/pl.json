@@ -19141,7 +19141,9 @@
         "editarLinea": "Edytuj pozycję",
         "minutosHint": "Zaplanowane: {{p}} · przepracowane: {{w}}",
         "excluirDeLaFactura": "Wyklucz z faktury",
-        "revisionLista": "Gotowa do weryfikacji przez klienta. Żaden e-mail nie jest wysyłany: skopiuj link i udostępnij go klientowi."
+        "revisionLista": "Gotowa do weryfikacji przez klienta. Żaden e-mail nie jest wysyłany: skopiuj link i udostępnij go klientowi.",
+        "nuevaRevision": "Nowa weryfikacja klienta",
+        "nuevaRevisionConfirm": "Zaczyna się nowa runda z innym linkiem: poprzedni link przestaje działać, a poprzednie zatwierdzenie już się nie liczy. Oczekujące zastrzeżenia zostają do rozwiązania."
       },
       "regla": {
         "usarElDeLaEmpresa": "Użyj wartości firmy",

@@ -18286,7 +18286,9 @@
         "editarLinea": "Edit line",
         "minutosHint": "Scheduled: {{p}} · worked: {{w}}",
         "excluirDeLaFactura": "Exclude from the invoice",
-        "revisionLista": "Ready for the client's review. No e-mail is sent: copy the link and share it with them."
+        "revisionLista": "Ready for the client's review. No e-mail is sent: copy the link and share it with them.",
+        "nuevaRevision": "New client review",
+        "nuevaRevisionConfirm": "A new round opens with another link: the previous link stops working and the previous approval no longer counts. Pending objections stay there to be resolved."
       },
       "regla": {
         "usarElDeLaEmpresa": "Use the company value",
