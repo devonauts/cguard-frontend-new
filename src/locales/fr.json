@@ -19542,7 +19542,9 @@
       "sinRequisitoAyuda": "Ici apparaissent les absences, les places vides et les congés sans remplaçant. Pour savoir ce qui manque, chaque poste doit dire combien d’agents il demande.",
       "irAEstaciones": "Définir le besoin d’un poste",
       "sinRequisitoTitulo": "Aucun poste n’a encore de besoin défini",
-      "ofrecido": "Proposée"
+      "ofrecido": "Proposée",
+      "sede": "Site",
+      "todasLasSedes": "Tous les sites"
     },
     "HorarioModos": {
       "modos": "Mode du planning",

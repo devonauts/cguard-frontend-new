@@ -19542,7 +19542,9 @@
       "sinRequisitoAyuda": "Hier verschijnen no-shows, lege plekken en verlof zonder vervanger. Om te weten wat ontbreekt, moet elke post aangeven hoeveel beveiligers hij nodig heeft.",
       "irAEstaciones": "Bezetting van een post instellen",
       "sinRequisitoTitulo": "Nog geen post met bezetting",
-      "ofrecido": "Aangeboden"
+      "ofrecido": "Aangeboden",
+      "sede": "Locatie",
+      "todasLasSedes": "Alle locaties"
     },
     "HorarioModos": {
       "modos": "Roostermodus",

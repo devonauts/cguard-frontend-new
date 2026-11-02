@@ -19002,7 +19002,9 @@
       "sinRequisitoAyuda": "Aqui aparecem as faltas, as vagas vazias e as licenças sem substituto. Para saber o que falta cobrir, cada estação precisa dizer quantos vigilantes pede.",
       "irAEstaciones": "Definir o requisito de uma estação",
       "sinRequisitoTitulo": "Ainda não há estações com requisito",
-      "ofrecido": "Oferecida"
+      "ofrecido": "Oferecida",
+      "sede": "Unidade",
+      "todasLasSedes": "Todas as unidades"
     },
     "HorarioModos": {
       "modos": "Modo da escala",

@@ -19542,7 +19542,9 @@
       "sinRequisitoAyuda": "Hier erscheinen Fehlzeiten, leere Plätze und Abwesenheiten ohne Vertretung. Damit klar ist, was fehlt, muss jede Station sagen, wie viele Wachleute sie braucht.",
       "irAEstaciones": "Bedarf einer Station festlegen",
       "sinRequisitoTitulo": "Noch keine Station mit Bedarf",
-      "ofrecido": "Angeboten"
+      "ofrecido": "Angeboten",
+      "sede": "Standort",
+      "todasLasSedes": "Alle Standorte"
     },
     "HorarioModos": {
       "modos": "Dienstplanmodus",

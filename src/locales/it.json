@@ -19542,7 +19542,9 @@
       "sinRequisitoAyuda": "Qui compaiono assenze, posti vuoti e permessi senza sostituto. Per sapere cosa manca, ogni postazione deve indicare quante guardie servono.",
       "irAEstaciones": "Definisci il fabbisogno di una postazione",
       "sinRequisitoTitulo": "Nessuna postazione ha ancora un fabbisogno",
-      "ofrecido": "Offerto"
+      "ofrecido": "Offerto",
+      "sede": "Sede",
+      "todasLasSedes": "Tutte le sedi"
     },
     "HorarioModos": {
       "modos": "Modalità del turnario",
