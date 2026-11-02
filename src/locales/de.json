@@ -10685,7 +10685,11 @@
       "revocarAcceso": "Zugang widerrufen",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Webportal",
-      "nombreDeLaPersona": "Name der Person (optional)"
+      "nombreDeLaPersona": "Name der Person (optional)",
+      "correoDeInvitacion": "E-Mail, die die Person erhält",
+      "opcionDescargaApp": "App {{app}} herunterladen",
+      "opcionBienvenida": "Willkommen und Aktivierung",
+      "mismaCuenta": "In beiden Fällen ist es dasselbe Konto (App und Portal): Nur die E-Mail ist anders."
     },
     "CommandBar": {
       "datosDeDemostracion": "Demodaten",

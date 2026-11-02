@@ -10685,7 +10685,11 @@
       "revocarAcceso": "Toegang intrekken",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Webportaal",
-      "nombreDeLaPersona": "Naam van de persoon (optioneel)"
+      "nombreDeLaPersona": "Naam van de persoon (optioneel)",
+      "correoDeInvitacion": "E-mail die de persoon ontvangt",
+      "opcionDescargaApp": "De app {{app}} downloaden",
+      "opcionBienvenida": "Welkom en activering",
+      "mismaCuenta": "In beide gevallen is het hetzelfde account (app en portaal): alleen de e-mail verschilt."
     },
     "CommandBar": {
       "datosDeDemostracion": "Demogegevens",

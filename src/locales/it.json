@@ -10685,7 +10685,11 @@
       "revocarAcceso": "Revoca accesso",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Portale web",
-      "nombreDeLaPersona": "Nome della persona (facoltativo)"
+      "nombreDeLaPersona": "Nome della persona (facoltativo)",
+      "correoDeInvitacion": "Email che riceve",
+      "opcionDescargaApp": "Scarica l’app {{app}}",
+      "opcionBienvenida": "Benvenuto e attivazione",
+      "mismaCuenta": "È lo stesso account in entrambi i casi (app e portale): cambia solo l’email."
     },
     "CommandBar": {
       "datosDeDemostracion": "Dati dimostrativi",
