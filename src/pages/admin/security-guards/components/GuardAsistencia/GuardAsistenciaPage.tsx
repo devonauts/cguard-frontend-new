@@ -294,8 +294,10 @@ export default function GuardAsistenciaPage() {
               {/* Navegador de rango */}
               <div className="flex items-center gap-1 rounded-xl border border-border bg-background px-2 py-1">
                 <Button
+                  aria-label={t("clients.pagination.prev", "Anterior")}
                   className="h-7 w-7"
                   size="icon"
+                  title={t("clients.pagination.prev", "Anterior")}
                   variant="ghost"
                   onClick={() => setAnchor((a) => shiftAnchor(period, a, -1))}
                 >
@@ -305,8 +307,10 @@ export default function GuardAsistenciaPage() {
                   {rangeLabel(period, anchor)}
                 </span>
                 <Button
+                  aria-label={t("clients.pagination.next", "Siguiente")}
                   className="h-7 w-7"
                   size="icon"
+                  title={t("clients.pagination.next", "Siguiente")}
                   variant="ghost"
                   onClick={() => setAnchor((a) => shiftAnchor(period, a, 1))}
                 >

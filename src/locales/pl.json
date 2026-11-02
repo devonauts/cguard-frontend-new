@@ -2596,7 +2596,15 @@
       "deleted": "Notatka służbowa usunięta",
       "pending": "Oczekuje",
       "title": "Notatki służbowe",
-      "total": "notatki służbowe"
+      "total": "notatki służbowe",
+      "count_one": "{{count}} notatka służbowa",
+      "count_other": "{{count}} notatki służbowej",
+      "acceptedCount_one": "{{count}} zaakceptowana",
+      "acceptedCount_other": "{{count}} zaakceptowanej",
+      "count_few": "{{count}} notatki służbowe",
+      "count_many": "{{count}} notatek służbowych",
+      "acceptedCount_few": "{{count}} zaakceptowane",
+      "acceptedCount_many": "{{count}} zaakceptowanych"
     },
     "actionNotImplemented": "Ta akcja nie jest jeszcze dostępna",
     "overview": {

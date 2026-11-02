@@ -2806,7 +2806,11 @@
       "deleted": "Memo deleted",
       "pending": "Pending",
       "title": "Memos",
-      "total": "memos"
+      "total": "memos",
+      "count_one": "{{count}} memo",
+      "count_other": "{{count}} memos",
+      "acceptedCount_one": "{{count}} accepted",
+      "acceptedCount_other": "{{count}} accepted"
     },
     "actionNotImplemented": "That action isn't available yet",
     "overview": {

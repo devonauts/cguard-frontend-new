@@ -2588,7 +2588,11 @@
       "deleted": "Memo verwijderd",
       "pending": "In behandeling",
       "title": "Memo's",
-      "total": "memo's"
+      "total": "memo's",
+      "count_one": "{{count}} memo",
+      "count_other": "{{count}} memo's",
+      "acceptedCount_one": "{{count}} geaccepteerd",
+      "acceptedCount_other": "{{count}} geaccepteerd"
     },
     "actionNotImplemented": "Deze actie is nog niet beschikbaar",
     "overview": {

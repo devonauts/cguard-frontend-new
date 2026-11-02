@@ -2588,7 +2588,11 @@
       "deleted": "Comunicazione eliminata",
       "pending": "In attesa",
       "title": "Comunicazioni",
-      "total": "comunicazioni"
+      "total": "comunicazioni",
+      "count_one": "{{count}} comunicazione",
+      "count_other": "{{count}} comunicazioni",
+      "acceptedCount_one": "{{count}} accettata",
+      "acceptedCount_other": "{{count}} accettate"
     },
     "actionNotImplemented": "Azione non ancora disponibile",
     "overview": {

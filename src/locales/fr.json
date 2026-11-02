@@ -2588,7 +2588,11 @@
       "deleted": "Mémo supprimé",
       "pending": "En attente",
       "title": "Mémos",
-      "total": "mémos"
+      "total": "mémos",
+      "count_one": "{{count}} mémo",
+      "count_other": "{{count}} mémos",
+      "acceptedCount_one": "{{count}} accepté",
+      "acceptedCount_other": "{{count}} acceptés"
     },
     "actionNotImplemented": "Action pas encore disponible",
     "overview": {

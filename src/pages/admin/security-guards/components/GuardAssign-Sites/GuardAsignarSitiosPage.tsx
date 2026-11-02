@@ -762,44 +762,47 @@ export default function GuardAsignarSitiosPage() {
                   value={query}
                   onChange={(v) => setQuery(v)}
                 />
-                <div ref={actionRef} className="relative">
-                  <button
-                    className="cg-btn-glass cg-focus inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={selectedKeys.length === 0}
-                    style={{ color: "var(--bad-text)" }}
-                    onClick={() => {
-                      if (!selectedKeys || selectedKeys.length === 0) {
-                        toast.error(
-                          t("guards.assignSites.actions.selectPair", {
-                            defaultValue:
-                              "Selecciona al menos una estación para eliminar",
-                          }),
-                        );
+                {/* Nothing assigned → nothing to remove: the button only confused. */}
+                {groups.length > 0 && (
+                  <div ref={actionRef} className="relative">
+                    <button
+                      className="cg-btn-glass cg-focus inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={selectedKeys.length === 0}
+                      style={{ color: "var(--bad-text)" }}
+                      onClick={() => {
+                        if (!selectedKeys || selectedKeys.length === 0) {
+                          toast.error(
+                            t("guards.assignSites.actions.selectPair", {
+                              defaultValue:
+                                "Selecciona al menos una estación para eliminar",
+                            }),
+                          );
 
-                        return;
-                      }
-                      requestDelete(
-                        groups.filter((g) => selectedKeys.includes(g.key)),
-                      );
-                    }}
-                  >
-                    <Trash2 size={15} />
-                    {t("guards.assignSites.actions.delete", {
-                      defaultValue: "Quitar",
-                    })}
-                    {selectedKeys.length > 0 && (
-                      <span
-                        className="ml-0.5 rounded-full px-1.5 py-0.5 text-[11px] tabular-nums"
-                        style={{
-                          background:
-                            "color-mix(in oklab, var(--bad) 16%, transparent)",
-                        }}
-                      >
-                        {selectedKeys.length}
-                      </span>
-                    )}
-                  </button>
-                </div>
+                          return;
+                        }
+                        requestDelete(
+                          groups.filter((g) => selectedKeys.includes(g.key)),
+                        );
+                      }}
+                    >
+                      <Trash2 size={15} />
+                      {t("guards.assignSites.actions.delete", {
+                        defaultValue: "Quitar",
+                      })}
+                      {selectedKeys.length > 0 && (
+                        <span
+                          className="ml-0.5 rounded-full px-1.5 py-0.5 text-[11px] tabular-nums"
+                          style={{
+                            background:
+                              "color-mix(in oklab, var(--bad) 16%, transparent)",
+                          }}
+                        >
+                          {selectedKeys.length}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                )}
                 <Button
                   size="sm"
                   variant="brand"

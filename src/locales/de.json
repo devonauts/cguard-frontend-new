@@ -2588,7 +2588,11 @@
       "deleted": "Mitteilung gelöscht",
       "pending": "Offen",
       "title": "Mitteilungen",
-      "total": "Mitteilungen"
+      "total": "Mitteilungen",
+      "count_one": "{{count}} Mitteilung",
+      "count_other": "{{count}} Mitteilungen",
+      "acceptedCount_one": "{{count}} angenommen",
+      "acceptedCount_other": "{{count}} angenommen"
     },
     "actionNotImplemented": "Aktion noch nicht verfügbar",
     "overview": {
