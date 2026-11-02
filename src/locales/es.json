@@ -11917,7 +11917,7 @@
       "diasMarcadosComo": "{{n}} día(s) marcados como {{codigo}}",
       "diasMovidosFalloEn": "{{n}} día(s) movido(s). Falló en: {{dias}}.",
       "diasNoSePudieronMarcar": "{{n}} día(s) no se pudieron marcar",
-      "diasSinCubrirCubriendo": "{{n}} día(s) sin cubrir cubriendo",
+      "diasSinCubrirCubriendo": "{{n}} día(s) sin cubrir",
       "editarElTurno": "Editar el turno",
       "editarEsteSacafranco": "Editar este sacafranco: su ciclo y por qué estaciones rota",
       "editarEsteTurnoHorasYEstacion": "Editar este turno (horas y estación)…",
@@ -15203,7 +15203,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Libre (clic derecho: cubrir este día)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (doble clic para editar)",
       "sinConfigurar": "Sin configurar",
-      "turnosDe12hRotativo": "Turnos de 12h · D/N rotativo"
+      "turnosDe12hRotativo": "Turnos de 12h · D/N rotativo",
+      "fueraDeSuAsignacion": "{{nombre}} — sin asignación en este puesto ese día"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Cada puesto con su ciclo — uno hace 2 mañanas y 3 tardes, otro 3 y 2.",

@@ -15743,7 +15743,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Repos (clic droit : couvrir ce jour)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (double-clic pour modifier)",
       "sinConfigurar": "Non configuré",
-      "turnosDe12hRotativo": "Postes de 12 h · J/N en rotation"
+      "turnosDe12hRotativo": "Postes de 12 h · J/N en rotation",
+      "fueraDeSuAsignacion": "{{nombre}} — pas affecté à ce poste ce jour-là"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Chaque place avec son cycle — l'un fait 2 matins et 3 après-midi, l'autre 3 et 2.",

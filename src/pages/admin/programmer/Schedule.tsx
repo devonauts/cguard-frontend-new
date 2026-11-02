@@ -7735,7 +7735,7 @@ export default function Schedule() {
                                     <div className="tabular-nums">
                                       •{" "}
                                       {t("ui.Schedule.diasSinCubrirCubriendo", {
-                                        defaultValue: "{{n}} día(s) sin cubrir cubriendo",
+                                        defaultValue: "{{n}} día(s) sin cubrir",
                                         n: alert.uncoveredDays,
                                       })}
                                     </div>

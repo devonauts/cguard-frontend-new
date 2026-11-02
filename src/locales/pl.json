@@ -15933,7 +15933,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Wolne (prawy przycisk: obsadź ten dzień)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (kliknij dwukrotnie, aby edytować)",
       "sinConfigurar": "Nieskonfigurowane",
-      "turnosDe12hRotativo": "Zmiany 12 h · D/N rotacyjnie"
+      "turnosDe12hRotativo": "Zmiany 12 h · D/N rotacyjnie",
+      "fueraDeSuAsignacion": "{{nombre}} — tego dnia nieprzypisany do tego posterunku"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Każde miejsce z własnym cyklem — jeden robi 2 poranki i 3 popołudnia, drugi 3 i 2.",

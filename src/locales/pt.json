@@ -15203,7 +15203,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Folga (clique direito: cobrir este dia)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (clique duas vezes para editar)",
       "sinConfigurar": "Não configurado",
-      "turnosDe12hRotativo": "Turnos de 12h · D/N rotativo"
+      "turnosDe12hRotativo": "Turnos de 12h · D/N rotativo",
+      "fueraDeSuAsignacion": "{{nombre}} — sem atribuição neste posto nesse dia"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Cada vaga com seu ciclo — um faz 2 manhãs e 3 tardes, outro 3 e 2.",

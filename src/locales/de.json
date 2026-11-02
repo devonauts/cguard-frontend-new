@@ -15743,7 +15743,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Frei (Rechtsklick: diesen Tag abdecken)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (Doppelklick zum Bearbeiten)",
       "sinConfigurar": "Nicht konfiguriert",
-      "turnosDe12hRotativo": "12-h-Schichten · T/N rotierend"
+      "turnosDe12hRotativo": "12-h-Schichten · T/N rotierend",
+      "fueraDeSuAsignacion": "{{nombre}} — an diesem Tag diesem Posten nicht zugewiesen"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Jeder Platz mit eigenem Zyklus — einer macht 2 Vormittage und 3 Nachmittage, ein anderer 3 und 2.",

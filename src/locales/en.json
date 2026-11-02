@@ -15203,7 +15203,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Off (right-click: cover this day)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (double-click to edit)",
       "sinConfigurar": "Not configured",
-      "turnosDe12hRotativo": "12h shifts · rotating D/N"
+      "turnosDe12hRotativo": "12h shifts · rotating D/N",
+      "fueraDeSuAsignacion": "{{nombre}} — not assigned to this post that day"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Each position with its own cycle — one does 2 mornings and 3 afternoons, another 3 and 2.",

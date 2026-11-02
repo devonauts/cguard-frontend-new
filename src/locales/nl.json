@@ -15743,7 +15743,8 @@
       "libreClicDerechoCubrir": "{{nombre}} — Vrij (rechtsklik: deze dag dekken)",
       "novedadDobleClicParaEditar": "{{nombre}} — {{codigo}}{{nota}} (dubbelklik om te bewerken)",
       "sinConfigurar": "Niet geconfigureerd",
-      "turnosDe12hRotativo": "Diensten van 12 u · D/N roterend"
+      "turnosDe12hRotativo": "Diensten van 12 u · D/N roterend",
+      "fueraDeSuAsignacion": "{{nombre}} — die dag niet aan deze post toegewezen"
     },
     "RotacionDeLaEstacion": {
       "cadaPlazaConSuCiclo": "Elke plaats met een eigen cyclus — de een doet 2 ochtenden en 3 middagen, de ander 3 en 2.",
