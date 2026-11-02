@@ -10579,7 +10579,8 @@
       "invitarAcceso": "Toegang uitnodigen",
       "revocarAcceso": "Toegang intrekken",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Webportaal"
+      "portalWeb": "Webportaal",
+      "nombreDeLaPersona": "Naam van de persoon (optioneel)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Demogegevens",

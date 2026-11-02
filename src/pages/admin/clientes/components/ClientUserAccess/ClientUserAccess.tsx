@@ -59,6 +59,7 @@ export default function ClientUserAccess({ client }: Props) {
   const [query, setQuery] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [form, setForm] = useState({
+    name: "",
     email: "",
     channel: "app" as "app" | "portal",
   });
@@ -104,11 +105,18 @@ export default function ClientUserAccess({ client }: Props) {
 
       return;
     }
+    // It sent «no-es-correo» and the server provisioned an account for it (QA M12).
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error(t("clients.contacts.errors.invalidEmail", "Correo inválido"));
+
+      return;
+    }
+    const name = form.name.trim() || undefined;
     setSending(true);
     try {
       if (form.channel === "portal")
-        await clientService.sendClientPortalInvitation(client.id, email);
-      else await clientService.sendClientAppInvitation(client.id, email);
+        await clientService.sendClientPortalInvitation(client.id, email, name);
+      else await clientService.sendClientAppInvitation(client.id, email, name);
       toast.success(
         t("ui.ClientsPage.invitacionEnviadaA", {
           defaultValue: "Invitación enviada a {{to}}",
@@ -116,7 +124,11 @@ export default function ClientUserAccess({ client }: Props) {
         }),
       );
       setInviteOpen(false);
-      setForm({ email: "", channel: appInviteEnabled ? "app" : "portal" });
+      setForm({
+        name: "",
+        email: "",
+        channel: appInviteEnabled ? "app" : "portal",
+      });
       await load();
     } catch (e: any) {
       toast.error(
@@ -272,6 +284,19 @@ export default function ClientUserAccess({ client }: Props) {
         }}
       >
         <div className="space-y-3">
+          {/* The invited person's own name: without it the e-mail greeted
+              them with the titular's name (QA M14). Optional. */}
+          <LabeledField
+            label={t("ui.ClientUserAccess.nombreDeLaPersona", "Nombre de la persona (opcional)")}
+          >
+            <input
+              className={FIELD_CLS}
+              maxLength={150}
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+          </LabeledField>
           <LabeledField label={t("ui.ClientUserAccess.correoDeLaPersona")}>
             <input
               className={FIELD_CLS}

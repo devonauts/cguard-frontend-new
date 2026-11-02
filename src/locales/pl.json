@@ -10617,7 +10617,8 @@
       "invitarAcceso": "Zaproś do dostępu",
       "revocarAcceso": "Cofnij dostęp",
       "appMiSeguridad": "Aplikacja {{app}}",
-      "portalWeb": "Portal internetowy"
+      "portalWeb": "Portal internetowy",
+      "nombreDeLaPersona": "Imię i nazwisko osoby (opcjonalnie)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Dane demonstracyjne",

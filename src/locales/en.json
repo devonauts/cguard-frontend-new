@@ -10039,7 +10039,8 @@
       "invitarAcceso": "Invite access",
       "revocarAcceso": "Revoke access",
       "appMiSeguridad": "{{app}} app",
-      "portalWeb": "Web portal"
+      "portalWeb": "Web portal",
+      "nombreDeLaPersona": "Person's name (optional)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Demo data",

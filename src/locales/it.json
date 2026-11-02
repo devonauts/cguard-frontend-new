@@ -10579,7 +10579,8 @@
       "invitarAcceso": "Invita accesso",
       "revocarAcceso": "Revoca accesso",
       "appMiSeguridad": "App {{app}}",
-      "portalWeb": "Portale web"
+      "portalWeb": "Portale web",
+      "nombreDeLaPersona": "Nome della persona (facoltativo)"
     },
     "CommandBar": {
       "datosDeDemostracion": "Dati dimostrativi",
