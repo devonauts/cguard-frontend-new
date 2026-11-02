@@ -19961,7 +19961,8 @@
       "placeType": "Art und Nummer des Orts",
       "postSite": "Objekt",
       "reason": "Besuchsgrund",
-      "station": "Objekt"
+      "station": "Objekt",
+      "place": "Ort"
     },
     "placeType": {
       "apartment": "Wohnung",

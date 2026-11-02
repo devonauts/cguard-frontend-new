@@ -19961,7 +19961,8 @@
       "placeType": "Type de lieu et numéro",
       "postSite": "Site surveillé",
       "reason": "Motif de la visite",
-      "station": "Site"
+      "station": "Site",
+      "place": "Lieu"
     },
     "placeType": {
       "apartment": "Appartement",

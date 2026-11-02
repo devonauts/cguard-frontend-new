@@ -5967,9 +5967,10 @@
       "numPeople": "Número de pessoas",
       "companions": "Acompanhantes",
       "placeType": "Tipo de local e número",
-      "postSite": "posto de vigilância",
+      "postSite": "Posto de vigilância",
       "reason": "Motivo da visita",
-      "station": "Estação"
+      "station": "Estação",
+      "place": "Local"
     },
     "markExit": "Marcar saída",
     "noLogs": "Nenhum registro de diário encontrado",

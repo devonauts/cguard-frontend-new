@@ -19961,7 +19961,8 @@
       "placeType": "Type ruimte en nummer",
       "postSite": "Post",
       "reason": "Reden van het bezoek",
-      "station": "Post"
+      "station": "Post",
+      "place": "Plaats"
     },
     "placeType": {
       "apartment": "Appartement",
