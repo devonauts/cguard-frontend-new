@@ -9051,7 +9051,8 @@
     "geofence": {
       "centerPinTitle": "Standort des Objekts (zum Anpassen ziehen)",
       "needThreePoints": "Fügen Sie mindestens 3 Punkte hinzu, um den Geofence zu schließen.",
-      "sizeOk": "Passende Größe zum Ein- und Ausstempeln."
+      "sizeOk": "Passende Größe zum Ein- und Ausstempeln.",
+      "radiusRange": "Der Geofence-Radius muss zwischen {{min}} und {{max}} {{unidad}} liegen."
     },
     "overview": {
       "locationSaveError": "Der Standort konnte nicht gespeichert werden",

@@ -9051,7 +9051,8 @@
     "geofence": {
       "centerPinTitle": "Positie van de post (sleep om bij te stellen)",
       "needThreePoints": "Voeg minstens 3 punten toe om de geofence te sluiten.",
-      "sizeOk": "Geschikte grootte om in en uit te klokken."
+      "sizeOk": "Geschikte grootte om in en uit te klokken.",
+      "radiusRange": "De straal van de geofence moet tussen {{min}} en {{max}} {{unidad}} liggen."
     },
     "overview": {
       "locationSaveError": "De positie kon niet worden opgeslagen",

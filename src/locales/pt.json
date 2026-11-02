@@ -7727,7 +7727,8 @@
     "geofence": {
       "centerPinTitle": "Localização do posto (arraste para ajustar)",
       "needThreePoints": "Adicione pelo menos 3 pontos para fechar a geocerca.",
-      "sizeOk": "Tamanho adequado para marcar entrada e saída."
+      "sizeOk": "Tamanho adequado para marcar entrada e saída.",
+      "radiusRange": "O raio da cerca virtual deve estar entre {{min}} e {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Erro ao salvar a localização",

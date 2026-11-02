@@ -37,6 +37,13 @@ import { Section, StatCard, Stagger } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
+  RADIO_MAX_M,
+  RADIO_MIN_M,
+  radioEnMetros,
+  radioParaMostrar,
+  radioValido,
+} from "@/lib/radioDeGeocerca";
+import {
   esEvento,
   eventoTerminado,
   rangoDelEvento,
@@ -276,6 +283,11 @@ export default function StationOverview({
     null,
   );
   const [polygon, setPolygon] = useState<PolyPoint[]>([]);
+  // The radius used to be settable only when creating the station, so a typo
+  // (100 150 m) could not be corrected. Typed in feet for US companies.
+  const usaPies =
+    (localStorage.getItem("tenantCountry") || "").toUpperCase() === "US";
+  const [editRadius, setEditRadius] = useState("");
   // Human-readable address for the station coords (reverse-geocoded for display).
   const [stationAddress, setStationAddress] = useState("");
   /* La actividad reciente (marcaciones) llega por prop: alimenta la cobertura
@@ -374,6 +386,11 @@ export default function StationOverview({
     );
     setPolygon(
       Array.isArray(station.geofencePolygon) ? station.geofencePolygon : [],
+    );
+    setEditRadius(
+      station.geofenceRadius != null && station.geofenceRadius !== ""
+        ? String(radioParaMostrar(Number(station.geofenceRadius), usaPies))
+        : "",
     );
   }, [station]);
 
@@ -616,6 +633,20 @@ export default function StationOverview({
 
       return;
     }
+    const radioMetros = radioEnMetros(editRadius, usaPies);
+    if (editRadius.trim() && !radioValido(radioMetros)) {
+      toast.error(
+        t("station.geofence.radiusRange", {
+          defaultValue:
+            "El radio de la geocerca debe estar entre {{min}} y {{max}} {{unidad}}.",
+          min: radioParaMostrar(RADIO_MIN_M, usaPies),
+          max: radioParaMostrar(RADIO_MAX_M, usaPies),
+          unidad: usaPies ? "ft" : "m",
+        }),
+      );
+
+      return;
+    }
     setSavingLoc(true);
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
@@ -625,6 +656,7 @@ export default function StationOverview({
           latitud: latNum,
           longitud: lngNum,
           geofencePolygon: polygon.length >= 3 ? polygon : null,
+          ...(radioMetros !== null ? { geofenceRadius: radioMetros } : {}),
         },
       });
       invalidateEntity("stations");
@@ -1306,6 +1338,28 @@ export default function StationOverview({
             }}
             onChange={setPolygon}
           />
+          <div className="max-w-xs">
+            <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+              {usaPies
+                ? t(
+                    "ui.StationCreateForm.radioPies",
+                    "Radio de la geocerca (pies)",
+                  )
+                : t(
+                    "ui.StationCreateForm.radioMetros",
+                    "Radio de la geocerca (metros)",
+                  )}
+            </label>
+            <input
+              className="cg-input cg-focus w-full px-3 py-2 text-sm"
+              max={radioParaMostrar(RADIO_MAX_M, usaPies)}
+              min={radioParaMostrar(RADIO_MIN_M, usaPies)}
+              placeholder={usaPies ? "330" : "100"}
+              type="number"
+              value={editRadius}
+              onChange={(e) => setEditRadius(e.target.value)}
+            />
+          </div>
           <p className="text-[11px] text-muted-foreground font-mono">
             {editLat && editLng
               ? t("ui.StationOverview.puntoCoords", {

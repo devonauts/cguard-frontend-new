@@ -6856,7 +6856,8 @@
     "geofence": {
       "centerPinTitle": "Station location (drag to adjust)",
       "needThreePoints": "Add at least 3 points to close the geofence.",
-      "sizeOk": "Good size for clocking in and out."
+      "sizeOk": "Good size for clocking in and out.",
+      "radiusRange": "The geofence radius must be between {{min}} and {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Error saving the location",

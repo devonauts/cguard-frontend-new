@@ -9065,7 +9065,8 @@
     "geofence": {
       "centerPinTitle": "Lokalizacja posterunku (prosimy przeciągnąć, aby poprawić)",
       "needThreePoints": "Prosimy dodać co najmniej 3 punkty, aby zamknąć geostrefę.",
-      "sizeOk": "Rozmiar odpowiedni do rejestrowania wejść i wyjść."
+      "sizeOk": "Rozmiar odpowiedni do rejestrowania wejść i wyjść.",
+      "radiusRange": "Promień geofencingu musi wynosić od {{min}} do {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Nie udało się zapisać lokalizacji",

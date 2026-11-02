@@ -9051,7 +9051,8 @@
     "geofence": {
       "centerPinTitle": "Position du poste (faites glisser pour ajuster)",
       "needThreePoints": "Ajoutez au moins 3 points pour fermer le géorepérage.",
-      "sizeOk": "Taille adaptée au pointage d'entrée et de sortie."
+      "sizeOk": "Taille adaptée au pointage d'entrée et de sortie.",
+      "radiusRange": "Le rayon du géorepérage doit être compris entre {{min}} et {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Impossible d'enregistrer la position",

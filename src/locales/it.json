@@ -9051,7 +9051,8 @@
     "geofence": {
       "centerPinTitle": "Posizione del posto (trascina per regolare)",
       "needThreePoints": "Aggiungi almeno 3 punti per chiudere il geofence.",
-      "sizeOk": "Dimensione adeguata per timbrare entrata e uscita."
+      "sizeOk": "Dimensione adeguata per timbrare entrata e uscita.",
+      "radiusRange": "Il raggio del geofence deve essere compreso tra {{min}} e {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Errore durante il salvataggio della posizione",

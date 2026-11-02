@@ -15,6 +15,13 @@ import { esEvento } from "@/lib/serviceTypes";
 import { rangoDelEvento, vigenciaDe } from "@/lib/eventos";
 import { horaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
+  RADIO_MAX_M,
+  RADIO_MIN_M,
+  radioEnMetros,
+  radioParaMostrar,
+  radioValido,
+} from "@/lib/radioDeGeocerca";
+import {
   cicloDe,
   diasIsoDe,
   indiceDeDia,
@@ -663,9 +670,16 @@ export default function StationCreateForm({
   const usaPies =
     (localStorage.getItem("tenantCountry") || "").toUpperCase() === "US";
   const [geofenceRadius, setGeofenceRadius] = useState(usaPies ? "330" : "100");
-  const radioEnMetros = usaPies
-    ? Math.round((Number(geofenceRadius) || 0) * 0.3048)
-    : Math.round(Number(geofenceRadius) || 0);
+  // Empty field = the default 100 m, as before.
+  const radioMetros = radioEnMetros(geofenceRadius, usaPies) ?? 100;
+  const errorDeRadio = () =>
+    t("station.geofence.radiusRange", {
+      defaultValue:
+        "El radio de la geocerca debe estar entre {{min}} y {{max}} {{unidad}}.",
+      min: radioParaMostrar(RADIO_MIN_M, usaPies),
+      max: radioParaMostrar(RADIO_MAX_M, usaPies),
+      unidad: usaPies ? "ft" : "m",
+    });
   const sedeLat = Number(site?.latitud || site?.latitude);
   const sedeLng = Number(site?.longitud || site?.longitude);
   const [punto, setPunto] = useState<{ lat: number; lng: number } | null>(null);
@@ -692,6 +706,11 @@ export default function StationCreateForm({
       toast.error(
         t("postsite.Details.unexpected", "Unexpected error occurred"),
       );
+
+      return;
+    }
+    if (!radioValido(radioMetros)) {
+      toast.error(errorDeRadio());
 
       return;
     }
@@ -733,7 +752,7 @@ export default function StationCreateForm({
         numberOfGuardsInStation: String(seats),
         startingTimeInDay: primera.start,
         finishTimeInDay: tipo === "24h" ? primera.start : ultima.end,
-        geofenceRadius: radioEnMetros || 100,
+        geofenceRadius: radioMetros,
         geofencePolygon: geofencePolygon.length >= 3 ? geofencePolygon : null,
         // Empty input → null so the tenant Nómina default applies.
         clockInEarlyBufferMin:
@@ -1914,8 +1933,8 @@ export default function StationCreateForm({
             </label>
             <input
               className={FIELD_CLS_LG}
-              max="5000"
-              min="10"
+              max={radioParaMostrar(RADIO_MAX_M, usaPies)}
+              min={radioParaMostrar(RADIO_MIN_M, usaPies)}
               placeholder="100"
               type="number"
               value={geofenceRadius}
@@ -1923,7 +1942,7 @@ export default function StationCreateForm({
             />
             {usaPies && (
               <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>
-                ≈ {radioEnMetros} m
+                ≈ {radioMetros} m
               </p>
             )}
             <p className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>
@@ -1999,7 +2018,7 @@ export default function StationCreateForm({
               showLocation
               centerLat={puntoFinal?.lat}
               centerLng={puntoFinal?.lng}
-              radiusMeters={geofencePolygon.length >= 3 ? 0 : radioEnMetros}
+              radiusMeters={geofencePolygon.length >= 3 ? 0 : radioMetros}
               siteLocation={
                 Number.isFinite(sedeLat) &&
                 Number.isFinite(sedeLng) &&

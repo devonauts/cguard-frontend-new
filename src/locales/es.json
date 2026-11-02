@@ -6856,7 +6856,8 @@
     "geofence": {
       "centerPinTitle": "Ubicación de la estación (arrastra para ajustar)",
       "needThreePoints": "Agrega al menos 3 puntos para cerrar la geocerca.",
-      "sizeOk": "Tamaño adecuado para marcar entrada y salida."
+      "sizeOk": "Tamaño adecuado para marcar entrada y salida.",
+      "radiusRange": "El radio de la geocerca debe estar entre {{min}} y {{max}} {{unidad}}."
     },
     "overview": {
       "locationSaveError": "Error al guardar la ubicación",
