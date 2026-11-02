@@ -7046,7 +7046,10 @@
     "forgotNoMailboxHint": "Se sua conta não tem e-mail, peça o link ao seu supervisor ou ao escritório.",
     "forgotSubtitleLoginId": "Digite seu e-mail ou usuário e enviaremos um link para criar uma nova.",
     "loginIdLabel": "E-mail ou usuário",
-    "loginIdPlaceholder": "jmiranda ou voce@email.com"
+    "loginIdPlaceholder": "jmiranda ou voce@email.com",
+    "validation_symbol": "Deve incluir um caractere especial",
+    "validation_same_as_old": "A nova senha precisa ser diferente da atual",
+    "passwordChangedSignInAgain": "Você alterou sua senha. Entre com a nova."
   },
   "billing": {
     "activate": "Ativar assinatura",

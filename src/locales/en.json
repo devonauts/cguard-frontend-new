@@ -467,7 +467,10 @@
     "forgotNoMailboxHint": "If your account has no email, ask your supervisor or the office for the link.",
     "forgotSubtitleLoginId": "Enter your email or username and we'll send you a link to create a new one.",
     "loginIdLabel": "Email or username",
-    "loginIdPlaceholder": "jmiranda or you@email.com"
+    "loginIdPlaceholder": "jmiranda or you@email.com",
+    "validation_symbol": "Must include a special character",
+    "validation_same_as_old": "The new password must be different from the current one",
+    "passwordChangedSignInAgain": "You changed your password. Sign in with the new one."
   },
   "billing": {
     "title": "Subscription status",

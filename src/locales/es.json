@@ -467,7 +467,10 @@
     "forgotNoMailboxHint": "Si tu cuenta no tiene correo, pide el enlace a tu supervisor o a la oficina.",
     "forgotSubtitleLoginId": "Escribe tu correo o tu usuario y te enviamos un enlace para crear una nueva.",
     "loginIdLabel": "Correo o usuario",
-    "loginIdPlaceholder": "jmiranda o tu@correo.com"
+    "loginIdPlaceholder": "jmiranda o tu@correo.com",
+    "validation_symbol": "Debe incluir un carácter especial",
+    "validation_same_as_old": "La nueva contraseña tiene que ser distinta de la actual",
+    "passwordChangedSignInAgain": "Cambiaste tu contraseña. Inicia sesión con la nueva."
   },
   "billing": {
     "title": "Estado de la suscripción",

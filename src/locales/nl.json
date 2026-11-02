@@ -336,7 +336,10 @@
     "forgotNoMailboxHint": "Heeft je account geen e-mail, vraag dan de link aan je leidinggevende of het kantoor.",
     "forgotSubtitleLoginId": "Vul je e-mail of gebruikersnaam in en we sturen je een link om een nieuw wachtwoord te maken.",
     "loginIdLabel": "E-mail of gebruikersnaam",
-    "loginIdPlaceholder": "jmiranda of jij@email.com"
+    "loginIdPlaceholder": "jmiranda of jij@email.com",
+    "validation_symbol": "Moet een speciaal teken bevatten",
+    "validation_same_as_old": "Het nieuwe wachtwoord moet anders zijn dan het huidige",
+    "passwordChangedSignInAgain": "Je hebt je wachtwoord gewijzigd. Meld je aan met het nieuwe."
   },
   "client": {
     "invite_not_found": "Uitnodiging niet gevonden of ongeldig.",

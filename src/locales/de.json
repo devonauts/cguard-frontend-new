@@ -336,7 +336,10 @@
     "forgotNoMailboxHint": "Hat Ihr Konto keine E-Mail, bitten Sie Ihre Aufsicht oder das Büro um den Link.",
     "forgotSubtitleLoginId": "Geben Sie Ihre E-Mail oder Ihren Benutzernamen ein und wir senden Ihnen einen Link für ein neues Passwort.",
     "loginIdLabel": "E-Mail oder Benutzername",
-    "loginIdPlaceholder": "jmiranda oder sie@email.com"
+    "loginIdPlaceholder": "jmiranda oder sie@email.com",
+    "validation_symbol": "Muss ein Sonderzeichen enthalten",
+    "validation_same_as_old": "Das neue Passwort muss sich vom aktuellen unterscheiden",
+    "passwordChangedSignInAgain": "Du hast dein Passwort geändert. Melde dich mit dem neuen an."
   },
   "client": {
     "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig.",

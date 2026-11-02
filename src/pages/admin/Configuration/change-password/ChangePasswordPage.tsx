@@ -8,9 +8,12 @@ import ChangePasswordForm, { ChangePasswordValues } from "./ChangePasswordForm";
 
 import { Section } from "@/components/kit";
 import AccountService from "@/services/accountService";
+import { useAuth } from "@/contexts/AuthContext";
+import { getServerErrorMessage } from "@/lib/utils";
 
 export default function PasswordChangePage() {
   const { t } = useTranslation();
+  const { signOut } = useAuth();
 
   const handleSubmit = async (values: ChangePasswordValues) => {
     try {
@@ -32,16 +35,32 @@ export default function PasswordChangePage() {
         t("auth.change_password_success", { defaultValue: "Password updated" });
 
       toast.success(message);
+      // The server ends every session of the account on a password change, so
+      // the next request bounced to /login with no word of why. Say it there.
+      try {
+        sessionStorage.setItem(
+          "authExitReason",
+          t("auth.passwordChangedSignInAgain", {
+            defaultValue:
+              "Cambiaste tu contraseña. Inicia sesión con la nueva.",
+          }),
+        );
+      } catch {
+        /* no storage: the toast above still said it */
+      }
     } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        t("auth.change_password_error", {
-          defaultValue: "Error changing password",
-        });
+      toast.error(
+        getServerErrorMessage(
+          err,
+          t("auth.change_password_error", {
+            defaultValue: "Error changing password",
+          }),
+        ),
+      );
 
-      toast.error(msg);
+      return;
     }
+    await signOut({ avisarAlServidor: false });
   };
 
   return (

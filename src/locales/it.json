@@ -336,7 +336,10 @@
     "forgotNoMailboxHint": "Se il tuo account non ha e-mail, chiedi il link al tuo supervisore o all'ufficio.",
     "forgotSubtitleLoginId": "Inserisci la tua e-mail o il tuo nome utente e ti invieremo un link per crearne una nuova.",
     "loginIdLabel": "E-mail o nome utente",
-    "loginIdPlaceholder": "jmiranda o tu@email.com"
+    "loginIdPlaceholder": "jmiranda o tu@email.com",
+    "validation_symbol": "Deve includere un carattere speciale",
+    "validation_same_as_old": "La nuova password deve essere diversa da quella attuale",
+    "passwordChangedSignInAgain": "Hai cambiato la password. Accedi con quella nuova."
   },
   "client": {
     "invite_not_found": "Invito non trovato o non valido.",
