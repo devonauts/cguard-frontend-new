@@ -19988,6 +19988,10 @@
     "RutaConPermiso": {
       "titulo": "Brak dostępu do tej strony",
       "descripcion": "Twoja rola nie może zobaczyć tej strony. Jeśli jej potrzebujesz, poproś administratora."
+    },
+    "training": {
+      "puntajeFueraDeRango": "Próg zaliczenia musi być liczbą całkowitą od 1 do 100.",
+      "puntosFueraDeRango": "Punkty muszą być liczbą całkowitą od 0 do 100000."
     }
   },
   "visitantes": {

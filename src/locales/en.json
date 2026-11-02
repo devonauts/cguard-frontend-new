@@ -19140,6 +19140,10 @@
     "RutaConPermiso": {
       "titulo": "No access to this page",
       "descripcion": "Your role can’t see this page. If you need it, ask an administrator."
+    },
+    "training": {
+      "puntajeFueraDeRango": "The passing score must be a whole number between 1 and 100.",
+      "puntosFueraDeRango": "Points must be a whole number between 0 and 100000."
     }
   },
   "map": {

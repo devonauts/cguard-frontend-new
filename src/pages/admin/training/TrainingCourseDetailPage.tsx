@@ -4,7 +4,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Lock, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 
-import { TRAINING_CATEGORIES, TRAINING_LEVELS } from "./trainingConstants";
+import {
+  TRAINING_CATEGORIES,
+  TRAINING_LEVELS,
+  courseScoreProblem,
+  PASSING_SCORE_MAX,
+  PASSING_SCORE_MIN,
+  POINTS_VALUE_MAX,
+} from "./trainingConstants";
 import LessonsManager from "./components/LessonsManager";
 import QuizManager from "./components/QuizManager";
 import AssignGuardsPanel from "./components/AssignGuardsPanel";
@@ -102,6 +109,13 @@ export default function TrainingCourseDetailPage() {
     if (!id) return;
     if (!meta.title.trim()) {
       toast.error(t("comun.elTituloEsObligatorio"));
+
+      return;
+    }
+    const scoreProblem = courseScoreProblem(meta);
+
+    if (scoreProblem) {
+      toast.error(scoreProblem);
 
       return;
     }
@@ -315,7 +329,9 @@ export default function TrainingCourseDetailPage() {
                   </Label>
                   <Input
                     disabled={readOnly}
+                    max={POINTS_VALUE_MAX}
                     min={0}
+                    step={1}
                     type="number"
                     value={meta.pointsValue}
                     onChange={(e) =>
@@ -327,8 +343,9 @@ export default function TrainingCourseDetailPage() {
                   <Label>{t("comun.puntajeParaAprobar")}</Label>
                   <Input
                     disabled={readOnly}
-                    max={100}
-                    min={0}
+                    max={PASSING_SCORE_MAX}
+                    min={PASSING_SCORE_MIN}
+                    step={1}
                     type="number"
                     value={meta.passingScore}
                     onChange={(e) =>

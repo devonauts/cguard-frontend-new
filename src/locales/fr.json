@@ -19680,6 +19680,10 @@
     "RutaConPermiso": {
       "titulo": "Pas d’accès à cette page",
       "descripcion": "Votre rôle ne peut pas voir cette page. Si vous en avez besoin, demandez-la à un administrateur."
+    },
+    "training": {
+      "puntajeFueraDeRango": "Le score de réussite doit être un nombre entier entre 1 et 100.",
+      "puntosFueraDeRango": "Les points doivent être un nombre entier entre 0 et 100000."
     }
   },
   "visitantes": {

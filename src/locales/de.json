@@ -19680,6 +19680,10 @@
     "RutaConPermiso": {
       "titulo": "Kein Zugriff auf diese Seite",
       "descripcion": "Ihre Rolle kann diese Seite nicht sehen. Wenn Sie sie brauchen, fragen Sie einen Administrator."
+    },
+    "training": {
+      "puntajeFueraDeRango": "Die Bestehensgrenze muss eine ganze Zahl zwischen 1 und 100 sein.",
+      "puntosFueraDeRango": "Die Punkte müssen eine ganze Zahl zwischen 0 und 100000 sein."
     }
   },
   "visitantes": {

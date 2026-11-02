@@ -9,6 +9,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import {
+  courseScoreProblem,
+  PASSING_SCORE_MAX,
+  PASSING_SCORE_MIN,
+} from "../trainingConstants";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -133,6 +139,13 @@ export default function QuizManager({
         return;
       }
     }
+    const scoreProblem = courseScoreProblem({ passingScore: passPct });
+
+    if (scoreProblem) {
+      toast.error(scoreProblem);
+
+      return;
+    }
     setSaving(true);
     try {
       await trainingCourseService.saveQuiz(courseId, {
@@ -237,8 +250,9 @@ export default function QuizManager({
               {t("comun.puntajeParaAprobar", "Puntaje para aprobar (%)")}
             </Label>
             <Input
-              max={100}
-              min={0}
+              max={PASSING_SCORE_MAX}
+              min={PASSING_SCORE_MIN}
+              step={1}
               type="number"
               value={passPct}
               onChange={(e) => setPassPct(Number(e.target.value))}

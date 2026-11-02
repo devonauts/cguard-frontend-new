@@ -19680,6 +19680,10 @@
     "RutaConPermiso": {
       "titulo": "Geen toegang tot deze pagina",
       "descripcion": "Je rol kan deze pagina niet zien. Heb je hem nodig, vraag het een beheerder."
+    },
+    "training": {
+      "puntajeFueraDeRango": "De slaagscore moet een geheel getal tussen 1 en 100 zijn.",
+      "puntosFueraDeRango": "De punten moeten een geheel getal tussen 0 en 100000 zijn."
     }
   },
   "visitantes": {

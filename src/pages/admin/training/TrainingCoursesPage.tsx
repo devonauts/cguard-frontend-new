@@ -19,6 +19,10 @@ import {
   TRAINING_LEVELS,
   categoryLabel,
   levelLabel,
+  courseScoreProblem,
+  PASSING_SCORE_MAX,
+  PASSING_SCORE_MIN,
+  POINTS_VALUE_MAX,
 } from "./trainingConstants";
 
 import AppLayout from "@/layouts/app-layout";
@@ -129,6 +133,13 @@ export default function TrainingCoursesPage() {
   const handleCreate = async () => {
     if (!form.title.trim()) {
       toast.error(t("comun.elTituloEsObligatorio"));
+
+      return;
+    }
+    const scoreProblem = courseScoreProblem(form);
+
+    if (scoreProblem) {
+      toast.error(scoreProblem);
 
       return;
     }
@@ -466,7 +477,9 @@ export default function TrainingCoursesPage() {
                   {t("ui.TrainingCourseDetailPage.puntosAlCompletar", "Puntos al completar")}
                 </Label>
                 <Input
+                  max={POINTS_VALUE_MAX}
                   min={0}
+                  step={1}
                   type="number"
                   value={form.pointsValue ?? 0}
                   onChange={(e) =>
@@ -477,8 +490,9 @@ export default function TrainingCoursesPage() {
               <div className="space-y-2">
                 <Label>{t("comun.puntajeParaAprobar")}</Label>
                 <Input
-                  max={100}
-                  min={0}
+                  max={PASSING_SCORE_MAX}
+                  min={PASSING_SCORE_MIN}
+                  step={1}
                   type="number"
                   value={form.passingScore ?? 70}
                   onChange={(e) =>
