@@ -64,9 +64,13 @@ export default function NominaAtrasos() {
         ? t("ui.NominaShared.administrativo", "Administrativo")
         : t("comun.vigilante", "Vigilante");
 
-  const dia = (ymd: string) =>
-    // The app's language, not the browser's («Sun, Nov 01» on a Spanish screen).
-    new Date(`${ymd}T12:00:00Z`).toLocaleDateString(localeActual(), { timeZone: "UTC", weekday: "short", day: "2-digit", month: "short" });
+  // The app's language, not the browser's («Sun, Nov 01» on a Spanish screen);
+  // only the first letter in capitals, like the range picker («Dom, 01 nov»).
+  const dia = (ymd: string) => {
+    const texto = new Date(`${ymd}T12:00:00Z`).toLocaleDateString(localeActual(), { timeZone: "UTC", weekday: "short", day: "2-digit", month: "short" });
+
+    return texto.charAt(0).toLocaleUpperCase(localeActual()) + texto.slice(1);
+  };
 
   const columns: Column<Fila>[] = [
     {
@@ -101,7 +105,7 @@ export default function NominaAtrasos() {
       header: t("ui.Asistencia.peorDia", "Peor día"),
       render: (_v, r) => (
         <span>
-          <span className="capitalize">{dia(r.worst.day)}</span>
+          <span>{dia(r.worst.day)}</span>
           {" · "}
           <span className="tabular-nums">{minutos(r.worst.minutes)}</span>
           {r.worst.stationName ? (
