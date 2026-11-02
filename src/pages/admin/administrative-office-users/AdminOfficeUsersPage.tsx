@@ -1210,7 +1210,9 @@ export default function AdminOfficeUsersPage() {
                     disabled={!hasPermission("userImport")}
                     onClick={() => {
                       if (!hasPermission("userImport")) return;
-                      console.log("Importar");
+                      // There is no office-only importer: «Agregar varias»
+                      // takes a pasted or uploaded sheet with office rows.
+                      navigate("/personal/varias");
                     }}
                   >
                     <ArrowDownUp className="mr-2 h-4 w-4" />{" "}
