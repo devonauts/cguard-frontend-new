@@ -18,6 +18,7 @@ import {
 } from "@/components/kit";
 import { BarChart, MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
+import { localeActual } from "@/lib/localeActual";
 
 /**
  * `hover:text-[var(--brand-text)]` y NO `hover:text-primary`.
@@ -556,15 +557,36 @@ export function AttendanceTiles({
   );
 }
 
+/** A company day (`YYYY-MM-DD`) in the reader's date format. */
+const diaLegible = (ymd: string) => {
+  const [y, m, d] = ymd.split("-").map(Number);
+
+  if (!y || !m || !d) return ymd;
+  try {
+    return new Intl.DateTimeFormat(localeActual(), {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(new Date(Date.UTC(y, m - 1, d)));
+  } catch {
+    return ymd;
+  }
+};
+
 export function RangeFooter({ data }: { data: OpsAnalytics }) {
   const { t } = useTranslation();
+  // The window's END instant is the next UTC day for a company west of UTC
+  // («Hoy» read «11-01 → 11-02»): print the company days the server echoes.
+  const inicio = data.range.startDay || data.range.start.slice(0, 10);
+  const fin = data.range.endDay || data.range.end.slice(0, 10);
 
   return (
     <p className="text-center text-xs" style={{ color: "var(--ink-faint)" }}>
       {t("ui.shared.periodoRango", {
         defaultValue: "Período: {{start}} → {{end}} · {{count}} días",
-        start: data.range.start.slice(0, 10),
-        end: data.range.end.slice(0, 10),
+        start: diaLegible(inicio),
+        end: diaLegible(fin),
         count: data.range.days,
       })}
     </p>
