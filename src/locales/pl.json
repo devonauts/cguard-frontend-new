@@ -1796,7 +1796,9 @@
       },
       "empty": {
         "description": "Nie znaleźliśmy<br />pozycji pasujących<br />do wyszukiwania",
-        "title": "Nie znaleziono wyników"
+        "title": "Nie znaleziono wyników",
+        "none": "Brak koncesji",
+        "hint": "Dodaj pierwszą koncesję lub legitymację."
       },
       "form": {
         "backImageLabel": "Zdjęcie dokumentu — tył",
@@ -1857,7 +1859,11 @@
         "updated": "Koncesja zaktualizowana"
       },
       "selected": "wybrane",
-      "untitled": "Koncesja"
+      "untitled": "Koncesja",
+      "errors": {
+        "typeRequired": "Wybierz rodzaj koncesji.",
+        "numberRequired": "Wpisz numer koncesji."
+      }
     },
     "list": {
       "applyFilters": "Zastosuj filtry",

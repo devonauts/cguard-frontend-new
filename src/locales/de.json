@@ -1796,7 +1796,9 @@
       },
       "empty": {
         "description": "Zu Ihrer Suche wurden<br />keine passenden<br />Einträge gefunden",
-        "title": "Keine Ergebnisse gefunden"
+        "title": "Keine Ergebnisse gefunden",
+        "none": "Noch keine Lizenzen",
+        "hint": "Fügen Sie die erste Lizenz oder den ersten Ausweis hinzu."
       },
       "form": {
         "backImageLabel": "Rückseite der Lizenz",
@@ -1857,7 +1859,11 @@
         "updated": "Lizenz aktualisiert"
       },
       "selected": "ausgewählt",
-      "untitled": "Lizenz"
+      "untitled": "Lizenz",
+      "errors": {
+        "typeRequired": "Wählen Sie die Art der Lizenz.",
+        "numberRequired": "Geben Sie die Lizenznummer ein."
+      }
     },
     "list": {
       "applyFilters": "Filter anwenden",

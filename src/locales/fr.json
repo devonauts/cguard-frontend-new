@@ -1796,7 +1796,9 @@
       },
       "empty": {
         "description": "Aucun élément<br />ne correspond<br />à votre recherche",
-        "title": "Aucun résultat trouvé"
+        "title": "Aucun résultat trouvé",
+        "none": "Aucune licence pour l’instant",
+        "hint": "Ajoutez la première licence ou carte professionnelle."
       },
       "form": {
         "backImageLabel": "Image du verso de la licence",
@@ -1857,7 +1859,11 @@
         "updated": "Licence mise à jour"
       },
       "selected": "sélectionnées",
-      "untitled": "Licence"
+      "untitled": "Licence",
+      "errors": {
+        "typeRequired": "Choisissez le type de licence.",
+        "numberRequired": "Saisissez le numéro de la licence."
+      }
     },
     "list": {
       "applyFilters": "Appliquer les filtres",

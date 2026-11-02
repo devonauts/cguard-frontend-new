@@ -2014,7 +2014,9 @@
       },
       "empty": {
         "description": "We couldn't find<br />any items matching<br />your search",
-        "title": "No results found"
+        "title": "No results found",
+        "none": "No licenses yet",
+        "hint": "Add the first license or credential."
       },
       "form": {
         "backImageLabel": "Back License Image",
@@ -2065,17 +2067,21 @@
       "subtitle": "This guard's documents and credentials",
       "toasts": {
         "noPermissionCreateType": "You don't have permission to create licence types",
-        "createError": "Could not create license",
+        "createError": "Could not save the license",
         "created": "License created",
         "deleteError": "Could not delete",
         "deleted": "Deleted",
         "deletedBulk": "Deleted",
-        "downloadError": "Could not download report",
+        "downloadError": "Could not download the license",
         "loadError": "Could not load licenses",
         "updated": "License updated"
       },
       "selected": "selected",
-      "untitled": "License"
+      "untitled": "License",
+      "errors": {
+        "typeRequired": "Choose the license type.",
+        "numberRequired": "Enter the license number."
+      }
     },
     "list": {
       "applyFilters": "Apply filters",

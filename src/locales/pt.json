@@ -4340,7 +4340,9 @@
       },
       "empty": {
         "description": "Não encontramos<br />itens que correspondam<br />à sua busca",
-        "title": "Nenhum resultado encontrado"
+        "title": "Nenhum resultado encontrado",
+        "none": "Nenhuma licença ainda",
+        "hint": "Adicione a primeira licença ou credencial."
       },
       "form": {
         "backImageLabel": "Imagem do verso da licença",
@@ -4403,7 +4405,11 @@
         "updated": "Licença atualizada"
       },
       "selected": "selecionadas",
-      "untitled": "Licença"
+      "untitled": "Licença",
+      "errors": {
+        "typeRequired": "Escolha o tipo de licença.",
+        "numberRequired": "Digite o número da licença."
+      }
     },
     "list": {
       "actions": {

@@ -1796,7 +1796,9 @@
       },
       "empty": {
         "description": "We konden niets vinden<br />dat overeenkomt<br />met je zoekopdracht",
-        "title": "Geen resultaten gevonden"
+        "title": "Geen resultaten gevonden",
+        "none": "Nog geen vergunningen",
+        "hint": "Voeg de eerste vergunning of pas toe."
       },
       "form": {
         "backImageLabel": "Achterkant van de pas",
@@ -1857,7 +1859,11 @@
         "updated": "Vergunning bijgewerkt"
       },
       "selected": "geselecteerd",
-      "untitled": "Vergunning"
+      "untitled": "Vergunning",
+      "errors": {
+        "typeRequired": "Kies het soort vergunning.",
+        "numberRequired": "Vul het vergunningsnummer in."
+      }
     },
     "list": {
       "applyFilters": "Filters toepassen",

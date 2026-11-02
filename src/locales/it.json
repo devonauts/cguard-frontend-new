@@ -1796,7 +1796,9 @@
       },
       "empty": {
         "description": "Non abbiamo trovato<br />elementi corrispondenti<br />alla tua ricerca",
-        "title": "Nessun risultato trovato"
+        "title": "Nessun risultato trovato",
+        "none": "Ancora nessuna licenza",
+        "hint": "Aggiungi la prima licenza o tessera."
       },
       "form": {
         "backImageLabel": "Immagine del retro della licenza",
@@ -1857,7 +1859,11 @@
         "updated": "Licenza aggiornata"
       },
       "selected": "selezionate",
-      "untitled": "Licenza"
+      "untitled": "Licenza",
+      "errors": {
+        "typeRequired": "Scegli il tipo di licenza.",
+        "numberRequired": "Inserisci il numero della licenza."
+      }
     },
     "list": {
       "applyFilters": "Applica filtri",

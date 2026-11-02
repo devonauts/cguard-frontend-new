@@ -2014,7 +2014,9 @@
       },
       "empty": {
         "description": "No pudimos encontrar<br />elementos que coincidan<br />con tu búsqueda",
-        "title": "No se encontraron resultados"
+        "title": "No se encontraron resultados",
+        "none": "Sin licencias todavía",
+        "hint": "Agrega la primera licencia o credencial."
       },
       "form": {
         "backImageLabel": "Imagen trasera de la licencia",
@@ -2052,8 +2054,8 @@
       "details": {
         "edit": "Editar",
         "download": "Descargar",
-        "notFound": "Details not available",
-        "title": "License details"
+        "notFound": "No hay detalles disponibles",
+        "title": "Detalles de la licencia"
       },
       "noNumber": "Sin número",
       "status": {
@@ -2065,17 +2067,21 @@
       "subtitle": "Documentos y credenciales del vigilante",
       "toasts": {
         "noPermissionCreateType": "No tiene permiso para crear tipos de licencia",
-        "createError": "Could not create license",
-        "created": "License created",
+        "createError": "No se pudo guardar la licencia",
+        "created": "Licencia creada",
         "deleteError": "No se pudo eliminar",
-        "deleted": "Deleted",
-        "deletedBulk": "Deleted",
-        "downloadError": "No se pudo descargar el reporte",
-        "loadError": "Could not load licenses",
-        "updated": "License updated"
+        "deleted": "Licencia eliminada",
+        "deletedBulk": "Licencias eliminadas",
+        "downloadError": "No se pudo descargar la licencia",
+        "loadError": "No se pudieron cargar las licencias",
+        "updated": "Licencia actualizada"
       },
       "selected": "seleccionadas",
-      "untitled": "Licencia"
+      "untitled": "Licencia",
+      "errors": {
+        "typeRequired": "Elige el tipo de licencia.",
+        "numberRequired": "Escribe el número de la licencia."
+      }
     },
     "list": {
       "applyFilters": "Aplicar filtros",
@@ -8300,7 +8306,7 @@
         "edit": "Editar Tipo de Licencia",
         "create": "Nuevo Tipo de Licencia"
       },
-      "createError": "Could not create license type"
+      "createError": "No se pudo crear el tipo de licencia"
     },
     "table": {
       "column": {
