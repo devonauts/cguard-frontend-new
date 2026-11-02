@@ -10817,7 +10817,8 @@
       "tipo": "Type",
       "tipoVigilanteAdicional": "Extra beveiliger",
       "tipoCotizacion": "Offerte",
-      "tipoServicio": "Dienst"
+      "tipoServicio": "Dienst",
+      "fechaPedida": "Gevraagde datum"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Kleur van de applicatie",

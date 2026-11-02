@@ -10258,7 +10258,8 @@
       "tipo": "Type",
       "tipoVigilanteAdicional": "Extra guard",
       "tipoCotizacion": "Quote",
-      "tipoServicio": "Service"
+      "tipoServicio": "Service",
+      "fechaPedida": "Requested date"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "App colour",

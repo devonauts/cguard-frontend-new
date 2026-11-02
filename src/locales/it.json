@@ -10817,7 +10817,8 @@
       "tipo": "Tipo",
       "tipoVigilanteAdicional": "Guardia aggiuntiva",
       "tipoCotizacion": "Preventivo",
-      "tipoServicio": "Servizio"
+      "tipoServicio": "Servizio",
+      "fechaPedida": "Data richiesta"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Colore dell'applicazione",

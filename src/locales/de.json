@@ -10817,7 +10817,8 @@
       "tipo": "Art",
       "tipoVigilanteAdicional": "Zusätzlicher Wachmann",
       "tipoCotizacion": "Angebot",
-      "tipoServicio": "Dienstleistung"
+      "tipoServicio": "Dienstleistung",
+      "fechaPedida": "Gewünschtes Datum"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Farbe der App",

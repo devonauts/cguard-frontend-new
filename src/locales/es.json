@@ -10258,7 +10258,8 @@
       "tipo": "Tipo",
       "tipoVigilanteAdicional": "Vigilante adicional",
       "tipoCotizacion": "Cotización",
-      "tipoServicio": "Servicio"
+      "tipoServicio": "Servicio",
+      "fechaPedida": "Fecha pedida"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Color de la aplicación",

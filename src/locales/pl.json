@@ -10863,7 +10863,8 @@
       "tipo": "Typ",
       "tipoVigilanteAdicional": "Dodatkowy ochroniarz",
       "tipoCotizacion": "Wycena",
-      "tipoServicio": "Usługa"
+      "tipoServicio": "Usługa",
+      "fechaPedida": "Żądana data"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Kolor aplikacji",

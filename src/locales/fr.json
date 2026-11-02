@@ -10817,7 +10817,8 @@
       "tipo": "Type",
       "tipoVigilanteAdicional": "Agent supplémentaire",
       "tipoCotizacion": "Devis",
-      "tipoServicio": "Service"
+      "tipoServicio": "Service",
+      "fechaPedida": "Date demandée"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Couleur de l'application",
