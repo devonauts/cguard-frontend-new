@@ -8988,7 +8988,8 @@
       "verifyNote2": "Scans außerhalb der Reichweite werden als „außerhalb des Standorts“ erfasst.",
       "popupBlocked": "Der Browser hat das Druckfenster blockiert.",
       "printFailed": "Das Blatt konnte nicht vorbereitet werden",
-      "qrFailed": "Der Code konnte nicht erzeugt werden"
+      "qrFailed": "Der Code konnte nicht erzeugt werden",
+      "radiusPerPoint": "dem Radius des jeweiligen Punkts (bei jedem angegeben)"
     },
     "rondaHistory": {
       "empty": "Für dieses Objekt sind keine Rundgänge erfasst.",
@@ -9010,7 +9011,7 @@
       "deleteFailed": "Löschen nicht möglich",
       "desc": "Beschreibung",
       "empty": "Es gibt noch keine Rundgänge. Legen Sie den ersten mit „Neuer Rundgang“ an.",
-      "hint": "Legen Sie Rundgänge und ihre Kontrollpunkte an. Erzeugen Sie danach die QR-Codes im Reiter „QR-Codes für Rundgänge erzeugen“.",
+      "hint": "Legen Sie Rundgänge und ihre Kontrollpunkte an. Erzeugen Sie danach die QR-Codes im Reiter „{{tab}}“.",
       "name": "Name",
       "nameRequired": "Geben Sie einen Namen ein",
       "new": "Neuer Rundgang",

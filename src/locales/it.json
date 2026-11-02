@@ -8988,7 +8988,8 @@
       "verifyNote2": "Le scansioni fuori raggio restano registrate come \"fuori posizione\".",
       "popupBlocked": "Il browser ha bloccato la finestra di stampa.",
       "printFailed": "Impossibile preparare il foglio",
-      "qrFailed": "Impossibile generare il codice"
+      "qrFailed": "Impossibile generare il codice",
+      "radiusPerPoint": "il raggio di ciascun punto (indicato su ognuno)"
     },
     "rondaHistory": {
       "empty": "Nessuna ronda registrata in questo posto.",
@@ -9010,7 +9011,7 @@
       "deleteFailed": "Impossibile eliminare",
       "desc": "Descrizione",
       "empty": "Non ci sono ancora ronde. Crea la prima con \"Nuova ronda\".",
-      "hint": "Crea le ronde e i loro punti di controllo. Poi genera i QR nella scheda \"Genera QR delle ronde\".",
+      "hint": "Crea le ronde e i loro punti di controllo. Poi genera i QR nella scheda \"{{tab}}\".",
       "name": "Nome",
       "nameRequired": "Scrivi un nome",
       "new": "Nuova ronda",

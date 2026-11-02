@@ -520,10 +520,11 @@ export default function StationSiteTours({
         }
       >
         <p className="px-6 -mt-2 mb-3 text-xs text-muted-foreground">
-          {t(
-            "station.siteTours.hint",
-            'Crea rondas y sus puntos de control. Luego genera los QR en la pestaña "Generar QR de Rondas".',
-          )}
+          {t("station.siteTours.hint", {
+            defaultValue:
+              'Crea rondas y sus puntos de control. Luego genera los QR en la pestaña «{{tab}}».',
+            tab: t("station.details.patrolQr", "QR de Rondas"),
+          })}
         </p>
 
         {loading ? (

@@ -9002,7 +9002,8 @@
       "verifyNote2": "Skany poza zasięgiem zapisywane są jako „poza lokalizacją”.",
       "popupBlocked": "Przeglądarka zablokowała okno drukowania.",
       "printFailed": "Nie udało się przygotować arkusza",
-      "qrFailed": "Nie udało się wygenerować kodu"
+      "qrFailed": "Nie udało się wygenerować kodu",
+      "radiusPerPoint": "promienia danego punktu (podanego przy każdym)"
     },
     "rondaHistory": {
       "empty": "Na tym posterunku nie zarejestrowano żadnych obchodów.",
@@ -9024,7 +9025,7 @@
       "deleteFailed": "Nie udało się usunąć",
       "desc": "Opis",
       "empty": "Nie ma jeszcze obchodów. Prosimy utworzyć pierwszy przyciskiem „Nowy obchód”.",
-      "hint": "Prosimy utworzyć obchody i ich punkty kontrolne. Następnie kody QR generuje się w zakładce „Generowanie kodów QR obchodów”.",
+      "hint": "Prosimy utworzyć obchody i ich punkty kontrolne. Następnie kody QR generuje się w zakładce „{{tab}}”.",
       "name": "Nazwa",
       "nameRequired": "Prosimy wpisać nazwę",
       "new": "Nowy obchód",

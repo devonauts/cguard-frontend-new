@@ -6793,7 +6793,8 @@
       "verifyNote2": "Los escaneos fuera de rango quedan registrados como \"fuera de ubicación\".",
       "qrFailed": "No se pudo generar el código",
       "printFailed": "No se pudo preparar la hoja",
-      "popupBlocked": "El navegador bloqueó la ventana de impresión."
+      "popupBlocked": "El navegador bloqueó la ventana de impresión.",
+      "radiusPerPoint": "el radio de cada punto (indicado en cada uno)"
     },
     "rondaHistory": {
       "empty": "No hay rondas registradas en esta estación.",
@@ -6815,7 +6816,7 @@
       "deleteFailed": "No se pudo eliminar",
       "desc": "Descripción",
       "empty": "Aún no hay rondas. Crea la primera con \"Nueva ronda\".",
-      "hint": "Crea rondas y sus puntos de control. Luego genera los QR en la pestaña \"Generar QR de Rondas\".",
+      "hint": "Crea rondas y sus puntos de control. Luego genera los QR en la pestaña \"{{tab}}\".",
       "name": "Nombre",
       "nameRequired": "Escribe un nombre",
       "new": "Nueva ronda",

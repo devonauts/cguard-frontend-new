@@ -45,6 +45,8 @@ interface Checkpoint {
   location: string;
   latitude: number | null;
   longitude: number | null;
+  /** Radius the server applies to THIS point (own → settings → station). */
+  radiusM: number;
 }
 
 // Raw site-tour + tag rows from the API (read via several aliases).
@@ -69,6 +71,8 @@ interface RawTagRow {
   latitud?: number | string | null;
   longitude?: number | string | null;
   longitud?: number | string | null;
+  geofenceRadius?: number | string | null;
+  effectiveRadiusM?: number | string | null;
 }
 
 /* El QR se genera EN EL NAVEGADOR (`@/lib/qr`). Antes se pedía a
@@ -100,6 +104,14 @@ export default function StationPatrolQR({ station, stationId }: Props) {
   const stationRadius = num(station?.geofenceRadius) ?? 75;
   const stationLat = num(station?.latitud ?? station?.latitude);
   const stationLng = num(station?.longitud ?? station?.longitude);
+  // One number in the note only when every point uses the same radius.
+  const radiosDistintos = Array.from(new Set(checkpoints.map((c) => c.radiusM)));
+  const radioComun =
+    radiosDistintos.length === 0
+      ? stationRadius
+      : radiosDistintos.length === 1
+        ? radiosDistintos[0]
+        : null;
 
   const load = useCallback(async () => {
     if (!stationId) return;
@@ -139,6 +151,10 @@ export default function StationPatrolQR({ station, stationId }: Props) {
               location: tag.location || tag.locationDescription || "",
               latitude: num(tag.latitude ?? tag.latitud),
               longitude: num(tag.longitude ?? tag.longitud),
+              radiusM:
+                num(tag.effectiveRadiusM) ??
+                num(tag.geofenceRadius) ??
+                stationRadius,
             });
           });
         } catch {
@@ -165,7 +181,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [stationId, tenantId, t]);
+  }, [stationId, tenantId, t, stationRadius]);
 
   useEffect(() => {
     load();
@@ -276,7 +292,9 @@ export default function StationPatrolQR({ station, stationId }: Props) {
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#39;");
 
-      const rotulo = esc(station?.nickname || station?.stationName || "");
+      // The labels are stuck on the client's walls: never the private
+      // nickname («El cliente no lo ve»), only the station name.
+      const rotulo = esc(station?.stationName || "");
       const cards = list
         .map((cp, i) => {
           const img = imagenes[i];
@@ -463,7 +481,15 @@ export default function StationPatrolQR({ station, stationId }: Props) {
               "station.patrolQr.verifyNote",
               "Verificación de ubicación: al escanear, el servidor compara el GPS del vigilante con la ubicación del punto. Solo cuenta como válido si está dentro de",
             )}{" "}
-            <strong>{stationRadius} m</strong>.{" "}
+            <strong>
+              {radioComun != null
+                ? `${radioComun} m`
+                : t(
+                    "station.patrolQr.radiusPerPoint",
+                    "el radio de cada punto (indicado en cada uno)",
+                  )}
+            </strong>
+            .{" "}
             {t(
               "station.patrolQr.verifyNote2",
               'Los escaneos fuera de rango quedan registrados como "fuera de ubicación".',
@@ -543,7 +569,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
                       <MapPin className="h-3.5 w-3.5" />
                       {cp.latitude!.toFixed(5)}, {cp.longitude!.toFixed(5)}
                       <span style={{ color: "var(--ink-soft)" }}>
-                        · ±{stationRadius}m
+                        · ±{cp.radiusM}m
                       </span>
                     </div>
                   ) : (

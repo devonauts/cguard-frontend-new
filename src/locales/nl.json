@@ -8988,7 +8988,8 @@
       "verifyNote2": "Scans buiten bereik worden vastgelegd als \"buiten de positie\".",
       "popupBlocked": "De browser blokkeerde het afdrukvenster.",
       "printFailed": "Kan het blad niet voorbereiden",
-      "qrFailed": "Kan de code niet genereren"
+      "qrFailed": "Kan de code niet genereren",
+      "radiusPerPoint": "de straal van elk punt (bij elk punt vermeld)"
     },
     "rondaHistory": {
       "empty": "Er zijn geen rondes vastgelegd op deze post.",
@@ -9010,7 +9011,7 @@
       "deleteFailed": "Verwijderen mislukt",
       "desc": "Omschrijving",
       "empty": "Er zijn nog geen rondes. Maak de eerste aan met \"Nieuwe ronde\".",
-      "hint": "Maak rondes en hun controlepunten aan. Genereer daarna de QR-codes op het tabblad \"QR-codes voor rondes genereren\".",
+      "hint": "Maak rondes en hun controlepunten aan. Genereer daarna de QR-codes op het tabblad \"{{tab}}\".",
       "name": "Naam",
       "nameRequired": "Voer een naam in",
       "new": "Nieuwe ronde",

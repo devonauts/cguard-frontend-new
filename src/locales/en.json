@@ -6793,7 +6793,8 @@
       "verifyNote2": "Scans out of range are recorded as \"off location\".",
       "qrFailed": "Could not generate the code",
       "printFailed": "Could not prepare the sheet",
-      "popupBlocked": "The browser blocked the print window."
+      "popupBlocked": "The browser blocked the print window.",
+      "radiusPerPoint": "each point's radius (shown on each one)"
     },
     "rondaHistory": {
       "empty": "No patrols have been recorded at this station.",
@@ -6815,7 +6816,7 @@
       "deleteFailed": "It could not be deleted",
       "desc": "Description",
       "empty": "No patrols yet. Create the first one with \"New patrol\".",
-      "hint": "Create patrols and their checkpoints. Then generate the QR codes on the \"Generate patrol QR codes\" tab.",
+      "hint": "Create patrols and their checkpoints. Then generate the QR codes on the \"{{tab}}\" tab.",
       "name": "Name",
       "nameRequired": "Enter a name",
       "new": "New patrol",

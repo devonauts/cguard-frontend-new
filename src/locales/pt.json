@@ -7664,7 +7664,8 @@
       "verifyNote2": "Escaneamentos fora do alcance ficam registrados como \"fora de localização\".",
       "qrFailed": "Não foi possível gerar o código",
       "printFailed": "Não foi possível preparar a folha",
-      "popupBlocked": "O navegador bloqueou a janela de impressão."
+      "popupBlocked": "O navegador bloqueou a janela de impressão.",
+      "radiusPerPoint": "o raio de cada ponto (indicado em cada um)"
     },
     "rondaHistory": {
       "empty": "Não há rondas registradas neste posto.",
@@ -7686,7 +7687,7 @@
       "deleteFailed": "Não foi possível excluir",
       "desc": "Descrição",
       "empty": "Ainda não há rondas. Crie a primeira com \"Nova ronda\".",
-      "hint": "Crie rondas e seus pontos de controle. Depois gere os QR na aba \"Gerar QR de rondas\".",
+      "hint": "Crie rondas e seus pontos de controle. Depois gere os QR na aba \"{{tab}}\".",
       "name": "Nome",
       "nameRequired": "Escreva um nome",
       "new": "Nova ronda",
