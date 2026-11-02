@@ -1655,7 +1655,15 @@
         "achieved": "Atteint",
         "notAchieved": "Non atteint"
       },
-      "totalKpis": "KPI"
+      "totalKpis": "KPI",
+      "scope": {
+        "guard": "Agent",
+        "postSite": "Site"
+      },
+      "errors": {
+        "frequencyRequired": "Choisissez la fréquence.",
+        "descriptionRequired": "Saisissez la description."
+      }
     },
     "assignSites": {
       "assignButton": "Attribuer un poste",

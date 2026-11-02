@@ -1655,7 +1655,15 @@
         "achieved": "Raggiunto",
         "notAchieved": "Non raggiunto"
       },
-      "totalKpis": "KPI"
+      "totalKpis": "KPI",
+      "scope": {
+        "guard": "Guardia",
+        "postSite": "Sede"
+      },
+      "errors": {
+        "frequencyRequired": "Scegli la frequenza.",
+        "descriptionRequired": "Inserisci la descrizione."
+      }
     },
     "assignSites": {
       "assignButton": "Assegna postazione",

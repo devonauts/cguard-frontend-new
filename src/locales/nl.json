@@ -1655,7 +1655,15 @@
         "achieved": "Behaald",
         "notAchieved": "Niet behaald"
       },
-      "totalKpis": "KPI's"
+      "totalKpis": "KPI's",
+      "scope": {
+        "guard": "Beveiliger",
+        "postSite": "Locatie"
+      },
+      "errors": {
+        "frequencyRequired": "Kies de frequentie.",
+        "descriptionRequired": "Vul de omschrijving in."
+      }
     },
     "assignSites": {
       "assignButton": "Post toewijzen",

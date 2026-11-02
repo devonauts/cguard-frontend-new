@@ -1655,7 +1655,15 @@
         "achieved": "Osiągnięty",
         "notAchieved": "Nieosiągnięty"
       },
-      "totalKpis": "KPI"
+      "totalKpis": "KPI",
+      "scope": {
+        "guard": "Pracownik ochrony",
+        "postSite": "Obiekt"
+      },
+      "errors": {
+        "frequencyRequired": "Wybierz częstotliwość.",
+        "descriptionRequired": "Wpisz opis."
+      }
     },
     "assignSites": {
       "assignButton": "Przypisz posterunek",

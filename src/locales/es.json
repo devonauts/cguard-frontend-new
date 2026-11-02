@@ -1826,7 +1826,7 @@
         "create_profile": "Crear perfil",
         "invite": "Invitar usando SMS o correo electrónico"
       },
-      "empty": "No KPI data",
+      "empty": "Sin datos de KPI",
       "kpiadded": "Añadir Nuevo KPI",
       "kpisearch": "Buscar KPI",
       "kpitable": {
@@ -1836,11 +1836,11 @@
       },
       "subtitle": "KPIs y desempeño del vigilante.",
       "table": {
-        "noTargets": "No targets defined",
-        "actual": "Actual",
-        "name": "Name",
-        "status": "Status",
-        "target": "Target"
+        "noTargets": "Sin metas definidas",
+        "actual": "Real",
+        "name": "Nombre",
+        "status": "Estado",
+        "target": "Meta"
       },
       "title": "Indicadores de rendimiento",
       "toasts": {
@@ -1852,28 +1852,36 @@
         "created": "KPI creado correctamente",
         "deleted": "KPI eliminado",
         "deletedMultiple": "KPIs eliminados",
-        "excelDownloaded": "Excel downloaded",
-        "excelError": "Could not generate/get Excel",
+        "excelDownloaded": "Excel descargado",
+        "excelError": "No se pudo generar el Excel",
         "excelExportError": "Error al exportar el Excel",
-        "pdfError": "Could not generate/get PDF",
+        "pdfError": "No se pudo generar el PDF",
         "pdfGenerated": "PDF generado",
-        "pdfOpened": "PDF opened",
+        "pdfOpened": "PDF abierto",
         "updated": "KPI actualizado correctamente"
       },
-      "descriptionLabel": "DESCRIPTION :",
-      "exportExcel": "Export as Excel",
-      "exportPdf": "Export as PDF",
+      "descriptionLabel": "DESCRIPCIÓN:",
+      "exportExcel": "Exportar a Excel",
+      "exportPdf": "Exportar a PDF",
       "feedTitle": "Indicadores clave (KPIs)",
       "metrics": {
-        "incidentReports": "Incident Reports",
-        "routeReports": "Route Reports",
-        "taskReports": "Task Reports"
+        "incidentReports": "Informes de incidentes",
+        "routeReports": "Informes de recorridos",
+        "taskReports": "Informes de tareas"
       },
       "status": {
         "achieved": "Cumplido",
         "notAchieved": "No cumplido"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Vigilante",
+        "postSite": "Sede"
+      },
+      "errors": {
+        "frequencyRequired": "Elige la frecuencia.",
+        "descriptionRequired": "Escribe la descripción."
+      }
     },
     "assignSites": {
       "assignButton": "Asignar estación",
@@ -1936,7 +1944,7 @@
       "noResults": "Sin resultados",
       "noResultsHint": "Ninguna asignación coincide con la búsqueda.",
       "thisPost": "esta estación",
-      "assignedCount": "Assigned Sites",
+      "assignedCount": "Estaciones asignadas",
       "nStations": "{{count}} estaciones",
       "selectAll": "Seleccionar todo",
       "shiftCount": "{{count}} turnos"

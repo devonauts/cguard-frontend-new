@@ -463,7 +463,33 @@ export default function GuardIndicators({ guard }: Props) {
     }
   };
 
+  // The server names a KPI by its description, or by its raw scope («guard»)
+  // when it has none: say the scope in words.
+  const tipoDeKpi = (k: Kpi): string => {
+    const tipo = String((k as { type?: string }).type || "");
+
+    if (tipo && tipo !== k.scope) return tipo;
+    if (k.scope === "postSite")
+      return t("guards.KPI.scope.postSite", "Sede");
+
+    return t("guards.KPI.scope.guard", "Vigilante");
+  };
+
   const handleSubmitKPI = async () => {
+    if (!String(formData.frequency || "").trim()) {
+      toast.error(
+        t("guards.KPI.errors.frequencyRequired", "Elige la frecuencia."),
+      );
+
+      return;
+    }
+    if (!String(formData.description || "").trim()) {
+      toast.error(
+        t("guards.KPI.errors.descriptionRequired", "Escribe la descripción."),
+      );
+
+      return;
+    }
     const toNumber = (v: string | number | null | undefined) =>
       v === "" || v === null || v === undefined ? null : Number(v);
 
@@ -850,7 +876,7 @@ export default function GuardIndicators({ guard }: Props) {
                                 />
                               </td>
                               <td className="px-4 py-3 text-sm text-foreground">
-                                {kpi.type}
+                                {tipoDeKpi(kpi)}
                               </td>
                               <td className="px-4 py-3 text-sm text-foreground">
                                 {formatDate(kpi.dateTime)}
@@ -1256,7 +1282,7 @@ export default function GuardIndicators({ guard }: Props) {
                     }
                     renderCard={(k: Kpi) => (
                       <>
-                      <div className="text-sm font-semibold">{k.type}</div>
+                      <div className="text-sm font-semibold">{tipoDeKpi(k)}</div>
                       <div className="text-xs text-muted-foreground">
                         {k.date} • {k.createdBy?.fullName ?? k.addedBy}
                       </div>

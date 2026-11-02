@@ -1836,7 +1836,7 @@
       },
       "subtitle": "This guard's KPIs and performance.",
       "table": {
-        "noTargets": "No targets defined",
+        "noTargets": "No targets set",
         "actual": "Actual",
         "name": "Name",
         "status": "Status",
@@ -1873,7 +1873,15 @@
         "achieved": "Achieved",
         "notAchieved": "Not Achieved"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Guard",
+        "postSite": "Site"
+      },
+      "errors": {
+        "frequencyRequired": "Choose the frequency.",
+        "descriptionRequired": "Enter the description."
+      }
     },
     "assignSites": {
       "assignButton": "Assign Post Sites",

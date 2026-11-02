@@ -1655,7 +1655,15 @@
         "achieved": "Erreicht",
         "notAchieved": "Nicht erreicht"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Sicherheitskraft",
+        "postSite": "Objekt"
+      },
+      "errors": {
+        "frequencyRequired": "Wählen Sie die Häufigkeit.",
+        "descriptionRequired": "Geben Sie die Beschreibung ein."
+      }
     },
     "assignSites": {
       "assignButton": "Objekt zuweisen",

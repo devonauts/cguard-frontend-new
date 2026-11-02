@@ -4321,7 +4321,15 @@
         "achieved": "Atingido",
         "notAchieved": "Não atingido"
       },
-      "totalKpis": "KPIs"
+      "totalKpis": "KPIs",
+      "scope": {
+        "guard": "Vigilante",
+        "postSite": "Local"
+      },
+      "errors": {
+        "frequencyRequired": "Escolha a frequência.",
+        "descriptionRequired": "Digite a descrição."
+      }
     },
     "created": "KPI criado com sucesso",
     "deleteError": "Erro ao excluir KPI(s)",
