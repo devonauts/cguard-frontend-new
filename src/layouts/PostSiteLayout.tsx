@@ -290,7 +290,19 @@ export default function PostSiteLayout({ title, children, site }: Props) {
                 <Button
                   size="sm"
                   variant="brand"
-                  onClick={() => navigate("/dispatch-tickets/new")}
+                  onClick={() =>
+                    // Same preset as the Incidents tab button: this site and
+                    // its client, so nobody has to pick them again.
+                    navigate("/dispatch-tickets/new", {
+                      state: {
+                        duplicate: {
+                          clientId: clientId || undefined,
+                          siteId: site?.id,
+                          siteName: site?.name,
+                        },
+                      },
+                    })
+                  }
                 >
                   <AlertTriangle className="mr-1 h-4 w-4" />{" "}
                   {t("clients.newIncident", "Crear incidente")}
