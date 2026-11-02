@@ -9,6 +9,7 @@ import {
   warnIfCapped,
 } from "./reportFormat";
 
+import i18n from "@/i18n";
 import attendanceService from "@/lib/api/attendanceService";
 
 interface Rec {
@@ -77,7 +78,9 @@ const columns: ReportColumn<Rec>[] = [
     key: "status",
     label: "Estado",
     labelKey: "reports.col.checkInOut.status",
-    value: (r) => r.status || "—",
+    // Stored codes (`no_schedule`, `early_departure`…), shown in words.
+    value: (r) =>
+      r.status ? i18n.t(`nomina.estado.${r.status}`, r.status) : "—",
   },
 ];
 

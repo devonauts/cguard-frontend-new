@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+
+import { mergeByIncidentPriority } from "@/lib/incidentPriority";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
@@ -284,7 +286,7 @@ export default function Reporting() {
                   "ui.Reporting.sinIncidentesEnElPeriodo",
                   "Sin incidentes en el período.",
                 )}
-                items={data.incidentsByPriority}
+                items={mergeByIncidentPriority(data.incidentsByPriority)}
               />
             </Section>
             <Section

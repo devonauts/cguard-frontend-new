@@ -14401,7 +14401,9 @@
     "Incident": {
       "informeDeIncidente": "Incident Report",
       "sinCaso": "This incident has no emergency case linked.",
-      "descripcion": "Reported incidents: priority, status, location and description by post."
+      "descripcion": "Reported incidents: priority, status, location and description by post.",
+      "estadoAbierto": "Open",
+      "estadoCerrado": "Closed"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Staff credentials and licenses, with their expiry dates.",
@@ -19145,6 +19147,13 @@
     "training": {
       "puntajeFueraDeRango": "The passing score must be a whole number between 1 and 100.",
       "puntosFueraDeRango": "Points must be a whole number between 0 and 100000."
+    },
+    "incidentPriority": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "none": "No priority"
     }
   },
   "map": {

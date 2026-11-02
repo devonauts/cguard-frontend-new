@@ -6,6 +6,9 @@ import { toast } from "sonner";
 
 import DataReport, { type ReportColumn } from "./DataReport";
 import { showName } from "./reportPrivacy";
+
+import i18n from "@/i18n";
+import { incidentPriorityLabel } from "@/lib/incidentPriority";
 import {
   formatDateTime,
   rangeBounds,
@@ -34,6 +37,18 @@ interface Incident {
   alarmCaseId?: string | null;
 }
 
+/** `abierto`/`cerrado` (the stored status) in the reader's language. */
+const incidentStatusLabel = (s?: string | null) => {
+  const v = String(s || "").toLowerCase();
+
+  if (v === "abierto" || v === "open")
+    return i18n.t("ui.Incident.estadoAbierto", "Abierto");
+  if (v === "cerrado" || v === "closed")
+    return i18n.t("ui.Incident.estadoCerrado", "Cerrado");
+
+  return s || "—";
+};
+
 const trim = (s?: string | null, n = 80) => {
   const v = (s || "").trim();
 
@@ -57,14 +72,14 @@ const columns: ReportColumn<Incident>[] = [
     key: "priority",
     label: "Prioridad",
     labelKey: "reports.col.incident.priority",
-    value: (r) => r.priority || "—",
+    value: (r) => (r.priority ? incidentPriorityLabel(r.priority) : "—"),
     align: "center",
   },
   {
     key: "status",
     label: "Estado",
     labelKey: "reports.col.incident.status",
-    value: (r) => r.status || "—",
+    value: (r) => incidentStatusLabel(r.status),
   },
   {
     key: "site",

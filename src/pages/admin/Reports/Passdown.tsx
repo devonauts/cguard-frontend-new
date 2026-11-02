@@ -14,6 +14,8 @@ import i18n from "@/i18n";
 
 // Clave i18n + texto en español; se traduce al pintar, dentro de `value()`.
 const STATUS: Record<string, [key: string, es: string]> = {
+  // `open` is what the server stores until the incoming guard receives it.
+  open: ["ui.Passdown.estadoPendiente", "Pendiente"],
   pending: ["ui.Passdown.estadoPendiente", "Pendiente"],
   received: ["ui.Passdown.estadoRecibido", "Recibido"],
   acknowledged: ["ui.Passdown.estadoReconocido", "Reconocido"],

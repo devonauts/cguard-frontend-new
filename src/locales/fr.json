@@ -14941,7 +14941,9 @@
     "Incident": {
       "informeDeIncidente": "Rapport d'incident",
       "sinCaso": "Cet incident n'a pas de dossier d'urgence associé.",
-      "descripcion": "Incidents signalés : priorité, statut, emplacement et description par poste."
+      "descripcion": "Incidents signalés : priorité, statut, emplacement et description par poste.",
+      "estadoAbierto": "Ouvert",
+      "estadoCerrado": "Fermé"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Habilitations et licences du personnel, avec leurs dates d'expiration.",
@@ -19685,6 +19687,13 @@
     "training": {
       "puntajeFueraDeRango": "Le score de réussite doit être un nombre entier entre 1 et 100.",
       "puntosFueraDeRango": "Les points doivent être un nombre entier entre 0 et 100000."
+    },
+    "incidentPriority": {
+      "critical": "Critique",
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse",
+      "none": "Sans priorité"
     }
   },
   "visitantes": {

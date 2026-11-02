@@ -15101,7 +15101,9 @@
     "Incident": {
       "informeDeIncidente": "Zgłoszenie zdarzenia",
       "sinCaso": "Ten incydent nie ma powiązanego zgłoszenia alarmowego.",
-      "descripcion": "Zgłoszone incydenty: priorytet, status, lokalizacja i opis według posterunku."
+      "descripcion": "Zgłoszone incydenty: priorytet, status, lokalizacja i opis według posterunku.",
+      "estadoAbierto": "Otwarte",
+      "estadoCerrado": "Zamknięte"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Legitymacje i uprawnienia pracowników wraz z datami ważności.",
@@ -19993,6 +19995,13 @@
     "training": {
       "puntajeFueraDeRango": "Próg zaliczenia musi być liczbą całkowitą od 1 do 100.",
       "puntosFueraDeRango": "Punkty muszą być liczbą całkowitą od 0 do 100000."
+    },
+    "incidentPriority": {
+      "critical": "Krytyczny",
+      "high": "Wysoki",
+      "medium": "Średni",
+      "low": "Niski",
+      "none": "Bez priorytetu"
     }
   },
   "visitantes": {

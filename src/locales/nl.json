@@ -14941,7 +14941,9 @@
     "Incident": {
       "informeDeIncidente": "Incidentmelding",
       "sinCaso": "Bij dit incident hoort geen noodgeval.",
-      "descripcion": "Gemelde incidenten: prioriteit, status, locatie en beschrijving per post."
+      "descripcion": "Gemelde incidenten: prioriteit, status, locatie en beschrijving per post.",
+      "estadoAbierto": "Open",
+      "estadoCerrado": "Gesloten"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Pasjes en vergunningen van het personeel, met hun vervaldatums.",
@@ -19685,6 +19687,13 @@
     "training": {
       "puntajeFueraDeRango": "De slaagscore moet een geheel getal tussen 1 en 100 zijn.",
       "puntosFueraDeRango": "De punten moeten een geheel getal tussen 0 en 100000 zijn."
+    },
+    "incidentPriority": {
+      "critical": "Kritiek",
+      "high": "Hoog",
+      "medium": "Gemiddeld",
+      "low": "Laag",
+      "none": "Geen prioriteit"
     }
   },
   "visitantes": {

@@ -14401,7 +14401,9 @@
     "Incident": {
       "informeDeIncidente": "Informe de Incidente",
       "sinCaso": "Este incidente no tiene un caso de emergencia asociado.",
-      "descripcion": "Incidentes reportados: prioridad, estado, ubicación y descripción por puesto."
+      "descripcion": "Incidentes reportados: prioridad, estado, ubicación y descripción por puesto.",
+      "estadoAbierto": "Abierto",
+      "estadoCerrado": "Cerrado"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Credenciales y licencias del personal, con sus fechas de vencimiento.",
@@ -19145,6 +19147,13 @@
     "training": {
       "puntajeFueraDeRango": "El puntaje para aprobar debe ser un número entero entre 1 y 100.",
       "puntosFueraDeRango": "Los puntos deben ser un número entero entre 0 y 100000."
+    },
+    "incidentPriority": {
+      "critical": "Crítica",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja",
+      "none": "Sin prioridad"
     }
   },
   "map": {

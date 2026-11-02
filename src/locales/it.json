@@ -14941,7 +14941,9 @@
     "Incident": {
       "informeDeIncidente": "Report dell'incidente",
       "sinCaso": "Questo incidente non ha un caso di emergenza collegato.",
-      "descripcion": "Incidenti segnalati: priorità, stato, posizione e descrizione per postazione."
+      "descripcion": "Incidenti segnalati: priorità, stato, posizione e descrizione per postazione.",
+      "estadoAbierto": "Aperto",
+      "estadoCerrado": "Chiuso"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Tesserini e licenze del personale, con le date di scadenza.",
@@ -19685,6 +19687,13 @@
     "training": {
       "puntajeFueraDeRango": "Il punteggio minimo deve essere un numero intero tra 1 e 100.",
       "puntosFueraDeRango": "I punti devono essere un numero intero tra 0 e 100000."
+    },
+    "incidentPriority": {
+      "critical": "Critica",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Bassa",
+      "none": "Senza priorità"
     }
   },
   "visitantes": {

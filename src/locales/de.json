@@ -14941,7 +14941,9 @@
     "Incident": {
       "informeDeIncidente": "Vorfallbericht",
       "sinCaso": "Zu diesem Vorfall gibt es keinen verknüpften Notfall.",
-      "descripcion": "Gemeldete Vorfälle: Priorität, Status, Ort und Beschreibung pro Posten."
+      "descripcion": "Gemeldete Vorfälle: Priorität, Status, Ort und Beschreibung pro Posten.",
+      "estadoAbierto": "Offen",
+      "estadoCerrado": "Geschlossen"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Dienstausweise und Lizenzen des Personals mit ihren Ablaufdaten.",
@@ -19685,6 +19687,13 @@
     "training": {
       "puntajeFueraDeRango": "Die Bestehensgrenze muss eine ganze Zahl zwischen 1 und 100 sein.",
       "puntosFueraDeRango": "Die Punkte müssen eine ganze Zahl zwischen 0 und 100000 sein."
+    },
+    "incidentPriority": {
+      "critical": "Kritisch",
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig",
+      "none": "Ohne Priorität"
     }
   },
   "visitantes": {
