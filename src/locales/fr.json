@@ -17072,7 +17072,9 @@
       "tuCuentaYaEstaActiva": "Votre compte chez <b>{{empresa}}</b> est déjà actif.",
       "invitacionYaUsada": "Cette invitation a déjà été utilisée : votre compte est actif.",
       "entraEnLaApp": "Connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Si vous ne vous souvenez plus du mot de passe, demandez à votre entreprise de le réinitialiser.",
-      "tuCuentaEstaLista": "Votre compte est prêt."
+      "tuCuentaEstaLista": "Votre compte est prêt.",
+      "invitacionNoValida": "Cette invitation n'est plus valable.",
+      "pideInvitacionNueva": "Si vous avez déjà créé votre compte, connectez-vous à l'application agent avec votre identifiant et votre mot de passe. Sinon, demandez à votre entreprise de vous envoyer une nouvelle invitation."
     },
     "InspectionPreview": {
       "alerta": "Alerte",

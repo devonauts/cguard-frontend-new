@@ -16513,7 +16513,9 @@
       "tuCuentaYaEstaActiva": "Tu cuenta en <b>{{empresa}}</b> ya está activa.",
       "invitacionYaUsada": "Esta invitación ya se usó: tu cuenta ya está activa.",
       "entraEnLaApp": "Entra en la app del vigilante con tu usuario y contraseña. Si no recuerdas la contraseña, pide a tu empresa que te la restablezca.",
-      "tuCuentaEstaLista": "Tu cuenta está lista."
+      "tuCuentaEstaLista": "Tu cuenta está lista.",
+      "invitacionNoValida": "Esta invitación ya no es válida.",
+      "pideInvitacionNueva": "Si ya creaste tu cuenta, entra en la app del vigilante con tu usuario y contraseña. Si no, pide a tu empresa que te envíe una invitación nueva."
     },
     "InspectionPreview": {
       "alerta": "Alerta",

@@ -17072,7 +17072,9 @@
       "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv.",
       "invitacionYaUsada": "Diese Einladung wurde bereits verwendet: Ihr Konto ist aktiv.",
       "entraEnLaApp": "Melden Sie sich in der App der Sicherheitskraft mit Benutzername und Passwort an. Wenn Sie das Passwort nicht mehr wissen, bitten Sie Ihr Unternehmen, es zurückzusetzen.",
-      "tuCuentaEstaLista": "Ihr Konto ist bereit."
+      "tuCuentaEstaLista": "Ihr Konto ist bereit.",
+      "invitacionNoValida": "Diese Einladung ist nicht mehr gültig.",
+      "pideInvitacionNueva": "Wenn Sie Ihr Konto schon erstellt haben, melden Sie sich in der Wachleute-App mit Benutzername und Passwort an. Andernfalls bitten Sie Ihr Unternehmen um eine neue Einladung."
     },
     "InspectionPreview": {
       "alerta": "Warnung",

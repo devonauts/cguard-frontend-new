@@ -17072,7 +17072,9 @@
       "tuCuentaYaEstaActiva": "Il tuo account presso <b>{{empresa}}</b> è già attivo.",
       "invitacionYaUsada": "Questo invito è già stato usato: il tuo account è attivo.",
       "entraEnLaApp": "Accedi all'app della guardia con il tuo nome utente e la tua password. Se non ricordi la password, chiedi alla tua azienda di reimpostarla.",
-      "tuCuentaEstaLista": "Il tuo account è pronto."
+      "tuCuentaEstaLista": "Il tuo account è pronto.",
+      "invitacionNoValida": "Questo invito non è più valido.",
+      "pideInvitacionNueva": "Se hai già creato il tuo account, accedi all'app della guardia con nome utente e password. Altrimenti chiedi alla tua azienda di inviarti un nuovo invito."
     },
     "InspectionPreview": {
       "alerta": "Allerta",

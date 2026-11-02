@@ -17302,7 +17302,9 @@
       "tuCuentaYaEstaActiva": "Twoje konto w <b>{{empresa}}</b> jest już aktywne.",
       "invitacionYaUsada": "To zaproszenie zostało już użyte: Twoje konto jest aktywne.",
       "entraEnLaApp": "Zaloguj się do aplikacji pracownika ochrony swoją nazwą użytkownika i hasłem. Jeśli nie pamiętasz hasła, poproś firmę o jego zresetowanie.",
-      "tuCuentaEstaLista": "Twoje konto jest gotowe."
+      "tuCuentaEstaLista": "Twoje konto jest gotowe.",
+      "invitacionNoValida": "To zaproszenie jest już nieważne.",
+      "pideInvitacionNueva": "Jeśli masz już konto, zaloguj się w aplikacji ochroniarza swoją nazwą użytkownika i hasłem. Jeśli nie, poproś firmę o nowe zaproszenie."
     },
     "InspectionPreview": {
       "alerta": "Alert",

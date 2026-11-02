@@ -17072,7 +17072,9 @@
       "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief.",
       "invitacionYaUsada": "Deze uitnodiging is al gebruikt: je account is actief.",
       "entraEnLaApp": "Log in op de beveiligersapp met je gebruikersnaam en wachtwoord. Weet je het wachtwoord niet meer, vraag je bedrijf dan om het te resetten.",
-      "tuCuentaEstaLista": "Je account is klaar."
+      "tuCuentaEstaLista": "Je account is klaar.",
+      "invitacionNoValida": "Deze uitnodiging is niet meer geldig.",
+      "pideInvitacionNueva": "Heb je je account al aangemaakt, meld je dan aan in de bewakers-app met je gebruikersnaam en wachtwoord. Zo niet, vraag je bedrijf om een nieuwe uitnodiging."
     },
     "InspectionPreview": {
       "alerta": "Waarschuwing",

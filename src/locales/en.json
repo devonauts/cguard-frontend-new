@@ -16513,7 +16513,9 @@
       "tuCuentaYaEstaActiva": "Your account at <b>{{empresa}}</b> is now active.",
       "invitacionYaUsada": "This invitation has already been used: your account is active.",
       "entraEnLaApp": "Sign in to the guard app with your username and password. If you don't remember the password, ask your company to reset it.",
-      "tuCuentaEstaLista": "Your account is ready."
+      "tuCuentaEstaLista": "Your account is ready.",
+      "invitacionNoValida": "This invitation is no longer valid.",
+      "pideInvitacionNueva": "If you already created your account, sign in to the guard app with your username and password. If not, ask your company to send you a new invitation."
     },
     "InspectionPreview": {
       "alerta": "Alert",
