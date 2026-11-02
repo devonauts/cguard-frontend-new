@@ -896,6 +896,37 @@ export function sanear(plan: Plan): void {
  * Deja el plan coherente tras un cambio: quita la cobertura que ya no hace
  * falta y la de quien ya no puede hacerla, y vuelve a poner a los fijos.
  */
+/**
+ * The days the engine fills with the fixed sacafrancos' covers: the sheet on
+ * screen (its focus Monday `vista`, `antes` days back and `despues` ahead)
+ * AND the whole publish horizon, which runs `despues` days from today. With
+ * only the sheet, «Publicar» counted a different draft depending on the week
+ * on screen: a week back left out the 13 Dec cover (QA 2026-11-02, N10).
+ */
+export function ventanaDelMotor(
+  vista: number,
+  hoy: number,
+  antes: number,
+  despues: number,
+): [number, number] {
+  return [Math.min(vista, hoy) - antes, Math.max(vista, hoy) + despues];
+}
+
+/**
+ * That person's day `d` already happened: before today, or today once their
+ * shifts ended (`pasado`). It is drawn as it was and the draft never edits it.
+ */
+export function diaPasado(
+  plan: Plan,
+  personaId: string,
+  d: number,
+  hoy: number,
+): boolean {
+  if (d < hoy) return true;
+
+  return personaDe(plan, personaId)?.pasado?.[d] !== undefined;
+}
+
 export function limpiar(plan: Plan, d0: number, d1: number): void {
   sanear(plan);
   // En orden fijo (por clave), no en el que estén guardadas: así el resultado no

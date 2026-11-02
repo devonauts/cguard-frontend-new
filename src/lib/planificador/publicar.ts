@@ -880,6 +880,61 @@ export function planificarPublicacion(
     );
   }
 
+  /* 4) What was changed by hand after the publish horizon stays in the
+     draft, and the sheet says so: the count and the list cover the whole
+     draft, whatever week is on screen (QA 2026-11-02, N10). */
+  const despues = new Map<string, number>();
+  const tarde = (id: string, d: number) => {
+    if (d < d1) return;
+    const x = despues.get(id);
+
+    if (x === undefined || d < x) despues.set(id, d);
+  };
+
+  for (const p of plan.personas) {
+    const antes = ori.get(p.id);
+
+    if (!antes) continue;
+    for (const k of new Set([
+      ...Object.keys(p.manual || {}),
+      ...Object.keys(antes.manual || {}),
+    ])) {
+      const d = Number(k);
+
+      if ((p.manual[d] ?? null) !== (antes.manual[d] ?? null)) tarde(p.id, d);
+    }
+    const firma = (a: { tipo: string; desde: number; hasta: number }) =>
+      `${a.tipo}|${a.desde}|${a.hasta}`;
+    const ya = new Set((antes.ausencias || []).map(firma));
+    const hay = new Set((p.ausencias || []).map(firma));
+
+    for (const a of p.ausencias || [])
+      if (!ya.has(firma(a)) && a.hasta >= d1) tarde(p.id, Math.max(a.desde, d1));
+    for (const a of antes.ausencias || [])
+      if (!hay.has(firma(a)) && a.hasta >= d1) tarde(p.id, Math.max(a.desde, d1));
+  }
+  for (const k of new Set([...Object.keys(plan.cubre), ...Object.keys(original.cubre)])) {
+    const d = Number(k.split("|")[2]);
+
+    if (!(d >= d1)) continue;
+    const ahora = plan.cubre[k] || [];
+    const antes = original.cubre[k] || [];
+
+    // The fixed sacafrancos' own covers are the engine's, not an edit.
+    for (const id of ahora)
+      if (!antes.includes(id) && !plan.auto[`${k}|${id}`]) tarde(id, d);
+    for (const id of antes)
+      if (!ahora.includes(id) && !original.auto[`${k}|${id}`]) tarde(id, d);
+  }
+  for (const [id, d] of despues) {
+    const p = plan.personas.find((x) => x.id === id);
+
+    if (p)
+      no.push(
+        `${nombreDe(p)}: lo cambiado desde el ${ctx.fechaDe(d)} se queda en el borrador; se publica hasta el ${ctx.fechaDe(d1 - 1)}.`,
+      );
+  }
+
   // Orden: primero lo estructural (cobertura, rotación, puestos fijos), luego
   // novedades, luego retirar turnos y por último crear turnos — un turno nuevo
   // sobre una plaza que se está reconfigurando se perdería.
