@@ -786,7 +786,11 @@ export default function DispatcherPage() {
       if (!r) return "-";
       // If client is an object with an explicit name, prefer that
       if (r.client && typeof r.client === "object") {
+        // Same name as the detail, print and public pages (the company first):
+        // the list showed the client's `name` («Qa Operacion») while those
+        // showed its commercial name («QA operacion Sede Norte»).
         return (
+          clientDisplayName(r.client, "") ||
           r.client.name ||
           r.client.fullName ||
           r.client.displayName ||

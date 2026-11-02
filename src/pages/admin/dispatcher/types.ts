@@ -13,6 +13,7 @@ export interface DispatchRef {
   fullName?: string;
   displayName?: string;
   companyName?: string;
+  commercialName?: string;
   businessName?: string;
   address?: string;
 }
