@@ -5351,7 +5351,7 @@
     "stations": {
       "add": "Adicionar estação",
       "cancel": "Cancelar",
-      "confirmRemovalDesc": "Tem certeza de que deseja excluir este posto? Esta ação não pode ser desfeita.",
+      "confirmRemovalDesc": "Tem certeza de que deseja excluir esta estação? Esta ação não pode ser desfeita.",
       "confirmRemovalTitle": "Confirmar exclusão",
       "create": "Criar",
       "createFailed": "Erro ao criar a estação",

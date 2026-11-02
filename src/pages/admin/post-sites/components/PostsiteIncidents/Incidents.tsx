@@ -1605,7 +1605,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               </div>
 
               <div>
-                {page} – {Math.max(1, Math.ceil(totalCount / limit))}
+                {/* «page / pages», as in the other lists: «1 – 1» read as a
+                    range of rows on an empty list. */}
+                {page} / {Math.max(1, Math.ceil(totalCount / limit))}
               </div>
 
               <div className="flex gap-2">

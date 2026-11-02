@@ -1081,7 +1081,7 @@
     "stations": {
       "add": "Agregar estación",
       "cancel": "Cancelar",
-      "confirmRemovalDesc": "¿Estás seguro de que deseas eliminar este puesto? Esta acción no se puede deshacer.",
+      "confirmRemovalDesc": "¿Estás seguro de que deseas eliminar esta estación? Esta acción no se puede deshacer.",
       "confirmRemovalTitle": "Confirmar eliminación",
       "create": "Crear",
       "createFailed": "Error al crear la estación",

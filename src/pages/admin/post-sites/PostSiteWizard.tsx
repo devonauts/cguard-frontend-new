@@ -2354,11 +2354,15 @@ export default function PostSiteWizard({
                       </div>
                     </div>
                   )}
-                  <CampoSucursalDeSede
-                    ciudad={city}
-                    value={branchId}
-                    onChange={setBranchId}
-                  />
+                  {/* Padded like the address panel above: flush, the field
+                      touched the card edges and its hint was cut. */}
+                  <div className="px-4 pb-4">
+                    <CampoSucursalDeSede
+                      ciudad={city}
+                      value={branchId}
+                      onChange={setBranchId}
+                    />
+                  </div>
                 </div>
               )}
 

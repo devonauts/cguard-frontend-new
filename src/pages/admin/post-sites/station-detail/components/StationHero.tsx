@@ -374,7 +374,12 @@ export default function StationHero({
                     en tres renglones parecía tres datos. */}
                 <span className="flex items-center gap-1.5 whitespace-nowrap">
                   <Clock className="h-3.5 w-3.5 shrink-0" />
-                  {station?.startingTimeInDay || station?.finishTimeInDay
+                  {station?.startingTimeInDay &&
+                  station.startingTimeInDay === station?.finishTimeInDay
+                    ? // A 24 h station starts and ends at the same time:
+                      // «07:00 – 07:00» read as an empty window.
+                      `${t("station.schedule.24h", "24 horas")} · ${station.startingTimeInDay}`
+                    : station?.startingTimeInDay || station?.finishTimeInDay
                     ? `${station?.startingTimeInDay || "?"} – ${station?.finishTimeInDay || "?"}`
                     : (() => {
                         const h = SCHEDULE_LABEL[station?.scheduleType || ""];
