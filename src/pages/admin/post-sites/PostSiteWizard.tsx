@@ -1326,6 +1326,10 @@ export default function PostSiteWizard({
 
   // ── step validation ──────────────────────────────────────────────────────────
   const canGoNext = () => {
+    // In the set-up flow there is no «continue without a type» shortcut, and
+    // «Siguiente» was one: the site ended up with no type and no guard could
+    // be assigned to it (QA 2026-11-01).
+    if (step === 1) return !enPuesta || !!serviceType;
     if (step === 2)
       return !!address.trim() && !errorVigencia && !faltaNombreEvento;
 
