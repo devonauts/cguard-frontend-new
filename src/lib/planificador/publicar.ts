@@ -24,6 +24,8 @@ import {
   propio,
   proximoArranque,
   esSacafranco,
+  fijosDe,
+  partir,
   type Persona,
   type Plan,
   type Puesto,
@@ -923,8 +925,22 @@ export function planificarPublicacion(
     // The fixed sacafrancos' own covers are the engine's, not an edit.
     for (const id of ahora)
       if (!antes.includes(id) && !plan.auto[`${k}|${id}`]) tarde(id, d);
+    // A cover can leave the draft without being marked automatic in the
+    // original (it was read as a real shift, or lay outside the window the
+    // engine ran on). When a sacafranco fixed to that post loses it, the
+    // engine took it back, unless someone blocked that slot by hand
+    // (QA re-test round 4, R4-N1).
+    const fijo = (pl: Plan, id: string) =>
+      fijosDe(pl, partir(k).puesto).some((x) => x.id === id);
+    const bloqueado = !!plan.no[k] && !original.no?.[k];
+
     for (const id of antes)
-      if (!ahora.includes(id) && !original.auto[`${k}|${id}`]) tarde(id, d);
+      if (
+        !ahora.includes(id) &&
+        !original.auto[`${k}|${id}`] &&
+        (bloqueado || !(fijo(original, id) && fijo(plan, id)))
+      )
+        tarde(id, d);
   }
   for (const [id, d] of despues) {
     const p = plan.personas.find((x) => x.id === id);

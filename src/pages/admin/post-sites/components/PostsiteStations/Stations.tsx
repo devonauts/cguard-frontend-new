@@ -152,6 +152,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
   >(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  // The list rows use a Radix menu with its own outside-click handling; it
+  // must not share openMenuId, whose document click listener closed it on
+  // the same click that opened it (QA re-test round 4, R4-REG-1).
+  const [openRowMenuId, setOpenRowMenuId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [pendingDeleteStation, setPendingDeleteStation] = useState<any | null>(
     null,
@@ -1276,9 +1280,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                         absolutely-positioned menu was clipped by the
                                         table's scroll box (same fix as Contacts). */}
                                     <DropdownMenu
-                                      open={openMenuId === id}
+                                      open={openRowMenuId === id}
                                       onOpenChange={(o) =>
-                                        setOpenMenuId(o ? id : null)
+                                        setOpenRowMenuId(o ? id : null)
                                       }
                                     >
                                       <DropdownMenuTrigger asChild>
@@ -1304,7 +1308,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                               navigate(
                                                 `/post-sites/${site?.id}/stations/${id}`,
                                               );
-                                              setOpenMenuId(null);
+                                              setOpenRowMenuId(null);
                                             }}
                                             className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                           >
@@ -1318,7 +1322,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               handleDelete(id);
-                                              setOpenMenuId(null);
+                                              setOpenRowMenuId(null);
                                             }}
                                             className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                             style={{ color: "var(--bad-text)" }}

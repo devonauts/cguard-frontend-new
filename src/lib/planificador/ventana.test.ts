@@ -28,8 +28,8 @@ const turno = (id: string, guardId: string, d: number, h: number) => ({
   id, guardId, stationId: "qata", startTime: iso(d, h), endTime: iso(d, h + 12), status: "planned",
 });
 
-function overview() {
-  const shifts: any[] = [];
+function overview(extra: any[] = []) {
+  const shifts: any[] = [...extra];
 
   // Uno: 5-2 by day from Sunday 1 Nov (works Sun–Thu, rests Fri–Sat).
   for (let d = -1; d < 60; d++)
@@ -59,8 +59,8 @@ const ctx = () =>
     return new Date(Date.UTC(y, mo - 1, d, h + 5, m));
   }, AHORA);
 
-const leer = () => {
-  const r = planDesdeHorarioReal(overview(), [], BASE, TZ, 60, AHORA);
+const leer = (extra: any[] = []) => {
+  const r = planDesdeHorarioReal(overview(extra), [], BASE, TZ, 60, AHORA);
 
   limpiar(r.plan, ...ventanaDelMotor(0, HOY, ANTES, DESPUES));
 
@@ -125,6 +125,19 @@ describe("borrador · lo que se publica no depende de la semana a la vista", () 
     expect(pub.noPublicables.join(" | ")).toMatch(
       /Uno: lo cambiado desde el 2026-12-17 se queda en el borrador; se publica hasta el 2026-12-13/,
     );
+  });
+
+  it("a fixed sacafranco's published cover the engine takes back is not reported as an edit (R4-N1)", () => {
+    // Tres already has a published shift on Friday 18 Dec (day 46), Uno's rest
+    // day. It is read as a real cover, not an automatic one. With Uno's
+    // rotation one day later Uno works that Friday and the engine drops it.
+    const leido = leer([turno("t-46", "tres", 46, 7)]);
+    const b = unDiaDespues(leido.plan);
+
+    limpiar(b, ...ventanaDelMotor(0, HOY, ANTES, DESPUES));
+    const pub = planificarPublicacion(leido.plan, b, leido.enlace, ctx());
+
+    expect(pub.noPublicables.join(" | ")).not.toMatch(/Tres: lo cambiado/);
   });
 
   it("the engine's own covers after the horizon are not reported as edits", () => {
