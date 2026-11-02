@@ -13065,7 +13065,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} van {{total}}",
       "sinEstacion": "Geen station",
       "sucediendoAhoraMismo": "Nu bezig",
-      "turnos": "Diensten"
+      "turnos": "Diensten",
+      "falta": "Afwezig"
     },
     "ShiftTemplates": {
       "basico": "Basis",

@@ -13065,7 +13065,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} von {{total}}",
       "sinEstacion": "Keine Station",
       "sucediendoAhoraMismo": "Findet gerade statt",
-      "turnos": "Schichten"
+      "turnos": "Schichten",
+      "falta": "Fehlzeit"
     },
     "ShiftTemplates": {
       "basico": "Basis",

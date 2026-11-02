@@ -12525,7 +12525,8 @@
       "rangoDePagina": "{{desde}}–{{hasta}} of {{total}}",
       "sinEstacion": "No station",
       "sucediendoAhoraMismo": "Happening right now",
-      "turnos": "Shifts"
+      "turnos": "Shifts",
+      "falta": "Absence"
     },
     "ShiftTemplates": {
       "basico": "Basic",
