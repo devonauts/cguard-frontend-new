@@ -20351,7 +20351,8 @@
     },
     "AccesoDeMarcaDePersona": {
       "todas": "Wszystkie",
-      "ninguna": "Brak marek"
+      "ninguna": "Brak marek",
+      "ve": "Widzi:"
     },
     "CampoAccesoDeMarca": {
       "sinMarcas": "Zaznacz co najmniej jedną markę: bez żadnej ta osoba nic nie zobaczy.",

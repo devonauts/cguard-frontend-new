@@ -84,17 +84,24 @@ export function accesoDeLaSesion(
   const tieneRol = roles.includes(ROL_ADMIN_DE_MARCA);
   const esAdminDeMarca =
     !esAdmin && (user?.isBrandAdmin === true || tieneRol);
-  let brandAccess = esAdmin ? null : normalizarAcceso(crudo);
+  return { ...accesoEfectivo(esAdmin ? null : crudo, esAdminDeMarca), esAdmin };
+}
 
-  // A brand admin with no brands sees nothing (the server fails closed).
-  if (esAdminDeMarca && brandAccess === null) brandAccess = [];
+/**
+ * The contract's rule on a stored `brandAccess`: only a NON-EMPTY list narrows
+ * an ordinary role (null or [] = every brand); a brand admin is always
+ * narrowed, and with no brands sees nothing (the server fails closed).
+ */
+export function accesoEfectivo(
+  crudo: unknown,
+  esAdminDeMarca: boolean,
+): { brandAccess: string[] | null; esAdminDeMarca: boolean; restringido: boolean } {
+  const v = normalizarAcceso(crudo);
 
-  return {
-    brandAccess,
-    esAdminDeMarca,
-    esAdmin,
-    restringido: !esAdmin && (esAdminDeMarca || brandAccess !== null),
-  };
+  if (esAdminDeMarca) return { brandAccess: v ?? [], esAdminDeMarca, restringido: true };
+  const brandAccess = v && v.length ? v : null;
+
+  return { brandAccess, esAdminDeMarca, restringido: brandAccess !== null };
 }
 
 // ── The route gate's refusals (403 `marca_<motivo>`) ───────────────────────

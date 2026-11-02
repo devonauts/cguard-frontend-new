@@ -20035,7 +20035,8 @@
     },
     "AccesoDeMarcaDePersona": {
       "todas": "Alle",
-      "ninguna": "Keine Marken"
+      "ninguna": "Keine Marken",
+      "ve": "Sieht:"
     },
     "CampoAccesoDeMarca": {
       "sinMarcas": "Mindestens eine Marke auswählen: ohne Marke sieht die Person nichts.",

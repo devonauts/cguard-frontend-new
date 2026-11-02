@@ -18,6 +18,12 @@ describe("brand refusals: the machine code wherever the server puts it", () => {
     );
   });
 
+  it("a numeric code does not hide the reason (route gates)", () => {
+    expect(codigoDeError({ data: { code: 403, reason: "marca_estructura" } })).toBe(
+      "marca_estructura",
+    );
+  });
+
   it("nothing readable is null", () => {
     expect(codigoDeError(null)).toBeNull();
     expect(codigoDeError({ data: "<html>" })).toBeNull();

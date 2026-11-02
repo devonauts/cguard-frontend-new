@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMarcas } from "@/hooks/useMarcas";
 import {
   accesoDeLaSesion,
-  normalizarAcceso,
+  accesoEfectivo,
   type AccesoDeLaSesion,
 } from "@/lib/multimarca/accesoDeMarca";
 
@@ -31,16 +31,12 @@ export function useAccesoDeMarca(): AccesoDeLaSesion & { modulo: boolean } {
 
   const delServidor = lista.data?.myAccess;
 
-  if (delServidor !== undefined && !sesion.esAdmin) {
-    const brandAccess = normalizarAcceso(delServidor);
-
+  if (delServidor !== undefined && !sesion.esAdmin)
     return {
       ...sesion,
+      ...accesoEfectivo(delServidor, sesion.esAdminDeMarca),
       modulo: true,
-      brandAccess: sesion.esAdminDeMarca && brandAccess === null ? [] : brandAccess,
-      restringido: sesion.esAdminDeMarca || brandAccess !== null,
     };
-  }
 
   return { ...sesion, modulo: true };
 }

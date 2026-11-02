@@ -53,6 +53,12 @@ describe("brand access of the session", () => {
     ).toMatchObject({ restringido: true, brandAccess: ["b2"], esAdminDeMarca: false });
   });
 
+  it("an empty list does not narrow an ordinary role", () => {
+    expect(
+      accesoDeLaSesion(sesion(["dispatcher"], { brandAccess: [] }), T),
+    ).toMatchObject({ restringido: false, brandAccess: null });
+  });
+
   it("reads brandAccess from the tenant entry of an older profile", () => {
     const u = { tenants: [{ tenantId: T, roles: ["dispatcher"], brandAccess: ["b9"] }] };
 

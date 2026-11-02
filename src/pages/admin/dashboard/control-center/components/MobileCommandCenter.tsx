@@ -32,6 +32,10 @@
 import type { ControlCenterData, Kpi } from "../types";
 import type { DashboardPrefs } from "../prefs";
 
+import FiltroDeMarcaEnMapa, {
+  useFiltroDeMarcaEnMapa,
+} from "@/components/multimarca/FiltroDeMarcaEnMapa";
+
 import {
   Boxes,
   LayoutDashboard,
@@ -121,6 +125,8 @@ export function MobileCommandCenter({
     t("sucursales.espacio.global"),
   );
   const enFoco = foco.actual;
+  // Multimarca: under «Todas las marcas», narrow the map to one brand.
+  const porMarca = useFiltroDeMarcaEnMapa(data.entities);
   const contRef = useRef<HTMLDivElement | null>(null);
   const carruselRef = useRef<HTMLDivElement | null>(null);
   const umbralRef = useRef(320);
@@ -230,7 +236,7 @@ export function MobileCommandCenter({
               ? { clave: enFoco.clave, puntos: enFoco.puntos }
               : null
           }
-          entities={data.entities}
+          entities={porMarca.filtradas}
           height={alto || 520}
           hud={false}
           prefs={prefs}
@@ -283,6 +289,12 @@ export function MobileCommandCenter({
           </button>
         </div>
 
+        {/* Multimarca: the brand chips, on glass so they read over the map. */}
+        {porMarca.disponible && (
+          <div className="mt-2" style={{ pointerEvents: "auto" }}>
+            <FiltroDeMarcaEnMapa filtro={porMarca} />
+          </div>
+        )}
         {/* Módulo Sucursales: el mapa se centra en la sucursal elegida. */}
         <div className="mt-2">
           <PastillasDeSucursal

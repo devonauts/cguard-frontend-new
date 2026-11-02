@@ -1770,6 +1770,7 @@ export default function AdminOfficeUsersPage() {
                         {accesosDeMarca.activo && (
                           <AccesoDeMarcaDePersona
                             accesos={accesosDeMarca}
+                            conEtiqueta
                             className="mt-1"
                             roles={rolesDeFila(u)}
                             userId={u.id || u._id || u.raw?.id}

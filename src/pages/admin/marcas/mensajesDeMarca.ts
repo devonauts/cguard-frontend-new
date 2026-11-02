@@ -1,10 +1,14 @@
 import type { TFunction } from "i18next";
 
+import { mensajeDeAccesoDeMarca } from "@/lib/multimarca/accesoDeMarca";
+
 /**
  * The server's refusals about brands, in plain words. Literal keys (the i18n
  * guard test sees them). Unknown codes get the generic line.
  */
 export function mensajeDeMarca(t: TFunction, code: string | null): string {
+  // Phase 2: a refusal of the brand access (brand admin) in its own words.
+  if (code && code.startsWith("marca_")) return mensajeDeAccesoDeMarca(code);
   switch (code) {
     case "brand_is_principal":
       return t(

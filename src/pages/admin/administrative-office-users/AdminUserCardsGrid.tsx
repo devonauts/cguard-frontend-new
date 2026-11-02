@@ -247,6 +247,7 @@ export default function AdminUserCardsGrid({
                 {accesosDeMarca.activo && (
                   <AccesoDeMarcaDePersona
                     accesos={accesosDeMarca}
+                    conEtiqueta
                     className="mt-1.5"
                     roles={rolesDeFila(u)}
                     userId={id}

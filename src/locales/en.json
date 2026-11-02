@@ -19476,7 +19476,8 @@
     },
     "AccesoDeMarcaDePersona": {
       "todas": "All",
-      "ninguna": "No brands"
+      "ninguna": "No brands",
+      "ve": "Sees:"
     },
     "CampoAccesoDeMarca": {
       "sinMarcas": "Tick at least one brand: with none, they would see nothing.",

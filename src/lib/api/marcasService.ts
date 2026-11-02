@@ -277,10 +277,13 @@ export async function subirLogoDeMarca(file: File): Promise<string> {
  */
 export function codigoDeError(e: any): string | null {
   const d = e?.data ?? e?.response?.data ?? null;
-  const c =
-    d?.code ?? d?.reason ?? d?.errorCode ?? d?.error?.code ?? d?.messageCode;
+  // The first STRING among them: route gates answer `{ code: 403, reason:
+  // 'marca_pago' }`, and a numeric `code` must not hide the reason.
+  for (const c of [d?.code, d?.reason, d?.errorCode, d?.error?.code, d?.messageCode]) {
+    if (typeof c === "string" && c) return c;
+  }
 
-  return typeof c === "string" && c ? c : null;
+  return null;
 }
 
 /** Whether a refusal is the module being off (402 `addon_required`). */

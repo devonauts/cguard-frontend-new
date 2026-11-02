@@ -20035,7 +20035,8 @@
     },
     "AccesoDeMarcaDePersona": {
       "todas": "Alle",
-      "ninguna": "Geen merken"
+      "ninguna": "Geen merken",
+      "ve": "Ziet:"
     },
     "CampoAccesoDeMarca": {
       "sinMarcas": "Vink minstens één merk aan: zonder merk ziet deze persoon niets.",
