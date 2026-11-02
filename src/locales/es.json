@@ -2541,8 +2541,8 @@
         "primary": "Primaria",
         "secondary": "Secundaria",
         "special": "Especial",
-        "university": "Universitaria",
-        "universityDegree": "Universidad"
+        "university": "Estudios universitarios",
+        "universityDegree": "Título universitario"
       },
       "maritalStatus": {
         "freeUnion": "Unión libre"
