@@ -14267,6 +14267,7 @@
       "asignarVigilante": "Assigner un agent"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "L'incident a été créé, mais ces fichiers n'ont pas pu être téléversés : {{archivos}}. Ajoutez-les depuis Modifier.",
       "errorAlCrearIncidente": "Impossible de créer l'incident",
       "nuevoIncidente": "Nouvel incident",
       "registraUnNuevoIncidenteY": "Enregistrez un nouvel incident et prévenez l'agent concerné.",

@@ -14403,6 +14403,7 @@
       "asignarVigilante": "Przypisz ochroniarza"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Incydent został utworzony, ale nie udało się przesłać tych plików: {{archivos}}. Dodaj je w Edytuj.",
       "errorAlCrearIncidente": "Błąd podczas tworzenia zdarzenia",
       "nuevoIncidente": "Nowe zdarzenie",
       "registraUnNuevoIncidenteY": "Rejestracja nowego zdarzenia i powiadomienie właściwego pracownika ochrony.",

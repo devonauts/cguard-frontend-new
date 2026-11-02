@@ -14267,6 +14267,7 @@
       "asignarVigilante": "Beveiliger toewijzen"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Het incident is aangemaakt, maar deze bestanden konden niet worden geüpload: {{archivos}}. Voeg ze toe via Bewerken.",
       "errorAlCrearIncidente": "Het incident kon niet worden aangemaakt",
       "nuevoIncidente": "Nieuw incident",
       "registraUnNuevoIncidenteY": "Leg een nieuw incident vast en informeer de betrokken beveiliger.",

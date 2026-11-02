@@ -13727,6 +13727,7 @@
       "asignarVigilante": "Assign guard"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "The incident was created, but these files could not be uploaded: {{archivos}}. Add them from Edit.",
       "errorAlCrearIncidente": "The incident could not be created",
       "nuevoIncidente": "New incident",
       "registraUnNuevoIncidenteY": "Log a new incident and notify the guard concerned.",

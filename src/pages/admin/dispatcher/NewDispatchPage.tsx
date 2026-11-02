@@ -44,7 +44,7 @@ import { postSiteService } from "@/lib/api/postSiteService";
 import { runOrQueue } from "@/lib/offline/offlineQueue";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import securityGuardService from "@/lib/api/securityGuardService";
+import { uploadIncidentAttachments } from "./incidentAttachments";
 import { diaDeLaEmpresa, horaDeLaEmpresa, desdeInputFechaHora} from "@/lib/horaDeLaEmpresa";
 
 // Datos cargados desde backend
@@ -1530,53 +1530,33 @@ export default function NewDispatchPage() {
       toast.success(t("comun.incidenteCreado"));
 
       // If frontend provided attachments, upload them to storage and create attachment metadata linked to the incident
-      try {
-        if (attachments && attachments.length > 0) {
-          for (const f of attachments) {
-            try {
-              const uploaded = await securityGuardService.uploadFileToStorage(
-                f,
-                "notesImages",
-              );
-              const attPayload: Record<string, string | number | null> = {
-                name: uploaded.name || f.name,
-                mimeType: f.type || "application/octet-stream",
-                sizeInBytes: uploaded.sizeInBytes || f.size,
-                storageId: "notesImages",
-                fileToken: uploaded.fileToken || null,
-                // Without one of the two the server refuses the record (400) and the
-                // photo was lost without a word (desktop e2e, 2026-11-01).
-                privateUrl: uploaded.fileToken ? null : uploaded.privateUrl || null,
-                publicUrl: uploaded.publicUrl || null,
-                notableType: "incident",
-                notableId:
-                  created && (created.id || (created.data && created.data.id))
-                    ? created.id || created.data.id
-                    : null,
-              };
-
-              if (attPayload.notableId) {
-                await api.post(`/tenant/${tenantId}/attachments`, attPayload);
-              }
-            } catch (e) {
-              console.warn(
-                "Failed to upload/create attachment for incident",
-                e,
-              );
-            }
-          }
+      const createdId =
+        created && (created.id || (created.data && created.data.id))
+          ? String(created.id || created.data.id)
+          : null;
+      if (attachments && attachments.length > 0) {
+        const { failed } = createdId
+          ? await uploadIncidentAttachments(tenantId, createdId, attachments)
+          : { failed: attachments.map((f) => f.name) };
+        if (failed.length > 0) {
+          toast.error(
+            t("ui.NewDispatchPage.adjuntosNoSubidos", {
+              defaultValue:
+                "El incidente se creó, pero no se pudieron subir estos archivos: {{archivos}}. Agrégalos desde Editar.",
+              archivos: failed.join(", "),
+            }),
+            { duration: 10000 },
+          );
         }
-      } catch (e) {
-        console.warn(
-          "Unhandled error while processing incident attachments",
-          e,
-        );
       }
 
       // Clear attachments and navigate back
       setAttachments([]);
-      const targetSiteId =
-        incidentPayload.postSiteId || payload.siteId || dupSiteId || null;
+      // Back to where the person came from: the post-site's incidents tab only
+      // when the form was opened from it, the incident list otherwise.
+      const targetSiteId = isFromPostSite
+        ? dupSiteId || incidentPayload.postSiteId || payload.siteId || null
+        : null;
       if (targetSiteId) {
         navigate(`/post-sites/${targetSiteId}/incidents`);
       } else {

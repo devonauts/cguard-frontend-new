@@ -14267,6 +14267,7 @@
       "asignarVigilante": "Wachkraft zuweisen"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "Der Vorfall wurde erstellt, aber diese Dateien konnten nicht hochgeladen werden: {{archivos}}. Fügen Sie sie über Bearbeiten hinzu.",
       "errorAlCrearIncidente": "Der Vorfall konnte nicht erstellt werden",
       "nuevoIncidente": "Neuer Vorfall",
       "registraUnNuevoIncidenteY": "Erfassen Sie einen neuen Vorfall und benachrichtigen Sie die zuständige Wachkraft.",

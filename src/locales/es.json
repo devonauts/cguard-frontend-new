@@ -13727,6 +13727,7 @@
       "asignarVigilante": "Asignar Vigilante"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "El incidente se creó, pero no se pudieron subir estos archivos: {{archivos}}. Agrégalos desde Editar.",
       "errorAlCrearIncidente": "Error al crear Incidente",
       "nuevoIncidente": "Nuevo Incidente",
       "registraUnNuevoIncidenteY": "Registra un nuevo incidente y notifica al vigilante correspondiente.",

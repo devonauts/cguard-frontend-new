@@ -14267,6 +14267,7 @@
       "asignarVigilante": "Assegna guardia"
     },
     "NewDispatchPage": {
+      "adjuntosNoSubidos": "L'incidente è stato creato, ma non è stato possibile caricare questi file: {{archivos}}. Aggiungili da Modifica.",
       "errorAlCrearIncidente": "Errore durante la creazione dell'incidente",
       "nuevoIncidente": "Nuovo incidente",
       "registraUnNuevoIncidenteY": "Registra un nuovo incidente e avvisa la guardia interessata.",
