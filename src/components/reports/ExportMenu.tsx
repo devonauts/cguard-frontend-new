@@ -263,7 +263,7 @@ export default function ExportMenu({
               className="text-xs"
               style={{ color: "var(--ink-faint)" }}
             >
-              Descargar como
+              {t("ui.ExportMenu.descargarComo", "Descargar como")}
             </DropdownMenuLabel>
             {acciones.map((a) => (
               <DropdownMenuItem key={a.key} className="gap-2" onSelect={a.run}>

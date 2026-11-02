@@ -21,6 +21,8 @@ interface Result<T> {
   items: T[];
   total: number;
   loading: boolean;
+  /** The last first-page load failed (the list is empty because of an error). */
+  error: boolean;
   hasMore: boolean;
   load: (reset: boolean) => void;
   sentinelRef: React.MutableRefObject<HTMLDivElement | null>;
@@ -39,6 +41,7 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
   const [items, setItems] = useState<T[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const itemsRef = useRef<T[]>([]);
   const loadingRef = useRef(false);
@@ -70,6 +73,7 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
           typeof r?.count === "number" ? r.count : rows.length;
 
         setTotal(count);
+        if (reset) setError(false);
         setItems((prev) => {
           const next = reset ? rows : [...prev, ...rows];
 
@@ -79,6 +83,7 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
         });
       } catch {
         if (reqId === reqIdRef.current && reset) {
+          setError(true);
           setItems([]);
           itemsRef.current = [];
           setTotal(0);
@@ -129,5 +134,5 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
 
   const hasMore = items.length < total;
 
-  return { items, total, loading, hasMore, load, sentinelRef };
+  return { items, total, loading, error, hasMore, load, sentinelRef };
 }

@@ -14,6 +14,8 @@ import i18n from "@/i18n";
 
 // Clave i18n + texto en español; se traduce al pintar, dentro de `value()`.
 const STATUS: Record<string, [key: string, es: string]> = {
+  // `open` is what the server stores until the incoming guard receives it.
+  open: ["ui.Passdown.estadoPendiente", "Pendiente"],
   pending: ["ui.Passdown.estadoPendiente", "Pendiente"],
   received: ["ui.Passdown.estadoRecibido", "Recibido"],
   acknowledged: ["ui.Passdown.estadoReconocido", "Reconocido"],
@@ -31,6 +33,7 @@ const columns: ReportColumn<Passdown>[] = [
     label: "Puesto",
     labelKey: "reports.col.passdown.station",
     value: (r) => r.stationName || "—",
+    privacy: "stationName",
   },
   {
     key: "outgoing",
@@ -78,6 +81,8 @@ const columns: ReportColumn<Passdown>[] = [
     label: "Recibido por",
     labelKey: "reports.col.passdown.received",
     value: (r) => r.receivedByName || "—",
+    // The incoming guard who took the handover.
+    privacy: "guardName",
   },
 ];
 

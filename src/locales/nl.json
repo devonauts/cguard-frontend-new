@@ -14402,7 +14402,9 @@
       "inscripciones": "Inschrijvingen",
       "completaron": "Voltooid",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lessen"
+      "lecciones": "Lessen",
+      "pistaParaTodos": "Aan iedereen toegewezen: telt wie de cursus heeft geopend",
+      "nDeMCompletaronParaTodos": "Aan alle beveiligers toegewezen. Iedereen verschijnt hier zodra die de cursus opent: {{done}} van {{total}} hebben hem afgerond."
     },
     "VehiclesPage": {
       "vehiculo": "voertuig",
@@ -14956,7 +14958,9 @@
     "Incident": {
       "informeDeIncidente": "Incidentmelding",
       "sinCaso": "Bij dit incident hoort geen noodgeval.",
-      "descripcion": "Gemelde incidenten: prioriteit, status, locatie en beschrijving per post."
+      "descripcion": "Gemelde incidenten: prioriteit, status, locatie en beschrijving per post.",
+      "estadoAbierto": "Open",
+      "estadoCerrado": "Gesloten"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Pasjes en vergunningen van het personeel, met hun vervaldatums.",
@@ -15259,7 +15263,12 @@
       "rangoRegistros_few": "Periode: {{range}} · {{count}} records",
       "rangoRegistros_many": "Periode: {{range}} · {{count}} records",
       "informeExportado": "Rapport geëxporteerd",
-      "sinFilasParaExportar": "Er zijn geen records om te exporteren"
+      "sinFilasParaExportar": "Er zijn geen records om te exporteren",
+      "seudonimoCliente": "Klant",
+      "seudonimoSede": "Locatie",
+      "seudonimoPuesto": "Post",
+      "sinCoincidencias": "Geen record komt overeen met ‘{{q}}’.",
+      "rangoInvalido": "Controleer de datums: ‘Van’ mag niet na ‘Tot’ liggen."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Dichtstbij met beveiliger",
@@ -16802,7 +16811,8 @@
       "hintImprimir": "Opent het afdrukvoorbeeld van de browser",
       "enviarPorCorreo": "Per e-mail verzenden",
       "hintEnviarPorCorreo": "Stuurt het rapport naar een ontvanger",
-      "exportando": "Exporteren…"
+      "exportando": "Exporteren…",
+      "descargarComo": "Downloaden als"
     },
     "ExportarPeriodo": {
       "semana": "Week",
@@ -17238,7 +17248,9 @@
       "cliente": "Klant",
       "todosLosClientes": "Alle klanten",
       "sede": "Locatie",
-      "todasLasSedes": "Alle locaties"
+      "todasLasSedes": "Alle locaties",
+      "nHuecos_one": "{{count}} gat",
+      "nHuecos_other": "{{count}} gaten"
     },
     "PuestaEnMarcha": {
       "titulo": "Aan de slag · {{hechos}} van {{total}}",
@@ -19692,6 +19704,17 @@
     "RutaConPermiso": {
       "titulo": "Geen toegang tot deze pagina",
       "descripcion": "Je rol kan deze pagina niet zien. Heb je hem nodig, vraag het een beheerder."
+    },
+    "training": {
+      "puntajeFueraDeRango": "De slaagscore moet een geheel getal tussen 1 en 100 zijn.",
+      "puntosFueraDeRango": "De punten moeten een geheel getal tussen 0 en 100000 zijn."
+    },
+    "incidentPriority": {
+      "critical": "Kritiek",
+      "high": "Hoog",
+      "medium": "Gemiddeld",
+      "low": "Laag",
+      "none": "Geen prioriteit"
     }
   },
   "visitantes": {

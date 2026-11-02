@@ -13862,7 +13862,9 @@
       "inscripciones": "Inscrições",
       "completaron": "Concluíram",
       "cuestionarioDosPuntos": "Questionário:",
-      "lecciones": "Lições"
+      "lecciones": "Lições",
+      "pistaParaTodos": "Atribuído a todos: conta quem já abriu o curso",
+      "nDeMCompletaronParaTodos": "Atribuído a todos os vigilantes. Cada um aparece aqui ao abrir o curso: {{done}} de {{total}} o concluíram."
     },
     "VehiclesPage": {
       "vehiculo": "veículo",
@@ -14416,7 +14418,9 @@
     "Incident": {
       "informeDeIncidente": "Relatório de Incidente",
       "sinCaso": "Este incidente não tem um caso de emergência associado.",
-      "descripcion": "Incidentes reportados: prioridade, status, localização e descrição por posto."
+      "descripcion": "Incidentes reportados: prioridade, status, localização e descrição por posto.",
+      "estadoAbierto": "Aberto",
+      "estadoCerrado": "Fechado"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Credenciais e licenças da equipe, com suas datas de vencimento.",
@@ -14719,7 +14723,12 @@
       "rangoRegistros_few": "Período: {{range}} · {{count}} registros",
       "rangoRegistros_many": "Período: {{range}} · {{count}} registros",
       "informeExportado": "Relatório exportado",
-      "sinFilasParaExportar": "Não há registros para exportar"
+      "sinFilasParaExportar": "Não há registros para exportar",
+      "seudonimoCliente": "Cliente",
+      "seudonimoSede": "Local",
+      "seudonimoPuesto": "Posto",
+      "sinCoincidencias": "Nenhum registro corresponde a “{{q}}”.",
+      "rangoInvalido": "Verifique as datas: “De” não pode ser posterior a “Até”."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Mais próximo com vigilante",
@@ -16262,7 +16271,8 @@
       "hintImprimir": "Abre a visualização de impressão do navegador",
       "enviarPorCorreo": "Enviar por e-mail",
       "hintEnviarPorCorreo": "Envia o relatório para um destinatário",
-      "exportando": "Exportando…"
+      "exportando": "Exportando…",
+      "descargarComo": "Baixar como"
     },
     "ExportarPeriodo": {
       "semana": "Semana",
@@ -16698,7 +16708,9 @@
       "cliente": "Cliente",
       "todosLosClientes": "Todos os clientes",
       "sede": "Unidade",
-      "todasLasSedes": "Todas as unidades"
+      "todasLasSedes": "Todas as unidades",
+      "nHuecos_one": "{{count}} lacuna",
+      "nHuecos_other": "{{count}} lacunas"
     },
     "PuestaEnMarcha": {
       "titulo": "Primeiros passos · {{hechos}} de {{total}}",
@@ -19152,6 +19164,17 @@
     "RutaConPermiso": {
       "titulo": "Sem acesso a esta página",
       "descripcion": "Sua função não pode ver esta página. Se precisar dela, peça a um administrador."
+    },
+    "training": {
+      "puntajeFueraDeRango": "A nota para aprovação deve ser um número inteiro entre 1 e 100.",
+      "puntosFueraDeRango": "Os pontos devem ser um número inteiro entre 0 e 100000."
+    },
+    "incidentPriority": {
+      "critical": "Crítica",
+      "high": "Alta",
+      "medium": "Média",
+      "low": "Baixa",
+      "none": "Sem prioridade"
     }
   },
   "map": {

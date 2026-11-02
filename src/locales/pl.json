@@ -14538,7 +14538,9 @@
       "inscripciones": "Zapisy",
       "completaron": "Ukończyli",
       "cuestionarioDosPuntos": "Quiz:",
-      "lecciones": "Lekcje"
+      "lecciones": "Lekcje",
+      "pistaParaTodos": "Przypisano wszystkim: liczy osoby, które otworzyły kurs",
+      "nDeMCompletaronParaTodos": "Przypisano wszystkim pracownikom ochrony. Każdy pojawia się tu po otwarciu kursu: {{done}} z {{total}} go ukończyło."
     },
     "VehiclesPage": {
       "vehiculo": "pojazd",
@@ -15116,7 +15118,9 @@
     "Incident": {
       "informeDeIncidente": "Zgłoszenie zdarzenia",
       "sinCaso": "Ten incydent nie ma powiązanego zgłoszenia alarmowego.",
-      "descripcion": "Zgłoszone incydenty: priorytet, status, lokalizacja i opis według posterunku."
+      "descripcion": "Zgłoszone incydenty: priorytet, status, lokalizacja i opis według posterunku.",
+      "estadoAbierto": "Otwarte",
+      "estadoCerrado": "Zamknięte"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Legitymacje i uprawnienia pracowników wraz z datami ważności.",
@@ -15423,7 +15427,12 @@
       "rangoRegistros_few": "Zakres: {{range}} · {{count}} rekordy",
       "rangoRegistros_many": "Zakres: {{range}} · {{count}} rekordów",
       "informeExportado": "Raport wyeksportowany",
-      "sinFilasParaExportar": "Brak rekordów do eksportu"
+      "sinFilasParaExportar": "Brak rekordów do eksportu",
+      "seudonimoCliente": "Klient",
+      "seudonimoSede": "Obiekt",
+      "seudonimoPuesto": "Posterunek",
+      "sinCoincidencias": "Żaden rekord nie pasuje do „{{q}}”.",
+      "rangoInvalido": "Sprawdź daty: „Od” nie może być późniejsza niż „Do”."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Najbliższy z pracownikiem ochrony",
@@ -17024,7 +17033,8 @@
       "hintImprimir": "Otwiera podgląd wydruku w przeglądarce",
       "enviarPorCorreo": "Wyślij e-mailem",
       "hintEnviarPorCorreo": "Wysyła raport do odbiorcy",
-      "exportando": "Eksportowanie…"
+      "exportando": "Eksportowanie…",
+      "descargarComo": "Pobierz jako"
     },
     "ExportarPeriodo": {
       "semana": "Tydzień",
@@ -17464,7 +17474,11 @@
       "cliente": "Klient",
       "todosLosClientes": "Wszyscy klienci",
       "sede": "Obiekt",
-      "todasLasSedes": "Wszystkie obiekty"
+      "todasLasSedes": "Wszystkie obiekty",
+      "nHuecos_one": "{{count}} luka",
+      "nHuecos_other": "{{count}} luki",
+      "nHuecos_few": "{{count}} luki",
+      "nHuecos_many": "{{count}} luk"
     },
     "PuestaEnMarcha": {
       "titulo": "Uruchomienie · {{hechos}} z {{total}}",
@@ -20000,6 +20014,17 @@
     "RutaConPermiso": {
       "titulo": "Brak dostępu do tej strony",
       "descripcion": "Twoja rola nie może zobaczyć tej strony. Jeśli jej potrzebujesz, poproś administratora."
+    },
+    "training": {
+      "puntajeFueraDeRango": "Próg zaliczenia musi być liczbą całkowitą od 1 do 100.",
+      "puntosFueraDeRango": "Punkty muszą być liczbą całkowitą od 0 do 100000."
+    },
+    "incidentPriority": {
+      "critical": "Krytyczny",
+      "high": "Wysoki",
+      "medium": "Średni",
+      "low": "Niski",
+      "none": "Bez priorytetu"
     }
   },
   "visitantes": {

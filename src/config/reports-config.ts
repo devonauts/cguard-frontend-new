@@ -360,9 +360,9 @@ export const REPORT_SECTIONS: ReportSection[] = [
       },
       {
         id: "order-ack-logs",
-        title: "Reconocimiento de Órdenes de Publicación",
+        title: "Reconocimiento de consignas",
         titleKey: "ui.PostOrderAck.reconocimientoDeOrdenesDePublicacion",
-        description: "Reconocimiento de Órdenes de Publicación",
+        description: "Reconocimiento de consignas",
         descriptionKey: "ui.PostOrderAck.reconocimientoDeOrdenesDePublicacion",
         href: "/reports/post-order-ack",
       },

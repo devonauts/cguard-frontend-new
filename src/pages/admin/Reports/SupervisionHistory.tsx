@@ -142,6 +142,7 @@ export default function SupervisionHistory() {
         key: "station",
         label: t("ui.SupervisionHistory.puesto", "Puesto"),
         value: (r) => nombrePuesto(r),
+        privacy: "stationName",
       },
       {
         key: "status",

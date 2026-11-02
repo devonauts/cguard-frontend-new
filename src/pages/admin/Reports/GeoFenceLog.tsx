@@ -43,6 +43,7 @@ const columns: ReportColumn<Rec>[] = [
     label: "Puesto",
     labelKey: "reports.col.geoFenceLog.station",
     value: (r) => r.stationName?.stationName || "—",
+    privacy: "stationName",
   },
   {
     key: "inDist",

@@ -131,7 +131,7 @@ export default function TrainingCatalogPage() {
                       dot={false}
                       tone="neutral"
                     >
-                      <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Addon")}
+                      <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Complementario")}
                     </StatusBadge>
                   </div>
                   {c.description && (

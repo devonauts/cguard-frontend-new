@@ -14402,7 +14402,9 @@
       "inscripciones": "Inscriptions",
       "completaron": "Ont terminé",
       "cuestionarioDosPuntos": "Quiz :",
-      "lecciones": "Leçons"
+      "lecciones": "Leçons",
+      "pistaParaTodos": "Attribué à tous : compte ceux qui ont ouvert le cours",
+      "nDeMCompletaronParaTodos": "Attribué à tous les agents. Chacun apparaît ici en ouvrant le cours : {{done}} sur {{total}} l’ont terminé."
     },
     "VehiclesPage": {
       "vehiculo": "véhicule",
@@ -14956,7 +14958,9 @@
     "Incident": {
       "informeDeIncidente": "Rapport d'incident",
       "sinCaso": "Cet incident n'a pas de dossier d'urgence associé.",
-      "descripcion": "Incidents signalés : priorité, statut, emplacement et description par poste."
+      "descripcion": "Incidents signalés : priorité, statut, emplacement et description par poste.",
+      "estadoAbierto": "Ouvert",
+      "estadoCerrado": "Fermé"
     },
     "License": {
       "credencialesYLicenciasDelPersonal": "Habilitations et licences du personnel, avec leurs dates d'expiration.",
@@ -15259,7 +15263,12 @@
       "rangoRegistros_few": "Période : {{range}} · {{count}} enregistrements",
       "rangoRegistros_many": "Période : {{range}} · {{count}} enregistrements",
       "informeExportado": "Rapport exporté",
-      "sinFilasParaExportar": "Aucun enregistrement à exporter"
+      "sinFilasParaExportar": "Aucun enregistrement à exporter",
+      "seudonimoCliente": "Client",
+      "seudonimoSede": "Site",
+      "seudonimoPuesto": "Poste",
+      "sinCoincidencias": "Aucun enregistrement ne correspond à « {{q}} ».",
+      "rangoInvalido": "Vérifiez les dates : « Du » ne peut pas être après « Au »."
     },
     "DispatchIncidentMap": {
       "masCercanoConVigilante": "Le plus proche avec agent",
@@ -16802,7 +16811,8 @@
       "hintImprimir": "Ouvre l'aperçu d'impression du navigateur",
       "enviarPorCorreo": "Envoyer par e-mail",
       "hintEnviarPorCorreo": "Envoie le rapport à un destinataire",
-      "exportando": "Exportation…"
+      "exportando": "Exportation…",
+      "descargarComo": "Télécharger en"
     },
     "ExportarPeriodo": {
       "semana": "Semaine",
@@ -17238,7 +17248,9 @@
       "cliente": "Client",
       "todosLosClientes": "Tous les clients",
       "sede": "Site",
-      "todasLasSedes": "Tous les sites"
+      "todasLasSedes": "Tous les sites",
+      "nHuecos_one": "{{count}} trou",
+      "nHuecos_other": "{{count}} trous"
     },
     "PuestaEnMarcha": {
       "titulo": "Mise en route · {{hechos}} sur {{total}}",
@@ -19692,6 +19704,17 @@
     "RutaConPermiso": {
       "titulo": "Pas d’accès à cette page",
       "descripcion": "Votre rôle ne peut pas voir cette page. Si vous en avez besoin, demandez-la à un administrateur."
+    },
+    "training": {
+      "puntajeFueraDeRango": "Le score de réussite doit être un nombre entier entre 1 et 100.",
+      "puntosFueraDeRango": "Les points doivent être un nombre entier entre 0 et 100000."
+    },
+    "incidentPriority": {
+      "critical": "Critique",
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse",
+      "none": "Sans priorité"
     }
   },
   "visitantes": {

@@ -3,7 +3,14 @@ import { ApiService } from "@/services/api/apiService";
 const tid = (): string => localStorage.getItem("tenantId") || "";
 
 export interface OpsAnalytics {
-  range: { start: string; end: string; days: number };
+  /** start/end: the UTC window; startDay/endDay: the company days asked for. */
+  range: {
+    start: string;
+    end: string;
+    startDay?: string;
+    endDay?: string;
+    days: number;
+  };
   kpis: {
     guardsOnDuty: number;
     shiftsTotal: number;

@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useParams,
 } from "react-router-dom";
 import RutaConPermiso from "@/components/RutaConPermiso";
 import { useEffect, lazy, Suspense } from "react";
@@ -676,6 +677,28 @@ function IrAlPanelDePlataforma() {
   }, []);
 
   return null;
+}
+
+/**
+ * `/reports/incident/:id` is where the control center, the map popup, the
+ * route-run detail and incident notifications send ONE incident — but it
+ * rendered the whole incident list and ignored the id. The incident's own
+ * page is the dispatch detail (`resource=incident`), the same one the post-site
+ * incident list opens.
+ */
+function IncidenteDelInforme() {
+  const { id } = useParams();
+
+  return (
+    <Navigate
+      replace
+      to={
+        id
+          ? `/dispatch-tickets/${encodeURIComponent(id)}?resource=incident`
+          : "/reports/incidents"
+      }
+    />
+  );
 }
 
 export default function App() {
@@ -1804,7 +1827,7 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <Incident />
+                                    <IncidenteDelInforme />
                                   </ProtectedRoute>
                                 }
                                 path="/reports/incident/:id"

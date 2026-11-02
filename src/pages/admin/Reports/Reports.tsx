@@ -14,6 +14,7 @@ import { SECTION_THEME, iconForReport, toneForReport } from "./reportIcons";
 
 import AppLayout from "@/layouts/app-layout";
 import { REPORT_SECTIONS } from "@/config/reports-config";
+import { plano } from "@/lib/buscadorGlobal";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
@@ -38,6 +39,7 @@ const READY_REPORT_HREFS = new Set<string>([
   "/reports/geo-fence-log",
   "/reports/incidents/general",
   "/reports/supervision-history",
+  "/reports/vehicle-patrol",
 ]);
 
 interface ReportsProps {
@@ -69,7 +71,8 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
 
   // Live filter across every report.
   const sections = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    // Accent-blind: «panico» finds «Pánico».
+    const q = plano(query.trim());
 
     if (!q) return REPORT_SECTIONS;
 
@@ -77,10 +80,8 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
       ...s,
       reports: s.reports.filter(
         (r) =>
-          tx(r.titleKey, r.title).toLowerCase().includes(q) ||
-          tx(r.descriptionKey, r.description || "")
-            .toLowerCase()
-            .includes(q),
+          plano(tx(r.titleKey, r.title)).includes(q) ||
+          plano(tx(r.descriptionKey, r.description || "")).includes(q),
       ),
     })).filter((s) => s.reports.length > 0);
   }, [query, tx]);

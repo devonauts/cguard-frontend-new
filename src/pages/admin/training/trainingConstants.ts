@@ -114,3 +114,41 @@ export function levelLabel(value?: string): string {
 
   return l ? i18n.t(l.labelKey, l.label) : "-";
 }
+
+/** Same limits as the server (trainingCourseService): a course saved with a
+ *  250 % passing score can never be passed, and negative points take points
+ *  away from whoever completes it. */
+export const PASSING_SCORE_MIN = 1;
+export const PASSING_SCORE_MAX = 100;
+export const POINTS_VALUE_MAX = 100000;
+
+const wholeIn = (v: unknown, min: number, max: number) => {
+  const n = Number(v);
+
+  return Number.isInteger(n) && n >= min && n <= max;
+};
+
+/** The first problem with a course's score fields, translated, or null. */
+export function courseScoreProblem(values: {
+  passingScore?: unknown;
+  pointsValue?: unknown;
+}): string | null {
+  if (
+    values.passingScore !== undefined &&
+    !wholeIn(values.passingScore, PASSING_SCORE_MIN, PASSING_SCORE_MAX)
+  )
+    return i18n.t(
+      "ui.training.puntajeFueraDeRango",
+      "El puntaje para aprobar debe ser un número entero entre 1 y 100.",
+    );
+  if (
+    values.pointsValue !== undefined &&
+    !wholeIn(values.pointsValue, 0, POINTS_VALUE_MAX)
+  )
+    return i18n.t(
+      "ui.training.puntosFueraDeRango",
+      "Los puntos deben ser un número entero entre 0 y 100000.",
+    );
+
+  return null;
+}
