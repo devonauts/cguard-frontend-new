@@ -9425,7 +9425,12 @@
       "nuevoCorreoCom": "nieuw@email.com",
       "perfilActualizadoCorrectamente": "Profiel succesvol bijgewerkt.",
       "esElNombreConEl": "Dit is de naam waaronder de rest van het team je ziet.",
-      "verificado": "Geverifieerd"
+      "verificado": "Geverifieerd",
+      "codigoNoEntregado": "We konden de code niet naar dat nummer sturen. Controleer het nummer of probeer het later opnieuw.",
+      "codigoDePrueba": "Er is geen sms-provider in deze omgeving. Testcode: {{code}}",
+      "escribeTuNumeroAntes": "Vul je mobiele nummer in voordat je het bevestigt.",
+      "correoNoValido": "Dat e-mailadres is niet geldig.",
+      "esTuCorreoActual": "Dat is al je e-mailadres."
     },
     "Routes": {
       "turnoDia": "Dagdienst",

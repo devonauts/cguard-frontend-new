@@ -8885,7 +8885,12 @@
       "nuevoCorreoCom": "new@email.com",
       "perfilActualizadoCorrectamente": "Profile updated successfully.",
       "esElNombreConEl": "This is the name the rest of the team sees.",
-      "verificado": "Verified"
+      "verificado": "Verified",
+      "codigoNoEntregado": "We couldn't send the code to that number. Check the number or try again later.",
+      "codigoDePrueba": "There is no SMS provider in this environment. Test code: {{code}}",
+      "escribeTuNumeroAntes": "Enter your mobile number before confirming it.",
+      "correoNoValido": "That email address is not valid.",
+      "esTuCorreoActual": "That is already your email address."
     },
     "Routes": {
       "turnoDia": "Day shift",

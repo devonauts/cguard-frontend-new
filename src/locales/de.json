@@ -9425,7 +9425,12 @@
       "nuevoCorreoCom": "neu@email.com",
       "perfilActualizadoCorrectamente": "Profil erfolgreich aktualisiert.",
       "esElNombreConEl": "Unter diesem Namen sieht dich der Rest des Teams.",
-      "verificado": "Verifiziert"
+      "verificado": "Verifiziert",
+      "codigoNoEntregado": "Wir konnten den Code nicht an diese Nummer senden. Prüfe die Nummer oder versuche es später erneut.",
+      "codigoDePrueba": "In dieser Umgebung gibt es keinen SMS-Anbieter. Testcode: {{code}}",
+      "escribeTuNumeroAntes": "Gib deine Handynummer ein, bevor du sie bestätigst.",
+      "correoNoValido": "Diese E-Mail-Adresse ist ungültig.",
+      "esTuCorreoActual": "Das ist bereits deine E-Mail-Adresse."
     },
     "Routes": {
       "turnoDia": "Tagschicht",

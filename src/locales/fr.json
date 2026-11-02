@@ -9425,7 +9425,12 @@
       "nuevoCorreoCom": "nouveau@courriel.com",
       "perfilActualizadoCorrectamente": "Profil mis à jour avec succès.",
       "esElNombreConEl": "C'est le nom sous lequel le reste de l'équipe vous voit.",
-      "verificado": "Vérifié"
+      "verificado": "Vérifié",
+      "codigoNoEntregado": "Nous n'avons pas pu envoyer le code à ce numéro. Vérifiez le numéro ou réessayez plus tard.",
+      "codigoDePrueba": "Aucun fournisseur SMS dans cet environnement. Code de test : {{code}}",
+      "escribeTuNumeroAntes": "Saisissez votre numéro de mobile avant de le confirmer.",
+      "correoNoValido": "Cette adresse e-mail n'est pas valide.",
+      "esTuCorreoActual": "C'est déjà votre adresse e-mail."
     },
     "Routes": {
       "turnoDia": "Vacation de jour",

@@ -23,6 +23,8 @@ import {
 } from "@/components/kit";
 import { ejemploDeTelefono } from "@/lib/telefonoDeLaEmpresa";
 import { reducirFoto } from "@/lib/reducirFoto";
+import { getServerErrorMessage } from "@/lib/utils";
+import { EMAIL_PATTERN, phoneForServer } from "./profile/contactFields";
 
 type MeTenantSetting = { theme?: string; logoUrl?: string | null };
 type MeTenant = { name?: string; phone?: string; settings?: MeTenantSetting[] };
@@ -42,16 +44,19 @@ type MeResponse = {
   avatars?: MeAvatar[];
   tenants?: Array<{ tenant?: MeTenant }>;
   emailVerified?: boolean;
+  phoneNumberVerified?: boolean;
 };
 
 // Raw /auth/me payload before normalization: fields may live at the top level or
 // be wrapped under `user`/`data`.
 type MeRaw = Partial<MeResponse> & { user?: MeRaw; data?: MeRaw };
 
-// Shape of the errors thrown by the API layer (axios-style response envelope).
-type ApiError = {
-  response?: { data?: { message?: string } };
-  message?: string;
+// What POST /auth/send-phone-verification answers. `code` only comes back
+// outside production (test copies have no SMS provider).
+type SendPhoneCodeResponse = {
+  delivered?: boolean;
+  channel?: string | null;
+  code?: string;
 };
 
 function pickAvatarUrl(avatars?: MeAvatar[] | null): string | null {
@@ -101,6 +106,7 @@ function normalizeMe(raw: MeRaw | null | undefined): MeResponse {
   }
   const tenants = base?.tenants ?? [];
   const emailVerified = base?.emailVerified ?? false;
+  const phoneNumberVerified = base?.phoneNumberVerified ?? false;
 
   return {
     id: base?.id as string,
@@ -114,6 +120,7 @@ function normalizeMe(raw: MeRaw | null | undefined): MeResponse {
     avatars: base?.avatars ?? [],
     tenants,
     emailVerified,
+    phoneNumberVerified,
   };
 }
 
@@ -150,6 +157,11 @@ export default function ProfileUserForm() {
   // cualquier administrador que no llegara a tocar el selector de país.
   const [phoneCode, setPhoneCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  // The number the server has marked as verified («» when none). The badge
+  // only says «Verificado» while the field still shows that same number.
+  const [verifiedPhone, setVerifiedPhone] = useState("");
+  const [sendingCode, setSendingCode] = useState(false);
+  const [verifyingCode, setVerifyingCode] = useState(false);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   // Tracks the current blob: object URL so it can be revoked when replaced/unmounted.
@@ -207,6 +219,11 @@ export default function ProfileUserForm() {
         setFullName(resolvedFullName);
         setEmail(me.email ?? "");
         setEmailVerified(me.emailVerified ?? false);
+        setVerifiedPhone(
+          me.phoneNumberVerified && me.phoneNumber
+            ? String(me.phoneNumber).replace(/\s+/g, "")
+            : "",
+        );
         setAvatar(me.avatarUrl ?? null);
 
         // phoneNumber may be stored on the user or on the tenant object
@@ -312,17 +329,8 @@ export default function ProfileUserForm() {
         payload.lastName = lastName;
 
       // Normalize phone to E.164 when possible before sending
-      let phoneToSend = `${phoneCode} ${phoneNumber}`.trim();
+      const phoneToSend = phoneForServer(phoneCode, phoneNumber);
 
-      try {
-        const parsedSend = parsePhoneNumberFromString(phoneToSend);
-
-        if (parsedSend && parsedSend.isValid()) {
-          phoneToSend = parsedSend.number; // E.164
-        }
-      } catch (err) {
-        // keep raw value
-      }
       if (phoneToSend && String(phoneToSend).trim() !== "")
         payload.phoneNumber = phoneToSend;
 
@@ -360,6 +368,8 @@ export default function ProfileUserForm() {
             avatarObjectUrlRef.current = null;
           }
           setAvatar(refreshedMe.avatarUrl ?? null);
+          // Uploaded: later saves must not send the same photo again.
+          setAvatarFile(null);
           didUpdate = true;
         } catch (err) {
           console.error("Avatar upload failed", err);
@@ -367,6 +377,10 @@ export default function ProfileUserForm() {
         }
       }
       if (didUpdate) {
+        // Saving another number drops its verification (server side too).
+        if (payload.phoneNumber && payload.phoneNumber !== verifiedPhone) {
+          setVerifiedPhone("");
+        }
         toast.success(
           t(
             "ui.ProfileUserForm.perfilActualizadoCorrectamente",
@@ -378,8 +392,10 @@ export default function ProfileUserForm() {
       }
     } catch (e) {
       toast.error(
-        (e as ApiError)?.response?.data?.message ??
+        getServerErrorMessage(
+          e,
           t("settings.profile.errors.save", "Error al guardar el perfil."),
+        ),
       );
     } finally {
       setSaving(false);
@@ -411,59 +427,129 @@ export default function ProfileUserForm() {
 
       return;
     }
+    if (!EMAIL_PATTERN.test(newEmail.trim())) {
+      toast.error(
+        t("ui.ProfileUserForm.correoNoValido", "Ese correo no es válido."),
+      );
+
+      return;
+    }
+    if (newEmail.trim().toLowerCase() === email.trim().toLowerCase()) {
+      toast.error(
+        t("ui.ProfileUserForm.esTuCorreoActual", "Ese ya es tu correo."),
+      );
+
+      return;
+    }
 
     try {
-      await AccountService.changeEmail({ password, newEmail });
+      await AccountService.changeEmail({ password, newEmail: newEmail.trim() });
       toast.success(
         t("ui.ProfileUserForm.correoActualizadoCorrectamenteVerificaTu"),
       );
-      setEmail(newEmail);
+      setEmail(newEmail.trim());
       setEmailVerified(false);
       setShowEmailModal(false);
       setPassword("");
       setNewEmail("");
     } catch (e) {
       toast.error(
-        (e as ApiError)?.response?.data?.message ??
+        getServerErrorMessage(
+          e,
           t(
             "settings.profile.errors.changeEmail",
             "Error al cambiar el correo.",
           ),
+        ),
       );
     }
   };
 
+  const currentPhone = phoneForServer(phoneCode, phoneNumber);
+  const phoneIsVerified =
+    !!verifiedPhone && currentPhone.replace(/\s+/g, "") === verifiedPhone;
+
   const handleVerifyPhone = async () => {
-    if (!verificationCode) {
+    const code = verificationCode.trim();
+
+    if (!code) {
       toast.error(t("ui.ProfileUserForm.porFavorIngresaElCodigo"));
 
       return;
     }
 
+    setVerifyingCode(true);
     try {
+      await AccountService.verifyPhone(code, currentPhone);
+      setVerifiedPhone(currentPhone.replace(/\s+/g, ""));
       toast.success(t("ui.ProfileUserForm.numeroVerificadoCorrectamente"));
       setShowPhoneVerifyModal(false);
       setVerificationCode("");
     } catch (e) {
       toast.error(
-        (e as ApiError)?.response?.data?.message ??
+        getServerErrorMessage(
+          e,
           t(
             "settings.profile.errors.verifyPhone",
             "Error al verificar el número.",
           ),
+        ),
       );
+    } finally {
+      setVerifyingCode(false);
     }
   };
 
   const handleSendVerificationCode = async () => {
+    if (!phoneNumber.trim()) {
+      toast.error(
+        t(
+          "ui.ProfileUserForm.escribeTuNumeroAntes",
+          "Escribe tu número móvil antes de confirmarlo.",
+        ),
+      );
+
+      return;
+    }
+
+    setSendingCode(true);
     try {
-      toast.success(t("ui.ProfileUserForm.codigoDeVerificacionEnviado"));
+      const res = (await AccountService.sendPhoneVerificationCode(
+        currentPhone,
+      )) as SendPhoneCodeResponse | undefined;
+
+      if (res?.delivered) {
+        toast.success(t("ui.ProfileUserForm.codigoDeVerificacionEnviado"));
+      } else if (res?.code) {
+        // Test copy without SMS/WhatsApp: the server hands the code back.
+        toast.info(
+          t("ui.ProfileUserForm.codigoDePrueba", {
+            defaultValue:
+              "No hay proveedor de SMS en este entorno. Código de prueba: {{code}}",
+            code: res.code,
+          }),
+        );
+      } else {
+        toast.error(
+          t(
+            "ui.ProfileUserForm.codigoNoEntregado",
+            "No pudimos enviar el código a ese número. Revisa el número o inténtalo más tarde.",
+          ),
+        );
+
+        return;
+      }
+      setVerificationCode("");
       setShowPhoneVerifyModal(true);
     } catch (e) {
       toast.error(
-        (e as ApiError)?.response?.data?.message ??
+        getServerErrorMessage(
+          e,
           t("settings.profile.errors.sendCode", "Error al enviar el código."),
+        ),
       );
+    } finally {
+      setSendingCode(false);
     }
   };
 
@@ -542,7 +628,16 @@ export default function ProfileUserForm() {
           </div>
 
           <div className="space-y-2">
-            <Label>{t("profile.phone")}</Label>
+            <div className="flex flex-wrap items-center gap-2">
+              <Label className="mb-0">{t("profile.phone")}</Label>
+              {phoneNumber.trim() !== "" && (
+                <StatusBadge tone={phoneIsVerified ? "ok" : "warn"}>
+                  {phoneIsVerified
+                    ? t("ui.ProfileUserForm.verificado", "Verificado")
+                    : t("revision.sinVerificar", "Sin verificar")}
+                </StatusBadge>
+              )}
+            </div>
             <PhoneField
               code={phoneCode}
               number={phoneNumber}
@@ -553,15 +648,18 @@ export default function ProfileUserForm() {
               <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
                 {t("profile.phoneExample", { ejemplo: ejemploDeTelefono() })}
               </p>
-              <Button
-                className="h-auto p-0 text-xs"
-                style={{ color: "var(--brand-text)" }}
-                type="button"
-                variant="link"
-                onClick={handleSendVerificationCode}
-              >
-                {t("profile.confirmNumber")}
-              </Button>
+              {!phoneIsVerified && (
+                <Button
+                  className="h-auto p-0 text-xs"
+                  disabled={sendingCode}
+                  style={{ color: "var(--brand-text)" }}
+                  type="button"
+                  variant="link"
+                  onClick={handleSendVerificationCode}
+                >
+                  {t("profile.confirmNumber")}
+                </Button>
+              )}
             </div>
           </div>
         </Section>
@@ -679,6 +777,7 @@ export default function ProfileUserForm() {
         footer={
           <Button
             className="text-muted-foreground hover:text-foreground/70"
+            disabled={verifyingCode}
             variant="ghost"
             onClick={handleVerifyPhone}
           >
@@ -696,7 +795,9 @@ export default function ProfileUserForm() {
               {t("profile.enterVerificationCode")}
             </Label>
             <Input
+              autoComplete="one-time-code"
               id="verificationCode"
+              inputMode="numeric"
               placeholder="123456"
               type="text"
               value={verificationCode}

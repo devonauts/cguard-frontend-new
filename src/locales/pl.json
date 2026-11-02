@@ -9441,7 +9441,12 @@
       "nuevoCorreoCom": "nowy@adres.pl",
       "perfilActualizadoCorrectamente": "Profil został zaktualizowany.",
       "esElNombreConEl": "To imię i nazwisko widzi reszta zespołu.",
-      "verificado": "Zweryfikowany"
+      "verificado": "Zweryfikowany",
+      "codigoNoEntregado": "Nie udało się wysłać kodu na ten numer. Sprawdź numer lub spróbuj później.",
+      "codigoDePrueba": "W tym środowisku nie ma dostawcy SMS. Kod testowy: {{code}}",
+      "escribeTuNumeroAntes": "Wpisz swój numer komórkowy, zanim go potwierdzisz.",
+      "correoNoValido": "Ten adres e-mail jest nieprawidłowy.",
+      "esTuCorreoActual": "To już jest twój adres e-mail."
     },
     "Routes": {
       "turnoDia": "Zmiana dzienna",

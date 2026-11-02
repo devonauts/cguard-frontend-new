@@ -8885,7 +8885,12 @@
       "nuevoCorreoCom": "nuevo@correo.com",
       "perfilActualizadoCorrectamente": "Perfil actualizado correctamente.",
       "esElNombreConEl": "Es el nombre con el que te ve el resto del equipo.",
-      "verificado": "Verificado"
+      "verificado": "Verificado",
+      "codigoNoEntregado": "No pudimos enviar el código a ese número. Revisa el número o inténtalo más tarde.",
+      "codigoDePrueba": "No hay proveedor de SMS en este entorno. Código de prueba: {{code}}",
+      "escribeTuNumeroAntes": "Escribe tu número móvil antes de confirmarlo.",
+      "correoNoValido": "Ese correo no es válido.",
+      "esTuCorreoActual": "Ese ya es tu correo."
     },
     "Routes": {
       "turnoDia": "Turno día",
