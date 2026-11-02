@@ -50,6 +50,7 @@ import {
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { clientService } from "@/lib/api/clientService";
 import { localeActual } from "@/lib/localeActual";
+import { soloFechaCivil, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /* ── Formas que devuelve el servidor ─────────────────────────────────────── */
 
@@ -163,6 +164,10 @@ const fmtDT = (iso?: string | null) => {
   return Number.isNaN(d.getTime())
     ? "—"
     : d.toLocaleString(localeActual(), {
+        // The company's clock, like the document library on the same screen;
+        // the browser's zone made «Enviada», «caduca» and the history differ
+        // from it (QA re-test R2-3).
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -170,7 +175,8 @@ const fmtDT = (iso?: string | null) => {
         minute: "2-digit",
       });
 };
-const fmtDay = (iso?: string | null) => (iso ? String(iso).slice(0, 10) : null);
+/** The folder period is made of civil days: shown in the user's format, not ISO (R2-4). */
+const fmtDay = (iso?: string | null) => (iso ? soloFechaCivil(iso, {}, "") || null : null);
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 

@@ -35,7 +35,7 @@ import {
 import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { soloFechaCivil, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { resolveApiBase } from "@/lib/apiBase";
 
 const API = (
@@ -65,6 +65,17 @@ interface Payload {
   decidedByName?: string | null;
   decisionAt?: string | null;
 }
+
+/** Day and time to the minute, in the company's zone. */
+const fechaCorta = (iso: string) =>
+  new Date(iso).toLocaleString(localeActual(), {
+    timeZone: zonaDeLaEmpresa(),
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 const bytes = (b: number) => {
   if (!b) return "0 B";
@@ -359,9 +370,10 @@ export default function DocumentPacketPublicView() {
     );
   }
 
+  // Civil days in the reader's format, not ISO (QA re-test R2-4).
   const periodo = [data.periodStart, data.periodEnd]
     .filter(Boolean)
-    .map((d) => String(d).slice(0, 10))
+    .map((d) => soloFechaCivil(String(d), {}, String(d).slice(0, 10)))
     .join(" → ");
 
   /* ── Pantalla de clave ── */
@@ -458,9 +470,11 @@ export default function DocumentPacketPublicView() {
         )}
         {data.expiresAt && (
           <p className="mt-3 text-xs" style={{ color: "var(--ink-faint)" }}>
+            {/* Without seconds; and a date ending in «p. m.» followed by the
+                sentence's own period read «p. m..» (QA re-test R2-5). */}
             {t("ui.DocumentPacketPublic.expiresOn", {
-              fecha: new Date(data.expiresAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() }),
-            })}
+              fecha: fechaCorta(data.expiresAt),
+            }).replace(/\.\.$/, ".")}
           </p>
         )}
       </Tarjeta>
@@ -528,9 +542,7 @@ export default function DocumentPacketPublicView() {
               </div>
               <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {data.decidedByName ? `${data.decidedByName} · ` : ""}
-                {data.decisionAt
-                  ? new Date(data.decisionAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
-                  : ""}
+                {data.decisionAt ? fechaCorta(data.decisionAt) : ""}
               </div>
             </div>
           </div>
