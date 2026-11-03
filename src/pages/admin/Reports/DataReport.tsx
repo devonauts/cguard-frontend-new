@@ -67,6 +67,9 @@ export interface ReportColumn<T> {
   /** Free text (a title, a location): in files, the hidden names of the
    *  report's rows that appear in it are replaced by their aliases. */
   freeText?: boolean;
+  /** A place as text (incident «Ubicación»): site and station names are
+   *  hidden in it in files even while other free text keeps them. */
+  placeText?: boolean;
   /** Characters shown before «…» — on screen and in files, AFTER masking. */
   maxChars?: number;
 }
@@ -223,7 +226,7 @@ export default function DataReport<T>({
      can name a post that has no row in the file. Fails open to the rows'
      own names. */
   const nombresDeLaEmpresa = useRef<Promise<CompanyNames | null> | null>(null);
-  const conTextoLibre = columnsProp.some((c) => c.freeText);
+  const conTextoLibre = columnsProp.some((c) => c.freeText || c.placeText);
   const pedirNombresDeLaEmpresa = (): Promise<CompanyNames | null> => {
     if (!conTextoLibre || !(ocultos.clientName || ocultos.siteName || ocultos.stationName))
       return Promise.resolve(null);
