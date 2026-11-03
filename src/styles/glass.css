@@ -674,27 +674,26 @@ input[type="password"]:not(:placeholder-shown) {
   z-index: 40;
   pointer-events: none;
   opacity: 0;
+  /* Apagado = OCULTO, no sólo transparente: un velo a pantalla completa con
+     `backdrop-filter` a opacidad 0 seguía vivo para el compositor y un fallo de
+     repintado lo dejaba pegado. `visibility` cambia al final del fundido. */
+  visibility: hidden;
   background: oklch(0 0 0 / 0.14);
   backdrop-filter: blur(7px) saturate(115%);
   -webkit-backdrop-filter: blur(7px) saturate(115%);
-  transition: opacity 0.16s var(--ease);
+  transition: opacity 0.16s var(--ease), visibility 0s linear 0.16s;
 }
 .dark .cg-scrim-menu { background: oklch(0 0 0 / 0.34); }
 
-/* Y ahora, QUIÉN lo enciende. Va después de la base para que se lea en orden:
-   apagado por defecto, encendido mientras haya algo flotando abierto. */
-/* Los tres primeros cubren lo que porta Radix. El cuarto, los menús escritos A
-   MANO: el del usuario en la cabecera es un `div` posicionado y ningún selector
-   de Radix lo alcanzaba; basta con que lleven la marca `.cg-flotante`.
-
-   OJO — el comentario va AQUÍ, no entre las comas. Un comentario dentro de una
-   lista de selectores hace que el parser descarte la regla ENTERA en silencio:
-   el velo se quedaba apagado y no había forma de verlo desde el CSSOM porque la
-   regla sencillamente no existía. */
-body:has([data-radix-popper-content-wrapper] [role="menu"]) .cg-scrim-menu,
-body:has([data-radix-popper-content-wrapper] [role="listbox"]) .cg-scrim-menu,
-body:has([data-radix-popper-content-wrapper] [data-radix-popover-content]) .cg-scrim-menu,
-body:has(.cg-flotante) .cg-scrim-menu { opacity: 1; }
+/* Y ahora, QUIÉN lo enciende: `components/layout/VeloDeMenus.tsx`, que marca
+   `data-abierto` mientras haya un menú flotante abierto. Antes era una regla
+   `body:has(...)`, y su recálculo al CERRARSE el menú no es fiable en todos los
+   motores: el velo se quedaba puesto tapando la página. */
+.cg-scrim-menu[data-abierto] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.16s var(--ease), visibility 0s;
+}
 
 /* Sin desenfoque cuando el sistema lo pide: `backdrop-filter` es justo lo que
    marea a quien activa esa preferencia. Se conserva el oscurecido, que sigue

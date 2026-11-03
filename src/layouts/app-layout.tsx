@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import VeloDeMenus from "@/components/layout/VeloDeMenus";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import ElegirEspacio from "@/components/sucursales/ElegirEspacio";
@@ -433,7 +434,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           ENTERO —cabecera y menú incluidos— y desenfocaba también el menú que
           venía a destacar. Dentro, con z-40, queda por debajo de la cabecera
           (z-50) y por encima del contenido, que es exactamente lo que hace falta. */}
-        <div aria-hidden className="cg-scrim-menu" />
+        <VeloDeMenus />
         {/* La cabecera RESERVA la muesca con `padding-top` y crece lo mismo en
           `height`: con `box-sizing: border-box` su caja de contenido sigue
           midiendo 3,5rem exactas, así que los botones no se mueven ni un píxel.

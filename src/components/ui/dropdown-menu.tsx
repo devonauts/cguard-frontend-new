@@ -117,10 +117,17 @@ DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
+>(({ className, children, checked, onSelect, ...props }, ref) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     checked={checked}
+    /* Una casilla es SELECCIÓN MÚLTIPLE: marcar una no cierra el menú, para
+       poder marcar varias seguidas. Quien quiera cerrarlo al elegir lo hace en
+       su propio `onSelect`; se cierra al pulsar fuera o con Escape. */
+    onSelect={(e) => {
+      onSelect?.(e);
+      if (!onSelect) e.preventDefault();
+    }}
     className={cn(
       itemBase,
       "pl-8 pr-2.5 data-[state=checked]:text-[color:var(--brand-text)]",
