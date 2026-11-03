@@ -21997,6 +21997,122 @@
           "evento": "Voyez ce qui se passe et gardez la preuve en deux clics",
           "despacho": "Voir, vérifier et agir depuis le même CRM"
         }
+      },
+      "multimarca": {
+        "marcas": {
+          "a": {
+            "nombre": "Andes Seguridad",
+            "corto": "Andes",
+            "legal": "Andes Seguridad Cía. Ltda."
+          },
+          "b": {
+            "nombre": "Costa Vigilancia",
+            "corto": "Costa",
+            "legal": "Costa Vigilancia S.A."
+          }
+        },
+        "clientesN": {
+          "altamira": "Grupo Altamira",
+          "naviera": "Naviera Pacífico",
+          "clinica": "Clínica San Rafael",
+          "bodega": "Bodega Sur Logística"
+        },
+        "personas": {
+          "diego": "Diego Paredes",
+          "carla": "Carla Ríos",
+          "luis": "Luis Vera"
+        },
+        "escenas": {
+          "marcas": "Deux marques",
+          "guardia": "Un agent",
+          "factura": "La facture",
+          "admin": "Admin de marque",
+          "horas": "Heures entre marques"
+        },
+        "principal": "Principale",
+        "idFiscal": "N° fiscal",
+        "serie": "Série",
+        "cupos": "2 marques incluses dans le module",
+        "todas": "Toutes les marques",
+        "todasCorto": "Toutes",
+        "clientes": "Clients",
+        "selector": "Avec quelle marque travaillez-vous ?",
+        "registradoEn": "Inscrit chez {{marca}}",
+        "semana": "Sa semaine",
+        "enSitiosDe": "Sur les sites {{marca}}",
+        "rolDe": "Bulletin de paie : {{marca}}",
+        "aCobrar": "Heures à facturer à {{marca}}",
+        "factura": "Facture",
+        "para": "À",
+        "lineas": {
+          "puesto": "Poste 24 h · Puerto Norte",
+          "ronda": "Rondes motorisées"
+        },
+        "impuesto": "Taxe 15 %",
+        "total": "Total",
+        "series": "À chaque marque sa série",
+        "asunto": "Facture {{n}} · novembre",
+        "sinRastro": "Ni le nom ni le logo de {{marca}}",
+        "adminDeMarca": "Admin de marque",
+        "enSusSitios": "Personnel sur ses sites",
+        "editaSuMarca": "Modifie le logo et les textes de sa marque",
+        "compraIntento": "Acheter une autre marque…",
+        "compraBloqueada": "C'est l'admin de l'entreprise qui le fait",
+        "informe": "Heures entre marques · octobre",
+        "filtroPone": "Personnel de :",
+        "cols": {
+          "persona": "Personne",
+          "horas": "Heures",
+          "tarifa": "Tarif",
+          "importe": "Montant",
+          "corto": {
+            "horas": "H",
+            "tarifa": "$/h",
+            "importe": "Mont."
+          }
+        },
+        "porPar": "Par paire de marques",
+        "par": "{{de}} sur les sites {{en}}",
+        "netoT": "Solde d'octobre",
+        "neto": "{{de}} paie {{a}}",
+        "archivo": "heures-entre-marques.xlsx",
+        "pasos": {
+          "principal": "Vous activez Multimarca : votre entreprise est la marque principale",
+          "segunda": "Vous créez Costa Vigilancia : sa raison sociale, son n° fiscal, sa série",
+          "logos": "Chaque marque avec son logo et ses couleurs",
+          "clientes": "Chaque client appartient à une seule marque",
+          "elige": "Vous choisissez Costa : tout le CRM se limite à elle",
+          "registrado": "Diego est inscrit chez Andes",
+          "semanaA": "Du lundi au mercredi : Torre Altamira, site Andes",
+          "semanaB": "Jeudi et vendredi : Puerto Norte, site Costa",
+          "unMapa": "Un seul planning, une seule carte, un seul centre",
+          "nomina": "Andes paie son bulletin : c'est là qu'il est inscrit",
+          "cruce": "Ses heures chez Costa vont au rapport entre marques",
+          "factura": "Vous facturez Naviera Pacífico, client de Costa",
+          "identidad": "Elle porte le logo, la raison sociale et le n° fiscal de Costa",
+          "serie": "Numérotée dans la série propre de Costa",
+          "correo": "L'e-mail arrive au nom de Costa",
+          "limpio": "Aucune trace d'Andes sur le document",
+          "entraAdmin": "Lucía, administratrice de Costa, se connecte",
+          "susClientes": "Elle ne voit que les clients de Costa",
+          "suPersonal": "Et tout le personnel de ses sites, y compris celui d'Andes",
+          "noCompra": "Acheter des marques ou toucher à Andes : admin de l'entreprise seulement",
+          "suLogo": "Elle peut modifier le logo, les couleurs et les textes de Costa",
+          "abre": "Vous ouvrez Heures entre marques : octobre, heures validées seulement",
+          "horas": "Qui a travaillé sur les sites de l'autre marque, et combien d'heures",
+          "tarifa": "Chaque paire de marques avec son tarif horaire",
+          "importe": "Heures fois tarif : le montant de chaque paire",
+          "filtro": "Vous filtrez par la marque qui fournit le personnel",
+          "neto": "Et le solde net entre les deux marques",
+          "excel": "Vous l'exportez vers Excel pour le régler"
+        },
+        "resultado": {
+          "marcas": "Deux entreprises, chacune son identité, un seul CRM",
+          "guardia": "Le même agent couvre les deux marques",
+          "factura": "Chaque marque facture avec sa propre identité",
+          "admin": "Un bureau par marque, une seule exploitation",
+          "horas": "Ce qu'une marque doit à l'autre, réglé"
+        }
       }
     },
     "pausa": {

@@ -21997,6 +21997,122 @@
           "evento": "Ves lo que pasa y guardas la prueba en dos clics",
           "despacho": "Ves, verificas y actúas desde el mismo CRM"
         }
+      },
+      "multimarca": {
+        "marcas": {
+          "a": {
+            "nombre": "Andes Seguridad",
+            "corto": "Andes",
+            "legal": "Andes Seguridad Cía. Ltda."
+          },
+          "b": {
+            "nombre": "Costa Vigilancia",
+            "corto": "Costa",
+            "legal": "Costa Vigilancia S.A."
+          }
+        },
+        "clientesN": {
+          "altamira": "Grupo Altamira",
+          "naviera": "Naviera Pacífico",
+          "clinica": "Clínica San Rafael",
+          "bodega": "Bodega Sur Logística"
+        },
+        "personas": {
+          "diego": "Diego Paredes",
+          "carla": "Carla Ríos",
+          "luis": "Luis Vera"
+        },
+        "escenas": {
+          "marcas": "Dos marcas",
+          "guardia": "Un guardia",
+          "factura": "La factura",
+          "admin": "Admin de marca",
+          "horas": "Horas entre marcas"
+        },
+        "principal": "Principal",
+        "idFiscal": "Id. fiscal",
+        "serie": "Serie",
+        "cupos": "2 marcas incluidas en el módulo",
+        "todas": "Todas las marcas",
+        "todasCorto": "Todas",
+        "clientes": "Clientes",
+        "selector": "¿Con qué marca trabajas?",
+        "registradoEn": "Registrado en {{marca}}",
+        "semana": "Su semana",
+        "enSitiosDe": "En sitios de {{marca}}",
+        "rolDe": "Rol de pago: {{marca}}",
+        "aCobrar": "Horas a cobrarle a {{marca}}",
+        "factura": "Factura",
+        "para": "Para",
+        "lineas": {
+          "puesto": "Puesto 24 h · Puerto Norte",
+          "ronda": "Rondas motorizadas"
+        },
+        "impuesto": "Impuesto 15 %",
+        "total": "Total",
+        "series": "Cada marca, su serie",
+        "asunto": "Factura {{n}} · noviembre",
+        "sinRastro": "Sin el nombre ni el logo de {{marca}}",
+        "adminDeMarca": "Admin de marca",
+        "enSusSitios": "Personal en sus sitios",
+        "editaSuMarca": "Edita el logo y los textos de su marca",
+        "compraIntento": "Comprar otra marca…",
+        "compraBloqueada": "Eso lo hace el admin de la empresa",
+        "informe": "Horas entre marcas · octubre",
+        "filtroPone": "Pone el personal:",
+        "cols": {
+          "persona": "Persona",
+          "horas": "Horas",
+          "tarifa": "Tarifa",
+          "importe": "Importe",
+          "corto": {
+            "horas": "H",
+            "tarifa": "$/h",
+            "importe": "Imp."
+          }
+        },
+        "porPar": "Por par de marcas",
+        "par": "{{de}} en sitios de {{en}}",
+        "netoT": "Saldo de octubre",
+        "neto": "{{de}} le paga a {{a}}",
+        "archivo": "horas-entre-marcas.xlsx",
+        "pasos": {
+          "principal": "Activas Multimarca: tu empresa es la marca principal",
+          "segunda": "Creas Costa Vigilancia: su razón social, su id. fiscal, su serie",
+          "logos": "Cada marca con su logo y sus colores",
+          "clientes": "Cada cliente pertenece a una sola marca",
+          "elige": "Eliges Costa: todo el CRM se acota a ella",
+          "registrado": "Diego está registrado en Andes",
+          "semanaA": "Lunes a miércoles: Torre Altamira, de Andes",
+          "semanaB": "Jueves y viernes: Puerto Norte, de Costa",
+          "unMapa": "Un solo horario, un solo mapa, una sola central",
+          "nomina": "Su rol lo paga Andes, la marca donde se registró",
+          "cruce": "Sus horas en Costa van al informe entre marcas",
+          "factura": "Facturas a Naviera Pacífico, cliente de Costa",
+          "identidad": "Sale con el logo, la razón social y el id. fiscal de Costa",
+          "serie": "Numerada en la serie propia de Costa",
+          "correo": "El correo llega a nombre de Costa",
+          "limpio": "Ni rastro de Andes en el documento",
+          "entraAdmin": "Lucía, administradora de Costa, entra",
+          "susClientes": "Sólo ve los clientes de Costa",
+          "suPersonal": "Y a todo el personal de sus sitios, también el de Andes",
+          "noCompra": "Comprar marcas o tocar Andes: sólo el admin de la empresa",
+          "suLogo": "Sí puede editar el logo, los colores y los textos de Costa",
+          "abre": "Abres Horas entre marcas: octubre, sólo horas aprobadas",
+          "horas": "Quién trabajó en sitios de la otra marca, y cuántas horas",
+          "tarifa": "Cada par de marcas con su tarifa por hora",
+          "importe": "Horas por tarifa: el importe de cada par",
+          "filtro": "Filtras por la marca que pone el personal",
+          "neto": "Y el saldo neto entre las dos marcas",
+          "excel": "Lo exportas a Excel para liquidarlo"
+        },
+        "resultado": {
+          "marcas": "Dos empresas con su identidad, un solo CRM",
+          "guardia": "El mismo guardia cubre las dos marcas",
+          "factura": "Cada marca factura con su propia identidad",
+          "admin": "Una oficina por marca, una sola operación",
+          "horas": "Lo que una marca le debe a la otra, cuadrado"
+        }
       }
     },
     "pausa": {

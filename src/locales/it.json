@@ -21997,6 +21997,122 @@
           "evento": "Vedi cosa succede e salvi la prova in due clic",
           "despacho": "Vedi, verifichi e agisci dallo stesso CRM"
         }
+      },
+      "multimarca": {
+        "marcas": {
+          "a": {
+            "nombre": "Andes Seguridad",
+            "corto": "Andes",
+            "legal": "Andes Seguridad Cía. Ltda."
+          },
+          "b": {
+            "nombre": "Costa Vigilancia",
+            "corto": "Costa",
+            "legal": "Costa Vigilancia S.A."
+          }
+        },
+        "clientesN": {
+          "altamira": "Grupo Altamira",
+          "naviera": "Naviera Pacífico",
+          "clinica": "Clínica San Rafael",
+          "bodega": "Bodega Sur Logística"
+        },
+        "personas": {
+          "diego": "Diego Paredes",
+          "carla": "Carla Ríos",
+          "luis": "Luis Vera"
+        },
+        "escenas": {
+          "marcas": "Due marchi",
+          "guardia": "Una guardia",
+          "factura": "La fattura",
+          "admin": "Admin del marchio",
+          "horas": "Ore tra marchi"
+        },
+        "principal": "Principale",
+        "idFiscal": "P. IVA",
+        "serie": "Serie",
+        "cupos": "2 marchi inclusi nel modulo",
+        "todas": "Tutti i marchi",
+        "todasCorto": "Tutti",
+        "clientes": "Clienti",
+        "selector": "Con quale marchio lavori?",
+        "registradoEn": "Assunto da {{marca}}",
+        "semana": "La sua settimana",
+        "enSitiosDe": "Nei siti di {{marca}}",
+        "rolDe": "Busta paga: {{marca}}",
+        "aCobrar": "Ore da fatturare a {{marca}}",
+        "factura": "Fattura",
+        "para": "A",
+        "lineas": {
+          "puesto": "Postazione 24 h · Puerto Norte",
+          "ronda": "Ronde motorizzate"
+        },
+        "impuesto": "Imposta 15 %",
+        "total": "Totale",
+        "series": "Ogni marchio, la sua serie",
+        "asunto": "Fattura {{n}} · novembre",
+        "sinRastro": "Né il nome né il logo di {{marca}}",
+        "adminDeMarca": "Admin del marchio",
+        "enSusSitios": "Personale nei suoi siti",
+        "editaSuMarca": "Modifica logo e testi del suo marchio",
+        "compraIntento": "Acquista un altro marchio…",
+        "compraBloqueada": "Lo fa l'admin dell'azienda",
+        "informe": "Ore tra marchi · ottobre",
+        "filtroPone": "Personale di:",
+        "cols": {
+          "persona": "Persona",
+          "horas": "Ore",
+          "tarifa": "Tariffa",
+          "importe": "Importo",
+          "corto": {
+            "horas": "Ore",
+            "tarifa": "$/h",
+            "importe": "Imp."
+          }
+        },
+        "porPar": "Per coppia di marchi",
+        "par": "{{de}} nei siti di {{en}}",
+        "netoT": "Saldo di ottobre",
+        "neto": "{{de}} paga {{a}}",
+        "archivo": "ore-tra-marchi.xlsx",
+        "pasos": {
+          "principal": "Attivi Multimarca: la tua azienda è il marchio principale",
+          "segunda": "Crei Costa Vigilancia: ragione sociale, P. IVA e serie propri",
+          "logos": "Ogni marchio con il suo logo e i suoi colori",
+          "clientes": "Ogni cliente appartiene a un solo marchio",
+          "elige": "Scegli Costa: tutto il CRM si limita a lei",
+          "registrado": "Diego è assunto da Andes",
+          "semanaA": "Da lunedì a mercoledì: Torre Altamira, sito Andes",
+          "semanaB": "Giovedì e venerdì: Puerto Norte, sito Costa",
+          "unMapa": "Un solo turno, una sola mappa, una sola centrale",
+          "nomina": "La busta paga la paga Andes: lì è assunto",
+          "cruce": "Le sue ore da Costa vanno nel report tra marchi",
+          "factura": "Fatturi Naviera Pacífico, cliente di Costa",
+          "identidad": "Esce con logo, ragione sociale e P. IVA di Costa",
+          "serie": "Numerata nella serie propria di Costa",
+          "correo": "L'e-mail arriva a nome di Costa",
+          "limpio": "Nessuna traccia di Andes nel documento",
+          "entraAdmin": "Lucía, amministratrice di Costa, entra",
+          "susClientes": "Vede solo i clienti di Costa",
+          "suPersonal": "E tutto il personale dei suoi siti, anche quello di Andes",
+          "noCompra": "Comprare marchi o toccare Andes: solo l'admin dell'azienda",
+          "suLogo": "Può modificare logo, colori e testi di Costa",
+          "abre": "Apri Ore tra marchi: ottobre, solo ore approvate",
+          "horas": "Chi ha lavorato nei siti dell'altro marchio, e quante ore",
+          "tarifa": "Ogni coppia di marchi con la sua tariffa oraria",
+          "importe": "Ore per tariffa: l'importo di ogni coppia",
+          "filtro": "Filtri per il marchio che fornisce il personale",
+          "neto": "E il saldo netto tra i due marchi",
+          "excel": "Lo esporti in Excel per regolarlo"
+        },
+        "resultado": {
+          "marcas": "Due aziende con la loro identità, un solo CRM",
+          "guardia": "La stessa guardia copre entrambi i marchi",
+          "factura": "Ogni marchio fattura con la propria identità",
+          "admin": "Un ufficio per marchio, un'unica operatività",
+          "horas": "Quanto un marchio deve all'altro, quadrato"
+        }
       }
     },
     "pausa": {
