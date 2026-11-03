@@ -68,3 +68,25 @@ export function mergeByIncidentPriority(
     (a, b) => b.count - a.count,
   );
 }
+
+const CRM_FORM: Record<IncidentPriority, "alta" | "media" | "baja"> = {
+  critical: "alta",
+  high: "alta",
+  medium: "media",
+  low: "baja",
+};
+
+/**
+ * The value the incident edit form can hold (`alta` / `media` / `baja`).
+ * Its schema accepts only those three, so an incident stored as `critical`,
+ * `high` or `medium` (alarm and video escalations, the guard app) opened with
+ * an empty priority and could not be saved until someone picked one — 46 live
+ * incidents in production on 2026-11-02 (QA r7 data). Unknown → `null`.
+ */
+export function incidentPriorityForForm(
+  raw: unknown,
+): "alta" | "media" | "baja" | null {
+  const k = incidentPriorityKey(raw);
+
+  return k ? CRM_FORM[k] : null;
+}

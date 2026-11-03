@@ -41,6 +41,8 @@ export interface DispatchRow {
   incidentTypeId?: string;
   dateTime?: string;
   incidentAt?: string;
+  /** Always set; the only date of incidents filed from the customer portal. */
+  date?: string;
   status?: string;
   content?: string;
   description?: string;
