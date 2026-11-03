@@ -14,21 +14,14 @@ export const routeCreateSchema = z
     }),
     description: z.string().optional(),
     continuous: z.boolean().default(true),
-    dateFrom: z.string().min(1, {
-      error: msj("validation.route.dateFromRequired", "Desde requerido"),
-    }),
-    dateTo: z.string().min(1, {
-      error: msj("validation.route.dateToRequired", "Hasta requerido"),
-    }),
-    startTime: z.string().min(1, {
-      error: msj(
-        "validation.route.startTimeRequired",
-        "Hora de inicio requerida",
-      ),
-    }),
-    endTime: z.string().min(1, {
-      error: msj("validation.route.endTimeRequired", "Hora de fin requerida"),
-    }),
+    dateFrom: z.string().optional().default(""),
+    dateTo: z.string().optional().default(""),
+    /* La ventana fija desde/hasta + inicio/fin ya no se pide: una ruta sale a
+       su hora (o al empezar el turno) y termina cuando termina —eso lo dan la
+       optimización y el tráfico—. Se conservan para las rutas viejas que la
+       tienen. */
+    startTime: z.string().optional().default(""),
+    endTime: z.string().optional().default(""),
     days: z
       .array(z.enum(["sun", "mon", "tue", "wed", "thu", "fri", "sat"]))
       .min(1, {
@@ -37,9 +30,10 @@ export const routeCreateSchema = z
           "Seleccionar al menos un día",
         ),
       }),
-    supervisorId: z.string().min(1, {
-      error: msj("validation.route.supervisorRequired", "Supervisor requerido"),
-    }),
+    /** La ruta es del PUESTO: la hace quien esté de turno en él ese día. */
+    supervisorPositionId: z.string().optional().default(""),
+    /** Rutas viejas: asignadas a una persona concreta. */
+    supervisorId: z.string().optional().default(""),
     siteIds: z.array(z.string()).min(1, {
       error: msj(
         "validation.route.sitesRequired",
@@ -58,7 +52,14 @@ export const routeCreateSchema = z
     autoCheckInByGeofence: z.boolean().default(false),
     forceCheckInBeforeStart: z.boolean().default(false),
   })
-  .refine((v) => new Date(v.dateFrom) <= new Date(v.dateTo), {
+  .refine((v) => !!(v.supervisorPositionId || v.supervisorId), {
+    path: ["supervisorPositionId"],
+    error: () =>
+      i18n.t("validation.route.puestoRequired", {
+        defaultValue: "Elige el puesto de supervisión que hace la ruta",
+      }),
+  })
+  .refine((v) => !v.dateFrom || !v.dateTo || new Date(v.dateFrom) <= new Date(v.dateTo), {
     path: ["dateTo"],
     // El esquema se construye al CARGAR el módulo, antes de que el idioma esté
     // listo: un `message` fijo con t() congelaría el texto en el idioma de

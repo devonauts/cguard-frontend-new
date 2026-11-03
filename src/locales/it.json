@@ -12397,7 +12397,14 @@
       "salidaPrevista": "Partenza prevista",
       "salidaPrevistaHint": "Base per calcolare «in ritardo» e «a rischio». Vuoto: si usa l'ora reale di inizio.",
       "aunNoHayVehiculos": "Non ci sono ancora veicoli registrati.",
-      "agregarVehiculo": "Aggiungi veicolo"
+      "agregarVehiculo": "Aggiungi veicolo",
+      "puestoDeSupervision": "Posto di supervisione",
+      "elegirPuesto": "Scegli il posto",
+      "puestoHint": "La fa chi è di turno in quel posto quel giorno, senza assegnarla. Se sono in due di turno, la prende il primo che la inizia.",
+      "sinPuestos": "Non ci sono ancora posti di supervisione. Creali in Supervisori › Posti.",
+      "supervisorFijoHint": "Questo percorso è stato creato per una persona. Scegli un posto perché lo faccia chi è di turno.",
+      "horaDeSalida": "Ora di partenza",
+      "horaDeSalidaHint": "Facoltativa. Senza ora, parte all'inizio del turno. Nessuna ora di fine: la danno percorso, ottimizzazione e traffico."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A velocità di traffico urbano, senza contare la sosta a ogni fermata",
@@ -21178,7 +21185,8 @@
       "sitesRequired": "Seleziona almeno un posto di servizio",
       "startTimeRequired": "Ora di inizio obbligatoria",
       "supervisorRequired": "Supervisore obbligatorio",
-      "vehicleRequired": "Veicolo obbligatorio"
+      "vehicleRequired": "Veicolo obbligatorio",
+      "puestoRequired": "Scegli il posto di supervisione che fa il percorso"
     },
     "vehicle": {
       "colorRequired": "Colore obbligatorio",

@@ -11839,7 +11839,14 @@
       "salidaPrevista": "Scheduled departure",
       "salidaPrevistaHint": "Used to calculate “delayed” and “at risk”. Empty: the actual start time is used.",
       "aunNoHayVehiculos": "No vehicles registered yet.",
-      "agregarVehiculo": "Add vehicle"
+      "agregarVehiculo": "Add vehicle",
+      "puestoDeSupervision": "Supervision post",
+      "elegirPuesto": "Choose post",
+      "puestoHint": "Whoever is on duty in that post that day runs it, no assigning needed. If two are on duty, the first to start it takes it.",
+      "sinPuestos": "There are no supervision posts yet. Create them in Supervisors › Posts.",
+      "supervisorFijoHint": "This route was created for one person. Choose a post so whoever is on duty runs it.",
+      "horaDeSalida": "Departure time",
+      "horaDeSalidaHint": "Optional. Without a time, it starts when the shift starts. No end time: the route, the optimization and traffic decide it."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "At city traffic speed, not counting time spent at each stop",
@@ -21177,7 +21184,8 @@
       "sitesRequired": "Select at least one site",
       "startTimeRequired": "Start time is required",
       "supervisorRequired": "Supervisor is required",
-      "vehicleRequired": "Vehicle is required"
+      "vehicleRequired": "Vehicle is required",
+      "puestoRequired": "Choose the supervision post that runs the route"
     },
     "vehicle": {
       "colorRequired": "Color is required",

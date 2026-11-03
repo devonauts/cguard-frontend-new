@@ -12481,7 +12481,14 @@
       "salidaPrevista": "Planowany wyjazd",
       "salidaPrevistaHint": "Podstawa do wyliczenia „opóźniona” i „zagrożona”. Puste: używana jest rzeczywista godzina rozpoczęcia.",
       "aunNoHayVehiculos": "Nie zarejestrowano jeszcze pojazdów.",
-      "agregarVehiculo": "Dodaj pojazd"
+      "agregarVehiculo": "Dodaj pojazd",
+      "puestoDeSupervision": "Posterunek nadzoru",
+      "elegirPuesto": "Wybierz posterunek",
+      "puestoHint": "Robi ją ten, kto ma tego dnia dyżur na tym posterunku, bez przydzielania. Jeśli dyżur mają dwie osoby, bierze ją ta, która zacznie pierwsza.",
+      "sinPuestos": "Nie ma jeszcze posterunków nadzoru. Utwórz je w Nadzór › Posterunki.",
+      "supervisorFijoHint": "Tę trasę utworzono dla jednej osoby. Wybierz posterunek, aby robił ją ten, kto ma dyżur.",
+      "horaDeSalida": "Godzina wyjazdu",
+      "horaDeSalidaHint": "Opcjonalnie. Bez godziny wyjazd następuje z początkiem zmiany. Bez godziny końca: wynika z trasy, optymalizacji i ruchu."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",
@@ -21505,7 +21512,8 @@
       "sitesRequired": "Proszę wybrać co najmniej jeden posterunek",
       "startTimeRequired": "Godzina rozpoczęcia jest wymagana",
       "supervisorRequired": "Nadzorca jest wymagany",
-      "vehicleRequired": "Pojazd jest wymagany"
+      "vehicleRequired": "Pojazd jest wymagany",
+      "puestoRequired": "Wybierz posterunek nadzoru, który robi trasę"
     },
     "vehicle": {
       "colorRequired": "Kolor jest wymagany",

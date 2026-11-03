@@ -11839,7 +11839,14 @@
       "salidaPrevista": "Saída prevista",
       "salidaPrevistaHint": "Base para calcular “atrasada” e “em risco”. Vazio: usa-se a hora real de início.",
       "aunNoHayVehiculos": "Ainda não há veículos cadastrados.",
-      "agregarVehiculo": "Adicionar veículo"
+      "agregarVehiculo": "Adicionar veículo",
+      "puestoDeSupervision": "Posto de supervisão",
+      "elegirPuesto": "Escolher posto",
+      "puestoHint": "Quem estiver de plantão nesse posto no dia faz a rota, sem atribuir. Se houver dois de plantão, fica com quem começar primeiro.",
+      "sinPuestos": "Ainda não há postos de supervisão. Crie-os em Supervisores › Postos.",
+      "supervisorFijoHint": "Esta rota foi criada para uma pessoa. Escolha um posto para que quem estiver de plantão a faça.",
+      "horaDeSalida": "Hora de saída",
+      "horaDeSalidaHint": "Opcional. Sem hora, sai ao começar o turno. Não se pede hora de fim: dependem do percurso, da otimização e do trânsito."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Em velocidade de trânsito urbano, sem contar a permanência em cada parada",
@@ -21178,7 +21185,8 @@
       "sitesRequired": "Selecione ao menos um posto de segurança",
       "startTimeRequired": "A hora de início é obrigatória",
       "supervisorRequired": "Supervisor obrigatório",
-      "vehicleRequired": "Veículo obrigatório"
+      "vehicleRequired": "Veículo obrigatório",
+      "puestoRequired": "Escolha o posto de supervisão que faz a rota"
     },
     "vehicle": {
       "colorRequired": "Cor obrigatória",

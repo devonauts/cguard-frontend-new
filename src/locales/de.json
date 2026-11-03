@@ -12397,7 +12397,14 @@
       "salidaPrevista": "Geplante Abfahrt",
       "salidaPrevistaHint": "Grundlage für „verspätet“ und „gefährdet“. Leer: Es wird die tatsächliche Startzeit verwendet.",
       "aunNoHayVehiculos": "Noch keine Fahrzeuge erfasst.",
-      "agregarVehiculo": "Fahrzeug hinzufügen"
+      "agregarVehiculo": "Fahrzeug hinzufügen",
+      "puestoDeSupervision": "Aufsichtsposten",
+      "elegirPuesto": "Posten wählen",
+      "puestoHint": "Wer an diesem Tag auf dem Posten Dienst hat, fährt sie – ohne Zuweisung. Haben zwei Dienst, übernimmt sie, wer zuerst startet.",
+      "sinPuestos": "Noch keine Aufsichtsposten. Lege sie unter Aufsicht › Posten an.",
+      "supervisorFijoHint": "Diese Route wurde für eine Person angelegt. Wähle einen Posten, damit sie fährt, wer Dienst hat.",
+      "horaDeSalida": "Abfahrtszeit",
+      "horaDeSalidaHint": "Optional. Ohne Uhrzeit startet sie mit Dienstbeginn. Keine Endzeit: die ergeben Strecke, Optimierung und Verkehr."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Bei Stadtverkehrstempo, ohne die Standzeit an jedem Halt",
@@ -21177,7 +21184,8 @@
       "sitesRequired": "Wählen Sie mindestens ein Objekt",
       "startTimeRequired": "Startzeit erforderlich",
       "supervisorRequired": "Einsatzleiter erforderlich",
-      "vehicleRequired": "Fahrzeug erforderlich"
+      "vehicleRequired": "Fahrzeug erforderlich",
+      "puestoRequired": "Wähle den Aufsichtsposten, der die Route fährt"
     },
     "vehicle": {
       "colorRequired": "Farbe erforderlich",

@@ -12397,7 +12397,14 @@
       "salidaPrevista": "Gepland vertrek",
       "salidaPrevistaHint": "Basis voor het berekenen van “vertraagd” en “risico”. Leeg: de werkelijke starttijd wordt gebruikt.",
       "aunNoHayVehiculos": "Nog geen voertuigen geregistreerd.",
-      "agregarVehiculo": "Voertuig toevoegen"
+      "agregarVehiculo": "Voertuig toevoegen",
+      "puestoDeSupervision": "Toezichtspost",
+      "elegirPuesto": "Post kiezen",
+      "puestoHint": "Wie die dag op die post dienst heeft, rijdt hem, zonder toewijzen. Hebben er twee dienst, dan neemt wie het eerst start hem.",
+      "sinPuestos": "Er zijn nog geen toezichtsposten. Maak ze aan bij Toezicht › Posten.",
+      "supervisorFijoHint": "Deze route is voor één persoon gemaakt. Kies een post zodat wie dienst heeft hem rijdt.",
+      "horaDeSalida": "Vertrektijd",
+      "horaDeSalidaHint": "Optioneel. Zonder tijd start hij bij het begin van de dienst. Geen eindtijd: die volgen uit route, optimalisatie en verkeer."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Op stadssnelheid, exclusief de tijd bij elke halte",
@@ -21177,7 +21184,8 @@
       "sitesRequired": "Kies minstens één beveiligingspost",
       "startTimeRequired": "Starttijd is verplicht",
       "supervisorRequired": "Supervisor is verplicht",
-      "vehicleRequired": "Voertuig is verplicht"
+      "vehicleRequired": "Voertuig is verplicht",
+      "puestoRequired": "Kies de toezichtspost die de route rijdt"
     },
     "vehicle": {
       "colorRequired": "Kleur is verplicht",

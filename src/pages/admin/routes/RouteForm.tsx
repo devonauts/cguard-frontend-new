@@ -43,6 +43,11 @@ import {
 } from "@/lib/validators/route-create.schema";
 import { Button } from "@/components/ui/button";
 import telemetryService from "@/lib/api/telemetryService";
+import {
+  supervisorPositionService,
+  type SupervisorPosition,
+} from "@/lib/api/supervisorPositionService";
+import tenantService from "@/services/tenant.service";
 import routeInspectionTemplateService from "@/lib/api/routeInspectionTemplateService";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -235,6 +240,7 @@ export default function RouteForm({
       endTime: initialData?.endTime || "23:59",
       days: initialData?.days || [],
       supervisorId: initialSupervisorId ? String(initialSupervisorId) : "",
+      supervisorPositionId: initialData?.supervisorPositionId || "",
       siteIds: initialData?.siteIds || [],
       vehicleId: initialData?.vehicleId ? String(initialData?.vehicleId) : "",
       syncHitsBetweenGuards: initialData?.syncHitsBetweenGuards || false,
@@ -333,6 +339,71 @@ export default function RouteForm({
   const [optimizada, setOptimizada] = useState<boolean>(
     Boolean(initialData?.optimized),
   );
+
+  /* ── LA RUTA ES DEL PUESTO DE SUPERVISIÓN ──────────────────────────────
+     La hace quien esté de turno en ese puesto el día que toca (ver
+     services/routeByPosition en el servidor); si hay dos, la toma el primero
+     que la empiece. Ya no se elige a una persona. */
+  const [puestos, setPuestos] = useState<SupervisorPosition[]>([]);
+
+  useEffect(() => {
+    let vivo = true;
+
+    supervisorPositionService
+      .list()
+      .then((r) => {
+        if (vivo) setPuestos((r?.rows || []).filter((p) => p.isActive !== false));
+      })
+      .catch(() => {
+        /* sin puestos: el selector queda vacío y lo dice */
+      });
+
+    return () => {
+      vivo = false;
+    };
+  }, []);
+
+  /** Los días que trabaja el puesto: sus días de la semana si es de oficina, todos si rota. */
+  const diasDelPuesto = (p?: SupervisorPosition | null): string[] => {
+    const seq = p?.rotationStyle?.weekly
+      ? String(p.rotationStyle.sequence || "").toUpperCase()
+      : "";
+
+    if (seq.length === 7) {
+      const lunesPrimero = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+      return lunesPrimero.filter((_d, i) => seq[i] !== "L");
+    }
+
+    return [...ALL_DAYS];
+  };
+
+  /* ── LA RUTA SALE DE LA OFICINA ─────────────────────────────────────────
+     Una ruta nueva empieza, por defecto, en la dirección de la empresa
+     (Ajustes › Empresa). Se puede cambiar o quitar como cualquier origen. */
+  useEffect(() => {
+    if (mode !== "create" || origen) return;
+    const tenantId = localStorage.getItem("tenantId") || "";
+
+    if (!tenantId) return;
+    let vivo = true;
+
+    Promise.resolve(tenantService.findById(tenantId))
+      .then((res: any) => {
+        const e = res?.data ?? res;
+        const etiqueta = [e?.address, e?.city].filter(Boolean).join(", ");
+        const oficina = leerExtremo(e?.latitude, e?.longitude, etiqueta);
+
+        if (vivo && oficina) setOrigen((actual) => actual || oficina);
+      })
+      .catch(() => {
+        /* sin dirección de la empresa: empieza en la primera parada */
+      });
+
+    return () => {
+      vivo = false;
+    };
+  }, [mode]);
   const [optimizadaEn, setOptimizadaEn] = useState<string | null>(
     initialData?.optimizedAt ?? null,
   );
@@ -1318,7 +1389,9 @@ export default function RouteForm({
       setSubmitting(true);
       const payload = {
         ...data,
-        assignedGuard: data.supervisorId,
+        supervisorPositionId: data.supervisorPositionId || null,
+        // Del puesto, o (rutas viejas) de la persona que ya tenía.
+        assignedGuard: data.supervisorPositionId ? null : data.supervisorId || null,
         windowStart:
           data.dateFrom && data.startTime
             ? // La ventana de la ruta es hora del puesto, no del portátil.
@@ -1473,58 +1546,23 @@ export default function RouteForm({
             </Label>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <FormField
-              control={form.control}
-              name="dateFrom"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("comun.desde")}</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="startTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("comun.horaDeInicio")}</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="endTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("comun.horaDeFin")}</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dateTo"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("comun.hasta")}</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="md:col-span-2">
+              <CampoKit
+                hint={t(
+                  "ui.RouteForm.horaDeSalidaHint",
+                  "Opcional. Sin hora, sale al empezar el turno. La hora de fin no se pide: la dan el recorrido, la optimización y el tráfico.",
+                )}
+                htmlFor="scheduledStartTime"
+                label={t("ui.RouteForm.horaDeSalida", "Hora de salida")}
+              >
+                <Input
+                  id="scheduledStartTime"
+                  type="time"
+                  value={scheduledStartTime}
+                  onChange={(e) => setScheduledStartTime(e.target.value)}
+                />
+              </CampoKit>
+            </div>
             <FormField
               control={form.control}
               name="days"
@@ -1576,6 +1614,62 @@ export default function RouteForm({
           contentClassName="space-y-6"
           title={t("ui.RouteForm.asignacion", "Asignación")}
         >
+          <FormField
+            control={form.control}
+            name="supervisorPositionId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("ui.RouteForm.puestoDeSupervision", "Puesto de supervisión")}
+                </FormLabel>
+                <Select
+                  value={field.value || ""}
+                  onValueChange={(v) => {
+                    field.onChange(v);
+                    // La hace el puesto: ya no hay una persona fija.
+                    form.setValue("supervisorId", "");
+                    if (!(form.getValues("days") || []).length)
+                      form.setValue(
+                        "days",
+                        diasDelPuesto(puestos.find((p) => p.id === v)) as any,
+                      );
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={t("ui.RouteForm.elegirPuesto", "Elegir puesto")}
+                    >
+                      {puestos.find((p) => p.id === field.value)?.name}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {puestos.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {puestos.length
+                    ? t(
+                        "ui.RouteForm.puestoHint",
+                        "La hace quien esté de turno en ese puesto ese día, sin asignarla. Si hay dos de turno, la toma el primero que la empiece.",
+                      )
+                    : t(
+                        "ui.RouteForm.sinPuestos",
+                        "Aún no hay puestos de supervisión. Créalos en Supervisores › Puestos.",
+                      )}
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Rutas viejas, asignadas a una persona: se ve a quién, hasta que
+              se le elija un puesto. */}
+          {initialSupervisorId && !form.watch("supervisorPositionId") ? (
+            <div className="space-y-1">
           <FormField
             control={form.control}
             name="supervisorId"
@@ -1678,6 +1772,14 @@ export default function RouteForm({
               </FormItem>
             )}
           />
+              <p className="text-xs text-muted-foreground">
+                {t(
+                  "ui.RouteForm.supervisorFijoHint",
+                  "Esta ruta se creó para una persona. Elige un puesto para que la haga quien esté de turno.",
+                )}
+              </p>
+            </div>
+          ) : null}
 
           <FormField
             control={form.control}
@@ -2154,21 +2256,6 @@ export default function RouteForm({
           )}
         >
           <div className="grid gap-4 md:grid-cols-2">
-            <CampoKit
-              hint={t(
-                "ui.RouteForm.salidaPrevistaHint",
-                "Base para calcular «retrasada» y «en riesgo». Vacío: se usa la hora real de inicio.",
-              )}
-              htmlFor="scheduledStartTime"
-              label={t("ui.RouteForm.salidaPrevista", "Salida prevista")}
-            >
-              <Input
-                id="scheduledStartTime"
-                type="time"
-                value={scheduledStartTime}
-                onChange={(e) => setScheduledStartTime(e.target.value)}
-              />
-            </CampoKit>
             <CampoKit
               hint={t(
                 "ui.RouteForm.plantillaHint",
