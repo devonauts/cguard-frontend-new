@@ -461,6 +461,12 @@ export default function VigiaWidget() {
       document.removeEventListener("pointerdown", alAcercarse, { capture: true });
       cancelAnimationFrame(slideFrame);
       if (temporizador) clearTimeout(temporizador);
+      // The timer or the slide that would have ended the step-aside is gone:
+      // end it here. Otherwise a chat opened within 420 ms of a scroll (a
+      // «Preguntar a VigIA» button, the notifications list) left the bubble
+      // translucent and click-through after the chat closed, until the next
+      // scroll somewhere.
+      setDesplazando(false);
     };
   }, [open]);
 
