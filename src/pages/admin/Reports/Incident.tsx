@@ -97,8 +97,9 @@ const columns: ReportColumn<Incident>[] = [
     label: "Ubicación",
     labelKey: "reports.col.incident.location",
     value: (r) => r.location || "—",
-    // The guard app fills it with the post name.
-    freeText: true,
+    // The guard app fills it with the post name: a place, so the post is
+    // hidden here like in the «Puesto/Estación» column.
+    placeText: true,
   },
   {
     key: "desc",
