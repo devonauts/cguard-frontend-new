@@ -11719,7 +11719,9 @@
       "comoTrabajanLosSupervisores": "Como trabalham os supervisores?",
       "cadaSupervisorSigueElCiclo": "Cada supervisor segue o ciclo do posto. Ao atribuí-lo você escolhe o dia em que começa, e com isso fica de dia ou de noite.",
       "aquiEsDosDiasDeSupervisor": "aqui é «2 dias de {{primero}}, 2 dias de {{segundo}}, 2 de folga».",
-      "sinDescansoElSupervisorTrabaja": "Sem folga: o supervisor trabalha todos os dias."
+      "sinDescansoElSupervisorTrabaja": "Sem folga: o supervisor trabalha todos os dias.",
+      "lunesAViernes": "Segunda a sexta",
+      "horarioDeOficina": "Horário de escritório"
     },
     "RouteForm": {
       "ningunDiaElegido": "Nenhum dia selecionado",
@@ -21063,10 +21065,12 @@
       "12hDay": "Diurno (12h)",
       "12hNight": "Noturno (12h)",
       "24h": "24h (dia/noite)",
-      "custom": "Personalizado"
+      "custom": "Personalizado",
+      "office": "Horário de escritório (segunda a sexta)"
     },
     "cobertura24h": "Dia {{s}}–{{e}} · noite {{e}}–{{s}}",
-    "soloDia": "Só de dia · {{s}}–{{e}}"
+    "soloDia": "Só de dia · {{s}}–{{e}}",
+    "coberturaSemanal": "{{dias}} · {{s}}–{{e}}"
   },
   "tasks": {
     "approvals": {

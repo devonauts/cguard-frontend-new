@@ -54,7 +54,13 @@ const SCHEDULE_TYPES = [
   }),
   conEtiqueta("supervisorPositions.scheduleType.24h", { value: "24h" }),
   conEtiqueta("supervisorPositions.scheduleType.custom", { value: "custom" }),
+  /* Form preset only: saved as `custom` with the weekly «Lunes a viernes»
+     pattern and office hours. See `elegirTipo`. */
+  conEtiqueta("supervisorPositions.scheduleType.office", { value: "office" }),
 ];
+
+/** Default office hours when «Horario de oficina» is picked (editable). */
+const HORAS_DE_OFICINA = { startTime: "08:00", endTime: "17:00" };
 
 interface StationOption {
   id: string;
@@ -116,6 +122,15 @@ function coberturaDe(p: SupervisorPosition): string {
       e: p.endTime,
     });
   }
+
+  // A weekly pattern (office hours) works those weekdays, no night half.
+  if (p.rotationStyle?.weekly && p.startTime && p.endTime)
+    return i18n.t("supervisorPositions.coberturaSemanal", {
+      defaultValue: "{{dias}} · {{s}}–{{e}}",
+      dias: p.rotationStyle.name,
+      s: p.startTime,
+      e: p.endTime,
+    });
 
   return (
     SCHEDULE_TYPES.find((x) => x.value === p.scheduleType)?.label ??
@@ -290,7 +305,8 @@ export default function SupervisorPositionsPage() {
       await supervisorPositionService.create({
         name: form.name.trim(),
         zone: form.zone.trim() || undefined,
-        scheduleType: form.scheduleType,
+        // «Horario de oficina» is a preset: the weekly pattern carries the days.
+        scheduleType: form.scheduleType === "office" ? "custom" : form.scheduleType,
         rotationStyleId: form.rotationStyleId || undefined,
         startTime: form.startTime || undefined,
         endTime: form.endTime || undefined,
@@ -810,9 +826,17 @@ export default function SupervisorPositionsPage() {
             <select
               className="cg-input cg-focus h-9 w-full px-2 text-sm"
               value={form.scheduleType}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, scheduleType: e.target.value }))
-              }
+              onChange={(e) => {
+                const scheduleType = e.target.value;
+
+                setForm((f) =>
+                  scheduleType === "office"
+                    ? { ...f, scheduleType, ...HORAS_DE_OFICINA, rotationStyleId: "" }
+                    : f.scheduleType === "office"
+                      ? { ...f, scheduleType, rotationStyleId: "" }
+                      : { ...f, scheduleType },
+                );
+              }}
             >
               {SCHEDULE_TYPES.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -826,8 +850,9 @@ export default function SupervisorPositionsPage() {
               {t("ui.SupervisorPositions.rotacion", "Rotación")}
             </label>
             <RotationStyleSelect
+              lunesAViernes={form.scheduleType === "office"}
               persona="supervisor"
-              scheduleType={form.scheduleType}
+              scheduleType={form.scheduleType === "office" ? "custom" : form.scheduleType}
               value={form.rotationStyleId}
               onChange={(id) => setForm((f) => ({ ...f, rotationStyleId: id }))}
             />

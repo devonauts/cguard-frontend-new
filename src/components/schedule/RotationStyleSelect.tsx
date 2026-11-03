@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { esArchivado, urlDePatrones, vigentesYElegidos } from "@/lib/patronesVigentes";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -10,8 +10,13 @@ import {
   nombreCortoDeDia,
   nombreDeEstilo,
   nombreSemanal,
+  secuenciaSemanal,
   type Traductor,
 } from "@/lib/secuenciaDeRotacion";
+
+/** Office hours: Monday to Friday, anchored to the calendar. */
+const DIAS_DE_OFICINA = ["mon", "tue", "wed", "thu", "fri"];
+const SECUENCIA_DE_OFICINA = secuenciaSemanal(DIAS_DE_OFICINA);
 
 export type RotationStyle = {
   id: string;
@@ -136,6 +141,7 @@ export default function RotationStyleSelect({
   etiquetaPrimerBloque,
   etiquetaSegundoBloque,
   persona = "vigilante",
+  lunesAViernes = false,
 }: {
   scheduleType: string; // '24h' | '12h-day' | '12h-night' | 'custom'
   value: string; // rotationStyleId
@@ -151,6 +157,12 @@ export default function RotationStyleSelect({
   /** Who follows this cycle. Supervisor positions reuse this picker, and its
    *  texts used to ask «¿Cómo trabajan los dos vigilantes?» there. */
   persona?: "vigilante" | "supervisor";
+  /**
+   * Horario de oficina: elige (o crea) el patrón semanal «Lunes a viernes» en
+   * cuanto cargan los patrones. Lo pide el formulario del puesto de supervisor
+   * al elegir «Horario de oficina».
+   */
+  lunesAViernes?: boolean;
 }) {
   const { t } = useTranslation();
   const tenantId = localStorage.getItem("tenantId") || "";
@@ -378,6 +390,67 @@ export default function RotationStyleSelect({
       setCreating(false);
     }
   };
+
+  /* ── HORARIO DE OFICINA: LUNES A VIERNES ──────────────────────────────
+     Un puesto de oficina (un supervisor que trabaja de lunes a viernes) no
+     rota: trabaja esos días de la semana. El motor lo sabe hacer —el patrón
+     semanal existe y el generador de supervisores lo lee— pero aquí sólo se
+     podían elegir ciclos, y una empresa sin ese patrón no tenía forma de
+     llegar a él. Se reutiliza si ya existe; si no, se crea al vuelo. */
+  const deOficina = useMemo(
+    () =>
+      styles.find(
+        (x) =>
+          esSemanal(x) &&
+          String(x.sequence || "").toUpperCase() === SECUENCIA_DE_OFICINA,
+      ) || null,
+    [styles],
+  );
+  const elegirLunesAViernes = async () => {
+    if (deOficina) {
+      onChange(deOficina.id);
+
+      return;
+    }
+    setCreating(true);
+    try {
+      const res: any = await ApiService.post(
+        `/tenant/${tenantId}/rotation-style`,
+        { data: { weekly: true, weekdays: DIAS_DE_OFICINA } },
+      );
+      const creado = res?.data ?? res;
+
+      if (creado?.id) {
+        setStyles((prev) =>
+          prev.some((p) => p.id === creado.id) ? prev : [...prev, creado],
+        );
+        onChange(creado.id);
+      }
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t(
+            "ui.RotationStyleSelect.errorCrearPatron",
+            "No se pudo crear el patrón",
+          ),
+      );
+    } finally {
+      setCreating(false);
+    }
+  };
+  const pidioOficina = useRef(false);
+
+  useEffect(() => {
+    if (!lunesAViernes) {
+      pidioOficina.current = false;
+
+      return;
+    }
+    if (loading || creating || pidioOficina.current) return;
+    if (deOficina && value === deOficina.id) return;
+    pidioOficina.current = true;
+    void elegirLunesAViernes();
+  }, [lunesAViernes, loading, deOficina, value]);
 
   // Surface the selected style object to the parent (for derived counts).
   useEffect(() => {
@@ -697,6 +770,24 @@ export default function RotationStyleSelect({
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {!dosTramos && !deOficina && (
+            <button
+              className="rounded-xl border border-border/40 px-3 py-2 text-left transition-all hover:border-primary/40 disabled:opacity-50"
+              disabled={creating}
+              type="button"
+              onClick={() => void elegirLunesAViernes()}
+            >
+              <span className="text-xs font-semibold text-foreground">
+                {t("ui.RotationStyleSelect.lunesAViernes", "Lunes a viernes")}
+              </span>
+              <div className="text-[10px] text-muted-foreground">
+                {t(
+                  "ui.RotationStyleSelect.horarioDeOficina",
+                  "Horario de oficina",
+                )}
+              </div>
+            </button>
+          )}
           {fijos && (
             <button
               className={`rounded-xl border px-3 py-2 text-left transition-all disabled:opacity-50 ${sinDescansos && value === sinDescansos.id ? "border-primary bg-primary/10" : "border-border/40 hover:border-primary/40"}`}

@@ -37,6 +37,9 @@ export interface SupervisorPosition {
     dayShifts: number;
     nightShifts: number;
     restDays: number;
+    /** Weekly style («Lunes a viernes»): `sequence` is 7 letters, Monday first. */
+    weekly?: boolean;
+    sequence?: string | null;
   } | null;
   startTime: string | null;
   endTime: string | null;

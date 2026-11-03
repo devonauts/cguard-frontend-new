@@ -12277,7 +12277,9 @@
       "comoTrabajanLosSupervisores": "Hoe werken de supervisors?",
       "cadaSupervisorSigueElCiclo": "Elke supervisor volgt de cyclus van de post. Bij het toewijzen kies je de startdag, en daarmee staat hij op dag- of nachtdienst.",
       "aquiEsDosDiasDeSupervisor": "betekent hier „2 dagen {{primero}}, 2 dagen {{segundo}}, 2 vrij”.",
-      "sinDescansoElSupervisorTrabaja": "Zonder rustdag: de supervisor werkt elke dag."
+      "sinDescansoElSupervisorTrabaja": "Zonder rustdag: de supervisor werkt elke dag.",
+      "lunesAViernes": "Maandag t/m vrijdag",
+      "horarioDeOficina": "Kantooruren"
     },
     "RouteForm": {
       "ningunDiaElegido": "Geen dagen geselecteerd",
@@ -21062,10 +21064,12 @@
       "12hDay": "Dag (12h)",
       "12hNight": "Nacht (12h)",
       "24h": "24h (dag/nacht)",
-      "custom": "Aangepast"
+      "custom": "Aangepast",
+      "office": "Kantooruren (maandag t/m vrijdag)"
     },
     "cobertura24h": "Dag {{s}}–{{e}} · nacht {{e}}–{{s}}",
-    "soloDia": "Alleen overdag · {{s}}–{{e}}"
+    "soloDia": "Alleen overdag · {{s}}–{{e}}",
+    "coberturaSemanal": "{{dias}} · {{s}}–{{e}}"
   },
   "tasks": {
     "approvals": {

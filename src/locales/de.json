@@ -12277,7 +12277,9 @@
       "comoTrabajanLosSupervisores": "Wie arbeiten die Einsatzleiter?",
       "cadaSupervisorSigueElCiclo": "Jede Einsatzleitung folgt dem Zyklus des Postens. Bei der Zuteilung wählst du den Starttag, und damit liegt sie im Tag- oder Nachtdienst.",
       "aquiEsDosDiasDeSupervisor": "bedeutet hier „2 Tage {{primero}}, 2 Tage {{segundo}}, 2 frei“.",
-      "sinDescansoElSupervisorTrabaja": "Ohne Ruhetag: Die Einsatzleitung arbeitet jeden Tag."
+      "sinDescansoElSupervisorTrabaja": "Ohne Ruhetag: Die Einsatzleitung arbeitet jeden Tag.",
+      "lunesAViernes": "Montag bis Freitag",
+      "horarioDeOficina": "Bürozeiten"
     },
     "RouteForm": {
       "ningunDiaElegido": "Keine Tage ausgewählt",
@@ -21062,10 +21064,12 @@
       "12hDay": "Tagdienst (12 h)",
       "12hNight": "Nachtdienst (12 h)",
       "24h": "24 h (Tag/Nacht)",
-      "custom": "Individuell"
+      "custom": "Individuell",
+      "office": "Bürozeiten (Montag bis Freitag)"
     },
     "cobertura24h": "Tag {{s}}–{{e}} · Nacht {{e}}–{{s}}",
-    "soloDia": "Nur tagsüber · {{s}}–{{e}}"
+    "soloDia": "Nur tagsüber · {{s}}–{{e}}",
+    "coberturaSemanal": "{{dias}} · {{s}}–{{e}}"
   },
   "tasks": {
     "approvals": {

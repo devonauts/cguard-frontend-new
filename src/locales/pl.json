@@ -12361,7 +12361,9 @@
       "comoTrabajanLosSupervisores": "Jak pracują nadzorcy?",
       "cadaSupervisorSigueElCiclo": "Każdy nadzorca podąża za cyklem stanowiska. Przy przypisaniu wybierasz dzień startu, i to ustawia go na dzień lub noc.",
       "aquiEsDosDiasDeSupervisor": "oznacza tutaj „2 dni {{primero}}, 2 dni {{segundo}}, 2 wolne”.",
-      "sinDescansoElSupervisorTrabaja": "Bez dnia wolnego: nadzorca pracuje codziennie."
+      "sinDescansoElSupervisorTrabaja": "Bez dnia wolnego: nadzorca pracuje codziennie.",
+      "lunesAViernes": "Poniedziałek–piątek",
+      "horarioDeOficina": "Godziny biurowe"
     },
     "RouteForm": {
       "ningunDiaElegido": "Nie wybrano dni",
@@ -21390,10 +21392,12 @@
       "12hDay": "Dzienna (12 h)",
       "12hNight": "Nocna (12 h)",
       "24h": "24 h (dzień/noc)",
-      "custom": "Własny"
+      "custom": "Własny",
+      "office": "Godziny biurowe (poniedziałek–piątek)"
     },
     "cobertura24h": "Dzień {{s}}–{{e}} · noc {{e}}–{{s}}",
-    "soloDia": "Tylko w dzień · {{s}}–{{e}}"
+    "soloDia": "Tylko w dzień · {{s}}–{{e}}",
+    "coberturaSemanal": "{{dias}} · {{s}}–{{e}}"
   },
   "tasks": {
     "approvals": {
