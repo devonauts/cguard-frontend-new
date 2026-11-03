@@ -1,5 +1,7 @@
 import type { CommentAttachment } from "./types";
 
+export { uploadErrorText } from "./uploadError";
+
 import api from "@/lib/api";
 import i18n from "@/i18n";
 
@@ -9,23 +11,6 @@ import i18n from "@/i18n";
  * the server answered 403 every time and the comment went out without it.
  */
 export const COMMENT_FILE_STORAGE = "incidentImageUrl";
-
-/** A readable reason out of whatever the upload threw (Error, api error, text). */
-export function uploadErrorText(err: unknown): string {
-  if (!err) return "";
-  if (typeof err === "string") return err;
-  const e = err as { message?: unknown; data?: { message?: unknown } };
-
-  if (
-    typeof e.message === "string" &&
-    e.message &&
-    !e.message.includes("[object Object]")
-  )
-    return e.message;
-  if (e.data && typeof e.data.message === "string") return e.data.message;
-
-  return "";
-}
 
 /**
  * Uploads the file and returns what the comment stores: a link and a name.

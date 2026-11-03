@@ -362,7 +362,8 @@ export default function GuardLicenses({
   };
 
   // «Descargar» on the card and in the details: the license PDF (it carries
-  // both images). Where there is no PDF (supervisors) the image opens instead.
+  // both images), for guards and supervisors alike. If the PDF cannot be
+  // made, the image opens instead.
   const downloadRow = async (row: GuardLicense) => {
     try {
       const blob = await api.download(row.id);
@@ -393,7 +394,7 @@ export default function GuardLicenses({
       message: t("guards.licenses.confirmDelete", {
         count,
         defaultValue:
-          "¿Eliminar {{count}} licencia(s)? Esta acción no se puede deshacer.",
+          "¿Eliminar {{count}} licencias? Esta acción no se puede deshacer.",
       }),
       confirmText: t("actions.delete", { defaultValue: "Eliminar" }),
       tone: "danger",
@@ -658,7 +659,7 @@ export default function GuardLicenses({
                     {/* casilla de selección */}
                     <input
                       checked={selected}
-                      className="absolute right-4 top-4 h-4 w-4 cursor-pointer rounded opacity-0 transition checked:opacity-100 group-hover:opacity-100"
+                      className="absolute right-4 top-4 h-4 w-4 cursor-pointer rounded opacity-0 transition checked:opacity-100 group-hover:opacity-100 focus-within:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100"
                       style={{ accentColor: "var(--brand)" }}
                       type="checkbox"
                       onChange={(e) => onSelectOne(lic.id, e.target.checked)}
@@ -712,7 +713,7 @@ export default function GuardLicenses({
                       <StatusBadge tone={status.tone}>{status.txt}</StatusBadge>
 
                       <div
-                        className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100"
+                        className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-100"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Button

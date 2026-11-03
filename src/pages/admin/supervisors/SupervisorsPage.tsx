@@ -310,10 +310,14 @@ export default function SupervisorsPage() {
         {/* «Enviar acceso a la app» describía el efecto pero no lo que es:
             quien la busca la busca como «reenviar la invitación», que es como
             se llama en la página de vigilantes y en el correo que recibe. */}
-        <DropdownMenuItem onClick={() => resendInvite(s)}>
-          <Send className="mr-2 h-4 w-4" />{" "}
-          {t("guards.list.actions.resendInvite", "Reenviar invitación")}
-        </DropdownMenuItem>
+        {/* An activated account needs no invitation (the server refuses it):
+            a forgotten password is «Restablecer contraseña». */}
+        {!s.accountActive && (
+          <DropdownMenuItem onClick={() => resendInvite(s)}>
+            <Send className="mr-2 h-4 w-4" />{" "}
+            {t("guards.list.actions.resendInvite", "Reenviar invitación")}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={() => sendPasswordReset(s)}>
           <KeyRound className="mr-2 h-4 w-4" />{" "}
           {t("guards.list.actions.resetPassword", "Restablecer contraseña")}

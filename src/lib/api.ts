@@ -7,6 +7,11 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "sonner";
 
 import {
+  callarPorVerificacion,
+  estadoDeVerificacionConocido,
+} from "@/lib/verificacionPendiente";
+
+import {
   reportRequestOk,
   reportNetworkFailure,
 } from "@/lib/offline/networkStatus";
@@ -345,7 +350,21 @@ api.interceptors.response.use(
       return Promise.reject(apiError);
     }
 
-    const silentStatus = (cfg.toast?.silentStatuses || []).includes(apiError.status);
+    // At boot the dashboard's lists go out in parallel with /auth/me: a 403
+    // that comes back first waits (briefly) to learn whether the account is
+    // only waiting for its email to be verified (lib/verificacionPendiente).
+    if (apiError.status === 403 && !cfg.toast?.silentError) {
+      await estadoDeVerificacionConocido();
+    }
+
+    const silentStatus =
+      (cfg.toast?.silentStatuses || []).includes(apiError.status) ||
+      // Background 403s behind «Verifica tu correo» (lib/verificacionPendiente).
+      callarPorVerificacion(apiError.status, apiError.details) ||
+      // A trial waiting for approval (or rejected) has its own full screen
+      // (PruebaEnRevisionScreen); its refusals need no toast on top.
+      (apiError.status === 403 &&
+        (apiError.code === "trial_pending" || apiError.code === "trial_rejected"));
 
     if (!cfg.toast?.silentError && !silentStatus) {
       const custom = cfg.toast?.error;

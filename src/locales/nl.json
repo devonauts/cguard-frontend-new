@@ -533,7 +533,8 @@
         "checkbox": "Beveiliger mag dit contact zien",
         "descriptioninput": "Voer de omschrijving van het contact in",
         "addContact": "Contact toevoegen",
-        "mobilePlaceholder": "bijv. +593987654321"
+        "mobilePlaceholder": "bijv. +593987654321",
+        "editContact": "Contact bewerken"
       },
       "loadError": "Contacten laden mislukt"
     },
@@ -1682,7 +1683,8 @@
       },
       "status": {
         "achieved": "Behaald",
-        "notAchieved": "Niet behaald"
+        "notAchieved": "Niet behaald",
+        "notMeasured": "Nog niet gemeten"
       },
       "totalKpis": "KPI's",
       "scope": {
@@ -1692,7 +1694,9 @@
       "errors": {
         "frequencyRequired": "Kies de frequentie.",
         "descriptionRequired": "Vul de omschrijving in."
-      }
+      },
+      "emptyNone": "Nog geen KPI's",
+      "emptyHint": "Voeg de eerste KPI toe om het werk van deze maand te meten."
     },
     "assignSites": {
       "assignButton": "Post toewijzen",
@@ -1901,8 +1905,9 @@
         "typeRequired": "Kies het soort vergunning.",
         "numberRequired": "Vul het vergunningsnummer in."
       },
-      "confirmDelete": "{{count}} licentie(s) verwijderen? Dit kan niet ongedaan worden gemaakt.",
-      "subtitleSupervisor": "Documenten en pasjes van de supervisor"
+      "subtitleSupervisor": "Documenten en pasjes van de supervisor",
+      "confirmDelete_one": "Deze licentie verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "confirmDelete_other": "{{count}} licenties verwijderen? Dit kan niet ongedaan worden gemaakt."
     },
     "list": {
       "applyFilters": "Filters toepassen",
@@ -8312,7 +8317,9 @@
       "platformHint": "{{marca}} beheert deze voor alle bedrijven. Hier ziet u of ze actief zijn.",
       "statusActive": "Actief",
       "statusInactive": "Inactief",
-      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn."
+      "minLengthOutOfRange": "De minimale lengte moet een getal tussen {{min}} en {{max}} zijn.",
+      "savedCorrected": "Beleid opgeslagen, maar wat het platform vereist is gebleven zoals het was. Controleer de waarden op het scherm.",
+      "requiredByPlatform": "Vereist door het platform: kan niet worden uitgeschakeld."
     },
     "central": {
       "loadError": "De instellingen konden niet worden geladen.",
@@ -9082,7 +9089,7 @@
       "popupBlocked": "De browser blokkeerde het afdrukvenster.",
       "printFailed": "Kan het blad niet voorbereiden",
       "qrFailed": "Kan de code niet genereren",
-      "radiusPerPoint": "de straal van elk punt (bij elk punt vermeld)"
+      "verifyNotePerPoint": "Positiecontrole: bij elke scan vergelijkt het systeem de gps van de beveiliger met de positie van het punt. De scan telt alleen als hij plaatsvindt binnen de straal van elk punt (bij elk punt vermeld)."
     },
     "rondaHistory": {
       "empty": "Er zijn geen rondes vastgelegd op deze post.",
@@ -9536,7 +9543,8 @@
       "codigoDePrueba": "Er is geen sms-provider in deze omgeving. Testcode: {{code}}",
       "escribeTuNumeroAntes": "Vul je mobiele nummer in voordat je het bevestigt.",
       "correoNoValido": "Dat e-mailadres is niet geldig.",
-      "esTuCorreoActual": "Dat is al je e-mailadres."
+      "esTuCorreoActual": "Dat is al je e-mailadres.",
+      "telefonoNoValido": "Dat telefoonnummer lijkt niet geldig. Controleer het land en het nummer."
     },
     "Routes": {
       "turnoDia": "Dagdienst",
@@ -10697,7 +10705,11 @@
       "revocarAcceso": "Toegang intrekken",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Webportaal",
-      "nombreDeLaPersona": "Naam van de persoon (optioneel)"
+      "nombreDeLaPersona": "Naam van de persoon (optioneel)",
+      "correoDeInvitacion": "E-mail die de persoon ontvangt",
+      "opcionDescargaApp": "De app {{app}} downloaden",
+      "opcionBienvenida": "Welkom en activering",
+      "mismaCuenta": "In beide gevallen is het hetzelfde account (app en portaal): alleen de e-mail verschilt."
     },
     "CommandBar": {
       "datosDeDemostracion": "Demogegevens",
@@ -10829,7 +10841,8 @@
       "tipo": "Type",
       "tipoVigilanteAdicional": "Extra beveiliger",
       "tipoCotizacion": "Offerte",
-      "tipoServicio": "Dienst"
+      "tipoServicio": "Dienst",
+      "fechaPedida": "Gevraagde datum"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Kleur van de applicatie",
@@ -11490,7 +11503,8 @@
       "nocheSegunReglas": "De nacht en de toeslag komen uit de loonregels hierboven: de schatting gebruikt wat echt wordt betaald.",
       "descansoEnJornada": "Rust tussen diensten en uren achter elkaar stelt u in bij Werktijd en rust.",
       "irAJornada": "Werktijd en rust",
-      "monedaUnica": "Dit is de valuta van het hele bedrijf: ook voor loonstroken."
+      "monedaUnica": "Dit is de valuta van het hele bedrijf: ook voor loonstroken.",
+      "campoVacio": "‘{{campo}}’ is leeg: vul een getal in voordat u opslaat."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",
@@ -12916,7 +12930,17 @@
       "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…",
       "irAEstaciones": "Naar posten",
       "moverCoberturaDel": "De dekking van {{dia}} verplaatsen",
-      "moverDePuesto": "De beveiliger naar een andere post verplaatsen"
+      "moverDePuesto": "De beveiliger naar een andere post verplaatsen",
+      "estadoTurno": {
+        "planned": "Gepland",
+        "covered": "Vervanging",
+        "extension": "Verlenging",
+        "reinforcement": "Versterking",
+        "absent": "Afwezig",
+        "cancelled": "Geannuleerd",
+        "transferred_out": "Overgeplaatst",
+        "training": "Meelopen"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",
@@ -13198,7 +13222,8 @@
       "sinEstacion": "Geen station",
       "sucediendoAhoraMismo": "Nu bezig",
       "turnos": "Diensten",
-      "falta": "Afwezig"
+      "falta": "Afwezig",
+      "ausente": "Afwezig"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -13566,7 +13591,42 @@
         "language": "taal",
         "languageChoice": "gekozen taal",
         "timezone": "tijdzone",
-        "appearance": "weergave"
+        "appearance": "weergave",
+        "governmentId": "identiteitsnummer",
+        "emailVerified": "e-mail bevestigd",
+        "birthPlace": "geboorteplaats",
+        "birthDate": "geboortedatum",
+        "gender": "geslacht",
+        "maritalStatus": "burgerlijke staat",
+        "bloodType": "bloedgroep",
+        "academicInstruction": "opleiding",
+        "hiringContractDate": "contractdatum",
+        "licenseNumber": "licentienummer",
+        "postalCode": "postcode",
+        "guardCredentials": "inloggegevens",
+        "invitationToken": "uitnodigingslink",
+        "invitationTokenExpiresAt": "uitnodiging verloopt op",
+        "emailVerificationToken": "link voor e-mailbevestiging",
+        "emailVerificationTokenExpiresAt": "e-mailbevestiging verloopt op",
+        "passwordResetToken": "link om het wachtwoord te herstellen",
+        "passwordResetTokenExpiresAt": "wachtwoordherstel verloopt op",
+        "jwtTokenInvalidBefore": "sessies gesloten vóór",
+        "archivedAt": "gearchiveerd op",
+        "breaks": "pauzes",
+        "hoursWorked": "gewerkte uren",
+        "payrollStatus": "salarisstatus",
+        "payrollStatusAt": "salarisstatus sinds",
+        "totalCents": "totaal (cent)",
+        "subtotalCents": "subtotaal (cent)",
+        "taxBreakdown": "belastingspecificatie",
+        "sentAt": "verzonden op",
+        "lastMessageAt": "laatste bericht op",
+        "lastMessagePreview": "voorbeeld van het laatste bericht",
+        "latitude": "breedtegraad",
+        "longitude": "lengtegraad",
+        "startDate": "begindatum",
+        "endDate": "einddatum",
+        "number": "nummer"
       },
       "si": "ja",
       "no": "nee",
@@ -13602,10 +13662,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Aanvragen voor vakantie, ziekte en verlof van het personeel.",
       "buscarVigilanteTipoOMotivo": "Zoeken op beveiliger, soort of reden",
       "nuevaSolicitudDeTiempoLibre": "Nieuwe verlofaanvraag",
-      "tipo": "Soort*",
-      "desde": "Van*",
-      "hasta": "Tot*",
-      "motivo": "Reden*",
+      "tipo": "Soort",
+      "desde": "Van",
+      "hasta": "Tot",
+      "motivo": "Reden",
       "describeElMotivo": "Beschrijf de reden…",
       "solicitudesDeTiempoLibre": "Verlofaanvragen",
       "aprobadas": "Goedgekeurd",
@@ -13677,7 +13737,12 @@
       "rechazarTitulo": "Verlof afwijzen",
       "rechazarMensaje": "Het verlof van {{nombre}} wordt afgewezen en de persoon krijgt bericht. Je kunt de reden opgeven (optioneel).",
       "rechazarMotivo": "Reden (optioneel)",
-      "solicitudEliminada": "Aanvraag verwijderd"
+      "solicitudEliminada": "Aanvraag verwijderd",
+      "agregarSolicitud": "Aanvraag toevoegen",
+      "opcional": "optioneel",
+      "horaOpcional": "De tijd is optioneel: zonder tijd telt de hele dag.",
+      "formIntro": "Vakantie, ziekte of verlof. Zodra je het goedkeurt, worden de diensten op die dagen open plekken die iemand moet invullen.",
+      "rechazadoOk": "Verlof afgewezen. {{nombre}} is op de hoogte gebracht."
     },
     "TrackingHistory": {
       "hibrido": "Hybride",
@@ -14329,7 +14394,9 @@
       "estacionesQueCubre_one": "Gedekte posten ({{count}})",
       "estacionesQueCubre_other": "Gedekte posten ({{count}})",
       "estacionesQueCubre": "Gedekte posten ({{count}})",
-      "eliminarElPuesto": "De post ‘{{nombre}}’ verwijderen?"
+      "eliminarElPuesto": "De post ‘{{nombre}}’ verwijderen?",
+      "estacionSinNombre": "Station zonder naam",
+      "estacionEliminada": "{{nombre}} (verwijderd)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",
@@ -15274,6 +15341,7 @@
       "indicadoresDelSupervisor": "Indicatoren van de supervisor"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Als u uw account al hebt geactiveerd, meld u dan aan in de supervisor-app met uw e-mailadres en wachtwoord. Zo niet, vraag uw bedrijf dan om u een nieuwe uitnodiging te sturen.",
       "tuCuentaCon": "Je account bij",
       "creaUnaContrasenaParaTuCuenta": "Maak een wachtwoord voor je account. Je houdt toezicht op je rondes en je team via de supervisor-app.",
       "tuCuentaConEstaListaDescarga": "Je account bij <b>{{empresa}}</b> is klaar. Download de <b>supervisor-app</b> om je rondes, je team en incidentmeldingen vanaf je telefoon te beheren.",
@@ -15616,11 +15684,11 @@
       "noCodeHint": "Deze link opent direct, zonder code. Wie hem ontvangt —of doorgestuurd krijgt— komt binnen.",
       "expiresHint": "Verloopt over {{horas}} uur. U kunt hem eerder intrekken via de lijst.",
       "recipientsLabel": "E-mailontvangers",
-      "noRecipientsHint": "Deze opdrachtgever heeft geen contacten met een e-mailadres. Geef hieronder aan naar wie het moet worden verstuurd.",
+      "noRecipientsHint": "Deze opdrachtgever heeft geen contacten met een e-mailadres. Voeg er een toe onder „Contacten” om het te versturen, of maak de link zonder te versturen en deel hem zelf.",
       "sourcePortal": "portaal",
       "sourceContact": "contact",
-      "otherEmailsLabel": "Andere e-mails (door komma's gescheiden)",
-      "otherEmailsPlaceholder": "boekhouder@bedrijf.com",
+      "otherEmailsLabel": "Andere ontvangers (door komma's gescheiden)",
+      "otherEmailsPlaceholder": "gebruiker@jouwbedrijf.com",
       "messageLabel": "Bericht (optioneel)",
       "messagePlaceholder": "Bijgevoegd vindt u de documenten van deze maand ter beoordeling.",
       "requireCodeLabel": "Toegangscode vereisen",
@@ -15630,7 +15698,8 @@
       "expiry72h": "72 uur",
       "expiry7d": "7 dagen",
       "historyTitle": "Geschiedenis · {{nombre}}",
-      "historyEmpty": "Nog geen activiteit vastgelegd."
+      "historyEmpty": "Nog geen activiteit vastgelegd.",
+      "otherEmailsHint": "Alleen contacten van deze opdrachtgever of gebruikers van je bedrijf. Voeg iemand anders eerst toe als contact van de opdrachtgever, of maak de link zonder te versturen en deel hem zelf."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Deze link is verlopen",
@@ -16108,7 +16177,8 @@
       "exportadaConRechazos_many": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
       "exportadaConRechazos_other": "Loonlijst geëxporteerd zonder {{count}} urenkaarten, die niet worden uitbetaald:",
       "tarifaInvalida": "Het tarief moet groter dan nul zijn. Laat het veld leeg om het te verwijderen.",
-      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen."
+      "tarifaQuitada": "Tarief van {{nombre}} verwijderd. Genereer de periode opnieuw om het toe te passen.",
+      "tarifaSinAplicar": "Niet toegepast: genereer de periode opnieuw"
     },
     "SupervisorLicensesPage": {
       "licencias": "Licenties",
@@ -17082,7 +17152,9 @@
       "tuCuentaYaEstaActiva": "Je account bij <b>{{empresa}}</b> is al actief.",
       "invitacionYaUsada": "Deze uitnodiging is al gebruikt: je account is actief.",
       "entraEnLaApp": "Log in op de beveiligersapp met je gebruikersnaam en wachtwoord. Weet je het wachtwoord niet meer, vraag je bedrijf dan om het te resetten.",
-      "tuCuentaEstaLista": "Je account is klaar."
+      "tuCuentaEstaLista": "Je account is klaar.",
+      "invitacionNoValida": "Deze uitnodiging is niet meer geldig.",
+      "pideInvitacionNueva": "Heb je je account al aangemaakt, meld je dan aan in de bewakers-app met je gebruikersnaam en wachtwoord. Zo niet, vraag je bedrijf om een nieuwe uitnodiging."
     },
     "InspectionPreview": {
       "alerta": "Waarschuwing",
@@ -17719,7 +17791,9 @@
       "salirTituloServidor": "Er zijn niet-opgeslagen wijzigingen",
       "salirMensajeServidor": "Je laatste wijzigingen in het concept zijn nog niet op de server. Als je nu weggaat, gaan ze verloren.",
       "salirSinGuardar": "Toch weggaan",
-      "descartarMensajeCompartido": "De {{n}} ongepubliceerde wijzigingen gaan verloren, ook voor anderen die het bewerken, en het echte rooster wordt weer getoond.",
+      "descartarMensajeCompartido_one": "De ongepubliceerde wijziging gaat verloren, ook voor anderen die het bewerken, en het echte rooster wordt weer getoond.",
+      "descartarMensajeCompartido_other": "De {{count}} ongepubliceerde wijzigingen gaan verloren, ook voor anderen die het bewerken, en het echte rooster wordt weer getoond.",
+      "pasadoNoSeCambia": "Wat al gebeurd is, wordt niet vanuit het concept gewijzigd: die dag blijft zoals hij was.",
       "guardadoEnServidor": "Opgeslagen voor het hele team",
       "noSeGuardo": "Opslaan mislukt; opnieuw bij de volgende wijziging",
       "guardando": "Opslaan…",
@@ -17736,7 +17810,9 @@
       "cerrar": "Sluiten",
       "recargarConLoNuevo": "Opnieuw laden met het nieuwste en controleren",
       "publicandoDeUnaVez": "Alles in één keer publiceren…",
-      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd."
+      "publicarDetalleTodo": "Dit schrijft in het echte rooster: de meldkamer, het Rooster en de beveiligers in hun app zien het. Alles gaat in één keer: mislukt één wijziging, dan wordt niets gepubliceerd.",
+      "seQuedaronConMarcaje": "Niet toegepast omdat de dienst al een klokregistratie heeft en blijft: {{lista}}",
+      "volverAlBorrador": "Terug naar het concept"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",
@@ -18481,7 +18557,7 @@
       },
       "sinPermiso": {
         "titulo": "Uw rol kan Loonstroken niet openen",
-        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Instellingen › Rollen."
+        "desc": "Uw rol heeft de rechten voor Loonstroken niet (loonstroken en betaalprofielen bekijken en bewerken). Een beheerder kan ze toekennen via Rollen en rechten."
       }
     },
     "ClientBillingContract": {
@@ -18857,7 +18933,9 @@
         "editarLinea": "Regel bewerken",
         "minutosHint": "Gepland: {{p}} · gewerkt: {{w}}",
         "excluirDeLaFactura": "Uitsluiten van de factuur",
-        "revisionLista": "Klaar voor controle door de klant. Er wordt geen e-mail verstuurd: kopieer de link en deel die met de klant."
+        "revisionLista": "Klaar voor controle door de klant. Er wordt geen e-mail verstuurd: kopieer de link en deel die met de klant.",
+        "nuevaRevision": "Nieuwe controle door de klant",
+        "nuevaRevisionConfirm": "Er start een nieuwe ronde met een andere link: de vorige link werkt niet meer en de vorige goedkeuring telt niet meer. Openstaande bezwaren blijven staan om op te lossen."
       },
       "regla": {
         "usarElDeLaEmpresa": "Bedrijfswaarde gebruiken",
@@ -20394,7 +20472,8 @@
       "placeType": "Type ruimte en nummer",
       "postSite": "Post",
       "reason": "Reden van het bezoek",
-      "station": "Post"
+      "station": "Post",
+      "place": "Plaats"
     },
     "placeType": {
       "apartment": "Appartement",
@@ -23524,7 +23603,7 @@
     "errores": {
       "requerido": "Verplicht veld",
       "correoInvalido": "Controleer het e-mailadres: zoals naam@bedrijf.nl",
-      "celularInvalido": "Controleer het mobiele nummer: minstens 7 cijfers",
+      "celularInvalido": "Controleer het mobiele nummer: typ één nummer, met of zonder «+» en de landcode (7 tot 15 cijfers)",
       "sedesVacias": "Kies minstens één locatie, of „Hele operatie”",
       "fecha": "Controleer de datum",
       "fechaPasada": "Kies vandaag of een latere datum: eerder geeft diensten die nooit gewerkt zijn",

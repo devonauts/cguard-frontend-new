@@ -56,7 +56,7 @@ import {
 } from "@/components/kit";
 
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { soloFechaCivil, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -313,6 +313,15 @@ export default function CustomerRequests() {
                   key: "type",
                   header: t("ui.CustomerRequests.tipo", "Tipo"),
                   render: (_v: any, row: any) => requestTypeLabel(row.type),
+                },
+                {
+                  // The day the customer asked for (e.g. the extra guard's
+                  // date). The API sent it, the table never showed it (QA
+                  // re-test N3). It is a civil day stored as UTC midnight.
+                  key: "requestedDate",
+                  header: t("ui.CustomerRequests.fechaPedida", "Fecha pedida"),
+                  render: (_v: any, row: any) =>
+                    soloFechaCivil(row.requestedDate, {}, "—"),
                 },
                 {
                   key: "content",

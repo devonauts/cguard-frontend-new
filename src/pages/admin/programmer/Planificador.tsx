@@ -78,6 +78,7 @@ import {
   clave,
   copiar,
   cubrirTodo,
+  diaPasado,
   diasTrabajados,
   esSacafranco,
   etiqueta,
@@ -95,6 +96,7 @@ import {
   resumen,
   seguidos,
   turnoDe,
+  ventanaDelMotor,
   type Franja,
   type Persona,
   type Plan,
@@ -123,6 +125,7 @@ import {
   seguirEditando,
   type Conflict,
   type Editor,
+  type Publicado,
 } from "@/lib/planificador/servidor";
 import { useFrenoAlSalir } from "@/lib/useFrenoAlSalir";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -487,6 +490,16 @@ export default function Planificador() {
           baseRef.current = b;
           setBase(b);
         }
+        const hoyB = (() => {
+          const [y, m, d] = hoyEnLaEmpresa().split("-").map(Number);
+          const [by, bm, bd] = b.split("-").map(Number);
+
+          return Math.round(
+            (Date.UTC(y, m - 1, d) - Date.UTC(by, bm - 1, bd)) / 86_400_000,
+          );
+        })();
+        const semanaB = Math.max(0, Math.floor(hoyB / 7));
+        const ventana = ventanaDelMotor(semanaB * 7, hoyB, ANTES, DESPUES);
         const [ov, rot]: any[] = await Promise.all([
           ApiService.get(
             `/tenant/${tenantId}/scheduler/overview?startDate=${sumaDias(b, -ANTES)}&endDate=${sumaDias(b, 59)}`,
@@ -499,9 +512,10 @@ export default function Planificador() {
           b,
           zonaDeLaEmpresa(),
           60,
+          Date.now(),
         );
 
-        limpiar(r.plan, -ANTES, DESPUES);
+        limpiar(r.plan, ...ventana);
         pila.current = [];
         leidoRef.current = { ...r, plan: copiar(r.plan) };
         setLeido(leidoRef.current);
@@ -567,7 +581,7 @@ export default function Planificador() {
             const m = rebasePlan(llevar.original ?? r.plan, llevar.plan, r.plan);
 
             plan = m.plan;
-            limpiar(plan, -ANTES, DESPUES);
+            limpiar(plan, ...ventana);
             choques.push(...m.conflicts, ...m.dropped);
             if (!m.conflicts.length && !m.dropped.length)
               toast.message(
@@ -577,6 +591,19 @@ export default function Planificador() {
                 ),
               );
           }
+        }
+        // What already happened comes from the live read, never from a saved
+        // draft: a day that ended since the draft was saved is drawn as it was.
+        if (plan !== r.plan) {
+          const hecho = new Map(r.plan.personas.map((x) => [x.id, x.pasado]));
+
+          for (const x of plan.personas) {
+            const h = hecho.get(x.id);
+
+            if (h) x.pasado = h;
+            else delete x.pasado;
+          }
+          limpiar(plan, ...ventana);
         }
         if (choques.length)
           toast.warning(
@@ -597,15 +624,7 @@ export default function Planificador() {
         setParecido(r.comparados ? r.coincidencia : null);
         setCambios(toques);
         cambiosRef.current = toques;
-        {
-          const [y, m, d] = hoyEnLaEmpresa().split("-").map(Number);
-          const [by, bm, bd] = b.split("-").map(Number);
-          const hoy = Math.round(
-            (Date.UTC(y, m - 1, d) - Date.UTC(by, bm - 1, bd)) / 86_400_000,
-          );
-
-          setSemana(Math.max(0, Math.floor(hoy / 7)));
-        }
+        setSemana(semanaB);
         // Opening a draft writes nothing: only my own unsaved edits, or a
         // rebase that had to drop or override something, are saved (QA: every
         // open sent a PUT, which also cleared the draft's live-change marks).
@@ -634,20 +653,33 @@ export default function Planificador() {
 
   /** Todo cambio pasa por aquí: copia, aplica, limpia y guarda para deshacer. */
   const cambiar = useCallback(
-    (fn: (p: Plan) => void) => {
+    (fn: (p: Plan) => void, dia?: { persona: string; d: number }) => {
       const actual = planRef.current;
 
       if (!actual) return;
+      /* A day that already happened stays as it happened: clicking it is not
+         an edit, so nothing is saved or counted (QA 2026-11-02, N11). */
+      if (dia && diaPasado(actual, dia.persona, dia.d, hoyIdx)) {
+        toast.message(
+          t(
+            "ui.Planificador.pasadoNoSeCambia",
+            "Lo que ya pasó no se cambia desde el borrador: ese día se queda como fue.",
+          ),
+          { id: "planificador-pasado" },
+        );
+
+        return;
+      }
       pila.current.push(JSON.stringify(actual));
       if (pila.current.length > 40) pila.current.shift();
       const p = copiar(actual);
 
       fn(p);
-      limpiar(p, d0 - ANTES, d0 + DESPUES);
+      limpiar(p, ...ventanaDelMotor(d0, hoyIdx, ANTES, DESPUES));
       setPlan(p);
       setCambios((n) => n + 1);
     },
-    [d0],
+    [d0, hoyIdx, t],
   );
   const deshacer = () => {
     const s = pila.current.pop();
@@ -664,7 +696,7 @@ export default function Planificador() {
     if (!actual) return;
     const p = copiar(actual);
 
-    limpiar(p, s * 7 - ANTES, s * 7 + DESPUES);
+    limpiar(p, ...ventanaDelMotor(s * 7, hoyIdx, ANTES, DESPUES));
     setPlan(p);
   };
 
@@ -681,8 +713,13 @@ export default function Planificador() {
   // sacafrancos fijos cubren solos al cargar también es nuevo para el horario.
   const contextoDePublicacion = useCallback(
     () =>
-      contextoEnLaEmpresa(tenantId, base, hoyIdx, DESPUES, (dia, h, m) =>
-        instanteEnLaEmpresa(dia, h, m),
+      contextoEnLaEmpresa(
+        tenantId,
+        base,
+        hoyIdx,
+        DESPUES,
+        (dia, h, m) => instanteEnLaEmpresa(dia, h, m),
+        Date.now(),
       ),
     [tenantId, base, hoyIdx],
   );
@@ -869,8 +906,8 @@ export default function Planificador() {
         title: t("ui.Planificador.descartarTitulo", "Descartar el borrador"),
         message: t("ui.Planificador.descartarMensajeCompartido", {
           defaultValue:
-            "Se pierden los {{n}} cambios sin publicar, también para quien más lo esté editando, y vuelve a verse el horario real.",
-          n: borrador.pendientes,
+            "Se pierden los {{count}} cambios sin publicar, también para quien más lo esté editando, y vuelve a verse el horario real.",
+          count: borrador.pendientes,
         }),
         confirmText: t("ui.Planificador.descartar", "Descartar borrador"),
         tone: "danger",
@@ -896,12 +933,12 @@ export default function Planificador() {
   };
 
   /** Publish: save first (the server applies exactly what was reviewed), then all or nothing. */
-  const publicarAhora = async (): Promise<{ applied: number }> => {
+  const publicarAhora = async (): Promise<Publicado> => {
     await guardarAhora(true);
     const l = leidoRef.current;
     const p = planRef.current;
 
-    if (!l || !p) return { applied: 0 };
+    if (!l || !p) return { applied: 0, kept: [] };
     const pub = planificarPublicacion(l.plan, p, l.enlace, contextoDePublicacion());
 
     return publicarEnElServidor(tenantId, {
@@ -2003,7 +2040,11 @@ export default function Planificador() {
   );
 }
 
-type Cambiar = (fn: (p: Plan) => void) => void;
+/** `dia`: the click is on that person's day; a day that already happened is not edited. */
+type Cambiar = (
+  fn: (p: Plan) => void,
+  dia?: { persona: string; d: number },
+) => void;
 const CELDA = "flex min-h-[3.25rem] flex-col gap-1";
 const BTN =
   "cg-focus w-full rounded-lg px-1 py-1.5 text-xs font-bold leading-tight";
@@ -2632,11 +2673,14 @@ function FilasDePuesto({
                 const extra = c === FRANCO ? turnoDe(plan, p, d) : null;
                 const orden = [...pu.franjas, FRANCO];
                 const sig = () =>
-                  cambiar((x) => {
-                    const q = x.personas.find((y) => y.id === p.id)!;
-                    q.manual[d] =
-                      orden[(orden.indexOf(propio(q, d)) + 1) % orden.length];
-                  });
+                  cambiar(
+                    (x) => {
+                      const q = x.personas.find((y) => y.id === p.id)!;
+                      q.manual[d] =
+                        orden[(orden.indexOf(propio(q, d)) + 1) % orden.length];
+                    },
+                    { persona: p.id, d },
+                  );
 
                 const enVivoAqui =
                   marcas && base && !marcas.vacio ? marcas.persona(p.id, sumaDias(base, d)) : [];
@@ -2965,10 +3009,13 @@ function FilaDeSacafranco({
                     "Quitar esta cobertura",
                   )}
                   onClick={() =>
-                    cambiar((x) => {
-                      quitar(x, tu.k!, s.id);
-                      x.no[tu.k!] = 1;
-                    })
+                    cambiar(
+                      (x) => {
+                        quitar(x, tu.k!, s.id);
+                        x.no[tu.k!] = 1;
+                      },
+                      { persona: s.id, d },
+                    )
                   }
                 >
                   {letra(fr)}
@@ -2984,10 +3031,13 @@ function FilaDeSacafranco({
                     color: "var(--ink-soft)",
                   }}
                   onClick={() =>
-                    cambiar((x) => {
-                      const q = x.personas.find((y) => y.id === s.id)!;
-                      q.manual[d] = propio(q, d) === FRANCO ? LIBRE : FRANCO;
-                    })
+                    cambiar(
+                      (x) => {
+                        const q = x.personas.find((y) => y.id === s.id)!;
+                        q.manual[d] = propio(q, d) === FRANCO ? LIBRE : FRANCO;
+                      },
+                      { persona: s.id, d },
+                    )
                   }
                 >
                   {propio(s, d) === FRANCO
@@ -3940,7 +3990,7 @@ function HojaPublicar({
   cerrar: () => void;
   publicado: () => void;
   /** Saves, then publishes on the server: everything or nothing. */
-  publicarAhora: () => Promise<{ applied: number }>;
+  publicarAhora: () => Promise<Publicado>;
   /** Re-read the live schedule keeping the draft on top. */
   recargar: () => void;
 }) {
@@ -3985,6 +4035,15 @@ function HojaPublicar({
           n: r.applied,
         }),
       );
+      if (r.kept.length)
+        toast.warning(
+          t("ui.Planificador.seQuedaronConMarcaje", {
+            defaultValue:
+              "Esto no se aplicó porque el turno ya tiene marcaje y se queda: {{lista}}",
+            lista: r.kept.map((k) => k.text).join(" · "),
+          }),
+          { duration: 12000 },
+        );
       publicado();
     } catch (e: any) {
       if (e instanceof DraftConflict)
@@ -4048,8 +4107,9 @@ function HojaPublicar({
             </ul>
           )}
           <div className="flex flex-wrap justify-end gap-2">
+            {/* The dialog already has its «Cerrar» (×): this one says where it goes. */}
             <Button size="sm" variant="outline" onClick={cerrar}>
-              {t("ui.Planificador.cerrar", "Cerrar")}
+              {t("ui.Planificador.volverAlBorrador", "Volver al borrador")}
             </Button>
             {error.recargar && (
               <Button

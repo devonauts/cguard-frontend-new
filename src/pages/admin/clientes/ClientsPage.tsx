@@ -1955,10 +1955,11 @@ export default function ClientesPage() {
                   if (!sendAccessClient?.id) return;
                   setSendingAccess(true);
                   try {
-                    await clientService.sendClientPortalInvitation(
-                      sendAccessClient.id,
-                      sendAccessClient.email || undefined,
-                    );
+                    const enviado: any =
+                      await clientService.sendClientPortalInvitation(
+                        sendAccessClient.id,
+                        sendAccessClient.email || undefined,
+                      );
                     toast.success(
                       t("ui.ClientsPage.invitacionEnviadaA", {
                         defaultValue: "Invitación enviada a {{to}}",
@@ -1969,7 +1970,16 @@ export default function ClientesPage() {
                     setClients((prev) =>
                       prev.map((c) =>
                         c.id === sendAccessClient.id
-                          ? { ...c, onboardingStatus: "invited" }
+                          ? {
+                              ...c,
+                              // What the server says now: an active client
+                              // stays «En app» after a resend (QA re-test M1).
+                              onboardingStatus:
+                                enviado?.onboardingStatus ||
+                                (c.onboardingStatus === "active"
+                                  ? "active"
+                                  : "invited"),
+                            }
                           : c,
                       ),
                     );

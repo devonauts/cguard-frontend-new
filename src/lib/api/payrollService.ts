@@ -40,6 +40,8 @@ export interface TarjetaDeNomina {
   estado: EstadoTarjeta;
   moneda: string;
   tarifaCentavos: number | null;
+  /** The person's hourly rate NOW (tenantUsers); differs from the card's until the period is generated again. */
+  tarifaActualCentavos?: number | null;
   horas: string | number;
   horasOrdinarias: string | number;
   horasExtra: string | number;

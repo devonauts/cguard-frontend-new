@@ -146,16 +146,25 @@ export interface PublishInput {
   changes: Array<{ text: string; calls: Array<{ method: string; path: string; body?: any }> }>;
 }
 
+export interface Publicado {
+  applied: number;
+  /** Changes left out because their shift already has a clock-in (it stays). */
+  kept: Array<{ text: string; detail: string }>;
+}
+
 export async function publicarEnElServidor(
   tenantId: string,
   input: PublishInput,
-): Promise<{ applied: number }> {
+): Promise<Publicado> {
   try {
     const r = unwrap(
       await ApiService.post(ruta(tenantId, "/publish"), { data: input }),
     );
 
-    return { applied: Number(r?.applied) || 0 };
+    return {
+      applied: Number(r?.applied) || 0,
+      kept: Array.isArray(r?.kept) ? r.kept : [],
+    };
   } catch (e) {
     rethrow(e);
   }

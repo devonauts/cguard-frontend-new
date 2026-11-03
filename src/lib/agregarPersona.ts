@@ -104,8 +104,21 @@ export type ErroresDeDatos = Partial<Record<keyof Datos, ErrorDeCampo>>;
 
 export const correoValido = (s: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
-/** A phone has at least 7 digits once spaces, dashes and the + are removed. */
-export const celularValido = (s: string) => s.replace(/\D/g, "").length >= 7;
+/**
+ * ONE phone as people type it: an optional leading «+», then digits with
+ * spaces, dashes, dots or brackets; 7 to 15 digits (E.164) and at most 24
+ * characters (the account column). Two numbers pasted together
+ * («+593 99 000 0611+593 99 000 0612») are not a phone: the server cut them
+ * at 24 characters. Same rule as the server's isValidPhone.
+ */
+export const celularValido = (s: string) => {
+  const t = s.trim();
+
+  if (!t || t.length > 24 || !/^\+?[\d\s().-]+$/.test(t)) return false;
+  const digitos = t.replace(/\D/g, "").length;
+
+  return digitos >= 7 && digitos <= 15;
+};
 
 /** Who can be added without e-mail: guards and supervisors (they use the apps). */
 export const admiteSinCorreo = (tipo: TipoDePersona) => tipo !== "oficina";

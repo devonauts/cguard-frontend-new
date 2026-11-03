@@ -50,6 +50,7 @@ import {
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { clientService } from "@/lib/api/clientService";
 import { localeActual } from "@/lib/localeActual";
+import { soloFechaCivil, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /* ── Formas que devuelve el servidor ─────────────────────────────────────── */
 
@@ -156,6 +157,10 @@ const VIA: Record<string, string> = {
   link: "ui.DocumentPackets.viaLink",
 };
 
+// History details are stored as text and older rows carry raw ISO timestamps
+// («caduca 2026-11-05T05:35:03.204Z»); show them in company time like the cards.
+const ISO_DATE_TIME = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z/g;
+
 const fmtDT = (iso?: string | null) => {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -163,6 +168,10 @@ const fmtDT = (iso?: string | null) => {
   return Number.isNaN(d.getTime())
     ? "—"
     : d.toLocaleString(localeActual(), {
+        // The company's clock, like the document library on the same screen;
+        // the browser's zone made «Enviada», «caduca» and the history differ
+        // from it (QA re-test R2-3).
+        timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -170,7 +179,8 @@ const fmtDT = (iso?: string | null) => {
         minute: "2-digit",
       });
 };
-const fmtDay = (iso?: string | null) => (iso ? String(iso).slice(0, 10) : null);
+/** The folder period is made of civil days: shown in the user's format, not ISO (R2-4). */
+const fmtDay = (iso?: string | null) => (iso ? soloFechaCivil(iso, {}, "") || null : null);
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
@@ -353,8 +363,12 @@ export default function DocumentPackets({
           : t("ui.DocumentPackets.toastLinkGenerated"),
       );
       await cargar();
-    } catch {
-      toast.error(t("ui.DocumentPackets.toastLinkFailed"));
+    } catch (e: any) {
+      // The server names the addresses it refuses (only client contacts and
+      // company users may receive client documents); say that, not just «failed».
+      toast.error(
+        e?.response?.data?.message || t("ui.DocumentPackets.toastLinkFailed"),
+      );
     } finally {
       setEnviando(false);
     }
@@ -861,6 +875,15 @@ export default function DocumentPackets({
                 value={correoSuelto}
                 onChange={(e) => setCorreoSuelto(e.target.value)}
               />
+              {/* What the server accepts (clientRecipientsService): the screen
+                  used to suggest any address, e.g. an outside accountant, and
+                  the server then refused it (QA re-test N4). */}
+              <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>
+                {t(
+                  "ui.DocumentPackets.otherEmailsHint",
+                  "Solo contactos de este cliente o usuarios de tu empresa. Para otra persona, agrégala antes como contacto del cliente, o genera el enlace sin enviarlo y compártelo tú.",
+                )}
+              </p>
             </LabeledField>
 
             <LabeledField label={t("ui.DocumentPackets.messageLabel")}>
@@ -959,7 +982,7 @@ export default function DocumentPackets({
                       className="truncate text-xs"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      {e.detail}
+                      {e.detail.replace(ISO_DATE_TIME, (m) => fmtDT(m))}
                     </div>
                   )}
                 </div>

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { ApiService } from "@/services/api/apiService";
+import { marcarVerificacionPendiente } from "@/lib/verificacionPendiente";
 
 /**
  * Blocking screen shown when an authenticated tenant user has NOT verified their
@@ -25,6 +26,13 @@ export default function VerifyEmailGate() {
   const [resending, setResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [checking, setChecking] = useState(false);
+
+  // While this screen is up, background 403s do not toast «Prohibido».
+  useEffect(() => {
+    marcarVerificacionPendiente(true);
+
+    return () => marcarVerificacionPendiente(false);
+  }, []);
 
   // Cooldown countdown after a resend.
   useEffect(() => {

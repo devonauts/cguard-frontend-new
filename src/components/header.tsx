@@ -116,6 +116,7 @@ import SelectorDeMarca from "@/components/multimarca/SelectorDeMarca";
 import { useAgente } from "@/lib/agenteDeMarca";
 import { useAddonChangesLive } from "@/hooks/useAddonChangesLive";
 import { usePuede } from "@/hooks/usePuede";
+import { isPlainEscape } from "@/lib/escapeKey";
 
 type HeaderProps = {
   toggleSidebar: () => void;
@@ -416,6 +417,22 @@ export default function Header({
 
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // Esc closes the profile menu and puts focus back on its button.
+  const userButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!openUser) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (!isPlainEscape(e)) return;
+      setOpenUser(false);
+      userButtonRef.current?.focus();
+    };
+
+    document.addEventListener("keydown", onKey);
+
+    return () => document.removeEventListener("keydown", onKey);
+  }, [openUser]);
 
   // ── Densidad al desplazar ────────────────────────────────────────────────
   // El contenido se desplaza dentro de <main>, no de la ventana: el evento no
@@ -1323,6 +1340,7 @@ export default function Header({
 
           <div ref={userRef} className="relative">
             <button
+              ref={userButtonRef}
               aria-expanded={openUser}
               aria-label={t("header.account")}
               className="cg-focus cg-btn-glass flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2.5 transition-all duration-200 active:scale-[0.98]"

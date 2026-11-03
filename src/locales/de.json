@@ -533,7 +533,8 @@
         "checkbox": "Sicherheitskraft darf diesen Kontakt sehen",
         "descriptioninput": "Beschreibung des Kontakts eingeben",
         "addContact": "Kontakt hinzufügen",
-        "mobilePlaceholder": "z. B. +593987654321"
+        "mobilePlaceholder": "z. B. +593987654321",
+        "editContact": "Kontakt bearbeiten"
       },
       "loadError": "Die Kontakte konnten nicht geladen werden"
     },
@@ -1682,7 +1683,8 @@
       },
       "status": {
         "achieved": "Erreicht",
-        "notAchieved": "Nicht erreicht"
+        "notAchieved": "Nicht erreicht",
+        "notMeasured": "Noch nicht gemessen"
       },
       "totalKpis": "KPIs",
       "scope": {
@@ -1692,7 +1694,9 @@
       "errors": {
         "frequencyRequired": "Wählen Sie die Häufigkeit.",
         "descriptionRequired": "Geben Sie die Beschreibung ein."
-      }
+      },
+      "emptyNone": "Noch keine Kennzahlen",
+      "emptyHint": "Fügen Sie die erste Kennzahl hinzu, um die Arbeit dieses Monats zu messen."
     },
     "assignSites": {
       "assignButton": "Objekt zuweisen",
@@ -1901,8 +1905,9 @@
         "typeRequired": "Wählen Sie die Art der Lizenz.",
         "numberRequired": "Geben Sie die Lizenznummer ein."
       },
-      "confirmDelete": "{{count}} Lizenz(en) löschen? Das kann nicht rückgängig gemacht werden.",
-      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors"
+      "subtitleSupervisor": "Dokumente und Nachweise des Supervisors",
+      "confirmDelete_one": "Diese Lizenz löschen? Das kann nicht rückgängig gemacht werden.",
+      "confirmDelete_other": "{{count}} Lizenzen löschen? Das kann nicht rückgängig gemacht werden."
     },
     "list": {
       "applyFilters": "Filter anwenden",
@@ -8312,7 +8317,9 @@
       "platformHint": "{{marca}} verwaltet sie für alle Firmen. Hier können Sie sehen, ob sie aktiv sind.",
       "statusActive": "Aktiv",
       "statusInactive": "Inaktiv",
-      "minLengthOutOfRange": "Die Mindestlänge muss eine Zahl zwischen {{min}} und {{max}} sein."
+      "minLengthOutOfRange": "Die Mindestlänge muss eine Zahl zwischen {{min}} und {{max}} sein.",
+      "savedCorrected": "Richtlinie gespeichert, aber was die Plattform verlangt, ist unverändert geblieben. Prüfe die Werte auf dem Bildschirm.",
+      "requiredByPlatform": "Von der Plattform vorgeschrieben: kann nicht ausgeschaltet werden."
     },
     "central": {
       "loadError": "Die Einstellungen konnten nicht geladen werden.",
@@ -9082,7 +9089,7 @@
       "popupBlocked": "Der Browser hat das Druckfenster blockiert.",
       "printFailed": "Das Blatt konnte nicht vorbereitet werden",
       "qrFailed": "Der Code konnte nicht erzeugt werden",
-      "radiusPerPoint": "dem Radius des jeweiligen Punkts (bei jedem angegeben)"
+      "verifyNotePerPoint": "Standortprüfung: Beim Scannen wird das GPS der Wachkraft mit dem Standort des Kontrollpunkts verglichen. Es zählt nur als gültig innerhalb des Radius des jeweiligen Punkts (bei jedem angegeben)."
     },
     "rondaHistory": {
       "empty": "Für dieses Objekt sind keine Rundgänge erfasst.",
@@ -9536,7 +9543,8 @@
       "codigoDePrueba": "In dieser Umgebung gibt es keinen SMS-Anbieter. Testcode: {{code}}",
       "escribeTuNumeroAntes": "Gib deine Handynummer ein, bevor du sie bestätigst.",
       "correoNoValido": "Diese E-Mail-Adresse ist ungültig.",
-      "esTuCorreoActual": "Das ist bereits deine E-Mail-Adresse."
+      "esTuCorreoActual": "Das ist bereits deine E-Mail-Adresse.",
+      "telefonoNoValido": "Diese Telefonnummer scheint ungültig zu sein. Prüfe Land und Nummer."
     },
     "Routes": {
       "turnoDia": "Tagschicht",
@@ -10697,7 +10705,11 @@
       "revocarAcceso": "Zugang widerrufen",
       "appMiSeguridad": "App {{app}}",
       "portalWeb": "Webportal",
-      "nombreDeLaPersona": "Name der Person (optional)"
+      "nombreDeLaPersona": "Name der Person (optional)",
+      "correoDeInvitacion": "E-Mail, die die Person erhält",
+      "opcionDescargaApp": "App {{app}} herunterladen",
+      "opcionBienvenida": "Willkommen und Aktivierung",
+      "mismaCuenta": "In beiden Fällen ist es dasselbe Konto (App und Portal): Nur die E-Mail ist anders."
     },
     "CommandBar": {
       "datosDeDemostracion": "Demodaten",
@@ -10829,7 +10841,8 @@
       "tipo": "Art",
       "tipoVigilanteAdicional": "Zusätzlicher Wachmann",
       "tipoCotizacion": "Angebot",
-      "tipoServicio": "Dienstleistung"
+      "tipoServicio": "Dienstleistung",
+      "fechaPedida": "Gewünschtes Datum"
     },
     "CustomizePanel": {
       "colorDeLaAplicacion": "Farbe der App",
@@ -11490,7 +11503,8 @@
       "nocheSegunReglas": "Nachtzeit und Zuschlag kommen aus den Lohnregeln oben: Die Schätzung nutzt, was tatsächlich gezahlt wird.",
       "descansoEnJornada": "Ruhezeit zwischen Schichten und Stunden am Stück legen Sie unter Arbeitszeit und Ruhe fest.",
       "irAJornada": "Arbeitszeit und Ruhe",
-      "monedaUnica": "Das ist die Währung des ganzen Unternehmens – auch für Lohnzettel."
+      "monedaUnica": "Das ist die Währung des ganzen Unternehmens – auch für Lohnzettel.",
+      "campoVacio": "„{{campo}}“ ist leer: Geben Sie vor dem Speichern eine Zahl ein."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",
@@ -12916,7 +12930,17 @@
       "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…",
       "irAEstaciones": "Zu den Objekten",
       "moverCoberturaDel": "Abdeckung vom {{dia}} verschieben",
-      "moverDePuesto": "Wachmann auf anderen Posten versetzen"
+      "moverDePuesto": "Wachmann auf anderen Posten versetzen",
+      "estadoTurno": {
+        "planned": "Geplant",
+        "covered": "Vertretung",
+        "extension": "Verlängerung",
+        "reinforcement": "Verstärkung",
+        "absent": "Abwesend",
+        "cancelled": "Storniert",
+        "transferred_out": "Verlegt",
+        "training": "Begleitung"
+      }
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
@@ -13198,7 +13222,8 @@
       "sinEstacion": "Keine Station",
       "sucediendoAhoraMismo": "Findet gerade statt",
       "turnos": "Schichten",
-      "falta": "Fehlzeit"
+      "falta": "Fehlzeit",
+      "ausente": "Abwesend"
     },
     "ShiftTemplates": {
       "basico": "Basis",
@@ -13566,7 +13591,42 @@
         "language": "Sprache",
         "languageChoice": "gewählte Sprache",
         "timezone": "Zeitzone",
-        "appearance": "Darstellung"
+        "appearance": "Darstellung",
+        "governmentId": "Ausweisnummer",
+        "emailVerified": "E-Mail bestätigt",
+        "birthPlace": "Geburtsort",
+        "birthDate": "Geburtsdatum",
+        "gender": "Geschlecht",
+        "maritalStatus": "Familienstand",
+        "bloodType": "Blutgruppe",
+        "academicInstruction": "Ausbildung",
+        "hiringContractDate": "Vertragsdatum",
+        "licenseNumber": "Lizenznummer",
+        "postalCode": "Postleitzahl",
+        "guardCredentials": "Zugangsdaten",
+        "invitationToken": "Einladungslink",
+        "invitationTokenExpiresAt": "Einladung läuft ab am",
+        "emailVerificationToken": "Link zur E-Mail-Bestätigung",
+        "emailVerificationTokenExpiresAt": "E-Mail-Bestätigung läuft ab am",
+        "passwordResetToken": "Link zum Zurücksetzen des Passworts",
+        "passwordResetTokenExpiresAt": "Zurücksetzen läuft ab am",
+        "jwtTokenInvalidBefore": "Sitzungen beendet vor",
+        "archivedAt": "archiviert am",
+        "breaks": "Pausen",
+        "hoursWorked": "gearbeitete Stunden",
+        "payrollStatus": "Lohnabrechnungsstatus",
+        "payrollStatusAt": "Lohnabrechnungsstatus seit",
+        "totalCents": "Gesamt (Cent)",
+        "subtotalCents": "Zwischensumme (Cent)",
+        "taxBreakdown": "Steueraufschlüsselung",
+        "sentAt": "gesendet am",
+        "lastMessageAt": "letzte Nachricht am",
+        "lastMessagePreview": "Vorschau der letzten Nachricht",
+        "latitude": "Breitengrad",
+        "longitude": "Längengrad",
+        "startDate": "Startdatum",
+        "endDate": "Enddatum",
+        "number": "Nummer"
       },
       "si": "ja",
       "no": "nein",
@@ -13602,10 +13662,10 @@
       "solicitudesDeVacacionesEnfermedadY": "Anträge auf Urlaub, Krankheit und Freistellung des Personals.",
       "buscarVigilanteTipoOMotivo": "Kraft, Art oder Grund suchen",
       "nuevaSolicitudDeTiempoLibre": "Neuer Abwesenheitsantrag",
-      "tipo": "Art*",
-      "desde": "Von*",
-      "hasta": "Bis*",
-      "motivo": "Grund*",
+      "tipo": "Art",
+      "desde": "Von",
+      "hasta": "Bis",
+      "motivo": "Grund",
       "describeElMotivo": "Beschreiben Sie den Grund…",
       "solicitudesDeTiempoLibre": "Abwesenheitsanträge",
       "aprobadas": "Genehmigt",
@@ -13677,7 +13737,12 @@
       "rechazarTitulo": "Abwesenheit ablehnen",
       "rechazarMensaje": "Die Abwesenheit von {{nombre}} wird abgelehnt, und die Person wird benachrichtigt. Du kannst den Grund angeben (optional).",
       "rechazarMotivo": "Grund (optional)",
-      "solicitudEliminada": "Antrag gelöscht"
+      "solicitudEliminada": "Antrag gelöscht",
+      "agregarSolicitud": "Antrag hinzufügen",
+      "opcional": "optional",
+      "horaOpcional": "Die Uhrzeit ist optional: ohne Uhrzeit zählt der ganze Tag.",
+      "formIntro": "Urlaub, Krankheit oder Freistellung. Nach der Genehmigung werden die Schichten an diesen Tagen zu offenen Lücken, die jemand übernehmen muss.",
+      "rechazadoOk": "Abwesenheit abgelehnt. {{nombre}} wurde benachrichtigt."
     },
     "TrackingHistory": {
       "hibrido": "Hybrid",
@@ -14329,7 +14394,9 @@
       "estacionesQueCubre_one": "Abgedeckte Standorte ({{count}})",
       "estacionesQueCubre_other": "Abgedeckte Standorte ({{count}})",
       "estacionesQueCubre": "Abgedeckte Standorte ({{count}})",
-      "eliminarElPuesto": "Posten „{{nombre}}“ löschen?"
+      "eliminarElPuesto": "Posten „{{nombre}}“ löschen?",
+      "estacionSinNombre": "Station ohne Namen",
+      "estacionEliminada": "{{nombre}} (gelöscht)"
     },
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",
@@ -15274,6 +15341,7 @@
       "indicadoresDelSupervisor": "Kennzahlen des Einsatzleiters"
     },
     "SupervisorRegistration": {
+      "pideInvitacionNueva": "Wenn Sie Ihr Konto bereits aktiviert haben, melden Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort in der Supervisor-App an. Andernfalls bitten Sie Ihr Unternehmen, Ihnen eine neue Einladung zu senden.",
       "tuCuentaCon": "Ihr Konto bei",
       "creaUnaContrasenaParaTuCuenta": "Erstellen Sie ein Passwort für Ihr Konto. Ihre Rundgänge und Ihr Team überwachen Sie über die Supervisor-App.",
       "tuCuentaConEstaListaDescarga": "Ihr Konto bei <b>{{empresa}}</b> ist bereit. Laden Sie die <b>Supervisor-App</b> herunter, um Rundgänge, Team und Vorfallberichte vom Telefon aus zu verwalten.",
@@ -15616,11 +15684,11 @@
       "noCodeHint": "Dieser Link öffnet direkt, ohne Code. Wer ihn erhält – oder an wen er weitergeleitet wird – kommt hinein.",
       "expiresHint": "Läuft in {{horas}} Stunden ab. Sie können ihn vorher über die Liste widerrufen.",
       "recipientsLabel": "E-Mail-Empfänger",
-      "noRecipientsHint": "Dieser Auftraggeber hat keine Kontakte mit E-Mail-Adresse. Geben Sie unten an, an wen es gesendet werden soll.",
+      "noRecipientsHint": "Dieser Auftraggeber hat keine Kontakte mit E-Mail-Adresse. Legen Sie unter „Kontakte“ einen an, um es zu senden, oder erstellen Sie den Link ohne Versand und teilen Sie ihn selbst.",
       "sourcePortal": "Portal",
       "sourceContact": "Kontakt",
-      "otherEmailsLabel": "Weitere E-Mails (durch Komma getrennt)",
-      "otherEmailsPlaceholder": "buchhaltung@firma.com",
+      "otherEmailsLabel": "Weitere Empfänger (durch Komma getrennt)",
+      "otherEmailsPlaceholder": "benutzer@ihrefirma.com",
       "messageLabel": "Nachricht (optional)",
       "messagePlaceholder": "Anbei die Unterlagen des Monats zur Prüfung.",
       "requireCodeLabel": "Zugangscode verlangen",
@@ -15630,7 +15698,8 @@
       "expiry72h": "72 Stunden",
       "expiry7d": "7 Tage",
       "historyTitle": "Verlauf · {{nombre}}",
-      "historyEmpty": "Noch keine Aktivität aufgezeichnet."
+      "historyEmpty": "Noch keine Aktivität aufgezeichnet.",
+      "otherEmailsHint": "Nur Kontakte dieses Auftraggebers oder Benutzer Ihres Unternehmens. Andere Personen zuerst als Kontakt des Auftraggebers anlegen – oder den Link ohne Versand erstellen und selbst teilen."
     },
     "DocumentPacketPublic": {
       "expiredTitle": "Dieser Link ist abgelaufen",
@@ -16108,7 +16177,8 @@
       "exportadaConRechazos_many": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
       "exportadaConRechazos_other": "Lohnliste exportiert ohne {{count}} Zeitkarten, die nicht ausgezahlt werden:",
       "tarifaInvalida": "Der Satz muss größer als null sein. Zum Entfernen das Feld leer lassen.",
-      "tarifaQuitada": "Satz von {{nombre}} entfernt. Erzeugen Sie die Periode neu, um es anzuwenden."
+      "tarifaQuitada": "Satz von {{nombre}} entfernt. Erzeugen Sie die Periode neu, um es anzuwenden.",
+      "tarifaSinAplicar": "Nicht angewendet: Periode neu erzeugen"
     },
     "SupervisorLicensesPage": {
       "licencias": "Lizenzen",
@@ -17082,7 +17152,9 @@
       "tuCuentaYaEstaActiva": "Ihr Konto bei <b>{{empresa}}</b> ist bereits aktiv.",
       "invitacionYaUsada": "Diese Einladung wurde bereits verwendet: Ihr Konto ist aktiv.",
       "entraEnLaApp": "Melden Sie sich in der App der Sicherheitskraft mit Benutzername und Passwort an. Wenn Sie das Passwort nicht mehr wissen, bitten Sie Ihr Unternehmen, es zurückzusetzen.",
-      "tuCuentaEstaLista": "Ihr Konto ist bereit."
+      "tuCuentaEstaLista": "Ihr Konto ist bereit.",
+      "invitacionNoValida": "Diese Einladung ist nicht mehr gültig.",
+      "pideInvitacionNueva": "Wenn Sie Ihr Konto schon erstellt haben, melden Sie sich in der Wachleute-App mit Benutzername und Passwort an. Andernfalls bitten Sie Ihr Unternehmen um eine neue Einladung."
     },
     "InspectionPreview": {
       "alerta": "Warnung",
@@ -17719,7 +17791,9 @@
       "salirTituloServidor": "Es gibt ungespeicherte Änderungen",
       "salirMensajeServidor": "Ihre letzten Änderungen am Entwurf sind noch nicht auf dem Server. Wenn Sie jetzt gehen, gehen sie verloren.",
       "salirSinGuardar": "Trotzdem verlassen",
-      "descartarMensajeCompartido": "Die {{n}} unveröffentlichten Änderungen gehen verloren, auch für alle anderen Bearbeiter, und der aktuelle Dienstplan wird wieder angezeigt.",
+      "descartarMensajeCompartido_one": "Die unveröffentlichte Änderung geht verloren, auch für alle anderen Bearbeiter, und der aktuelle Dienstplan wird wieder angezeigt.",
+      "descartarMensajeCompartido_other": "Die {{count}} unveröffentlichten Änderungen gehen verloren, auch für alle anderen Bearbeiter, und der aktuelle Dienstplan wird wieder angezeigt.",
+      "pasadoNoSeCambia": "Was bereits geschehen ist, wird nicht über den Entwurf geändert: Dieser Tag bleibt, wie er war.",
       "guardadoEnServidor": "Für das ganze Team gespeichert",
       "noSeGuardo": "Speichern fehlgeschlagen; neuer Versuch bei der nächsten Änderung",
       "guardando": "Wird gespeichert…",
@@ -17736,7 +17810,9 @@
       "cerrar": "Schließen",
       "recargarConLoNuevo": "Mit dem Neuesten neu laden und prüfen",
       "publicandoDeUnaVez": "Alles wird auf einmal veröffentlicht…",
-      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht."
+      "publicarDetalleTodo": "Dies schreibt in den aktuellen Dienstplan: Leitstelle, Dienstplan und die Wachleute in ihrer App sehen es. Alles geht auf einmal: Schlägt eine Änderung fehl, wird nichts veröffentlicht.",
+      "seQuedaronConMarcaje": "Nicht übernommen, weil die Schicht bereits eine Stempelung hat und bleibt: {{lista}}",
+      "volverAlBorrador": "Zurück zum Entwurf"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",
@@ -18481,7 +18557,7 @@
       },
       "sinPermiso": {
         "titulo": "Ihre Rolle kann Lohnabrechnungen nicht öffnen",
-        "desc": "Ihrer Rolle fehlen die Berechtigungen für Lohnabrechnungen (Abrechnungen und Lohnprofile ansehen und bearbeiten). Eine Administratorin oder ein Administrator kann sie unter Einstellungen › Rollen vergeben."
+        "desc": "Ihrer Rolle fehlen die Berechtigungen für Lohnabrechnungen (Abrechnungen und Lohnprofile ansehen und bearbeiten). Eine Administratorin oder ein Administrator kann sie unter Rollen und Berechtigungen vergeben."
       }
     },
     "ClientBillingContract": {
@@ -18857,7 +18933,9 @@
         "editarLinea": "Position bearbeiten",
         "minutosHint": "Geplant: {{p}} · gearbeitet: {{w}}",
         "excluirDeLaFactura": "Von der Rechnung ausschließen",
-        "revisionLista": "Bereit zur Prüfung durch den Kunden. Es wird keine E-Mail versendet: Kopieren Sie den Link und teilen Sie ihn mit dem Kunden."
+        "revisionLista": "Bereit zur Prüfung durch den Kunden. Es wird keine E-Mail versendet: Kopieren Sie den Link und teilen Sie ihn mit dem Kunden.",
+        "nuevaRevision": "Neue Kundenprüfung",
+        "nuevaRevisionConfirm": "Eine neue Runde mit einem anderen Link beginnt: Der bisherige Link funktioniert nicht mehr und die bisherige Freigabe zählt nicht mehr. Offene Einwände bleiben zur Klärung bestehen."
       },
       "regla": {
         "usarElDeLaEmpresa": "Firmenwert verwenden",
@@ -20394,7 +20472,8 @@
       "placeType": "Art und Nummer des Orts",
       "postSite": "Objekt",
       "reason": "Besuchsgrund",
-      "station": "Objekt"
+      "station": "Objekt",
+      "place": "Ort"
     },
     "placeType": {
       "apartment": "Wohnung",
@@ -23524,7 +23603,7 @@
     "errores": {
       "requerido": "Pflichtfeld",
       "correoInvalido": "E-Mail prüfen: sie sollte wie name@firma.de aussehen",
-      "celularInvalido": "Handynummer prüfen: mindestens 7 Ziffern",
+      "celularInvalido": "Handynummer prüfen: eine einzige Nummer, mit oder ohne «+» und Ländervorwahl (7 bis 15 Ziffern)",
       "sedesVacias": "Wähle mindestens ein Objekt oder „Gesamter Betrieb“",
       "fecha": "Datum prüfen",
       "fechaPasada": "Wähle heute oder ein späteres Datum: ein früherer Beginn erzeugt Schichten, die nie gearbeitet wurden",

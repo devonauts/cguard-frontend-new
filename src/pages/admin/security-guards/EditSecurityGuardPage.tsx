@@ -249,13 +249,17 @@ export default function EditSecurityGuardPage() {
         );
         navigate("/security-guards");
       } catch (err: any) {
-        const msg = err?.message || String(err);
-        toast.error(
-          t("ui.EditSecurityGuard.errorGuardandoCambios", {
-            defaultValue: "Error guardando cambios: {{msg}}",
-            msg,
-          }),
-        );
+        // The API layer already toasted the server's message (`toastShown`):
+        // a used ID number showed twice (QA r3 N-R2-4).
+        if (!err?.toastShown) {
+          const msg = err?.message || String(err);
+          toast.error(
+            t("ui.EditSecurityGuard.errorGuardandoCambios", {
+              defaultValue: "Error guardando cambios: {{msg}}",
+              msg,
+            }),
+          );
+        }
       } finally {
         setLoading(false);
       }

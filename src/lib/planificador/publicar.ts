@@ -24,6 +24,8 @@ import {
   propio,
   proximoArranque,
   esSacafranco,
+  fijosDe,
+  partir,
   type Persona,
   type Plan,
   type Puesto,
@@ -75,6 +77,12 @@ export interface Contexto {
   /** `YYYY-MM-DD` de un día, y el instante ISO de una hora de ese día en la zona de la empresa. */
   fechaDe(d: number): string;
   instanteDe(d: number, minuto: number): string;
+  /**
+   * Now (ms). With it, nothing is published for a shift or a day that is
+   * already over (QA 2026-11-02, N7): it would double-cover — and maybe
+   * double-pay — a day that has happened.
+   */
+  ahora?: number;
 }
 
 /** `YYYY-MM-DD` + n days, calendar arithmetic (no zone involved). */
@@ -96,12 +104,14 @@ export function contextoEnLaEmpresa(
   hoy: number,
   dias: number,
   instante: (dia: string, hora: number, minuto: number) => Date,
+  ahora?: number,
 ): Contexto {
   return {
     tenantId,
     base,
     hoy,
     dias,
+    ...(ahora !== undefined ? { ahora } : {}),
     fechaDe: (d) => masDias(base, d),
     instanteDe: (d, min) =>
       instante(
@@ -223,6 +233,21 @@ export function planificarPublicacion(
       }
     },
   });
+  /** Has this instant passed? Never, without `ctx.ahora`. */
+  const yaPaso = (iso: string | number | undefined) => {
+    if (ctx.ahora === undefined || iso === undefined) return false;
+    const t = typeof iso === "number" ? iso : Date.parse(iso);
+
+    return Number.isFinite(t) && t <= ctx.ahora;
+  };
+  /** That person's day `d` is over: the day ended, or every live shift of it did. */
+  const diaTerminado = (pid: string, d: number) => {
+    if (ctx.ahora === undefined) return false;
+    if (yaPaso(ctx.instanteDe(d + 1, 0))) return true;
+    const lista = enlace.turnosTodos?.[pid]?.[d] || [];
+
+    return lista.length > 0 && lista.every((x) => yaPaso(enlace.finDeTurno?.[x.id]));
+  };
   /* Coberturas que ya viajan DENTRO de otra llamada (la ausencia con su
      reemplazo): `puesto|franja|día|persona`, para no crearlas dos veces. */
   const encadenadas = new Set<string>();
@@ -508,6 +533,18 @@ export function planificarPublicacion(
       const aAntes = (antes.ausencias || []).find(
         (a) => d >= a.desde && d <= a.hasta,
       );
+
+      // A day that is over is not changed: it says so if the draft differs.
+      if (diaTerminado(p.id, d)) {
+        if (
+          aAhora?.tipo !== aAntes?.tipo ||
+          (p.manual[d] ?? null) !== (antes.manual[d] ?? null)
+        )
+          no.push(
+            `${nombreDe(p)}: el ${ctx.fechaDe(d)} ya pasó; se queda como fue.`,
+          );
+        continue;
+      }
       const novedad = enlace.novedades[p.id]?.[d];
 
       if (aAhora && !aAntes) {
@@ -746,6 +783,21 @@ export function planificarPublicacion(
       ).some((x) => x.stationId === pu.id);
 
       if (yaReal || encadenadas.has(`${pu.id}|${franja}|${d}|${id}`)) continue;
+      // A shift that already ended is not covered after the fact.
+      if (yaPaso(ctx.instanteDe(d, fr.ini + duracion(fr)))) {
+        no.push(
+          `${nombreDe(p)} cubriendo ${pu.nombre} el ${ctx.fechaDe(d)}: ese turno ya terminó.`,
+        );
+        continue;
+      }
+      // Covering elsewhere would delete their own shift that day, but they
+      // already clocked into it: it is the proof of pay and stays.
+      if (real && enlace.marcados?.[real.id]) {
+        no.push(
+          `${nombreDe(p)} cubriendo ${pu.nombre} el ${ctx.fechaDe(d)}: ya marcó entrada en su turno de ese día; ese turno se queda.`,
+        );
+        continue;
+      }
       /* Si el hueco viene de una FALTA con novedad abierta, cubrirlo por la
          novedad (como en Cobertura en vivo): crea el turno de cobertura y
          cierra la novedad a la vez, en vez de dejar la alerta viva. Quien lo
@@ -806,6 +858,20 @@ export function planificarPublicacion(
     const p = plan.personas.find((x) => x.id === id);
 
     if (!p) continue;
+    /* A shift someone clocked into is never withdrawn: the server refuses it
+       and the whole publish used to fail on that one row (QA 2026-11-02). */
+    if (yaPaso(enlace.finDeTurno?.[shiftId])) {
+      no.push(
+        `${nombreDe(p)}: el turno del ${ctx.fechaDe(d)} ya terminó; se queda en el horario.`,
+      );
+      continue;
+    }
+    if (enlace.marcados?.[shiftId]) {
+      no.push(
+        `${nombreDe(p)}: el turno del ${ctx.fechaDe(d)} ya tiene marcaje; se queda en el horario.`,
+      );
+      continue;
+    }
     cambios.push(
       llamada(
         "quitarTurno",
@@ -814,6 +880,75 @@ export function planificarPublicacion(
         nombreDe(p),
       ),
     );
+  }
+
+  /* 4) What was changed by hand after the publish horizon stays in the
+     draft, and the sheet says so: the count and the list cover the whole
+     draft, whatever week is on screen (QA 2026-11-02, N10). */
+  const despues = new Map<string, number>();
+  const tarde = (id: string, d: number) => {
+    if (d < d1) return;
+    const x = despues.get(id);
+
+    if (x === undefined || d < x) despues.set(id, d);
+  };
+
+  for (const p of plan.personas) {
+    const antes = ori.get(p.id);
+
+    if (!antes) continue;
+    for (const k of new Set([
+      ...Object.keys(p.manual || {}),
+      ...Object.keys(antes.manual || {}),
+    ])) {
+      const d = Number(k);
+
+      if ((p.manual[d] ?? null) !== (antes.manual[d] ?? null)) tarde(p.id, d);
+    }
+    const firma = (a: { tipo: string; desde: number; hasta: number }) =>
+      `${a.tipo}|${a.desde}|${a.hasta}`;
+    const ya = new Set((antes.ausencias || []).map(firma));
+    const hay = new Set((p.ausencias || []).map(firma));
+
+    for (const a of p.ausencias || [])
+      if (!ya.has(firma(a)) && a.hasta >= d1) tarde(p.id, Math.max(a.desde, d1));
+    for (const a of antes.ausencias || [])
+      if (!hay.has(firma(a)) && a.hasta >= d1) tarde(p.id, Math.max(a.desde, d1));
+  }
+  for (const k of new Set([...Object.keys(plan.cubre), ...Object.keys(original.cubre)])) {
+    const d = Number(k.split("|")[2]);
+
+    if (!(d >= d1)) continue;
+    const ahora = plan.cubre[k] || [];
+    const antes = original.cubre[k] || [];
+
+    // The fixed sacafrancos' own covers are the engine's, not an edit.
+    for (const id of ahora)
+      if (!antes.includes(id) && !plan.auto[`${k}|${id}`]) tarde(id, d);
+    // A cover can leave the draft without being marked automatic in the
+    // original (it was read as a real shift, or lay outside the window the
+    // engine ran on). When a sacafranco fixed to that post loses it, the
+    // engine took it back, unless someone blocked that slot by hand
+    // (QA re-test round 4, R4-N1).
+    const fijo = (pl: Plan, id: string) =>
+      fijosDe(pl, partir(k).puesto).some((x) => x.id === id);
+    const bloqueado = !!plan.no[k] && !original.no?.[k];
+
+    for (const id of antes)
+      if (
+        !ahora.includes(id) &&
+        !original.auto[`${k}|${id}`] &&
+        (bloqueado || !(fijo(original, id) && fijo(plan, id)))
+      )
+        tarde(id, d);
+  }
+  for (const [id, d] of despues) {
+    const p = plan.personas.find((x) => x.id === id);
+
+    if (p)
+      no.push(
+        `${nombreDe(p)}: lo cambiado desde el ${ctx.fechaDe(d)} se queda en el borrador; se publica hasta el ${ctx.fechaDe(d1 - 1)}.`,
+      );
   }
 
   // Orden: primero lo estructural (cobertura, rotación, puestos fijos), luego

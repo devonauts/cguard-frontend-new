@@ -157,8 +157,16 @@ export default function SupervisorPositionsPage() {
   const [cicloSel, setCicloSel] = useState<Record<string, string>>({});
   const [stationEdit, setStationEdit] = useState<string | null>(null);
 
-  const stationName = (id: string) =>
-    stations.find((s) => s.id === id)?.name || id;
+  // Never show a raw id: the server resolves names (deleted stations too);
+  // the live list is only a fallback for an older API.
+  const stationName = (p: SupervisorPosition, id: string) => {
+    const fromServer = p.stations?.find((s) => s.id === id);
+    const name = fromServer?.name || stations.find((s) => s.id === id)?.name;
+    if (!name) return t("ui.SupervisorPositionsPage.estacionSinNombre", "Estación sin nombre");
+    return fromServer?.deleted
+      ? t("ui.SupervisorPositionsPage.estacionEliminada", { nombre: name, defaultValue: "{{nombre}} (eliminada)" })
+      : name;
+  };
 
   const [fallo, setFallo] = useState(false);
   const load = useCallback(() => {
@@ -735,7 +743,7 @@ export default function SupervisorPositionsPage() {
                         {p.stationIds.map((sid) => (
                           <StatusBadge key={sid} dot={false} tone="neutral">
                             <Building2 className="h-3 w-3" />
-                            {stationName(sid)}
+                            {stationName(p, sid)}
                           </StatusBadge>
                         ))}
                       </div>

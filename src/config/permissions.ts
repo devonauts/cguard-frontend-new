@@ -120,6 +120,16 @@ const GROUP_OVERRIDES: Record<string, string> = {
   bannerSuperiorApp: 'clienteApp',
   service: 'clienteApp',
   certification: 'clienteApp',
+  // Permissions without a standard action suffix join their resource's group
+  // instead of becoming a group named after the raw id.
+  assistantUse: 'assistant',
+  coverageTransfer: 'coverage',
+  coverageClockInOnBehalf: 'coverage',
+  estimateConvert: 'estimate',
+  estimateDownload: 'estimate',
+  routeDispatch: 'route',
+  routeOverrideGeofence: 'route',
+  payrollSlipPublish: 'payrollSlip',
 };
 
 export function groupPermissions(perms: string[]) {

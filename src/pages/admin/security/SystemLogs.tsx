@@ -208,6 +208,13 @@ function copiaDeBorrado(changes: any): any[] | null {
  *  el resto se deletrea. Se traducen en el render: esta lista sólo guarda claves. */
 const CAMPOS_CONOCIDOS = new Set([
   "name", "title", "fullName", "firstName", "lastName", "email", "phoneNumber", "status", "workStatus", "priority", "description", "notes", "internalNotes", "startTime", "endTime", "punchInTime", "punchOutTime", "scheduledEnd", "scheduledStart", "stationId", "stationNameId", "guardId", "guardNameId", "postSiteId", "roles", "billingStatus", "plan", "suspendedAt", "hourlyRateCents", "monthlyRateCents", "assignedToUserId", "dispatchStatus", "forcedClockOut", "address", "active", "archived", "reason", "module", "acknowledgedAt", "dunningStage", "password", "observations", "filas", "turnos", "language", "languageChoice", "timezone", "appearance",
+  "governmentId", "emailVerified", "birthPlace", "birthDate", "gender", "maritalStatus",
+  "bloodType", "academicInstruction", "hiringContractDate", "licenseNumber", "postalCode",
+  "guardCredentials", "invitationToken", "invitationTokenExpiresAt", "emailVerificationToken",
+  "emailVerificationTokenExpiresAt", "passwordResetToken", "passwordResetTokenExpiresAt",
+  "jwtTokenInvalidBefore", "archivedAt", "breaks", "hoursWorked", "payrollStatus",
+  "payrollStatusAt", "totalCents", "subtotalCents", "taxBreakdown", "sentAt", "lastMessageAt",
+  "lastMessagePreview", "latitude", "longitude", "startDate", "endDate", "number",
 ]);
 const deletrear = (c: string) =>
   c.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]/g, " ").toLowerCase();

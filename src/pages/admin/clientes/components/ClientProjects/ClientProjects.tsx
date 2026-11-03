@@ -42,6 +42,7 @@ import {
 } from "@/components/projects/ProjectBadge";
 import ProjectForm from "@/pages/admin/projects/ProjectForm";
 import { Section, EmptyState, SkeletonCards } from "@/components/kit";
+import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 
 interface Props {
   client: Client;
@@ -191,10 +192,10 @@ export default function ClientProjects({ client }: Props) {
                       <ProjectTypeBadge value={p.type} />
                     </td>
                     <td className="px-2 py-2.5 text-foreground/70">
-                      {p.startDate ?? "-"}
+                      {soloFechaCivil(p.startDate, {}, "-")}
                     </td>
                     <td className="px-2 py-2.5 text-foreground/70">
-                      {p.endDate ?? "-"}
+                      {soloFechaCivil(p.endDate, {}, "-")}
                     </td>
                     <td className="px-2 py-2.5">
                       <ProjectStatusBadge value={p.status} />

@@ -909,22 +909,12 @@ export default function ClientForm({
                           value={
                             typeof field.value === "string" ? field.value : ""
                           }
-                          onChange={(e) => {
-                            const noDigits = e.target.value.replace(
-                              /[0-9]/g,
-                              "",
-                            );
-                            const capitalized = noDigits
-                              .split(" ")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase(),
-                              )
-                              .join(" ");
-
-                            field.onChange(capitalized);
-                          }}
+                          /* Typed as is. This used to strip every digit and
+                             re-case each keystroke («R2» → «R», «QA» → «Qa»);
+                             the server's nombrePropio already normalises
+                             person names on save and keeps digits and roman
+                             numerals (QA re-test R2: «Apellido R2»). */
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -949,22 +939,7 @@ export default function ClientForm({
                           value={
                             typeof field.value === "string" ? field.value : ""
                           }
-                          onChange={(e) => {
-                            const noDigits = e.target.value.replace(
-                              /[0-9]/g,
-                              "",
-                            );
-                            const capitalized = noDigits
-                              .split(" ")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase(),
-                              )
-                              .join(" ");
-
-                            field.onChange(capitalized);
-                          }}
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
                       </FormControl>
                       <FormMessage />

@@ -15,6 +15,7 @@
  */
 import { iconoDe, siluetaDe } from "@/lib/formasDelAgente";
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -43,6 +44,8 @@ import {
 } from "@/lib/agenteDeMarca";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+
+import { liftClearOf, overlaps, pointerNear, type Box } from "./bubbleSpot";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -276,21 +279,10 @@ function LogoVigia({
 const CONTROL_SELECTOR =
   'button, a[href], input, textarea, select, [role="button"], [role="combobox"], [role="tab"], [role="checkbox"], [role="switch"]';
 
-/** Gap kept between the bubble and a control it steps away from. */
-const STEP_GAP = 12;
-/** Never lift the bubble higher than this share of the window. */
-const MAX_LIFT_SHARE = 0.45;
-
-function overlaps(a: DOMRect | { left: number; right: number; top: number; bottom: number }, b: DOMRect): boolean {
-  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-}
-
 /** Visible interactive controls of the page whose box intersects `box`. */
-function controlsUnder(
-  bubble: HTMLElement,
-  box: { left: number; right: number; top: number; bottom: number },
-): DOMRect[] {
+function controlsUnder(bubble: HTMLElement, box: Box): DOMRect[] {
   const hits: DOMRect[] = [];
+  const appRoot = document.getElementById("root");
 
   for (const el of Array.from(document.querySelectorAll<HTMLElement>(CONTROL_SELECTOR))) {
     if (bubble.contains(el) || el.closest("[data-flotante]")) continue;
@@ -301,11 +293,21 @@ function controlsUnder(
     // Hidden or clipped controls (behind a closed drawer, scrolled out of a
     // panel) are not under the bubble: the topmost element at their centre
     // must be the control itself or something inside it.
+    // Menus, dialogs and popovers render outside #root and are only there for
+    // a moment. A page control under one of them still counts: otherwise the
+    // bubble settled over the row ⋮ buttons while a row menu or dialog hid
+    // them, and stayed there, clickable, after it closed.
+    const inPage = !!appRoot?.contains(el);
     const cx = Math.min(Math.max(r.left + r.width / 2, 0), window.innerWidth - 1);
     const cy = Math.min(Math.max(r.top + r.height / 2, 0), window.innerHeight - 1);
     const top = document
       .elementsFromPoint(cx, cy)
-      .find((x) => !bubble.contains(x) && !x.closest("[data-flotante]"));
+      .find(
+        (x) =>
+          !bubble.contains(x) &&
+          !x.closest("[data-flotante]") &&
+          (!inPage || appRoot!.contains(x)),
+      );
 
     if (top && (el === top || el.contains(top) || top.contains(el))) hits.push(r);
   }
@@ -323,23 +325,25 @@ export function bubblePlacement(bubble: HTMLElement, currentLift: number): numbe
   const now = bubble.getBoundingClientRect();
 
   if (!now.width || !now.height) return 0;
-  // Where the bubble sits with no lift at all.
-  const base = { left: now.left, right: now.right, top: now.top + currentLift, bottom: now.bottom + currentLift };
-  let lift = 0;
+  // Where the bubble sits with no lift at all. A fixed element's offsetTop is its
+  // layout position, before `translate`; reading it instead of adding
+  // `currentLift` keeps the answer right while the lift is still animating
+  // (the bubble bounced up and down for ~3 s over «Guardar configuración»).
+  const shift = bubble.offsetParent === null ? now.top - bubble.offsetTop : -currentLift;
+  const base = { left: now.left, right: now.right, top: now.top - shift, bottom: now.bottom - shift };
 
-  for (let i = 0; i < 6; i++) {
-    const box = { ...base, top: base.top - lift - STEP_GAP / 2, bottom: base.bottom - lift + STEP_GAP / 2 };
-    const hits = controlsUnder(bubble, box);
-
-    if (!hits.length) return lift;
-    const highest = Math.min(...hits.map((r) => r.top));
-
-    lift = Math.ceil(base.bottom - highest + STEP_GAP);
-    if (lift > window.innerHeight * MAX_LIFT_SHARE || base.top - lift < 8) return "hide";
-  }
-
-  return "hide";
+  return liftClearOf(base, (box) => controlsUnder(bubble, box), window.innerHeight);
 }
+
+/** Whether the bubble, where it is right now, covers a control. */
+function coversControlNow(bubble: HTMLElement): boolean {
+  const now = bubble.getBoundingClientRect();
+
+  return !!now.width && controlsUnder(bubble, now).length > 0;
+}
+
+/** How close (px) the pointer must come for the bubble to re-check its spot. */
+const POINTER_MARGIN = 24;
 
 export default function VigiaWidget() {
   const navigate = useNavigate();
@@ -379,22 +383,83 @@ export default function VigiaWidget() {
 
   useEffect(() => {
     if (open) return;
-    const lienzo = document.querySelector("main");
-
-    if (!lienzo) return;
     let temporizador: ReturnType<typeof setTimeout> | undefined;
+    let slideFrame = 0;
+    // Find the clear spot BEFORE the bubble takes clicks again, and stay
+    // click-through while it slides there (.22 s): coming back first and
+    // re-checking later left it over «Guardar configuración» for ~1.5 s.
+    // Called with `desplazando` already true.
+    const settle = () => {
+      const b = burbujaRef.current;
+
+      cancelAnimationFrame(slideFrame);
+      if (!b) {
+        setDesplazando(false);
+
+        return;
+      }
+      const place = bubblePlacement(b, liftRef.current);
+      const next = place === "hide" ? 0 : place;
+      // Where it will be once the slide ends: the slide can take longer than
+      // its .22 s on a busy page, so wait until it gets there (1.2 s at most).
+      const target = b.getBoundingClientRect().top - (next - liftRef.current);
+      const startedAt = performance.now();
+
+      liftRef.current = next;
+      setLift(next);
+      setTapaControl(place === "hide");
+      const waitForSlide = () => {
+        const arrived = Math.abs(b.getBoundingClientRect().top - target) < 2;
+
+        if (arrived || performance.now() - startedAt > 1200) setDesplazando(false);
+        else slideFrame = requestAnimationFrame(waitForSlide);
+      };
+
+      slideFrame = requestAnimationFrame(waitForSlide);
+    };
     const alDesplazar = () => {
       setDesplazando(true);
       if (temporizador) clearTimeout(temporizador);
+      cancelAnimationFrame(slideFrame);
       // 420 ms: lo justo para que un desplazamiento con inercia no la haga
       // parpadear entre empujón y empujón.
-      temporizador = setTimeout(() => setDesplazando(false), 420);
+      temporizador = setTimeout(settle, 420);
     };
 
-    lienzo.addEventListener("scroll", alDesplazar, { passive: true });
+    // Any scroller, not only <main>: settings pages scroll their own panel, so
+    // after scrolling to «Guardar configuración» the bubble never re-checked and
+    // sat over the button (QA re-test 2026-11-02, /nomina/settings at 1440×900).
+    document.addEventListener("scroll", alDesplazar, { passive: true, capture: true });
+
+    // The spot can go stale between checks: rows that slide in or arrive late,
+    // a layer that closes. When the pointer comes near and the bubble covers a
+    // control, it turns click-through at once (before the press lands) and
+    // then settles as after a scroll. Before, it only stepped aside once its
+    // own hover animation ended, so a quick press on the row ⋮ opened VigIA.
+    let lastPointerCheck = 0;
+    const alAcercarse = (e: PointerEvent) => {
+      const b = burbujaRef.current;
+
+      if (!b || b.dataset.apartada !== undefined || b.dataset.oculta !== undefined) return;
+      if (!pointerNear(e.clientX, e.clientY, b.getBoundingClientRect(), POINTER_MARGIN)) return;
+      const now = performance.now();
+
+      if (e.type === "pointermove" && now - lastPointerCheck < 100) return;
+      lastPointerCheck = now;
+      if (!coversControlNow(b)) return;
+      if (temporizador) clearTimeout(temporizador);
+      flushSync(() => setDesplazando(true));
+      settle();
+    };
+
+    document.addEventListener("pointermove", alAcercarse, { passive: true, capture: true });
+    document.addEventListener("pointerdown", alAcercarse, { passive: true, capture: true });
 
     return () => {
-      lienzo.removeEventListener("scroll", alDesplazar);
+      document.removeEventListener("scroll", alDesplazar, { capture: true });
+      document.removeEventListener("pointermove", alAcercarse, { capture: true });
+      document.removeEventListener("pointerdown", alAcercarse, { capture: true });
+      cancelAnimationFrame(slideFrame);
       if (temporizador) clearTimeout(temporizador);
     };
   }, [open]);

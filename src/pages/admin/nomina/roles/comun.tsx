@@ -282,9 +282,14 @@ export function PresentacionDelModulo({ modo }: { modo?: PayrollAccess } = {}) {
   if (modo === "denied") {
     return (
       <EmptyState
+        action={
+          <Button asChild variant="outline">
+            <Link to="/setting/roles">{t("settings.configuracion.roles", "Roles y permisos")}</Link>
+          </Button>
+        }
         description={t(
           "ui.RolesDePago.sinPermiso.desc",
-          "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Configuración › Roles.",
+          "Tu rol no tiene los permisos de Roles de pago (ver y editar roles y perfiles de pago). Un administrador puede dárselos en Roles y permisos.",
         )}
         icon={<Lock />}
         title={t("ui.RolesDePago.sinPermiso.titulo", "Tu rol no puede abrir Roles de pago")}

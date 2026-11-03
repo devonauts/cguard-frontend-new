@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { leerDias } from "./diasDeRonda";
+import { DIAS_CORTOS, leerDias, ordenLunesPrimero } from "./diasDeRonda";
 
 describe("leerDias", () => {
   it("reads numbers, as the station wizard writes them", () => {
@@ -17,5 +17,12 @@ describe("leerDias", () => {
     expect(leerDias(["", " ", "x", 9, "monday", 1])).toEqual([1]);
     expect(leerDias(null)).toEqual([]);
     expect(leerDias("")).toEqual([]);
+  });
+});
+
+describe("weekday order shared by Rondas and Consignas", () => {
+  it("lists Monday first and Sunday last", () => {
+    expect(DIAS_CORTOS.map((d) => d.corta).join(" ")).toBe("L M X J V S D");
+    expect([0, 3, 1, 6].sort((a, b) => ordenLunesPrimero(a) - ordenLunesPrimero(b))).toEqual([1, 3, 6, 0]);
   });
 });

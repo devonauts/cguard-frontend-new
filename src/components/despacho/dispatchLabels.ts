@@ -1,4 +1,4 @@
-import i18n from "../../../i18n";
+import i18n from "@/i18n";
 
 /**
  * «Tipo de informador» in words. The column printed the stored value, and the

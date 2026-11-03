@@ -4,6 +4,7 @@ import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
 import { ApiService } from "@/services/api/apiService";
 import { toast } from "sonner";
+import { rowMenuOpenChange } from "@/lib/rowMenu";
 import {
   Plus,
   Trash,
@@ -16,6 +17,11 @@ import {
   Search,
 } from "lucide-react";
 import StationCardsGrid from "./StationCardsGrid";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -147,6 +153,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
   >(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  // The list rows use a Radix menu with its own outside-click handling; it
+  // must not share openMenuId, whose document click listener closed it on
+  // the same click that opened it (QA re-test round 4, R4-REG-1).
+  const [openRowMenuId, setOpenRowMenuId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [pendingDeleteStation, setPendingDeleteStation] = useState<any | null>(
     null,
@@ -1267,34 +1277,39 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                 </td>
                                 <td className="relative w-24 px-2 py-2.5 text-right align-middle text-sm">
                                   <div className="inline-flex items-center gap-2">
-                                    <div className="relative">
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setOpenMenuId(
-                                            openMenuId === id ? null : id,
-                                          );
-                                        }}
-                                        aria-label={t(
-                                          "ui.Stations.masAcciones",
-                                          "Más acciones",
-                                        )}
-                                        className="cg-btn-ghost cg-focus rounded p-1"
-                                      >
-                                        <MoreVertical size={18} />
-                                      </button>
-                                      {openMenuId === id && (
-                                        <div
-                                          data-menu-id={id}
-                                          className="glass-raised absolute right-0 z-50 mt-2 w-44 py-1"
+                                    {/* Radix renders the menu in a portal: the old
+                                        absolutely-positioned menu was clipped by the
+                                        table's scroll box (same fix as Contacts). */}
+                                    <DropdownMenu
+                                      open={openRowMenuId === id}
+                                      onOpenChange={(o) =>
+                                        setOpenRowMenuId(rowMenuOpenChange(id, o))
+                                      }
+                                    >
+                                      <DropdownMenuTrigger asChild>
+                                        <button
+                                          onClick={(e) => e.stopPropagation()}
+                                          aria-label={t(
+                                            "ui.Stations.masAcciones",
+                                            "Más acciones",
+                                          )}
+                                          className="cg-btn-ghost cg-focus rounded p-1"
                                         >
+                                          <MoreVertical size={18} />
+                                        </button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent
+                                        align="end"
+                                        data-menu-id={id}
+                                        className="w-44 py-1"
+                                      >
                                           <button
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               navigate(
                                                 `/post-sites/${site?.id}/stations/${id}`,
                                               );
-                                              setOpenMenuId(null);
+                                              setOpenRowMenuId(null);
                                             }}
                                             className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                           >
@@ -1308,7 +1323,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               handleDelete(id);
-                                              setOpenMenuId(null);
+                                              setOpenRowMenuId(null);
                                             }}
                                             className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                             style={{ color: "var(--bad-text)" }}
@@ -1319,9 +1334,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                               "Remove",
                                             )}
                                           </button>
-                                        </div>
-                                      )}
-                                    </div>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
                                   </div>
                                 </td>
                               </tr>

@@ -187,6 +187,7 @@ export const visitorLogService = {
   async uploadPhoto(
     file: File,
   ): Promise<{
+    new: true;
     name: string;
     privateUrl: string;
     mimeType: string;
@@ -209,6 +210,9 @@ export const visitorLogService = {
     const uploadResp = await fetch(uploadUrl, { method: "POST", body: form });
     if (!uploadResp.ok) throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: uploadResp.status, detalle: "" }).trim());
     return {
+      // Without `new` the API used to neither create nor keep the file:
+      // the visitor's photo came back empty (QA re-test N-6).
+      new: true,
       name: file.name,
       privateUrl: credData.privateUrl,
       mimeType: file.type || "image/jpeg",

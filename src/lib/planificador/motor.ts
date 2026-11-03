@@ -73,6 +73,12 @@ export interface Persona {
   desfase: number;
   /** Cambios de un día suelto, por encima de la rotación. */
   manual: Record<number, Codigo>;
+  /**
+   * Days that already happened, as they happened (the live shifts): above the
+   * rotation AND above the edits. Moving a rotation in the draft redraws the
+   * future only; a worked day never turns into «Franco» (QA 2026-11-02, N7).
+   */
+  pasado?: Record<number, Codigo>;
   /** Sacafranco: los puestos cuyos huecos cubre solo. */
   fijos?: string[];
   /** Sin asignación en ningún puesto: la bolsa de disponibles. Nunca se coloca sola. */
@@ -113,8 +119,10 @@ export interface Plan {
    * `puesto|franja|día|persona`: that cover is a shift that already exists in
    * the live schedule (an extension, a cover made in Horario or «Sin cubrir»).
    * It is a fact, not a proposal: only the person editing removes it.
+   * `2`: someone already clocked into that shift — it stays even when the
+   * post ends up with more people than it asks for.
    */
-  real?: Record<string, 1>;
+  real?: Record<string, 1 | 2>;
   /** `puesto|franja|día`: la central dejó ese hueco sin cubrir a propósito. */
   no: Record<string, 1>;
   reglas: Reglas;
@@ -314,6 +322,9 @@ function conDomingo(p: Persona, d: number): Codigo {
 
 /** Lo que dice su rotación ese día (o el cambio suelto que la pisa). */
 export function propio(p: Persona, d: number): Codigo {
+  const h = p.pasado?.[d];
+
+  if (h) return h;
   const m = p.manual[d];
 
   if (m) return m;
@@ -792,6 +803,14 @@ export function sanear(plan: Plan): void {
     for (const k of Object.keys(manual))
       if (Number.isInteger(Number(k)) && vale(manual[k]))
         p.manual[Number(k)] = manual[k];
+    if (p.pasado !== undefined) {
+      const pasado = obj(p.pasado);
+
+      p.pasado = {};
+      for (const k of Object.keys(pasado))
+        if (Number.isInteger(Number(k)) && vale(pasado[k]))
+          p.pasado[Number(k)] = pasado[k];
+    }
     p.fijos =
       p.puesto === null
         ? [
@@ -877,6 +896,37 @@ export function sanear(plan: Plan): void {
  * Deja el plan coherente tras un cambio: quita la cobertura que ya no hace
  * falta y la de quien ya no puede hacerla, y vuelve a poner a los fijos.
  */
+/**
+ * The days the engine fills with the fixed sacafrancos' covers: the sheet on
+ * screen (its focus Monday `vista`, `antes` days back and `despues` ahead)
+ * AND the whole publish horizon, which runs `despues` days from today. With
+ * only the sheet, «Publicar» counted a different draft depending on the week
+ * on screen: a week back left out the 13 Dec cover (QA 2026-11-02, N10).
+ */
+export function ventanaDelMotor(
+  vista: number,
+  hoy: number,
+  antes: number,
+  despues: number,
+): [number, number] {
+  return [Math.min(vista, hoy) - antes, Math.max(vista, hoy) + despues];
+}
+
+/**
+ * That person's day `d` already happened: before today, or today once their
+ * shifts ended (`pasado`). It is drawn as it was and the draft never edits it.
+ */
+export function diaPasado(
+  plan: Plan,
+  personaId: string,
+  d: number,
+  hoy: number,
+): boolean {
+  if (d < hoy) return true;
+
+  return personaDe(plan, personaId)?.pasado?.[d] !== undefined;
+}
+
 export function limpiar(plan: Plan, d0: number, d1: number): void {
   sanear(plan);
   // En orden fijo (por clave), no en el que estén guardadas: así el resultado no
@@ -892,7 +942,7 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
         !pu ||
         !p ||
         !pu.franjas.includes(franja) ||
-        falta(plan, pu, franja, d) < 0
+        (falta(plan, pu, franja, d) < 0 && plan.real?.[`${k}|${id}`] !== 2)
       ) {
         quitar(plan, k, id);
         continue;
