@@ -35,7 +35,7 @@ import {
 import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
-import { soloFechaCivil, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { soloFechaCivil, zonaDeLaEmpresa, zonaUsable } from "@/lib/horaDeLaEmpresa";
 import { resolveApiBase } from "@/lib/apiBase";
 
 const API = (
@@ -64,12 +64,18 @@ interface Payload {
   createdByName?: string;
   decidedByName?: string | null;
   decisionAt?: string | null;
+  /** The company's IANA zone, sent by the server. */
+  timezone?: string | null;
 }
 
-/** Day and time to the minute, in the company's zone. */
-const fechaCorta = (iso: string) =>
+/**
+ * Day and time to the minute, in the company's zone. The reader is outside
+ * the company: `zonaDeLaEmpresa()` alone is THEIR zone (or the one cached by
+ * another company this browser works for), so the server's zone goes first.
+ */
+export const fechaCorta = (iso: string, zona?: string | null) =>
   new Date(iso).toLocaleString(localeActual(), {
-    timeZone: zonaDeLaEmpresa(),
+    timeZone: zonaUsable(zona) ? zona : zonaDeLaEmpresa(),
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -473,7 +479,7 @@ export default function DocumentPacketPublicView() {
             {/* Without seconds; and a date ending in «p. m.» followed by the
                 sentence's own period read «p. m..» (QA re-test R2-5). */}
             {t("ui.DocumentPacketPublic.expiresOn", {
-              fecha: fechaCorta(data.expiresAt),
+              fecha: fechaCorta(data.expiresAt, data.timezone),
             }).replace(/\.\.$/, ".")}
           </p>
         )}
@@ -542,7 +548,7 @@ export default function DocumentPacketPublicView() {
               </div>
               <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {data.decidedByName ? `${data.decidedByName} · ` : ""}
-                {data.decisionAt ? fechaCorta(data.decisionAt) : ""}
+                {data.decisionAt ? fechaCorta(data.decisionAt, data.timezone) : ""}
               </div>
             </div>
           </div>
