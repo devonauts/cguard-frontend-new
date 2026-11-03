@@ -34,13 +34,36 @@
 import { localeActual } from "@/lib/localeActual";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 
-/** La zona de la empresa; si no está configurada, la del dispositivo. */
+/* Whether this browser knows a zone. The server checks it against Node's
+   tz database, but a browser can be older: «America/Ciudad_Juarez» (2022)
+   is unknown to an iOS 15 Safari, and every helper below would throw a
+   RangeError and take the screen down with it. */
+const zonasConocidas = new Map<string, boolean>();
+
+export function zonaUsable(zona: string | null | undefined): zona is string {
+  if (!zona) return false;
+  let ok = zonasConocidas.get(zona);
+
+  if (ok === undefined) {
+    try {
+      new Intl.DateTimeFormat("en-US", { timeZone: zona });
+      ok = true;
+    } catch {
+      ok = false;
+    }
+    zonasConocidas.set(zona, ok);
+  }
+
+  return ok;
+}
+
+/** La zona de la empresa; si no está configurada (o este navegador no la conoce), la del dispositivo. */
 export function zonaDeLaEmpresa(): string {
-  return (
-    getTenantTimezone() ||
-    Intl.DateTimeFormat().resolvedOptions().timeZone ||
-    "UTC"
-  );
+  const zona = getTenantTimezone();
+
+  if (zonaUsable(zona)) return zona;
+
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 }
 
 /** Convierte lo que llegue (ISO, Date, epoch) en Date, o null si no vale. */

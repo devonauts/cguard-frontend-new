@@ -35,7 +35,7 @@ import {
 import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
-import { soloFechaCivil, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { soloFechaCivil, zonaDeLaEmpresa, zonaUsable } from "@/lib/horaDeLaEmpresa";
 import { resolveApiBase } from "@/lib/apiBase";
 
 const API = (
@@ -75,7 +75,7 @@ interface Payload {
  */
 export const fechaCorta = (iso: string, zona?: string | null) =>
   new Date(iso).toLocaleString(localeActual(), {
-    timeZone: zona || zonaDeLaEmpresa(),
+    timeZone: zonaUsable(zona) ? zona : zonaDeLaEmpresa(),
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
