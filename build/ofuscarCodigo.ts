@@ -5,8 +5,12 @@
  * route and string was readable in the shipped files, and a scraper that
  * walked away with them could read how the CRM is built. This pass runs
  * javascript-obfuscator over every chunk of OUR code after the minifier:
- * names become hex, all strings move to an encoded table, a little control
- * flow is flattened.
+ * names become hex, all strings move to an encoded table.
+ *
+ * Control-flow flattening is OFF (2026-11-03): on some seeds it turned
+ * `onSaved?.(…)` into `onSaved(…)` inside a minified sequence expression, and
+ * creating a client threw «_0x… is not a function» after the save. The build
+ * now also fails if any chunk loses an optional call («?.(») in this pass.
  *
  * What it does NOT touch: third-party libraries (vendor-*, the rolldown
  * runtime, the preload helper, workbox) — they are public anyway and
@@ -48,6 +52,11 @@ function semillaDe(codigo: string): number {
   return parseInt(createHash("sha256").update(codigo).digest("hex").slice(0, 8), 16);
 }
 
+/** Optional calls (`f?.(…)`). The obfuscator must keep every one of them. */
+export function llamadasOpcionales(codigo: string): number {
+  return (codigo.match(/\?\.\(/g) || []).length;
+}
+
 const NO_SE_OFUSCA = /(^|\/)(vendor-|rolldown-runtime|vite-precarga|workbox)/;
 
 export const OPCIONES_DE_OFUSCACION = {
@@ -69,8 +78,8 @@ export const OPCIONES_DE_OFUSCACION = {
   stringArrayWrappersCount: 1,
   stringArrayWrappersType: "variable" as const,
   stringArrayCallsTransform: false,
-  controlFlowFlattening: true,
-  controlFlowFlatteningThreshold: 0.1,
+  controlFlowFlattening: false,
+  controlFlowFlatteningThreshold: 0,
   numbersToExpressions: false,
   simplify: true,
   splitStrings: false,
@@ -133,10 +142,18 @@ export function ofuscarCodigo(): Plugin {
       let n = 0;
       for (const [nombre, fichero] of Object.entries(bundle)) {
         if (fichero.type !== "chunk" || NO_SE_OFUSCA.test(nombre)) continue;
+        const antes = llamadasOpcionales(fichero.code);
         fichero.code = JavaScriptObfuscator.obfuscate(fichero.code, {
           ...OPCIONES_DE_OFUSCACION,
           seed: semillaDe(fichero.code),
         }).getObfuscatedCode();
+        const despues = llamadasOpcionales(fichero.code);
+        if (despues < antes) {
+          this.error(
+            `ofuscación: ${nombre} perdió ${antes - despues} llamada(s) opcional(es) «?.(» ` +
+              `(${antes} → ${despues}); una llamada sin «?.» rompe la página. No se publica.`,
+          );
+        }
         n += 1;
       }
       this.info?.(`ofuscados ${n} ficheros propios`);
