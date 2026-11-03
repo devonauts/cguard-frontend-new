@@ -140,6 +140,39 @@ describe("borrador · lo que se publica no depende de la semana a la vista", () 
     expect(pub.noPublicables.join(" | ")).not.toMatch(/Tres: lo cambiado/);
   });
 
+  it("a live cover after the horizon the engine drops is named: it stays in the live schedule (R7 time)", () => {
+    // Same draft as R4-N1: Uno's rotation (published) now works Friday 18
+    // Dec, so the draft drops Tres's live shift that day. Nothing after the
+    // horizon is withdrawn, so the post would have Uno AND Tres: say so.
+    const leido = leer([turno("t-46", "tres", 46, 7)]);
+    const b = unDiaDespues(leido.plan);
+
+    limpiar(b, ...ventanaDelMotor(0, HOY, ANTES, DESPUES));
+    const pub = planificarPublicacion(leido.plan, b, leido.enlace, ctx());
+
+    expect(pub.cambios.map((c) => c.texto).join(" | ")).toMatch(/Uno: rotación/);
+    expect(pub.cambios.map((c) => c.texto).join(" | ")).not.toMatch(/2026-12-18/);
+    expect(pub.noPublicables.join(" | ")).toMatch(
+      /Tres: su turno del 2026-12-18 en QA turnos Estación A sigue en el horario real/,
+    );
+  });
+
+  it("a falta on a shift the guard already clocked into is not published (R7 time)", () => {
+    const shifts = overview().shifts.map((s: any) =>
+      s.id === "u-1" ? { ...s, clockedIn: true } : s,
+    );
+    const r = planDesdeHorarioReal({ ...overview(), shifts }, [], BASE, TZ, 60, AHORA);
+
+    limpiar(r.plan, ...ventanaDelMotor(0, HOY, ANTES, DESPUES));
+    const b = copiar(r.plan);
+
+    uno(b).ausencias = [...(uno(b).ausencias || []), { desde: 1, hasta: 1, tipo: "falta" }];
+    const pub = planificarPublicacion(r.plan, b, r.enlace, ctx());
+
+    expect(pub.cambios.flatMap((c) => c.llamadas).some((l) => /coverage\/absence/.test(l.ruta))).toBe(false);
+    expect(pub.noPublicables.join(" | ")).toMatch(/Uno: ya marcó entrada el 2026-11-03/);
+  });
+
   it("the engine's own covers after the horizon are not reported as edits", () => {
     const leido = leer();
     const b = copiar(leido.plan);

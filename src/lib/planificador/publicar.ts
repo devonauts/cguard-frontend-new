@@ -555,6 +555,14 @@ export function planificarPublicacion(
              vean igual. Sin turno real ese día no hay nada que marcar. */
           const turno = enlace.turnos[p.id]?.[d];
 
+          // Someone who clocked in is at work: a «no se presentó» would stand
+          // the post down and open an uncovered-post alert (QA round 7, time).
+          if (turno && enlace.marcados?.[turno.id]) {
+            no.push(
+              `${nombreDe(p)}: ya marcó entrada el ${ctx.fechaDe(d)}; la falta no se publica. Si se fue del puesto, regístralo en Cobertura en vivo.`,
+            );
+            continue;
+          }
           if (turno && pu) {
             /* La falta y su reemplazo van en UNA llamada: el servidor abre la
                novedad y la cubre sin gritar «puesto sin cubrir» en medio. */
@@ -892,6 +900,13 @@ export function planificarPublicacion(
 
     if (x === undefined || d < x) despues.set(id, d);
   };
+  /** Live shifts after the horizon the draft drops but nobody withdraws. */
+  const siguen = new Map<string, { d: number; puesto: string }>();
+  const sigue = (id: string, d: number, puesto: string) => {
+    const x = siguen.get(id);
+
+    if (!x || d < x.d) siguen.set(id, { d, puesto });
+  };
 
   for (const p of plan.personas) {
     const antes = ori.get(p.id);
@@ -934,13 +949,24 @@ export function planificarPublicacion(
       fijosDe(pl, partir(k).puesto).some((x) => x.id === id);
     const bloqueado = !!plan.no[k] && !original.no?.[k];
 
-    for (const id of antes)
-      if (
-        !ahora.includes(id) &&
-        !original.auto[`${k}|${id}`] &&
-        (bloqueado || !(fijo(original, id) && fijo(plan, id)))
-      )
-        tarde(id, d);
+    for (const id of antes) {
+      if (ahora.includes(id) || original.auto[`${k}|${id}`]) continue;
+      if (bloqueado || !(fijo(original, id) && fijo(plan, id))) tarde(id, d);
+      // The engine took back a cover that is a LIVE shift: nothing after the
+      // horizon is published, so that shift stays in the live schedule while
+      // the draft no longer needs it (e.g. the titular now works that day).
+      // Say so; silence left a second guard on the post (QA round 7, time).
+      else if (original.real?.[`${k}|${id}`]) sigue(id, d, partir(k).puesto);
+    }
+  }
+  for (const [id, x] of siguen) {
+    const p = plan.personas.find((y) => y.id === id);
+    const pu = plan.puestos.find((y) => y.id === x.puesto);
+
+    if (p)
+      no.push(
+        `${nombreDe(p)}: su turno del ${ctx.fechaDe(x.d)}${pu ? ` en ${pu.nombre}` : ""} sigue en el horario real aunque el borrador ya no lo necesita; se publica hasta el ${ctx.fechaDe(d1 - 1)}. Retíralo desde Horario si sobra.`,
+      );
   }
   for (const [id, d] of despues) {
     const p = plan.personas.find((x) => x.id === id);
