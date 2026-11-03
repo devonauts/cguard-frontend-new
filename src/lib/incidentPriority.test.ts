@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { incidentPriorityKey, mergeByIncidentPriority } from "./incidentPriority";
+import {
+  incidentPriorityForForm,
+  incidentPriorityKey,
+  mergeByIncidentPriority,
+} from "./incidentPriority";
 
 describe("incident priority", () => {
   it("reads the English and Spanish spellings as one priority", () => {
@@ -21,5 +25,16 @@ describe("incident priority", () => {
     expect(merged).toHaveLength(2);
     expect(merged[0].count).toBe(6);
     expect(merged[1].count).toBe(1);
+  });
+
+  it("opens every stored spelling in the edit form's alta / media / baja", () => {
+    expect(incidentPriorityForForm("critical")).toBe("alta");
+    expect(incidentPriorityForForm("critica")).toBe("alta");
+    expect(incidentPriorityForForm("high")).toBe("alta");
+    expect(incidentPriorityForForm("medium")).toBe("media");
+    expect(incidentPriorityForForm("low")).toBe("baja");
+    expect(incidentPriorityForForm("alta")).toBe("alta");
+    expect(incidentPriorityForForm(null)).toBeNull();
+    expect(incidentPriorityForForm("otra")).toBeNull();
   });
 });

@@ -1931,7 +1931,8 @@ export default function DispatcherPage() {
                       </td>
                       <td className="px-4 py-3" data-rotulo={t("dispatcher.header_datetime")}>
                         {(() => {
-                          const dateValue = r.dateTime || r.incidentAt;
+                          // Portal incidents carry only `date`: show it rather than «-».
+                          const dateValue = r.dateTime || r.incidentAt || r.date;
                           if (!dateValue) return "-";
                           const d = new Date(dateValue);
                           return isNaN(d.getTime()) ? "-" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });

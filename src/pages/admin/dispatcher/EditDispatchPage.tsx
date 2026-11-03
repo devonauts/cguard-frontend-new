@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { incidentPriorityForForm } from "@/lib/incidentPriority";
 import MejorarRedaccion from "@/components/vigia/partes/MejorarRedaccion";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -336,7 +337,9 @@ export default function EditDispatchPage() {
           siteId: savedSiteId ? String(savedSiteId) : "",
           stationId: data.stationId ? String(data.stationId) : "",
           guardId: derivedGuard.id || "",
-          priority: data.priority || "media",
+          // `critical` / `high` / `medium` (alarm, video, guard app) are not
+          // options of this form: mapped, or the form could not be saved.
+          priority: incidentPriorityForForm(data.priority) || "media",
           callerType: data.callerType || "",
           callerName: data.callerName || "",
           location: data.location || "",
