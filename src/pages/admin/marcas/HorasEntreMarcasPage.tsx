@@ -441,13 +441,8 @@ export default function HorasEntreMarcasPage() {
               />
             ) : (
               <>
-                <StatsStrip className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <StatCard
-                    flat
-                    icon={<Clock />}
-                    label={t("ui.HorasEntreMarcas.horasAprobadas", "Horas aprobadas")}
-                    value={horas(matriz.total)}
-                  />
+                {/* One tile per page on the phone: two side by side cut the amount and the label. */}
+                <StatsStrip porPagina={1} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <StatCard
                     flat
                     hint={
@@ -458,6 +453,12 @@ export default function HorasEntreMarcasPage() {
                     icon={<BadgeDollarSign />}
                     label={t("ui.HorasEntreMarcas.importe", "Importe")}
                     value={textoImporteTotal}
+                  />
+                  <StatCard
+                    flat
+                    icon={<Clock />}
+                    label={t("ui.HorasEntreMarcas.horasAprobadas", "Horas aprobadas")}
+                    value={horas(matriz.total)}
                   />
                   <StatCard
                     flat
