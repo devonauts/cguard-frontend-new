@@ -58,6 +58,13 @@ export interface NameMaskOptions {
   placeNamesInText?: boolean;
 }
 
+export interface InTextOptions {
+  /** Hide site/station names in this text whatever the file's default: the
+   *  text IS a place (the incident's «Ubicación», which the guard app fills
+   *  with the post's name). */
+  placeNames?: boolean;
+}
+
 /** The screen shows every name as it is. */
 export const showName: NameMask = (_kind, name) => (name == null ? "" : String(name));
 
@@ -70,7 +77,7 @@ export type FileNameMask = NameMask & {
    * is replaced. Site and station names only when `placeNamesInText` is on
    * (see HIDE_PLACE_NAMES_IN_TEXT).
    */
-  inText: (text: string) => string;
+  inText: (text: string, options?: InTextOptions) => string;
   /** Gives `name` the alias of `sameAs` (a station's call-sign «Alfa 1» is
    *  hidden as the same «Puesto 3» as the station). */
   alias: (kind: MaskedKind, name: string | null | undefined, sameAs: string) => void;
@@ -157,11 +164,12 @@ export function createNameMask(
     return alias;
   };
 
-  const inText = (text: string) => {
+  const inText = (text: string, options: InTextOptions = {}) => {
     const original = text == null ? "" : String(text);
+    const places = options.placeNames ?? placeNamesInText;
     // Longest first, so «Garita Principal Norte» wins over «Garita Principal».
     const pairs = (Object.keys(aliases) as MaskedKind[])
-      .filter((k) => hidden[k] && (placeNamesInText || !PLACE_KINDS.has(k)))
+      .filter((k) => hidden[k] && (places || !PLACE_KINDS.has(k)))
       .flatMap((k) => Array.from(aliases[k], ([name, alias]) => [plegar(name), alias]))
       .filter(([name]) => name.length > 1)
       .sort((a, b) => b[0].length - a[0].length);
@@ -216,6 +224,13 @@ interface MarkedColumn<T> {
   privacy?: PrivacyMark;
   /** Free text that may contain the row's names (see FileNameMask.inText). */
   freeText?: boolean;
+  /**
+   * Text that names a place (an incident's «Ubicación» holds the post's name).
+   * Site and station names are hidden in it even while place names in other
+   * free text are kept (HIDE_PLACE_NAMES_IN_TEXT): otherwise the post hidden
+   * in the «Puesto» column showed in clear in the column next to it.
+   */
+  placeText?: boolean;
   /** Characters shown before «…» — applied AFTER masking. */
   maxChars?: number;
   value: (row: T, mask?: NameMask) => string;
@@ -238,6 +253,8 @@ export function exportValue<T>(column: MarkedColumn<T>, row: T, mask: FileNameMa
   const kind = column.privacy;
 
   if (kind && kind !== "guardName") return mask(kind, column.value(row, showName));
+  if (column.placeText)
+    return recortar(mask.inText(column.value(row, showName), { placeNames: true }), column.maxChars);
   if (column.freeText) return recortar(mask.inText(column.value(row, showName)), column.maxChars);
 
   return recortar(column.value(row, mask), column.maxChars);

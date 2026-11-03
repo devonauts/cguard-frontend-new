@@ -33,6 +33,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { confirmDialog } from "@/components/ui/confirmDialog";
+
+import { confirmThenDelete } from "./confirmDelete";
 import { Link } from "react-router-dom";
 import {
   EllipsisVertical,
@@ -214,10 +217,26 @@ export default function Incidents({ site }: { site?: SiteProp }) {
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
       if (!tenantId) throw new Error("Tenant missing");
-      // Backend expects bulk-delete via query param `ids[]`; use that for single-id delete
-      await ApiService.delete(
-        `/tenant/${tenantId}/incident?ids[]=${encodeURIComponent(it.id)}`,
+      // Ask first, like «Eliminar» in the incident list (/dispatch-tickets).
+      const deleted = await confirmThenDelete(
+        () =>
+          confirmDialog({
+            title: t("ui.Dispatcher.confirmarEliminacion", "Confirmar eliminación"),
+            message: t("dispatcher.confirm_delete_desc", {
+              defaultValue:
+                "¿Estás seguro de eliminar {{count}} incidente(s)? Esta acción no se puede deshacer.",
+              count: 1,
+            }),
+            confirmText: t("actions.delete", "Eliminar"),
+            tone: "danger",
+          }),
+        // Backend expects bulk-delete via query param `ids[]`; use that for single-id delete
+        () =>
+          ApiService.delete(
+            `/tenant/${tenantId}/incident?ids[]=${encodeURIComponent(it.id)}`,
+          ),
       );
+      if (!deleted) return;
       setIncidents((prev) => prev.filter((p) => p.id !== it.id));
       toast.success(t("ui.Incidents.incidenteEliminado"));
     } catch (err) {

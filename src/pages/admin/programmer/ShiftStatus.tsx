@@ -57,10 +57,11 @@ import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 import { localeActual } from "@/lib/localeActual";
 import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
 import { listarTodo } from "@/lib/listarCompleto";
-import { ESTADOS_ANULADOS, ESTADO_NOVEDAD } from "@/lib/shiftStatus";
+import { ESTADO_NOVEDAD } from "@/lib/shiftStatus";
 import { ApiService } from "@/services/api/apiService";
 import { diaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { etiquetaDeAusencia, marcasPorDia } from "./ausenciaDelTurno";
+import { estadoEnLaLista, type EstadoEnLaLista } from "./estadoEnLaLista";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -85,34 +86,10 @@ function formatTime(iso: string | null) {
   });
 }
 
-type ShiftStatusValue =
-  | "completed"
-  | "in-progress"
-  | "pending"
-  | "cancelled"
-  /** Handed to a colleague (approved swap) or moved: someone else works it. */
-  | "transferred";
+type ShiftStatusValue = EstadoEnLaLista;
 
-function computeStatus(row: ShiftRecord): ShiftStatusValue {
-  /* A voided shift (absent, cancelled, moved to another station) leaves the
-     post without that guard whatever the clock says: it was «Pendiente» and
-     later «Completado» (QA 2026-11-01). */
-  /* A swapped or moved shift did not leave the post empty: the colleague's
-     row covers it. It counted as «Cancelado — quedaron sin vigilante»
-     (QA 2026-11-02, N8). */
-  if (String((row as any).status || "") === "transferred_out") return "transferred";
-  if ((ESTADOS_ANULADOS as readonly string[]).includes(String((row as any).status || "")))
-    return "cancelled";
-  const now = new Date();
-  const start = new Date(row.startTime);
-  const end = new Date(row.endTime);
-  if (!row.guardId) {
-    return end < now ? "cancelled" : "pending";
-  }
-  if (now >= start && now <= end) return "in-progress";
-  if (end < now) return "completed";
-  return "pending";
-}
+const computeStatus = (row: ShiftRecord): ShiftStatusValue =>
+  estadoEnLaLista(row as any);
 
 // ── component ────────────────────────────────────────────────────────────────
 
@@ -259,6 +236,15 @@ export default function ShiftStatus() {
           </StatusBadge>
         );
       case "cancelled":
+        // Pulled to another post (Cobertura en vivo): the post is still
+        // without him, but the word is what happened.
+        if (row?.status === "transferred_out")
+          return (
+            <StatusBadge tone="bad">
+              {t("ui.Schedule.estadoTurno.transferred_out", "Trasladado")}
+            </StatusBadge>
+          );
+
         return (
           <StatusBadge tone="bad">
             {t("ui.ShiftStatus.cancelado", "Cancelado")}

@@ -50,7 +50,14 @@ export function cacheTenantTimezone(tz: string | null | undefined): void {
 /** The cached tenant timezone, or undefined (callers then use device tz). */
 export function getTenantTimezone(): string | undefined {
   try {
-    return localStorage.getItem(TZ_KEY) || undefined;
+    const tz = localStorage.getItem(TZ_KEY) || undefined;
+
+    // A zone newer than this browser's tz data («America/Ciudad_Juarez» on an
+    // older Safari) made every `timeZone: getTenantTimezone()` throw a
+    // RangeError: it is treated as unset, so callers use the device zone.
+    if (tz) new Intl.DateTimeFormat("en-US", { timeZone: tz });
+
+    return tz;
   } catch {}
 
   return undefined;

@@ -236,6 +236,27 @@ describe("report privacy", () => {
       expect(exportValue({ privacy: "siteName", value: () => "Prueba" }, {}, mask)).toBe("Sede 1");
     });
 
+    it("hides the post in the incident location column, which names a place", () => {
+      const mask = todo();
+
+      learnCompanyNames(mask, empresa);
+      const puesto = mask("stationName", "Garita Principal");
+      const ubicacion = { placeText: true, value: (r: { location: string }) => r.location };
+
+      expect(exportValue(ubicacion, { location: "Garita Principal" }, mask)).toBe(puesto);
+      expect(exportValue(ubicacion, { location: "garita  principal" }, mask)).toBe(puesto);
+      expect(exportValue(ubicacion, { location: "Sede Norte" }, mask)).toBe(mask("siteName", "Sede Norte"));
+      // Other free text still keeps place names (the «Prueba» case).
+      expect(exportValue({ freeText: true, value: () => "Garita Principal" }, {}, mask)).toBe("Garita Principal");
+    });
+
+    it("leaves the location alone when no name switch is on", () => {
+      const mask = createNameMask(NOTHING_HIDDEN, LABELS);
+
+      learnCompanyNames(mask, empresa);
+      expect(exportValue({ placeText: true, value: () => "Garita Principal" }, {}, mask)).toBe("Garita Principal");
+    });
+
     it("still hides a person's full name in free text, as before", () => {
       const mask = todo();
 
