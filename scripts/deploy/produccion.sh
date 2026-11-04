@@ -35,6 +35,12 @@ if [ "$PUNTA" != "$(git rev-parse "$SHA")" ]; then
   echo "main ya está en ${PUNTA:0:8}, más nuevo que ${SHA:0:8}: lo despliega la ejecución de ese commit."
   exit 0
 fi
+# Ya publicado (a mano o por otra ejecución): desplegar.sh deja el commit en el
+# index servido. Recompilar lo mismo sólo gasta diez minutos de CPU de producción.
+SELLO=$(grep -o 'name="cg-commit" content="[^"]*"' /var/www/frontend/index.html 2>/dev/null | sed 's/.*content="//;s/"$//' || true)
+if [ -n "$SELLO" ] && [ "$(git rev-parse "$SELLO" 2>/dev/null || true)" = "$(git rev-parse "$SHA")" ]; then
+  echo "El CRM publicado ya es ${SHA:0:8}."; exit 0
+fi
 PREV=$(git rev-parse HEAD)
 git merge --ff-only -q "$SHA"
 if ! git diff --quiet "$PREV" "$SHA" -- package.json package-lock.json; then
