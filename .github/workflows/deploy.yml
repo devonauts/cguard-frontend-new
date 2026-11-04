@@ -2,9 +2,9 @@
 #
 # CUÁNDO
 #   - Solo, cada vez que el flujo «CI» termina en VERDE sobre un push a main:
-#     se despliega exactamente ese commit.
-#   - A mano («Run workflow»): un commit concreto, o volver atrás (rollback)
-#     a uno anterior. A mano también se exige que ese commit tenga CI verde.
+#     se despliega ese commit si sigue siendo la punta de main.
+#   - A mano («Run workflow»): desplegar la punta de main, o «revertir» al
+#     último respaldo.
 #
 # DÓNDE CORRE
 #   En el ejecutor propio de la oficina (etiqueta `cguard-deploy`, contenedor en
@@ -13,13 +13,15 @@
 #   únicamente desde la oficina.
 #
 # QUÉ HACE
-#   scripts/deploy/produccion.sh, ejecutado en la VM: build con el `.env` de
-#   producción (la clave real de mapas no sale del servidor), respaldo,
-#   publicación en /var/www/frontend y chequeo, con vuelta atrás automática.
+#   scripts/deploy/produccion.sh compila EN la VM con su .env de producción y
+#   publica con scripts/desplegar.sh crm (backend), el despliegue oficial:
+#   valida el artefacto, respalda, publica, prueba la integridad vía
+#   Cloudflare, vuelve atrás solo si algo falla y lo registra en
+#   Superadmin › Observabilidad › Versiones.
 #
 # DÓNDE SE VE
 #   Actions › Deploy (registros), Code › Deployments › production (historial)
-#   y Superadmin › Despliegues.
+#   y Superadmin › Observabilidad › Versiones.
 name: Deploy
 
 on:
@@ -29,13 +31,10 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      sha:
-        description: 'Commit a desplegar (vacío = el último de main)'
-        required: false
       modo:
-        description: 'deploy = avanzar · rollback = volver a un commit anterior'
+        description: 'deploy = la punta de main · revertir = volver al último respaldo'
         type: choice
-        options: [deploy, rollback]
+        options: [deploy, revertir]
         default: deploy
 
 # Nunca dos despliegues a la vez; si llegan varios, gana el más reciente.
@@ -67,37 +66,37 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_SHA: ${{ github.event.workflow_run.head_sha }}
-          IN_SHA: ${{ inputs.sha }}
         run: |
           set -euo pipefail
-          SHA="${RUN_SHA:-$IN_SHA}"
+          SHA="$RUN_SHA"
           if [ -z "$SHA" ]; then
             SHA=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" \
               "https://api.github.com/repos/${{ github.repository }}/commits/main" | jq -r .sha)
           fi
-          # A mano también: sólo un commit con CI verde.
-          OK=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/ci.yml/runs?head_sha=$SHA&status=success&per_page=1" \
-            | jq -r '.total_count')
-          if [ "$OK" = "0" ]; then echo "::error::$SHA no tiene CI verde"; exit 1; fi
+          if [ "${{ inputs.modo }}" != revertir ]; then
+            OK=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/workflows/ci.yml/runs?head_sha=$SHA&status=success&per_page=1" \
+              | jq -r '.total_count')
+            if [ "$OK" = "0" ]; then echo "::error::${SHA:0:8} no tiene CI verde"; exit 1; fi
+          fi
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "### Desplegando \`${SHA:0:8}\` (${{ inputs.modo || 'deploy' }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "### ${{ inputs.modo || 'deploy' }} · \`${SHA:0:8}\`" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.sha.outputs.sha }}
           sparse-checkout: scripts/deploy
 
-      - name: Desplegar en la VM
+      - name: Desplegar en la VM (scripts/desplegar.sh crm)
         run: |
           ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
-            "bash -s -- ${{ steps.sha.outputs.sha }} ${{ inputs.modo || 'deploy' }} ${{ github.actor }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            "bash -s -- ${{ steps.sha.outputs.sha }} ${{ inputs.modo || 'deploy' }} ${{ github.actor }}" \
             < scripts/deploy/produccion.sh
 
       - name: Salud pública
         run: |
           for i in 1 2 3 4 5; do
-            c=$(curl -s -o /dev/null -w '%{http_code}' https://app.cguardpro.com/) && [ "$c" = 200 ] && { echo "CRM 200"; exit 0; }
+            c=$(curl -s -o /dev/null -w "%{http_code}" https://app.cguardpro.com/) && [ "$c" = 200 ] && { echo "CRM 200"; exit 0; }
             sleep 5
           done
           echo "::error::app.cguardpro.com no responde 200"; exit 1
