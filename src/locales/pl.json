@@ -12501,7 +12501,15 @@
       "sinCoincidencias": "Żaden posterunek nie pasuje do wyszukiwania.",
       "nElegidosDeTotal": "Wybrano {{n}} z {{total}}. Kolejność wizyt ustawisz poniżej.",
       "vehiculoOpcional": "Pojazd (opcjonalnie)",
-      "sinVehiculo": "Bez pojazdu"
+      "sinVehiculo": "Bez pojazdu",
+      "optimizarYTrazar": "Optymalizuj i wyznacz",
+      "trazarEnEsteOrden": "Wyznacz w tej kolejności",
+      "planUnaLlamada": "Jedno zapytanie do usługi map: kolejność, trasa ulicami i czas, z ruchem w godzinie wyjazdu. Nie trzeba najpierw zapisywać.",
+      "planFaltanParadas": "Dodaj co najmniej dwa przystanki, aby zoptymalizować lub wyznaczyć trasę.",
+      "planConTrafico": "Trasa obliczona z uwzględnieniem ruchu: {{cifras}}.",
+      "planSinTrafico": "Trasa obliczona ulicami: {{cifras}}. Bez ruchu: Google Routes API nie jest włączone.",
+      "planSinUbicacion": "Przystanki bez lokalizacji ({{count}}) trafiły na koniec.",
+      "planGuarda": "Zapisz trasę, aby zachować tę kolejność i przebieg."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",

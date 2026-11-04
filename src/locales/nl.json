@@ -12417,7 +12417,15 @@
       "sinCoincidencias": "Geen post komt overeen met de zoekopdracht.",
       "nElegidosDeTotal": "{{n}} van {{total}} gekozen. De volgorde stel je hieronder in.",
       "vehiculoOpcional": "Voertuig (optioneel)",
-      "sinVehiculo": "Geen voertuig"
+      "sinVehiculo": "Geen voertuig",
+      "optimizarYTrazar": "Optimaliseren en tekenen",
+      "trazarEnEsteOrden": "In deze volgorde tekenen",
+      "planUnaLlamada": "Eén enkele kaartaanvraag: volgorde, route over de weg en tijd, met verkeer op het vertrektijdstip. Eerst opslaan is niet nodig.",
+      "planFaltanParadas": "Voeg minstens twee stops toe om de route te optimaliseren of te tekenen.",
+      "planConTrafico": "Route berekend met verkeer: {{cifras}}.",
+      "planSinTrafico": "Route over de weg berekend: {{cifras}}. Zonder verkeer: de Google Routes API is niet ingeschakeld.",
+      "planSinUbicacion": "{{count}} stops hebben geen locatie en staan achteraan.",
+      "planGuarda": "Sla de route op om deze volgorde en het traject te bewaren."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Op stadssnelheid, exclusief de tijd bij elke halte",

@@ -11859,7 +11859,15 @@
       "sinCoincidencias": "Ningún puesto coincide con la búsqueda.",
       "nElegidosDeTotal": "{{n}} de {{total}} elegidos. El orden de visita se ajusta abajo.",
       "vehiculoOpcional": "Vehículo (opcional)",
-      "sinVehiculo": "Sin vehículo"
+      "sinVehiculo": "Sin vehículo",
+      "optimizarYTrazar": "Optimizar y trazar",
+      "trazarEnEsteOrden": "Trazar en este orden",
+      "planUnaLlamada": "Una sola consulta al servicio de mapas: orden, recorrido por calles y tiempo, con tráfico a la hora de salida. No hace falta guardar antes.",
+      "planFaltanParadas": "Agrega al menos dos paradas para optimizar o trazar la ruta.",
+      "planConTrafico": "Ruta calculada con tráfico: {{cifras}}.",
+      "planSinTrafico": "Ruta calculada por calles: {{cifras}}. Sin tráfico: falta activar la Routes API de Google.",
+      "planSinUbicacion": "{{count}} paradas no tienen ubicación y quedaron al final.",
+      "planGuarda": "Guarda la ruta para conservar este orden y su recorrido."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A marcha de tráfico urbano, sin contar la permanencia en cada parada",

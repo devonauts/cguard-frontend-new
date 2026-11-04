@@ -153,6 +153,26 @@ const routeService = {
     return resp;
   },
 
+  /**
+   * Orden + trazado por calles + tiempo de la ruta, en UNA llamada a Google y
+   * SIN guardarla (ver services/routePlanService en el servidor). Sirve al
+   * crear y al editar; el resultado se guarda con la ruta.
+   */
+  async plan(body: {
+    points: Array<{ key: string; siteId?: string; lat?: number | null; lng?: number | null; duration?: number | null }>;
+    origin?: { lat: number; lng: number } | null;
+    destination?: { lat: number; lng: number } | null;
+    optimize: boolean;
+    departureTime?: string | null;
+  }) {
+    const tenantId = getTenantId();
+    const { data: resp } = await api.post<any>(`/tenant/${tenantId}/route/plan`, {
+      data: body,
+    });
+
+    return resp;
+  },
+
   /* ── Ejecución guiada (2026-09) ─────────────────────────────────────────
      Las EJECUCIONES (`routeRun`) de las rutas: el tablero en vivo, el
      historial, el detalle de una ejecución y las modificaciones de despacho

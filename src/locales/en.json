@@ -11859,7 +11859,15 @@
       "sinCoincidencias": "No post matches the search.",
       "nElegidosDeTotal": "{{n}} of {{total}} selected. The visit order is set below.",
       "vehiculoOpcional": "Vehicle (optional)",
-      "sinVehiculo": "No vehicle"
+      "sinVehiculo": "No vehicle",
+      "optimizarYTrazar": "Optimize and map",
+      "trazarEnEsteOrden": "Map in this order",
+      "planUnaLlamada": "One single maps request: order, street route and time, with traffic at departure time. No need to save first.",
+      "planFaltanParadas": "Add at least two stops to optimize or map the route.",
+      "planConTrafico": "Route calculated with traffic: {{cifras}}.",
+      "planSinTrafico": "Route calculated by street: {{cifras}}. No traffic: the Google Routes API is not enabled.",
+      "planSinUbicacion": "{{count}} stops have no location and were placed last.",
+      "planGuarda": "Save the route to keep this order and its path."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "At city traffic speed, not counting time spent at each stop",

@@ -1227,230 +1227,149 @@ export default function RouteForm({
    *  optimización NO puede tener en cuenta. */
   const sinUbicacion = points.length - paradas.length;
 
-  /**
-   * Relee la ruta del servidor y adopta lo que diga.
-   *
-   * Es el paso OBLIGATORIO tras optimizar: el servidor puede haber apagado la
-   * marca, borrado el trazado o reordenado las paradas por su cuenta, y la única
-   * forma de no quedarse con una pantalla que miente es volver a preguntar. El
-   * orden lo manda `routePoint.order`.
-   */
-  const releerRuta = async () => {
-    if (!routeId) return;
-    const ruta: any = await routeService.find(routeId);
+  /* ── Optimizar y trazar: UNA llamada, antes o después de guardar ─────────
+     Seguridad B.A.S., 2026-11-04: había que guardar para optimizar, luego
+     otra llamada para trazar, y con paradas sin coordenadas no hacía nada.
+     Ahora `POST /route/plan` recibe las paradas tal como están en pantalla y
+     devuelve, en una sola consulta a Google, el orden, el trazado por calles y
+     el tiempo (con tráfico si la Routes API está activa). Se aplica aquí y se
+     guarda con la ruta (`plan` en el payload). */
 
-    if (!ruta) return;
+  /** El plan calculado para el recorrido que se ve; se manda al guardar. */
+  const planPendiente = useRef<{
+    firma: string;
+    optimized: boolean;
+    polyline: string | null;
+    meta: any;
+  } | null>(null);
 
-    const devueltos: any[] = Array.isArray(ruta.points)
-      ? ruta.points
-          .slice()
-          .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
-      : [];
+  /** Próxima salida a la hora programada (para el tráfico), o ya. */
+  const salidaParaTrafico = (): string | null => {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(scheduledStartTime || "");
 
-    if (devueltos.length) {
-      // Los datos que el operador escribió y el servidor no toca (duración,
-      // pasadas, dirección) se conservan; lo único que se adopta es el ORDEN.
-      const porId = new Map(
-        pointsRef.current.map((p) => [String(p.siteId), p]),
+    if (!m) return null;
+    const d = new Date();
+
+    d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+    if (d.getTime() < Date.now() + 60_000) d.setDate(d.getDate() + 1);
+
+    return d.toISOString();
+  };
+
+  const planificar = async (ordenar: boolean) => {
+    if (points.length + (origen ? 1 : 0) + (destino ? 1 : 0) < 2) {
+      toast.info(
+        t("ui.RouteForm.planFaltanParadas", "Agrega al menos dos paradas para optimizar o trazar la ruta."),
       );
-      const siguiente = devueltos.map((d: any) => {
-        const id = String(d.siteId ?? d.postSiteId ?? "");
-        const previo = porId.get(id);
 
-        return {
-          siteId: id,
-          siteName: d.siteName ?? previo?.siteName,
-          address: previo?.address || d.address || "",
-          duration: d.duration ?? previo?.duration ?? 5,
-          scheduledHits: d.scheduledHits ?? previo?.scheduledHits ?? 1,
-          // Las coordenadas llegan como CADENA (son decimales en la base de
-          // datos): se normalizan aquí para que el estado guarde números.
-          lat: parseCoord(d.lat) ?? previo?.lat ?? null,
-          lng: parseCoord(d.lng) ?? previo?.lng ?? null,
-          ...detalleDeParada(
-            d.inspectionTemplateId !== undefined || d.priority !== undefined
-              ? d
-              : previo,
-          ),
-        };
+      return;
+    }
+    const setOcupado = ordenar ? setOptimizando : setTrazando;
+
+    try {
+      setOcupado(true);
+      const r: any = await routeService.plan({
+        points: points.map((p) => ({
+          key: p.siteId,
+          siteId: p.siteId,
+          lat: p.lat ?? null,
+          lng: p.lng ?? null,
+          duration: p.duration ?? null,
+        })),
+        origin: origen ? { lat: origen.lat, lng: origen.lng } : null,
+        destination: destino ? { lat: destino.lat, lng: destino.lng } : null,
+        optimize: ordenar,
+        departureTime: salidaParaTrafico(),
       });
 
+      // El orden nuevo, y las coordenadas que faltaban (las de la sede).
+      const porId = new Map(points.map((p) => [String(p.siteId), p]));
+      const ordenados = (r?.order || [])
+        .map((k: string) => {
+          const p = porId.get(String(k));
+
+          if (!p) return null;
+          porId.delete(String(k));
+          const c = r?.coords?.[k];
+
+          return c
+            ? { ...p, lat: c.lat, lng: c.lng, address: p.address || c.address || "" }
+            : p;
+        })
+        .filter(Boolean) as PuntoDelFormulario[];
+      const siguiente = [...ordenados, ...porId.values()];
+
       setPoints(siguiente);
-      firmaGuardada.current = firmaDe(siguiente);
-      // El desplegable tiene que enseñar los mismos puestos; el vigía de
-      // `siteIds` compara CONJUNTOS, así que reordenar aquí no lo despierta.
       form.setValue(
         "siteIds",
         siguiente.map((p) => p.siteId),
         { shouldDirty: false },
       );
-    }
+      setTrazado(r?.polyline || null);
+      setOptimizada(ordenar);
+      setOptimizadaEn(ordenar ? new Date().toISOString() : null);
+      setAhorro(ordenar ? leerAhorro(r?.meta) : null);
+      planPendiente.current = {
+        firma: firmaDe(siguiente),
+        optimized: ordenar,
+        polyline: r?.polyline || null,
+        meta: r?.meta || null,
+      };
 
-    const org = leerExtremo(ruta.originLat, ruta.originLng, ruta.originLabel);
-    const dst = leerExtremo(
-      ruta.destinationLat,
-      ruta.destinationLng,
-      ruta.destinationLabel,
-    );
+      const road = r?.road;
+      const cifras = road
+        ? [
+            road.km != null ? fmtKm(road.km) : null,
+            road.minutes != null ? fmtMin(road.minutes) : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        : "";
 
-    setOrigen(org);
-    setDestino(dst);
-    extremosGuardados.current = { origen: org, destino: dst };
-
-    setOptimizada(Boolean(ruta.optimized));
-    setOptimizadaEn(ruta.optimizedAt ?? null);
-    setAhorro(leerAhorro(ruta.optimizedMeta));
-    setTrazado(ruta.roadPolyline ?? null);
-  };
-
-  /* ── Optimizar ─────────────────────────────────────────────────────────── */
-
-  const optimizar = async () => {
-    if (!routeId) return;
-    if (recorridoSucio) {
-      toast.info(t("ui.RouteForm.guardaPrimeroLosCambiosLa"));
-
-      return;
-    }
-    if (
-      !(await confirmDialog({
-        title: t(
-          "ui.RouteForm.optimizarElOrdenDeLasParadas",
-          "Optimizar el orden de las paradas",
-        ),
-        message: t(
-          "ui.RouteForm.optimizarConfirmMensaje",
-          "Se reordenarán las paradas para recortar kilómetros y minutos, contando el tiempo de permanencia en cada una y una marcha efectiva de tráfico urbano. El orden manual actual se reemplaza; puedes volver a cambiarlo a mano cuando quieras.",
-        ),
-        confirmText: t("ui.RouteForm.optimizar", "Optimizar"),
-      }))
-    ) {
-      return;
-    }
-
-    try {
-      setOptimizando(true);
-      const resp: any = await routeService.optimize(routeId);
-      const r = resp?.data ?? resp ?? {};
-      const nuevoAhorro = leerAhorro(r.meta ?? r.optimizedMeta ?? r);
-
-      // La verdad está en el servidor: se relee en vez de reconstruir el orden a
-      // partir de la respuesta (sus `points` van por id de parada, no de puesto).
-      await releerRuta();
-
-      // `changed: false` NO es un fallo: es que el orden manual ya era el bueno.
-      // Decir «has ahorrado 0 km» ahí suena a que el botón no hizo nada.
-      if (r.changed === false) {
-        toast.success(t("comun.laRutaYaEstabaEn"));
-      } else if (nuevoAhorro?.hayAhorro) {
-        const trozos: string[] = [];
-
-        if (nuevoAhorro.km != null && nuevoAhorro.km >= 0.05)
-          trozos.push(`-${fmtKm(nuevoAhorro.km)}`);
-        if (nuevoAhorro.min != null && nuevoAhorro.min >= 0.5)
-          trozos.push(`-${fmtMin(nuevoAhorro.min)}`);
+      if (r?.source === "google_routes") {
         toast.success(
-          t("ui.RouteForm.rutaOptimizadaAhorro", {
-            defaultValue: "Ruta optimizada: {{ahorro}} frente al orden manual.",
-            ahorro: trozos.join(" · "),
+          t("ui.RouteForm.planConTrafico", {
+            defaultValue: "Ruta calculada con tráfico: {{cifras}}.",
+            cifras,
+          }),
+        );
+      } else if (r?.source === "google_directions") {
+        toast.success(
+          t("ui.RouteForm.planSinTrafico", {
+            defaultValue: "Ruta calculada por calles: {{cifras}}. Sin tráfico: falta activar la Routes API de Google.",
+            cifras,
           }),
         );
       } else {
-        toast.success(t("ui.RouteForm.rutaOptimizada", "Ruta optimizada."));
+        toast.info(motivoTrazado(r?.reason));
       }
-
-      const sinCoords = nuevoAhorro?.sinCoordenadas ?? 0;
-
-      if (sinCoords > 0) {
+      if ((r?.unlocated || []).length) {
         toast.info(
-          sinCoords === 1
-            ? t("ui.RouteForm.unaParadaSinUbicacionOptimizar", "Una parada no tiene ubicación: se ha quedado en su sitio y las demás se repartieron alrededor.")
-            : t("ui.RouteForm.nParadasSinUbicacionOptimizar", {
-                defaultValue:
-                  "{{count}} paradas no tienen ubicación: se han quedado en su sitio y las demás se repartieron alrededor.",
-                count: sinCoords,
-              }),
+          t("ui.RouteForm.planSinUbicacion", {
+            defaultValue: "{{count}} paradas no tienen ubicación y quedaron al final.",
+            count: r.unlocated.length,
+          }),
         );
       }
-    } catch (err: any) {
-      // El mensaje ya viene traducido del servidor y el interceptor de `api` lo
-      // enseña tal cual (`runInProgress`, `notEnoughStops`, `noCoordinates`).
-      // Reescribirlo aquí sería taparlo con un texto peor.
-      console.error("Error optimizando ruta", err);
-      try {
-        telemetryService.log({
-          level: "error",
-          message: "Error optimizando ruta",
-          details: err,
-        });
-      } catch {}
-    } finally {
-      setOptimizando(false);
-    }
-  };
-
-  /* ── Trazar por calles ─────────────────────────────────────────────────── */
-
-  /** Ya hay trazado guardado: volver a pedirlo es lo que cuesta dinero. */
-  const rehacerTrazado = Boolean(trazado);
-
-  const trazarPorCalles = async () => {
-    if (!routeId) return;
-    if (recorridoSucio) {
-      toast.info(t("ui.RouteForm.guardaPrimeroLosCambiosPara"));
-
-      return;
-    }
-    if (
-      !(await confirmDialog({
-        title: rehacerTrazado
-          ? t("ui.RouteForm.volverATrazarPorCalles", "Volver a trazar por calles")
-          : t("ui.RouteForm.trazarElRecorridoPorCalles", "Trazar el recorrido por calles"),
-        message: rehacerTrazado
-          ? t("ui.RouteForm.rehacerTrazadoMensaje", "Esta ruta ya tiene su recorrido trazado. Volver a calcularlo consulta otra vez el servicio de mapas y eso se factura. Hazlo sólo si el recorrido cambió.")
-          : t("ui.RouteForm.trazarMensaje", "Se dibujará el camino real que sigue el vehículo en vez de la línea recta entre paradas. La primera vez consulta el servicio de mapas, que tiene coste; después queda guardado."),
-        confirmText: rehacerTrazado
-          ? t("ui.RouteForm.volverATrazar", "Volver a trazar")
-          : t("ui.RouteForm.trazar", "Trazar"),
-      }))
-    ) {
-      return;
-    }
-
-    try {
-      setTrazando(true);
-      // `force` SÓLO cuando el operador acaba de aceptar rehacerlo a sabiendas.
-      const resp: any = await routeService.roadShape(routeId, rehacerTrazado);
-      const r = resp?.data ?? resp ?? {};
-      const linea = r.polyline ?? r.roadPolyline ?? null;
-
-      if (!linea) {
-        // Esto NO es un error: el servidor lo dice y la pantalla sigue con la
-        // línea recta, que es una respuesta honesta y gratis.
-        toast.info(motivoTrazado(r.reason));
-
-        return;
+      if (mode === "edit") {
+        toast.info(t("ui.RouteForm.planGuarda", "Guarda la ruta para conservar este orden y su recorrido."));
       }
-
-      setTrazado(String(linea));
-      toast.success(
-        r.source === "cache"
-          ? t("ui.RouteForm.recorridoRecuperado", "Recorrido por calles recuperado del último trazado. No hizo falta consultar el servicio de mapas.")
-          : t("ui.RouteForm.recorridoTrazado", "Recorrido trazado por calles."),
-      );
     } catch (err: any) {
-      console.error("Error trazando ruta", err);
+      console.error("Error calculando el plan de la ruta", err);
       try {
         telemetryService.log({
           level: "error",
-          message: "Error trazando ruta por calles",
+          message: "Error calculando el plan de la ruta",
           details: err,
         });
       } catch {}
     } finally {
-      setTrazando(false);
+      setOcupado(false);
     }
   };
+
+  const optimizar = () => planificar(true);
+  const trazarPorCalles = () => planificar(false);
 
   const onSubmit = async (data: RouteCreateSchema) => {
     try {
@@ -1477,6 +1396,10 @@ export default function RouteForm({
           duration: p.duration,
           scheduledHits: p.scheduledHits,
           address: p.address,
+          // Sin coordenadas el servidor las toma de la sede; con ellas, se
+          // guardan las que se ven en el mapa.
+          lat: p.lat ?? null,
+          lng: p.lng ?? null,
           inspectionTemplateId: p.inspectionTemplateId || null,
           priority: p.priority || "normal",
           required: p.required !== false,
@@ -1499,6 +1422,18 @@ export default function RouteForm({
         destinationLat: valorExtremo(destino).lat,
         destinationLng: valorExtremo(destino).lng,
         destinationLabel: valorExtremo(destino).label,
+        // El plan calculado en pantalla, sólo si el recorrido sigue siendo el
+        // mismo (tocar una parada o un extremo después lo invalida).
+        plan:
+          planPendiente.current &&
+          planPendiente.current.firma === firmaDe(points) &&
+          (planPendiente.current.polyline || null) === (trazado || null)
+            ? {
+                optimized: planPendiente.current.optimized && optimizada,
+                polyline: planPendiente.current.polyline,
+                meta: planPendiente.current.meta,
+              }
+            : undefined,
       } as any;
 
       const resp: any =
@@ -2121,10 +2056,10 @@ export default function RouteForm({
           <PanelAhorro ahorro={ahorro} optimizadaEn={optimizadaEn} />
 
           <div className="flex flex-wrap items-center gap-2">
+            {/* Funcionan ANTES de guardar: una sola consulta a Google da el
+                orden, el recorrido por calles y el tiempo. */}
             <Button
-              disabled={
-                mode !== "edit" || !routeId || optimizando || paradas.length < 3
-              }
+              disabled={optimizando || trazando || points.length < 2}
               size="lg"
               type="button"
               variant="brand"
@@ -2137,12 +2072,10 @@ export default function RouteForm({
               )}
               {optimizando
                 ? t("ui.RouteForm.optimizando", "Optimizando…")
-                : t("ui.RouteForm.optimizar", "Optimizar")}
+                : t("ui.RouteForm.optimizarYTrazar", "Optimizar y trazar")}
             </Button>
             <Button
-              disabled={
-                mode !== "edit" || !routeId || trazando || paradas.length < 2
-              }
+              disabled={optimizando || trazando || points.length + (origen ? 1 : 0) + (destino ? 1 : 0) < 2}
               size="lg"
               type="button"
               variant="outline"
@@ -2155,33 +2088,16 @@ export default function RouteForm({
               )}
               {trazando
                 ? t("ui.RouteForm.trazando", "Trazando…")
-                : rehacerTrazado
-                  ? t("ui.RouteForm.volverATrazarPorCalles", "Volver a trazar por calles")
-                  : t("ui.RouteForm.trazarPorCalles", "Trazar por calles")}
+                : t("ui.RouteForm.trazarEnEsteOrden", "Trazar en este orden")}
             </Button>
             <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-              {rehacerTrazado
-                ? t("ui.RouteForm.yaHayRecorridoTrazado", "Ya hay recorrido trazado. Volver a calcularlo consulta el servicio de mapas otra vez y se factura.")
-                : t("ui.RouteForm.trazadoTieneCoste", "El trazado por calles usa el servicio de mapas y tiene coste. Por omisión la línea va recta.")}
+              {t(
+                "ui.RouteForm.planUnaLlamada",
+                "Una sola consulta al servicio de mapas: orden, recorrido por calles y tiempo, con tráfico a la hora de salida. No hace falta guardar antes.",
+              )}
             </span>
           </div>
 
-          {mode !== "edit" && (
-            <InfoNote tone="neutral">
-              {t(
-                "ui.RouteForm.guardaLaRutaParaOptimizar",
-                "Guarda la ruta para poder optimizar el orden de las paradas y trazar el recorrido real.",
-              )}
-            </InfoNote>
-          )}
-          {mode === "edit" && recorridoSucio && (
-            <InfoNote tone="warn">
-              {t(
-                "ui.RouteForm.hasCambiadoElRecorrido",
-                "Has cambiado el recorrido. Guarda los cambios para optimizar o trazar sobre el orden nuevo.",
-              )}
-            </InfoNote>
-          )}
           {sinUbicacion > 0 && (
             <InfoNote tone="info">
               {sinUbicacion === 1
