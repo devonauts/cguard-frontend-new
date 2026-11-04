@@ -57,6 +57,11 @@ jobs:
       # `verificar-build` sólo acepta este marcador cuando CI=true: si aparece
       # en cualquier otro sitio, el build se niega a continuar.
       VITE_GOOGLE_MAPS_API_KEY: CI-PLACEHOLDER-NO-ES-UNA-CLAVE-REAL
+      # ── MEMORIA PARA EL TYPECHECK ─────────────────────────────────────────
+      # Desde 2026-11-03 `tsc --noEmit` pasa de los ~2 GB que Node usa por
+      # defecto y muere con «JavaScript heap out of memory» en el runner de
+      # GitHub (7 GB). 6 GB deja margen al resto del runner.
+      NODE_OPTIONS: --max-old-space-size=6144
 
     steps:
       - uses: actions/checkout@v4
