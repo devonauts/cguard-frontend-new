@@ -1,0 +1,103 @@
+# Despliegue continuo del CRM (app.cguardpro.com) a producción (VM 192.168.86.19).
+#
+# CUÁNDO
+#   - Solo, cada vez que el flujo «CI» termina en VERDE sobre un push a main:
+#     se despliega exactamente ese commit.
+#   - A mano («Run workflow»): un commit concreto, o volver atrás (rollback)
+#     a uno anterior. A mano también se exige que ese commit tenga CI verde.
+#
+# DÓNDE CORRE
+#   En el ejecutor propio de la oficina (etiqueta `cguard-deploy`, contenedor en
+#   el R620): producción no es alcanzable desde GitHub, y está bien que no lo
+#   sea. El ejecutor sólo tiene una llave SSH dedicada que la VM acepta
+#   únicamente desde la oficina.
+#
+# QUÉ HACE
+#   scripts/deploy/produccion.sh, ejecutado en la VM: build con el `.env` de
+#   producción (la clave real de mapas no sale del servidor), respaldo,
+#   publicación en /var/www/frontend y chequeo, con vuelta atrás automática.
+#
+# DÓNDE SE VE
+#   Actions › Deploy (registros), Code › Deployments › production (historial)
+#   y Superadmin › Despliegues.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Commit a desplegar (vacío = el último de main)'
+        required: false
+      modo:
+        description: 'deploy = avanzar · rollback = volver a un commit anterior'
+        type: choice
+        options: [deploy, rollback]
+        default: deploy
+
+# Nunca dos despliegues a la vez; si llegan varios, gana el más reciente.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Producción
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: [self-hosted, cguard-deploy]
+    environment:
+      name: production
+      url: https://app.cguardpro.com
+    timeout-minutes: 45
+    env:
+      HOST: cguardpro@192.168.86.19
+    steps:
+      - name: Commit a desplegar
+        id: sha
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          IN_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          SHA="${RUN_SHA:-$IN_SHA}"
+          if [ -z "$SHA" ]; then
+            SHA=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/commits/main" | jq -r .sha)
+          fi
+          # A mano también: sólo un commit con CI verde.
+          OK=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/ci.yml/runs?head_sha=$SHA&status=success&per_page=1" \
+            | jq -r '.total_count')
+          if [ "$OK" = "0" ]; then echo "::error::$SHA no tiene CI verde"; exit 1; fi
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "### Desplegando \`${SHA:0:8}\` (${{ inputs.modo || 'deploy' }})" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.sha.outputs.sha }}
+          sparse-checkout: scripts/deploy
+
+      - name: Desplegar en la VM
+        run: |
+          ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
+            "bash -s -- ${{ steps.sha.outputs.sha }} ${{ inputs.modo || 'deploy' }} ${{ github.actor }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            < scripts/deploy/produccion.sh
+
+      - name: Salud pública
+        run: |
+          for i in 1 2 3 4 5; do
+            c=$(curl -s -o /dev/null -w '%{http_code}' https://app.cguardpro.com/) && [ "$c" = 200 ] && { echo "CRM 200"; exit 0; }
+            sleep 5
+          done
+          echo "::error::app.cguardpro.com no responde 200"; exit 1

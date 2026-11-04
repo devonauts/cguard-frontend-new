@@ -59,8 +59,19 @@ const fen = flat(en);
 const fpt = flat(pt);
 
 const live = Object.keys(fes).filter((k) => isAlive(k) && typeof fes[k] === 'string');
-const missingEN = live.filter((k) => !(k in fen));
-const missingPT = live.filter((k) => !(k in fpt));
+/* Plurales: i18next sólo pide a cada idioma las formas que usa. El español
+   tiene «many» (`clave_many`) y el inglés, el alemán o el neerlandés no: exigir
+   ahí una `_many` es un hueco que nadie vería nunca. Las formas de cada idioma
+   salen de Intl.PluralRules. */
+const SUFIJO_PLURAL = /_(zero|one|two|few|many|other)$/;
+const usaForma = (lang, k) => {
+  const m = SUFIJO_PLURAL.exec(k);
+  if (!m) return true;
+  try { return new Intl.PluralRules(lang).resolvedOptions().pluralCategories.includes(m[1]); } catch { return true; }
+};
+const falta = (lang, f) => (k) => !(k in f) && usaForma(lang, k);
+const missingEN = live.filter(falta('en', fen));
+const missingPT = live.filter(falta('pt', fpt));
 // Cognados válidos entre es y pt son legítimos → aviso, no error.
 const stuckPT = live.filter(
   (k) => k in fpt && typeof fpt[k] === 'string' && fpt[k] === fes[k] && String(fes[k]).length > 3 && /\s/.test(String(fes[k])),
@@ -98,7 +109,7 @@ if (stuckPT.length) log(`\n⚠️  PT: ${stuckPT.length} valores idénticos al e
 const EXTRA = ['de', 'fr', 'it', 'nl', 'pl'];
 const huecos = EXTRA.map((l) => {
   const f = flat(load(`${l}.json`));
-  return { l, faltan: live.filter((k) => !(k in f)) };
+  return { l, faltan: live.filter(falta(l, f)) };
 }).filter((x) => x.faltan.length);
 
 if (huecos.length) {
