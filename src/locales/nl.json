@@ -20431,6 +20431,9 @@
       "quoteClosing": "Afsluiting",
       "quoteFooter": "Voettekst",
       "reportFooterText": "Voettekst van de rapporten aan haar klanten"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "Dit is de eigen cyclus van deze invaller: hoeveel dagen hij werkt en hoeveel hij vrij is. De post verandert niet."
     }
   },
   "visitantes": {

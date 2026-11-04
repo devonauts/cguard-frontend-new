@@ -20755,6 +20755,9 @@
       "quoteClosing": "Zakończenie",
       "quoteFooter": "Stopka",
       "reportFooterText": "Stopka raportów dla jej klientów"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "To własny cykl tego zmiennika: ile dni pracuje, a ile ma wolnych. Stanowisko się nie zmienia."
     }
   },
   "visitantes": {

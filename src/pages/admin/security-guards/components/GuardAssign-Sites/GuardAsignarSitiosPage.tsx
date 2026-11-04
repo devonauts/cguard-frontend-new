@@ -1,3 +1,4 @@
+import { usePedirCiclo } from "@/components/schedule/PedirCicloAlAsignar";
 import React from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -145,6 +146,7 @@ type StationGroup = {
 };
 
 export default function GuardAsignarSitiosPage() {
+  const { conCiclo, dialogoDeCiclo } = usePedirCiclo();
   const { id } = useParams();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -442,9 +444,11 @@ export default function GuardAsignarSitiosPage() {
         } as any;
         const routeStationOrSite = selectedStationAssign || selectedPostSite;
 
-        await api.post(
+        // A post without a rest cycle asks for it here and retries.
+        const hecho = await conCiclo((rotationStyleId) =>
+          api.post(
           `/tenant/${tenantId}/stations/${routeStationOrSite}/assign-guard`,
-          assignPayload,
+          rotationStyleId ? { ...assignPayload, rotationStyleId } : assignPayload,
           {
             toast: {
               success: t("guards.assignSites.assigned", {
@@ -455,7 +459,10 @@ export default function GuardAsignarSitiosPage() {
               silentError: true,
             },
           } as any,
+          ),
         );
+
+        if (hecho === null) return;
 
         setSelectedClient("");
         setSelectedPostSite("");
@@ -748,6 +755,7 @@ export default function GuardAsignarSitiosPage() {
 
   return (
     <AppLayout>
+      {dialogoDeCiclo}
       <GuardsLayout navKey="keep-safe" title="guards.nav.asignarSitios">
         <div className="mx-auto max-w-5xl space-y-6">
           <Section
@@ -959,8 +967,12 @@ export default function GuardAsignarSitiosPage() {
             className="glass-scrim fixed inset-0 z-50"
             onClick={() => setAssignModalOpen(false)}
           >
+            {/* On a phone the bottom tab bar (BarraInferiorMovil, same z-50,
+                later in the page) covered «Cancelar» / «Asignar»: the panel
+                stops above it. Raising the scrim instead would hide the cycle
+                question, which opens in a portal at z-50. */}
             <div
-              className="glass-raised fixed bottom-0 right-0 top-0 flex w-full max-w-md flex-col rounded-l-3xl rounded-r-none"
+              className="glass-raised fixed bottom-[calc(3.5rem+2px+env(safe-area-inset-bottom))] right-0 top-0 flex w-full max-w-md flex-col rounded-l-3xl rounded-r-none lg:bottom-0"
               style={{ position: "fixed" }}
               onClick={(e) => e.stopPropagation()}
             >

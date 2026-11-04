@@ -1,3 +1,4 @@
+import { usePedirCiclo } from "@/components/schedule/PedirCicloAlAsignar";
 import type { Station } from "@/types";
 
 import React, { useEffect, useState, useCallback, useMemo } from "react";
@@ -160,6 +161,7 @@ export default function StationGuards({
   stationId,
   postSiteId,
 }: Props) {
+  const { conCiclo, dialogoDeCiclo } = usePedirCiclo();
   const { t } = useTranslation();
   const tenantId = (station?.tenantId ||
     localStorage.getItem("tenantId") ||
@@ -432,13 +434,18 @@ export default function StationGuards({
     const pid =
       positionId !== undefined ? positionId : await ensurePosition(type);
 
-    await ApiService.post(`/tenant/${tenantId}/guard-assignment`, {
-      guardId: guardUserId,
-      stationId,
-      positionId: pid || undefined,
-      isRelief: type === "sacafranco",
-      startDate: startDate || today(),
-    });
+    // A post without a rest cycle asks for it here and retries.
+    return conCiclo((rotationStyleId) =>
+      ApiService.post(`/tenant/${tenantId}/guard-assignment`, {
+        guardId: guardUserId,
+        stationId,
+        positionId: pid || undefined,
+        isRelief: type === "sacafranco",
+        startDate: startDate || today(),
+        ...(rotationStyleId ? { rotationStyleId } : {}),
+      }),
+      { sacafranco: type === "sacafranco" },
+    );
   };
 
   /** La plaza de una fila. En un evento la asignación no guarda `positionId`:
@@ -560,7 +567,9 @@ export default function StationGuards({
           ),
         );
       } else if (assignType) {
-        await doAssign(pickGuard, assignType, undefined, assignStart);
+        const hecho = await doAssign(pickGuard, assignType, undefined, assignStart);
+
+        if (hecho === null) return;
         toast.success(
           assignType === "sacafranco"
             ? t("station.guards.sacaAdded", "Sacafranco asignado")
@@ -691,6 +700,7 @@ export default function StationGuards({
 
   return (
     <>
+      {dialogoDeCiclo}
       <Section
         action={
           /* Los dos botones suman ~340 px: en un teléfono tienen que envolverse. */

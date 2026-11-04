@@ -19874,6 +19874,9 @@
       "quoteClosing": "Encerramento",
       "quoteFooter": "Rodapé",
       "reportFooterText": "Rodapé dos relatórios aos seus clientes"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "É o ciclo deste folguista: quantos dias trabalha e quantos folga. O posto não muda."
     }
   },
   "map": {

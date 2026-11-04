@@ -938,7 +938,7 @@ export const clientService = {
             : await todosLosVigilantes(tenantId);
         return Array.isArray(arr) ? arr.map((g: { id?: string | number; value?: string | number; label?: string; fullName?: string; name?: string }) => ({ id: String(g.id ?? g.value), label: g.label ?? g.fullName ?? g.name ?? '' })) : [];
     },
-    async assignGuardToPosition(payload: { guardId: string; stationId: string; positionId: string; startDate?: string; isRelief?: boolean }) {
+    async assignGuardToPosition(payload: { guardId: string; stationId: string; positionId: string; startDate?: string; isRelief?: boolean; rotationStyleId?: string }) {
         const tenantId = getTenantId();
         const { data } = await api.post<any>(`/tenant/${tenantId}/guard-assignment`, { data: payload }, { toast: { silentError: true } });
         return data?.data ?? data;

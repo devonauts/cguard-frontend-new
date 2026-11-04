@@ -19873,6 +19873,9 @@
       "quoteClosing": "Closing",
       "quoteFooter": "Footer",
       "reportFooterText": "Footer of the reports to its clients"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "This is this relief guard's own cycle: how many days they work and how many they rest. The post does not change."
     }
   },
   "map": {

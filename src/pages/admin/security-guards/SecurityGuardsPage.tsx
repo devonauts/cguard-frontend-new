@@ -1,3 +1,4 @@
+import { usePedirCiclo } from "@/components/schedule/PedirCicloAlAsignar";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -435,6 +436,7 @@ export default function SecurityGuardsPage() {
   const [assignGuard, setAssignGuard] = useState<SecurityGuard | null>(null);
   const [assignStationId, setAssignStationId] = useState<string>("");
   const [assignLoading, setAssignLoading] = useState(false);
+  const { conCiclo, dialogoDeCiclo } = usePedirCiclo();
   const [assignStations, setAssignStations] = useState<
     { id: string; name: string; postSiteId: string }[]
   >([]);
@@ -623,16 +625,25 @@ export default function SecurityGuardsPage() {
       // Goes through the assignment service, which binds an OPEN puesto at the
       // station → the guard shows up in the Horario scheduler (vs the old raw
       // /shift call that created an orphaned shift with no assignment).
-      await api.post(
-        `/tenant/${tenantId}/stations/${assignStationId}/assign-guard`,
-        {
-          data: {
-            guardId: guardUserId,
-            securityGuardId,
-            stationId: assignStationId,
+      // A post without a rest cycle asks for it here and retries.
+      const hecho = await conCiclo((rotationStyleId) =>
+        api.post(
+          `/tenant/${tenantId}/stations/${assignStationId}/assign-guard`,
+          {
+            data: {
+              guardId: guardUserId,
+              securityGuardId,
+              stationId: assignStationId,
+              ...(rotationStyleId ? { rotationStyleId } : {}),
+            },
           },
-        },
+          // The catch below shows the server message once.
+          { toast: { silentError: true } } as any,
+        ),
+        { sacafranco: assignGuard.raw?.guardType === "sacafranco" },
       );
+
+      if (hecho === null) return;
       invalidateEntity("stations");
       toast.success(
         t("guards.list.toasts.assigned", "Vigilante asignado exitosamente"),
@@ -1173,6 +1184,7 @@ export default function SecurityGuardsPage() {
 
   return (
     <AppLayout>
+      {dialogoDeCiclo}
       {/* Page Header */}
       <div className="px-4 pt-5 sm:px-6">
         <PageHeader

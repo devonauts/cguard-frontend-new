@@ -20432,6 +20432,9 @@
       "quoteClosing": "Formule de clôture",
       "quoteFooter": "Pied de page",
       "reportFooterText": "Pied des rapports à ses clients"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "C'est le cycle propre de cet agent volant : combien de jours il travaille et combien il se repose. Le poste ne change pas."
     }
   },
   "visitantes": {

@@ -1,3 +1,4 @@
+import { usePedirCiclo } from "@/components/schedule/PedirCicloAlAsignar";
 import type React from "react";
 
 import { useEffect, useMemo, useState } from "react";
@@ -160,6 +161,7 @@ export default function ScheduleCard({
   const [editRow, setEditRow] = useState<ScheduleRow | null>(null);
   const [pickGuard, setPickGuard] = useState("");
   const [saving, setSaving] = useState(false);
+  const { conCiclo, dialogoDeCiclo } = usePedirCiclo();
 
   const load = async (quiet = false) => {
     if (!sedeId) {
@@ -232,12 +234,19 @@ export default function ScheduleCard({
         // Create the NEW assignment first (the unique slot index is keyed on
         // guardId, so it can coexist with the old one), THEN remove the old. A
         // failed create never leaves the position unassigned / nukes old shifts.
-        await clientService.assignGuardToPosition({
-          guardId: pickGuard,
-          stationId: editRow.stationId,
-          positionId: editRow.positionId,
-          isRelief: editRow.positionType === "sacafranco",
-        });
+        // A post without a rest cycle asks for it here and retries.
+        const hecho = await conCiclo((rotationStyleId) =>
+          clientService.assignGuardToPosition({
+            guardId: pickGuard,
+            stationId: editRow.stationId,
+            positionId: editRow.positionId,
+            isRelief: editRow.positionType === "sacafranco",
+            ...(rotationStyleId ? { rotationStyleId } : {}),
+          }),
+          { sacafranco: editRow.positionType === "sacafranco" },
+        );
+
+        if (hecho === null) return;
         if (editRow.assignmentId) {
           try {
             await clientService.removeGuardAssignment(editRow.assignmentId);
@@ -302,6 +311,8 @@ export default function ScheduleCard({
       : "";
 
   return (
+    <>
+      {dialogoDeCiclo}
     <Section
       action={
         <div className="flex items-center gap-1.5">
@@ -647,5 +658,6 @@ export default function ScheduleCard({
         )}
       </Modal>
     </Section>
+    </>
   );
 }

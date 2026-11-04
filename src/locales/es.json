@@ -19874,6 +19874,9 @@
       "quoteClosing": "Cierre",
       "quoteFooter": "Pie de página",
       "reportFooterText": "Pie de los informes a sus clientes"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "Es el ciclo de este sacafranco: cada cuántos días trabaja y cuántos libra. El puesto no cambia."
     }
   },
   "map": {

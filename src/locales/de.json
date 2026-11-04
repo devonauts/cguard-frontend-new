@@ -20431,6 +20431,9 @@
       "quoteClosing": "Schlussformel",
       "quoteFooter": "Fußzeile",
       "reportFooterText": "Fußzeile der Berichte an ihre Kunden"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "Das ist der eigene Zyklus dieser Springerwache: wie viele Tage sie arbeitet und wie viele sie frei hat. Der Posten ändert sich nicht."
     }
   },
   "visitantes": {

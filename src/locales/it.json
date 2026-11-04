@@ -20432,6 +20432,9 @@
       "quoteClosing": "Chiusura",
       "quoteFooter": "Piè di pagina",
       "reportFooterText": "Piè dei report ai suoi clienti"
+    },
+    "PedirCicloAlAsignar": {
+      "cicloDelSacafranco": "È il ciclo di questo jolly: quanti giorni lavora e quanti riposa. Il posto non cambia."
     }
   },
   "visitantes": {
