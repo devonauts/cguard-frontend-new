@@ -82,7 +82,7 @@ jobs:
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "### ${{ inputs.modo || 'deploy' }} · \`${SHA:0:8}\`" >> "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.sha.outputs.sha }}
           sparse-checkout: scripts/deploy
