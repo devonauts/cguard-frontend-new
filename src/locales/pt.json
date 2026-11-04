@@ -23660,7 +23660,9 @@
       "crear": "Não foi possível criar a pessoa",
       "sinId": "Não encontramos a pessoa recém-criada",
       "horario": "Não foi possível salvar o horário",
-      "ubicacion": "Não foi possível salvar o escritório"
+      "ubicacion": "Não foi possível salvar o escritório",
+      "correoEnEstaEmpresa": "{{nombre}} já está na sua empresa com esse e-mail. Procure na lista de pessoal.",
+      "otraPersona": "outra pessoa"
     },
     "rotacion": {
       "sinRotacion": "Sem rotação definida",

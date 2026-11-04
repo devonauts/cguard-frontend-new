@@ -53,10 +53,12 @@ import { crearPersona, filasDe, mensajeDeError } from "@/lib/crearPersona";
 import { presetLunesAViernes } from "@/lib/jornadaSemanal";
 import { hoyEnLaEmpresa, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { securityGuardService } from "@/lib/api/securityGuardService";
+import { CampoUsuarioDeAcceso } from "@/components/usuarioDeAcceso/CampoUsuarioDeAcceso";
 import { claveDeDocumento } from "@/lib/agregarVarias";
 import { plazasElegibles } from "@/pages/admin/programmer/AsignarAPuestoModal";
 import {
   admiteSinCorreo,
+  correoValido,
   datosVacios,
   dondeTerminarHorario,
   enlaceDeWhatsApp,
@@ -241,6 +243,15 @@ export default function AgregarPersonaPage() {
   const [tocado, setTocado] = useState(false);
   /** Name of the guard who already has the typed ID number (null = free). */
   const [docDeOtro, setDocDeOtro] = useState<string | null>(null);
+  /* ── CHECKED WHILE TYPING, NOT AT THE END (Mike, 2026-11-04) ─────────────
+     The username and the email used to be refused only on the last step,
+     after the whole schedule was filled in. Now: the username is checked live
+     (CampoUsuarioDeAcceso: false = taken / reserved / malformed), the email
+     against this company (name of whoever already has it), and «Falta este
+     dato» / «Revisa el correo» show as soon as the field is left. */
+  const [usuarioValido, setUsuarioValido] = useState<boolean | null>(null);
+  const [correoDeOtro, setCorreoDeOtro] = useState<string | null>(null);
+  const [correoVisto, setCorreoVisto] = useState(false);
   const [horario, setHorario] = useState<Horario>(null);
   /** «Lo hago después» chosen explicitly in step 3. */
   const [despues, setDespues] = useState(false);
@@ -500,12 +511,53 @@ export default function AgregarPersonaPage() {
     };
   }, [tipo, datos.documento, t]);
 
+  // The email of someone who is already in THIS company: say it now.
+  const sinCorreoElegido = !!tipo && admiteSinCorreo(tipo) && datos.sinCorreo;
+
+  useEffect(() => {
+    const correo = sinCorreoElegido ? "" : datos.correo.trim().toLowerCase();
+
+    if (!correo || !correoValido(correo)) {
+      setCorreoDeOtro(null);
+
+      return;
+    }
+    let vivo = true;
+    const espera = setTimeout(async () => {
+      const r: any = await ApiService.get(
+        `/tenant/${tenantId()}/alta/disponibilidad?correo=${encodeURIComponent(correo)}`,
+      ).catch(() => null);
+
+      if (!vivo) return;
+      const c = r?.correo || r?.data?.correo;
+
+      setCorreoDeOtro(
+        c?.estado === "en_esta_empresa"
+          ? String(
+              c.nombre ||
+                t("agregarPersona.errores.otraPersona", "otra persona"),
+            )
+          : null,
+      );
+    }, 450);
+
+    return () => {
+      vivo = false;
+      clearTimeout(espera);
+    };
+  }, [sinCorreoElegido, datos.correo, t]);
+
   // ── Navigation ────────────────────────────────────────────────────────────
   const horarioEfectivo: Horario = despues ? null : horario;
   const hoy = hoyEnLaEmpresa();
   const listoParaSeguir =
     puedeSeguir(paso, tipo, datos, horarioEfectivo, hoy) &&
-    !(paso === 2 && !!docDeOtro);
+    !(
+      paso === 2 &&
+      (!!docDeOtro ||
+        !!correoDeOtro ||
+        (sinCorreoElegido && usuarioValido === false))
+    );
   const siguiente = () => {
     if (paso === 2 && !listoParaSeguir) {
       setTocado(true);
@@ -525,8 +577,8 @@ export default function AgregarPersonaPage() {
     setPaso(2);
   };
 
-  const errorDeCampo = (e?: ErrorDeCampo) =>
-    !tocado || !e
+  const errorDeCampo = (e?: ErrorDeCampo, visto = false) =>
+    !(tocado || visto) || !e
       ? undefined
       : e === "requerido"
         ? t("agregarPersona.errores.requerido", "Falta este dato")
@@ -953,7 +1005,15 @@ export default function AgregarPersonaPage() {
                       </FormField>
                     )}
                     <FormField
-                      error={errorDeCampo(errores.correo)}
+                      error={
+                        correoDeOtro && !sinCorreoElegido
+                          ? t("agregarPersona.errores.correoEnEstaEmpresa", {
+                              defaultValue:
+                                "{{nombre}} ya está en tu empresa con ese correo. Búscalo en la lista de personal.",
+                              nombre: correoDeOtro,
+                            })
+                          : errorDeCampo(errores.correo, correoVisto)
+                      }
                       hint={
                         datos.sinCorreo && admiteSinCorreo(tipo)
                           ? undefined
@@ -981,6 +1041,7 @@ export default function AgregarPersonaPage() {
                             ? ""
                             : datos.correo
                         }
+                        onBlur={() => setCorreoVisto(true)}
                         onChange={(e) => cambiar({ correo: e.target.value })}
                       />
                       {admiteSinCorreo(tipo) && (
@@ -1030,13 +1091,15 @@ export default function AgregarPersonaPage() {
                           "Usuario para entrar",
                         )}
                       >
-                        <input
-                          autoComplete="off"
-                          className={FIELD_CLS}
+                        <CampoUsuarioDeAcceso
+                          sugerir
+                          ayuda={false}
+                          firstName={datos.nombres}
                           id="alta-usuario"
-                          placeholder="cruiz"
+                          lastName={datos.apellidos}
                           value={datos.usuario}
-                          onChange={(e) => cambiar({ usuario: e.target.value })}
+                          onChange={(v) => cambiar({ usuario: v })}
+                          onValidez={setUsuarioValido}
                         />
                       </FormField>
                     )}

@@ -23659,7 +23659,9 @@
       "crear": "De persoon kon niet worden aangemaakt",
       "sinId": "De zojuist aangemaakte persoon is niet gevonden",
       "horario": "Het rooster kon niet worden opgeslagen",
-      "ubicacion": "Het kantoor kon niet worden opgeslagen"
+      "ubicacion": "Het kantoor kon niet worden opgeslagen",
+      "correoEnEstaEmpresa": "{{nombre}} staat al met dit e-mailadres in je bedrijf. Zoek de persoon op in de personeelslijst.",
+      "otraPersona": "iemand anders"
     },
     "rotacion": {
       "sinRotacion": "Geen rotatie ingesteld",

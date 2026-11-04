@@ -23991,7 +23991,9 @@
       "crear": "Nie udało się utworzyć osoby",
       "sinId": "Nie znaleziono właśnie utworzonej osoby",
       "horario": "Nie udało się zapisać grafiku",
-      "ubicacion": "Nie udało się zapisać biura"
+      "ubicacion": "Nie udało się zapisać biura",
+      "correoEnEstaEmpresa": "{{nombre}} jest już w Twojej firmie z tym adresem e-mail. Znajdź tę osobę na liście personelu.",
+      "otraPersona": "inna osoba"
     },
     "rotacion": {
       "sinRotacion": "Brak ustalonej rotacji",

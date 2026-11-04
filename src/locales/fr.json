@@ -23660,7 +23660,9 @@
       "crear": "Impossible de créer la personne",
       "sinId": "Impossible de trouver la personne qui vient d’être créée",
       "horario": "Impossible d’enregistrer l’horaire",
-      "ubicacion": "Impossible d’enregistrer le bureau"
+      "ubicacion": "Impossible d’enregistrer le bureau",
+      "correoEnEstaEmpresa": "{{nombre}} est déjà dans votre entreprise avec cet e-mail. Cherchez-le dans la liste du personnel.",
+      "otraPersona": "une autre personne"
     },
     "rotacion": {
       "sinRotacion": "Aucune rotation définie",

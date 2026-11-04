@@ -23659,7 +23659,9 @@
       "crear": "Person konnte nicht angelegt werden",
       "sinId": "Die gerade angelegte Person wurde nicht gefunden",
       "horario": "Dienstplan konnte nicht gespeichert werden",
-      "ubicacion": "Büro konnte nicht gespeichert werden"
+      "ubicacion": "Büro konnte nicht gespeichert werden",
+      "correoEnEstaEmpresa": "{{nombre}} ist mit dieser E-Mail bereits in Ihrem Unternehmen. Suchen Sie die Person in der Personalliste.",
+      "otraPersona": "eine andere Person"
     },
     "rotacion": {
       "sinRotacion": "Keine Rotation festgelegt",

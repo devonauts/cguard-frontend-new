@@ -23659,7 +23659,9 @@
       "crear": "The person could not be created",
       "sinId": "We could not find the person just created",
       "horario": "The schedule could not be saved",
-      "ubicacion": "The office could not be saved"
+      "ubicacion": "The office could not be saved",
+      "correoEnEstaEmpresa": "{{nombre}} is already in your company with that email. Look them up in the staff list.",
+      "otraPersona": "someone else"
     },
     "rotacion": {
       "sinRotacion": "No rotation set",
