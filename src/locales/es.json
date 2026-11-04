@@ -11846,7 +11846,18 @@
       "sinPuestos": "Aún no hay puestos de supervisión. Créalos en Supervisores › Puestos.",
       "supervisorFijoHint": "Esta ruta se creó para una persona. Elige un puesto para que la haga quien esté de turno.",
       "horaDeSalida": "Hora de salida",
-      "horaDeSalidaHint": "Opcional. Sin hora, sale al empezar el turno. La hora de fin no se pide: la dan el recorrido, la optimización y el tráfico."
+      "horaDeSalidaHint": "Opcional. Sin hora, sale al empezar el turno. La hora de fin no se pide: la dan el recorrido, la optimización y el tráfico.",
+      "puestosDeSupervision": "Puestos de supervisión",
+      "nPuestosDeVigilancia": "{{n}} puestos de vigilancia",
+      "puestosHint": "La ve quien esté de turno ese día en cualquiera de los puestos marcados, sin asignarla a una persona. La toma el primero que la empiece.",
+      "diasTodos": "Todos",
+      "diasLaborables": "Lunes a viernes",
+      "diasFinDeSemana": "Fin de semana",
+      "buscarPuesto": "Buscar puesto o dirección",
+      "agregarLosDelPuesto": "Agregar los {{n}} que cubren los puestos marcados",
+      "quitarTodos": "Quitar todos",
+      "sinCoincidencias": "Ningún puesto coincide con la búsqueda.",
+      "nElegidosDeTotal": "{{n}} de {{total}} elegidos. El orden de visita se ajusta abajo."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A marcha de tráfico urbano, sin contar la permanencia en cada parada",
@@ -16161,7 +16172,8 @@
         "partially_completed": "Parcial",
         "aborted": "Abortada",
         "cancelled": "Cancelada",
-        "skipped": "No realizada"
+        "skipped": "No realizada",
+        "not_done": "No se hizo"
       },
       "visitStatus": {
         "pending": "Pendiente",
@@ -16658,10 +16670,18 @@
       "hasta": "Hasta",
       "paradas": "paradas",
       "ruta": "Ruta",
-      "sub": "Cada recorrido de supervisión que se ejecutó, con su resultado y su evidencia.",
+      "sub": "Una fila por ruta y por día: lo que se hizo, con su resultado y su evidencia, y los días en que no se hizo.",
       "titulo": "Historial de rutas",
       "todos": "Todos los estados",
-      "vacio": "Sin recorridos en este periodo"
+      "vacio": "Sin recorridos en este periodo",
+      "colFecha": "Fecha",
+      "colQuien": "Puesto / supervisor",
+      "colSalida": "Salida",
+      "colParadas": "Paradas",
+      "colDuracion": "Duración",
+      "colNovedades": "Novedades",
+      "nNovedades": "{{n}} novedades",
+      "programadaA": "Programada {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Completada",
@@ -21186,7 +21206,7 @@
       "startTimeRequired": "Hora de inicio requerida",
       "supervisorRequired": "Supervisor requerido",
       "vehicleRequired": "Vehículo requerido",
-      "puestoRequired": "Elige el puesto de supervisión que hace la ruta"
+      "puestoRequired": "Elige al menos un puesto de supervisión que haga la ruta"
     },
     "vehicle": {
       "colorRequired": "Color requerido",

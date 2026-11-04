@@ -11846,7 +11846,18 @@
       "sinPuestos": "There are no supervision posts yet. Create them in Supervisors › Posts.",
       "supervisorFijoHint": "This route was created for one person. Choose a post so whoever is on duty runs it.",
       "horaDeSalida": "Departure time",
-      "horaDeSalidaHint": "Optional. Without a time, it starts when the shift starts. No end time: the route, the optimization and traffic decide it."
+      "horaDeSalidaHint": "Optional. Without a time, it starts when the shift starts. No end time: the route, the optimization and traffic decide it.",
+      "puestosDeSupervision": "Supervision posts",
+      "nPuestosDeVigilancia": "{{n}} guard posts",
+      "puestosHint": "Whoever is on duty that day in any of the selected posts sees it, with no one assigned by name. The first to start it takes it.",
+      "diasTodos": "Every day",
+      "diasLaborables": "Monday to Friday",
+      "diasFinDeSemana": "Weekend",
+      "buscarPuesto": "Search post or address",
+      "agregarLosDelPuesto": "Add the {{n}} covered by the selected posts",
+      "quitarTodos": "Remove all",
+      "sinCoincidencias": "No post matches the search.",
+      "nElegidosDeTotal": "{{n}} of {{total}} selected. The visit order is set below."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "At city traffic speed, not counting time spent at each stop",
@@ -16161,7 +16172,8 @@
         "partially_completed": "Partial",
         "aborted": "Aborted",
         "cancelled": "Canceled",
-        "skipped": "Not carried out"
+        "skipped": "Not carried out",
+        "not_done": "Not done"
       },
       "visitStatus": {
         "pending": "Pending",
@@ -16658,10 +16670,18 @@
       "hasta": "To",
       "paradas": "stops",
       "ruta": "Route",
-      "sub": "Every supervision route that was run, with its outcome and evidence.",
+      "sub": "One row per route and day: what was done, with its result and evidence, and the days it was not done.",
       "titulo": "Route history",
       "todos": "All statuses",
-      "vacio": "No routes in this period"
+      "vacio": "No routes in this period",
+      "colFecha": "Date",
+      "colQuien": "Post / supervisor",
+      "colSalida": "Departure",
+      "colParadas": "Stops",
+      "colDuracion": "Duration",
+      "colNovedades": "Findings",
+      "nNovedades": "{{n}} findings",
+      "programadaA": "Scheduled {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Completed",
@@ -21185,7 +21205,7 @@
       "startTimeRequired": "Start time is required",
       "supervisorRequired": "Supervisor is required",
       "vehicleRequired": "Vehicle is required",
-      "puestoRequired": "Choose the supervision post that runs the route"
+      "puestoRequired": "Choose at least one supervision post to run the route"
     },
     "vehicle": {
       "colorRequired": "Color is required",

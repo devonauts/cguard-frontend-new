@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { useWatch, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,9 @@ import {
   SlidersHorizontal,
   ClipboardList,
   Plus,
+  Check,
+  Search,
+  X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -69,12 +72,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 /* `FormField` del kit se importa con alias: en este archivo `FormField` ya es
    el de react-hook-form (ui/form). El del kit es el envoltorio
@@ -89,6 +86,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import userService from "@/lib/api/userService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import vehicleService from "@/lib/api/vehicleService";
+import { stationService } from "@/lib/api/stationService";
 import routeService from "@/lib/api/routeService";
 import { desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
 
@@ -116,6 +114,22 @@ const DAY_LABEL_KEY: Record<string, string> = {
   sat: "siteTour.options.saturday",
 };
 const ALL_DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
+/** Como se lee una semana de trabajo en la oficina: de lunes a domingo. */
+const DIAS_LUNES_PRIMERO = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+
+/** Para buscar sin distinguir mayúsculas ni tildes («Pontevedra» = «pontevédra»). */
+const sinTildes = (s: string) =>
+  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+/** Botón conmutable (día, puesto): marcado con el color de la marca. */
+const chipEstilo = (activo: boolean): CSSProperties =>
+  activo
+    ? {
+        background: "var(--brand-wash)",
+        borderColor: "var(--brand-line)",
+        color: "var(--brand-text)",
+      }
+    : { borderColor: "var(--hairline)" };
 
 type RouteFormProps = {
   mode: "create" | "edit";
@@ -240,7 +254,7 @@ export default function RouteForm({
       endTime: initialData?.endTime || "23:59",
       days: initialData?.days || [],
       supervisorId: initialSupervisorId ? String(initialSupervisorId) : "",
-      supervisorPositionId: initialData?.supervisorPositionId || "",
+      supervisorPositionIds: initialData?.supervisorPositionIds || [],
       siteIds: initialData?.siteIds || [],
       vehicleId: initialData?.vehicleId ? String(initialData?.vehicleId) : "",
       syncHitsBetweenGuards: initialData?.syncHitsBetweenGuards || false,
@@ -363,6 +377,56 @@ export default function RouteForm({
     };
   }, []);
 
+  /* ── LO QUE CUBRE CADA PUESTO DE SUPERVISIÓN ───────────────────────────
+     Un puesto de supervisión guarda ESTACIONES bajo su protección; las
+     paradas de la ruta son SEDES. Cada estación sabe su sede (`postSiteId`):
+     con eso, «Agregar los que cubren los puestos marcados» precarga las
+     paradas y sólo queda quitar o reordenar. */
+  const [sedeDeEstacion, setSedeDeEstacion] = useState<Map<string, string>>(
+    () => new Map(),
+  );
+  const [buscaSitio, setBuscaSitio] = useState("");
+
+  useEffect(() => {
+    let vivo = true;
+
+    stationService
+      .getStationCards()
+      .then((tarjetas) => {
+        if (!vivo) return;
+        const m = new Map<string, string>();
+
+        for (const e of tarjetas || [])
+          if (e?.id && e.postSiteId) m.set(String(e.id), String(e.postSiteId));
+        setSedeDeEstacion(m);
+      })
+      .catch(() => {
+        /* sin estaciones: el botón de agregar no aparece */
+      });
+
+    return () => {
+      vivo = false;
+    };
+  }, []);
+
+  /** Sedes (en el orden de los puestos) que cubren estos puestos de supervisión. */
+  const sedesDeLosPuestos = (ids: string[]): string[] => {
+    const hay = new Set(sites.map((s) => s.id));
+    const out: string[] = [];
+
+    for (const id of ids) {
+      const p = puestos.find((x) => x.id === id);
+
+      for (const est of p?.stationIds || []) {
+        const sede = sedeDeEstacion.get(String(est));
+
+        if (sede && hay.has(sede) && !out.includes(sede)) out.push(sede);
+      }
+    }
+
+    return out;
+  };
+
   /** Los días que trabaja el puesto: sus días de la semana si es de oficina, todos si rota. */
   const diasDelPuesto = (p?: SupervisorPosition | null): string[] => {
     const seq = p?.rotationStyle?.weekly
@@ -458,6 +522,7 @@ export default function RouteForm({
         endTime: initialData.endTime || "23:59",
         days: initialData.days || [],
         supervisorId: initialSupervisorId ? String(initialSupervisorId) : "",
+        supervisorPositionIds: initialData.supervisorPositionIds || [],
         siteIds: initialData.siteIds || [],
         vehicleId: initialData.vehicleId ? String(initialData.vehicleId) : "",
         syncHitsBetweenGuards: initialData.syncHitsBetweenGuards || false,
@@ -1389,9 +1454,11 @@ export default function RouteForm({
       setSubmitting(true);
       const payload = {
         ...data,
-        supervisorPositionId: data.supervisorPositionId || null,
-        // Del puesto, o (rutas viejas) de la persona que ya tenía.
-        assignedGuard: data.supervisorPositionId ? null : data.supervisorId || null,
+        supervisorPositionIds: data.supervisorPositionIds || [],
+        // De los puestos, o (rutas viejas) de la persona que ya tenía.
+        assignedGuard: (data.supervisorPositionIds || []).length
+          ? null
+          : data.supervisorId || null,
         windowStart:
           data.dateFrom && data.startTime
             ? // La ventana de la ruta es hora del puesto, no del portátil.
@@ -1571,38 +1638,75 @@ export default function RouteForm({
                   <FormLabel>
                     {t("ui.RouteForm.seleccionarDias", "Seleccionar Días*")}
                   </FormLabel>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        className="flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm"
+                  {/* Siete botones, de lunes a domingo: se ve de un vistazo
+                      qué días sale la ruta, sin abrir un menú. */}
+                  <div
+                    aria-label={t("ui.RouteForm.seleccionarDias", "Seleccionar Días*")}
+                    className="flex flex-wrap gap-2"
+                    role="group"
+                  >
+                    {DIAS_LUNES_PRIMERO.map((d) => {
+                      const activo = (field.value || []).includes(d);
+                      const nombre = t(DAY_LABEL_KEY[d], DAY_LABEL[d]);
+
+                      return (
+                        <button
+                          key={d}
+                          aria-label={nombre}
+                          aria-pressed={activo}
+                          className="h-10 min-w-12 rounded-md border px-3 text-sm font-medium transition-colors"
+                          style={chipEstilo(activo)}
+                          title={nombre}
+                          type="button"
+                          onClick={() => {
+                            const cur = new Set(field.value || []);
+
+                            if (activo) cur.delete(d);
+                            else cur.add(d);
+                            field.onChange(
+                              ALL_DAYS.filter((x) => cur.has(x)) as any,
+                            );
+                          }}
+                        >
+                          {nombre.slice(0, 3)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1 text-xs">
+                    {(
+                      [
+                        ["todos", t("ui.RouteForm.diasTodos", "Todos"), [...ALL_DAYS]],
+                        [
+                          "laborables",
+                          t("ui.RouteForm.diasLaborables", "Lunes a viernes"),
+                          ["mon", "tue", "wed", "thu", "fri"],
+                        ],
+                        [
+                          "finde",
+                          t("ui.RouteForm.diasFinDeSemana", "Fin de semana"),
+                          ["sat", "sun"],
+                        ],
+                      ] as const
+                    ).map(([clave, rotulo, dias]) => (
+                      <Button
+                        key={clave}
+                        size="sm"
                         type="button"
+                        variant="ghost"
+                        onClick={() =>
+                          field.onChange(
+                            ALL_DAYS.filter((x) =>
+                              (dias as readonly string[]).includes(x),
+                            ) as any,
+                          )
+                        }
                       >
-                        <span className="truncate">{daysText}</span>
-                        <ChevronDown className="h-4 w-4 opacity-60" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-[320px]">
-                      {ALL_DAYS.map((d) => {
-                        const checked = (field.value || []).includes(d);
-
-                        return (
-                          <DropdownMenuCheckboxItem
-                            key={d}
-                            checked={checked}
-                            onCheckedChange={(v) => {
-                              const cur = new Set(field.value || []);
-
-                              if (v) cur.add(d);
-                              else cur.delete(d);
-                              field.onChange(Array.from(cur));
-                            }}
-                          >
-                            {t(DAY_LABEL_KEY[d], DAY_LABEL[d])}
-                          </DropdownMenuCheckboxItem>
-                        );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        {rotulo}
+                      </Button>
+                    ))}
+                    <span style={{ color: "var(--ink-faint)" }}>{daysText}</span>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -1616,45 +1720,79 @@ export default function RouteForm({
         >
           <FormField
             control={form.control}
-            name="supervisorPositionId"
+            name="supervisorPositionIds"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t("ui.RouteForm.puestoDeSupervision", "Puesto de supervisión")}
+                  {t("ui.RouteForm.puestosDeSupervision", "Puestos de supervisión")}
                 </FormLabel>
-                <Select
-                  value={field.value || ""}
-                  onValueChange={(v) => {
-                    field.onChange(v);
-                    // La hace el puesto: ya no hay una persona fija.
-                    form.setValue("supervisorId", "");
-                    if (!(form.getValues("days") || []).length)
-                      form.setValue(
-                        "days",
-                        diasDelPuesto(puestos.find((p) => p.id === v)) as any,
-                      );
-                  }}
+                {/* Uno o varios puestos. Son pocos (cinco, diez): se ven
+                    todos como tarjetas y se marcan con un clic. */}
+                <div
+                  className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3"
+                  role="group"
                 >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={t("ui.RouteForm.elegirPuesto", "Elegir puesto")}
-                    >
-                      {puestos.find((p) => p.id === field.value)?.name}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {puestos.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  {puestos.map((p) => {
+                    const elegidos: string[] = field.value || [];
+                    const activo = elegidos.includes(p.id);
+                    const nVig = (p.stationIds || []).length;
+
+                    return (
+                      <button
+                        key={p.id}
+                        aria-pressed={activo}
+                        className="flex items-start gap-2 rounded-md border px-3 py-2 text-left text-sm transition-colors"
+                        style={chipEstilo(activo)}
+                        type="button"
+                        onClick={() => {
+                          const siguiente = activo
+                            ? elegidos.filter((id) => id !== p.id)
+                            : [...elegidos, p.id];
+
+                          field.onChange(siguiente);
+                          // La hacen los puestos: ya no hay una persona fija.
+                          if (siguiente.length) form.setValue("supervisorId", "");
+                          if (!activo && !(form.getValues("days") || []).length)
+                            form.setValue("days", diasDelPuesto(p) as any);
+                        }}
+                      >
+                        <span
+                          aria-hidden
+                          className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-sm border"
+                          style={{ borderColor: activo ? "var(--brand-line)" : "var(--hairline)" }}
+                        >
+                          {activo ? <Check className="size-3" /> : null}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium">
+                            {p.name}
+                          </span>
+                          <span
+                            className="block truncate text-xs"
+                            style={{ color: "var(--ink-faint)" }}
+                          >
+                            {[
+                              p.zone,
+                              nVig
+                                ? t("ui.RouteForm.nPuestosDeVigilancia", {
+                                    defaultValue: "{{n}} puestos de vigilancia",
+                                    n: nVig,
+                                  })
+                                : null,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {puestos.length
                     ? t(
-                        "ui.RouteForm.puestoHint",
-                        "La hace quien esté de turno en ese puesto ese día, sin asignarla. Si hay dos de turno, la toma el primero que la empiece.",
+                        "ui.RouteForm.puestosHint",
+                        "La ve quien esté de turno ese día en cualquiera de los puestos marcados, sin asignarla a una persona. La toma el primero que la empiece.",
                       )
                     : t(
                         "ui.RouteForm.sinPuestos",
@@ -1668,7 +1806,7 @@ export default function RouteForm({
 
           {/* Rutas viejas, asignadas a una persona: se ve a quién, hasta que
               se le elija un puesto. */}
-          {initialSupervisorId && !form.watch("supervisorPositionId") ? (
+          {initialSupervisorId && !(form.watch("supervisorPositionIds") || []).length ? (
             <div className="space-y-1">
           <FormField
             control={form.control}
@@ -1789,54 +1927,158 @@ export default function RouteForm({
                 <FormLabel>
                   {t("ui.RouteForm.seleccionarPuestosDeVigilancia")}
                 </FormLabel>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className="flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm"
-                      type="button"
-                    >
-                      <span className="truncate">
-                        {(field.value || []).length
-                          ? (field.value || [])
-                              .map(
-                                (id: string) =>
-                                  sites.find((s) => s.id === id)?.name,
-                              )
-                              .filter((n): n is string => Boolean(n))
-                              .join(", ")
-                          : t("ui.RouteForm.seleccionar", "Seleccionar")}
-                      </span>
-                      <ChevronDown className="h-4 w-4 opacity-60" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[320px]">
-                    {sites.length === 0 ? (
-                      <div className="p-3 text-sm text-muted-foreground">
-                        {t("ui.RouteForm.noHayPuestosDisponibles")}
-                      </div>
-                    ) : (
-                      sites.map((s) => {
-                        const checked = (field.value || []).includes(s.id);
+                {(() => {
+                  /* Lista con buscador en lugar del menú de casillas: con
+                     catorce sedes el menú no se podía leer, y lo elegido
+                     quedaba como un texto cortado con comas. */
+                  const elegidos: string[] = field.value || [];
+                  const alternar = (id: string) =>
+                    field.onChange(
+                      elegidos.includes(id)
+                        ? elegidos.filter((x) => x !== id)
+                        : [...elegidos, id],
+                    );
+                  const q = sinTildes(buscaSitio);
+                  const visibles = q
+                    ? sites.filter((s) =>
+                        sinTildes(`${s.name} ${s.address || ""}`).includes(q),
+                      )
+                    : sites;
+                  const delPuesto = sedesDeLosPuestos(
+                    form.watch("supervisorPositionIds") || [],
+                  ).filter((id) => !elegidos.includes(id));
 
-                        return (
-                          <DropdownMenuCheckboxItem
-                            key={s.id}
-                            checked={checked}
-                            onCheckedChange={(v) => {
-                              const cur = new Set(field.value || []);
+                  return (
+                    <div className="space-y-2">
+                      {elegidos.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {elegidos.map((id) => {
+                            const s = sites.find((x) => x.id === id);
 
-                              if (v) cur.add(s.id);
-                              else cur.delete(s.id);
-                              field.onChange(Array.from(cur));
-                            }}
+                            return (
+                              <span
+                                key={id}
+                                className="inline-flex items-center gap-1 rounded-full border py-0.5 pl-2.5 pr-1 text-xs"
+                                style={chipEstilo(true)}
+                              >
+                                {s?.name || id}
+                                <button
+                                  aria-label={t("ui.RouteForm.quitar", {
+                                    defaultValue: "Quitar {{name}}",
+                                    name: s?.name || id,
+                                  })}
+                                  className="rounded-full p-0.5 hover:opacity-70"
+                                  type="button"
+                                  onClick={() => alternar(id)}
+                                >
+                                  <X className="size-3" />
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="relative min-w-56 flex-1">
+                          <Search
+                            className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2"
+                            style={{ color: "var(--ink-faint)" }}
+                          />
+                          <Input
+                            aria-label={t("ui.RouteForm.buscarPuesto", "Buscar puesto o dirección")}
+                            className="pl-8"
+                            placeholder={t("ui.RouteForm.buscarPuesto", "Buscar puesto o dirección")}
+                            value={buscaSitio}
+                            onChange={(e) => setBuscaSitio(e.target.value)}
+                          />
+                        </div>
+                        {delPuesto.length > 0 && (
+                          <Button
+                            size="sm"
+                            type="button"
+                            variant="outline"
+                            onClick={() =>
+                              field.onChange([...elegidos, ...delPuesto])
+                            }
                           >
-                            {s.name}
-                          </DropdownMenuCheckboxItem>
-                        );
-                      })
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                            <Plus className="size-4" />
+                            {t("ui.RouteForm.agregarLosDelPuesto", {
+                              defaultValue: "Agregar los {{n}} que cubren los puestos marcados",
+                              n: delPuesto.length,
+                            })}
+                          </Button>
+                        )}
+                        {elegidos.length > 0 && (
+                          <Button
+                            size="sm"
+                            type="button"
+                            variant="ghost"
+                            onClick={() => field.onChange([])}
+                          >
+                            {t("ui.RouteForm.quitarTodos", "Quitar todos")}
+                          </Button>
+                        )}
+                      </div>
+                      <div
+                        className="max-h-72 overflow-y-auto rounded-md border"
+                        style={{ borderColor: "var(--hairline)" }}
+                      >
+                        {sites.length === 0 ? (
+                          <div className="p-3 text-sm text-muted-foreground">
+                            {t("ui.RouteForm.noHayPuestosDisponibles")}
+                          </div>
+                        ) : visibles.length === 0 ? (
+                          <div className="p-3 text-sm text-muted-foreground">
+                            {t("ui.RouteForm.sinCoincidencias", "Ningún puesto coincide con la búsqueda.")}
+                          </div>
+                        ) : (
+                          visibles.map((s) => {
+                            const activo = elegidos.includes(s.id);
+
+                            return (
+                              <button
+                                key={s.id}
+                                aria-pressed={activo}
+                                className="flex w-full items-start gap-2 border-b px-3 py-2 text-left text-sm last:border-b-0 hover:bg-[var(--glass-sunken)]"
+                                style={{ borderColor: "var(--hairline)" }}
+                                type="button"
+                                onClick={() => alternar(s.id)}
+                              >
+                                <span
+                                  aria-hidden
+                                  className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-sm border"
+                                  style={chipEstilo(activo)}
+                                >
+                                  {activo ? <Check className="size-3" /> : null}
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block truncate font-medium">
+                                    {s.name}
+                                  </span>
+                                  {s.address ? (
+                                    <span
+                                      className="block truncate text-xs"
+                                      style={{ color: "var(--ink-faint)" }}
+                                    >
+                                      {s.address}
+                                    </span>
+                                  ) : null}
+                                </span>
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                      <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                        {t("ui.RouteForm.nElegidosDeTotal", {
+                          defaultValue: "{{n}} de {{total}} elegidos. El orden de visita se ajusta abajo.",
+                          n: elegidos.length,
+                          total: sites.length,
+                        })}
+                      </p>
+                    </div>
+                  );
+                })()}
                 <FormMessage />
               </FormItem>
             )}

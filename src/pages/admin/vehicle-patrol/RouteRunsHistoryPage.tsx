@@ -15,6 +15,7 @@ import {
   RUN_STATUS_TONE,
   fmtHora,
   fmtFecha,
+  fmtDur,
   runStatusLabel,
 } from "./runLabels";
 
@@ -32,7 +33,6 @@ import {
   Section,
   StatusBadge,
   EmptyState,
-  ListRow,
   SkeletonCards,
   Toolbar,
   FIELD_CLS,
@@ -93,7 +93,7 @@ export default function RouteRunsHistoryPage() {
           icon={<HistoryIcon />}
           subtitle={t(
             "ui.RouteRunsHistory.sub",
-            "Cada recorrido de supervisión que se ejecutó, con su resultado y su evidencia.",
+            "Una fila por ruta y por día: lo que se hizo, con su resultado y su evidencia, y los días en que no se hizo.",
           )}
           title={t("ui.RouteRunsHistory.titulo", "Historial de rutas")}
         />
@@ -161,67 +161,147 @@ export default function RouteRunsHistoryPage() {
               )}
             />
           ) : (
-            <div className="space-y-1">
-              {rows.map((r) => {
-                const paradas = r.summary
-                  ? `${r.summary.stopsCompleted}/${r.summary.stopsPlanned}`
-                  : `${r.progress?.completed ?? 0}/${r.progress?.total ?? 0}`;
-                const meta = [
-                  `${paradas} ${t("ui.RouteRunsHistory.paradas", "paradas")}`,
-                  r.summary?.averageInspection != null
-                    ? `${Math.round(r.summary.averageInspection)} %`
-                    : null,
-                  r.summary?.criticalFindings
-                    ? t("ui.RouteRunsHistory.criticos", "{{n}} críticos", {
-                        n: r.summary.criticalFindings,
-                      })
-                    : null,
-                ]
-                  .filter(Boolean)
-                  .join(" · ");
+            /* Una fila por ruta y por día, también los días en que nadie la
+               hizo (`not_done`, fila sin ejecución que no se abre). */
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[860px] border-collapse text-left text-sm">
+                <thead style={{ background: "var(--glass-sunken)" }}>
+                  <tr className="border-b" style={{ borderColor: "var(--hairline)" }}>
+                    {[
+                      t("ui.RouteRunsHistory.colFecha", "Fecha"),
+                      t("ui.RouteRunsHistory.ruta", "Ruta"),
+                      t("ui.RouteRunsHistory.colQuien", "Puesto / supervisor"),
+                      t("ui.RouteRunsHistory.colSalida", "Salida"),
+                      t("ui.RouteRunsHistory.colParadas", "Paradas"),
+                      t("ui.RouteRunsHistory.colDuracion", "Duración"),
+                      t("ui.RouteRunsHistory.colNovedades", "Novedades"),
+                      t("ui.RouteRunsHistory.estado", "Estado"),
+                    ].map((h) => (
+                      <th key={h} className="px-3 py-2.5 font-semibold">
+                        {h}
+                      </th>
+                    ))}
+                    <th aria-hidden className="w-8" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => {
+                    const sinHacer = !!r.virtual;
+                    const s = r.summary;
+                    const paradas = sinHacer
+                      ? "—"
+                      : s
+                        ? `${s.stopsCompleted}/${s.stopsPlanned}`
+                        : `${r.progress?.completed ?? 0}/${r.progress?.total ?? 0}`;
+                    const novedades = [
+                      s?.observations
+                        ? t("ui.RouteRunsHistory.nNovedades", {
+                            defaultValue: "{{n}} novedades",
+                            n: s.observations,
+                          })
+                        : null,
+                      s?.criticalFindings
+                        ? t("ui.RouteRunsHistory.criticos", "{{n}} críticos", {
+                            n: s.criticalFindings,
+                          })
+                        : null,
+                      s?.averageInspection != null
+                        ? `${Math.round(s.averageInspection)} %`
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ");
+                    const programada = r.scheduledStartAt
+                      ? fmtHora(r.scheduledStartAt, locale)
+                      : r.scheduledStartTime || null;
+                    const abrir = sinHacer
+                      ? undefined
+                      : () => navigate(`/vehicle-patrol/runs/${r.id}`);
 
-                return (
-                  <ListRow
-                    key={r.id}
-                    actions={
-                      <ChevronRight
-                        className="size-4"
-                        style={{ color: "var(--ink-faint)" }}
-                      />
-                    }
-                    badges={
-                      <StatusBadge
-                        tone={RUN_STATUS_TONE[r.status] || "neutral"}
+                    return (
+                      <tr
+                        key={r.id}
+                        className={cn(
+                          "border-b align-top",
+                          abrir && "cursor-pointer hover:bg-[var(--glass-sunken)]",
+                        )}
+                        style={{ borderColor: "var(--hairline)" }}
+                        tabIndex={abrir ? 0 : undefined}
+                        onClick={abrir}
+                        onKeyDown={(e) => {
+                          if (abrir && (e.key === "Enter" || e.key === " ")) {
+                            e.preventDefault();
+                            abrir();
+                          }
+                        }}
                       >
-                        {runStatusLabel(r.status)}
-                      </StatusBadge>
-                    }
-                    meta={meta}
-                    subtitle={
-                      <span className="flex flex-wrap gap-x-3">
-                        <span>{fmtFecha(r.date, locale)}</span>
-                        {r.supervisorName && (
-                          <span>
-                            <User className="mr-1 inline size-3" />
-                            {r.supervisorName}
-                          </span>
-                        )}
-                        {r.startedAt && (
-                          <span>
-                            <Clock className="mr-1 inline size-3" />
-                            {fmtHora(r.startedAt, locale)}
-                            {r.completedAt
-                              ? ` – ${fmtHora(r.completedAt, locale)}`
-                              : ""}
-                          </span>
-                        )}
-                      </span>
-                    }
-                    title={r.routeName || t("ui.RouteRunsHistory.ruta", "Ruta")}
-                    onClick={() => navigate(`/vehicle-patrol/runs/${r.id}`)}
-                  />
-                );
-              })}
+                        <td className="whitespace-nowrap px-3 py-2.5">
+                          {fmtFecha(r.date, locale)}
+                        </td>
+                        <td className="px-3 py-2.5 font-medium">
+                          {r.routeName || t("ui.RouteRunsHistory.ruta", "Ruta")}
+                        </td>
+                        <td className="px-3 py-2.5">
+                          {r.supervisorName ? (
+                            <span className="inline-flex items-center gap-1">
+                              <User className="size-3" />
+                              {r.supervisorName}
+                            </span>
+                          ) : (r.positionNames || []).length ? (
+                            <span style={{ color: "var(--ink-soft)" }}>
+                              {r.positionNames.join(", ")}
+                            </span>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5">
+                          {r.startedAt ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Clock className="size-3" />
+                              {fmtHora(r.startedAt, locale)}
+                              {r.completedAt
+                                ? ` – ${fmtHora(r.completedAt, locale)}`
+                                : ""}
+                            </span>
+                          ) : (
+                            "—"
+                          )}
+                          {programada ? (
+                            <span
+                              className="block text-xs"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              {t("ui.RouteRunsHistory.programadaA", {
+                                defaultValue: "Programada {{hora}}",
+                                hora: programada,
+                              })}
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-3 py-2.5">{paradas}</td>
+                        <td className="whitespace-nowrap px-3 py-2.5">
+                          {s?.totalSeconds != null ? fmtDur(s.totalSeconds) : "—"}
+                        </td>
+                        <td className="px-3 py-2.5">{novedades || "—"}</td>
+                        <td className="px-3 py-2.5">
+                          <StatusBadge tone={RUN_STATUS_TONE[r.status] || "neutral"}>
+                            {runStatusLabel(r.status)}
+                          </StatusBadge>
+                        </td>
+                        <td className="px-1 py-2.5">
+                          {abrir ? (
+                            <ChevronRight
+                              className="size-4"
+                              style={{ color: "var(--ink-faint)" }}
+                            />
+                          ) : null}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </Section>

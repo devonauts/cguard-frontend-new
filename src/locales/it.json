@@ -12404,7 +12404,18 @@
       "sinPuestos": "Non ci sono ancora posti di supervisione. Creali in Supervisori › Posti.",
       "supervisorFijoHint": "Questo percorso è stato creato per una persona. Scegli un posto perché lo faccia chi è di turno.",
       "horaDeSalida": "Ora di partenza",
-      "horaDeSalidaHint": "Facoltativa. Senza ora, parte all'inizio del turno. Nessuna ora di fine: la danno percorso, ottimizzazione e traffico."
+      "horaDeSalidaHint": "Facoltativa. Senza ora, parte all'inizio del turno. Nessuna ora di fine: la danno percorso, ottimizzazione e traffico.",
+      "puestosDeSupervision": "Postazioni di supervisione",
+      "nPuestosDeVigilancia": "{{n}} postazioni di vigilanza",
+      "puestosHint": "La vede chi è di turno quel giorno in una qualsiasi delle postazioni selezionate, senza assegnarla a una persona. La prende il primo che la avvia.",
+      "diasTodos": "Tutti",
+      "diasLaborables": "Da lunedì a venerdì",
+      "diasFinDeSemana": "Fine settimana",
+      "buscarPuesto": "Cerca postazione o indirizzo",
+      "agregarLosDelPuesto": "Aggiungi i {{n}} coperti dalle postazioni selezionate",
+      "quitarTodos": "Rimuovi tutti",
+      "sinCoincidencias": "Nessuna postazione corrisponde alla ricerca.",
+      "nElegidosDeTotal": "{{n}} di {{total}} scelti. L’ordine di visita si imposta sotto."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A velocità di traffico urbano, senza contare la sosta a ogni fermata",
@@ -16719,7 +16730,8 @@
         "partially_completed": "Parziale",
         "aborted": "Interrotta",
         "cancelled": "Annullata",
-        "skipped": "Non effettuata"
+        "skipped": "Non effettuata",
+        "not_done": "Non fatta"
       },
       "visitStatus": {
         "pending": "In attesa",
@@ -17216,10 +17228,18 @@
       "hasta": "Al",
       "paradas": "fermate",
       "ruta": "Percorso",
-      "sub": "Ogni percorso di supervisione eseguito, con il suo esito e le sue prove.",
+      "sub": "Una riga per percorso e per giorno: ciò che è stato fatto, con esito ed evidenze, e i giorni in cui non è stato fatto.",
       "titulo": "Cronologia dei percorsi",
       "todos": "Tutti gli stati",
-      "vacio": "Nessun percorso in questo periodo"
+      "vacio": "Nessun percorso in questo periodo",
+      "colFecha": "Data",
+      "colQuien": "Postazione / supervisore",
+      "colSalida": "Partenza",
+      "colParadas": "Tappe",
+      "colDuracion": "Durata",
+      "colNovedades": "Segnalazioni",
+      "nNovedades": "{{n}} segnalazioni",
+      "programadaA": "Programmata {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Completata",
@@ -21186,7 +21206,7 @@
       "startTimeRequired": "Ora di inizio obbligatoria",
       "supervisorRequired": "Supervisore obbligatorio",
       "vehicleRequired": "Veicolo obbligatorio",
-      "puestoRequired": "Scegli il posto di supervisione che fa il percorso"
+      "puestoRequired": "Scegli almeno una postazione di supervisione che faccia il percorso"
     },
     "vehicle": {
       "colorRequired": "Colore obbligatorio",

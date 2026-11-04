@@ -12488,7 +12488,18 @@
       "sinPuestos": "Nie ma jeszcze posterunków nadzoru. Utwórz je w Nadzór › Posterunki.",
       "supervisorFijoHint": "Tę trasę utworzono dla jednej osoby. Wybierz posterunek, aby robił ją ten, kto ma dyżur.",
       "horaDeSalida": "Godzina wyjazdu",
-      "horaDeSalidaHint": "Opcjonalnie. Bez godziny wyjazd następuje z początkiem zmiany. Bez godziny końca: wynika z trasy, optymalizacji i ruchu."
+      "horaDeSalidaHint": "Opcjonalnie. Bez godziny wyjazd następuje z początkiem zmiany. Bez godziny końca: wynika z trasy, optymalizacji i ruchu.",
+      "puestosDeSupervision": "Posterunki nadzoru",
+      "nPuestosDeVigilancia": "Posterunki ochrony: {{n}}",
+      "puestosHint": "Widzi ją ten, kto tego dnia ma dyżur na którymkolwiek z zaznaczonych posterunków, bez przypisywania osoby. Przejmuje ją ten, kto pierwszy ją rozpocznie.",
+      "diasTodos": "Wszystkie",
+      "diasLaborables": "Od poniedziałku do piątku",
+      "diasFinDeSemana": "Weekend",
+      "buscarPuesto": "Szukaj posterunku lub adresu",
+      "agregarLosDelPuesto": "Dodaj objęte zaznaczonymi posterunkami ({{n}})",
+      "quitarTodos": "Usuń wszystkie",
+      "sinCoincidencias": "Żaden posterunek nie pasuje do wyszukiwania.",
+      "nElegidosDeTotal": "Wybrano {{n}} z {{total}}. Kolejność wizyt ustawisz poniżej."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",
@@ -16949,7 +16960,8 @@
         "partially_completed": "Częściowa",
         "aborted": "Przerwana",
         "cancelled": "Anulowana",
-        "skipped": "Niewykonana"
+        "skipped": "Niewykonana",
+        "not_done": "Niewykonana"
       },
       "visitStatus": {
         "pending": "Oczekująca",
@@ -17448,10 +17460,18 @@
       "hasta": "Do",
       "paradas": "przystanki",
       "ruta": "Trasa",
-      "sub": "Każda wykonana trasa nadzoru wraz z wynikiem i dowodami.",
+      "sub": "Jeden wiersz na trasę i dzień: co wykonano, z wynikiem i dowodami, oraz dni, w których jej nie wykonano.",
       "titulo": "Historia tras",
       "todos": "Wszystkie statusy",
-      "vacio": "Brak tras w tym okresie"
+      "vacio": "Brak tras w tym okresie",
+      "colFecha": "Data",
+      "colQuien": "Posterunek / nadzorca",
+      "colSalida": "Wyjazd",
+      "colParadas": "Przystanki",
+      "colDuracion": "Czas trwania",
+      "colNovedades": "Zdarzenia",
+      "nNovedades": "Zdarzenia: {{n}}",
+      "programadaA": "Zaplanowana {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Zakończona",
@@ -21513,7 +21533,7 @@
       "startTimeRequired": "Godzina rozpoczęcia jest wymagana",
       "supervisorRequired": "Nadzorca jest wymagany",
       "vehicleRequired": "Pojazd jest wymagany",
-      "puestoRequired": "Wybierz posterunek nadzoru, który robi trasę"
+      "puestoRequired": "Wybierz co najmniej jeden posterunek nadzoru, który wykona trasę"
     },
     "vehicle": {
       "colorRequired": "Kolor jest wymagany",

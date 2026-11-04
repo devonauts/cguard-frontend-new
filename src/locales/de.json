@@ -12404,7 +12404,18 @@
       "sinPuestos": "Noch keine Aufsichtsposten. Lege sie unter Aufsicht › Posten an.",
       "supervisorFijoHint": "Diese Route wurde für eine Person angelegt. Wähle einen Posten, damit sie fährt, wer Dienst hat.",
       "horaDeSalida": "Abfahrtszeit",
-      "horaDeSalidaHint": "Optional. Ohne Uhrzeit startet sie mit Dienstbeginn. Keine Endzeit: die ergeben Strecke, Optimierung und Verkehr."
+      "horaDeSalidaHint": "Optional. Ohne Uhrzeit startet sie mit Dienstbeginn. Keine Endzeit: die ergeben Strecke, Optimierung und Verkehr.",
+      "puestosDeSupervision": "Aufsichtsposten",
+      "nPuestosDeVigilancia": "{{n}} Wachposten",
+      "puestosHint": "Wer an diesem Tag in einem der markierten Posten Dienst hat, sieht sie, ohne Zuweisung an eine Person. Wer sie zuerst startet, übernimmt sie.",
+      "diasTodos": "Alle",
+      "diasLaborables": "Montag bis Freitag",
+      "diasFinDeSemana": "Wochenende",
+      "buscarPuesto": "Posten oder Adresse suchen",
+      "agregarLosDelPuesto": "Die {{n}} der markierten Posten hinzufügen",
+      "quitarTodos": "Alle entfernen",
+      "sinCoincidencias": "Kein Posten passt zur Suche.",
+      "nElegidosDeTotal": "{{n}} von {{total}} gewählt. Die Reihenfolge wird unten festgelegt."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Bei Stadtverkehrstempo, ohne die Standzeit an jedem Halt",
@@ -16719,7 +16730,8 @@
         "partially_completed": "Teilweise",
         "aborted": "Abgebrochen",
         "cancelled": "Storniert",
-        "skipped": "Nicht durchgeführt"
+        "skipped": "Nicht durchgeführt",
+        "not_done": "Nicht erledigt"
       },
       "visitStatus": {
         "pending": "Ausstehend",
@@ -17216,10 +17228,18 @@
       "hasta": "Bis",
       "paradas": "Haltepunkte",
       "ruta": "Route",
-      "sub": "Jede durchgeführte Kontrollroute mit Ergebnis und Nachweisen.",
+      "sub": "Eine Zeile pro Route und Tag: was erledigt wurde, mit Ergebnis und Nachweisen, und die Tage, an denen sie ausfiel.",
       "titulo": "Routenverlauf",
       "todos": "Alle Status",
-      "vacio": "Keine Routen in diesem Zeitraum"
+      "vacio": "Keine Routen in diesem Zeitraum",
+      "colFecha": "Datum",
+      "colQuien": "Posten / Aufsicht",
+      "colSalida": "Abfahrt",
+      "colParadas": "Stopps",
+      "colDuracion": "Dauer",
+      "colNovedades": "Befunde",
+      "nNovedades": "{{n}} Befunde",
+      "programadaA": "Geplant {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Abgeschlossen",
@@ -21185,7 +21205,7 @@
       "startTimeRequired": "Startzeit erforderlich",
       "supervisorRequired": "Einsatzleiter erforderlich",
       "vehicleRequired": "Fahrzeug erforderlich",
-      "puestoRequired": "Wähle den Aufsichtsposten, der die Route fährt"
+      "puestoRequired": "Wähle mindestens einen Aufsichtsposten, der die Route fährt"
     },
     "vehicle": {
       "colorRequired": "Farbe erforderlich",

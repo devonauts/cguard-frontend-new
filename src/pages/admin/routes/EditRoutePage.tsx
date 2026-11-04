@@ -88,7 +88,11 @@ export default function EditRoutePage() {
           days: route.days || [],
           supervisorId,
           supervisorName,
-          supervisorPositionId: route.supervisorPositionId ? String(route.supervisorPositionId) : "",
+          supervisorPositionIds: Array.isArray(route.supervisorPositionIds)
+            ? route.supervisorPositionIds.map(String)
+            : route.supervisorPositionId
+              ? [String(route.supervisorPositionId)]
+              : [],
           siteIds: puntos.map((point: any) => point.siteId),
           vehicleId,
           vehicleName,

@@ -12404,7 +12404,18 @@
       "sinPuestos": "Er zijn nog geen toezichtsposten. Maak ze aan bij Toezicht › Posten.",
       "supervisorFijoHint": "Deze route is voor één persoon gemaakt. Kies een post zodat wie dienst heeft hem rijdt.",
       "horaDeSalida": "Vertrektijd",
-      "horaDeSalidaHint": "Optioneel. Zonder tijd start hij bij het begin van de dienst. Geen eindtijd: die volgen uit route, optimalisatie en verkeer."
+      "horaDeSalidaHint": "Optioneel. Zonder tijd start hij bij het begin van de dienst. Geen eindtijd: die volgen uit route, optimalisatie en verkeer.",
+      "puestosDeSupervision": "Toezichtsposten",
+      "nPuestosDeVigilancia": "{{n}} bewakingsposten",
+      "puestosHint": "Wie die dag dienst heeft in een van de aangevinkte posten ziet hem, zonder toewijzing aan een persoon. Wie hem als eerste start, neemt hem.",
+      "diasTodos": "Alle",
+      "diasLaborables": "Maandag t/m vrijdag",
+      "diasFinDeSemana": "Weekend",
+      "buscarPuesto": "Post of adres zoeken",
+      "agregarLosDelPuesto": "De {{n}} van de aangevinkte posten toevoegen",
+      "quitarTodos": "Alles verwijderen",
+      "sinCoincidencias": "Geen post komt overeen met de zoekopdracht.",
+      "nElegidosDeTotal": "{{n}} van {{total}} gekozen. De volgorde stel je hieronder in."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Op stadssnelheid, exclusief de tijd bij elke halte",
@@ -16719,7 +16730,8 @@
         "partially_completed": "Gedeeltelijk",
         "aborted": "Afgebroken",
         "cancelled": "Geannuleerd",
-        "skipped": "Niet uitgevoerd"
+        "skipped": "Niet uitgevoerd",
+        "not_done": "Niet gedaan"
       },
       "visitStatus": {
         "pending": "In afwachting",
@@ -17216,10 +17228,18 @@
       "hasta": "Tot",
       "paradas": "stops",
       "ruta": "Route",
-      "sub": "Elke uitgevoerde supervisieroute, met het resultaat en het bewijs.",
+      "sub": "Eén rij per route en per dag: wat gedaan is, met resultaat en bewijs, en de dagen waarop het niet gebeurde.",
       "titulo": "Routegeschiedenis",
       "todos": "Alle statussen",
-      "vacio": "Geen routes in deze periode"
+      "vacio": "Geen routes in deze periode",
+      "colFecha": "Datum",
+      "colQuien": "Post / supervisor",
+      "colSalida": "Vertrek",
+      "colParadas": "Stops",
+      "colDuracion": "Duur",
+      "colNovedades": "Bevindingen",
+      "nNovedades": "{{n}} bevindingen",
+      "programadaA": "Gepland {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Voltooid",
@@ -21185,7 +21205,7 @@
       "startTimeRequired": "Starttijd is verplicht",
       "supervisorRequired": "Supervisor is verplicht",
       "vehicleRequired": "Voertuig is verplicht",
-      "puestoRequired": "Kies de toezichtspost die de route rijdt"
+      "puestoRequired": "Kies minstens één toezichtspost die de route rijdt"
     },
     "vehicle": {
       "colorRequired": "Kleur is verplicht",

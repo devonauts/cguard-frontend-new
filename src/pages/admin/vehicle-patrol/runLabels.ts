@@ -18,6 +18,7 @@ export const RUN_STATUS_LABEL: Record<string, string> = {
   aborted: "Abortada",
   cancelled: "Cancelada",
   skipped: "No realizada",
+  not_done: "No se hizo",
 };
 export const RUN_STATUS_TONE: Record<string, string> = {
   scheduled: "neutral",
@@ -28,6 +29,7 @@ export const RUN_STATUS_TONE: Record<string, string> = {
   aborted: "bad",
   cancelled: "neutral",
   skipped: "bad",
+  not_done: "bad",
 };
 export const VISIT_STATUS_LABEL: Record<string, string> = {
   pending: "Pendiente",

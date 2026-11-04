@@ -12404,7 +12404,18 @@
       "sinPuestos": "Aucun poste de supervision pour l'instant. Créez-les dans Superviseurs › Postes.",
       "supervisorFijoHint": "Cette tournée a été créée pour une personne. Choisissez un poste pour que celui de service la fasse.",
       "horaDeSalida": "Heure de départ",
-      "horaDeSalidaHint": "Facultatif. Sans heure, elle part au début du service. Pas d'heure de fin : le parcours, l'optimisation et le trafic la donnent."
+      "horaDeSalidaHint": "Facultatif. Sans heure, elle part au début du service. Pas d'heure de fin : le parcours, l'optimisation et le trafic la donnent.",
+      "puestosDeSupervision": "Postes de supervision",
+      "nPuestosDeVigilancia": "{{n}} postes de garde",
+      "puestosHint": "Celui qui est de service ce jour-là dans l’un des postes cochés la voit, sans l’attribuer à une personne. Le premier qui la démarre la prend.",
+      "diasTodos": "Tous",
+      "diasLaborables": "Du lundi au vendredi",
+      "diasFinDeSemana": "Week-end",
+      "buscarPuesto": "Rechercher un poste ou une adresse",
+      "agregarLosDelPuesto": "Ajouter les {{n}} couverts par les postes cochés",
+      "quitarTodos": "Tout retirer",
+      "sinCoincidencias": "Aucun poste ne correspond à la recherche.",
+      "nElegidosDeTotal": "{{n}} sur {{total}} choisis. L’ordre de visite se règle plus bas."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "À la vitesse de la circulation urbaine, sans compter le temps passé à chaque arrêt",
@@ -16719,7 +16730,8 @@
         "partially_completed": "Partielle",
         "aborted": "Abandonnée",
         "cancelled": "Annulée",
-        "skipped": "Non effectuée"
+        "skipped": "Non effectuée",
+        "not_done": "Non faite"
       },
       "visitStatus": {
         "pending": "En attente",
@@ -17216,10 +17228,18 @@
       "hasta": "Au",
       "paradas": "arrêts",
       "ruta": "Tournée",
-      "sub": "Chaque tournée de supervision effectuée, avec son résultat et ses preuves.",
+      "sub": "Une ligne par itinéraire et par jour : ce qui a été fait, avec son résultat et ses preuves, et les jours où il ne l’a pas été.",
       "titulo": "Historique des tournées",
       "todos": "Tous les statuts",
-      "vacio": "Aucune tournée sur cette période"
+      "vacio": "Aucune tournée sur cette période",
+      "colFecha": "Date",
+      "colQuien": "Poste / superviseur",
+      "colSalida": "Départ",
+      "colParadas": "Arrêts",
+      "colDuracion": "Durée",
+      "colNovedades": "Constats",
+      "nNovedades": "{{n}} constats",
+      "programadaA": "Prévue {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Terminée",
@@ -21186,7 +21206,7 @@
       "startTimeRequired": "L'heure de début est obligatoire",
       "supervisorRequired": "Le superviseur est obligatoire",
       "vehicleRequired": "Le véhicule est obligatoire",
-      "puestoRequired": "Choisissez le poste de supervision qui fait la tournée"
+      "puestoRequired": "Choisissez au moins un poste de supervision pour faire l’itinéraire"
     },
     "vehicle": {
       "colorRequired": "La couleur est obligatoire",

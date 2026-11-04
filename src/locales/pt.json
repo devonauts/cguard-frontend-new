@@ -11846,7 +11846,18 @@
       "sinPuestos": "Ainda não há postos de supervisão. Crie-os em Supervisores › Postos.",
       "supervisorFijoHint": "Esta rota foi criada para uma pessoa. Escolha um posto para que quem estiver de plantão a faça.",
       "horaDeSalida": "Hora de saída",
-      "horaDeSalidaHint": "Opcional. Sem hora, sai ao começar o turno. Não se pede hora de fim: dependem do percurso, da otimização e do trânsito."
+      "horaDeSalidaHint": "Opcional. Sem hora, sai ao começar o turno. Não se pede hora de fim: dependem do percurso, da otimização e do trânsito.",
+      "puestosDeSupervision": "Postos de supervisão",
+      "nPuestosDeVigilancia": "{{n}} postos de vigilância",
+      "puestosHint": "Quem estiver de turno nesse dia em qualquer um dos postos marcados a vê, sem atribuí-la a uma pessoa. Fica com o primeiro que a iniciar.",
+      "diasTodos": "Todos",
+      "diasLaborables": "Segunda a sexta",
+      "diasFinDeSemana": "Fim de semana",
+      "buscarPuesto": "Buscar posto ou endereço",
+      "agregarLosDelPuesto": "Adicionar os {{n}} cobertos pelos postos marcados",
+      "quitarTodos": "Remover todos",
+      "sinCoincidencias": "Nenhum posto corresponde à busca.",
+      "nElegidosDeTotal": "{{n}} de {{total}} escolhidos. A ordem de visita é ajustada abaixo."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Em velocidade de trânsito urbano, sem contar a permanência em cada parada",
@@ -16161,7 +16172,8 @@
         "partially_completed": "Parcial",
         "aborted": "Abortada",
         "cancelled": "Cancelada",
-        "skipped": "Não realizada"
+        "skipped": "Não realizada",
+        "not_done": "Não feita"
       },
       "visitStatus": {
         "pending": "Pendente",
@@ -16658,10 +16670,18 @@
       "hasta": "Até",
       "paradas": "paradas",
       "ruta": "Rota",
-      "sub": "Cada percurso de supervisão executado, com seu resultado e sua evidência.",
+      "sub": "Uma linha por rota e por dia: o que foi feito, com resultado e evidências, e os dias em que não foi feito.",
       "titulo": "Histórico de rotas",
       "todos": "Todos os status",
-      "vacio": "Nenhum percurso neste período"
+      "vacio": "Nenhum percurso neste período",
+      "colFecha": "Data",
+      "colQuien": "Posto / supervisor",
+      "colSalida": "Saída",
+      "colParadas": "Paradas",
+      "colDuracion": "Duração",
+      "colNovedades": "Ocorrências",
+      "nNovedades": "{{n}} ocorrências",
+      "programadaA": "Programada {{hora}}"
     },
     "SupervisionHistory": {
       "completada": "Concluída",
@@ -21186,7 +21206,7 @@
       "startTimeRequired": "A hora de início é obrigatória",
       "supervisorRequired": "Supervisor obrigatório",
       "vehicleRequired": "Veículo obrigatório",
-      "puestoRequired": "Escolha o posto de supervisão que faz a rota"
+      "puestoRequired": "Escolha pelo menos um posto de supervisão para fazer a rota"
     },
     "vehicle": {
       "colorRequired": "Cor obrigatória",

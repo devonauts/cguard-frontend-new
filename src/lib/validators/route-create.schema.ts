@@ -30,8 +30,9 @@ export const routeCreateSchema = z
           "Seleccionar al menos un día",
         ),
       }),
-    /** La ruta es del PUESTO: la hace quien esté de turno en él ese día. */
-    supervisorPositionId: z.string().optional().default(""),
+    /** La ruta es de uno o más PUESTOS: la ve quien esté de turno en
+        cualquiera de ellos ese día, y la toma el primero que la empiece. */
+    supervisorPositionIds: z.array(z.string()).optional().default([]),
     /** Rutas viejas: asignadas a una persona concreta. */
     supervisorId: z.string().optional().default(""),
     siteIds: z.array(z.string()).min(1, {
@@ -52,11 +53,11 @@ export const routeCreateSchema = z
     autoCheckInByGeofence: z.boolean().default(false),
     forceCheckInBeforeStart: z.boolean().default(false),
   })
-  .refine((v) => !!(v.supervisorPositionId || v.supervisorId), {
-    path: ["supervisorPositionId"],
+  .refine((v) => !!((v.supervisorPositionIds || []).length || v.supervisorId), {
+    path: ["supervisorPositionIds"],
     error: () =>
       i18n.t("validation.route.puestoRequired", {
-        defaultValue: "Elige el puesto de supervisión que hace la ruta",
+        defaultValue: "Elige al menos un puesto de supervisión que haga la ruta",
       }),
   })
   .refine((v) => !v.dateFrom || !v.dateTo || new Date(v.dateFrom) <= new Date(v.dateTo), {
