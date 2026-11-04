@@ -41,9 +41,9 @@ export const routeCreateSchema = z
         "Selecciona al menos una sede",
       ),
     }),
-    vehicleId: z.string().min(1, {
-      error: msj("validation.route.vehicleRequired", "Vehículo requerido"),
-    }),
+    /** Opcional: hay supervisores que hacen la ruta en su propia moto, sin
+        vehículo de la empresa (Seguridad B.A.S., 2026-11-04). */
+    vehicleId: z.string().optional().default(""),
     createPatrol: z.boolean().default(false),
     syncHitsBetweenGuards: z.boolean().default(false),
     forceVehicleRouteOrder: z.boolean().default(false),

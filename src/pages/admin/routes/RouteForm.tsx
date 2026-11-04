@@ -114,6 +114,9 @@ const DAY_LABEL_KEY: Record<string, string> = {
   sat: "siteTour.options.saturday",
 };
 const ALL_DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
+/** Valor del `Select` para «Sin vehículo» (Radix no admite un valor vacío). */
+const SIN_VEHICULO = "__sin_vehiculo__";
+
 /** Como se lee una semana de trabajo en la oficina: de lunes a domingo. */
 const DIAS_LUNES_PRIMERO = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -2562,11 +2565,18 @@ export default function RouteForm({
               <FormItem>
                 <FormLabel>
                   {t(
-                    "ui.RouteForm.seleccionarVehiculo",
-                    "Seleccionar vehículo*",
+                    "ui.RouteForm.vehiculoOpcional",
+                    "Vehículo (opcional)",
                   )}
                 </FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
+                {/* Radix no admite un valor vacío: «Sin vehículo» lleva un
+                    centinela que se guarda como vacío. */}
+                <Select
+                  value={field.value || SIN_VEHICULO}
+                  onValueChange={(v) =>
+                    field.onChange(v === SIN_VEHICULO ? "" : v)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue
                       placeholder={t(
@@ -2581,11 +2591,14 @@ export default function RouteForm({
                           ? [sv.name, sv.licensePlate]
                               .filter(Boolean)
                               .join(" • ")
-                          : undefined;
+                          : t("ui.RouteForm.sinVehiculo", "Sin vehículo");
                       })()}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value={SIN_VEHICULO}>
+                      {t("ui.RouteForm.sinVehiculo", "Sin vehículo")}
+                    </SelectItem>
                     {vehicles.map((v) => (
                       <SelectItem key={v.id} value={v.id}>
                         <span className="truncate">

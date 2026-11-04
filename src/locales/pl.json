@@ -12499,7 +12499,9 @@
       "agregarLosDelPuesto": "Dodaj objęte zaznaczonymi posterunkami ({{n}})",
       "quitarTodos": "Usuń wszystkie",
       "sinCoincidencias": "Żaden posterunek nie pasuje do wyszukiwania.",
-      "nElegidosDeTotal": "Wybrano {{n}} z {{total}}. Kolejność wizyt ustawisz poniżej."
+      "nElegidosDeTotal": "Wybrano {{n}} z {{total}}. Kolejność wizyt ustawisz poniżej.",
+      "vehiculoOpcional": "Pojazd (opcjonalnie)",
+      "sinVehiculo": "Bez pojazdu"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",

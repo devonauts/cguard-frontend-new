@@ -11857,7 +11857,9 @@
       "agregarLosDelPuesto": "Add the {{n}} covered by the selected posts",
       "quitarTodos": "Remove all",
       "sinCoincidencias": "No post matches the search.",
-      "nElegidosDeTotal": "{{n}} of {{total}} selected. The visit order is set below."
+      "nElegidosDeTotal": "{{n}} of {{total}} selected. The visit order is set below.",
+      "vehiculoOpcional": "Vehicle (optional)",
+      "sinVehiculo": "No vehicle"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "At city traffic speed, not counting time spent at each stop",

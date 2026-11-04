@@ -12415,7 +12415,9 @@
       "agregarLosDelPuesto": "Die {{n}} der markierten Posten hinzufügen",
       "quitarTodos": "Alle entfernen",
       "sinCoincidencias": "Kein Posten passt zur Suche.",
-      "nElegidosDeTotal": "{{n}} von {{total}} gewählt. Die Reihenfolge wird unten festgelegt."
+      "nElegidosDeTotal": "{{n}} von {{total}} gewählt. Die Reihenfolge wird unten festgelegt.",
+      "vehiculoOpcional": "Fahrzeug (optional)",
+      "sinVehiculo": "Kein Fahrzeug"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Bei Stadtverkehrstempo, ohne die Standzeit an jedem Halt",

@@ -11857,7 +11857,9 @@
       "agregarLosDelPuesto": "Agregar los {{n}} que cubren los puestos marcados",
       "quitarTodos": "Quitar todos",
       "sinCoincidencias": "Ningún puesto coincide con la búsqueda.",
-      "nElegidosDeTotal": "{{n}} de {{total}} elegidos. El orden de visita se ajusta abajo."
+      "nElegidosDeTotal": "{{n}} de {{total}} elegidos. El orden de visita se ajusta abajo.",
+      "vehiculoOpcional": "Vehículo (opcional)",
+      "sinVehiculo": "Sin vehículo"
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A marcha de tráfico urbano, sin contar la permanencia en cada parada",
