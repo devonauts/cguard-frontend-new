@@ -12427,7 +12427,10 @@
       "planSinUbicacion": "{{count}} stops hebben geen locatie en staan achteraan.",
       "planGuarda": "Sla de route op om deze volgorde en het traject te bewaren.",
       "planGuardado": "Opgeslagen: de route houdt deze volgorde en het traject over de weg, ook in de supervisor-app.",
-      "planNoGuardadoEnCurso": "Er is vandaag een ronde van deze route bezig: het plan is niet opgeslagen zodat het pad van de supervisor niet verandert."
+      "planNoGuardadoEnCurso": "Er is vandaag een ronde van deze route bezig: het plan is niet opgeslagen zodat het pad van de supervisor niet verandert.",
+      "yaOptimizada": "Al geoptimaliseerd",
+      "yaTrazada": "Al getekend",
+      "yaCalculadaHint": "Deze route heeft haar traject over de weg al opgeslagen. Wijzig een stop, de volgorde of een eindpunt om het opnieuw te berekenen."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Op stadssnelheid, exclusief de tijd bij elke halte",

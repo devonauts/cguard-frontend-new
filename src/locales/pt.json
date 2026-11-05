@@ -11869,7 +11869,10 @@
       "planSinUbicacion": "{{count}} paradas não têm localização e ficaram no final.",
       "planGuarda": "Salve a rota para manter esta ordem e o percurso.",
       "planGuardado": "Salvo: a rota fica com esta ordem e o percurso pelas ruas, também no app do supervisor.",
-      "planNoGuardadoEnCurso": "Há um percurso desta rota em andamento hoje: o plano não foi salvo para não mudar o caminho do supervisor."
+      "planNoGuardadoEnCurso": "Há um percurso desta rota em andamento hoje: o plano não foi salvo para não mudar o caminho do supervisor.",
+      "yaOptimizada": "Já otimizada",
+      "yaTrazada": "Já traçada",
+      "yaCalculadaHint": "Esta rota já tem seu percurso pelas ruas salvo. Mude uma parada, a ordem ou um extremo para calcular de novo."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Em velocidade de trânsito urbano, sem contar a permanência em cada parada",

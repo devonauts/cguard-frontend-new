@@ -11869,7 +11869,10 @@
       "planSinUbicacion": "{{count}} stops have no location and were placed last.",
       "planGuarda": "Save the route to keep this order and its path.",
       "planGuardado": "Saved: the route keeps this order and its street path, in the supervisor app too.",
-      "planNoGuardadoEnCurso": "There is a run of this route in progress today: the plan was not saved so the supervisor's path does not change."
+      "planNoGuardadoEnCurso": "There is a run of this route in progress today: the plan was not saved so the supervisor's path does not change.",
+      "yaOptimizada": "Already optimized",
+      "yaTrazada": "Already mapped",
+      "yaCalculadaHint": "This route already has its street path saved. Change a stop, the order or an end to calculate it again."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "At city traffic speed, not counting time spent at each stop",

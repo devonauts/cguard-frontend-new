@@ -198,13 +198,43 @@ export default function PatrullaBoardPage() {
 
     setBusyId(route.id);
     try {
-      const resp: any = await routeService.optimize(route.id);
+      /* El mismo plan que el formulario (2026-11-04): orden + trazado por
+         calles en UNA consulta, guardado en el acto. El optimizador viejo de
+         aquí reordenaba en línea recta y BORRABA el trazado por calles. */
+      const num = (v: any) => (v == null || v === "" ? null : Number(v));
+      const ancla = (lat: any, lng: any) =>
+        num(lat) != null && num(lng) != null
+          ? { lat: Number(lat), lng: Number(lng) }
+          : null;
+      const puntos = [...(route.points || [])].sort(
+        (a: any, b: any) => (a.order ?? 0) - (b.order ?? 0),
+      );
+      const resp: any = await routeService.plan({
+        points: puntos.map((p: any) => ({
+          key: String(p.siteId),
+          siteId: String(p.siteId),
+          lat: num(p.lat),
+          lng: num(p.lng),
+          duration: p.duration ?? null,
+        })),
+        origin: ancla(route.originLat, route.originLng),
+        destination: ancla(route.destinationLat, route.destinationLng),
+        optimize: true,
+        routeId: String(route.id),
+        guardar: true,
+      });
       const r = resp?.data ?? resp ?? {};
       const ahorro = leerAhorro(r.meta ?? r.optimizedMeta ?? r);
 
-      // `changed: false` es un buen resultado, no un fallo: el orden manual ya
-      // era el mejor. «Has ahorrado 0 km» ahí suena a que el botón no funcionó.
-      if (r.changed === false) {
+      if (!r.guardado) {
+        toast.warning(
+          r.motivoSinGuardar === "run_in_progress"
+            ? t("ui.RouteForm.planNoGuardadoEnCurso", "Hoy hay un recorrido de esta ruta en curso: el plan no se guardó para no cambiarle el camino al supervisor.")
+            : t("ui.RouteForm.planGuarda", "Guarda la ruta para conservar este orden y su recorrido."),
+        );
+      } else if (r.changed === false) {
+        // `changed: false` es un buen resultado, no un fallo: el orden manual ya
+        // era el mejor. «Has ahorrado 0 km» ahí suena a que el botón no funcionó.
         toast.success(t("comun.laRutaYaEstabaEn"));
       } else if (ahorro?.hayAhorro) {
         const trozos: string[] = [];
@@ -223,7 +253,7 @@ export default function PatrullaBoardPage() {
         toast.success(t("ui.PatrullaBoard.rutaOptimizada", "Ruta optimizada."));
       }
 
-      const sinCoords = ahorro?.sinCoordenadas ?? 0;
+      const sinCoords = (r.unlocated || []).length || (ahorro?.sinCoordenadas ?? 0);
 
       if (sinCoords > 0) {
         toast.info(
@@ -478,17 +508,21 @@ export default function PatrullaBoardPage() {
                           ? t("revision.deshacer", "Deshacer")
                           : t("ui.PatrullaBoard.marcarCompletada", "Marcar completada")}
                       </Button>
-                      {/* Reordering needs two stops at least: with one the
-                          server could only answer 400. */}
-                      <Button
-                        disabled={busyId === route.id || stops < 2}
-                        size="sm"
-                        variant="outline"
-                        onClick={() => optimize(route)}
-                      >
-                        <Wand2 className="size-3.5" />{" "}
-                        {t("ui.PatrullaBoard.optimizar", "Optimizar")}
-                      </Button>
+                      {/* Already optimized and untouched: nothing to offer.
+                          Editing a stop or an end turns the mark off (server
+                          side) and the button comes back. Reordering needs
+                          two stops at least. */}
+                      {!route.optimized && (
+                        <Button
+                          disabled={busyId === route.id || stops < 2}
+                          size="sm"
+                          variant="outline"
+                          onClick={() => optimize(route)}
+                        >
+                          <Wand2 className="size-3.5" />{" "}
+                          {t("ui.PatrullaBoard.optimizar", "Optimizar")}
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="outline"

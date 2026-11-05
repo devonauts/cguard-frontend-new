@@ -12511,7 +12511,10 @@
       "planSinUbicacion": "Przystanki bez lokalizacji ({{count}}) trafiły na koniec.",
       "planGuarda": "Zapisz trasę, aby zachować tę kolejność i przebieg.",
       "planGuardado": "Zapisano: trasa zachowuje tę kolejność i przebieg ulicami, także w aplikacji nadzorcy.",
-      "planNoGuardadoEnCurso": "Dziś trwa przejazd tej trasy: plan nie został zapisany, aby nie zmieniać drogi nadzorcy."
+      "planNoGuardadoEnCurso": "Dziś trwa przejazd tej trasy: plan nie został zapisany, aby nie zmieniać drogi nadzorcy.",
+      "yaOptimizada": "Już zoptymalizowana",
+      "yaTrazada": "Już wyznaczona",
+      "yaCalculadaHint": "Ta trasa ma już zapisany przebieg ulicami. Zmień przystanek, kolejność lub koniec trasy, aby obliczyć go ponownie."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",

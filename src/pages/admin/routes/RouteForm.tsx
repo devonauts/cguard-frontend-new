@@ -1386,6 +1386,10 @@ export default function RouteForm({
     }
   };
 
+  /* Ya hecho y sin tocar desde entonces: cualquier cambio de paradas, orden o
+     extremos pasa por `desoptimizar`, que apaga la marca y borra el trazado. */
+  const yaTrazada = Boolean(trazado);
+  const yaOptimizada = optimizada && yaTrazada;
   const optimizar = () => planificar(true);
   const trazarPorCalles = () => planificar(false);
 
@@ -2076,8 +2080,11 @@ export default function RouteForm({
           <div className="flex flex-wrap items-center gap-2">
             {/* Funcionan ANTES de guardar: una sola consulta a Google da el
                 orden, el recorrido por calles y el tiempo. */}
+            {/* Ya optimizada y trazada, sin tocar: no hay nada que volver a
+                calcular. Cambiar una parada o un extremo apaga la marca y
+                borra el trazado (desoptimizar) y el botón vuelve solo. */}
             <Button
-              disabled={optimizando || trazando || points.length < 2}
+              disabled={optimizando || trazando || points.length < 2 || yaOptimizada}
               size="lg"
               type="button"
               variant="brand"
@@ -2085,15 +2092,19 @@ export default function RouteForm({
             >
               {optimizando ? (
                 <Loader2 className="size-4 animate-spin" />
+              ) : yaOptimizada ? (
+                <Check className="size-4" />
               ) : (
                 <Wand2 className="size-4" />
               )}
               {optimizando
                 ? t("ui.RouteForm.optimizando", "Optimizando…")
-                : t("ui.RouteForm.optimizarYTrazar", "Optimizar y trazar")}
+                : yaOptimizada
+                  ? t("ui.RouteForm.yaOptimizada", "Ya optimizada")
+                  : t("ui.RouteForm.optimizarYTrazar", "Optimizar y trazar")}
             </Button>
             <Button
-              disabled={optimizando || trazando || points.length + (origen ? 1 : 0) + (destino ? 1 : 0) < 2}
+              disabled={optimizando || trazando || points.length + (origen ? 1 : 0) + (destino ? 1 : 0) < 2 || yaTrazada}
               size="lg"
               type="button"
               variant="outline"
@@ -2106,13 +2117,20 @@ export default function RouteForm({
               )}
               {trazando
                 ? t("ui.RouteForm.trazando", "Trazando…")
-                : t("ui.RouteForm.trazarEnEsteOrden", "Trazar en este orden")}
+                : yaTrazada
+                  ? t("ui.RouteForm.yaTrazada", "Ya trazada")
+                  : t("ui.RouteForm.trazarEnEsteOrden", "Trazar en este orden")}
             </Button>
             <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-              {t(
-                "ui.RouteForm.planUnaLlamada",
-                "Una sola consulta al servicio de mapas: orden, recorrido por calles y tiempo, con tráfico a la hora de salida. No hace falta guardar antes.",
-              )}
+              {yaTrazada
+                ? t(
+                    "ui.RouteForm.yaCalculadaHint",
+                    "Esta ruta ya tiene su recorrido por calles guardado. Cambia una parada, el orden o un extremo para volver a calcularlo.",
+                  )
+                : t(
+                    "ui.RouteForm.planUnaLlamada",
+                    "Una sola consulta al servicio de mapas: orden, recorrido por calles y tiempo, con tráfico a la hora de salida. No hace falta guardar antes.",
+                  )}
             </span>
           </div>
 

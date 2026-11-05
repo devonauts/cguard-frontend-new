@@ -12427,7 +12427,10 @@
       "planSinUbicacion": "{{count}} Stopps haben keinen Standort und stehen am Ende.",
       "planGuarda": "Speichere die Route, um diese Reihenfolge und den Verlauf zu behalten.",
       "planGuardado": "Gespeichert: die Route behält diese Reihenfolge und ihren Straßenverlauf, auch in der Aufsichts-App.",
-      "planNoGuardadoEnCurso": "Heute läuft eine Fahrt dieser Route: der Plan wurde nicht gespeichert, damit sich der Weg der Aufsicht nicht ändert."
+      "planNoGuardadoEnCurso": "Heute läuft eine Fahrt dieser Route: der Plan wurde nicht gespeichert, damit sich der Weg der Aufsicht nicht ändert.",
+      "yaOptimizada": "Bereits optimiert",
+      "yaTrazada": "Bereits gezeichnet",
+      "yaCalculadaHint": "Diese Route hat ihren Straßenverlauf bereits gespeichert. Ändere einen Stopp, die Reihenfolge oder einen Endpunkt, um ihn neu zu berechnen."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Bei Stadtverkehrstempo, ohne die Standzeit an jedem Halt",

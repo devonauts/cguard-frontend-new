@@ -398,16 +398,18 @@ export default function VigiaWidget() {
 
         return;
       }
-      const place = bubblePlacement(b, liftRef.current);
-      const next = place === "hide" ? 0 : place;
-      // Where it will be once the slide ends: the slide can take longer than
-      // its .22 s on a busy page, so wait until it gets there (1.2 s at most).
+      // NEVER MOVES (B.A.S., 2026-11-04: «el Vigía se está moviendo de su
+      // ubicación»). It used to lift itself over any control below it; now it
+      // stays in its corner and, over a control, turns translucent and lets the
+      // click through (the state it already had when no clear spot existed).
+      const place = bubblePlacement(b, 0);
+      const next = 0;
       const target = b.getBoundingClientRect().top - (next - liftRef.current);
       const startedAt = performance.now();
 
       liftRef.current = next;
       setLift(next);
-      setTapaControl(place === "hide");
+      setTapaControl(place !== 0);
       const waitForSlide = () => {
         const arrived = Math.abs(b.getBoundingClientRect().top - target) < 2;
 
@@ -494,12 +496,12 @@ export default function VigiaWidget() {
         const b = burbujaRef.current;
 
         if (!b) return;
-        const place = bubblePlacement(b, liftRef.current);
-        const next = place === "hide" ? 0 : place;
+        // Never lifted: over a control it goes translucent and click-through.
+        const place = bubblePlacement(b, 0);
 
-        liftRef.current = next;
-        setLift(next);
-        setTapaControl(place === "hide");
+        liftRef.current = 0;
+        setLift(0);
+        setTapaControl(place !== 0);
       });
     };
     // Mutations come in bursts (a list rendering, a form opening) and some
@@ -984,7 +986,8 @@ export default function VigiaWidget() {
           style={{
             // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
             // revés. La botonera de guardar de algunas páginas vive en
-            // bottom-6 right-6 — la burbuja se levanta por encima de ella.
+            // bottom-6 right-6 — sobre ella la burbuja se vuelve translúcida y
+            // deja pasar el clic; nunca se mueve de su sitio.
             position: "fixed",
             right: "clamp(1rem, 4vw, 1.75rem)",
             bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))",
@@ -1022,7 +1025,7 @@ export default function VigiaWidget() {
             @media (max-width: 767.98px) { .vigia-burbuja { transform: scale(0.78); transform-origin: 100% 100%; } }
             .vigia-burbuja { transition: opacity .22s ease, transform .22s ease, translate .22s ease; }
             .vigia-burbuja[data-apartada] { opacity: .18; pointer-events: none; }
-            .vigia-burbuja[data-oculta] { opacity: 0; pointer-events: none; }
+            .vigia-burbuja[data-oculta] { opacity: .3; pointer-events: none; }
             @media (prefers-reduced-motion: reduce) { .vigia-burbuja { transition: none } }
           `}</style>
           <span className="relative block">

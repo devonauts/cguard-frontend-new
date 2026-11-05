@@ -12427,7 +12427,10 @@
       "planSinUbicacion": "{{count}} tappe non hanno posizione e sono finite in fondo.",
       "planGuarda": "Salva il percorso per mantenere questo ordine e il tracciato.",
       "planGuardado": "Salvato: il percorso mantiene quest'ordine e il tracciato stradale, anche nell'app del supervisore.",
-      "planNoGuardadoEnCurso": "Oggi c'è un giro di questo percorso in corso: il piano non è stato salvato per non cambiare la strada al supervisore."
+      "planNoGuardadoEnCurso": "Oggi c'è un giro di questo percorso in corso: il piano non è stato salvato per non cambiare la strada al supervisore.",
+      "yaOptimizada": "Già ottimizzato",
+      "yaTrazada": "Già tracciato",
+      "yaCalculadaHint": "Questo percorso ha già il suo tracciato stradale salvato. Cambia una tappa, l'ordine o un estremo per ricalcolarlo."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A velocità di traffico urbano, senza contare la sosta a ogni fermata",
