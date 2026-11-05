@@ -4789,10 +4789,10 @@
       "vehiculos": "Veicoli"
     },
     "patrulla": {
-      "label": "Pattuglia veicolare",
+      "label": "Percorso di supervisione",
       "rutas": "Percorsi",
       "vehiculo": "Veicolo",
-      "patrulla-board": "Pattuglia veicolare",
+      "patrulla-board": "Percorso di supervisione",
       "patrulla-rutas": "Percorsi di supervisione",
       "patrulla-live": "Monitoraggio in diretta",
       "patrulla-vehiculos": "Veicoli"
@@ -11112,7 +11112,7 @@
       "hibrido": "Ibrido",
       "satelite": "Satellite",
       "todasLasRutas": "Tutti i percorsi",
-      "vigilantesYSupervisoresEnServicio": "Guardie e supervisori in servizio, sulle fermate dei percorsi di pattuglia della giornata.",
+      "vigilantesYSupervisoresEnServicio": "Guardie e supervisori in servizio, sulle tappe dei percorsi di supervisione del giorno.",
       "personalEnElMapa": "Personale sulla mappa",
       "tipoDeMapa": "Tipo di mappa",
       "hojaDeRuta": "Foglio di percorso",
@@ -11143,7 +11143,7 @@
       "nParadas_few": "{{count}} tappe",
       "nParadas_many": "{{count}} tappe",
       "completada": "Completata",
-      "obteniendoLasRutasDePatrulla": "Recupero dei percorsi di pattuglia del giorno.",
+      "obteniendoLasRutasDePatrulla": "Recupero dei percorsi di supervisione del giorno.",
       "noHayRutasConParadas": "Non ci sono percorsi con tappe geolocalizzate per questa data. Aggiungi le posizioni ai posti del percorso per vederle qui.",
       "cargandoRutas": "Caricamento percorsi…",
       "noSeEncontraronParadas": "Nessuna tappa trovata"
@@ -11716,7 +11716,7 @@
       "paradasSinUbicacion_other": "{{count}} tappe non hanno una posizione: sono rimaste al loro posto e le altre sono state distribuite intorno.",
       "paradasSinUbicacion_few": "{{count}} tappe non hanno una posizione: sono rimaste al loro posto e le altre sono state distribuite intorno.",
       "paradasSinUbicacion_many": "{{count}} tappe non hanno una posizione: sono rimaste al loro posto e le altre sono state distribuite intorno.",
-      "crearPatrullaVehicular": "Crea pattuglia veicolare",
+      "crearPatrullaVehicular": "Crea percorso di supervisione",
       "gestionarRutas": "Gestisci percorsi",
       "programadasHoy": "Programmate oggi",
       "completadas": "Completate",
@@ -12360,7 +12360,7 @@
       "quitar": "Rimuovi {{name}}",
       "detalleDe": "Dettagli di {{name}}",
       "sincronizarPasadas": "Sincronizza i passaggi tra supervisori",
-      "forzarOrden": "Obbliga il supervisore a seguire il percorso di pattuglia veicolare in ordine",
+      "forzarOrden": "Obbligare il supervisore a seguire il percorso di supervisione in ordine",
       "registroAutomaticoGeocerca": "Registrazione automatica di entrata e uscita nelle postazioni in base al geofence",
       "aunNoActivo": "non ancora attivo",
       "enviando": "Invio in corso...",
@@ -12425,7 +12425,9 @@
       "planConTrafico": "Percorso calcolato con il traffico: {{cifras}}.",
       "planSinTrafico": "Percorso calcolato su strada: {{cifras}}. Senza traffico: manca l’attivazione della Routes API di Google.",
       "planSinUbicacion": "{{count}} tappe non hanno posizione e sono finite in fondo.",
-      "planGuarda": "Salva il percorso per mantenere questo ordine e il tracciato."
+      "planGuarda": "Salva il percorso per mantenere questo ordine e il tracciato.",
+      "planGuardado": "Salvato: il percorso mantiene quest'ordine e il tracciato stradale, anche nell'app del supervisore.",
+      "planNoGuardadoEnCurso": "Oggi c'è un giro di questo percorso in corso: il piano non è stato salvato per non cambiare la strada al supervisore."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A velocità di traffico urbano, senza contare la sosta a ogni fermata",
@@ -14949,7 +14951,7 @@
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Seleziona almeno un percorso.",
-      "defineYGestionaLasRutas": "Definisci e gestisci i percorsi di pattugliamento veicolare dei tuoi posti.",
+      "defineYGestionaLasRutas": "Definisci e gestisci i percorsi di supervisione delle tue postazioni.",
       "buscarRuta": "Cerca percorso",
       "turnoNoche": "Turno notte",
       "noPudimosEncontrarNingunaRuta": "Non abbiamo trovato nessun percorso corrispondente alla tua ricerca.",
@@ -15019,7 +15021,7 @@
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "Percorsi che il supervisore deve fare e il loro stato nella giornata.",
-      "creaUnaPatrullaVehicularCon": "Crea una pattuglia veicolare con le sue fermate (siti dei committenti) per iniziare."
+      "creaUnaPatrullaVehicularCon": "Crea un percorso di supervisione con le sue tappe (siti dei clienti) per iniziare."
     },
     "NewVehiclePage": {
       "errorSubiendoImagenDelVehiculo": "Errore durante il caricamento dell'immagine del veicolo",
@@ -15407,8 +15409,8 @@
       "requeridoAdmin": "Necessario per l'accesso amministratore (non può essere negato)"
     },
     "VehiclePatrol": {
-      "informeDePatrullaVehicular": "Report della pattuglia veicolare",
-      "recorridosDePatrullajeVehicular": "Percorsi di pattugliamento veicolare: itinerari, soste e tempi.",
+      "informeDePatrullaVehicular": "Report dei percorsi di supervisione",
+      "recorridosDePatrullajeVehicular": "Giri di supervisione: percorsi, tappe e tempi.",
       "distancia": "Distanza",
       "duracion": "Durata",
       "estado": "Stato",
@@ -15422,7 +15424,7 @@
       "paradas": "Fermate",
       "puntualidad": "Puntualità",
       "ruta": "Percorso",
-      "sinRecorridos": "Nessun percorso di pattugliamento in questo intervallo.",
+      "sinRecorridos": "Nessun giro di supervisione in questo intervallo.",
       "supervisor": "Supervisore"
     },
     "VerifyEmailGate": {
@@ -20915,7 +20917,7 @@
         "title": "Ore del cartellino per posto di servizio"
       },
       "vehiclePatrol": {
-        "desc": "Vedi l'attività del pattugliamento veicolare"
+        "desc": "Vedi l'attività dei percorsi di supervisione"
       },
       "watchModeLogs": {
         "desc": "Vedi i file multimediali inviati dalle guardie"

@@ -4789,10 +4789,10 @@
       "vehiculos": "Véhicules"
     },
     "patrulla": {
-      "label": "Patrouille mobile",
+      "label": "Itinéraire de supervision",
       "rutas": "Tournées",
       "vehiculo": "Véhicule",
-      "patrulla-board": "Patrouille mobile",
+      "patrulla-board": "Itinéraire de supervision",
       "patrulla-rutas": "Tournées de supervision",
       "patrulla-live": "Suivi en direct",
       "patrulla-vehiculos": "Véhicules"
@@ -11112,7 +11112,7 @@
       "hibrido": "Hybride",
       "satelite": "Satellite",
       "todasLasRutas": "Toutes les tournées",
-      "vigilantesYSupervisoresEnServicio": "Agents et superviseurs en service, sur les arrêts des tournées de patrouille du jour.",
+      "vigilantesYSupervisoresEnServicio": "Agents et superviseurs en service, sur les arrêts des itinéraires de supervision du jour.",
       "personalEnElMapa": "Personnel sur la carte",
       "tipoDeMapa": "Type de carte",
       "hojaDeRuta": "Feuille de route",
@@ -11143,7 +11143,7 @@
       "nParadas_few": "{{count}} arrêts",
       "nParadas_many": "{{count}} arrêts",
       "completada": "Terminée",
-      "obteniendoLasRutasDePatrulla": "Récupération des itinéraires de patrouille du jour.",
+      "obteniendoLasRutasDePatrulla": "Récupération des itinéraires de supervision du jour.",
       "noHayRutasConParadas": "Aucun itinéraire avec des arrêts géolocalisés pour cette date. Ajoutez des emplacements aux postes de l'itinéraire pour les voir ici.",
       "cargandoRutas": "Chargement des itinéraires…",
       "noSeEncontraronParadas": "Aucun arrêt trouvé"
@@ -11716,7 +11716,7 @@
       "paradasSinUbicacion_other": "{{count}} arrêts n'ont pas d'emplacement : ils sont restés à leur place et les autres ont été répartis autour.",
       "paradasSinUbicacion_few": "{{count}} arrêts n'ont pas d'emplacement : ils sont restés à leur place et les autres ont été répartis autour.",
       "paradasSinUbicacion_many": "{{count}} arrêts n'ont pas d'emplacement : ils sont restés à leur place et les autres ont été répartis autour.",
-      "crearPatrullaVehicular": "Créer une patrouille véhiculée",
+      "crearPatrullaVehicular": "Créer un itinéraire de supervision",
       "gestionarRutas": "Gérer les itinéraires",
       "programadasHoy": "Planifiées aujourd'hui",
       "completadas": "Terminées",
@@ -12360,7 +12360,7 @@
       "quitar": "Retirer {{name}}",
       "detalleDe": "Détails de {{name}}",
       "sincronizarPasadas": "Synchroniser les passages entre superviseurs",
-      "forzarOrden": "Obliger le superviseur à suivre l'itinéraire de patrouille véhiculée dans l'ordre",
+      "forzarOrden": "Obliger le superviseur à suivre l'itinéraire de supervision dans l'ordre",
       "registroAutomaticoGeocerca": "Enregistrement automatique d'arrivée et de départ aux postes selon le géorepérage",
       "aunNoActivo": "pas encore actif",
       "enviando": "Envoi...",
@@ -12425,7 +12425,9 @@
       "planConTrafico": "Itinéraire calculé avec le trafic : {{cifras}}.",
       "planSinTrafico": "Itinéraire calculé par les rues : {{cifras}}. Sans trafic : la Routes API de Google n’est pas activée.",
       "planSinUbicacion": "{{count}} arrêts n’ont pas de position et ont été placés à la fin.",
-      "planGuarda": "Enregistrez l’itinéraire pour garder cet ordre et son tracé."
+      "planGuarda": "Enregistrez l’itinéraire pour garder cet ordre et son tracé.",
+      "planGuardado": "Enregistré : l'itinéraire garde cet ordre et son tracé par les rues, aussi dans l'app du superviseur.",
+      "planNoGuardadoEnCurso": "Un parcours de cet itinéraire est en cours aujourd'hui : le plan n'a pas été enregistré pour ne pas changer le chemin du superviseur."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "À la vitesse de la circulation urbaine, sans compter le temps passé à chaque arrêt",
@@ -14949,7 +14951,7 @@
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Sélectionnez au moins une tournée.",
-      "defineYGestionaLasRutas": "Définissez et gérez les tournées de patrouille véhiculée de vos postes.",
+      "defineYGestionaLasRutas": "Définissez et gérez les itinéraires de supervision de vos postes.",
       "buscarRuta": "Rechercher une tournée",
       "turnoNoche": "Vacation de nuit",
       "noPudimosEncontrarNingunaRuta": "Aucune tournée ne correspond à votre recherche.",
@@ -15019,7 +15021,7 @@
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "Tournées que le superviseur doit effectuer et leur état du jour.",
-      "creaUnaPatrullaVehicularCon": "Créez une patrouille en véhicule avec ses arrêts (sites clients) pour commencer."
+      "creaUnaPatrullaVehicularCon": "Créez un itinéraire de supervision avec ses arrêts (sites clients) pour commencer."
     },
     "NewVehiclePage": {
       "errorSubiendoImagenDelVehiculo": "Impossible d'envoyer la photo du véhicule",
@@ -15407,8 +15409,8 @@
       "requeridoAdmin": "Requise pour l'accès administrateur (ne peut pas être refusée)"
     },
     "VehiclePatrol": {
-      "informeDePatrullaVehicular": "Rapport de patrouille mobile",
-      "recorridosDePatrullajeVehicular": "Parcours de patrouille mobile : tournées, arrêts et horaires.",
+      "informeDePatrullaVehicular": "Rapport des itinéraires de supervision",
+      "recorridosDePatrullajeVehicular": "Parcours de supervision : itinéraires, arrêts et horaires.",
       "distancia": "Distance",
       "duracion": "Durée",
       "estado": "Statut",
@@ -15422,7 +15424,7 @@
       "paradas": "Arrêts",
       "puntualidad": "Ponctualité",
       "ruta": "Tournée",
-      "sinRecorridos": "Aucune tournée de patrouille sur cette période.",
+      "sinRecorridos": "Aucun parcours de supervision sur cette période.",
       "supervisor": "Superviseur"
     },
     "VerifyEmailGate": {
@@ -20915,7 +20917,7 @@
         "title": "Heures pointées par site surveillé"
       },
       "vehiclePatrol": {
-        "desc": "Voir l'activité des patrouilles véhiculées"
+        "desc": "Voir l'activité des itinéraires de supervision"
       },
       "watchModeLogs": {
         "desc": "Voir les fichiers multimédias envoyés par les agents de sécurité"

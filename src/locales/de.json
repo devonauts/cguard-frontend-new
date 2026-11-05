@@ -4789,10 +4789,10 @@
       "vehiculos": "Fahrzeuge"
     },
     "patrulla": {
-      "label": "Fahrzeugstreife",
+      "label": "Aufsichtsroute",
       "rutas": "Routen",
       "vehiculo": "Fahrzeug",
-      "patrulla-board": "Fahrzeugstreife",
+      "patrulla-board": "Aufsichtsroute",
       "patrulla-rutas": "Streifenrouten",
       "patrulla-live": "Live-Verfolgung",
       "patrulla-vehiculos": "Fahrzeuge"
@@ -11112,7 +11112,7 @@
       "hibrido": "Hybrid",
       "satelite": "Satellit",
       "todasLasRutas": "Alle Routen",
-      "vigilantesYSupervisoresEnServicio": "Kräfte und Supervisoren im Dienst, über den Haltepunkten der heutigen Patrouillenrouten.",
+      "vigilantesYSupervisoresEnServicio": "Wachleute und Aufsichten im Dienst, über den Stopps der heutigen Aufsichtsrouten.",
       "personalEnElMapa": "Personal auf der Karte",
       "tipoDeMapa": "Kartentyp",
       "hojaDeRuta": "Fahrtenblatt",
@@ -11143,7 +11143,7 @@
       "nParadas_few": "{{count}} Halte",
       "nParadas_many": "{{count}} Halte",
       "completada": "Abgeschlossen",
-      "obteniendoLasRutasDePatrulla": "Die Patrouillenrouten des Tages werden abgerufen.",
+      "obteniendoLasRutasDePatrulla": "Heutige Aufsichtsrouten werden geladen.",
       "noHayRutasConParadas": "Für dieses Datum gibt es keine Routen mit georeferenzierten Halten. Fügen Sie den Posten der Route Standorte hinzu, um sie hier zu sehen.",
       "cargandoRutas": "Routen werden geladen…",
       "noSeEncontraronParadas": "Keine Halte gefunden"
@@ -11716,7 +11716,7 @@
       "paradasSinUbicacion_other": "{{count}} Halte haben keinen Standort: Sie blieben an ihrer Stelle und die anderen wurden darum herum verteilt.",
       "paradasSinUbicacion_few": "{{count}} Halte haben keinen Standort: Sie blieben an ihrer Stelle und die anderen wurden darum herum verteilt.",
       "paradasSinUbicacion_many": "{{count}} Halte haben keinen Standort: Sie blieben an ihrer Stelle und die anderen wurden darum herum verteilt.",
-      "crearPatrullaVehicular": "Fahrzeugpatrouille erstellen",
+      "crearPatrullaVehicular": "Aufsichtsroute erstellen",
       "gestionarRutas": "Routen verwalten",
       "programadasHoy": "Heute geplant",
       "completadas": "Abgeschlossen",
@@ -12360,7 +12360,7 @@
       "quitar": "{{name}} entfernen",
       "detalleDe": "Details zu {{name}}",
       "sincronizarPasadas": "Durchgänge zwischen Supervisoren synchronisieren",
-      "forzarOrden": "Supervisor zwingen, die Fahrzeugpatrouillenroute in der Reihenfolge abzufahren",
+      "forzarOrden": "Die Aufsicht muss die Aufsichtsroute der Reihe nach abfahren",
       "registroAutomaticoGeocerca": "Automatisches An- und Abmelden an Posten per Geozaun",
       "aunNoActivo": "noch nicht aktiv",
       "enviando": "Wird gesendet...",
@@ -12425,7 +12425,9 @@
       "planConTrafico": "Route mit Verkehr berechnet: {{cifras}}.",
       "planSinTrafico": "Route über Straßen berechnet: {{cifras}}. Ohne Verkehr: die Google Routes API ist nicht aktiviert.",
       "planSinUbicacion": "{{count}} Stopps haben keinen Standort und stehen am Ende.",
-      "planGuarda": "Speichere die Route, um diese Reihenfolge und den Verlauf zu behalten."
+      "planGuarda": "Speichere die Route, um diese Reihenfolge und den Verlauf zu behalten.",
+      "planGuardado": "Gespeichert: die Route behält diese Reihenfolge und ihren Straßenverlauf, auch in der Aufsichts-App.",
+      "planNoGuardadoEnCurso": "Heute läuft eine Fahrt dieser Route: der Plan wurde nicht gespeichert, damit sich der Weg der Aufsicht nicht ändert."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Bei Stadtverkehrstempo, ohne die Standzeit an jedem Halt",
@@ -14949,7 +14951,7 @@
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Wählen Sie mindestens eine Route aus.",
-      "defineYGestionaLasRutas": "Legen Sie die Fahrzeugpatrouillen-Routen Ihrer Objekte fest und verwalten Sie sie.",
+      "defineYGestionaLasRutas": "Lege die Aufsichtsrouten deiner Posten an und verwalte sie.",
       "buscarRuta": "Route suchen",
       "turnoNoche": "Nachtschicht",
       "noPudimosEncontrarNingunaRuta": "Wir konnten keine Route finden, die zu Ihrer Suche passt.",
@@ -15019,7 +15021,7 @@
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "Routen, die der Supervisor abfahren muss, und deren Status für heute.",
-      "creaUnaPatrullaVehicularCon": "Erstellen Sie zum Start eine Fahrzeugpatrouille mit ihren Haltepunkten (Einsatzobjekte der Auftraggeber)."
+      "creaUnaPatrullaVehicularCon": "Erstelle eine Aufsichtsroute mit ihren Stopps (Kundenstandorten), um zu beginnen."
     },
     "NewVehiclePage": {
       "errorSubiendoImagenDelVehiculo": "Das Fahrzeugbild konnte nicht hochgeladen werden",
@@ -15407,8 +15409,8 @@
       "requeridoAdmin": "Für den Administratorzugang erforderlich (kann nicht verweigert werden)"
     },
     "VehiclePatrol": {
-      "informeDePatrullaVehicular": "Bericht Fahrzeugstreife",
-      "recorridosDePatrullajeVehicular": "Fahrten der Fahrzeugstreife: Routen, Halte und Zeiten.",
+      "informeDePatrullaVehicular": "Bericht der Aufsichtsrouten",
+      "recorridosDePatrullajeVehicular": "Aufsichtsfahrten: Routen, Stopps und Zeiten.",
       "distancia": "Entfernung",
       "duracion": "Dauer",
       "estado": "Status",
@@ -15422,7 +15424,7 @@
       "paradas": "Haltepunkte",
       "puntualidad": "Pünktlichkeit",
       "ruta": "Route",
-      "sinRecorridos": "In diesem Zeitraum gab es keine Streifenfahrten.",
+      "sinRecorridos": "In diesem Zeitraum gab es keine Aufsichtsfahrten.",
       "supervisor": "Supervisor"
     },
     "VerifyEmailGate": {
@@ -20914,7 +20916,7 @@
         "title": "Zeiterfassungsstunden je Objekt"
       },
       "vehiclePatrol": {
-        "desc": "Die Aktivität der Fahrzeugstreife ansehen"
+        "desc": "Aktivität der Aufsichtsrouten ansehen"
       },
       "watchModeLogs": {
         "desc": "Die von den Sicherheitskräften gesendeten Medien ansehen"

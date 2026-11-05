@@ -5256,10 +5256,10 @@
       "vehiculos": "Vehicles"
     },
     "patrulla": {
-      "label": "Vehicle Patrol",
+      "label": "Supervision Route",
       "rutas": "Routes",
       "vehiculo": "Vehicle",
-      "patrulla-board": "Vehicle patrol",
+      "patrulla-board": "Supervision Route",
       "patrulla-rutas": "Supervision routes",
       "patrulla-live": "Live tracking",
       "patrulla-vehiculos": "Vehicles"
@@ -10554,7 +10554,7 @@
       "hibrido": "Hybrid",
       "satelite": "Satellite",
       "todasLasRutas": "All routes",
-      "vigilantesYSupervisoresEnServicio": "Guards and supervisors on duty, over today's patrol route stops.",
+      "vigilantesYSupervisoresEnServicio": "Guards and supervisors on duty, over today's supervision route stops.",
       "personalEnElMapa": "Staff on the map",
       "tipoDeMapa": "Map type",
       "hojaDeRuta": "Route Sheet",
@@ -10585,7 +10585,7 @@
       "nParadas_few": "{{count}} stops",
       "nParadas_many": "{{count}} stops",
       "completada": "Completed",
-      "obteniendoLasRutasDePatrulla": "Fetching today's patrol routes.",
+      "obteniendoLasRutasDePatrulla": "Fetching today's supervision routes.",
       "noHayRutasConParadas": "There are no routes with geolocated stops for this date. Add locations to the route's posts to see them here.",
       "cargandoRutas": "Loading routes…",
       "noSeEncontraronParadas": "No stops found"
@@ -11158,7 +11158,7 @@
       "paradasSinUbicacion_other": "{{count}} stops have no location: they stayed in place and the others were arranged around them.",
       "paradasSinUbicacion_few": "{{count}} stops have no location: they stayed in place and the others were arranged around them.",
       "paradasSinUbicacion_many": "{{count}} stops have no location: they stayed in place and the others were arranged around them.",
-      "crearPatrullaVehicular": "Create vehicle patrol",
+      "crearPatrullaVehicular": "Create supervision route",
       "gestionarRutas": "Manage routes",
       "programadasHoy": "Scheduled today",
       "completadas": "Completed",
@@ -11802,7 +11802,7 @@
       "quitar": "Remove {{name}}",
       "detalleDe": "Details for {{name}}",
       "sincronizarPasadas": "Sync passes between supervisors",
-      "forzarOrden": "Require the supervisor to follow the vehicle patrol route in order",
+      "forzarOrden": "Require the supervisor to follow the supervision route in order",
       "registroAutomaticoGeocerca": "Automatic check-in and check-out at posts based on geofence",
       "aunNoActivo": "not active yet",
       "enviando": "Sending...",
@@ -11867,7 +11867,9 @@
       "planConTrafico": "Route calculated with traffic: {{cifras}}.",
       "planSinTrafico": "Route calculated by street: {{cifras}}. No traffic: the Google Routes API is not enabled.",
       "planSinUbicacion": "{{count}} stops have no location and were placed last.",
-      "planGuarda": "Save the route to keep this order and its path."
+      "planGuarda": "Save the route to keep this order and its path.",
+      "planGuardado": "Saved: the route keeps this order and its street path, in the supervisor app too.",
+      "planNoGuardadoEnCurso": "There is a run of this route in progress today: the plan was not saved so the supervisor's path does not change."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "At city traffic speed, not counting time spent at each stop",
@@ -14391,7 +14393,7 @@
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Select at least one route.",
-      "defineYGestionaLasRutas": "Set up and manage the vehicle patrol routes for your posts.",
+      "defineYGestionaLasRutas": "Set up and manage the supervision routes for your posts.",
       "buscarRuta": "Search routes",
       "turnoNoche": "Night shift",
       "noPudimosEncontrarNingunaRuta": "No route matched your search.",
@@ -14461,7 +14463,7 @@
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "The routes the supervisor has to run, and how they stand today.",
-      "creaUnaPatrullaVehicularCon": "Create a vehicle patrol with its stops (client sites) to get started."
+      "creaUnaPatrullaVehicularCon": "Create a supervision route with its stops (client sites) to get started."
     },
     "NewVehiclePage": {
       "errorSubiendoImagenDelVehiculo": "The vehicle photo could not be uploaded",
@@ -14849,8 +14851,8 @@
       "requeridoAdmin": "Required for admin access (can't be denied)"
     },
     "VehiclePatrol": {
-      "informeDePatrullaVehicular": "Vehicle Patrol Report",
-      "recorridosDePatrullajeVehicular": "Vehicle patrol runs: routes, stops and times.",
+      "informeDePatrullaVehicular": "Supervision Routes Report",
+      "recorridosDePatrullajeVehicular": "Supervision runs: routes, stops and times.",
       "distancia": "Distance",
       "duracion": "Duration",
       "estado": "Status",
@@ -14864,7 +14866,7 @@
       "paradas": "Stops",
       "puntualidad": "Punctuality",
       "ruta": "Route",
-      "sinRecorridos": "There were no patrol routes in this range.",
+      "sinRecorridos": "There were no supervision runs in this range.",
       "supervisor": "Supervisor"
     },
     "VerifyEmailGate": {
@@ -20914,7 +20916,7 @@
         "title": "Timecard Hours by Security Post"
       },
       "vehiclePatrol": {
-        "desc": "See vehicle patrol activity"
+        "desc": "See supervision route activity"
       },
       "watchModeLogs": {
         "desc": "See the media files sent by security guards"

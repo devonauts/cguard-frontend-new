@@ -426,13 +426,13 @@
   },
   {
     "id": "patrulla",
-    "name": "Patrulla vehicular",
-    "icon": "Car",
+    "name": "Ruta de Supervisión",
+    "icon": "Route",
     "expandable": true,
     "subItems": [
       {
         "id": "patrulla-board",
-        "name": "Patrulla vehicular",
+        "name": "Ruta de Supervisión",
         "path": "/vehicle-patrol",
         "children": [
           {

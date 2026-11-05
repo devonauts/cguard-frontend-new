@@ -4803,10 +4803,10 @@
       "vehiculos": "Pojazdy"
     },
     "patrulla": {
-      "label": "Patrol zmotoryzowany",
+      "label": "Trasa nadzoru",
       "rutas": "Trasy",
       "vehiculo": "Pojazd",
-      "patrulla-board": "Patrol zmotoryzowany",
+      "patrulla-board": "Trasa nadzoru",
       "patrulla-rutas": "Trasy nadzoru",
       "patrulla-live": "Śledzenie na żywo",
       "patrulla-vehiculos": "Pojazdy"
@@ -11162,7 +11162,7 @@
       "hibrido": "Hybrydowa",
       "satelite": "Satelita",
       "todasLasRutas": "Wszystkie trasy",
-      "vigilantesYSupervisoresEnServicio": "Pracownicy ochrony i nadzorcy na służbie na tle przystanków dzisiejszych tras patrolowych.",
+      "vigilantesYSupervisoresEnServicio": "Ochroniarze i nadzorcy na służbie, na przystankach dzisiejszych tras nadzoru.",
       "personalEnElMapa": "Personel na mapie",
       "tipoDeMapa": "Typ mapy",
       "hojaDeRuta": "Karta trasy",
@@ -11193,7 +11193,7 @@
       "nParadas_few": "{{count}} przystanki",
       "nParadas_many": "{{count}} przystanków",
       "completada": "Ukończona",
-      "obteniendoLasRutasDePatrulla": "Pobieranie tras patrolowych na dziś.",
+      "obteniendoLasRutasDePatrulla": "Pobieranie dzisiejszych tras nadzoru.",
       "noHayRutasConParadas": "Brak tras z geolokalizowanymi przystankami w tym dniu. Dodaj lokalizacje do posterunków trasy, aby je tu zobaczyć.",
       "cargandoRutas": "Ładowanie tras…",
       "noSeEncontraronParadas": "Nie znaleziono przystanków"
@@ -11770,7 +11770,7 @@
       "paradasSinUbicacion_other": "{{count}} przystanków nie ma lokalizacji: zostały na swoim miejscu, a pozostałe rozmieszczono wokół nich.",
       "paradasSinUbicacion_few": "{{count}} przystanki nie mają lokalizacji: zostały na swoim miejscu, a pozostałe rozmieszczono wokół nich.",
       "paradasSinUbicacion_many": "{{count}} przystanków nie ma lokalizacji: zostały na swoim miejscu, a pozostałe rozmieszczono wokół nich.",
-      "crearPatrullaVehicular": "Utwórz patrol pojazdem",
+      "crearPatrullaVehicular": "Utwórz trasę nadzoru",
       "gestionarRutas": "Zarządzaj trasami",
       "programadasHoy": "Zaplanowane na dziś",
       "completadas": "Ukończone",
@@ -12444,7 +12444,7 @@
       "quitar": "Usuń {{name}}",
       "detalleDe": "Szczegóły {{name}}",
       "sincronizarPasadas": "Synchronizuj przejazdy między przełożonymi",
-      "forzarOrden": "Wymuś na przełożonym przejazd trasy patrolu pojazdem w kolejności",
+      "forzarOrden": "Wymagaj, aby nadzorca przejechał trasę nadzoru po kolei",
       "registroAutomaticoGeocerca": "Automatyczna rejestracja wejścia i wyjścia na posterunkach według geofencingu",
       "aunNoActivo": "jeszcze nieaktywne",
       "enviando": "Wysyłanie...",
@@ -12509,7 +12509,9 @@
       "planConTrafico": "Trasa obliczona z uwzględnieniem ruchu: {{cifras}}.",
       "planSinTrafico": "Trasa obliczona ulicami: {{cifras}}. Bez ruchu: Google Routes API nie jest włączone.",
       "planSinUbicacion": "Przystanki bez lokalizacji ({{count}}) trafiły na koniec.",
-      "planGuarda": "Zapisz trasę, aby zachować tę kolejność i przebieg."
+      "planGuarda": "Zapisz trasę, aby zachować tę kolejność i przebieg.",
+      "planGuardado": "Zapisano: trasa zachowuje tę kolejność i przebieg ulicami, także w aplikacji nadzorcy.",
+      "planNoGuardadoEnCurso": "Dziś trwa przejazd tej trasy: plan nie został zapisany, aby nie zmieniać drogi nadzorcy."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Przy tempie ruchu miejskiego, bez czasu postoju na przystankach",
@@ -15115,7 +15117,7 @@
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Prosimy wybrać co najmniej jedną trasę.",
-      "defineYGestionaLasRutas": "Definiowanie tras patroli zmotoryzowanych dla posterunków i zarządzanie nimi.",
+      "defineYGestionaLasRutas": "Twórz trasy nadzoru swoich posterunków i zarządzaj nimi.",
       "buscarRuta": "Szukaj trasy",
       "turnoNoche": "Zmiana nocna",
       "noPudimosEncontrarNingunaRuta": "Nie znaleźliśmy żadnej trasy pasującej do wyszukiwania.",
@@ -15185,7 +15187,7 @@
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "Trasy, które nadzorca ma objechać, wraz z ich statusem na dziś.",
-      "creaUnaPatrullaVehicularCon": "Prosimy utworzyć patrol zmotoryzowany wraz z przystankami (obiektami zleceniodawców), aby zacząć."
+      "creaUnaPatrullaVehicularCon": "Utwórz trasę nadzoru z przystankami (lokalizacjami klientów), aby zacząć."
     },
     "NewVehiclePage": {
       "errorSubiendoImagenDelVehiculo": "Błąd podczas wgrywania zdjęcia pojazdu",
@@ -15577,8 +15579,8 @@
       "requeridoAdmin": "Wymagane do dostępu administratora (nie można odmówić)"
     },
     "VehiclePatrol": {
-      "informeDePatrullaVehicular": "Raport patrolu zmotoryzowanego",
-      "recorridosDePatrullajeVehicular": "Przejazdy patrolu zmotoryzowanego: trasy, postoje i czasy.",
+      "informeDePatrullaVehicular": "Raport tras nadzoru",
+      "recorridosDePatrullajeVehicular": "Przejazdy nadzoru: trasy, przystanki i czasy.",
       "distancia": "Dystans",
       "duracion": "Czas trwania",
       "estado": "Status",
@@ -15592,7 +15594,7 @@
       "paradas": "Przystanki",
       "puntualidad": "Punktualność",
       "ruta": "Trasa",
-      "sinRecorridos": "W tym zakresie nie było tras patrolowych.",
+      "sinRecorridos": "W tym okresie nie było przejazdów nadzoru.",
       "supervisor": "Nadzorca"
     },
     "VerifyEmailGate": {
@@ -21242,7 +21244,7 @@
         "title": "Ewidencja czasu pracy wg posterunku"
       },
       "vehiclePatrol": {
-        "desc": "Podgląd aktywności patrolu zmotoryzowanego"
+        "desc": "Zobacz aktywność tras nadzoru"
       },
       "watchModeLogs": {
         "desc": "Podgląd plików multimedialnych przesłanych przez pracowników ochrony"

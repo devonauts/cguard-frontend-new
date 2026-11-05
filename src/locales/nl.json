@@ -4789,10 +4789,10 @@
       "vehiculos": "Voertuigen"
     },
     "patrulla": {
-      "label": "Mobiele surveillance",
+      "label": "Toezichtsroute",
       "rutas": "Routes",
       "vehiculo": "Voertuig",
-      "patrulla-board": "Mobiele surveillance",
+      "patrulla-board": "Toezichtsroute",
       "patrulla-rutas": "Surveillanceroutes",
       "patrulla-live": "Live volgen",
       "patrulla-vehiculos": "Voertuigen"
@@ -11112,7 +11112,7 @@
       "hibrido": "Hybride",
       "satelite": "Satelliet",
       "todasLasRutas": "Alle routes",
-      "vigilantesYSupervisoresEnServicio": "Beveiligers en supervisors in dienst, over de haltes van de patrouilleroutes van vandaag.",
+      "vigilantesYSupervisoresEnServicio": "Bewakers en supervisors in dienst, op de stops van de toezichtsroutes van vandaag.",
       "personalEnElMapa": "Personeel op de kaart",
       "tipoDeMapa": "Type kaart",
       "hojaDeRuta": "Routestaat",
@@ -11143,7 +11143,7 @@
       "nParadas_few": "{{count}} stops",
       "nParadas_many": "{{count}} stops",
       "completada": "Voltooid",
-      "obteniendoLasRutasDePatrulla": "De patrouilleroutes van vandaag worden opgehaald.",
+      "obteniendoLasRutasDePatrulla": "Toezichtsroutes van vandaag ophalen.",
       "noHayRutasConParadas": "Er zijn geen routes met gegeolokaliseerde stops voor deze datum. Voeg locaties toe aan de posten van de route om ze hier te zien.",
       "cargandoRutas": "Routes laden…",
       "noSeEncontraronParadas": "Geen stops gevonden"
@@ -11716,7 +11716,7 @@
       "paradasSinUbicacion_other": "{{count}} stops hebben geen locatie: die bleven op hun plek en de andere zijn eromheen verdeeld.",
       "paradasSinUbicacion_few": "{{count}} stops hebben geen locatie: die bleven op hun plek en de andere zijn eromheen verdeeld.",
       "paradasSinUbicacion_many": "{{count}} stops hebben geen locatie: die bleven op hun plek en de andere zijn eromheen verdeeld.",
-      "crearPatrullaVehicular": "Voertuigpatrouille aanmaken",
+      "crearPatrullaVehicular": "Toezichtsroute aanmaken",
       "gestionarRutas": "Routes beheren",
       "programadasHoy": "Vandaag gepland",
       "completadas": "Voltooid",
@@ -12360,7 +12360,7 @@
       "quitar": "{{name}} verwijderen",
       "detalleDe": "Details van {{name}}",
       "sincronizarPasadas": "Passages tussen supervisors synchroniseren",
-      "forzarOrden": "Supervisor verplichten de voertuigpatrouilleroute in volgorde te volgen",
+      "forzarOrden": "De supervisor moet de toezichtsroute in volgorde afleggen",
       "registroAutomaticoGeocerca": "Automatisch in- en uitchecken bij posten op basis van geofence",
       "aunNoActivo": "nog niet actief",
       "enviando": "Verzenden...",
@@ -12425,7 +12425,9 @@
       "planConTrafico": "Route berekend met verkeer: {{cifras}}.",
       "planSinTrafico": "Route over de weg berekend: {{cifras}}. Zonder verkeer: de Google Routes API is niet ingeschakeld.",
       "planSinUbicacion": "{{count}} stops hebben geen locatie en staan achteraan.",
-      "planGuarda": "Sla de route op om deze volgorde en het traject te bewaren."
+      "planGuarda": "Sla de route op om deze volgorde en het traject te bewaren.",
+      "planGuardado": "Opgeslagen: de route houdt deze volgorde en het traject over de weg, ook in de supervisor-app.",
+      "planNoGuardadoEnCurso": "Er is vandaag een ronde van deze route bezig: het plan is niet opgeslagen zodat het pad van de supervisor niet verandert."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "Op stadssnelheid, exclusief de tijd bij elke halte",
@@ -14949,7 +14951,7 @@
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Selecteer minstens één route.",
-      "defineYGestionaLasRutas": "Stel de voertuigpatrouilleroutes van uw posten in en beheer ze.",
+      "defineYGestionaLasRutas": "Stel de toezichtsroutes van je posten in en beheer ze.",
       "buscarRuta": "Route zoeken",
       "turnoNoche": "Nachtdienst",
       "noPudimosEncontrarNingunaRuta": "We hebben geen route gevonden die overeenkomt met uw zoekopdracht.",
@@ -15019,7 +15021,7 @@
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "De routes die de supervisor moet rijden en hun status van vandaag.",
-      "creaUnaPatrullaVehicularCon": "Maak een voertuigpatrouille aan met de haltes (locaties van opdrachtgevers) om te beginnen."
+      "creaUnaPatrullaVehicularCon": "Maak een toezichtsroute met haar stops (klantlocaties) om te beginnen."
     },
     "NewVehiclePage": {
       "errorSubiendoImagenDelVehiculo": "De foto van het voertuig kon niet worden geüpload",
@@ -15407,8 +15409,8 @@
       "requeridoAdmin": "Vereist voor beheerderstoegang (kan niet worden geweigerd)"
     },
     "VehiclePatrol": {
-      "informeDePatrullaVehicular": "Rapport mobiele surveillance",
-      "recorridosDePatrullajeVehicular": "Ritten van de mobiele surveillance: routes, stops en tijden.",
+      "informeDePatrullaVehicular": "Rapport van toezichtsroutes",
+      "recorridosDePatrullajeVehicular": "Toezichtsrondes: routes, stops en tijden.",
       "distancia": "Afstand",
       "duracion": "Duur",
       "estado": "Status",
@@ -15422,7 +15424,7 @@
       "paradas": "Stops",
       "puntualidad": "Punctualiteit",
       "ruta": "Route",
-      "sinRecorridos": "Er waren geen patrouilleroutes in deze periode.",
+      "sinRecorridos": "Geen toezichtsrondes in deze periode.",
       "supervisor": "Supervisor"
     },
     "VerifyEmailGate": {
@@ -20914,7 +20916,7 @@
         "title": "Geklokte uren per post"
       },
       "vehiclePatrol": {
-        "desc": "Bekijk de activiteit van de mobiele surveillance"
+        "desc": "Activiteit van toezichtsroutes bekijken"
       },
       "watchModeLogs": {
         "desc": "Bekijk de foto's en video's die de beveiligers hebben gestuurd"

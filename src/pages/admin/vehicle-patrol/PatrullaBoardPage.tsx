@@ -109,7 +109,7 @@ function scheduledOn(route: any, weekday: number): boolean {
 export default function PatrullaBoardPage() {
   const { t } = useTranslation();
 
-  usePageTitle(t("sidebar.patrulla.patrulla-board", "Patrulla vehicular"));
+  usePageTitle(t("sidebar.patrulla.patrulla-board", "Ruta de Supervisión"));
   const navigate = useNavigate();
   const [date, setDate] = useState(() => hoyEnLaEmpresa());
   const [routes, setRoutes] = useState<any[]>([]);
@@ -260,7 +260,7 @@ export default function PatrullaBoardPage() {
       <PageContainer width="wide">
         <PageHeader
           icon={<Car />}
-          title={t("sidebar.patrulla.patrulla-board", "Patrulla vehicular")}
+          title={t("sidebar.patrulla.patrulla-board", "Ruta de Supervisión")}
           subtitle={t('ui.PatrullaBoardPage.rutasQueElSupervisorDebe')}
           /* UNA acción primaria en la cabecera. Las demás (historial, plantillas,
              gestionar rutas) van en la barra de abajo: cinco botones aquí

@@ -164,6 +164,9 @@ const routeService = {
     destination?: { lat: number; lng: number } | null;
     optimize: boolean;
     departureTime?: string | null;
+    /** Ruta ya guardada: el plan se guarda en el acto (orden + trazado). */
+    routeId?: string;
+    guardar?: boolean;
   }) {
     const tenantId = getTenantId();
     const { data: resp } = await api.post<any>(`/tenant/${tenantId}/route/plan`, {

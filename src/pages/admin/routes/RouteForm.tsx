@@ -1280,6 +1280,12 @@ export default function RouteForm({
         destination: destino ? { lat: destino.lat, lng: destino.lng } : null,
         optimize: ordenar,
         departureTime: salidaParaTrafico(),
+        /* Ruta ya guardada y sin cambios de paradas pendientes: el plan se
+           guarda en el acto («una vez optimizado debe quedarse ahí»). Con
+           paradas nuevas sin guardar, el plan viaja con «Guardar». */
+        ...(mode === "edit" && routeId && !recorridoSucio
+          ? { routeId, guardar: true }
+          : {}),
       });
 
       // El orden nuevo, y las coordenadas que faltaban (las de la sede).
@@ -1351,7 +1357,19 @@ export default function RouteForm({
           }),
         );
       }
-      if (mode === "edit") {
+      if (r?.guardado) {
+        // Lo que se ve ya es lo guardado: el orden, los extremos y el trazado.
+        firmaGuardada.current = firmaDe(siguiente);
+        extremosGuardados.current = { origen, destino };
+        planPendiente.current = null;
+        toast.success(
+          t("ui.RouteForm.planGuardado", "Guardado: la ruta queda con este orden y su recorrido por calles, también en la app del supervisor."),
+        );
+      } else if (r?.motivoSinGuardar === "run_in_progress") {
+        toast.warning(
+          t("ui.RouteForm.planNoGuardadoEnCurso", "Hoy hay un recorrido de esta ruta en curso: el plan no se guardó para no cambiarle el camino al supervisor."),
+        );
+      } else if (mode === "edit") {
         toast.info(t("ui.RouteForm.planGuarda", "Guarda la ruta para conservar este orden y su recorrido."));
       }
     } catch (err: any) {

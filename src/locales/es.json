@@ -5257,10 +5257,10 @@
       "vehiculos": "Vehículos"
     },
     "patrulla": {
-      "label": "Patrulla vehicular",
+      "label": "Ruta de Supervisión",
       "rutas": "Rutas",
       "vehiculo": "Vehículo",
-      "patrulla-board": "Patrulla vehicular",
+      "patrulla-board": "Ruta de Supervisión",
       "patrulla-rutas": "Rutas de supervisión",
       "patrulla-live": "Seguimiento en vivo",
       "patrulla-vehiculos": "Vehículos"
@@ -10554,7 +10554,7 @@
       "hibrido": "Híbrido",
       "satelite": "Satélite",
       "todasLasRutas": "Todas las rutas",
-      "vigilantesYSupervisoresEnServicio": "Vigilantes y supervisores en servicio, sobre las paradas de las rutas de patrulla del día.",
+      "vigilantesYSupervisoresEnServicio": "Vigilantes y supervisores en servicio, sobre las paradas de las rutas de supervisión del día.",
       "personalEnElMapa": "Personal en el mapa",
       "tipoDeMapa": "Tipo de Mapa",
       "hojaDeRuta": "Hoja de Ruta",
@@ -10585,7 +10585,7 @@
       "nParadas_few": "{{count}} paradas",
       "nParadas_many": "{{count}} paradas",
       "completada": "Completada",
-      "obteniendoLasRutasDePatrulla": "Obteniendo las rutas de patrulla del día.",
+      "obteniendoLasRutasDePatrulla": "Obteniendo las rutas de supervisión del día.",
       "noHayRutasConParadas": "No hay rutas con paradas geolocalizadas para esta fecha. Agrega ubicaciones a los puestos de la ruta para verlas aquí.",
       "cargandoRutas": "Cargando rutas…",
       "noSeEncontraronParadas": "No se encontraron paradas"
@@ -11158,7 +11158,7 @@
       "paradasSinUbicacion_other": "{{count}} paradas no tienen ubicación: se quedaron en su sitio y las demás se repartieron alrededor.",
       "paradasSinUbicacion_few": "{{count}} paradas no tienen ubicación: se quedaron en su sitio y las demás se repartieron alrededor.",
       "paradasSinUbicacion_many": "{{count}} paradas no tienen ubicación: se quedaron en su sitio y las demás se repartieron alrededor.",
-      "crearPatrullaVehicular": "Crear patrulla vehicular",
+      "crearPatrullaVehicular": "Crear ruta de supervisión",
       "gestionarRutas": "Gestionar rutas",
       "programadasHoy": "Programadas hoy",
       "completadas": "Completadas",
@@ -11802,7 +11802,7 @@
       "quitar": "Quitar {{name}}",
       "detalleDe": "Detalle de {{name}}",
       "sincronizarPasadas": "Sincronizar pasadas entre supervisores",
-      "forzarOrden": "Forzar al supervisor a seguir la ruta de patrulla vehicular en orden",
+      "forzarOrden": "Forzar al supervisor a seguir la ruta de supervisión en orden",
       "registroAutomaticoGeocerca": "Registro automático de entrada y salida en Puestos de Vigilancia según geocerca",
       "aunNoActivo": "aún no activo",
       "enviando": "Enviando...",
@@ -11867,7 +11867,9 @@
       "planConTrafico": "Ruta calculada con tráfico: {{cifras}}.",
       "planSinTrafico": "Ruta calculada por calles: {{cifras}}. Sin tráfico: falta activar la Routes API de Google.",
       "planSinUbicacion": "{{count}} paradas no tienen ubicación y quedaron al final.",
-      "planGuarda": "Guarda la ruta para conservar este orden y su recorrido."
+      "planGuarda": "Guarda la ruta para conservar este orden y su recorrido.",
+      "planGuardado": "Guardado: la ruta queda con este orden y su recorrido por calles, también en la app del supervisor.",
+      "planNoGuardadoEnCurso": "Hoy hay un recorrido de esta ruta en curso: el plan no se guardó para no cambiarle el camino al supervisor."
     },
     "RouteMap": {
       "aMarchaDeTraficoUrbano": "A marcha de tráfico urbano, sin contar la permanencia en cada parada",
@@ -14391,7 +14393,7 @@
     },
     "RoutesPage": {
       "seleccionaAlMenosUnaRuta": "Selecciona al menos una ruta.",
-      "defineYGestionaLasRutas": "Define y gestiona las rutas de patrullaje vehicular de tus puestos.",
+      "defineYGestionaLasRutas": "Define y gestiona las rutas de supervisión de tus puestos.",
       "buscarRuta": "Buscar ruta",
       "turnoNoche": "Turno noche",
       "noPudimosEncontrarNingunaRuta": "No pudimos encontrar ninguna ruta que coincida con tu búsqueda.",
@@ -14461,7 +14463,7 @@
     },
     "PatrullaBoardPage": {
       "rutasQueElSupervisorDebe": "Rutas que el supervisor debe recorrer y su estado del día.",
-      "creaUnaPatrullaVehicularCon": "Crea una patrulla vehicular con sus paradas (sitios de clientes) para empezar."
+      "creaUnaPatrullaVehicularCon": "Crea una ruta de supervisión con sus paradas (sitios de clientes) para empezar."
     },
     "NewVehiclePage": {
       "errorSubiendoImagenDelVehiculo": "Error subiendo imagen del vehículo",
@@ -14842,8 +14844,8 @@
       "requeridoAdmin": "Requerido para el acceso de administrador (no se puede denegar)"
     },
     "VehiclePatrol": {
-      "informeDePatrullaVehicular": "Informe de Patrulla Vehicular",
-      "recorridosDePatrullajeVehicular": "Recorridos de patrullaje vehicular: rutas, paradas y tiempos.",
+      "informeDePatrullaVehicular": "Informe de rutas de supervisión",
+      "recorridosDePatrullajeVehicular": "Recorridos de supervisión: rutas, paradas y tiempos.",
       "distancia": "Distancia",
       "duracion": "Duración",
       "estado": "Estado",
@@ -14857,7 +14859,7 @@
       "paradas": "Paradas",
       "puntualidad": "Puntualidad",
       "ruta": "Ruta",
-      "sinRecorridos": "No hubo recorridos de patrullaje en este rango.",
+      "sinRecorridos": "No hubo recorridos de supervisión en este rango.",
       "supervisor": "Supervisor"
     },
     "VerifyEmailGate": {
@@ -20915,7 +20917,7 @@
         "title": "Horas de tarjeta de tiempo por sede"
       },
       "vehiclePatrol": {
-        "desc": "Ver actividad de patrulla vehicular"
+        "desc": "Ver la actividad de las rutas de supervisión"
       },
       "watchModeLogs": {
         "desc": "Ver los archivos multimedia enviados por los vigilantes de seguridad"
