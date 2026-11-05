@@ -1094,7 +1094,12 @@
       "plantillaRechazada": "Niezatwierdzony",
       "plantillasCreadas": "Szablony wysłane do Meta. Zwykle są zatwierdzane w kilka minut; czasem trwa to do doby.",
       "plantillasConFallos": "Meta nie pozwoliła utworzyć szablonów ({{count}}): {{nombres}}. Pozostałe są w weryfikacji.",
-      "plantillasError": "Nie udało się utworzyć szablonów."
+      "plantillasError": "Nie udało się utworzyć szablonów.",
+      "pagosTitulo": "Płatności WhatsApp",
+      "pagoProblema": "Od {{fecha}} Meta odrzuca Twoje wiadomości z powodu braku płatności. Dodaj lub sprawdź kartę konta WhatsApp w Meta; powiadomienia znów wyjdą, gdy zostanie zaakceptowana.",
+      "pagosTexto": "Meta obciąża Twoją firmę bezpośrednio za powiadomienia, które platforma wysyła jako pierwsza przez Twój WhatsApp. Bez ważnej karty na koncie WhatsApp te wiadomości nie wychodzą.",
+      "pagosBoton": "Metoda płatności w Meta",
+      "administradorBoton": "Menedżer WhatsApp"
     },
     "loadError": "Nie udało się wczytać ustawień komunikacji",
     "logsError": "Nie udało się wczytać historii",

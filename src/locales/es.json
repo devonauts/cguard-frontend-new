@@ -8474,7 +8474,12 @@
       "plantillaRechazada": "No aprobada",
       "plantillasCreadas": "Plantillas enviadas a Meta. Suelen aprobarse en minutos; a veces tarda hasta un día.",
       "plantillasConFallos": "Meta no dejó crear {{count}} plantilla(s): {{nombres}}. Las demás quedaron en revisión.",
-      "plantillasError": "No se pudieron crear las plantillas."
+      "plantillasError": "No se pudieron crear las plantillas.",
+      "pagosTitulo": "Pagos de WhatsApp",
+      "pagoProblema": "Desde el {{fecha}}, Meta está rechazando tus mensajes por falta de pago. Agrega o revisa la tarjeta de tu cuenta de WhatsApp en Meta; los avisos vuelven a salir en cuanto la acepte.",
+      "pagosTexto": "Meta le cobra directamente a tu empresa los avisos que la plataforma inicia por tu WhatsApp. Si tu cuenta de WhatsApp no tiene una tarjeta válida, esos mensajes no salen.",
+      "pagosBoton": "Método de pago en Meta",
+      "administradorBoton": "Administrador de WhatsApp"
     },
     "loadError": "No se pudo cargar la configuración de comunicaciones",
     "logsError": "No se pudo cargar el historial",

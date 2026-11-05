@@ -161,6 +161,17 @@ export interface WhatsAppStatus {
   plantillas?: WhatsAppPlantilla[];
   /** Las que usa la plataforma y aún no están creadas en su cuenta. */
   plantillasQueFaltan?: string[];
+  metaBusinessId?: string | null;
+  /**
+   * Pagos en Meta: los enlaces directos y si Meta está rechazando mensajes
+   * por falta de pago (error 131042) sin que haya salido ninguno después.
+   */
+  pago?: {
+    problema: boolean;
+    desde: string | null;
+    pagos: string;
+    administrador: string;
+  } | null;
 }
 
 export interface WhatsAppPlantilla {

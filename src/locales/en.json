@@ -8474,7 +8474,12 @@
       "plantillaRechazada": "Not approved",
       "plantillasCreadas": "Templates sent to Meta. They are usually approved within minutes; sometimes it takes up to a day.",
       "plantillasConFallos": "Meta didn't allow {{count}} template(s): {{nombres}}. The rest are in review.",
-      "plantillasError": "Couldn't create the templates."
+      "plantillasError": "Couldn't create the templates.",
+      "pagosTitulo": "WhatsApp payments",
+      "pagoProblema": "Since {{fecha}}, Meta has been rejecting your messages for lack of payment. Add or check the card on your WhatsApp account in Meta; notices go out again as soon as it is accepted.",
+      "pagosTexto": "Meta bills your company directly for the notices the platform starts on your WhatsApp. If your WhatsApp account has no valid card, those messages do not go out.",
+      "pagosBoton": "Payment method in Meta",
+      "administradorBoton": "WhatsApp Manager"
     },
     "loadError": "Couldn't load communications settings",
     "logsError": "Couldn't load the history",

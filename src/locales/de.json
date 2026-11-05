@@ -1094,7 +1094,12 @@
       "plantillaRechazada": "Nicht genehmigt",
       "plantillasCreadas": "Vorlagen an Meta gesendet. Meist in Minuten genehmigt, manchmal dauert es bis zu einem Tag.",
       "plantillasConFallos": "Meta hat {{count}} Vorlage(n) nicht zugelassen: {{nombres}}. Die übrigen sind in Prüfung.",
-      "plantillasError": "Die Vorlagen konnten nicht erstellt werden."
+      "plantillasError": "Die Vorlagen konnten nicht erstellt werden.",
+      "pagosTitulo": "WhatsApp-Zahlungen",
+      "pagoProblema": "Seit dem {{fecha}} lehnt Meta Ihre Nachrichten mangels Zahlung ab. Fügen Sie die Karte Ihres WhatsApp-Kontos bei Meta hinzu oder prüfen Sie sie; die Hinweise gehen wieder raus, sobald sie akzeptiert ist.",
+      "pagosTexto": "Meta berechnet Ihrem Unternehmen direkt die Hinweise, die die Plattform über Ihr WhatsApp startet. Ohne gültige Karte in Ihrem WhatsApp-Konto gehen diese Nachrichten nicht raus.",
+      "pagosBoton": "Zahlungsmethode bei Meta",
+      "administradorBoton": "WhatsApp Manager"
     },
     "loadError": "Die Kommunikationseinstellungen konnten nicht geladen werden",
     "logsError": "Der Verlauf konnte nicht geladen werden",

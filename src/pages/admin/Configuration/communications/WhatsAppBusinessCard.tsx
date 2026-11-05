@@ -8,6 +8,9 @@ import {
   RefreshCw,
   KeyRound,
   FileText,
+  CreditCard,
+  ExternalLink,
+  CircleAlert,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -674,6 +677,61 @@ export default function WhatsAppBusinessCard() {
                   </p>
                 )}
               </div>
+
+              {/* PAGOS EN META (Mike, 2026-11-04): «si tiene que recargar su
+                  WhatsApp debe salir el link directo dentro de la página».
+                  Meta le cobra a la empresa los avisos que la plataforma
+                  inicia; sin tarjeta en SU cuenta de WhatsApp no salen. Meta
+                  no nos deja leer la tarjeta: los enlaces están siempre, y
+                  el aviso rojo sale cuando Meta rechazó por pago (131042). */}
+              {status?.pago && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <CreditCard size={16} />
+                    {t("comms.wa.pagosTitulo", { defaultValue: "Pagos de WhatsApp" })}
+                  </div>
+                  {status.pago.problema && (
+                    <div
+                      className="flex items-start gap-2 rounded-xl p-3 text-sm"
+                      role="alert"
+                      style={{
+                        background: "color-mix(in oklab, var(--bad) 12%, transparent)",
+                        color: "var(--bad-text)",
+                      }}
+                    >
+                      <CircleAlert className="mt-0.5 shrink-0" size={16} />
+                      <span>
+                        {t("comms.wa.pagoProblema", {
+                          defaultValue:
+                            "Desde el {{fecha}}, Meta está rechazando tus mensajes por falta de pago. Agrega o revisa la tarjeta de tu cuenta de WhatsApp en Meta; los avisos vuelven a salir en cuanto la acepte.",
+                          fecha: fmtDate(status.pago.desde),
+                        })}
+                      </span>
+                    </div>
+                  )}
+                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {t("comms.wa.pagosTexto", {
+                      defaultValue:
+                        "Meta le cobra directamente a tu empresa los avisos que la plataforma inicia por tu WhatsApp. Si tu cuenta de WhatsApp no tiene una tarjeta válida, esos mensajes no salen.",
+                    })}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button asChild size="sm" variant={status.pago.problema ? "brand" : "outline"}>
+                      <a href={status.pago.pagos} rel="noopener noreferrer" target="_blank">
+                        <CreditCard className="mr-1.5" size={14} />
+                        {t("comms.wa.pagosBoton", { defaultValue: "Método de pago en Meta" })}
+                        <ExternalLink className="ml-1.5" size={12} />
+                      </a>
+                    </Button>
+                    <Button asChild size="sm" variant="ghost">
+                      <a href={status.pago.administrador} rel="noopener noreferrer" target="_blank">
+                        {t("comms.wa.administradorBoton", { defaultValue: "Administrador de WhatsApp" })}
+                        <ExternalLink className="ml-1.5" size={12} />
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <div className="flex flex-wrap items-center gap-2">
                 <Button

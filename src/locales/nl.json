@@ -1094,7 +1094,12 @@
       "plantillaRechazada": "Niet goedgekeurd",
       "plantillasCreadas": "Sjablonen naar Meta gestuurd. Meestal binnen minuten goedgekeurd; soms duurt het tot een dag.",
       "plantillasConFallos": "Meta stond {{count}} sjabloon/sjablonen niet toe: {{nombres}}. De rest is in beoordeling.",
-      "plantillasError": "De sjablonen konden niet worden gemaakt."
+      "plantillasError": "De sjablonen konden niet worden gemaakt.",
+      "pagosTitulo": "WhatsApp-betalingen",
+      "pagoProblema": "Sinds {{fecha}} weigert Meta je berichten wegens ontbrekende betaling. Voeg de kaart van je WhatsApp-account bij Meta toe of controleer die; de meldingen gaan weer uit zodra die is geaccepteerd.",
+      "pagosTexto": "Meta brengt je bedrijf rechtstreeks de meldingen in rekening die het platform via je WhatsApp start. Zonder geldige kaart op je WhatsApp-account gaan die berichten niet uit.",
+      "pagosBoton": "Betaalmethode bij Meta",
+      "administradorBoton": "WhatsApp Manager"
     },
     "loadError": "De instellingen voor communicatie konden niet worden geladen",
     "logsError": "De geschiedenis kon niet worden geladen",

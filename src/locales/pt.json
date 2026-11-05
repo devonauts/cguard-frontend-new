@@ -8474,7 +8474,12 @@
       "plantillaRechazada": "Não aprovado",
       "plantillasCreadas": "Modelos enviados à Meta. Costumam ser aprovados em minutos; às vezes leva até um dia.",
       "plantillasConFallos": "A Meta não permitiu criar {{count}} modelo(s): {{nombres}}. Os demais ficaram em análise.",
-      "plantillasError": "Não foi possível criar os modelos."
+      "plantillasError": "Não foi possível criar os modelos.",
+      "pagosTitulo": "Pagamentos do WhatsApp",
+      "pagoProblema": "Desde {{fecha}}, a Meta está recusando suas mensagens por falta de pagamento. Adicione ou revise o cartão da sua conta do WhatsApp na Meta; os avisos voltam a sair assim que ela o aceitar.",
+      "pagosTexto": "A Meta cobra diretamente da sua empresa os avisos que a plataforma inicia pelo seu WhatsApp. Se a sua conta do WhatsApp não tiver um cartão válido, essas mensagens não saem.",
+      "pagosBoton": "Forma de pagamento na Meta",
+      "administradorBoton": "Gerenciador do WhatsApp"
     },
     "loadError": "Não foi possível carregar as configurações de comunicações",
     "logsError": "Não foi possível carregar o histórico",
