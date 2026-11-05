@@ -101,6 +101,70 @@ const vehicleService = {
 
     return true;
   },
+
+  /* ── Flota: salidas y devoluciones (2026-11-04) ──────────────────────────
+     Un vehículo de la empresa se SACA y se DEVUELVE con su odómetro; el
+     personal de un supervisor sólo lo usa su dueño. El servidor valida que
+     el odómetro no retroceda y marca lo raro (salto grande, odómetro ≫ GPS). */
+
+  async checkout(
+    vehicleId: string,
+    data: {
+      odometer?: number | null;
+      fuel?: string | null;
+      purpose?: string | null;
+      driverUserId?: string | null;
+      photos?: unknown[];
+    },
+  ) {
+    const tenantId = getTenantId();
+    const { data: resp } = await api.post<any>(
+      `/tenant/${tenantId}/vehicle/${vehicleId}/checkout`,
+      { data },
+    );
+
+    return resp;
+  },
+
+  async checkin(
+    useId: string,
+    data: {
+      odometer?: number | null;
+      fuel?: string | null;
+      notes?: string | null;
+      damages?: string | null;
+      photos?: unknown[];
+    },
+  ) {
+    const tenantId = getTenantId();
+    const { data: resp } = await api.post<any>(
+      `/tenant/${tenantId}/vehicle-use/${useId}/checkin`,
+      { data },
+    );
+
+    return resp;
+  },
+
+  async uses(params: {
+    vehicleId?: string;
+    driverUserId?: string;
+    status?: "open" | "closed";
+    from?: string;
+    to?: string;
+    flagged?: boolean;
+    limit?: number;
+  } = {}) {
+    const tenantId = getTenantId();
+    const q = new URLSearchParams();
+
+    for (const [k, v] of Object.entries(params))
+      if (v !== undefined && v !== null && v !== "") q.set(k, String(v));
+    const { data: resp } = await api.get<any>(
+      `/tenant/${tenantId}/vehicle-use?${q.toString()}`,
+    );
+
+    return resp as { rows: any[]; count: number };
+  },
 };
 
 export default vehicleService;

@@ -15215,7 +15215,8 @@
       "datosOperativos": "Dane eksploatacyjne",
       "kilometrajeInicial": "Przebieg początkowy",
       "propiedad": "Własność",
-      "crearVehiculo": "Utwórz pojazd"
+      "crearVehiculo": "Utwórz pojazd",
+      "alEditarIdentidadFija": "Dane identyfikacyjne (marka, model, rok, tablica i VIN) są stałe od utworzenia. Typ, własność, status, dokumenty, zdjęcie i notatki można zmieniać. Licznik aktualizuje się przy każdym zwrocie."
     },
     "ActivityStream": {
       "parteDeNovedades": "Raport zdarzeń",
@@ -20768,6 +20769,102 @@
     },
     "PedirCicloAlAsignar": {
       "cicloDelSacafranco": "To własny cykl tego zmiennika: ile dni pracuje, a ile ma wolnych. Stanowisko się nie zmienia."
+    },
+    "flota": {
+      "tipo": {
+        "car": "Samochód",
+        "pickup": "Pickup",
+        "motorcycle": "Motocykl",
+        "bicycle": "Rower",
+        "scooter": "Skuter",
+        "other": "Inne",
+        "titulo": "Typ"
+      },
+      "propiedad": {
+        "company": "Firmowy",
+        "rented": "Wynajęty",
+        "client": "Klienta",
+        "personal": "Prywatny supervisora",
+        "titulo": "Własność"
+      },
+      "estado": {
+        "available": "Dostępny",
+        "in_use": "W użyciu",
+        "maintenance": "W warsztacie",
+        "out_of_service": "Wycofany z użytku"
+      },
+      "combustible": {
+        "empty": "Rezerwa",
+        "quarter": "1/4",
+        "half": "1/2",
+        "three_quarters": "3/4",
+        "full": "Pełny",
+        "titulo": "Paliwo"
+      },
+      "alerta": {
+        "odometer_jump": "Duży skok od ostatniego odczytu",
+        "distance_implausible": "Zbyt długa trasa",
+        "odometer_vs_gps": "Licznik pokazuje dużo więcej niż GPS"
+      },
+      "tipoYPropiedad": "Typ i własność",
+      "dueno": "Supervisor właściciel",
+      "elegirSupervisor": "Wybierz supervisora",
+      "personalHint": "Może z niego korzystać tylko właściciel. Rejestrowane są tylko kilometry służbowe, nie to, co poza zmianą.",
+      "puestoAsignado": "Posterunek nadzoru, który go używa",
+      "ninguno": "Brak",
+      "puestoHint": "Osoba na zmianie na tym posterunku zobaczy go jako pierwszy przy starcie trasy.",
+      "opcional": "opcjonalnie",
+      "lecturaActual": "Aktualny stan licznika",
+      "lecturaInicial": "Stan licznika dziś",
+      "lecturaHint": "Aktualizuje się sam przy każdym zwrocie.",
+      "unidad": "Jednostka licznika",
+      "km": "Kilometry (km)",
+      "mi": "Mile (mi)",
+      "estadoHint": "«W użyciu» system ustawia przy wydaniu i usuwa przy zwrocie.",
+      "documentos": "Dokumenty i terminy",
+      "matricula": "Rejestracja wygasa",
+      "seguro": "Ubezpieczenie wygasa",
+      "revision": "Przegląd wygasa",
+      "empezarUso": "Zacznij używać",
+      "sacarVehiculo": "Wydaj pojazd",
+      "terminarUso": "Zakończ użycie",
+      "devolverVehiculo": "Zwróć pojazd",
+      "enUsoPor": "Używa: {{name}}",
+      "usos": {
+        "pestana": "Użycia i przebieg",
+        "todos": "Wszystkie",
+        "abiertos": "Teraz w użyciu",
+        "alertas": "Z alertami",
+        "titulo": "Wydania i zwroty",
+        "vacio": "Brak użyć w tym okresie",
+        "vehiculo": "Pojazd",
+        "salida": "Wydanie",
+        "devolucion": "Zwrot",
+        "recorrido": "Trasa",
+        "gps": "GPS",
+        "plan": "Plan trasy",
+        "alertasCol": "Alerty",
+        "verRecorrido": "Zobacz przejazd"
+      },
+      "personalDe": "Prywatny: {{name}}",
+      "odometro": "Licznik",
+      "faltaOdometro": "Wpisz stan licznika.",
+      "sacado": "Pojazd w użyciu. Po zakończeniu zwróć go ze stanem licznika.",
+      "devuelto": "Pojazd zwrócony: przejechano {{km}}.",
+      "conAlertas": "To użycie ma alerty: sprawdź je w «Użycia».",
+      "ultimaLectura": "ostatni odczyt",
+      "conductor": "Kto prowadzi",
+      "yoMismo": "Ja",
+      "personalNota": "Prywatny pojazd {{name}}: rejestrowane są tylko kilometry służbowe.",
+      "alSalirMarcaba": "Przy wydaniu: {{n}}",
+      "menorQueSalida": "Mniej niż odczyt przy wydaniu.",
+      "recorrido": "Trasa: {{km}}",
+      "motivo": "Cel (opcjonalnie)",
+      "motivoEj": "Nocny obchód, sprawa w banku…",
+      "danos": "Uszkodzenia (jeśli są)",
+      "notas": "Notatki",
+      "fotoOdometro": "Zdjęcie licznika",
+      "fotoVehiculo": "Zdjęcie pojazdu"
     }
   },
   "visitantes": {
@@ -21567,7 +21664,9 @@
       "plateRequired": "Numer rejestracyjny jest wymagany",
       "vinAlphanumeric": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 liter lub cyfr; litery I, O i Q nie są używane)",
       "vinLength": "Nieprawidłowy numer VIN (musi mieć dokładnie 17 znaków)",
-      "yearInvalid": "Nieprawidłowy rok"
+      "yearInvalid": "Nieprawidłowy rok",
+      "odometerRequired": "Stan licznika wymagany",
+      "ownerRequired": "Wybierz supervisora, właściciela pojazdu"
     }
   },
   "video": {

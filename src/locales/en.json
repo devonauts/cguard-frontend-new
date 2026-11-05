@@ -14491,7 +14491,8 @@
       "datosOperativos": "Operational details",
       "kilometrajeInicial": "Initial mileage",
       "propiedad": "Ownership",
-      "crearVehiculo": "Create vehicle"
+      "crearVehiculo": "Create vehicle",
+      "alEditarIdentidadFija": "Identification data (make, model, year, plate and VIN) is fixed once created. Type, ownership, status, documents, photo and notes can be changed. The odometer updates with every return."
     },
     "ActivityStream": {
       "parteDeNovedades": "Shift report",
@@ -19886,6 +19887,102 @@
     },
     "PedirCicloAlAsignar": {
       "cicloDelSacafranco": "This is this relief guard's own cycle: how many days they work and how many they rest. The post does not change."
+    },
+    "flota": {
+      "tipo": {
+        "car": "Car",
+        "pickup": "Pickup",
+        "motorcycle": "Motorcycle",
+        "bicycle": "Bicycle",
+        "scooter": "Scooter",
+        "other": "Other",
+        "titulo": "Type"
+      },
+      "propiedad": {
+        "company": "Company-owned",
+        "rented": "Rented",
+        "client": "Client's",
+        "personal": "A supervisor's own",
+        "titulo": "Ownership"
+      },
+      "estado": {
+        "available": "Available",
+        "in_use": "In use",
+        "maintenance": "In the shop",
+        "out_of_service": "Out of service"
+      },
+      "combustible": {
+        "empty": "Reserve",
+        "quarter": "1/4",
+        "half": "1/2",
+        "three_quarters": "3/4",
+        "full": "Full",
+        "titulo": "Fuel"
+      },
+      "alerta": {
+        "odometer_jump": "Big jump since the last reading",
+        "distance_implausible": "Trip too long",
+        "odometer_vs_gps": "Odometer shows far more than GPS"
+      },
+      "tipoYPropiedad": "Type and ownership",
+      "dueno": "Owning supervisor",
+      "elegirSupervisor": "Choose supervisor",
+      "personalHint": "Only its owner can use it. Only work kilometers are recorded, not what they do off shift.",
+      "puestoAsignado": "Supervision post that uses it",
+      "ninguno": "None",
+      "puestoHint": "Whoever is on shift at that post sees it first when starting a route.",
+      "opcional": "optional",
+      "lecturaActual": "Current odometer reading",
+      "lecturaInicial": "Odometer reading today",
+      "lecturaHint": "It updates itself with every return.",
+      "unidad": "Odometer unit",
+      "km": "Kilometers (km)",
+      "mi": "Miles (mi)",
+      "estadoHint": "The system sets «In use» on checkout and clears it on return.",
+      "documentos": "Documents and expirations",
+      "matricula": "Registration expires",
+      "seguro": "Insurance expires",
+      "revision": "Inspection expires",
+      "empezarUso": "Start using it",
+      "sacarVehiculo": "Check out vehicle",
+      "terminarUso": "End use",
+      "devolverVehiculo": "Return vehicle",
+      "enUsoPor": "In use by {{name}}",
+      "usos": {
+        "pestana": "Uses and mileage",
+        "todos": "All",
+        "abiertos": "In use now",
+        "alertas": "With alerts",
+        "titulo": "Checkouts and returns",
+        "vacio": "No uses in this period",
+        "vehiculo": "Vehicle",
+        "salida": "Checkout",
+        "devolucion": "Return",
+        "recorrido": "Distance",
+        "gps": "GPS",
+        "plan": "Route plan",
+        "alertasCol": "Alerts",
+        "verRecorrido": "View trip"
+      },
+      "personalDe": "{{name}}'s own",
+      "odometro": "Odometer",
+      "faltaOdometro": "Enter the odometer reading.",
+      "sacado": "Vehicle in use. Return it with the odometer reading when done.",
+      "devuelto": "Vehicle returned: {{km}} traveled.",
+      "conAlertas": "This use has alerts: check it under «Uses».",
+      "ultimaLectura": "last reading",
+      "conductor": "Who drives it",
+      "yoMismo": "Me",
+      "personalNota": "{{name}}'s own vehicle: only work kilometers are recorded.",
+      "alSalirMarcaba": "At checkout it read {{n}}",
+      "menorQueSalida": "It is lower than the checkout reading.",
+      "recorrido": "Distance: {{km}}",
+      "motivo": "Purpose (optional)",
+      "motivoEj": "Night patrol, bank errand…",
+      "danos": "Damage (if any)",
+      "notas": "Notes",
+      "fotoOdometro": "Odometer photo",
+      "fotoVehiculo": "Vehicle photo"
     }
   },
   "map": {
@@ -21239,7 +21336,9 @@
       "plateRequired": "Plate is required",
       "vinAlphanumeric": "Invalid VIN (must be exactly 17 letters or digits; the letters I, O and Q are not used)",
       "vinLength": "Invalid VIN (must be exactly 17 characters)",
-      "yearInvalid": "Invalid year"
+      "yearInvalid": "Invalid year",
+      "odometerRequired": "Odometer reading required",
+      "ownerRequired": "Choose the supervisor who owns the vehicle"
     }
   },
   "video": {

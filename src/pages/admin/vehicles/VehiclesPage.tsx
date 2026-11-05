@@ -83,6 +83,19 @@ import {
 import vehicleService from "@/lib/api/vehicleService";
 import { enLotes } from "@/lib/enLotes";
 import { localeActual } from "@/lib/localeActual";
+import { Undo2 } from "lucide-react";
+
+import VehicleUseDialog from "./VehicleUseDialog";
+import VehicleUsesPanel from "./VehicleUsesPanel";
+import {
+  estadoLabel,
+  estadoTone,
+  lectura,
+  propiedadLabel,
+  propiedadNormal,
+  tipoDe,
+  tipoLabel,
+} from "./flota";
 
 /** Cómo se llama la propiedad del vehículo en la ficha. Constante de MÓDULO: la
  *  clave viaja junto al español de respaldo y se traduce al PINTAR; llamar a t()
@@ -135,6 +148,10 @@ export default function VehiclesPage() {
   const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
   const [detailsVehicle, setDetailsVehicle] = useState<any | null>(null);
   const [vista, setVista] = useState<"tarjetas" | "lista">("tarjetas");
+  /* Flota (2026-11-04): pestaña de usos y el diálogo de salida/devolución. */
+  const [pestana, setPestana] = useState<"vehiculos" | "usos">("vehiculos");
+  const [uso, setUso] = useState<{ vehicle: any; mode: "checkout" | "checkin" } | null>(null);
+  const [refrescoUsos, setRefrescoUsos] = useState(0);
 
   const aplicarFiltros = () => {
     const parse = vehicleFiltersSchema.safeParse(filters);
@@ -304,6 +321,44 @@ export default function VehiclesPage() {
   const inactivos = rows.filter((r) => !r.active).length;
   const sinResultados = !loading && rows.length === 0;
 
+  /** Sacar o devolver: el botón que cambia según el vehículo esté libre o en uso. */
+  const botonUso = (r: any) => {
+    const libre = !r.openUse;
+    const bloqueado = libre && ["maintenance", "out_of_service"].includes(String(r.status));
+
+    if (!r.active || bloqueado) return null;
+
+    return (
+      <Button
+        size="sm"
+        type="button"
+        variant={libre ? "outline" : "brand"}
+        onClick={() => setUso({ vehicle: r, mode: libre ? "checkout" : "checkin" })}
+      >
+        {libre ? <KeyRound className="size-3.5" /> : <Undo2 className="size-3.5" />}
+        {libre
+          ? propiedadNormal(r.ownership) === "personal"
+            ? t("ui.flota.empezarUso", "Empezar a usarlo")
+            : t("ui.flota.sacarVehiculo", "Sacar vehículo")
+          : propiedadNormal(r.ownership) === "personal"
+            ? t("ui.flota.terminarUso", "Terminar el uso")
+            : t("ui.flota.devolverVehiculo", "Devolver vehículo")}
+      </Button>
+    );
+  };
+
+  /** «En uso por Jordan desde las 21:13» o el estado del vehículo. */
+  const estadoDe = (r: any) => (
+    <StatusBadge tone={r.openUse ? "brand" : estadoTone(r.status)}>
+      {r.openUse
+        ? t("ui.flota.enUsoPor", {
+            defaultValue: "En uso por {{name}}",
+            name: r.openUse.driverName || "—",
+          })
+        : estadoLabel(r.status)}
+    </StatusBadge>
+  );
+
   /** El menú «…» del kit — el mismo que usan las tablas del resto del CRM. */
   const menuVehiculo = (id: string) => (
     <RowActionsMenu
@@ -440,6 +495,23 @@ export default function VehiclesPage() {
             </>
           }
         />
+
+        {/* Flota: los vehículos, o sus usos (salidas y devoluciones). */}
+        <div className="mb-4">
+          <Segmented
+            value={pestana}
+            onChange={setPestana}
+            options={[
+              { value: "vehiculos", label: t("ui.Vehicles.vehiculos2", "Vehículos") },
+              { value: "usos", label: t("ui.flota.usos.pestana", "Usos y kilometraje") },
+            ]}
+          />
+        </div>
+
+        {pestana === "usos" ? (
+          <VehicleUsesPanel refresco={refrescoUsos} />
+        ) : (
+        <>
 
         <StatsStrip className="grid gap-4 sm:grid-cols-3">
           <StatCard
@@ -619,21 +691,31 @@ export default function VehiclesPage() {
                     </button>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      <StatusBadge tone={r.active ? "ok" : "neutral"}>
-                        {r.active
-                          ? t("common.active", "Activo")
-                          : t("common.inactive", "Inactivo")}
-                      </StatusBadge>
-                      {r.ownership && (
-                        <StatusBadge tone="info" dot={false}>
-                          {OWNERSHIP_LABELS[r.ownership]
-                            ? t(
-                                OWNERSHIP_LABELS[r.ownership].labelKey,
-                                OWNERSHIP_LABELS[r.ownership].label,
-                              )
-                            : r.ownership}
+                      {(() => {
+                        const Icono = tipoDe(r.vehicleType).icon;
+
+                        return (
+                          <StatusBadge tone="neutral" dot={false}>
+                            <Icono className="mr-1 inline size-3.5" />
+                            {tipoLabel(r.vehicleType)}
+                          </StatusBadge>
+                        );
+                      })()}
+                      {r.active ? (
+                        estadoDe(r)
+                      ) : (
+                        <StatusBadge tone="neutral">
+                          {t("common.inactive", "Inactivo")}
                         </StatusBadge>
                       )}
+                      <StatusBadge tone="info" dot={false}>
+                        {propiedadNormal(r.ownership) === "personal" && r.ownerName
+                          ? t("ui.flota.personalDe", {
+                              defaultValue: "Personal de {{name}}",
+                              name: r.ownerName,
+                            })
+                          : propiedadLabel(r.ownership)}
+                      </StatusBadge>
                     </div>
 
                     <div className="glass-sunken mt-auto grid grid-cols-2 gap-3 p-3">
@@ -642,21 +724,18 @@ export default function VehiclesPage() {
                         value={r.color || "—"}
                       />
                       <Field
-                        label={t("ui.VehiclesPage.kilometraje", "Kilometraje")}
-                        value={
-                          r.initialMileage != null
-                            ? Number(r.initialMileage).toLocaleString(localeActual())
-                            : "—"
-                        }
+                        label={t("ui.flota.odometro", "Odómetro")}
+                        value={lectura(r.currentOdometer ?? r.initialMileage, r.odometerUnit)}
                       />
                     </div>
+                    {botonUso(r)}
                   </GlassPanel>
                 );
               })}
             </Stagger>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[760px] divide-y divide-border">
+              <table className="w-full min-w-[1100px] divide-y divide-border">
                 <thead
                   className="text-left text-sm"
                   style={{
@@ -675,6 +754,9 @@ export default function VehiclesPage() {
                       />
                     </th>
                     <th className="px-4 py-2 font-semibold">
+                      {t("ui.flota.tipo.titulo", "Tipo")}
+                    </th>
+                    <th className="px-4 py-2 font-semibold">
                       {t("ui.Vehicles.ano3", "Año")}
                     </th>
                     <th className="px-4 py-2 font-semibold">
@@ -685,6 +767,12 @@ export default function VehiclesPage() {
                     </th>
                     <th className="px-4 py-2 font-semibold">
                       {t("station.parking.col.plate", "Placa")}
+                    </th>
+                    <th className="px-4 py-2 font-semibold">
+                      {t("ui.flota.propiedad.titulo", "Propiedad")}
+                    </th>
+                    <th className="px-4 py-2 font-semibold">
+                      {t("ui.flota.odometro", "Odómetro")}
                     </th>
                     <th className="px-4 py-2 font-semibold">
                       {t("comun.estado")}
@@ -718,6 +806,18 @@ export default function VehiclesPage() {
                           })}
                         />
                       </td>
+                      <td className="px-4 py-3">
+                        {(() => {
+                          const Icono = tipoDe(r.vehicleType).icon;
+
+                          return (
+                            <span className="inline-flex items-center gap-1.5">
+                              <Icono className="size-4" />
+                              {tipoLabel(r.vehicleType)}
+                            </span>
+                          );
+                        })()}
+                      </td>
                       <td className="px-4 py-3 tabular-nums">
                         {r.year || "—"}
                       </td>
@@ -727,14 +827,30 @@ export default function VehiclesPage() {
                         {r.licensePlate || "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <StatusBadge tone={r.active ? "ok" : "neutral"}>
-                          {r.active
-                            ? t("common.active", "Activo")
-                            : t("common.inactive", "Inactivo")}
-                        </StatusBadge>
+                        {propiedadNormal(r.ownership) === "personal" && r.ownerName
+                          ? t("ui.flota.personalDe", {
+                              defaultValue: "Personal de {{name}}",
+                              name: r.ownerName,
+                            })
+                          : propiedadLabel(r.ownership)}
+                      </td>
+                      <td className="px-4 py-3 tabular-nums">
+                        {lectura(r.currentOdometer ?? r.initialMileage, r.odometerUnit)}
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.active ? (
+                          estadoDe(r)
+                        ) : (
+                          <StatusBadge tone="neutral">
+                            {t("common.inactive", "Inactivo")}
+                          </StatusBadge>
+                        )}
                       </td>
                       <td className="px-2 py-3 text-right">
-                        {menuVehiculo(r.id)}
+                        <div className="flex items-center justify-end gap-2">
+                          {botonUso(r)}
+                          {menuVehiculo(r.id)}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1113,6 +1229,19 @@ export default function VehiclesPage() {
             </div>
           </div>
         </Section>
+        </>
+        )}
+
+        <VehicleUseDialog
+          mode={uso?.mode || "checkout"}
+          open={!!uso}
+          vehicle={uso?.vehicle || null}
+          onDone={() => {
+            void load();
+            setRefrescoUsos((n) => n + 1);
+          }}
+          onOpenChange={(v) => !v && setUso(null)}
+        />
       </PageContainer>
     </AppLayout>
   );

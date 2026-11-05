@@ -14491,7 +14491,8 @@
       "datosOperativos": "Dados operacionais",
       "kilometrajeInicial": "Quilometragem inicial",
       "propiedad": "Propriedade",
-      "crearVehiculo": "Criar veículo"
+      "crearVehiculo": "Criar veículo",
+      "alEditarIdentidadFija": "Os dados de identificação (marca, modelo, ano, placa e VIN) ficam fixos desde o cadastro. Tipo, propriedade, status, documentos, foto e notas podem ser alterados. O hodômetro é atualizado a cada devolução."
     },
     "ActivityStream": {
       "parteDeNovedades": "Relatório de novidades",
@@ -19887,6 +19888,102 @@
     },
     "PedirCicloAlAsignar": {
       "cicloDelSacafranco": "É o ciclo deste folguista: quantos dias trabalha e quantos folga. O posto não muda."
+    },
+    "flota": {
+      "tipo": {
+        "car": "Carro",
+        "pickup": "Caminhonete",
+        "motorcycle": "Moto",
+        "bicycle": "Bicicleta",
+        "scooter": "Patinete",
+        "other": "Outro",
+        "titulo": "Tipo"
+      },
+      "propiedad": {
+        "company": "Da empresa",
+        "rented": "Alugado",
+        "client": "Do cliente",
+        "personal": "Pessoal de um supervisor",
+        "titulo": "Propriedade"
+      },
+      "estado": {
+        "available": "Disponível",
+        "in_use": "Em uso",
+        "maintenance": "Na oficina",
+        "out_of_service": "Fora de serviço"
+      },
+      "combustible": {
+        "empty": "Reserva",
+        "quarter": "1/4",
+        "half": "1/2",
+        "three_quarters": "3/4",
+        "full": "Cheio",
+        "titulo": "Combustível"
+      },
+      "alerta": {
+        "odometer_jump": "Salto grande desde a última leitura",
+        "distance_implausible": "Percurso longo demais",
+        "odometer_vs_gps": "O hodômetro marca muito mais que o GPS"
+      },
+      "tipoYPropiedad": "Tipo e propriedade",
+      "dueno": "Supervisor dono",
+      "elegirSupervisor": "Escolher supervisor",
+      "personalHint": "Só o dono pode usá-lo. Registram-se apenas os quilômetros de trabalho, não o que fizer fora do turno.",
+      "puestoAsignado": "Posto de supervisão que o usa",
+      "ninguno": "Nenhum",
+      "puestoHint": "Quem estiver de turno nesse posto o verá primeiro ao iniciar uma rota.",
+      "opcional": "opcional",
+      "lecturaActual": "Leitura atual do hodômetro",
+      "lecturaInicial": "Leitura do hodômetro hoje",
+      "lecturaHint": "Atualiza-se sozinha a cada devolução.",
+      "unidad": "Unidade do hodômetro",
+      "km": "Quilômetros (km)",
+      "mi": "Milhas (mi)",
+      "estadoHint": "O sistema marca «Em uso» ao retirar e tira ao devolver.",
+      "documentos": "Documentos e vencimentos",
+      "matricula": "Licenciamento vence",
+      "seguro": "Seguro vence",
+      "revision": "Vistoria vence",
+      "empezarUso": "Começar a usar",
+      "sacarVehiculo": "Retirar veículo",
+      "terminarUso": "Encerrar o uso",
+      "devolverVehiculo": "Devolver veículo",
+      "enUsoPor": "Em uso por {{name}}",
+      "usos": {
+        "pestana": "Usos e quilometragem",
+        "todos": "Todos",
+        "abiertos": "Em uso agora",
+        "alertas": "Com alertas",
+        "titulo": "Retiradas e devoluções",
+        "vacio": "Sem usos neste período",
+        "vehiculo": "Veículo",
+        "salida": "Saída",
+        "devolucion": "Devolução",
+        "recorrido": "Percurso",
+        "gps": "GPS",
+        "plan": "Plano da rota",
+        "alertasCol": "Alertas",
+        "verRecorrido": "Ver percurso"
+      },
+      "personalDe": "Pessoal de {{name}}",
+      "odometro": "Hodômetro",
+      "faltaOdometro": "Digite a leitura do hodômetro.",
+      "sacado": "Veículo em uso. Devolva-o com a leitura do hodômetro ao terminar.",
+      "devuelto": "Veículo devolvido: {{km}} percorridos.",
+      "conAlertas": "Este uso ficou com alertas: revise em «Usos».",
+      "ultimaLectura": "última leitura",
+      "conductor": "Quem dirige",
+      "yoMismo": "Eu",
+      "personalNota": "Veículo pessoal de {{name}}: só se registram os quilômetros de trabalho.",
+      "alSalirMarcaba": "Na saída marcava {{n}}",
+      "menorQueSalida": "É menor que a leitura de saída.",
+      "recorrido": "Percurso: {{km}}",
+      "motivo": "Motivo (opcional)",
+      "motivoEj": "Ronda noturna, ida ao banco…",
+      "danos": "Danos (se houver)",
+      "notas": "Notas",
+      "fotoOdometro": "Foto do hodômetro",
+      "fotoVehiculo": "Foto do veículo"
     }
   },
   "map": {
@@ -21240,7 +21337,9 @@
       "plateRequired": "Placa obrigatória",
       "vinAlphanumeric": "VIN inválido (deve ter exatamente 17 letras ou números; as letras I, O e Q não são usadas)",
       "vinLength": "VIN inválido (deve ter exatamente 17 caracteres)",
-      "yearInvalid": "Ano inválido"
+      "yearInvalid": "Ano inválido",
+      "odometerRequired": "Leitura do hodômetro obrigatória",
+      "ownerRequired": "Escolha o supervisor dono do veículo"
     }
   },
   "video": {

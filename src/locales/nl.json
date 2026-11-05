@@ -15049,7 +15049,8 @@
       "datosOperativos": "Operationele gegevens",
       "kilometrajeInicial": "Beginkilometerstand",
       "propiedad": "Eigendom",
-      "crearVehiculo": "Voertuig aanmaken"
+      "crearVehiculo": "Voertuig aanmaken",
+      "alEditarIdentidadFija": "De identificatiegegevens (merk, model, jaar, kenteken en VIN) liggen vast vanaf het aanmaken. Type, eigendom, status, documenten, foto en notities kunnen worden gewijzigd. De kilometerstand wordt bij elke inlevering bijgewerkt."
     },
     "ActivityStream": {
       "parteDeNovedades": "Meldingenrapport",
@@ -20444,6 +20445,102 @@
     },
     "PedirCicloAlAsignar": {
       "cicloDelSacafranco": "Dit is de eigen cyclus van deze invaller: hoeveel dagen hij werkt en hoeveel hij vrij is. De post verandert niet."
+    },
+    "flota": {
+      "tipo": {
+        "car": "Auto",
+        "pickup": "Pick-up",
+        "motorcycle": "Motor",
+        "bicycle": "Fiets",
+        "scooter": "Scooter",
+        "other": "Overig",
+        "titulo": "Type"
+      },
+      "propiedad": {
+        "company": "Van het bedrijf",
+        "rented": "Gehuurd",
+        "client": "Van de klant",
+        "personal": "Privé van een supervisor",
+        "titulo": "Eigendom"
+      },
+      "estado": {
+        "available": "Beschikbaar",
+        "in_use": "In gebruik",
+        "maintenance": "In de garage",
+        "out_of_service": "Buiten dienst"
+      },
+      "combustible": {
+        "empty": "Reserve",
+        "quarter": "1/4",
+        "half": "1/2",
+        "three_quarters": "3/4",
+        "full": "Vol",
+        "titulo": "Brandstof"
+      },
+      "alerta": {
+        "odometer_jump": "Grote sprong sinds de laatste stand",
+        "distance_implausible": "Rit te lang",
+        "odometer_vs_gps": "Teller toont veel meer dan gps"
+      },
+      "tipoYPropiedad": "Type en eigendom",
+      "dueno": "Supervisor-eigenaar",
+      "elegirSupervisor": "Kies supervisor",
+      "personalHint": "Alleen de eigenaar kan het gebruiken. Alleen werkkilometers worden vastgelegd, niet wat buiten de dienst gebeurt.",
+      "puestoAsignado": "Supervisiepost die het gebruikt",
+      "ninguno": "Geen",
+      "puestoHint": "Wie dienst heeft op die post ziet het als eerste bij het starten van een route.",
+      "opcional": "optioneel",
+      "lecturaActual": "Huidige kilometerstand",
+      "lecturaInicial": "Kilometerstand vandaag",
+      "lecturaHint": "Wordt bij elke inlevering vanzelf bijgewerkt.",
+      "unidad": "Eenheid van de teller",
+      "km": "Kilometer (km)",
+      "mi": "Mijl (mi)",
+      "estadoHint": "«In gebruik» zet het systeem bij uitgifte en haalt het weg bij inlevering.",
+      "documentos": "Documenten en vervaldata",
+      "matricula": "Registratie verloopt",
+      "seguro": "Verzekering verloopt",
+      "revision": "APK verloopt",
+      "empezarUso": "Gebruik starten",
+      "sacarVehiculo": "Voertuig uitgeven",
+      "terminarUso": "Gebruik beëindigen",
+      "devolverVehiculo": "Voertuig inleveren",
+      "enUsoPor": "In gebruik door {{name}}",
+      "usos": {
+        "pestana": "Gebruik en kilometers",
+        "todos": "Alle",
+        "abiertos": "Nu in gebruik",
+        "alertas": "Met waarschuwingen",
+        "titulo": "Uitgiftes en inleveringen",
+        "vacio": "Geen gebruik in deze periode",
+        "vehiculo": "Voertuig",
+        "salida": "Vertrek",
+        "devolucion": "Inlevering",
+        "recorrido": "Afstand",
+        "gps": "GPS",
+        "plan": "Routeplan",
+        "alertasCol": "Waarschuwingen",
+        "verRecorrido": "Rit bekijken"
+      },
+      "personalDe": "Privé van {{name}}",
+      "odometro": "Kilometerteller",
+      "faltaOdometro": "Vul de kilometerstand in.",
+      "sacado": "Voertuig in gebruik. Lever het na afloop in met de kilometerstand.",
+      "devuelto": "Voertuig ingeleverd: {{km}} gereden.",
+      "conAlertas": "Dit gebruik heeft waarschuwingen: bekijk het bij «Gebruik».",
+      "ultimaLectura": "laatste stand",
+      "conductor": "Wie rijdt",
+      "yoMismo": "Ik",
+      "personalNota": "Privévoertuig van {{name}}: alleen werkkilometers worden vastgelegd.",
+      "alSalirMarcaba": "Bij vertrek: {{n}}",
+      "menorQueSalida": "Lager dan de stand bij vertrek.",
+      "recorrido": "Afstand: {{km}}",
+      "motivo": "Doel (optioneel)",
+      "motivoEj": "Nachtronde, bankbezoek…",
+      "danos": "Schade (indien aanwezig)",
+      "notas": "Notities",
+      "fotoOdometro": "Foto van de kilometerteller",
+      "fotoVehiculo": "Foto van het voertuig"
     }
   },
   "visitantes": {
@@ -21239,7 +21336,9 @@
       "plateRequired": "Kenteken is verplicht",
       "vinAlphanumeric": "Ongeldig VIN (moet precies 17 letters of cijfers hebben; de letters I, O en Q worden niet gebruikt)",
       "vinLength": "Ongeldig VIN (moet precies 17 tekens hebben)",
-      "yearInvalid": "Ongeldig bouwjaar"
+      "yearInvalid": "Ongeldig bouwjaar",
+      "odometerRequired": "Kilometerstand verplicht",
+      "ownerRequired": "Kies de supervisor die eigenaar is van het voertuig"
     }
   },
   "video": {

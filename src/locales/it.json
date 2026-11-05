@@ -15049,7 +15049,8 @@
       "datosOperativos": "Dati operativi",
       "kilometrajeInicial": "Chilometraggio iniziale",
       "propiedad": "Proprietà",
-      "crearVehiculo": "Crea veicolo"
+      "crearVehiculo": "Crea veicolo",
+      "alEditarIdentidadFija": "I dati identificativi (marca, modello, anno, targa e VIN) restano fissi dalla creazione. Tipo, proprietà, stato, documenti, foto e note si possono modificare. Il contachilometri si aggiorna a ogni riconsegna."
     },
     "ActivityStream": {
       "parteDeNovedades": "Rapporto delle novità",
@@ -20445,6 +20446,102 @@
     },
     "PedirCicloAlAsignar": {
       "cicloDelSacafranco": "È il ciclo di questo jolly: quanti giorni lavora e quanti riposa. Il posto non cambia."
+    },
+    "flota": {
+      "tipo": {
+        "car": "Auto",
+        "pickup": "Pick-up",
+        "motorcycle": "Moto",
+        "bicycle": "Bicicletta",
+        "scooter": "Scooter",
+        "other": "Altro",
+        "titulo": "Tipo"
+      },
+      "propiedad": {
+        "company": "Aziendale",
+        "rented": "Noleggiato",
+        "client": "Del cliente",
+        "personal": "Personale di un supervisore",
+        "titulo": "Proprietà"
+      },
+      "estado": {
+        "available": "Disponibile",
+        "in_use": "In uso",
+        "maintenance": "In officina",
+        "out_of_service": "Fuori servizio"
+      },
+      "combustible": {
+        "empty": "Riserva",
+        "quarter": "1/4",
+        "half": "1/2",
+        "three_quarters": "3/4",
+        "full": "Pieno",
+        "titulo": "Carburante"
+      },
+      "alerta": {
+        "odometer_jump": "Grande salto dall'ultima lettura",
+        "distance_implausible": "Percorso troppo lungo",
+        "odometer_vs_gps": "Il contachilometri segna molto più del GPS"
+      },
+      "tipoYPropiedad": "Tipo e proprietà",
+      "dueno": "Supervisore proprietario",
+      "elegirSupervisor": "Scegli supervisore",
+      "personalHint": "Solo il proprietario può usarlo. Si registrano solo i chilometri di lavoro, non ciò che fa fuori turno.",
+      "puestoAsignado": "Postazione di supervisione che lo usa",
+      "ninguno": "Nessuno",
+      "puestoHint": "Chi è di turno in quella postazione lo vedrà per primo all'avvio di un percorso.",
+      "opcional": "facoltativo",
+      "lecturaActual": "Lettura attuale del contachilometri",
+      "lecturaInicial": "Lettura del contachilometri oggi",
+      "lecturaHint": "Si aggiorna da sola a ogni riconsegna.",
+      "unidad": "Unità del contachilometri",
+      "km": "Chilometri (km)",
+      "mi": "Miglia (mi)",
+      "estadoHint": "«In uso» lo imposta il sistema al ritiro e lo toglie alla riconsegna.",
+      "documentos": "Documenti e scadenze",
+      "matricula": "Immatricolazione scade",
+      "seguro": "Assicurazione scade",
+      "revision": "Revisione scade",
+      "empezarUso": "Inizia a usarlo",
+      "sacarVehiculo": "Ritira veicolo",
+      "terminarUso": "Termina l'uso",
+      "devolverVehiculo": "Riconsegna veicolo",
+      "enUsoPor": "In uso da {{name}}",
+      "usos": {
+        "pestana": "Utilizzi e chilometraggio",
+        "todos": "Tutti",
+        "abiertos": "In uso ora",
+        "alertas": "Con avvisi",
+        "titulo": "Ritiri e riconsegne",
+        "vacio": "Nessun utilizzo in questo periodo",
+        "vehiculo": "Veicolo",
+        "salida": "Uscita",
+        "devolucion": "Riconsegna",
+        "recorrido": "Percorso",
+        "gps": "GPS",
+        "plan": "Piano del percorso",
+        "alertasCol": "Avvisi",
+        "verRecorrido": "Vedi percorso"
+      },
+      "personalDe": "Personale di {{name}}",
+      "odometro": "Contachilometri",
+      "faltaOdometro": "Inserisci la lettura del contachilometri.",
+      "sacado": "Veicolo in uso. Riconsegnalo con la lettura del contachilometri alla fine.",
+      "devuelto": "Veicolo riconsegnato: {{km}} percorsi.",
+      "conAlertas": "Questo utilizzo ha avvisi: controllalo in «Utilizzi».",
+      "ultimaLectura": "ultima lettura",
+      "conductor": "Chi lo guida",
+      "yoMismo": "Io",
+      "personalNota": "Veicolo personale di {{name}}: si registrano solo i chilometri di lavoro.",
+      "alSalirMarcaba": "All'uscita segnava {{n}}",
+      "menorQueSalida": "È inferiore alla lettura di uscita.",
+      "recorrido": "Percorso: {{km}}",
+      "motivo": "Motivo (facoltativo)",
+      "motivoEj": "Ronda notturna, commissione in banca…",
+      "danos": "Danni (se presenti)",
+      "notas": "Note",
+      "fotoOdometro": "Foto del contachilometri",
+      "fotoVehiculo": "Foto del veicolo"
     }
   },
   "visitantes": {
@@ -21240,7 +21337,9 @@
       "plateRequired": "Targa obbligatoria",
       "vinAlphanumeric": "Numero di telaio non valido (deve avere esattamente 17 lettere o cifre; le lettere I, O e Q non si usano)",
       "vinLength": "Numero di telaio non valido (deve avere esattamente 17 caratteri)",
-      "yearInvalid": "Anno non valido"
+      "yearInvalid": "Anno non valido",
+      "odometerRequired": "Lettura del contachilometri obbligatoria",
+      "ownerRequired": "Scegli il supervisore proprietario del veicolo"
     }
   },
   "video": {

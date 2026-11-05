@@ -14491,7 +14491,8 @@
       "datosOperativos": "Datos operativos",
       "kilometrajeInicial": "Kilometraje inicial",
       "propiedad": "Propiedad",
-      "crearVehiculo": "Crear vehículo"
+      "crearVehiculo": "Crear vehículo",
+      "alEditarIdentidadFija": "Los datos de identificación (marca, modelo, año, placa y VIN) quedan fijos desde el alta. El tipo, la propiedad, el estado, los documentos, la foto y las notas se pueden cambiar. El odómetro se actualiza con cada devolución."
     },
     "ActivityStream": {
       "parteDeNovedades": "Parte de novedades",
@@ -19887,6 +19888,102 @@
     },
     "PedirCicloAlAsignar": {
       "cicloDelSacafranco": "Es el ciclo de este sacafranco: cada cuántos días trabaja y cuántos libra. El puesto no cambia."
+    },
+    "flota": {
+      "tipo": {
+        "car": "Auto",
+        "pickup": "Camioneta",
+        "motorcycle": "Moto",
+        "bicycle": "Bicicleta",
+        "scooter": "Scooter",
+        "other": "Otro",
+        "titulo": "Tipo"
+      },
+      "propiedad": {
+        "company": "De la empresa",
+        "rented": "Alquilado",
+        "client": "Del cliente",
+        "personal": "Personal de un supervisor",
+        "titulo": "Propiedad"
+      },
+      "estado": {
+        "available": "Disponible",
+        "in_use": "En uso",
+        "maintenance": "En taller",
+        "out_of_service": "Fuera de servicio"
+      },
+      "combustible": {
+        "empty": "Reserva",
+        "quarter": "1/4",
+        "half": "1/2",
+        "three_quarters": "3/4",
+        "full": "Lleno",
+        "titulo": "Combustible"
+      },
+      "alerta": {
+        "odometer_jump": "Salto grande desde la última lectura",
+        "distance_implausible": "Recorrido demasiado largo",
+        "odometer_vs_gps": "El odómetro dice mucho más que el GPS"
+      },
+      "tipoYPropiedad": "Tipo y propiedad",
+      "dueno": "Supervisor dueño",
+      "elegirSupervisor": "Elegir supervisor",
+      "personalHint": "Sólo su dueño puede usarlo. Se registran únicamente los kilómetros de trabajo, no lo que haga fuera de su turno.",
+      "puestoAsignado": "Puesto de supervisión que lo usa",
+      "ninguno": "Ninguno",
+      "puestoHint": "Quien esté de turno en ese puesto lo verá primero al empezar una ruta.",
+      "opcional": "opcional",
+      "lecturaActual": "Lectura actual del odómetro",
+      "lecturaInicial": "Lectura del odómetro hoy",
+      "lecturaHint": "Se actualiza sola con cada devolución.",
+      "unidad": "Unidad del odómetro",
+      "km": "Kilómetros (km)",
+      "mi": "Millas (mi)",
+      "estadoHint": "«En uso» lo pone el sistema al sacarlo y lo quita al devolverlo.",
+      "documentos": "Documentos y vencimientos",
+      "matricula": "Matrícula vence",
+      "seguro": "Seguro vence",
+      "revision": "Revisión técnica vence",
+      "empezarUso": "Empezar a usarlo",
+      "sacarVehiculo": "Sacar vehículo",
+      "terminarUso": "Terminar el uso",
+      "devolverVehiculo": "Devolver vehículo",
+      "enUsoPor": "En uso por {{name}}",
+      "usos": {
+        "pestana": "Usos y kilometraje",
+        "todos": "Todos",
+        "abiertos": "En uso ahora",
+        "alertas": "Con alertas",
+        "titulo": "Salidas y devoluciones",
+        "vacio": "Sin usos en este periodo",
+        "vehiculo": "Vehículo",
+        "salida": "Salida",
+        "devolucion": "Devolución",
+        "recorrido": "Recorrido",
+        "gps": "GPS",
+        "plan": "Plan de la ruta",
+        "alertasCol": "Alertas",
+        "verRecorrido": "Ver recorrido"
+      },
+      "personalDe": "Personal de {{name}}",
+      "odometro": "Odómetro",
+      "faltaOdometro": "Escribe la lectura del odómetro.",
+      "sacado": "Vehículo en uso. Devuélvelo con la lectura del odómetro al terminar.",
+      "devuelto": "Vehículo devuelto: {{km}} recorridos.",
+      "conAlertas": "Este uso quedó con alertas: revísalo en «Usos».",
+      "ultimaLectura": "última lectura",
+      "conductor": "Quién lo conduce",
+      "yoMismo": "Yo",
+      "personalNota": "Vehículo personal de {{name}}: sólo se registran los kilómetros de trabajo.",
+      "alSalirMarcaba": "Al salir marcaba {{n}}",
+      "menorQueSalida": "Es menor que la lectura de salida.",
+      "recorrido": "Recorrido: {{km}}",
+      "motivo": "Motivo (opcional)",
+      "motivoEj": "Ronda nocturna, trámite en el banco…",
+      "danos": "Daños (si hay)",
+      "notas": "Notas",
+      "fotoOdometro": "Foto del odómetro",
+      "fotoVehiculo": "Foto del vehículo"
     }
   },
   "map": {
@@ -21240,7 +21337,9 @@
       "plateRequired": "Placa requerida",
       "vinAlphanumeric": "VIN inválido (debe tener exactamente 17 letras o números; las letras I, O y Q no se usan)",
       "vinLength": "VIN inválido (debe tener exactamente 17 caracteres)",
-      "yearInvalid": "Año inválido"
+      "yearInvalid": "Año inválido",
+      "odometerRequired": "Lectura del odómetro requerida",
+      "ownerRequired": "Elige al supervisor dueño del vehículo"
     }
   },
   "video": {

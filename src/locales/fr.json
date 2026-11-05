@@ -15049,7 +15049,8 @@
       "datosOperativos": "Données opérationnelles",
       "kilometrajeInicial": "Kilométrage initial",
       "propiedad": "Propriété",
-      "crearVehiculo": "Créer le véhicule"
+      "crearVehiculo": "Créer le véhicule",
+      "alEditarIdentidadFija": "Les données d'identification (marque, modèle, année, plaque et VIN) sont fixes dès la création. Le type, la propriété, l'état, les documents, la photo et les notes peuvent être modifiés. Le compteur se met à jour à chaque retour."
     },
     "ActivityStream": {
       "parteDeNovedades": "Rapport de service",
@@ -20445,6 +20446,102 @@
     },
     "PedirCicloAlAsignar": {
       "cicloDelSacafranco": "C'est le cycle propre de cet agent volant : combien de jours il travaille et combien il se repose. Le poste ne change pas."
+    },
+    "flota": {
+      "tipo": {
+        "car": "Voiture",
+        "pickup": "Pick-up",
+        "motorcycle": "Moto",
+        "bicycle": "Vélo",
+        "scooter": "Trottinette",
+        "other": "Autre",
+        "titulo": "Type"
+      },
+      "propiedad": {
+        "company": "De l'entreprise",
+        "rented": "Loué",
+        "client": "Du client",
+        "personal": "Personnel d'un superviseur",
+        "titulo": "Propriété"
+      },
+      "estado": {
+        "available": "Disponible",
+        "in_use": "En service",
+        "maintenance": "Au garage",
+        "out_of_service": "Hors service"
+      },
+      "combustible": {
+        "empty": "Réserve",
+        "quarter": "1/4",
+        "half": "1/2",
+        "three_quarters": "3/4",
+        "full": "Plein",
+        "titulo": "Carburant"
+      },
+      "alerta": {
+        "odometer_jump": "Grand saut depuis le dernier relevé",
+        "distance_implausible": "Trajet trop long",
+        "odometer_vs_gps": "Le compteur indique bien plus que le GPS"
+      },
+      "tipoYPropiedad": "Type et propriété",
+      "dueno": "Superviseur propriétaire",
+      "elegirSupervisor": "Choisir un superviseur",
+      "personalHint": "Seul son propriétaire peut l'utiliser. Seuls les kilomètres de travail sont enregistrés, pas ce qui se fait hors service.",
+      "puestoAsignado": "Poste de supervision qui l'utilise",
+      "ninguno": "Aucun",
+      "puestoHint": "La personne de service à ce poste le verra en premier en démarrant une tournée.",
+      "opcional": "facultatif",
+      "lecturaActual": "Relevé actuel du compteur",
+      "lecturaInicial": "Relevé du compteur aujourd'hui",
+      "lecturaHint": "Se met à jour à chaque retour.",
+      "unidad": "Unité du compteur",
+      "km": "Kilomètres (km)",
+      "mi": "Miles (mi)",
+      "estadoHint": "Le système met «En service» à la sortie et le retire au retour.",
+      "documentos": "Documents et échéances",
+      "matricula": "Immatriculation expire",
+      "seguro": "Assurance expire",
+      "revision": "Contrôle technique expire",
+      "empezarUso": "Commencer à l'utiliser",
+      "sacarVehiculo": "Sortir le véhicule",
+      "terminarUso": "Terminer l'utilisation",
+      "devolverVehiculo": "Rendre le véhicule",
+      "enUsoPor": "Utilisé par {{name}}",
+      "usos": {
+        "pestana": "Utilisations et kilométrage",
+        "todos": "Tous",
+        "abiertos": "En service maintenant",
+        "alertas": "Avec alertes",
+        "titulo": "Sorties et retours",
+        "vacio": "Aucune utilisation sur cette période",
+        "vehiculo": "Véhicule",
+        "salida": "Sortie",
+        "devolucion": "Retour",
+        "recorrido": "Trajet",
+        "gps": "GPS",
+        "plan": "Plan de la tournée",
+        "alertasCol": "Alertes",
+        "verRecorrido": "Voir le trajet"
+      },
+      "personalDe": "Personnel de {{name}}",
+      "odometro": "Compteur",
+      "faltaOdometro": "Saisissez le relevé du compteur.",
+      "sacado": "Véhicule en service. Rendez-le avec le relevé du compteur à la fin.",
+      "devuelto": "Véhicule rendu : {{km}} parcourus.",
+      "conAlertas": "Cette utilisation a des alertes : vérifiez-la dans «Utilisations».",
+      "ultimaLectura": "dernier relevé",
+      "conductor": "Qui le conduit",
+      "yoMismo": "Moi",
+      "personalNota": "Véhicule personnel de {{name}} : seuls les kilomètres de travail sont enregistrés.",
+      "alSalirMarcaba": "À la sortie il indiquait {{n}}",
+      "menorQueSalida": "C'est inférieur au relevé de sortie.",
+      "recorrido": "Trajet : {{km}}",
+      "motivo": "Motif (facultatif)",
+      "motivoEj": "Ronde de nuit, course à la banque…",
+      "danos": "Dégâts (le cas échéant)",
+      "notas": "Notes",
+      "fotoOdometro": "Photo du compteur",
+      "fotoVehiculo": "Photo du véhicule"
     }
   },
   "visitantes": {
@@ -21240,7 +21337,9 @@
       "plateRequired": "La plaque d'immatriculation est obligatoire",
       "vinAlphanumeric": "VIN non valide (il doit comporter exactement 17 lettres ou chiffres ; les lettres I, O et Q ne sont pas utilisées)",
       "vinLength": "VIN non valide (il doit comporter exactement 17 caractères)",
-      "yearInvalid": "Année non valide"
+      "yearInvalid": "Année non valide",
+      "odometerRequired": "Relevé du compteur requis",
+      "ownerRequired": "Choisissez le superviseur propriétaire du véhicule"
     }
   },
   "video": {
