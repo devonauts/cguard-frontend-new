@@ -46,6 +46,7 @@ permissions:
   contents: read
   actions: read
   deployments: write
+  issues: write
 
 jobs:
   deploy:
@@ -57,7 +58,8 @@ jobs:
     environment:
       name: production
       url: https://app.cguardpro.com
-    timeout-minutes: 45
+    # Incluye la espera de la aprobación (hasta 24 h).
+    timeout-minutes: 1500
     env:
       HOST: cguardpro@192.168.86.19
     steps:
@@ -82,18 +84,38 @@ jobs:
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "### ${{ inputs.modo || 'deploy' }} · \`${SHA:0:8}\`" >> "$GITHUB_STEP_SUMMARY"
 
+      # Aprobación gratis (GitHub no da revisores obligatorios en privados con
+      # este plan): incidencia + «aprobar», o la ventana del botón
+      # «Aprobación automática» (cguard-backend). Ver /compartido/aprobar.sh.
+      # Las ejecuciones a mano no la piden: ya son una decisión humana.
+      - name: Aprobación
+        id: aprobacion
+        if: github.event_name == 'workflow_run' && steps.sha.outputs.seguir != 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set +e
+          bash /compartido/aprobar.sh "${{ github.repository }}" "${{ steps.sha.outputs.sha }}" "crm"
+          rc=$?
+          if [ "$rc" = 2 ]; then echo "seguir=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          exit $rc
+
       - uses: actions/checkout@v7
+        if: steps.aprobacion.outputs.seguir != 'false'
         with:
           ref: ${{ steps.sha.outputs.sha }}
           sparse-checkout: scripts/deploy
 
       - name: Desplegar en la VM (scripts/desplegar.sh crm)
+        if: steps.aprobacion.outputs.seguir != 'false'
         run: |
           ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
             "bash -s -- ${{ steps.sha.outputs.sha }} ${{ inputs.modo || 'deploy' }} ${{ github.actor }}" \
             < scripts/deploy/produccion.sh
 
       - name: Salud pública
+        if: steps.aprobacion.outputs.seguir != 'false'
         run: |
           for i in 1 2 3 4 5; do
             c=$(curl -s -o /dev/null -w "%{http_code}" https://app.cguardpro.com/) && [ "$c" = 200 ] && { echo "CRM 200"; exit 0; }
