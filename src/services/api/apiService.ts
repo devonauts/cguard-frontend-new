@@ -1,5 +1,4 @@
 import { avisarSiFueraDeDisponibilidad } from "@/lib/avisoDeDisponibilidad";
-import { cerrarSesionDeCodigo } from "@/lib/sesionDeCodigo";
 import { toast } from "sonner";
 import i18n from "@/i18n";
 import {
@@ -19,11 +18,7 @@ import {
 } from "@/lib/multimarca/accesoDeMarca";
 import { resolveApiBase } from "@/lib/apiBase";
 import { handleDesktopApiError } from "@/lib/desktop";
-import {
-  esAccesoBloqueado,
-  RUTA_ACCESO_BLOQUEADO,
-  sacarDeLaSesion,
-} from "@/lib/accesoBloqueado";
+import { cerrarPorSesionCaida } from "@/lib/sesionCaida";
 const API_BASE_URL = (
   resolveApiBase() ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
@@ -225,38 +220,8 @@ export class ApiService {
       // session). Clear it and return to the login screen.
       // BLOQUEADO (401 auth.accessBlocked): no al login, a «Acceso bloqueado»,
       // con el cierre de sesión normal (ver lib/accesoBloqueado).
-      if (
-        response.status === 401 &&
-        token &&
-        esAccesoBloqueado(data) &&
-        !window.location.pathname.startsWith(RUTA_ACCESO_BLOQUEADO)
-      ) {
-        void sacarDeLaSesion({ motivo: "bloqueo" });
-      } else if (
-        response.status === 401 &&
-        token &&
-        !window.location.pathname.startsWith("/login") &&
-        !window.location.pathname.startsWith(RUTA_ACCESO_BLOQUEADO)
-      ) {
-        // POR QUÉ se cerró la sesión. Sin esto, al centralista que ficha salida
-        // le aparecía la pantalla de login sin explicación y parecía una avería.
-        // `sessionStorage`: vale para este arranque y no sobrevive al navegador.
-        try {
-          sessionStorage.setItem("authExitReason", String(msg || ""));
-        } catch {}
-        try {
-          localStorage.removeItem("authToken");
-        } catch {}
-        // El perfil cacheado para la sesión offline pertenece a la sesión que
-        // acaba de morir — sin esto, el próximo arranque sin red restauraría a
-        // un usuario cuyo token ya fue invalidado (auditoría 2026-08-18).
-        try {
-          localStorage.removeItem("authUserCache");
-        } catch {}
-        void cerrarSesionDeCodigo();
-        try {
-          window.location.replace("/login");
-        } catch {}
+      if (response.status === 401 && token) {
+        cerrarPorSesionCaida(data, msg);
       }
       // 402 del cobro del socio: el mismo aviso y el mismo salto a Facturación
       // que en el cliente axios (`lib/pagoRequerido`).

@@ -110,11 +110,15 @@ describe("4. el cableado", () => {
     expect(src).toContain("alRecibirSesionBloqueada(");
   });
 
-  it("el cliente de API manda el 401 auth.accessBlocked a la página, no al login", () => {
-    const src = leer("services/api/apiService.ts");
+  it("los dos clientes de API mandan el 401 auth.accessBlocked a la página, no al login", () => {
+    // El cierre por 401 vive en lib/sesionCaida y lo usan ApiService y el axios
+    // de lib/api (antes axios se tragaba el 401; ver sesionCaida.ts).
+    const comun = leer("lib/sesionCaida.ts");
 
-    expect(src).toContain("esAccesoBloqueado(data)");
-    expect(src).toContain('sacarDeLaSesion({ motivo: "bloqueo" })');
+    expect(comun).toContain("esAccesoBloqueado(datos)");
+    expect(comun).toContain('sacarDeLaSesion({ motivo: "bloqueo" })');
+    expect(leer("services/api/apiService.ts")).toContain("cerrarPorSesionCaida(data, msg)");
+    expect(leer("lib/api.ts")).toContain("cerrarPorSesionCaida(apiError.details, apiError.message)");
   });
 
   it("AuthProvider registra su signOut sin avisar al servidor", () => {

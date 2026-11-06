@@ -27,6 +27,7 @@ import {
 } from "@/lib/multimarca/accesoDeMarca";
 import { resolveApiBase } from "@/lib/apiBase";
 import { handleDesktopApiError } from "@/lib/desktop";
+import { cerrarPorSesionCaida } from "@/lib/sesionCaida";
 
 const API_URL = resolveApiBase() as string | undefined;
 
@@ -283,6 +284,19 @@ api.interceptors.response.use(
     // own screen. No toast: the window is about to change.
     if (handleDesktopApiError(apiError.status, apiError.details)) {
       return Promise.reject(apiError);
+    }
+
+    // 401 con sesión: la sesión murió (superada por otro login, caducada).
+    // Mismo cierre que ApiService; antes axios se lo tragaba y los sondeos
+    // seguían preguntando con el token muerto. Ver lib/sesionCaida.
+    if (apiError.status === 401) {
+      const conSesion = Boolean(
+        (cfg as any)?.headers?.Authorization || (cfg as any)?.headers?.authorization,
+      );
+
+      if (conSesion && cerrarPorSesionCaida(apiError.details, apiError.message)) {
+        return Promise.reject(apiError);
+      }
     }
 
     // La puerta anti-copia: esta dirección o esta cuenta tiene que verificarse.

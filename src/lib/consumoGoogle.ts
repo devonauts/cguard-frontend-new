@@ -63,6 +63,14 @@ export function crearContador(deps: Dependencias) {
   const pendientes = new Map<string, EntradaPendiente>();
   let pase: string | null = null;
   let enVuelo = false;
+  /**
+   * El token que el servidor ya rechazó con 401 (sesión superada por otro
+   * login, caducada…). Con ese token NO se vuelve a enviar: una pestaña oculta
+   * con un mapa vivo mandaba el token muerto cada minuto durante horas (159
+   * rechazos «sesion-superada» seguidos, 2026-11-05). En cuanto hay un token
+   * NUEVO —la persona volvió a entrar— se envía con normalidad.
+   */
+  let tokenRechazado: string | null = null;
 
   function anotar(sku: string, area: string, count: number, reused: number) {
     const s = texto(sku, "");
@@ -91,6 +99,8 @@ export function crearContador(deps: Dependencias) {
 
     pendientes.clear();
     if (!tenantId) return;
+    // Sesión muerta: lo de este minuto se descarta, no se insiste.
+    if (token && token === tokenRechazado) return;
 
     const base = deps.base().replace(/\/+$/, "");
     const cuerpo = JSON.stringify({ app: "crm", items });
@@ -116,6 +126,11 @@ export function crearContador(deps: Dependencias) {
 
         Promise.resolve(p)
           .then(async (r: any) => {
+            if (r?.status === 401) {
+              tokenRechazado = token;
+
+              return;
+            }
             if (!r?.ok) return;
             const d = await r.json().catch(() => null);
 

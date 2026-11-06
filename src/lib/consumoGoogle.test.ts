@@ -130,3 +130,44 @@ describe("contador del consumo de Google", () => {
     expect(d.fetch).not.toHaveBeenCalled();
   });
 });
+
+describe("contador del consumo de Google · sesión rechazada", () => {
+  it("tras un 401 no vuelve a enviar con ese token; con un token nuevo sí", async () => {
+    let token = "VIEJO";
+    const fetch = vi.fn(async () => ({ ok: false, status: 401, json: async () => ({}) }));
+    const c = crearContador(dobles({ fetch, token: () => token }).deps);
+
+    c.anotar(SKU_MAPA, "mapa", 1, 0);
+    c.enviar(false);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    // Pestaña oculta con un mapa vivo: sigue anotando cada minuto.
+    for (let i = 0; i < 5; i++) {
+      c.anotar(SKU_MAPA, "mapa", 0, 1);
+      c.enviar(false);
+      await new Promise((r) => setTimeout(r, 0));
+    }
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(c.pendientes()).toEqual([]);
+
+    // Vuelve a entrar: token nuevo, se envía otra vez.
+    token = "NUEVO";
+    c.anotar(SKU_MAPA, "mapa", 1, 0);
+    c.enviar(false);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("otros errores (500, red) no bloquean el token", async () => {
+    const fetch = vi.fn(async () => ({ ok: false, status: 500, json: async () => ({}) }));
+    const c = crearContador(dobles({ fetch }).deps);
+
+    for (let i = 0; i < 3; i++) {
+      c.anotar(SKU_MAPA, "mapa", 1, 0);
+      c.enviar(false);
+      await new Promise((r) => setTimeout(r, 0));
+    }
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+});
