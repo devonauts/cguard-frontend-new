@@ -310,6 +310,17 @@ export default function Register() {
 
     if (ok) {
       pistaDeAlta("signup_completed");
+      /* Una cuenta nueva nace con el idioma en AUTOMÁTICO. El idioma que
+         alguien eligió a mano en ESTE navegador (otra cuenta, o la persona
+         que montó la demo) se copiaba a la cuenta nueva en cuanto había
+         sesión: un registro desde EE. UU. quedaba en español (2026-11-06).
+         Se borra la elección guardada; el idioma ya pintado se queda. */
+      try {
+        localStorage.removeItem("app_language_choice");
+        localStorage.removeItem("app_language_manual");
+      } catch {
+        /* sin almacenamiento: no hay elección que copiar */
+      }
       /* El embudo del SOCIO: en su anfitrión, este registro es su conversión
          (`sign_up` es el nombre recomendado de GA4). En el de la plataforma
          no hay medición de socio y esto no hace nada. */

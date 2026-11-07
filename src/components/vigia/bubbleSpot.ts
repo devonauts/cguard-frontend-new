@@ -66,3 +66,23 @@ export function pointerNear(
     y <= box.bottom + margin
   );
 }
+
+/**
+ * WHICH CONTROLS THE BUBBLE MAY NOT SIT ON: the ones it could hide.
+ *
+ * Over a control the bubble turns translucent and lets the click through
+ * (QA-95: it swallowed «Enviar»). Every clickable element counted, whatever its
+ * size, so a whole dashboard card that is one big link sat under the corner and
+ * the bubble stayed faded on the dashboard for good, looking disabled
+ * (2026-11-06). A control much bigger than the bubble can be clicked anywhere
+ * else: only one it could cover — a button, a row ⋮, a field — counts.
+ */
+export function canBeHiddenBy(control: Box, bubble: Box): boolean {
+  const w = control.right - control.left;
+  const h = control.bottom - control.top;
+  const bw = bubble.right - bubble.left;
+  const bh = bubble.bottom - bubble.top;
+
+  // Bigger than twice the bubble in BOTH directions: a card or a panel.
+  return !(w > bw * 2.5 && h > bh * 1.6);
+}

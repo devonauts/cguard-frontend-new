@@ -52,7 +52,7 @@ import {
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
-import { liftClearOf, overlaps, pointerNear, type Box } from "./bubbleSpot";
+import { canBeHiddenBy, liftClearOf, overlaps, pointerNear, type Box } from "./bubbleSpot";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -286,6 +286,9 @@ function controlsUnder(bubble: HTMLElement, box: Box): DOMRect[] {
 
     if (!r.width || !r.height) continue;
     if (!overlaps(box, r)) continue;
+    // A whole card that is one big link is not «hidden» by the corner the
+    // bubble sits on: it made the bubble look disabled on the dashboard.
+    if (!canBeHiddenBy(r, box)) continue;
     // Hidden or clipped controls (behind a closed drawer, scrolled out of a
     // panel) are not under the bubble: the topmost element at their centre
     // must be the control itself or something inside it.

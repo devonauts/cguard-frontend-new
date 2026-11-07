@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  canBeHiddenBy,
   liftClearOf,
   overlaps,
   pointerNear,
@@ -74,5 +75,17 @@ describe("pointerNear", () => {
   it("is false farther away", () => {
     expect(pointerNear(1300, 780, BUBBLE, 16)).toBe(false);
     expect(pointerNear(1370, 700, BUBBLE, 16)).toBe(false);
+  });
+});
+
+describe("which controls the bubble may not cover", () => {
+  it("a button, a row ⋮ or a wide row still count", () => {
+    expect(canBeHiddenBy({ left: 1300, right: 1420, top: 780, bottom: 820 }, BUBBLE)).toBe(true);
+    expect(canBeHiddenBy({ left: 1380, right: 1412, top: 790, bottom: 822 }, BUBBLE)).toBe(true);
+    expect(canBeHiddenBy({ left: 260, right: 1420, top: 790, bottom: 838 }, BUBBLE)).toBe(true);
+  });
+
+  it("a whole clickable card or panel does not (it can be clicked elsewhere)", () => {
+    expect(canBeHiddenBy({ left: 1000, right: 1420, top: 560, bottom: 860 }, BUBBLE)).toBe(false);
   });
 });
