@@ -33,7 +33,14 @@ import {
   FileText,
   FileSpreadsheet,
   Download,
+  ShieldCheck,
+  CalendarClock,
+  UserPlus,
+  Siren,
+  ArrowUpRight,
 } from "lucide-react";
+
+import MensajeVigia from "./partes/MensajeVigia";
 
 import api from "@/lib/api";
 import {
@@ -138,17 +145,6 @@ function tituloDeConvo(msgs: Msg[]): string {
   const primero = msgs.find((m) => m.role === "user")?.content || "";
 
   return primero.slice(0, 60) || "";
-}
-
-/** El modelo a veces escapa el «sin markdown» del prompt: los restos de
- *  negritas y viñetas se limpian aquí para que no salgan asteriscos crudos. */
-function sinMarkdown(t: string): string {
-  return t
-    .replace(/\*\*(.+?)\*\*/g, "$1")
-    .replace(/(^|\s)\*([^*\n]+)\*(?=\s|[.,;:!?]|$)/g, "$1$2")
-    .replace(/`([^`\n]+)`/g, "$1")
-    .replace(/^#{1,4}\s+/gm, "")
-    .replace(/^\s*[-*]\s+/gm, "• ");
 }
 
 interface Archivo {
@@ -1149,14 +1145,16 @@ export default function VigiaWidget() {
                 agente: agente.nombre,
               },
             )}
-            className="flex min-h-0 flex-1 flex-col overflow-hidden border shadow-2xl"
+            className="flex min-h-0 flex-1 flex-col overflow-hidden border"
             role="dialog"
             style={{
               // La silueta del escudo: esquinas superiores de tarjeta, base que
               // se afila hacia la punta central (el tip vive justo debajo).
               borderRadius: esEscudo
-                ? "1.25rem 1.25rem 2.75rem 2.75rem"
-                : "1.25rem",
+                ? "1.5rem 1.5rem 2.75rem 2.75rem"
+                : "1.5rem",
+              boxShadow:
+                "0 24px 60px -18px rgba(15, 23, 42, 0.45), 0 8px 20px -10px rgba(15, 23, 42, 0.25)",
               background: "var(--float)",
               borderColor: "var(--hairline)",
               // La receta de .glass-raised: --float sin blur transparenta el
@@ -1167,14 +1165,21 @@ export default function VigiaWidget() {
             }}
           >
             {/* Cabecera */}
+            {/* Una cabecera oscura con el color de la marca como brillo: se ve
+                bien con cualquier marca, también con una gris (antes era un
+                bloque plano del color de la marca). */}
             <div
-              className="flex items-center justify-between px-4 py-3"
-              style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
+              className="relative flex items-center justify-between gap-2 overflow-hidden px-3.5 py-3"
+              style={{
+                color: "#f8fafc",
+                background:
+                  "radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--brand) 55%, transparent) 0%, transparent 55%), radial-gradient(90% 120% at 100% 0%, color-mix(in oklab, var(--brand) 28%, transparent) 0%, transparent 60%), linear-gradient(135deg, #111827 0%, #0b1220 100%)",
+              }}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2.5">
                 <button
                   aria-label={t("vigia.history", "Conversaciones pasadas")}
-                  className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+                  className="cg-focus grid size-8 shrink-0 place-items-center rounded-xl text-white/75 transition-colors hover:bg-white/10 hover:text-white"
                   title={t("vigia.history", "Conversaciones pasadas")}
                   onClick={() =>
                     setVista(vista === "historial" ? "chat" : "historial")
@@ -1186,29 +1191,44 @@ export default function VigiaWidget() {
                     <History size={16} />
                   )}
                 </button>
-                <LogoVigia
-                  avatarUrl={agente.avatarUrl}
-                  forma={agente.forma}
-                  icono={agente.icono}
-                />
-                <div>
+                <span
+                  className="relative grid size-10 shrink-0 place-items-center rounded-2xl"
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    boxShadow:
+                      "inset 0 0 0 1px rgba(255,255,255,0.14), 0 6px 18px -6px color-mix(in oklab, var(--brand) 70%, transparent)",
+                  }}
+                >
+                  <LogoVigia
+                    avatarUrl={agente.avatarUrl}
+                    forma={agente.forma}
+                    icono={agente.icono}
+                    size={24}
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full"
+                    style={{ background: "#22c55e", boxShadow: "0 0 0 2px #0f172a" }}
+                  />
+                </span>
+                <div className="min-w-0">
                   <p
-                    className="text-sm font-bold leading-none"
+                    className="truncate text-[15px] font-bold leading-tight tracking-tight"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {agente.nombre}
                   </p>
-                  <p className="text-[11px] opacity-80">
+                  <p className="truncate text-[11.5px] text-white/65">
                     {vista === "historial"
                       ? t("vigia.history", "Conversaciones pasadas")
                       : t("vigia.tagline", "El vigía de tu operación")}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex shrink-0 items-center gap-0.5">
                 <button
                   aria-label={t("vigia.newChat", "Conversación nueva")}
-                  className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+                  className="cg-focus grid size-8 place-items-center rounded-xl text-white/75 transition-colors hover:bg-white/10 hover:text-white"
                   title={t("vigia.newChat", "Conversación nueva")}
                   onClick={nuevaConversacion}
                 >
@@ -1216,7 +1236,7 @@ export default function VigiaWidget() {
                 </button>
                 <button
                   aria-label={t("actions.close", "Cerrar")}
-                  className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+                  className="cg-focus grid size-8 place-items-center rounded-xl text-white/75 transition-colors hover:bg-white/10 hover:text-white"
                   onClick={pedirCierre}
                 >
                   <X size={16} />
@@ -1344,13 +1364,27 @@ export default function VigiaWidget() {
                 role="log"
               >
                 {msgs.length === 0 && (
-                  <div
-                    className="px-2 py-4 text-sm"
-                    style={{ color: "var(--ink-soft)" }}
-                  >
+                  <div className="flex flex-col items-center px-2 pb-2 pt-5 text-center">
+                    <span
+                      className="grid size-14 place-items-center rounded-[1.25rem]"
+                      style={{
+                        color: "var(--brand-text)",
+                        background:
+                          "linear-gradient(145deg, color-mix(in oklab, var(--brand) 18%, transparent), color-mix(in oklab, var(--brand) 6%, transparent))",
+                        boxShadow:
+                          "inset 0 0 0 1px color-mix(in oklab, var(--brand) 25%, transparent)",
+                      }}
+                    >
+                      <LogoVigia
+                        avatarUrl={agente.avatarUrl}
+                        forma={agente.forma}
+                        icono={agente.icono}
+                        size={30}
+                      />
+                    </span>
                     <p
-                      className="mb-2 font-semibold"
-                      style={{ color: "var(--ink)" }}
+                      className="mt-3 text-[17px] font-bold tracking-tight"
+                      style={{ color: "var(--ink)", fontFamily: "var(--font-display)" }}
                     >
                       {/* Si el socio escribió un saludo, manda el suyo. Es el
                           único texto libre suyo de todo esto, y por eso se
@@ -1358,44 +1392,56 @@ export default function VigiaWidget() {
                       {agente.saludo ||
                         t("vigia.emptyTitle", "¿En qué te ayudo?")}
                     </p>
-                    <p>{t("vigia.emptyHint", "Puedo, por ejemplo:")}</p>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
+                    <p className="mt-1 text-[13px]" style={{ color: "var(--ink-soft)" }}>
+                      {t("vigia.emptyHint", "Puedo, por ejemplo:")}
+                    </p>
+                    <div className="mt-4 grid w-full grid-cols-2 gap-2 text-left">
                       {[
-                        t(
-                          "ui.VigiaWidget.ejemploCobertura",
-                          "¿Cómo va la cobertura ahora?",
-                        ),
-                        t(
-                          "ui.VigiaWidget.ejemploIncidentes",
-                          "¿Qué incidentes hubo hoy?",
-                        ),
-                        t(
-                          "ui.VigiaWidget.ejemploAgregarVigilante",
-                          "Agrega un vigilante nuevo",
-                        ),
-                        t(
-                          "ui.VigiaWidget.ejemploHorario",
-                          "Llévame al horario",
-                        ),
-                      ].map((ej) => (
+                        {
+                          Icono: ShieldCheck,
+                          texto: t("ui.VigiaWidget.ejemploCobertura", "¿Cómo va la cobertura ahora?"),
+                        },
+                        {
+                          Icono: Siren,
+                          texto: t("ui.VigiaWidget.ejemploIncidentes", "¿Qué incidentes hubo hoy?"),
+                        },
+                        {
+                          Icono: UserPlus,
+                          texto: t("ui.VigiaWidget.ejemploAgregarVigilante", "Agrega un vigilante nuevo"),
+                        },
+                        {
+                          Icono: CalendarClock,
+                          texto: t("ui.VigiaWidget.ejemploHorario", "Llévame al horario"),
+                        },
+                      ].map(({ Icono, texto: ej }) => (
                         <button
                           key={ej}
-                          className="cg-focus rounded-full border px-2.5 py-1 text-xs transition-[filter] hover:brightness-110"
+                          className="cg-focus group flex min-w-0 flex-col gap-2 rounded-2xl border p-3 text-[12.5px] leading-snug transition-[border-color,transform,box-shadow] hover:-translate-y-0.5"
                           style={{
                             borderColor: "var(--hairline)",
                             color: "var(--ink)",
+                            background: "var(--glass-raised)",
                           }}
                           onClick={() => {
                             setTexto(ej);
                             setTimeout(() => entrada.current?.focus(), 0);
                           }}
                         >
-                          {ej}
+                          <span className="flex items-center justify-between">
+                            <Icono aria-hidden size={16} style={{ color: "var(--brand-text)" }} />
+                            <ArrowUpRight
+                              aria-hidden
+                              className="opacity-0 transition-opacity group-hover:opacity-100"
+                              size={14}
+                              style={{ color: "var(--ink-faint)" }}
+                            />
+                          </span>
+                          <span>{ej}</span>
                         </button>
                       ))}
                     </div>
                     <p
-                      className="mt-2 text-xs"
+                      className="mt-4 text-[11.5px]"
                       style={{ color: "var(--ink-faint)" }}
                     >
                       {t(
@@ -1411,27 +1457,55 @@ export default function VigiaWidget() {
                     className={
                       m.role === "user"
                         ? "flex justify-end"
-                        : "flex justify-start"
+                        : "flex items-start justify-start gap-2"
                     }
                   >
+                    {m.role === "assistant" && (
+                      <span
+                        aria-hidden
+                        className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-xl"
+                        style={{
+                          color: "#f8fafc",
+                          background:
+                            "linear-gradient(135deg, color-mix(in oklab, var(--brand) 70%, #111827), #111827)",
+                        }}
+                      >
+                        <LogoVigia
+                          avatarUrl={agente.avatarUrl}
+                          forma={agente.forma}
+                          icono={agente.icono}
+                          size={15}
+                        />
+                      </span>
+                    )}
                     <div
-                      className="max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm"
+                      className={
+                        m.role === "user"
+                          ? "max-w-[82%] whitespace-pre-wrap rounded-2xl rounded-br-md px-3.5 py-2 text-[13.5px] leading-relaxed"
+                          : "min-w-0 max-w-[88%] rounded-2xl rounded-tl-md border px-3.5 py-2.5"
+                      }
                       style={
                         m.role === "user"
                           ? {
                               background:
-                                "color-mix(in oklab, var(--brand) 16%, transparent)",
-                              color: "var(--ink)",
+                                "linear-gradient(135deg, color-mix(in oklab, var(--brand) 92%, #ffffff), var(--brand))",
+                              color: "var(--brand-ink)",
+                              boxShadow:
+                                "0 6px 16px -8px color-mix(in oklab, var(--brand) 60%, transparent)",
                             }
                           : {
                               background: "var(--glass-raised)",
+                              borderColor: "var(--hairline)",
                               color: "var(--ink)",
+                              boxShadow: "0 1px 2px rgba(15, 23, 42, 0.06)",
                             }
                       }
                     >
-                      {m.role === "assistant"
-                        ? sinMarkdown(m.content)
-                        : m.content}
+                      {m.role === "assistant" ? (
+                        <MensajeVigia texto={m.content} />
+                      ) : (
+                        m.content
+                      )}
                       {m.archivos?.length ? (
                         <div className="mt-2 flex flex-col gap-1.5 whitespace-normal">
                           {m.archivos.map((a) => {
@@ -1600,16 +1674,21 @@ export default function VigiaWidget() {
 
             {/* Entrada */}
             {vista === "chat" && (
+              <div className="px-3 pb-3 pt-2">
               <div
-                className="flex items-center gap-2 border-t px-4 pb-3 pt-2"
-                style={{ borderColor: "var(--hairline)" }}
+                className="flex items-end gap-1 rounded-[1.25rem] border py-1.5 pl-3 pr-1.5 transition-[border-color,box-shadow] focus-within:border-[color-mix(in_oklab,var(--brand)_55%,var(--hairline))] focus-within:shadow-[0_0_0_4px_color-mix(in_oklab,var(--brand)_14%,transparent)]"
+                style={{
+                  borderColor: "var(--hairline)",
+                  background: "var(--glass-raised)",
+                }}
               >
                 <textarea
                   ref={entrada}
                   aria-label={t("vigia.inputAria", "Mensaje para {{agente}}", {
                     agente: agente.nombre,
                   })}
-                  className="cg-input max-h-28 flex-1 resize-none px-3 py-2 text-sm"
+                  className="max-h-28 min-h-[2.25rem] flex-1 resize-none border-0 bg-transparent py-2 text-[13.5px] outline-none placeholder:text-[var(--ink-faint)] focus:outline-none focus:ring-0"
+                  style={{ color: "var(--ink)" }}
                   disabled={ocupado}
                   placeholder={t(
                     "vigia.placeholder",
@@ -1645,7 +1724,7 @@ export default function VigiaWidget() {
                 />
                 <button
                   aria-label={t("vigia.attachCv", "Adjuntar hoja de vida")}
-                  className="cg-focus rounded-xl p-2 transition-colors hover:bg-[var(--glass-hover)] disabled:opacity-40"
+                  className="cg-focus grid size-9 shrink-0 place-items-center rounded-full transition-colors hover:bg-[var(--glass-hover)] disabled:opacity-40"
                   disabled={ocupado}
                   style={{ color: "var(--muted-foreground)" }}
                   title={t("vigia.attachCv", "Adjuntar hoja de vida")}
@@ -1655,16 +1734,20 @@ export default function VigiaWidget() {
                 </button>
                 <button
                   aria-label={t("actions.send", "Enviar")}
-                  className="cg-focus rounded-xl p-2 transition-[filter] hover:brightness-110 disabled:opacity-40"
+                  className="cg-focus grid size-9 shrink-0 place-items-center rounded-full transition-[filter,transform,opacity] hover:brightness-110 active:scale-95 disabled:opacity-35"
                   disabled={ocupado || !texto.trim()}
                   style={{
-                    background: "var(--brand)",
+                    background:
+                      "linear-gradient(135deg, color-mix(in oklab, var(--brand) 85%, #ffffff), var(--brand))",
                     color: "var(--brand-ink)",
+                    boxShadow:
+                      "0 6px 14px -6px color-mix(in oklab, var(--brand) 70%, transparent)",
                   }}
                   onClick={enviar}
                 >
-                  <Send size={16} />
+                  <Send size={15} />
                 </button>
+              </div>
               </div>
             )}
           </div>
