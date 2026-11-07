@@ -323,6 +323,9 @@ const CGSB_CSS = `
 /* ── BUSCADOR ─────────────────────────────────────────────────────────────── */
 .cgsb-search {
   position: relative;
+  /* Fuera de .cgsb-head: sin esto tocaba los dos bordes del panel. Mismo
+     margen lateral que la cabecera (12 px). */
+  margin: 10px 12px 6px;
   display: flex; align-items: center; gap: 8px;
   height: 34px; padding: 0 10px; border-radius: var(--r-md);
   background: var(--glass-sunken);
