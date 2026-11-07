@@ -43,6 +43,11 @@ const LITERAL = /["'`]([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*)["'`]/g;
 // lacks entirely).
 const CLAVE_SEGURA =
   /(?:\bt\(\s*|\bi18nKey=\{?\s*|\bconEtiqueta\(\s*|\blabelKey\s*:\s*)["']([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)+)["']/g;
+// A key BUILT at runtime: t(`publico.accesoNegado.${motivo}.titulo`). The scan
+// cannot know the final key, but it knows the fixed part before `${`: that
+// subtree has to be in the public dictionary (via diccionarioPublico.extras),
+// or the screen shows raw keys (2026-11-06, the «in review» screen).
+const CLAVE_DINAMICA = /\bt\(\s*`([A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*)\.\$\{/g;
 const PLURAL = /^(.*)_(zero|one|two|few|many|other|plural)$/;
 const LOCALE = /[\\/]src[\\/]locales[\\/]([a-z]{2})\.json$/;
 
@@ -163,6 +168,13 @@ export function filtrar(d: Dicc, claves: Iterable<string>): Dicc {
 }
 
 /** Is `k` (or a plural form of it) present in `d`? */
+/** Every leaf key under `v` (a subtree of the dictionary), with its full path. */
+function hojas(v: unknown, prefijo: string): string[] {
+  if (!esObjeto(v)) return [prefijo];
+
+  return Object.entries(v).flatMap(([k, h]) => hojas(h, `${prefijo}.${k}`));
+}
+
 function contiene(d: Dicc, k: string): boolean {
   if (nodo(d, k) !== undefined) return true;
   const i = k.lastIndexOf(".");
@@ -241,6 +253,11 @@ export function diccionarioPublico({
 
         for (const k of clavesDeFuente(texto, completo))
           if (!contiene(filtrado, k)) faltan.push(`${k}  (${rel})`);
+        // The WHOLE subtree, not just its parent: `publico.accesoNegado` existed
+        // (its buttons are literal keys) while every title and text was missing.
+        for (const m of texto.matchAll(CLAVE_DINAMICA))
+          for (const hoja of hojas(nodo(completo, m[1]), m[1]))
+            if (!contiene(filtrado, hoja)) faltan.push(`${hoja}  (${rel}, built at runtime)`);
         for (const m of texto.matchAll(CLAVE_SEGURA))
           if (!contiene(completo, m[1])) sinTraduccion.push(`${m[1]}  (${rel})`);
       }
