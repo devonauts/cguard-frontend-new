@@ -186,6 +186,7 @@ const GROUPS: GroupDef[] = [
     icon: Siren,
     ids: [
       "despachador",
+      "mensajeria",
       "vigia-pro",
       "monitoreo-alarmas",
       "videovigilancia",
@@ -221,7 +222,6 @@ const GROUPS: GroupDef[] = [
       "clientes",
       "solicitudes-clientes",
       "control-de-calidad",
-      "mensajeria",
     ],
   },
   {

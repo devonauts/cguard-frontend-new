@@ -1682,39 +1682,33 @@ export default function App() {
                               />
 
                               {/* Keep any ?conversation=… so notification deep-links still open the thread. */}
+                              {/* Messaging: UNA bandeja (directos y grupos con equipo y
+                                  clientes). Las dos rutas viejas —Operativos y
+                                  Clientes— siguen vivas para los enlaces y avisos
+                                  ya enviados, y llevan aquí con su ?conversation=. */}
                               <Route
                                 element={
-                                  <Navigate
-                                    replace
-                                    to={`/messenger/operativos${window.location.search}`}
-                                  />
+                                  <ProtectedRoute>
+                                    <MessengerPage />
+                                  </ProtectedRoute>
                                 }
                                 path="/messenger"
                               />
                               <Route
                                 element={
-                                  <ProtectedRoute>
-                                    {/* key per scope: both routes render the same MessengerPage
-                        type at the same tree position, so without a distinct key
-                        React reuses the instance and just swaps the prop —
-                        leaving the previously selected (client) thread on screen.
-                        The key forces a fresh remount when switching scopes. */}
-                                    <MessengerPage
-                                      key="messenger-operational"
-                                      scope="operational"
-                                    />
-                                  </ProtectedRoute>
+                                  <Navigate
+                                    replace
+                                    to={`/messenger${window.location.search}`}
+                                  />
                                 }
                                 path="/messenger/operativos"
                               />
                               <Route
                                 element={
-                                  <ProtectedRoute>
-                                    <MessengerPage
-                                      key="messenger-client"
-                                      scope="client"
-                                    />
-                                  </ProtectedRoute>
+                                  <Navigate
+                                    replace
+                                    to={`/messenger${window.location.search}`}
+                                  />
                                 }
                                 path="/messenger/clientes"
                               />

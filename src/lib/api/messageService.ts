@@ -25,9 +25,22 @@ export type GroupMember = {
   id: string;
   userId: string;
   name: string;
-  participantType: "staff" | "guard";
+  participantType: "staff" | "guard" | "client";
   role: "admin" | "member";
   source: "auto" | "manual";
+};
+
+/** Alguien a quien el CRM puede escribir (GET /message-people). */
+export type MessagePerson = {
+  kind: "guard" | "staff" | "client";
+  /** Su usuario: lo que usan los grupos. null = sin cuenta en la app. */
+  userId: string | null;
+  recipientType: "guard" | "staff" | "client";
+  recipientId: string;
+  name: string;
+  roles: string[];
+  detail: string | null;
+  hasAccount: boolean;
 };
 
 const unwrap = (resp: any) =>
@@ -61,8 +74,20 @@ export const messageService = {
     return unwrap(await api.get(`/tenant/${t}/message${qs ? `?${qs}` : ""}`));
   },
 
+  /** Vigilantes, equipo y clientes en una sola búsqueda. */
+  async searchPeople(
+    q: string,
+    kind?: MessagePerson["kind"],
+  ): Promise<MessagePerson[]> {
+    const t = getTenantId();
+    const qs = new URLSearchParams({ q, ...(kind ? { kind } : {}) }).toString();
+    const res = unwrap(await api.get(`/tenant/${t}/message-people?${qs}`));
+
+    return Array.isArray(res?.rows) ? res.rows : [];
+  },
+
   async createConversation(input: {
-    recipientType: "guard" | "client";
+    recipientType: "guard" | "client" | "staff";
     recipientId: string;
     subject?: string;
     isOneWay?: boolean;

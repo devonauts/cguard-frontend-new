@@ -27,10 +27,12 @@ import {
   messageService,
   type MessageAttachment,
   type GroupMember,
+  type MessagePerson,
 } from "@/lib/api/messageService";
-import securityGuardService from "@/lib/api/securityGuardService";
 import { postSiteService } from "@/lib/api/postSiteService";
-import { clientService } from "@/lib/api/clientService";
+
+import PeoplePicker, { useEtiquetaDePersona } from "./PeoplePicker";
+import { coincide, enFiltro, sinLeerPorFiltro, tipoDe, type Filtro } from "./bandeja";
 import { useFileUrl } from "@/lib/fileUrl";
 import { useAudioRecorder } from "@/lib/useAudioRecorder";
 
@@ -139,16 +141,37 @@ const fmtTime = (d?: string | null) => {
   }
 };
 
-export default function MessengerPage({
-  scope = "operational",
-}: {
-  scope?: "operational" | "client";
-}) {
+/** Lo que se lee debajo del nombre de un hilo: «Grupo · 4 miembros», «Vigilante»… */
+function useSubtituloDeHilo() {
   const { t } = useTranslation();
-  const isClient = scope === "client";
-  const pageTitle = isClient
-    ? t("sidebar.mensajeria.msg-clientes", "Mensajes de Clientes")
-    : t("sidebar.mensajeria.msg-operativos", "Mensajes Operativos");
+
+  return (c: Conversation) => {
+    const tipo = tipoDe(c);
+
+    if (tipo === "grupo")
+      return t("ui.MessengerPage.grupoNMiembros", {
+        defaultValue: "Grupo · {{count}} miembros",
+        count: c.memberCount || 0,
+      });
+    if (tipo === "client") return t("clients.client", "Cliente");
+    if (tipo === "staff") return t("ui.MessengerPage.equipo", "Equipo");
+
+    return t("dashboard.table.headers.guard", "Vigilante");
+  };
+}
+
+/**
+ * MESSAGING — un solo centro para todos los mensajes del CRM: directos con un
+ * vigilante, un supervisor, alguien de la oficina o un cliente, y grupos que
+ * mezclan a cualquiera de ellos. Antes eran dos pantallas («Operativos» y
+ * «Clientes») sobre la misma lista, y nadie de la oficina era alcanzable.
+ */
+export default function MessengerPage() {
+  const { t } = useTranslation();
+  const pageTitle = t("sidebar.mensajeria.label", "Mensajería");
+  const subtitulo = useSubtituloDeHilo();
+  const [filtro, setFiltro] = useState<Filtro>("todos");
+  const [buscar, setBuscar] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selected, setSelected] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -272,14 +295,23 @@ export default function MessengerPage({
     if (selected) loadThread(selected);
   });
 
-  // Operativos = chats with vigilantes/supervisores + grupos (recipientType !== "client").
-  // Clientes = chats with customers (recipientType === "client").
   const visibleConversations = useMemo(
-    () =>
-      conversations.filter((c) =>
-        isClient ? c.recipientType === "client" : c.recipientType !== "client",
-      ),
-    [conversations, isClient],
+    () => conversations.filter((c) => enFiltro(c, filtro) && coincide(c, buscar)),
+    [conversations, filtro, buscar],
+  );
+  const sinLeer = useMemo(() => sinLeerPorFiltro(conversations), [conversations]);
+  const pestana = (f: Filtro, label: string) => (
+    <span className="inline-flex items-center gap-1">
+      {label}
+      {sinLeer[f] > 0 && (
+        <span
+          className="grid h-4 min-w-4 place-items-center rounded-full px-1 text-[9px] font-bold tabular-nums"
+          style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
+        >
+          {sinLeer[f]}
+        </span>
+      )}
+    </span>
   );
 
   const onSelect = (c: Conversation) => {
@@ -468,7 +500,7 @@ export default function MessengerPage({
               <Plus size={15} className="mr-1.5" />{" "}{t('ui.MessengerPage.nuevo')}{" "}</Button>
           }
           icon={<MessageSquareText />}
-          subtitle={isClient ? t("ui.MessengerPage.conversacionesConTusClientes", "Conversaciones con tus clientes.") : t("ui.MessengerPage.conversacionesConVigilantesSupervisores", "Conversaciones con vigilantes, supervisores y grupos por puesto.")}
+          subtitle={t("ui.MessengerPage.subtituloUnificado", "Mensajes directos y grupos con tu equipo y tus clientes.")}
           title={pageTitle}
         />
         <div
@@ -499,14 +531,39 @@ export default function MessengerPage({
                 {t("ui.MessengerPage.nuevo")}{" "}
               </Button>
             </div>
+            <div
+              className="space-y-2 border-b p-2"
+              style={{ borderColor: "var(--hairline)" }}
+            >
+              <Segmented
+                className="w-full [&>button]:flex-1 [&>button]:px-1.5 [&>button]:text-[11.5px]"
+                options={[
+                  { value: "todos" as const, label: pestana("todos", t("ui.MessengerPage.filtroTodos", "Todos")) },
+                  { value: "equipo" as const, label: pestana("equipo", t("ui.MessengerPage.equipo", "Equipo")) },
+                  { value: "clientes" as const, label: pestana("clientes", t("ui.MessengerPage.filtroClientes", "Clientes")) },
+                  { value: "grupos" as const, label: pestana("grupos", t("ui.MessengerPage.filtroGrupos", "Grupos")) },
+                ]}
+                value={filtro}
+                onChange={setFiltro}
+              />
+              <SearchInput
+                placeholder={t("ui.MessengerPage.buscarConversacion", "Buscar conversación…")}
+                value={buscar}
+                onChange={setBuscar}
+              />
+            </div>
             <div className="flex-1 space-y-2 overflow-auto p-2">
               {loadingList ? (
                 <SkeletonCards className="sm:grid-cols-1" count={4} />
               ) : visibleConversations.length === 0 ? (
                 <EmptyState
-                  description={isClient ? t("ui.MessengerPage.todaviaNoHayMensajesDeTusClientes", "Todavía no hay mensajes de tus clientes.") : t("ui.MessengerPage.empiezaUnaNuevaConElBoton", "Empieza una nueva con el botón «Nuevo».")}
+                  description={
+                    buscar.trim() || filtro !== "todos"
+                      ? t("ui.MessengerPage.nadaConEseFiltro", "Nada con este filtro.")
+                      : t("ui.MessengerPage.empiezaUnaNuevaConElBoton", "Empieza una nueva con el botón «Nuevo».")
+                  }
                   icon={<MessageSquareText />}
-                  title={isClient ? t("ui.MessengerPage.sinMensajesDeClientes", "Sin mensajes de clientes") : t("ui.MessengerPage.sinConversaciones", "Sin conversaciones")}
+                  title={t("ui.MessengerPage.sinConversaciones", "Sin conversaciones")}
                 />
               ) : (
                 visibleConversations.map((c) => {
@@ -549,15 +606,7 @@ export default function MessengerPage({
                           className="truncate text-xs"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          {c.lastMessagePreview ||
-                            (c.isGroup
-                              ? t("ui.MessengerPage.grupoNMiembros", {
-                                  defaultValue: "Grupo · {{count}} miembros",
-                                  count: c.memberCount || 0,
-                                })
-                              : c.recipientType === "guard"
-                                ? t("dashboard.table.headers.guard", "Vigilante")
-                                : t("clients.client", "Cliente"))}
+                          {c.lastMessagePreview || subtitulo(c)}
                         </p>
                       </div>
                       {(c.unreadCount || 0) > 0 && (
@@ -627,14 +676,7 @@ export default function MessengerPage({
                       className="text-[11px]"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      {selected.isGroup
-                        ? t("ui.MessengerPage.grupoNMiembros", {
-                            defaultValue: "Grupo · {{count}} miembros",
-                            count: selected.memberCount || 0,
-                          })
-                        : selected.recipientType === "guard"
-                          ? t("dashboard.table.headers.guard", "Vigilante")
-                          : t("clients.client", "Cliente")}
+                      {subtitulo(selected)}
                     </p>
                   </div>
                   {selected.isOneWay && (
@@ -899,7 +941,6 @@ export default function MessengerPage({
 
       {composeOpen && (
         <ComposeDialog
-          scope={scope}
           onClose={() => setComposeOpen(false)}
           onSent={(conv) => {
             setComposeOpen(false);
@@ -922,27 +963,59 @@ export default function MessengerPage({
   );
 }
 
+/** Una persona elegida, como ficha con aspa para quitarla. */
+function FichaDePersona({
+  persona,
+  onQuitar,
+}: {
+  persona: MessagePerson;
+  onQuitar: () => void;
+}) {
+  const { t } = useTranslation();
+  const etiqueta = useEtiquetaDePersona();
+
+  return (
+    <span className="glass-flat glass-brand inline-flex max-w-full items-center gap-2 py-1 pl-3 pr-1.5 text-sm">
+      <span className="min-w-0 truncate">
+        <span className="font-medium">{persona.name}</span>
+        <span className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
+          {" "}· {etiqueta(persona)}
+        </span>
+      </span>
+      <button
+        aria-label={t("station.guards.remove", "Quitar")}
+        className="cg-focus grid h-6 w-6 shrink-0 place-items-center rounded-md"
+        style={{ color: "var(--ink-soft)" }}
+        type="button"
+        onClick={onQuitar}
+      >
+        <X size={13} />
+      </button>
+    </span>
+  );
+}
+
+/**
+ * «Nuevo» en Messaging: un mensaje directo a CUALQUIERA (vigilante, alguien del
+ * equipo, cliente) o un grupo con cualquier mezcla de ellos. Opcionalmente el
+ * grupo trae a los vigilantes de un puesto y se mantiene al día con sus
+ * asignaciones.
+ */
 function ComposeDialog({
-  scope,
   onClose,
   onSent,
 }: {
-  scope: "operational" | "client";
   onClose: () => void;
   onSent: (conv: unknown) => void;
 }) {
   const { t } = useTranslation();
-  const isClient = scope === "client";
   const [mode, setMode] = useState<"direct" | "group">("direct");
-  // Direct mode
-  const [q, setQ] = useState("");
-  const [results, setResults] = useState<{ id: string; label: string }[]>([]);
-  const [picked, setPicked] = useState<{ id: string; label: string } | null>(
-    null,
-  );
+  // Directo
+  const [picked, setPicked] = useState<MessagePerson | null>(null);
   const [body, setBody] = useState("");
-  // Group mode
+  // Grupo
   const [groupName, setGroupName] = useState("");
+  const [miembros, setMiembros] = useState<MessagePerson[]>([]);
   const [siteQ, setSiteQ] = useState("");
   const [siteResults, setSiteResults] = useState<
     { id: string; label: string }[]
@@ -952,65 +1025,12 @@ function ComposeDialog({
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    if (mode !== "direct") return;
-    let active = true;
-    const t = setTimeout(async () => {
-      if (!q.trim()) {
-        setResults([]);
-        return;
-      }
-      try {
-        if (isClient) {
-          const res: unknown = await clientService.autocomplete(q.trim(), 15);
-          const rows: AcRow[] = Array.isArray(res)
-            ? (res as AcRow[])
-            : (res as { rows?: AcRow[] })?.rows || [];
-
-          if (active)
-            setResults(
-              rows
-                .filter((r) => r && r.id)
-                .map((r) => ({
-                  id: r.id,
-                  label: r.label || r.name || i18n.t("clients.client", "Cliente"),
-                })),
-            );
-        } else {
-          const res = await securityGuardService.autocomplete(q.trim(), 15);
-          const rows = Array.isArray(res) ? res : res?.rows || [];
-
-          if (active)
-            setResults(
-              rows
-                .filter(
-                  (r: AcRow) => r && r.id && !String(r.id).startsWith("sg:"),
-                )
-                .map((r: AcRow) => ({
-                  id: r.id,
-                  label:
-                    r.label ||
-                    r.name ||
-                    i18n.t("dashboard.table.headers.guard", "Vigilante"),
-                })),
-            );
-        }
-      } catch {
-        /* ignore */
-      }
-    }, 300);
-
-    return () => {
-      active = false;
-      clearTimeout(t);
-    };
-  }, [q, mode]);
-
-  useEffect(() => {
     if (mode !== "group") return;
     let active = true;
-    const t = setTimeout(async () => {
+    const h = setTimeout(async () => {
       if (!siteQ.trim()) {
         setSiteResults([]);
+
         return;
       }
       try {
@@ -1041,7 +1061,7 @@ function ComposeDialog({
 
     return () => {
       active = false;
-      clearTimeout(t);
+      clearTimeout(h);
     };
   }, [siteQ, mode]);
 
@@ -1050,8 +1070,8 @@ function ComposeDialog({
     setSending(true);
     try {
       const res = await messageService.createConversation({
-        recipientType: isClient ? "client" : "guard",
-        recipientId: picked.id,
+        recipientType: picked.recipientType,
+        recipientId: picked.recipientId,
         body: body.trim(),
       });
 
@@ -1061,8 +1081,8 @@ function ComposeDialog({
       // list adds, so the header showed «?» and no name: give it the one picked.
       onSent({
         ...conv,
-        recipientType: conv?.recipientType || (isClient ? "client" : "guard"),
-        recipientName: conv?.recipientName || picked.label,
+        recipientType: conv?.recipientType || picked.recipientType,
+        recipientName: conv?.recipientName || picked.name,
       });
     } catch (e: any) {
       toast.error(
@@ -1075,14 +1095,19 @@ function ComposeDialog({
     }
   };
 
+  const puedeCrearGrupo =
+    !!groupName.trim() && (!!site || miembros.length > 0) && !sending;
+
   const createGroup = async () => {
-    if (!groupName.trim() || !site || sending) return;
+    if (!puedeCrearGrupo) return;
     setSending(true);
     try {
       const res = await messageService.createGroup({
         name: groupName.trim(),
-        anchorType: "postSite",
-        anchorId: site.id,
+        ...(site ? { anchorType: "postSite" as const, anchorId: site.id } : {}),
+        extraMemberUserIds: miembros
+          .map((m) => m.userId)
+          .filter((u): u is string => !!u),
         isOneWay: oneWay,
         body: body.trim() || undefined,
       });
@@ -1130,7 +1155,7 @@ function ComposeDialog({
               {t("actions.send", "Enviar")}
             </Button>
           ) : (
-            <Button onClick={createGroup} disabled={!groupName.trim() || !site || sending}>
+            <Button onClick={createGroup} disabled={!puedeCrearGrupo}>
               {sending ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />}{" "}
               {t("ui.MessengerPage.crearGrupo", "Crear grupo")}
             </Button>
@@ -1142,73 +1167,31 @@ function ComposeDialog({
       onOpenChange={(o) => { if (!o) onClose(); }}
     >
       <div className="space-y-3">
-        {/* Groups are an operational feature (vigilantes by puesto); clients only get direct chats. */}
-        {!isClient && (
-          <Segmented
-            className="w-full [&>button]:flex-1"
-            options={[
-              {
-                value: "direct" as const,
-                label: tabLabel(
-                  <UserCircle2 size={14} />,
-                  t("ui.MessengerPage.directo", "Directo"),
-                ),
-              },
-              {
-                value: "group" as const,
-                label: tabLabel(<Users size={14} />, t("ui.MessengerPage.grupo", "Grupo")),
-              },
-            ]}
-            value={mode}
-            onChange={setMode}
-          />
-        )}
+        <Segmented
+          className="w-full [&>button]:flex-1"
+          options={[
+            {
+              value: "direct" as const,
+              label: tabLabel(
+                <UserCircle2 size={14} />,
+                t("ui.MessengerPage.mensajeDirecto", "Mensaje directo"),
+              ),
+            },
+            {
+              value: "group" as const,
+              label: tabLabel(<Users size={14} />, t("ui.MessengerPage.grupo", "Grupo")),
+            },
+          ]}
+          value={mode}
+          onChange={setMode}
+        />
 
         {mode === "direct" ? (
           <>
             {picked ? (
-              <div className="glass-flat glass-brand flex items-center justify-between px-3 py-2">
-                <span className="text-sm font-medium">{picked.label}</span>
-                <button
-                  onClick={() => setPicked(null)}
-                  className="cg-focus"
-                  style={{ color: "var(--ink-soft)" }}
-                >
-                  <X size={15} />
-                </button>
-              </div>
+              <FichaDePersona persona={picked} onQuitar={() => setPicked(null)} />
             ) : (
-              <div>
-                <SearchInput
-                  placeholder={
-                      isClient
-                      ? t("ui.MessengerPage.buscarCliente", "Buscar cliente…")
-                      : t("comun.buscarVigilante", "Buscar vigilante…")
-                    }
-                  value={q}
-                  onChange={(v) => setQ(v)}
-                />
-                {results.length > 0 && (
-                  <div
-                    className="mt-2 max-h-44 overflow-auto rounded-xl border"
-                    style={{ borderColor: "var(--hairline)" }}
-                  >
-                    {results.map((r) => (
-                      <button
-                        key={r.id}
-                        onClick={() => {
-                          setPicked(r);
-                          setResults([]);
-                          setQ("");
-                        }}
-                        className="block w-full px-3 py-2 text-left text-sm hover:bg-muted/50"
-                      >
-                        {r.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <PeoplePicker autoFocus onPick={setPicked} />
             )}
             <textarea
               value={body}
@@ -1226,6 +1209,40 @@ function ComposeDialog({
               placeholder={i18n.t("ui.MessengerPage.nombreDelGrupo")}
               className="cg-input w-full px-3 py-2 text-sm"
             />
+
+            <div className="space-y-2">
+              <p className="text-xs font-semibold" style={{ color: "var(--ink-soft)" }}>
+                {t("ui.MessengerPage.miembros", "Miembros")}
+                {miembros.length > 0 ? ` · ${miembros.length}` : ""}
+              </p>
+              {miembros.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {miembros.map((m) => (
+                    <FichaDePersona
+                      key={`${m.kind}:${m.recipientId}`}
+                      persona={m}
+                      onQuitar={() =>
+                        setMiembros((ms) => ms.filter((x) => x.userId !== m.userId))
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+              <PeoplePicker
+                soloConCuenta
+                excluir={miembros.map((m) => m.userId || "")}
+                placeholder={t(
+                  "ui.MessengerPage.anadirPersona",
+                  "Añadir vigilante, equipo o cliente…",
+                )}
+                onPick={(p) =>
+                  setMiembros((ms) =>
+                    p.userId && !ms.some((x) => x.userId === p.userId) ? [...ms, p] : ms,
+                  )
+                }
+              />
+            </div>
+
             {site ? (
               <div className="glass-flat glass-brand flex items-center justify-between px-3 py-2">
                 <span className="text-sm font-medium">
@@ -1238,6 +1255,7 @@ function ComposeDialog({
                   onClick={() => setSite(null)}
                   className="cg-focus"
                   style={{ color: "var(--ink-soft)" }}
+                  type="button"
                 >
                   <X size={15} />
                 </button>
@@ -1245,7 +1263,10 @@ function ComposeDialog({
             ) : (
               <div>
                 <SearchInput
-                  placeholder={i18n.t("ui.MessengerPage.buscarPuestoSitio")}
+                  placeholder={t(
+                    "ui.MessengerPage.vigilantesDeUnPuestoOpcional",
+                    "Vigilantes de un puesto (opcional)…",
+                  )}
                   value={siteQ}
                   onChange={(v) => setSiteQ(v)}
                 />
@@ -1263,6 +1284,7 @@ function ComposeDialog({
                           setSiteQ("");
                         }}
                         className="block w-full px-3 py-2 text-left text-sm hover:bg-muted/50"
+                        type="button"
                       >
                         {r.label}
                       </button>
@@ -1304,7 +1326,7 @@ function ComposeDialog({
   );
 }
 
-/** Slide-over panel: list group members, add (guard autocomplete), remove, resync. */
+/** Slide-over panel: list group members, add anyone (guard, team, client), remove, resync. */
 function MembersPanel({
   conversation,
   onClose,
@@ -1318,8 +1340,6 @@ function MembersPanel({
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [q, setQ] = useState("");
-  const [results, setResults] = useState<{ id: string; label: string }[]>([]);
 
   const load = useCallback(async () => {
     try {
@@ -1354,49 +1374,11 @@ function MembersPanel({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  useEffect(() => {
-    let active = true;
-    const t = setTimeout(async () => {
-      if (!q.trim()) {
-        setResults([]);
-        return;
-      }
-      try {
-        const res = await securityGuardService.autocomplete(q.trim(), 15);
-        const rows = Array.isArray(res) ? res : res?.rows || [];
-
-        if (active)
-          setResults(
-            rows
-              .filter(
-                (r: AcRow) => r && r.id && !String(r.id).startsWith("sg:"),
-              )
-              .map((r: AcRow) => ({
-                id: r.id,
-                label:
-                    r.label ||
-                    r.name ||
-                    i18n.t("dashboard.table.headers.guard", "Vigilante"),
-              })),
-          );
-      } catch {
-        /* ignore */
-      }
-    }, 300);
-
-    return () => {
-      active = false;
-      clearTimeout(t);
-    };
-  }, [q]);
-
   const addMember = async (userId: string) => {
     setBusy(true);
     try {
       const res = await messageService.addMembers(conversation.id, [userId]);
       setMembers(res?.rows || []);
-      setQ("");
-      setResults([]);
       onChanged();
     } catch (e: any) {
       toast.error(
@@ -1442,6 +1424,13 @@ function MembersPanel({
     }
   };
 
+  const tipoDeMiembro = (m: GroupMember) =>
+    m.participantType === "staff"
+      ? t("ui.MessengerPage.equipo", "Equipo")
+      : m.participantType === "client"
+        ? t("clients.client", "Cliente")
+        : t("dashboard.table.headers.guard", "Vigilante");
+
   return (
     <div
       className="fixed inset-0 z-50 flex justify-end"
@@ -1478,41 +1467,23 @@ function MembersPanel({
         </div>
         <div
           className="border-b p-3"
-          style={{ borderColor: "var(--hairline)" }}
+          style={{ borderColor: "var(--hairline)", opacity: busy ? 0.6 : 1 }}
         >
-          <div className="relative">
-            <UserPlus
-              size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2"
-              style={{ color: "var(--ink-faint)" }}
-            />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t(
-                "ui.Messenger.anadirVigilante",
-                "Añadir vigilante…",
-              )}
-              disabled={busy}
-              className="cg-input w-full py-2 pl-9 pr-3 text-sm"
-            />
+          <div className="flex items-center gap-2 pb-2 text-xs font-semibold" style={{ color: "var(--ink-soft)" }}>
+            <UserPlus size={14} />
+            {t("ui.MessengerPage.anadirMiembro", "Añadir miembro")}
           </div>
-          {results.length > 0 && (
-            <div
-              className="mt-2 max-h-40 overflow-auto rounded-xl border"
-              style={{ borderColor: "var(--hairline)" }}
-            >
-              {results.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => addMember(r.id)}
-                  className="block w-full px-3 py-2 text-left text-sm hover:bg-muted/50"
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-          )}
+          <PeoplePicker
+            soloConCuenta
+            excluir={members.map((m) => m.userId)}
+            placeholder={t(
+              "ui.MessengerPage.anadirPersona",
+              "Añadir vigilante, equipo o cliente…",
+            )}
+            onPick={(p) => {
+              if (p.userId && !busy) addMember(p.userId);
+            }}
+          />
           <button
             onClick={resync}
             disabled={busy}
@@ -1556,9 +1527,7 @@ function MembersPanel({
                     className="text-[10px]"
                     style={{ color: "var(--ink-faint)" }}
                   >
-                    {m.participantType === "staff"
-                      ? t("ui.ClientStaff.operador", "Operador")
-                      : t("dashboard.table.headers.guard", "Vigilante")}
+                    {tipoDeMiembro(m)}
                     {m.role === "admin" ? " · Admin" : ""}
                     {m.source === "auto" ? " · Auto" : ""}
                   </p>

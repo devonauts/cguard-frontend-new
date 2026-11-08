@@ -478,24 +478,9 @@
     "id": "mensajeria",
     "name": "Mensajería",
     "icon": "MessageSquare",
-    "expandable": true,
-    "subItems": [
-      {
-        "id": "msg-operativos",
-        "name": "Mensajes Operativos",
-        "path": "/messenger/operativos",
-        "permission": [
-          "messageRead"
-        ]
-      },
-      {
-        "id": "msg-clientes",
-        "name": "Mensajes de Clientes",
-        "path": "/messenger/clientes",
-        "permission": [
-          "messageRead"
-        ]
-      }
+    "path": "/messenger",
+    "permission": [
+      "messageRead"
     ]
   },
   {
