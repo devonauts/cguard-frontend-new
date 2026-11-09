@@ -67,6 +67,10 @@ export interface ShiftRecord {
    * ámbar y no en verde.
    */
   status?: string;
+  /** Hay un fichaje de este turno (lo pone `/scheduler/overview`). */
+  clockedIn?: boolean;
+  /** Cómo fue ese fichaje: 'ok' a tiempo, 'incidencia' tarde / sin salida… */
+  asistencia?: "ok" | "incidencia";
   guard?: Pick<GuardRef, "id" | "firstName" | "lastName">;
 }
 export interface ScheduleOverride {

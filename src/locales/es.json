@@ -7060,6 +7060,8 @@
       "dobletes.desc": "Oleadas, bonos, puntos, niveles y ranking de la reserva.",
       "patrones-rotacion": "Patrones de rotación",
       "patrones-rotacion.desc": "Los ciclos de trabajo y descanso: renombrar, archivar y ver dónde se usa cada uno.",
+      "colores-horario": "Colores del horario",
+      "colores-horario.desc": "El color de cada turno pasado según lo que pasó: completado, sin fichaje, doblaje, otro trabajador.",
       "computadoras": "Computadoras de escritorio",
       "computadoras.desc": "Aprueba o revoca cada computadora que usa la app de escritorio.",
       "app-escritorio": "App de escritorio",
@@ -8713,6 +8715,39 @@
     "required_fields": "Completa los campos obligatorios"
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Completado sin problema",
+      "incumplido": "No se cumplió (sin fichaje)",
+      "conIncidencia": "Con incidencia (tarde, salió antes o sin salida)",
+      "doblaje": "Completado con doblaje",
+      "cubiertoPorOtro": "Completado por otro trabajador",
+      "ayuda": {
+        "completado": "Fichó la entrada y la salida a tiempo.",
+        "incumplido": "Había turno y nadie fichó.",
+        "conIncidencia": "Fichó, pero llegó tarde, salió antes, no marcó la salida o quedó pendiente de revisar.",
+        "doblaje": "Lo cubrió alguien que dobló turno porque su relevo no llegó.",
+        "cubiertoPorOtro": "Lo cubrió otro trabajador (cobertura o refuerzo) y fichó."
+      },
+      "corto": {
+        "completado": "Completado",
+        "incumplido": "No cumplido",
+        "conIncidencia": "Incidencia",
+        "doblaje": "Doblaje",
+        "cubiertoPorOtro": "Otro trabajador"
+      },
+      "titulo": "Colores del horario",
+      "subtitulo": "Cuando un turno ya terminó, la celda del horario se pinta según lo que pasó. Elige el color de cada caso.",
+      "nota": "Se aplica a la hoja del horario. Lo que está por venir sigue con sus colores de siempre (D, N, L…), y las novedades (vacaciones, permiso, falta) conservan los suyos.",
+      "activo": "Pintar los turnos pasados según lo que pasó",
+      "activoAyuda": "Si lo apagas, el pasado se ve igual que el futuro.",
+      "porEvento": "Color de cada evento",
+      "restaurar": "Volver a los colores de fábrica",
+      "guardar": "Guardar colores",
+      "guardado": "Colores guardados.",
+      "errorCargar": "No se pudieron cargar los colores.",
+      "errorGuardar": "No se pudieron guardar los colores.",
+      "cambiarColores": "Cambiar los colores del horario"
+    },
     "horario": {
       "hDiurno": "{{h}}h Diurno",
       "hNocturno": "{{h}}h Nocturno",

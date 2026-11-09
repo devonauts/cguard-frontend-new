@@ -7591,6 +7591,8 @@
       "dobletes.desc": "Ondate, bonus, punti, livelli e classifica della riserva.",
       "patrones-rotacion": "Schemi di rotazione",
       "patrones-rotacion.desc": "I cicli di lavoro e riposo: rinominare, archiviare e vedere dove si usa ciascuno.",
+      "colores-horario": "Colori dell'orario",
+      "colores-horario.desc": "Il colore di ogni turno passato in base a ciò che è successo: completato, senza timbratura, turno doppio, altro lavoratore.",
       "computadoras": "Computer desktop",
       "computadoras.desc": "Approva o revoca ogni computer che usa l’app desktop.",
       "app-escritorio": "App desktop",
@@ -9271,6 +9273,39 @@
     }
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Completato senza problemi",
+      "incumplido": "Non svolto (senza timbratura)",
+      "conIncidencia": "Con anomalia (ritardo, uscita anticipata o senza uscita)",
+      "doblaje": "Completato con turno doppio",
+      "cubiertoPorOtro": "Completato da un altro lavoratore",
+      "ayuda": {
+        "completado": "Ha timbrato entrata e uscita in orario.",
+        "incumplido": "C'era un turno e nessuno ha timbrato.",
+        "conIncidencia": "Ha timbrato, ma in ritardo, è uscito prima, non ha timbrato l'uscita o è in attesa di verifica.",
+        "doblaje": "Coperto da qualcuno che ha fatto il doppio turno perché il cambio non è arrivato.",
+        "cubiertoPorOtro": "Coperto da un altro lavoratore (copertura o rinforzo) che ha timbrato."
+      },
+      "corto": {
+        "completado": "Completato",
+        "incumplido": "Non svolto",
+        "conIncidencia": "Anomalia",
+        "doblaje": "Turno doppio",
+        "cubiertoPorOtro": "Altro lavoratore"
+      },
+      "titulo": "Colori dell'orario",
+      "subtitulo": "Quando un turno è finito, la sua cella nell'orario prende il colore di ciò che è successo. Scegli il colore di ogni caso.",
+      "nota": "Vale per il foglio dell'orario. Ciò che deve ancora venire mantiene i colori di sempre (D, N, L…), e le assenze (ferie, permesso, assenza) mantengono i loro.",
+      "activo": "Colorare i turni passati in base a ciò che è successo",
+      "activoAyuda": "Se lo disattivi, il passato appare come il futuro.",
+      "porEvento": "Colore di ogni evento",
+      "restaurar": "Ripristina i colori predefiniti",
+      "guardar": "Salva colori",
+      "guardado": "Colori salvati.",
+      "errorCargar": "Impossibile caricare i colori.",
+      "errorGuardar": "Impossibile salvare i colori.",
+      "cambiarColores": "Cambia i colori dell'orario"
+    },
     "horario": {
       "hDiurno": "{{h}}h Diurno",
       "hNocturno": "{{h}}h Notturno",

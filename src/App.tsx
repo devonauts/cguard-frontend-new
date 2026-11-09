@@ -146,6 +146,9 @@ const PatronesDeRotacionPage = lazy(
 const JornadaPage = lazy(
   () => import("./pages/admin/Configuration/scheduling/JornadaPage"),
 );
+const ColoresDelHorarioPage = lazy(
+  () => import("./pages/admin/Configuration/scheduling/ColoresDelHorarioPage"),
+);
 // The desktop program: download page (everyone) and computer approvals (Settings).
 const EscritorioPage = lazy(() => import("./pages/escritorio/EscritorioPage"));
 const ComputadorasPage = lazy(
@@ -2802,6 +2805,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/setting/patrones-de-rotacion"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <ColoresDelHorarioPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/setting/colores-del-horario"
                               />
                               <Route
                                 element={

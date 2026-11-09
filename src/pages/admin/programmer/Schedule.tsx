@@ -62,6 +62,16 @@ import {
 } from "./pulsacionLarga";
 import SupervisionSection from "./SupervisionSection";
 import AllStaffSection from "./AllStaffSection";
+import {
+  COLORES_DEL_HORARIO_DEFAULTS,
+  ETIQUETA_DE_EVENTO,
+  EVENTOS_DEL_HORARIO,
+  estiloDeResultado,
+  resolverColores,
+  resultadoDelTurno,
+  type ColoresDelHorario,
+  type EventoDelHorario,
+} from "@/lib/coloresDelHorario";
 import AsignarAPuestoModal from "./AsignarAPuestoModal";
 import MonthStationBlock, {
   type BlockSel,
@@ -504,6 +514,14 @@ const vistaUsableAqui = (v: ViewMode): ViewMode => {
 
 type ViewMode = (typeof VISTAS)[number];
 type VistaDelHorario = "general" | "estaciones";
+/** Leyenda: el nombre corto de cada color del pasado. */
+const CORTO: Record<EventoDelHorario, string> = {
+  completado: "Completado",
+  incumplido: "No cumplido",
+  conIncidencia: "Incidencia",
+  doblaje: "Doblaje",
+  cubiertoPorOtro: "Otro trabajador",
+};
 const esVistaDelHorario = (v: any): v is VistaDelHorario =>
   v === "general" || v === "estaciones";
 const esVista = (v: any): v is ViewMode =>
@@ -597,6 +615,10 @@ export default function Schedule() {
   const [rotationStyles, setRotationStyles] = useState<RotationStyle[]>([]);
   const [guardsPool, setGuardsPool] = useState<GuardOption[]>([]);
   const [staffing, setStaffing] = useState<StaffingInfo | null>(null);
+  /** Colores del pasado (Configuración › Colores del horario). */
+  const [coloresHorario, setColoresHorario] = useState<ColoresDelHorario>(
+    COLORES_DEL_HORARIO_DEFAULTS,
+  );
   const [loading, setLoading] = useState(true); // initial load only
   /** The last load failed: say it instead of «no stations yet». */
   const [falloCarga, setFalloCarga] = useState(false);
@@ -1189,6 +1211,7 @@ export default function Schedule() {
         setAssignments(ov.assignments || []);
         setShifts(ov.shifts || []);
         setOverrides(ov.overrides || []);
+        setColoresHorario(resolverColores(ov.coloresDelHorario));
 
         const rots = rotRes?.rows || rotRes?.data?.rows || [];
 
@@ -1401,6 +1424,28 @@ export default function Schedule() {
   // porque empieza más tarde— y su propia casilla pasaba de «D» a «N»: el
   // horario mentía sobre el turno que de verdad le toca. El doblaje se ve donde
   // corresponde, en la píldora «2×» de la plaza que fue a cubrir.
+  /* Cada turno que YA TERMINÓ → qué pasó (completado, sin fichar, doblaje…).
+     La hora se toma al recalcular: tras cada carga, que es cuando cambia algo. */
+  const pasadoDe = useMemo(() => {
+    const m = new Map<string, EventoDelHorario>();
+
+    if (!coloresHorario.activo) return m;
+    /* Una empresa que no ficha con la app no tiene con qué juzgar el pasado:
+       sin un solo fichaje en lo cargado, todo saldría «no cumplido» en rojo.
+       Ahí no se pinta nada (medido: hay inquilinos con 0 fichajes en 183
+       turnos de dos semanas). */
+    if (!shifts.some((s) => s.clockedIn)) return m;
+    const ahora = Date.now();
+
+    for (const s of shifts) {
+      const r = resultadoDelTurno(s, ahora);
+
+      if (r) m.set(s.id, r);
+    }
+
+    return m;
+  }, [shifts, coloresHorario.activo]);
+
   const shiftByGuardDate = useMemo(() => {
     const m = new Map<string, ShiftRecord>();
 
@@ -6821,6 +6866,8 @@ export default function Schedule() {
                               >
                                 <MonthStationBlock
                                   assignmentsByPosition={assignmentsByPosition}
+                                  colores={coloresHorario}
+                                  pasadoDe={pasadoDe}
                                   cartaElegida={cartaElegida}
                                   colA={colA}
                                   colB={colB}
@@ -7331,6 +7378,7 @@ export default function Schedule() {
                                     const covStName =
                                       stationsById.get(covShift.stationId)
                                         ?.stationName || "";
+                                    const evSf = pasadoDe.get(covShift.id);
 
                                     return (
                                       <div
@@ -7342,13 +7390,24 @@ export default function Schedule() {
                                         pinte quien la pinte, fijo o sacafranco. */}
                                         <div
                                           className="flex flex-1 cursor-pointer flex-col items-center justify-center rounded"
-                                          style={codePill(code)}
-                                          title={t("ui.Schedule.cubreDobleClicParaQuitar", {
-                                            defaultValue:
-                                              "Cubre: {{estacion}} — {{codigo}} · doble clic para quitar la cobertura",
-                                            estacion: covStName,
-                                            codigo: CODE_LABEL[code],
-                                          })}
+                                          style={
+                                            evSf
+                                              ? estiloDeResultado(
+                                                  coloresHorario[evSf],
+                                                )
+                                              : codePill(code)
+                                          }
+                                          title={
+                                            t("ui.Schedule.cubreDobleClicParaQuitar", {
+                                              defaultValue:
+                                                "Cubre: {{estacion}} — {{codigo}} · doble clic para quitar la cobertura",
+                                              estacion: covStName,
+                                              codigo: CODE_LABEL[code],
+                                            }) +
+                                            (evSf
+                                              ? ` · ${t(ETIQUETA_DE_EVENTO[evSf][0], ETIQUETA_DE_EVENTO[evSf][1])}`
+                                              : "")
+                                          }
                                           onDoubleClick={() =>
                                             removeSfCoverage(covShift)
                                           }
@@ -7488,6 +7547,32 @@ export default function Schedule() {
                     </span>
                   ))}
                 </span>
+              )}
+              {/* Y los colores del pasado, con enlace a donde se eligen. */}
+              {view === "month" && coloresHorario.activo && (
+                <Link
+                  className="hidden items-center gap-2 rounded px-1 hover:underline xl:flex"
+                  title={t(
+                    "ui.ColoresDelHorario.cambiarColores",
+                    "Cambiar los colores del horario",
+                  )}
+                  to="/setting/colores-del-horario"
+                >
+                  {EVENTOS_DEL_HORARIO.map((ev) => (
+                    <span
+                      key={ev}
+                      className="inline-flex items-center gap-1 whitespace-nowrap"
+                      title={t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1])}
+                    >
+                      <span
+                        aria-hidden
+                        className="inline-block size-2.5 rounded-sm"
+                        style={{ background: coloresHorario[ev] }}
+                      />
+                      {t(`ui.ColoresDelHorario.corto.${ev}`, CORTO[ev])}
+                    </span>
+                  ))}
+                </Link>
               )}
             </div>
           </>

@@ -7613,6 +7613,8 @@
       "dobletes.desc": "Tury, premie, punkty, poziomy i ranking rezerwy.",
       "patrones-rotacion": "Wzorce rotacji",
       "patrones-rotacion.desc": "Cykle pracy i odpoczynku: zmiana nazwy, archiwizacja i gdzie każdy jest używany.",
+      "colores-horario": "Kolory grafiku",
+      "colores-horario.desc": "Kolor każdej minionej zmiany według tego, co się wydarzyło: wykonane, brak odbicia, podwójna zmiana, inny pracownik.",
       "computadoras": "Komputery z aplikacją desktopową",
       "computadoras.desc": "Zatwierdzaj lub unieważniaj komputery, na których działa aplikacja desktopowa.",
       "app-escritorio": "Aplikacja desktopowa",
@@ -9293,6 +9295,39 @@
     }
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Wykonane bez problemów",
+      "incumplido": "Niewykonane (brak odbicia)",
+      "conIncidencia": "Z incydentem (spóźnienie, wcześniejsze wyjście lub brak wyjścia)",
+      "doblaje": "Wykonane z podwójną zmianą",
+      "cubiertoPorOtro": "Wykonane przez innego pracownika",
+      "ayuda": {
+        "completado": "Odbił wejście i wyjście na czas.",
+        "incumplido": "Była zmiana i nikt się nie odbił.",
+        "conIncidencia": "Odbił, ale spóźnił się, wyszedł wcześniej, nie odbił wyjścia lub czeka na weryfikację.",
+        "doblaje": "Pokryte przez kogoś, kto został na drugą zmianę, bo zmiennik nie przyszedł.",
+        "cubiertoPorOtro": "Pokryte przez innego pracownika (zastępstwo lub wsparcie), który się odbił."
+      },
+      "corto": {
+        "completado": "Wykonane",
+        "incumplido": "Niewykonane",
+        "conIncidencia": "Incydent",
+        "doblaje": "Podwójna zmiana",
+        "cubiertoPorOtro": "Inny pracownik"
+      },
+      "titulo": "Kolory grafiku",
+      "subtitulo": "Gdy zmiana się skończy, jej komórka w grafiku dostaje kolor tego, co się wydarzyło. Wybierz kolor dla każdego przypadku.",
+      "nota": "Dotyczy arkusza grafiku. To, co nadchodzi, zachowuje zwykłe kolory (D, N, L…), a nieobecności (urlop, zwolnienie, absencja) swoje.",
+      "activo": "Kolorować minione zmiany według tego, co się wydarzyło",
+      "activoAyuda": "Jeśli to wyłączysz, przeszłość wygląda jak przyszłość.",
+      "porEvento": "Kolor każdego zdarzenia",
+      "restaurar": "Przywróć kolory domyślne",
+      "guardar": "Zapisz kolory",
+      "guardado": "Kolory zapisane.",
+      "errorCargar": "Nie udało się wczytać kolorów.",
+      "errorGuardar": "Nie udało się zapisać kolorów.",
+      "cambiarColores": "Zmień kolory grafiku"
+    },
     "horario": {
       "hDiurno": "{{h}}h Dzień",
       "hNocturno": "{{h}}h Noc",

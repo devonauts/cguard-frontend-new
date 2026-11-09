@@ -7591,6 +7591,8 @@
       "dobletes.desc": "Rondes, bonussen, punten, niveaus en ranglijst van de reserve.",
       "patrones-rotacion": "Rotatiepatronen",
       "patrones-rotacion.desc": "De werk- en rustcycli: hernoemen, archiveren en zien waar elk wordt gebruikt.",
+      "colores-horario": "Kleuren van het rooster",
+      "colores-horario.desc": "De kleur van elke voorbije dienst naar wat er gebeurde: voltooid, niet ingeklokt, dubbele dienst, andere medewerker.",
       "computadoras": "Desktopcomputers",
       "computadoras.desc": "Keur elke computer goed die de desktop-app gebruikt, of trek hem in.",
       "app-escritorio": "Desktop-app",
@@ -9271,6 +9273,39 @@
     }
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Zonder problemen voltooid",
+      "incumplido": "Niet gewerkt (niet ingeklokt)",
+      "conIncidencia": "Met incident (te laat, eerder weg of niet uitgeklokt)",
+      "doblaje": "Voltooid met een dubbele dienst",
+      "cubiertoPorOtro": "Voltooid door een andere medewerker",
+      "ayuda": {
+        "completado": "Op tijd in- en uitgeklokt.",
+        "incumplido": "Er was een dienst en niemand klokte in.",
+        "conIncidencia": "Ingeklokt, maar te laat, eerder weg, niet uitgeklokt of wacht op controle.",
+        "doblaje": "Gedekt door iemand die dubbel werkte omdat de aflossing niet kwam.",
+        "cubiertoPorOtro": "Gedekt door een andere medewerker (vervanging of versterking) die inklokte."
+      },
+      "corto": {
+        "completado": "Voltooid",
+        "incumplido": "Niet gewerkt",
+        "conIncidencia": "Incident",
+        "doblaje": "Dubbele dienst",
+        "cubiertoPorOtro": "Andere medewerker"
+      },
+      "titulo": "Kleuren van het rooster",
+      "subtitulo": "Als een dienst voorbij is, krijgt de cel in het rooster de kleur van wat er gebeurde. Kies de kleur voor elk geval.",
+      "nota": "Geldt voor het roosterblad. Komende diensten houden hun gewone kleuren (D, N, L…), en afwezigheden (vakantie, verlof, verzuim) de hunne.",
+      "activo": "Voorbije diensten kleuren naar wat er gebeurde",
+      "activoAyuda": "Als je het uitzet, ziet het verleden eruit als de toekomst.",
+      "porEvento": "Kleur per gebeurtenis",
+      "restaurar": "Standaardkleuren herstellen",
+      "guardar": "Kleuren opslaan",
+      "guardado": "Kleuren opgeslagen.",
+      "errorCargar": "Kon de kleuren niet laden.",
+      "errorGuardar": "Kon de kleuren niet opslaan.",
+      "cambiarColores": "Kleuren van het rooster wijzigen"
+    },
     "horario": {
       "hDiurno": "{{h}}u Dag",
       "hNocturno": "{{h}}u Nacht",

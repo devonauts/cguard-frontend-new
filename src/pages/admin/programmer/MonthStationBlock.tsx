@@ -24,6 +24,12 @@ import {
   codePill,
   columnRules,
 } from "./codeTones";
+import {
+  ETIQUETA_DE_EVENTO,
+  estiloDeResultado,
+  type ColoresDelHorario,
+  type EventoDelHorario,
+} from "@/lib/coloresDelHorario";
 import { COL_W } from "./gridBand";
 
 import { Button } from "@/components/ui/button";
@@ -230,13 +236,16 @@ export type MonthStationBlockProps = {
    */
   shiftByGuardDate: Map<
     string,
-    { startTime?: string | Date | null; status?: string }
+    { id?: string; startTime?: string | Date | null; status?: string }
   >;
   /** Igual, pero por vigilante Y plaza: desempata a quien dobla. */
   shiftByGuardPosDate: Map<
     string,
-    { startTime?: string | Date | null; status?: string }
+    { id?: string; startTime?: string | Date | null; status?: string }
   >;
+  /** Turnos que ya terminaron → qué pasó (vacío si la empresa lo apagó). */
+  pasadoDe: Map<string, EventoDelHorario>;
+  colores: ColoresDelHorario;
   station: Station;
   stationPositions: StationPosition[];
   stationAlert: StationAlert | undefined;
@@ -287,8 +296,13 @@ function MonthStationBlockInner({
   sel,
   cartaElegida,
   h,
+  pasadoDe,
+  colores,
 }: MonthStationBlockProps) {
   const { t, i18n } = useTranslation();
+  /** « · Completado sin problema» para el título de una celda pasada. */
+  const notaDelPasado = (ev: EventoDelHorario | undefined) =>
+    ev ? ` · ${t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1])}` : "";
   const hasPositions = stationPositions.length > 0;
 
   /* Horas distintas entre los fijos ⇒ cada fila es dueña de su mitad (diurno
@@ -419,7 +433,11 @@ function MonthStationBlockInner({
    * Ahora se apilan todas. Cada una arrastra y abre SU hoja del día.
    */
   const pildorasCobertura = (lista: CoberturaDia[], dateStr: string) =>
-    lista.map((c) => (
+    lista.map((c) => {
+      // Ya pasó: el color dice lo que pasó (doblaje, otro trabajador, sin fichar…).
+      const ev = pasadoDe.get(c.id);
+
+      return (
       // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
       // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
       // pero NO está en orden — hay una persona encadenando dos turnos.
@@ -427,13 +445,13 @@ function MonthStationBlockInner({
         key={c.id}
         draggable
         className="flex min-h-[16px] flex-1 cursor-grab flex-col items-center justify-center rounded active:cursor-grabbing"
-        style={toneCard(
-          c.ext ? "warn" : "ok",
-          c.ext ? 18 : 12,
-          c.ext ? 34 : 22,
-        )}
+        style={
+          ev
+            ? estiloDeResultado(colores[ev])
+            : toneCard(c.ext ? "warn" : "ok", c.ext ? 18 : 12, c.ext ? 34 : 22)
+        }
         title={
-          c.ext
+          (c.ext
             ? t("ui.MonthStationBlock.doblaTurno", {
                 defaultValue: "{{nombre}} DOBLA turno ({{codigo}})",
                 nombre: c.fullName,
@@ -444,7 +462,7 @@ function MonthStationBlockInner({
                   "Cubre {{nombre}} — {{codigo}} · arrastra para moverlo · doble clic para editar el día",
                 nombre: c.fullName,
                 codigo: CODE_LABEL[c.code] ?? c.code,
-              })
+              })) + notaDelPasado(ev)
         }
         onDragStart={(e) => h.onCoverageDragStart(e, c.id)}
         /* La cobertura también es la hoja de asistencia de alguien: se abre igual
@@ -462,7 +480,8 @@ function MonthStationBlockInner({
         </span>
         <span className="text-[8px] leading-none opacity-80">{c.name}</span>
       </div>
-    ));
+      );
+    });
 
   const renderFijoCell = (
     pos: StationPosition,
@@ -718,6 +737,9 @@ function MonthStationBlockInner({
               const is24h =
                 station.scheduleType === "24h" && !horasDecidenMitad;
               const pillCode = is24h && code !== "N" ? "24" : code;
+              // Ya terminó: se pinta lo que pasó, no el plan.
+              const ev =
+                !esAprendiz && suTurno?.id ? pasadoDe.get(suTurno.id) : undefined;
 
               return (
                 <div
@@ -725,7 +747,7 @@ function MonthStationBlockInner({
                   {...cartaProps}
                   className={`flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded hover:opacity-80${anillo}`}
                   style={{
-                    ...codePill(pillCode),
+                    ...(ev ? estiloDeResultado(colores[ev]) : codePill(pillCode)),
                     borderLeft: `2px solid ${color}`,
                     // El aprendiz se distingue del titular de un vistazo: misma
                     // letra —trabaja el mismo día— pero apagado y punteado,
@@ -750,7 +772,7 @@ function MonthStationBlockInner({
                             "{{nombre}} — {{codigo}}{{extra}} (doble clic para novedad)",
                           nombre: guardName,
                           codigo: CODE_LABEL[code] ?? code,
-                          extra: is24h ? " · 24 h" : "",
+                          extra: (is24h ? " · 24 h" : "") + notaDelPasado(ev),
                         })
                   }
                   onDoubleClick={() =>

@@ -7060,6 +7060,8 @@
       "dobletes.desc": "Waves, bonuses, points, levels and ranking of the reserve.",
       "patrones-rotacion": "Rotation patterns",
       "patrones-rotacion.desc": "Work and rest cycles: rename, archive and see where each one is used.",
+      "colores-horario": "Schedule colors",
+      "colores-horario.desc": "The color of each past shift by what happened: completed, no clock-in, double shift, another worker.",
       "computadoras": "Desktop computers",
       "computadoras.desc": "Approve or revoke each computer that uses the desktop app.",
       "app-escritorio": "Desktop app",
@@ -8713,6 +8715,39 @@
     "required_fields": "Please fill in the required fields"
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Completed without issues",
+      "incumplido": "Not worked (no clock-in)",
+      "conIncidencia": "With an issue (late, left early or no clock-out)",
+      "doblaje": "Completed with a double shift",
+      "cubiertoPorOtro": "Completed by another worker",
+      "ayuda": {
+        "completado": "Clocked in and out on time.",
+        "incumplido": "There was a shift and nobody clocked in.",
+        "conIncidencia": "Clocked in, but arrived late, left early, did not clock out or is pending review.",
+        "doblaje": "Covered by someone who doubled because their relief did not arrive.",
+        "cubiertoPorOtro": "Covered by another worker (coverage or reinforcement) who clocked in."
+      },
+      "corto": {
+        "completado": "Completed",
+        "incumplido": "Not worked",
+        "conIncidencia": "Issue",
+        "doblaje": "Double shift",
+        "cubiertoPorOtro": "Another worker"
+      },
+      "titulo": "Schedule colors",
+      "subtitulo": "Once a shift is over, its schedule cell is painted by what happened. Choose the color for each case.",
+      "nota": "Applies to the schedule sheet. Upcoming shifts keep their usual colors (D, N, L…), and time-off codes (vacation, leave, absence) keep theirs.",
+      "activo": "Paint past shifts by what happened",
+      "activoAyuda": "If you turn it off, the past looks the same as the future.",
+      "porEvento": "Color for each event",
+      "restaurar": "Restore default colors",
+      "guardar": "Save colors",
+      "guardado": "Colors saved.",
+      "errorCargar": "Could not load the colors.",
+      "errorGuardar": "Could not save the colors.",
+      "cambiarColores": "Change the schedule colors"
+    },
     "horario": {
       "hDiurno": "{{h}}h Day",
       "hNocturno": "{{h}}h Night",

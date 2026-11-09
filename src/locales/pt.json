@@ -2602,6 +2602,8 @@
       "dobletes.desc": "Rodadas, bônus, pontos, níveis e ranking da reserva.",
       "patrones-rotacion": "Padrões de rotação",
       "patrones-rotacion.desc": "Os ciclos de trabalho e descanso: renomear, arquivar e ver onde cada um é usado.",
+      "colores-horario": "Cores da escala",
+      "colores-horario.desc": "A cor de cada turno passado conforme o que aconteceu: concluído, sem marcação, dobra, outro trabalhador.",
       "computadoras": "Computadores desktop",
       "computadoras.desc": "Aprove ou revogue cada computador que usa o app para desktop.",
       "app-escritorio": "App para desktop",
@@ -8713,6 +8715,39 @@
     "required_fields": "Preencha os campos obrigatórios"
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Concluído sem problema",
+      "incumplido": "Não cumprido (sem marcação)",
+      "conIncidencia": "Com ocorrência (atraso, saída antecipada ou sem saída)",
+      "doblaje": "Concluído com dobra",
+      "cubiertoPorOtro": "Concluído por outro trabalhador",
+      "ayuda": {
+        "completado": "Marcou entrada e saída no horário.",
+        "incumplido": "Havia turno e ninguém marcou.",
+        "conIncidencia": "Marcou, mas chegou atrasado, saiu antes, não marcou a saída ou ficou pendente de revisão.",
+        "doblaje": "Coberto por alguém que dobrou o turno porque o substituto não chegou.",
+        "cubiertoPorOtro": "Coberto por outro trabalhador (cobertura ou reforço) que marcou."
+      },
+      "corto": {
+        "completado": "Concluído",
+        "incumplido": "Não cumprido",
+        "conIncidencia": "Ocorrência",
+        "doblaje": "Dobra",
+        "cubiertoPorOtro": "Outro trabalhador"
+      },
+      "titulo": "Cores da escala",
+      "subtitulo": "Quando um turno termina, a célula da escala é pintada conforme o que aconteceu. Escolha a cor de cada caso.",
+      "nota": "Vale para a planilha da escala. O que está por vir mantém as cores de sempre (D, N, L…), e as ausências (férias, licença, falta) mantêm as suas.",
+      "activo": "Pintar os turnos passados conforme o que aconteceu",
+      "activoAyuda": "Se desligar, o passado fica igual ao futuro.",
+      "porEvento": "Cor de cada evento",
+      "restaurar": "Voltar às cores padrão",
+      "guardar": "Salvar cores",
+      "guardado": "Cores salvas.",
+      "errorCargar": "Não foi possível carregar as cores.",
+      "errorGuardar": "Não foi possível salvar as cores.",
+      "cambiarColores": "Mudar as cores da escala"
+    },
     "horario": {
       "hDiurno": "{{h}}h Diurno",
       "hNocturno": "{{h}}h Noturno",

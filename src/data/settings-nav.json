@@ -158,6 +158,14 @@
             "keywords": "patron patrones rotacion ciclo 4x4 2x2 dia noche libre descanso secuencia semanal lunes a viernes turno archivar renombrar"
           },
           {
+            "id": "colores-horario",
+            "label": "Colores del horario",
+            "path": "/setting/colores-del-horario",
+            "icon": "Palette",
+            "desc": "El color de cada turno pasado según lo que pasó: completado, sin fichaje, doblaje, otro trabajador.",
+            "keywords": "color colores horario celda pasado completado gris rojo cafe doblaje cubierto otro trabajador incidencia tarde fichaje leyenda"
+          },
+          {
             "id": "festivos",
             "label": "Festivos",
             "path": "/setting/festivos",

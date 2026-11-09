@@ -7591,6 +7591,8 @@
       "dobletes.desc": "Wellen, Boni, Punkte, Stufen und Rangliste der Reserve.",
       "patrones-rotacion": "Rotationsmuster",
       "patrones-rotacion.desc": "Arbeits- und Ruhezyklen: umbenennen, archivieren und sehen, wo jedes verwendet wird.",
+      "colores-horario": "Farben des Dienstplans",
+      "colores-horario.desc": "Die Farbe jeder vergangenen Schicht nach dem Ereignis: erledigt, keine Stempelung, Doppelschicht, andere Person.",
       "computadoras": "Desktop-Computer",
       "computadoras.desc": "Geben Sie jeden Computer frei, der die Desktop-App nutzt, oder widerrufen Sie ihn.",
       "app-escritorio": "Desktop-App",
@@ -9271,6 +9273,39 @@
     }
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Ohne Probleme erledigt",
+      "incumplido": "Nicht erfüllt (keine Stempelung)",
+      "conIncidencia": "Mit Vorfall (verspätet, früher gegangen oder ohne Ausstempeln)",
+      "doblaje": "Mit Doppelschicht erledigt",
+      "cubiertoPorOtro": "Von einer anderen Person erledigt",
+      "ayuda": {
+        "completado": "Pünktlich ein- und ausgestempelt.",
+        "incumplido": "Es gab eine Schicht und niemand hat gestempelt.",
+        "conIncidencia": "Gestempelt, aber verspätet, früher gegangen, nicht ausgestempelt oder in Prüfung.",
+        "doblaje": "Von jemandem übernommen, der doppelt gearbeitet hat, weil die Ablösung nicht kam.",
+        "cubiertoPorOtro": "Von einer anderen Person übernommen (Vertretung oder Verstärkung), die gestempelt hat."
+      },
+      "corto": {
+        "completado": "Erledigt",
+        "incumplido": "Nicht erfüllt",
+        "conIncidencia": "Vorfall",
+        "doblaje": "Doppelschicht",
+        "cubiertoPorOtro": "Andere Person"
+      },
+      "titulo": "Farben des Dienstplans",
+      "subtitulo": "Ist eine Schicht vorbei, wird ihre Zelle im Dienstplan nach dem Ereignis eingefärbt. Wähle die Farbe für jeden Fall.",
+      "nota": "Gilt für das Dienstplan-Blatt. Kommende Schichten behalten ihre üblichen Farben (D, N, L…), Abwesenheiten (Urlaub, Freistellung, Fehltag) ihre eigenen.",
+      "activo": "Vergangene Schichten nach dem Ereignis einfärben",
+      "activoAyuda": "Wenn du es ausschaltest, sieht die Vergangenheit aus wie die Zukunft.",
+      "porEvento": "Farbe je Ereignis",
+      "restaurar": "Standardfarben wiederherstellen",
+      "guardar": "Farben speichern",
+      "guardado": "Farben gespeichert.",
+      "errorCargar": "Die Farben konnten nicht geladen werden.",
+      "errorGuardar": "Die Farben konnten nicht gespeichert werden.",
+      "cambiarColores": "Farben des Dienstplans ändern"
+    },
     "horario": {
       "hDiurno": "{{h}}h Tag",
       "hNocturno": "{{h}}h Nacht",

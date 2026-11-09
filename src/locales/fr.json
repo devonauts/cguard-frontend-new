@@ -7591,6 +7591,8 @@
       "dobletes.desc": "Vagues, primes, points, niveaux et classement de la réserve.",
       "patrones-rotacion": "Modèles de rotation",
       "patrones-rotacion.desc": "Les cycles de travail et de repos : renommer, archiver et voir où chacun est utilisé.",
+      "colores-horario": "Couleurs du planning",
+      "colores-horario.desc": "La couleur de chaque service passé selon ce qui s'est passé : terminé, sans pointage, doublage, autre agent.",
       "computadoras": "Ordinateurs de bureau",
       "computadoras.desc": "Approuvez ou révoquez chaque ordinateur qui utilise l’application de bureau.",
       "app-escritorio": "Application de bureau",
@@ -9271,6 +9273,39 @@
     }
   },
   "ui": {
+    "ColoresDelHorario": {
+      "completado": "Terminé sans problème",
+      "incumplido": "Non effectué (sans pointage)",
+      "conIncidencia": "Avec incident (retard, départ anticipé ou sans sortie)",
+      "doblaje": "Terminé avec un doublage",
+      "cubiertoPorOtro": "Terminé par un autre agent",
+      "ayuda": {
+        "completado": "A pointé l'entrée et la sortie à l'heure.",
+        "incumplido": "Il y avait un service et personne n'a pointé.",
+        "conIncidencia": "A pointé, mais en retard, est parti plus tôt, n'a pas pointé la sortie ou est en attente de vérification.",
+        "doblaje": "Couvert par quelqu'un qui a doublé parce que sa relève n'est pas arrivée.",
+        "cubiertoPorOtro": "Couvert par un autre agent (couverture ou renfort) qui a pointé."
+      },
+      "corto": {
+        "completado": "Terminé",
+        "incumplido": "Non effectué",
+        "conIncidencia": "Incident",
+        "doblaje": "Doublage",
+        "cubiertoPorOtro": "Autre agent"
+      },
+      "titulo": "Couleurs du planning",
+      "subtitulo": "Une fois un service terminé, sa case du planning prend la couleur de ce qui s'est passé. Choisissez la couleur de chaque cas.",
+      "nota": "S'applique à la feuille du planning. Ce qui est à venir garde ses couleurs habituelles (D, N, L…), et les absences (congés, permission, absence) gardent les leurs.",
+      "activo": "Colorer les services passés selon ce qui s'est passé",
+      "activoAyuda": "Si vous le désactivez, le passé ressemble au futur.",
+      "porEvento": "Couleur de chaque événement",
+      "restaurar": "Revenir aux couleurs d'origine",
+      "guardar": "Enregistrer les couleurs",
+      "guardado": "Couleurs enregistrées.",
+      "errorCargar": "Impossible de charger les couleurs.",
+      "errorGuardar": "Impossible d'enregistrer les couleurs.",
+      "cambiarColores": "Modifier les couleurs du planning"
+    },
     "horario": {
       "hDiurno": "{{h}}h Jour",
       "hNocturno": "{{h}}h Nuit",
