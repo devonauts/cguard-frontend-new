@@ -27,7 +27,7 @@ const tenantId = () => localStorage.getItem("tenantId") || "";
 const AYUDA: Record<EventoDelHorario, [string, string]> = {
   completado: [
     "ui.ColoresDelHorario.ayuda.completado",
-    "Fichó la entrada y la salida a tiempo.",
+    "Fichó entrada y salida: a tiempo, con horas extra o aprobado por la oficina.",
   ],
   incumplido: [
     "ui.ColoresDelHorario.ayuda.incumplido",

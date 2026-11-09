@@ -1211,7 +1211,16 @@ export default function Schedule() {
         setAssignments(ov.assignments || []);
         setShifts(ov.shifts || []);
         setOverrides(ov.overrides || []);
-        setColoresHorario(resolverColores(ov.coloresDelHorario));
+        {
+          const colores = resolverColores(ov.coloresDelHorario);
+
+          /* El servidor no pudo leer TODOS los fichajes: pintar con un mapa a
+             medias diría «no cumplido» de turnos que sí se ficharon. Esta
+             carga no juzga el pasado; la siguiente lo vuelve a intentar. */
+          setColoresHorario(
+            ov.asistenciaCompleta === false ? { ...colores, activo: false } : colores,
+          );
+        }
 
         const rots = rotRes?.rows || rotRes?.data?.rows || [];
 

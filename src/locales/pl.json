@@ -9302,7 +9302,7 @@
       "doblaje": "Wykonane z podwójną zmianą",
       "cubiertoPorOtro": "Wykonane przez innego pracownika",
       "ayuda": {
-        "completado": "Odbił wejście i wyjście na czas.",
+        "completado": "Odbił wejście i wyjście: na czas, z nadgodzinami lub zatwierdzone przez biuro.",
         "incumplido": "Była zmiana i nikt się nie odbił.",
         "conIncidencia": "Odbił, ale spóźnił się, wyszedł wcześniej, nie odbił wyjścia lub czeka na weryfikację.",
         "doblaje": "Pokryte przez kogoś, kto został na drugą zmianę, bo zmiennik nie przyszedł.",

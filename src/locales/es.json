@@ -8722,7 +8722,7 @@
       "doblaje": "Completado con doblaje",
       "cubiertoPorOtro": "Completado por otro trabajador",
       "ayuda": {
-        "completado": "Fichó la entrada y la salida a tiempo.",
+        "completado": "Fichó entrada y salida: a tiempo, con horas extra o aprobado por la oficina.",
         "incumplido": "Había turno y nadie fichó.",
         "conIncidencia": "Fichó, pero llegó tarde, salió antes, no marcó la salida o quedó pendiente de revisar.",
         "doblaje": "Lo cubrió alguien que dobló turno porque su relevo no llegó.",

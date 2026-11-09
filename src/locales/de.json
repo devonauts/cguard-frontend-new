@@ -9280,7 +9280,7 @@
       "doblaje": "Mit Doppelschicht erledigt",
       "cubiertoPorOtro": "Von einer anderen Person erledigt",
       "ayuda": {
-        "completado": "Pünktlich ein- und ausgestempelt.",
+        "completado": "Ein- und ausgestempelt: pünktlich, mit Überstunden oder vom Büro genehmigt.",
         "incumplido": "Es gab eine Schicht und niemand hat gestempelt.",
         "conIncidencia": "Gestempelt, aber verspätet, früher gegangen, nicht ausgestempelt oder in Prüfung.",
         "doblaje": "Von jemandem übernommen, der doppelt gearbeitet hat, weil die Ablösung nicht kam.",

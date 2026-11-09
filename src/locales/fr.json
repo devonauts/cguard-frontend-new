@@ -9280,7 +9280,7 @@
       "doblaje": "Terminé avec un doublage",
       "cubiertoPorOtro": "Terminé par un autre agent",
       "ayuda": {
-        "completado": "A pointé l'entrée et la sortie à l'heure.",
+        "completado": "A pointé l'entrée et la sortie : à l'heure, avec des heures supplémentaires ou approuvé par le bureau.",
         "incumplido": "Il y avait un service et personne n'a pointé.",
         "conIncidencia": "A pointé, mais en retard, est parti plus tôt, n'a pas pointé la sortie ou est en attente de vérification.",
         "doblaje": "Couvert par quelqu'un qui a doublé parce que sa relève n'est pas arrivée.",

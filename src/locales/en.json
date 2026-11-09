@@ -8722,7 +8722,7 @@
       "doblaje": "Completed with a double shift",
       "cubiertoPorOtro": "Completed by another worker",
       "ayuda": {
-        "completado": "Clocked in and out on time.",
+        "completado": "Clocked in and out: on time, with overtime or approved by the office.",
         "incumplido": "There was a shift and nobody clocked in.",
         "conIncidencia": "Clocked in, but arrived late, left early, did not clock out or is pending review.",
         "doblaje": "Covered by someone who doubled because their relief did not arrive.",

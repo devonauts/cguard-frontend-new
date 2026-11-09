@@ -8722,7 +8722,7 @@
       "doblaje": "Concluído com dobra",
       "cubiertoPorOtro": "Concluído por outro trabalhador",
       "ayuda": {
-        "completado": "Marcou entrada e saída no horário.",
+        "completado": "Marcou entrada e saída: no horário, com horas extras ou aprovado pelo escritório.",
         "incumplido": "Havia turno e ninguém marcou.",
         "conIncidencia": "Marcou, mas chegou atrasado, saiu antes, não marcou a saída ou ficou pendente de revisão.",
         "doblaje": "Coberto por alguém que dobrou o turno porque o substituto não chegou.",

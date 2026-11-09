@@ -9280,7 +9280,7 @@
       "doblaje": "Completato con turno doppio",
       "cubiertoPorOtro": "Completato da un altro lavoratore",
       "ayuda": {
-        "completado": "Ha timbrato entrata e uscita in orario.",
+        "completado": "Ha timbrato entrata e uscita: in orario, con straordinari o approvato dall'ufficio.",
         "incumplido": "C'era un turno e nessuno ha timbrato.",
         "conIncidencia": "Ha timbrato, ma in ritardo, è uscito prima, non ha timbrato l'uscita o è in attesa di verifica.",
         "doblaje": "Coperto da qualcuno che ha fatto il doppio turno perché il cambio non è arrivato.",

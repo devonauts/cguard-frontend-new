@@ -9280,7 +9280,7 @@
       "doblaje": "Voltooid met een dubbele dienst",
       "cubiertoPorOtro": "Voltooid door een andere medewerker",
       "ayuda": {
-        "completado": "Op tijd in- en uitgeklokt.",
+        "completado": "In- en uitgeklokt: op tijd, met overuren of goedgekeurd door het kantoor.",
         "incumplido": "Er was een dienst en niemand klokte in.",
         "conIncidencia": "Ingeklokt, maar te laat, eerder weg, niet uitgeklokt of wacht op controle.",
         "doblaje": "Gedekt door iemand die dubbel werkte omdat de aflossing niet kwam.",
