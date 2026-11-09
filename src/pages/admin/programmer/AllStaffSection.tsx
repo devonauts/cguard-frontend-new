@@ -17,8 +17,8 @@ import { codePill, CODE_LABEL, columnRules, tonePill, type Tone } from "./codeTo
 
 import { ApiService } from "@/services/api/apiService";
 import {
-  ETIQUETA_DE_EVENTO,
   estiloDeResultado,
+  textoDelPasado,
   type ColoresDelHorario,
 } from "@/lib/coloresDelHorario";
 import { SearchInput, Segmented } from "@/components/kit";
@@ -336,7 +336,7 @@ function AllStaffSection({
 
     const pasado =
       d.resultado && colores?.activo
-        ? t(ETIQUETA_DE_EVENTO[d.resultado][0], ETIQUETA_DE_EVENTO[d.resultado][1])
+        ? textoDelPasado(t, d.resultado, d.motivos)
         : null;
 
     return [p.name, ds, que, donde, pasado].filter(Boolean).join(" · ");

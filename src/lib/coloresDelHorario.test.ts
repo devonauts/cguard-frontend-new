@@ -4,6 +4,7 @@ import {
   COLORES_DEL_HORARIO_DEFAULTS,
   resolverColores,
   resultadoDelTurno,
+  textoDelPasado,
 } from "./coloresDelHorario";
 
 const AHORA = Date.parse("2026-11-08T12:00:00Z");
@@ -50,5 +51,26 @@ describe("resolverColores", () => {
     expect(c.doblaje).toBe("#aa5500");
     expect(c.incumplido).toBe(COLORES_DEL_HORARIO_DEFAULTS.incumplido);
     expect(resolverColores(null)).toEqual(COLORES_DEL_HORARIO_DEFAULTS);
+  });
+});
+
+describe("textoDelPasado — el título de una celda pasada", () => {
+  const t = ((k: string, d?: string) =>
+    ({
+      "nomina.excepcion.late_arrival": "Llegada tarde",
+      "nomina.excepcion.outside_geofence": "Fuera de geocerca",
+    })[k] ?? d ?? k) as any;
+
+  it("la incidencia dice el motivo, con los textos de Nómina", () => {
+    expect(textoDelPasado(t, "conIncidencia", ["late_arrival", "outside_geofence"])).toBe(
+      "Con incidencia (tarde, salió antes o sin salida): Llegada tarde, Fuera de geocerca",
+    );
+  });
+
+  it("sin motivos, o en otro evento, sólo la etiqueta", () => {
+    expect(textoDelPasado(t, "conIncidencia", [])).toBe(
+      "Con incidencia (tarde, salió antes o sin salida)",
+    );
+    expect(textoDelPasado(t, "completado", ["late_arrival"])).toBe("Completado sin problema");
   });
 });

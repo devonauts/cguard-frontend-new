@@ -41,6 +41,8 @@ export interface DiaDePersona {
   lunch?: { start: string; end: string } | null;
   /** Ya pasó: qué pasó contra el fichaje (Colores del horario). */
   resultado?: EventoDelHorario;
+  /** Con incidencia: por qué (códigos de attendanceException.type). */
+  motivos?: string[];
 }
 
 export interface PersonaDelHorario {
@@ -128,6 +130,9 @@ function diaLimpio(d: any): DiaDePersona | null {
     absence: AUSENCIAS.includes(d?.absence) ? d.absence : null,
     ...(EVENTOS_DEL_HORARIO.includes(d?.resultado)
       ? { resultado: d.resultado as EventoDelHorario }
+      : {}),
+    ...(Array.isArray(d?.motivos) && d.motivos.length
+      ? { motivos: d.motivos.filter((m: unknown) => typeof m === "string").slice(0, 8) }
       : {}),
   };
 }

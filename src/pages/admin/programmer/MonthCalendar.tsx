@@ -8,8 +8,8 @@ import { nombreDeVigilante } from "@/lib/guardName";
 import { stationShort } from "@/lib/stationName";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
 import {
-  ETIQUETA_DE_EVENTO,
   estiloDeResultado,
+  textoDelPasado,
   type ColoresDelHorario,
   type EventoDelHorario,
 } from "@/lib/coloresDelHorario";
@@ -290,7 +290,7 @@ function MonthCalendarInner({
                             }
                           : null),
                       }}
-                      title={`${quien}${est ? ` · ${est.stationName}` : ""} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ` · ${t("ui.MonthCalendar.aprendiz")}` : ""}${ev ? ` · ${t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1])}` : ""}`}
+                      title={`${quien}${est ? ` · ${est.stationName}` : ""} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ` · ${t("ui.MonthCalendar.aprendiz")}` : ""}${ev ? ` · ${textoDelPasado(t, ev, s.motivos)}` : ""}`}
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();

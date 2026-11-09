@@ -25,8 +25,8 @@ import {
   columnRules,
 } from "./codeTones";
 import {
-  ETIQUETA_DE_EVENTO,
   estiloDeResultado,
+  textoDelPasado,
   type ColoresDelHorario,
   type EventoDelHorario,
 } from "@/lib/coloresDelHorario";
@@ -246,6 +246,8 @@ export type MonthStationBlockProps = {
   /** Turnos que ya terminaron → qué pasó (vacío si la empresa lo apagó). */
   pasadoDe: Map<string, EventoDelHorario>;
   colores: ColoresDelHorario;
+  /** Turno con incidencia → por qué (para el título de la celda). */
+  motivosDe?: Map<string, string[]>;
   station: Station;
   stationPositions: StationPosition[];
   stationAlert: StationAlert | undefined;
@@ -298,11 +300,12 @@ function MonthStationBlockInner({
   h,
   pasadoDe,
   colores,
+  motivosDe,
 }: MonthStationBlockProps) {
   const { t, i18n } = useTranslation();
-  /** « · Completado sin problema» para el título de una celda pasada. */
-  const notaDelPasado = (ev: EventoDelHorario | undefined) =>
-    ev ? ` · ${t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1])}` : "";
+  /** « · Con incidencia: Llegada tarde» para el título de una celda pasada. */
+  const notaDelPasado = (ev: EventoDelHorario | undefined, id?: string) =>
+    ev ? ` · ${textoDelPasado(t, ev, id ? motivosDe?.get(id) : null)}` : "";
   const hasPositions = stationPositions.length > 0;
 
   /* Horas distintas entre los fijos ⇒ cada fila es dueña de su mitad (diurno
@@ -462,7 +465,7 @@ function MonthStationBlockInner({
                   "Cubre {{nombre}} — {{codigo}} · arrastra para moverlo · doble clic para editar el día",
                 nombre: c.fullName,
                 codigo: CODE_LABEL[c.code] ?? c.code,
-              })) + notaDelPasado(ev)
+              })) + notaDelPasado(ev, c.id)
         }
         onDragStart={(e) => h.onCoverageDragStart(e, c.id)}
         /* La cobertura también es la hoja de asistencia de alguien: se abre igual
@@ -772,7 +775,7 @@ function MonthStationBlockInner({
                             "{{nombre}} — {{codigo}}{{extra}} (doble clic para novedad)",
                           nombre: guardName,
                           codigo: CODE_LABEL[code] ?? code,
-                          extra: (is24h ? " · 24 h" : "") + notaDelPasado(ev),
+                          extra: (is24h ? " · 24 h" : "") + notaDelPasado(ev, suTurno?.id),
                         })
                   }
                   onDoubleClick={() =>

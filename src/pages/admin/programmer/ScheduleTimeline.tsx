@@ -41,8 +41,8 @@ import { stationLabel, stationShort } from "@/lib/stationName";
 import { localeActual } from "@/lib/localeActual";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
 import {
-  ETIQUETA_DE_EVENTO,
   estiloDeResultado,
+  textoDelPasado,
   type ColoresDelHorario,
   type EventoDelHorario,
 } from "@/lib/coloresDelHorario";
@@ -1371,7 +1371,7 @@ export default function ScheduleTimeline({
                               " · generado por rotación",
                             )
                           : t("ui.ScheduleTimeline.turnoManualCorto", " · turno manual"),
-                      }) + (ev ? ` · ${t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1])}` : "")}
+                      }) + (ev ? ` · ${textoDelPasado(t, ev, s.motivos)}` : "")}
                       /* LOS DOS. `onMouseDown` impide que el lienzo empiece a
                          DIBUJAR debajo (secuencia de ratón); `onPointerDown`
                          arranca el arrastre (secuencia de puntero, la que

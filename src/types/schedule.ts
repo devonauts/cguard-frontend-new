@@ -71,6 +71,8 @@ export interface ShiftRecord {
   clockedIn?: boolean;
   /** Cómo fue ese fichaje: 'ok' a tiempo, 'incidencia' tarde / sin salida… */
   asistencia?: "ok" | "incidencia";
+  /** Con incidencia: por qué (códigos de attendanceException.type). */
+  motivos?: string[];
   guard?: Pick<GuardRef, "id" | "firstName" | "lastName">;
 }
 export interface ScheduleOverride {

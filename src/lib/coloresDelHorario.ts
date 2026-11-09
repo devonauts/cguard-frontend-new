@@ -1,4 +1,5 @@
 import type React from "react";
+import type { TFunction } from "i18next";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -72,6 +73,28 @@ export interface TurnoParaColor {
   clockedIn?: boolean;
   /** 'ok' = entró y salió a tiempo; 'incidencia' = tarde, salió antes, sin salida… */
   asistencia?: "ok" | "incidencia" | null;
+  /** Por qué fue incidencia: códigos de `attendanceException.type`. */
+  motivos?: string[] | null;
+}
+
+/**
+ * Lo que dice el título de una celda pasada: «Con incidencia (…): Llegada
+ * tarde, Fuera de geocerca». Los motivos usan los MISMOS textos que Nómina
+ * (`nomina.excepcion.<tipo>`), así una incidencia se llama igual en las dos
+ * pantallas. Sólo la incidencia lleva motivos: el resto ya se explica solo.
+ */
+export function textoDelPasado(
+  t: TFunction,
+  ev: EventoDelHorario,
+  motivos?: string[] | null,
+): string {
+  const base = t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1]);
+  const lista =
+    ev === "conIncidencia" && motivos?.length
+      ? motivos.map((m) => t(`nomina.excepcion.${m}`, m)).join(", ")
+      : "";
+
+  return lista ? `${base}: ${lista}` : base;
 }
 
 /**

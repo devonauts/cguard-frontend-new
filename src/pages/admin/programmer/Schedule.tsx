@@ -69,6 +69,7 @@ import {
   estiloDeResultado,
   resolverColores,
   resultadoDelTurno,
+  textoDelPasado,
   type ColoresDelHorario,
   type EventoDelHorario,
 } from "@/lib/coloresDelHorario";
@@ -1454,6 +1455,15 @@ export default function Schedule() {
 
     return m;
   }, [shifts, coloresHorario.activo]);
+
+  /** Turno con incidencia → sus motivos (el título de la celda los dice). */
+  const motivosDe = useMemo(() => {
+    const m = new Map<string, string[]>();
+
+    for (const s of shifts) if (s.motivos?.length) m.set(s.id, s.motivos);
+
+    return m;
+  }, [shifts]);
 
   const shiftByGuardDate = useMemo(() => {
     const m = new Map<string, ShiftRecord>();
@@ -6882,6 +6892,7 @@ export default function Schedule() {
                                 <MonthStationBlock
                                   assignmentsByPosition={assignmentsByPosition}
                                   colores={coloresHorario}
+                                  motivosDe={motivosDe}
                                   pasadoDe={pasadoDe}
                                   cartaElegida={cartaElegida}
                                   colA={colA}
@@ -7420,7 +7431,7 @@ export default function Schedule() {
                                               codigo: CODE_LABEL[code],
                                             }) +
                                             (evSf
-                                              ? ` · ${t(ETIQUETA_DE_EVENTO[evSf][0], ETIQUETA_DE_EVENTO[evSf][1])}`
+                                              ? ` · ${textoDelPasado(t, evSf, covShift.motivos)}`
                                               : "")
                                           }
                                           onDoubleClick={() =>
