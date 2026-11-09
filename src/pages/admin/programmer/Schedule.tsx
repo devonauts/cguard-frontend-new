@@ -6592,9 +6592,11 @@ export default function Schedule() {
                 />
               ) : view === "calendar" ? (
                 <MonthCalendar
+                  colores={coloresHorario}
                   dateStrOf={(iso) => dateToWall(new Date(iso), tzName).dateStr}
                   guardColorMap={guardColorMap}
                   monthAnchor={visibleMonth}
+                  pasadoDe={pasadoDe}
                   shifts={shifts}
                   stationsById={stationsById}
                   timeOf={(iso) => {
@@ -6667,7 +6669,9 @@ export default function Schedule() {
                   {!verGeneral && (
                   <div className="flex min-h-0 flex-1">
                     <ScheduleTimeline
+                      colores={coloresHorario}
                       days={timelineDays}
+                      pasadoDe={pasadoDe}
                       guardColorMap={guardColorMap}
                       guardsPool={guardsPool}
                       shifts={shifts}
@@ -7549,7 +7553,12 @@ export default function Schedule() {
                 </span>
               )}
               {/* Y los colores del pasado, con enlace a donde se eligen. */}
-              {view === "month" && coloresHorario.activo && (
+              {(view === "month" ||
+                view === "week" ||
+                view === "day" ||
+                view === "calendar") &&
+                coloresHorario.activo &&
+                pasadoDe.size > 0 && (
                 <Link
                   className="hidden items-center gap-2 rounded px-1 hover:underline xl:flex"
                   title={t(

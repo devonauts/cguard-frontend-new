@@ -7,6 +7,12 @@ import { localeActual } from "@/lib/localeActual";
 import { nombreDeVigilante } from "@/lib/guardName";
 import { stationShort } from "@/lib/stationName";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
+import {
+  ETIQUETA_DE_EVENTO,
+  estiloDeResultado,
+  type ColoresDelHorario,
+  type EventoDelHorario,
+} from "@/lib/coloresDelHorario";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -70,6 +76,9 @@ export type MonthCalendarProps = {
   timeOf: (iso: string) => string;
   onPickDay: (dateStr: string) => void;
   onPickShift: (shift: ShiftRecord) => void;
+  /** Turnos que ya terminaron → qué pasó (Colores del horario). */
+  pasadoDe?: Map<string, EventoDelHorario>;
+  colores?: ColoresDelHorario;
 };
 
 function MonthCalendarInner({
@@ -82,6 +91,8 @@ function MonthCalendarInner({
   timeOf,
   onPickDay,
   onPickShift,
+  pasadoDe,
+  colores,
 }: MonthCalendarProps) {
   const { t } = useTranslation();
   const locale = localeActual();
@@ -255,13 +266,16 @@ function MonthCalendarInner({
                      que se había planificado, y el hueco que hay que cubrir),
                      pero tachada. Ver `lib/shiftStatus`. */
                   const anulado = !cuentaComoCobertura(s);
+                  const ev = colores ? pasadoDe?.get(s.id) : undefined;
 
                   return (
                     <button
                       key={s.id}
                       className="cg-focus flex shrink-0 items-center gap-1 truncate rounded px-1 py-0.5 text-left text-[10px] transition-opacity hover:opacity-80"
                       style={{
-                        background: "var(--glass-sunken)",
+                        ...(ev && colores
+                          ? estiloDeResultado(colores[ev])
+                          : { background: "var(--glass-sunken)" }),
                         borderLeft: `3px solid ${color}`,
                         // El aprendiz se ve, pero apagado: está en el puesto y no
                         // cubre la plaza (ver `lib/shiftStatus`).
@@ -276,7 +290,7 @@ function MonthCalendarInner({
                             }
                           : null),
                       }}
-                      title={`${quien}${est ? ` · ${est.stationName}` : ""} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ` · ${t("ui.MonthCalendar.aprendiz")}` : ""}`}
+                      title={`${quien}${est ? ` · ${est.stationName}` : ""} · ${timeOf(s.startTime)}–${timeOf(s.endTime)}${aprendiz ? ` · ${t("ui.MonthCalendar.aprendiz")}` : ""}${ev ? ` · ${t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1])}` : ""}`}
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();

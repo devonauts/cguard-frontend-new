@@ -9295,7 +9295,7 @@
       },
       "titulo": "Farben des Dienstplans",
       "subtitulo": "Ist eine Schicht vorbei, wird ihre Zelle im Dienstplan nach dem Ereignis eingefärbt. Wähle die Farbe für jeden Fall.",
-      "nota": "Gilt für das Dienstplan-Blatt. Kommende Schichten behalten ihre üblichen Farben (D, N, L…), Abwesenheiten (Urlaub, Freistellung, Fehltag) ihre eigenen.",
+      "nota": "Gilt für die Ansichten Blatt, Woche, Tag und Kalender des Dienstplans. Kommende Schichten behalten ihre üblichen Farben (D, N, L…), Abwesenheiten (Urlaub, Freistellung, Fehltag) ihre eigenen.",
       "activo": "Vergangene Schichten nach dem Ereignis einfärben",
       "activoAyuda": "Wenn du es ausschaltest, sieht die Vergangenheit aus wie die Zukunft.",
       "porEvento": "Farbe je Ereignis",

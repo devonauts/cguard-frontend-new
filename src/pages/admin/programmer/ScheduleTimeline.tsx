@@ -40,6 +40,12 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import { stationLabel, stationShort } from "@/lib/stationName";
 import { localeActual } from "@/lib/localeActual";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
+import {
+  ETIQUETA_DE_EVENTO,
+  estiloDeResultado,
+  type ColoresDelHorario,
+  type EventoDelHorario,
+} from "@/lib/coloresDelHorario";
 /**
  * Semana/Día timeline for Programador › Horario, Google-Calendar style with a
  * PUESTO sub-axis: DAYS are the top-level COLUMNS and inside each day there is
@@ -64,6 +70,9 @@ interface Props {
   tz?: string;
   todayStr: string;
   onChanged: () => void; // silent refetch upstream
+  /** Turnos que ya terminaron → qué pasó (Colores del horario). */
+  pasadoDe?: Map<string, EventoDelHorario>;
+  colores?: ColoresDelHorario;
 }
 
 // ─── Tenant-timezone wall-clock helpers ─────────────────────────────────────
@@ -145,6 +154,8 @@ export default function ScheduleTimeline({
   tz,
   todayStr,
   onChanged,
+  pasadoDe,
+  colores,
 }: Props) {
   const { t } = useTranslation();
   const hourH = 36; // px per hour, vertical
@@ -1295,6 +1306,9 @@ export default function ScheduleTimeline({
                      que hay que cubrir), apagado y tachado. Ver
                      `lib/shiftStatus`. */
                   const anulado = !cuentaComoCobertura(s);
+                  // Ya terminó: el bloque se pinta con el color de lo que pasó.
+                  const ev = colores ? pasadoDe?.get(s.id) : undefined;
+                  const colorPasado = ev && colores ? colores[ev] : null;
 
                   return (
                     <div
@@ -1303,8 +1317,10 @@ export default function ScheduleTimeline({
                         height: Math.max(8, h - 1),
                         left: di * dayW + si * SUBCOL_W + 4 + lane * laneW,
                         width: laneW - 2,
-                        backgroundColor: `color-mix(in oklab, ${color} ${isEngine ? 10 : 18}%, transparent)`,
-                        borderColor: `color-mix(in oklab, ${color} 42%, transparent)`,
+                        backgroundColor: colorPasado
+                          ? `color-mix(in oklab, ${colorPasado} 30%, transparent)`
+                          : `color-mix(in oklab, ${color} ${isEngine ? 10 : 18}%, transparent)`,
+                        borderColor: `color-mix(in oklab, ${colorPasado || color} 42%, transparent)`,
                         ...(anulado ? { opacity: 0.45, borderStyle: 'dotted', textDecoration: 'line-through' } : null),
                         ...(seg.first ? { borderTop: `3px solid ${color}` } : {}),
                         /* ── DE DÓNDE VENÍA ────────────────────────────────
@@ -1355,7 +1371,7 @@ export default function ScheduleTimeline({
                               " · generado por rotación",
                             )
                           : t("ui.ScheduleTimeline.turnoManualCorto", " · turno manual"),
-                      })}
+                      }) + (ev ? ` · ${t(ETIQUETA_DE_EVENTO[ev][0], ETIQUETA_DE_EVENTO[ev][1])}` : "")}
                       /* LOS DOS. `onMouseDown` impide que el lienzo empiece a
                          DIBUJAR debajo (secuencia de ratón); `onPointerDown`
                          arranca el arrastre (secuencia de puntero, la que

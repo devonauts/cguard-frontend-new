@@ -8737,7 +8737,7 @@
       },
       "titulo": "Cores da escala",
       "subtitulo": "Quando um turno termina, a célula da escala é pintada conforme o que aconteceu. Escolha a cor de cada caso.",
-      "nota": "Vale para a planilha da escala. O que está por vir mantém as cores de sempre (D, N, L…), e as ausências (férias, licença, falta) mantêm as suas.",
+      "nota": "Vale para as visões Planilha, Semana, Dia e Calendário da escala. O que está por vir mantém as cores de sempre (D, N, L…), e as ausências (férias, licença, falta) mantêm as suas.",
       "activo": "Pintar os turnos passados conforme o que aconteceu",
       "activoAyuda": "Se desligar, o passado fica igual ao futuro.",
       "porEvento": "Cor de cada evento",

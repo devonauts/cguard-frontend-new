@@ -8737,7 +8737,7 @@
       },
       "titulo": "Schedule colors",
       "subtitulo": "Once a shift is over, its schedule cell is painted by what happened. Choose the color for each case.",
-      "nota": "Applies to the schedule sheet. Upcoming shifts keep their usual colors (D, N, L…), and time-off codes (vacation, leave, absence) keep theirs.",
+      "nota": "Applies to the Sheet, Week, Day and Calendar views of the schedule. Upcoming shifts keep their usual colors (D, N, L…), and time-off codes (vacation, leave, absence) keep theirs.",
       "activo": "Paint past shifts by what happened",
       "activoAyuda": "If you turn it off, the past looks the same as the future.",
       "porEvento": "Color for each event",

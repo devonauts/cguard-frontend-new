@@ -9295,7 +9295,7 @@
       },
       "titulo": "Colori dell'orario",
       "subtitulo": "Quando un turno è finito, la sua cella nell'orario prende il colore di ciò che è successo. Scegli il colore di ogni caso.",
-      "nota": "Vale per il foglio dell'orario. Ciò che deve ancora venire mantiene i colori di sempre (D, N, L…), e le assenze (ferie, permesso, assenza) mantengono i loro.",
+      "nota": "Vale per le viste Foglio, Settimana, Giorno e Calendario dell'orario. Ciò che deve ancora venire mantiene i colori di sempre (D, N, L…), e le assenze (ferie, permesso, assenza) mantengono i loro.",
       "activo": "Colorare i turni passati in base a ciò che è successo",
       "activoAyuda": "Se lo disattivi, il passato appare come il futuro.",
       "porEvento": "Colore di ogni evento",

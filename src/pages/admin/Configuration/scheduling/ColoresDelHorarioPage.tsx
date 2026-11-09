@@ -131,7 +131,7 @@ export default function ColoresDelHorarioPage() {
               <InfoNote tone="info">
                 {t(
                   "ui.ColoresDelHorario.nota",
-                  "Se aplica a la hoja del horario. Lo que está por venir sigue con sus colores de siempre (D, N, L…), y las novedades (vacaciones, permiso, falta) conservan los suyos.",
+                  "Se aplica a las vistas Hoja, Semana, Día y Calendario del horario. Lo que está por venir sigue con sus colores de siempre (D, N, L…), y las novedades (vacaciones, permiso, falta) conservan los suyos.",
                 )}
               </InfoNote>
 

@@ -9295,7 +9295,7 @@
       },
       "titulo": "Kleuren van het rooster",
       "subtitulo": "Als een dienst voorbij is, krijgt de cel in het rooster de kleur van wat er gebeurde. Kies de kleur voor elk geval.",
-      "nota": "Geldt voor het roosterblad. Komende diensten houden hun gewone kleuren (D, N, L…), en afwezigheden (vakantie, verlof, verzuim) de hunne.",
+      "nota": "Geldt voor de weergaven Blad, Week, Dag en Kalender van het rooster. Komende diensten houden hun gewone kleuren (D, N, L…), en afwezigheden (vakantie, verlof, verzuim) de hunne.",
       "activo": "Voorbije diensten kleuren naar wat er gebeurde",
       "activoAyuda": "Als je het uitzet, ziet het verleden eruit als de toekomst.",
       "porEvento": "Kleur per gebeurtenis",

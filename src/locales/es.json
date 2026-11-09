@@ -8737,7 +8737,7 @@
       },
       "titulo": "Colores del horario",
       "subtitulo": "Cuando un turno ya terminó, la celda del horario se pinta según lo que pasó. Elige el color de cada caso.",
-      "nota": "Se aplica a la hoja del horario. Lo que está por venir sigue con sus colores de siempre (D, N, L…), y las novedades (vacaciones, permiso, falta) conservan los suyos.",
+      "nota": "Se aplica a las vistas Hoja, Semana, Día y Calendario del horario. Lo que está por venir sigue con sus colores de siempre (D, N, L…), y las novedades (vacaciones, permiso, falta) conservan los suyos.",
       "activo": "Pintar los turnos pasados según lo que pasó",
       "activoAyuda": "Si lo apagas, el pasado se ve igual que el futuro.",
       "porEvento": "Color de cada evento",

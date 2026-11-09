@@ -9317,7 +9317,7 @@
       },
       "titulo": "Kolory grafiku",
       "subtitulo": "Gdy zmiana się skończy, jej komórka w grafiku dostaje kolor tego, co się wydarzyło. Wybierz kolor dla każdego przypadku.",
-      "nota": "Dotyczy arkusza grafiku. To, co nadchodzi, zachowuje zwykłe kolory (D, N, L…), a nieobecności (urlop, zwolnienie, absencja) swoje.",
+      "nota": "Dotyczy widoków Arkusz, Tydzień, Dzień i Kalendarz grafiku. To, co nadchodzi, zachowuje zwykłe kolory (D, N, L…), a nieobecności (urlop, zwolnienie, absencja) swoje.",
       "activo": "Kolorować minione zmiany według tego, co się wydarzyło",
       "activoAyuda": "Jeśli to wyłączysz, przeszłość wygląda jak przyszłość.",
       "porEvento": "Kolor każdego zdarzenia",

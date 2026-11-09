@@ -9295,7 +9295,7 @@
       },
       "titulo": "Couleurs du planning",
       "subtitulo": "Une fois un service terminé, sa case du planning prend la couleur de ce qui s'est passé. Choisissez la couleur de chaque cas.",
-      "nota": "S'applique à la feuille du planning. Ce qui est à venir garde ses couleurs habituelles (D, N, L…), et les absences (congés, permission, absence) gardent les leurs.",
+      "nota": "S'applique aux vues Feuille, Semaine, Jour et Calendrier du planning. Ce qui est à venir garde ses couleurs habituelles (D, N, L…), et les absences (congés, permission, absence) gardent les leurs.",
       "activo": "Colorer les services passés selon ce qui s'est passé",
       "activoAyuda": "Si vous le désactivez, le passé ressemble au futur.",
       "porEvento": "Couleur de chaque événement",
