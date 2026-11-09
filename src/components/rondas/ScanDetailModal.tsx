@@ -61,6 +61,7 @@ interface DetalleEscaneo {
   id: string;
   scannedAt: string | null;
   photoUrl: string | null;
+  photoUrls?: string[] | null;
   note: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -171,7 +172,9 @@ export default function ScanDetailModal({
   const [d, setD] = useState<DetalleEscaneo | null>(null);
   const [nota, setNota] = useState("");
   const [guardando, setGuardando] = useState<VeredictoRevision | null>(null);
-  const [ampliada, setAmpliada] = useState(false);
+  const [zoom, setZoom] = useState<string | null>(null);
+  // Multi-foto: usa la galería `photoUrls` (nuevo) y cae a la foto única `photoUrl` (compat).
+  const fotos = d ? (d.photoUrls && d.photoUrls.length ? d.photoUrls : d.photoUrl ? [d.photoUrl] : []) : [];
 
   useEffect(() => {
     if (!open || !scanId) return;
@@ -182,7 +185,7 @@ export default function ScanDetailModal({
       setError(null);
       setD(null);
       setNota("");
-      setAmpliada(false);
+      setZoom(null);
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
         const res: any = await ApiService.get(
@@ -444,22 +447,31 @@ export default function ScanDetailModal({
               <div className="cg-eyebrow mb-1">
                 {t("revision.foto", { defaultValue: "Foto del punto" })}
               </div>
-              {d.photoUrl ? (
-                <button
-                  className="cg-focus block w-full overflow-hidden rounded-lg border"
-                  style={{
-                    borderColor: "var(--hairline)",
-                    background: "var(--glass-sunken)",
-                  }}
-                  type="button"
-                  onClick={() => setAmpliada(true)}
-                >
-                  <SmartImage
-                    alt={t("revision.foto", { defaultValue: "Foto del punto" })}
-                    className="max-h-72 w-full object-contain"
-                    src={d.photoUrl}
-                  />
-                </button>
+              {fotos.length > 0 ? (
+                <div className={fotos.length > 1 ? "grid grid-cols-2 gap-2" : ""}>
+                  {fotos.map((url, i) => (
+                    <button
+                      key={i}
+                      className="cg-focus block w-full overflow-hidden rounded-lg border"
+                      style={{
+                        borderColor: "var(--hairline)",
+                        background: "var(--glass-sunken)",
+                      }}
+                      type="button"
+                      onClick={() => setZoom(url)}
+                    >
+                      <SmartImage
+                        alt={t("revision.foto", { defaultValue: "Foto del punto" })}
+                        className={
+                          fotos.length > 1
+                            ? "h-36 w-full object-cover"
+                            : "max-h-72 w-full object-contain"
+                        }
+                        src={url}
+                      />
+                    </button>
+                  ))}
+                </div>
               ) : (
                 <div
                   className="glass-sunken flex items-center gap-2 rounded-lg px-3 py-4 text-sm"
@@ -666,17 +678,17 @@ export default function ScanDetailModal({
       </Modal>
 
       {/* Lupa de la foto */}
-      {ampliada && d?.photoUrl && (
+      {zoom && (
         <Modal
-          open={ampliada}
+          open={!!zoom}
           size="lg"
-          title={d.checkpoint?.name || undefined}
-          onOpenChange={setAmpliada}
+          title={d?.checkpoint?.name || undefined}
+          onOpenChange={(o) => { if (!o) setZoom(null); }}
         >
           <SmartImage
             alt={t("revision.foto", { defaultValue: "Foto del punto" })}
             className="max-h-[70vh] w-full object-contain"
-            src={d.photoUrl}
+            src={zoom}
           />
         </Modal>
       )}
