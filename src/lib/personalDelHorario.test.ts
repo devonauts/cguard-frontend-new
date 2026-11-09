@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   disponibilidadDe,
+  rotuloCortoDeDonde,
   accionDePersona,
   contarPersonas,
   cubreLaVentana,
@@ -322,5 +323,29 @@ describe("normalizarPersonas — el resultado de un día pasado", () => {
 
     expect(p.days[0].resultado).toBe("completado");
     expect(p.days[1].resultado).toBeUndefined();
+  });
+});
+
+describe("rotuloCortoDeDonde — la estación dentro de la celda", () => {
+  const base = { stationId: "s", stationName: "Garita Norte", postSiteId: "p", postSiteName: "Condominio Las Palmas" };
+
+  it("el nominativo si lo tiene; si no, el nombre de la estación", () => {
+    expect(rotuloCortoDeDonde({ ...base, stationNickname: "Bravo 14" })).toBe("Bravo 14");
+    expect(rotuloCortoDeDonde(base)).toBe("Garita Norte");
+  });
+
+  it("un supervisor: su puesto; sin lugar: nada", () => {
+    expect(
+      rotuloCortoDeDonde({ stationId: null, stationName: null, postSiteId: null, postSiteName: null, positionName: "Ronda Norte" }),
+    ).toBe("Ronda Norte");
+    expect(rotuloCortoDeDonde(null)).toBeNull();
+  });
+
+  it("el normalizador conserva el nominativo", () => {
+    const [p] = normalizarPersonas({
+      people: [{ userId: "u", name: "A", kind: "guard", days: [{ date: "2026-11-07", status: "work", where: { ...base, stationNickname: "Bravo 14" } }] }],
+    });
+
+    expect(p.days[0].where?.stationNickname).toBe("Bravo 14");
   });
 });

@@ -33,6 +33,7 @@ import {
   dondeEstaEl,
   filtrarPersonas,
   normalizarPersonas,
+  rotuloCortoDeDonde,
   rotuloDeDonde,
   tramosDe,
   unirPersonas,
@@ -342,6 +343,17 @@ function AllStaffSection({
     return [p.name, ds, que, donde, pasado].filter(Boolean).join(" · ");
   };
 
+  /** La estación del día, dentro de la celda (el rótulo largo va en el título). */
+  const lineaDeEstacion = (d: DiaDePersona) => {
+    const corto = rotuloCortoDeDonde(d.where);
+
+    return corto ? (
+      <span className="block w-full truncate px-0.5 text-center text-[8px] font-medium leading-tight opacity-75">
+        {corto}
+      </span>
+    ) : null;
+  };
+
   const celda = (d: DiaDePersona | undefined, vacio = false) => {
     if (!d)
       return (
@@ -352,7 +364,7 @@ function AllStaffSection({
     if (d.status === "work")
       return (
         <div
-          className="flex flex-1 flex-col items-center justify-center rounded py-0.5 leading-none"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-px rounded py-0.5 leading-none"
           style={
             d.resultado && colores?.activo
               ? estiloDeResultado(colores[d.resultado])
@@ -367,12 +379,17 @@ function AllStaffSection({
           ) : (
             <span className="text-[10px] font-bold">{t("ui.RotationStyleSelect.letraDia", "D")}</span>
           )}
+          {lineaDeEstacion(d)}
         </div>
       );
     if (d.status === "absence" && d.absence)
       return (
-        <div className="flex flex-1 items-center justify-center rounded" style={codePill(d.absence)}>
+        <div
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-px rounded py-0.5 leading-none"
+          style={codePill(d.absence)}
+        >
           <span className="text-[10px] font-bold">{d.absence}</span>
+          {lineaDeEstacion(d)}
         </div>
       );
     if (d.status === "off" && vacio)
@@ -666,7 +683,7 @@ function AllStaffSection({
                   return (
                     <div
                       key={i}
-                      className="flex min-h-[34px] items-center justify-center px-0.5 py-0.5"
+                      className="flex min-h-[40px] min-w-0 items-stretch justify-center overflow-hidden px-0.5 py-0.5"
                       style={{ borderRight: "1px solid var(--hairline)", background: tintFor?.(day, i) }}
                       title={tituloDe(p, d, ds)}
                     >

@@ -23,6 +23,8 @@ export type CodigoDeAusencia = "V" | "PM" | "F";
 export interface DondeEsta {
   stationId: string | null;
   stationName: string | null;
+  /** El nominativo de la estación («Bravo 14»): lo que cabe en la celda. */
+  stationNickname?: string | null;
   postSiteId: string | null;
   postSiteName: string | null;
   /** Supervisors: their supervision position. */
@@ -106,6 +108,7 @@ function dondeLimpio(w: any): DondeEsta | null {
     ? {
         stationId: texto(w.stationId),
         stationName: texto(w.stationName),
+        stationNickname: texto(w.stationNickname),
         postSiteId: texto(w.postSiteId),
         postSiteName: texto(w.postSiteName),
         positionId: texto(w.positionId),
@@ -297,6 +300,18 @@ export function accionDePersona(
   if (p.kind === "office" && !p.hasSchedule && p.nextShiftDate) return null;
 
   return p.hasSchedule ? null : "asignarHorario";
+}
+
+/**
+ * Lo que cabe DENTRO de la celda de un día (Mike, 2026-11-08: «en la vista
+ * general sólo veo la hora, no en qué estación está»): el nominativo de la
+ * estación si lo tiene, si no su nombre, y para un supervisor su puesto de
+ * supervisión. El rótulo completo («Sede · Estación») va en el título.
+ */
+export function rotuloCortoDeDonde(w: DondeEsta | null | undefined): string | null {
+  if (!w) return null;
+
+  return w.stationNickname || w.stationName || w.positionName || w.postSiteName || null;
 }
 
 /** «Sitio · Estación» of a day, or null. */
