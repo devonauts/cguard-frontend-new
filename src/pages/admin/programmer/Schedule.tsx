@@ -6654,6 +6654,7 @@ export default function Schedule() {
                     {verGeneral && (
                     <AllStaffSection
                       fija
+                      colores={coloresHorario}
                       colA={0}
                       colB={timelineDays.length}
                       colWidth={64}
@@ -6816,6 +6817,7 @@ export default function Schedule() {
                     {verGeneral && (
                     <AllStaffSection
                       fija
+                      colores={coloresHorario}
                       colA={colA}
                       colB={colB}
                       gridCols={gridCols}

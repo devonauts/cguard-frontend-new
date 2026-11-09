@@ -301,3 +301,26 @@ describe("disponibilidadDe — el semáforo de cada persona", () => {
     ).toBe("completo");
   });
 });
+
+describe("normalizarPersonas — el resultado de un día pasado", () => {
+  it("conserva un resultado válido y descarta uno desconocido", () => {
+    const [p] = normalizarPersonas({
+      people: [
+        {
+          userId: "u1",
+          name: "Ana",
+          kind: "guard",
+          hasSchedule: true,
+          assigned: true,
+          days: [
+            { date: "2026-11-07", status: "work", start: "19:00", end: "07:00", resultado: "completado" },
+            { date: "2026-11-08", status: "work", start: "19:00", end: "07:00", resultado: "inventado" },
+          ],
+        },
+      ],
+    });
+
+    expect(p.days[0].resultado).toBe("completado");
+    expect(p.days[1].resultado).toBeUndefined();
+  });
+});

@@ -14,6 +14,8 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 
+import { EVENTOS_DEL_HORARIO, type EventoDelHorario } from "./coloresDelHorario";
+
 export type TipoDePersona = "guard" | "supervisor" | "office";
 export type EstadoDelDia = "work" | "off" | "absence" | "none";
 export type CodigoDeAusencia = "V" | "PM" | "F";
@@ -37,6 +39,8 @@ export interface DiaDePersona {
   absence: CodigoDeAusencia | null;
   /** Office staff: the planned lunch of that day. */
   lunch?: { start: string; end: string } | null;
+  /** Ya pasó: qué pasó contra el fichaje (Colores del horario). */
+  resultado?: EventoDelHorario;
 }
 
 export interface PersonaDelHorario {
@@ -122,6 +126,9 @@ function diaLimpio(d: any): DiaDePersona | null {
     end: hora(d?.end),
     where,
     absence: AUSENCIAS.includes(d?.absence) ? d.absence : null,
+    ...(EVENTOS_DEL_HORARIO.includes(d?.resultado)
+      ? { resultado: d.resultado as EventoDelHorario }
+      : {}),
   };
 }
 

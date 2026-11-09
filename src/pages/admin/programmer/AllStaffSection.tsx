@@ -16,6 +16,11 @@ import {
 import { codePill, CODE_LABEL, columnRules, tonePill, type Tone } from "./codeTones";
 
 import { ApiService } from "@/services/api/apiService";
+import {
+  ETIQUETA_DE_EVENTO,
+  estiloDeResultado,
+  type ColoresDelHorario,
+} from "@/lib/coloresDelHorario";
 import { SearchInput, Segmented } from "@/components/kit";
 import OfficeHoursEditor from "@/components/schedule/OfficeHoursEditor";
 import { jornadaDesdeDias } from "@/lib/jornadaSemanal";
@@ -99,6 +104,7 @@ function AllStaffSection({
   todayStr,
   refreshKey = 0,
   fija = false,
+  colores,
   onAsignarAPuesto,
 }: {
   /** The SAME days the sheet paints, so the columns line up. */
@@ -115,6 +121,8 @@ function AllStaffSection({
   refreshKey?: number;
   /** «Vista general»: the band IS the page, so it is always open (no chevron). */
   fija?: boolean;
+  /** Colores del pasado: un día que ya pasó se pinta según lo que pasó. */
+  colores?: ColoresDelHorario;
   onAsignarAPuesto: (p: { userId: string; name: string }) => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -326,7 +334,12 @@ function AllStaffSection({
             ? (d.absence && CODE_LABEL[d.absence]) || t("ui.AllStaff.ausente", "Ausente")
             : t("ui.AllStaff.sinHorario", "Sin horario");
 
-    return [p.name, ds, que, donde].filter(Boolean).join(" · ");
+    const pasado =
+      d.resultado && colores?.activo
+        ? t(ETIQUETA_DE_EVENTO[d.resultado][0], ETIQUETA_DE_EVENTO[d.resultado][1])
+        : null;
+
+    return [p.name, ds, que, donde, pasado].filter(Boolean).join(" · ");
   };
 
   const celda = (d: DiaDePersona | undefined, vacio = false) => {
@@ -340,7 +353,11 @@ function AllStaffSection({
       return (
         <div
           className="flex flex-1 flex-col items-center justify-center rounded py-0.5 leading-none"
-          style={tonePill("brand", 14)}
+          style={
+            d.resultado && colores?.activo
+              ? estiloDeResultado(colores[d.resultado])
+              : tonePill("brand", 14)
+          }
         >
           {d.start && d.end ? (
             <>
