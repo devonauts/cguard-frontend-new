@@ -37,6 +37,46 @@ export interface CalidadDelRegistro {
   coherencia: number;
 }
 
+/** Una de las fotos que guardó el registro, con sus números. */
+export interface FotoDelRegistro {
+  url: string | null;
+  postura?: "frente" | "izquierda" | "derecha" | null;
+  giro?: number | null;
+  cabeceo?: number | null;
+  nitidez?: number | null;
+  luz?: number | null;
+  anchoCara?: number | null;
+  confianza?: number | null;
+  referencia?: boolean;
+  /** Posición en la ráfaga (1 = la primera). */
+  cuadro?: number | null;
+}
+
+/** De dónde vino la captura (sólo en el detalle). */
+export interface CapturaDelRegistro {
+  app?: string | null;
+  plataforma?: string | null;
+  version?: string | null;
+  build?: string | null;
+  dispositivo?: string | null;
+  sistema?: string | null;
+  agente?: string | null;
+  ip?: string | null;
+  ubicacion?: { lat: number; lng: number; precision: number | null } | null;
+  capturadoEn?: string | null;
+}
+
+export interface RafagaDelRegistro {
+  total: number | null;
+  usables: number | null;
+  descartadosPorPersona: number | null;
+  giroMin: number | null;
+  giroMax: number | null;
+  coherencia: number | null;
+  motivoFrecuente: string | null;
+  seleccionLocal: boolean | null;
+}
+
 export interface RostroRegistrado {
   userId: string;
   nombre?: string;
@@ -46,6 +86,13 @@ export interface RostroRegistrado {
   revisadoEn?: string | null;
   motivoRechazo?: string | null;
   calidad?: CalidadDelRegistro | null;
+  /* Sólo en el detalle (`leer`). */
+  email?: string | null;
+  telefono?: string | null;
+  fotos?: FotoDelRegistro[];
+  rafaga?: RafagaDelRegistro;
+  captura?: CapturaDelRegistro | null;
+  revisadoPor?: string | null;
 }
 
 export interface ListaDeRostros {

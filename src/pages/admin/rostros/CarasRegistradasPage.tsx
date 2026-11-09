@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Clock, ScanFace, ShieldCheck, UserX, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, Eye, ScanFace, ShieldCheck, UserX, XCircle } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
 } from "@/components/kit";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import AccionesDeRostro from "@/components/rostro/AccionesDeRostro";
+import DetalleDeRostro from "@/components/rostro/DetalleDeRostro";
 import { DatosDelRegistro, FotoDeReferencia } from "@/components/rostro/PiezasDeRostro";
 import { PausedAddonGate } from "@/components/modulos/PausedAddon";
 import { useEntitlement } from "@/hooks/useEntitlement";
@@ -49,6 +50,7 @@ export default function CarasRegistradasPage() {
   const { t } = useTranslation();
   const tiene = useEntitlement(MODULO_RECONOCIMIENTO_FACIAL);
   const [estado, setEstado] = useState<EstadoListable>("pendiente");
+  const [viendo, setViendo] = useState<RostroRegistrado | null>(null);
   const tenant = typeof window !== "undefined" ? localStorage.getItem("tenantId") : null;
 
   /** How many to show; «Ver más» asks for the next 200 (server max 1000). */
@@ -147,7 +149,7 @@ export default function CarasRegistradasPage() {
                   emptyState={<Vacio estado={estado} />}
                   items={(lista.data?.rows ?? []).map((r) => ({ ...r, id: r.userId }))}
                   loading={lista.isLoading}
-                  renderCard={(r) => <TarjetaDeCara rostro={r} />}
+                  renderCard={(r) => <TarjetaDeCara rostro={r} onVer={() => setViendo(r)} />}
                   skeletonCount={3}
                 />
               )}
@@ -165,26 +167,45 @@ export default function CarasRegistradasPage() {
           </div>
         )}
       </PageContainer>
+      <DetalleDeRostro rostro={viendo} onClose={() => setViendo(null)} />
     </AppLayout>
   );
 }
 
 /** Una cara: la foto de referencia, quién es, cuándo y con qué calidad. */
-function TarjetaDeCara({ rostro }: { rostro: RostroRegistrado }) {
+function TarjetaDeCara({ rostro, onVer }: { rostro: RostroRegistrado; onVer: () => void }) {
   const { t } = useTranslation();
   const chip = chipDeEstado(rostro.estado);
   const nombre = rostro.nombre || t("comun.vigilante", "Vigilante");
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-      <FotoDeReferencia nombre={nombre} url={rostro.fotoUrl} />
+      <button
+        aria-label={t("rostros.detalle.revisar", "Revisar fotos y datos")}
+        className="cg-focus shrink-0 rounded-2xl transition-opacity hover:opacity-85"
+        title={t("rostros.detalle.revisar", "Revisar fotos y datos")}
+        type="button"
+        onClick={onVer}
+      >
+        <FotoDeReferencia nombre={nombre} url={rostro.fotoUrl} />
+      </button>
       <div className="min-w-0 flex-1 space-y-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="truncate text-sm font-semibold">{nombre}</span>
+          <button
+            className="cg-focus truncate text-left text-sm font-semibold hover:underline"
+            type="button"
+            onClick={onVer}
+          >
+            {nombre}
+          </button>
           <StatusBadge tone={chip.tono}>{t(chip.clave, { defaultValue: chip.respaldo })}</StatusBadge>
         </div>
         <DatosDelRegistro rostro={rostro} />
-        <div className="pt-1">
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <Button size="sm" variant="outline" onClick={onVer}>
+            <Eye />
+            {t("rostros.detalle.revisar", "Revisar fotos y datos")}
+          </Button>
           <AccionesDeRostro rostro={rostro} />
         </div>
       </div>
