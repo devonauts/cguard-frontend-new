@@ -12023,7 +12023,7 @@
       "avisoTopeHorasSemanales": "{{n}} vigilante(s) acima do limite de horas semanais",
       "ayudaAgenda": "Lista por dia · toque um turno para abrir esse dia ·",
       "ayudaCalendario": "O mês num relance · Clique num turno ou em «+N mais» para abrir esse dia ·",
-      "ayudaLineaDeTiempo": "(ex.: 07:00 → 07:00 do dia seguinte) · Clique num bloco: detalhe / excluir · Solte um vigilante do painel sobre a linha ·",
+      "ayudaLineaDeTiempo": "(ex.: 07:00 → 07:00 do dia seguinte) · Clique num bloco: detalhe / excluir ·",
       "ayudaModoFijo": "Fica neste horário em todos os dias de trabalho, sem alternar. Leva alguns segundos.",
       "ayudaModoRango": "Um turno avulso para cada dia do intervalo, com os mesmos horários.",
       "ayudaModoRotacion": "Entra na rotação do posto: os turnos são gerados e ele vai alternando dia e noite. Leva alguns segundos.",
@@ -12403,6 +12403,8 @@
       "vistaCalendario": "Calendário",
       "vistaDia": "Dia",
       "vistaHoja": "Planilha",
+      "vistaGeneral": "Visão geral",
+      "porEstacion": "Por estação",
       "vistaSemana": "Semana",
       "yFichaConNormalidadPero": "e registra ponto normalmente, mas",
       "yaTieneTurnoEseDiaAviso": "Já tem turno nesse dia: o novo substituirá o que se sobrepuser.",
@@ -18926,6 +18928,10 @@
       "vie": "Sex"
     },
     "AllStaff": {
+      "semaforoFalta": "Precisa de horário ou posto",
+      "semaforoCompleto": "Completo",
+      "semaforoDisponible": "Disponível",
+      "semaforoAyuda": "Conforme o dia que você está vendo (hoje, se estiver à vista).",
       "asignarAPuesto": "Atribuir a um posto",
       "asignarHorario": "Definir horário",
       "ausente": "Ausente",

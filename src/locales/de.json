@@ -12581,7 +12581,7 @@
       "avisoTopeHorasSemanales": "{{n}} Wachmann/-leute über der wöchentlichen Stundengrenze",
       "ayudaAgenda": "Liste nach Tag · tippe auf eine Schicht, um den Tag zu öffnen ·",
       "ayudaCalendario": "Der Monat auf einen Blick · Klicke auf eine Schicht oder „+N mehr“, um den Tag zu öffnen ·",
-      "ayudaLineaDeTiempo": "(z. B. 07:00 → 07:00 am nächsten Tag) · Klick auf einen Block: Details / löschen · Ziehe einen Wachmann aus der Seitenleiste auf die Zeitleiste ·",
+      "ayudaLineaDeTiempo": "(z. B. 07:00 → 07:00 am nächsten Tag) · Klick auf einen Block: Details / löschen ·",
       "ayudaModoFijo": "Bleibt an allen Arbeitstagen bei diesen Zeiten, ohne Wechsel. Das dauert ein paar Sekunden.",
       "ayudaModoRango": "Eine Einzelschicht für jeden Tag im Zeitraum, mit denselben Zeiten.",
       "ayudaModoRotacion": "Tritt in die Rotation des Postens ein: Seine Schichten werden erzeugt und er wechselt zwischen Tag und Nacht. Das dauert ein paar Sekunden.",
@@ -12961,6 +12961,8 @@
       "vistaCalendario": "Kalender",
       "vistaDia": "Tag",
       "vistaHoja": "Tabelle",
+      "vistaGeneral": "Übersicht",
+      "porEstacion": "Nach Station",
       "vistaSemana": "Woche",
       "yFichaConNormalidadPero": "und stempelt normal ein, aber",
       "yaTieneTurnoEseDiaAviso": "Hat an diesem Tag bereits eine Schicht: Die neue ersetzt die überlappende.",
@@ -19483,6 +19485,10 @@
       "vie": "Fr"
     },
     "AllStaff": {
+      "semaforoFalta": "Braucht Dienstplan oder Posten",
+      "semaforoCompleto": "Voll",
+      "semaforoDisponible": "Verfügbar",
+      "semaforoAyuda": "Bezogen auf den angezeigten Tag (heute, wenn sichtbar).",
       "asignarAPuesto": "Einem Posten zuweisen",
       "asignarHorario": "Dienstplan festlegen",
       "ausente": "Abwesend",

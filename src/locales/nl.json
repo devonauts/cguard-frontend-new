@@ -12581,7 +12581,7 @@
       "avisoTopeHorasSemanales": "{{n}} bewaker(s) boven het weekurenplafond",
       "ayudaAgenda": "Lijst per dag · tik op een dienst om die dag te openen ·",
       "ayudaCalendario": "De maand in één oogopslag · Klik op een dienst of op „+N meer” om die dag te openen ·",
-      "ayudaLineaDeTiempo": "(bijv. 07:00 → 07:00 de volgende dag) · Klik op een blok: details / verwijderen · Sleep een bewaker uit het paneel op de tijdlijn ·",
+      "ayudaLineaDeTiempo": "(bijv. 07:00 → 07:00 de volgende dag) · Klik op een blok: details / verwijderen ·",
       "ayudaModoFijo": "Blijft op al zijn werkdagen op deze uren, zonder afwisseling. Dit duurt een paar seconden.",
       "ayudaModoRango": "Een losse dienst voor elke dag in de periode, met dezelfde uren.",
       "ayudaModoRotacion": "Gaat mee in de rotatie van de post: zijn diensten worden gegenereerd en hij wisselt dag en nacht af. Dit duurt een paar seconden.",
@@ -12961,6 +12961,8 @@
       "vistaCalendario": "Kalender",
       "vistaDia": "Dag",
       "vistaHoja": "Blad",
+      "vistaGeneral": "Overzicht",
+      "porEstacion": "Per station",
       "vistaSemana": "Week",
       "yFichaConNormalidadPero": "en klokt gewoon in, maar",
       "yaTieneTurnoEseDiaAviso": "Heeft die dag al een dienst: de nieuwe vervangt de overlappende.",
@@ -19483,6 +19485,10 @@
       "vie": "Vr"
     },
     "AllStaff": {
+      "semaforoFalta": "Heeft rooster of post nodig",
+      "semaforoCompleto": "Vol",
+      "semaforoDisponible": "Beschikbaar",
+      "semaforoAyuda": "Op basis van de dag die je bekijkt (vandaag, als die in beeld is).",
       "asignarAPuesto": "Aan een post toewijzen",
       "asignarHorario": "Rooster instellen",
       "ausente": "Afwezig",

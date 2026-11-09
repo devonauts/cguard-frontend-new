@@ -44,8 +44,6 @@ import {
   RefreshCw,
   MapPin,
   CalendarDays,
-  PanelRightClose,
-  PanelRightOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -505,6 +503,9 @@ const vistaUsableAqui = (v: ViewMode): ViewMode => {
 };
 
 type ViewMode = (typeof VISTAS)[number];
+type VistaDelHorario = "general" | "estaciones";
+const esVistaDelHorario = (v: any): v is VistaDelHorario =>
+  v === "general" || v === "estaciones";
 const esVista = (v: any): v is ViewMode =>
   typeof v === "string" && (VISTAS as readonly string[]).includes(v);
 
@@ -709,8 +710,9 @@ export default function Schedule() {
           /* bloqueado */
         }
       }
-      if (typeof ap?.scheduler?.panel === "boolean")
-        setPanelOpen(ap.scheduler.panel);
+      const vh = ap?.scheduler?.vista;
+
+      if (esVistaDelHorario(vh)) setVistaHorario(vh);
       if (typeof ap?.scheduler?.sf === "boolean")
         setSfSectionOpen(ap.scheduler.sf);
     });
@@ -743,14 +745,14 @@ export default function Schedule() {
     guardarApariencia({ scheduler: { view: v } });
   }, []);
 
-  const alternarPanel = useCallback(() => {
-    setPanelOpen((abierto) => {
-      const v = !abierto;
-
-      guardarApariencia({ scheduler: { panel: v } });
-
-      return v;
-    });
+  /* «Vista general» (todo el personal) / «Por estación» (los puestos). Antes
+     iban una debajo de la otra y la página era larguísima; el panel lateral
+     (vigilantes disponibles, herramientas, personal necesario) se retiró a
+     pedido (2026-11-08). */
+  const elegirVistaHorario = useCallback((v: VistaDelHorario) => {
+    setVistaHorario(v);
+    setSel(null);
+    guardarApariencia({ scheduler: { vista: v } });
   }, []);
 
   const alternarSacafrancos = useCallback(() => {
@@ -762,7 +764,10 @@ export default function Schedule() {
       return v;
     });
   }, []);
-  const [panelOpen, setPanelOpen] = useState<boolean>(savedView.panel ?? true);
+  const [vistaHorario, setVistaHorario] = useState<VistaDelHorario>(
+    esVistaDelHorario(savedView.vh) ? savedView.vh : "general",
+  );
+  const verGeneral = vistaHorario === "general";
   const [sfSectionOpen, setSfSectionOpen] = useState<boolean>(
     savedView.sf ?? false,
   );
@@ -4632,33 +4637,6 @@ export default function Schedule() {
       setGeocoding(false);
     }
   };
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiRecommendation, setAiRecommendation] = useState<string | null>(null);
-
-  const runAiRecommend = async () => {
-    setAiLoading(true);
-    setAiRecommendation(null);
-    try {
-      const result: {
-        recommendation?: string;
-        data?: { recommendation?: string };
-      } = await ApiService.post(`/tenant/${tenantId}/scheduler/ai-recommend`, {
-        data: { type: "optimize" },
-      });
-      const rec =
-        result?.recommendation ||
-        result?.data?.recommendation ||
-        t("ui.RadioDispatch.status.no_response", "Sin respuesta");
-
-      setAiRecommendation(rec);
-    } catch (e: any) {
-      toast.error(t("ui.Schedule.errorAlConsultarIa", "Error al consultar IA"));
-      console.error(e);
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
   const runAutoAssign = async () => {
     if (
       !(await confirmDialog({
@@ -5957,13 +5935,13 @@ export default function Schedule() {
           sl: el ? el.scrollLeft : prev.sl || 0,
           st: el ? el.scrollTop : prev.st || 0,
           sf: sfSectionOpen,
-          panel: panelOpen,
+          vh: vistaHorario,
         }),
       );
     } catch {
       /* storage full/blocked */
     }
-  }, [currentDate, view, sfSectionOpen, panelOpen, todayYear]);
+  }, [currentDate, view, sfSectionOpen, vistaHorario, todayYear]);
 
   /* Guardar la posición toca `sessionStorage` (un `JSON.parse` + un `setItem`,
      ambos SÍNCRONOS). Esto colgaba de un `requestAnimationFrame`, o sea que se
@@ -6411,29 +6389,22 @@ export default function Schedule() {
 
           <div className="flex-1" />
 
-          <Button
-            className="hidden gap-1.5 md:inline-flex"
-            size="sm"
-            title={
-              panelOpen
-                ? t("ui.Schedule.ocultarPanelLateral", "Ocultar panel lateral")
-                : t(
-                    "ui.Schedule.mostrarPanel",
-                    "Mostrar panel (vigilantes, IA, personal)",
-                  )
-            }
-            variant="outline"
-            onClick={alternarPanel}
-          >
-            {panelOpen ? (
-              <PanelRightClose size={15} />
-            ) : (
-              <PanelRightOpen size={15} />
-            )}
-            <span className="hidden md:inline">
-              {t("ui.Schedule.panel", "Panel")}
-            </span>
-          </Button>
+          {(view === "month" || view === "week" || view === "day") && (
+            <Segmented<VistaDelHorario>
+              options={[
+                {
+                  value: "general",
+                  label: t("ui.Schedule.vistaGeneral", "Vista general"),
+                },
+                {
+                  value: "estaciones",
+                  label: t("ui.Schedule.porEstacion", "Por estación"),
+                },
+              ]}
+              value={vistaHorario}
+              onChange={elegirVistaHorario}
+            />
+          )}
         </div>
 
         {loading ? (
@@ -6606,14 +6577,15 @@ export default function Schedule() {
                       fuera una estación de verdad dejaría dibujar un turno contra
                       un `stationId` inventado. Aquí se lee; se dibuja abajo. */}
                   <div
-                    className="shrink-0 overflow-auto rounded-xl"
+                    className={`${verGeneral ? "min-h-0 flex-1" : "shrink-0"} overflow-auto rounded-xl`}
                     style={{
                       border: "1px solid var(--hairline)",
                       /* Everyone can be a long list: it scrolls inside so the
                          timeline below keeps its room. */
-                      maxHeight: "60vh",
+                      maxHeight: verGeneral ? undefined : "60vh",
                     }}
                   >
+                    {!verGeneral && (
                     <SupervisionSection
                       colA={0}
                       colB={timelineDays.length}
@@ -6628,10 +6600,13 @@ export default function Schedule() {
                             : undefined
                       }
                     />
+                    )}
                     {/* TODO EL PERSONAL — also in Semana/Día: whoever has no
                         seat was invisible here too. Same columns, with zero-width
                         pads where the year sheet keeps its virtualized margins. */}
+                    {verGeneral && (
                     <AllStaffSection
+                      fija
                       colA={0}
                       colB={timelineDays.length}
                       colWidth={64}
@@ -6642,7 +6617,9 @@ export default function Schedule() {
                       todayStr={todayStr}
                       onAsignarAPuesto={abrirAsignarPersona}
                     />
+                    )}
                   </div>
+                  {!verGeneral && (
                   <div className="flex min-h-0 flex-1">
                     <ScheduleTimeline
                       days={timelineDays}
@@ -6657,6 +6634,7 @@ export default function Schedule() {
                       onChanged={() => fetchAll({ silent: true })}
                     />
                   </div>
+                  )}
                 </div>
               ) : (
                 <div
@@ -6765,6 +6743,7 @@ export default function Schedule() {
                       Todo su código vive en `SupervisionSection`: este fichero
                       ya pasa de 2.700 líneas y la supervisión corre sobre OTRO
                       motor (nunca toca `shift`/`guardShift`). */}
+                    {!verGeneral && (
                     <SupervisionSection
                       colA={colA}
                       colB={colB}
@@ -6778,13 +6757,16 @@ export default function Schedule() {
                             : undefined
                       }
                     />
+                    )}
 
                     {/* TODO EL PERSONAL — misma rejilla. Una fila por PERSONA
                       (vigilantes, supervisores y oficina), con dónde está y sus
                       horas cada día, y «Sin horario» en ámbar. Sustituye a la
                       banda «Oficina»: la jornada semanal se edita desde aquí.
                       Va debajo de Supervisión y encima de los puestos. */}
+                    {verGeneral && (
                     <AllStaffSection
+                      fija
                       colA={colA}
                       colB={colB}
                       gridCols={gridCols}
@@ -6794,6 +6776,7 @@ export default function Schedule() {
                       todayStr={todayStr}
                       onAsignarAPuesto={abrirAsignarPersona}
                     />
+                    )}
 
                     {/* Station rows — cada puesto es un componente MEMOIZADO
                       (`MonthStationBlock`). Arrastrar una selección sólo repinta
@@ -6801,7 +6784,7 @@ export default function Schedule() {
                     {/* Marca dónde empieza la tira de estaciones dentro del
                       lienzo; `syncRowWindow` mide desde aquí. Alto cero. */}
                     <div ref={basePxRef} />
-                    {(() => {
+                    {!verGeneral && (() => {
                       const a = Math.max(
                         0,
                         Math.min(rowWin.a, stations.length),
@@ -6870,7 +6853,7 @@ export default function Schedule() {
                     })()}
 
                     {/* ─── Sacafrancos Section ─── */}
-                    {(() => {
+                    {!verGeneral && (() => {
                       return (
                         // When EXPANDED, pin the sacafranco section to the bottom of
                         // the scroll viewport (sticky bottom-0) so the fijo stations
@@ -7393,516 +7376,7 @@ export default function Schedule() {
                 </div>
               )}
 
-              {/* ─── Side panel (former left sidebar + guard pool, now collapsible) ─── */}
-              {/* En un teléfono el panel se esconde: 280 px fijos al lado de
-                  la hoja dejaban la rejilla en 60 px de ancho, ilegible. */}
-              {panelOpen && (
-                <aside className="hidden w-[280px] shrink-0 overflow-y-auto space-y-3 pr-0.5 md:block">
-                  {/* Vigilantes disponibles — drag them onto the sheet */}
-                  <div className="glass p-3">
-                    <div className="mb-2 flex items-center gap-2">
-                      <Users size={14} style={{ color: "var(--brand-text)" }} />
-                      <h3 className="cg-eyebrow">
-                        {t("ui.Schedule.vigilantesDisponibles", "Vigilantes disponibles")}
-                      </h3>
-                      <span
-                        className="text-[10px] tabular-nums"
-                        style={{ color: "var(--ink-faint)" }}
-                      >
-                        ({unassignedGuards.length})
-                      </span>
-                    </div>
-                    {unassignedGuards.length === 0 ? (
-                      <p
-                        className="text-[11px]"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        {t(
-                          "ui.Schedule.todosLosVigilantesEstanAsignados",
-                          "Todos los vigilantes están asignados.",
-                        )}
-                      </p>
-                    ) : (
-                      <>
-                        <p
-                          className="mb-2 text-[10px]"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {t("ui.Schedule.arrastraUnVigilanteAUn")}
-                        </p>
-                        <div className="flex max-h-[180px] flex-wrap gap-1.5 overflow-y-auto">
-                          {unassignedGuards.map((g) => (
-                            /* Ficha arrastrable: cristal PLANO (se repiten) y
-                               brillo del acento al agarrarla. */
-                            <div
-                              key={g.id}
-                              draggable
-                              className="glass-flat cursor-grab rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all hover:border-[var(--brand-line)] active:cursor-grabbing active:shadow-[0_0_18px_-6px_var(--brand-glow)]"
-                              onDragStart={(e) => onGuardDragStart(e, g.id)}
-                            >
-                              {g.label}
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
 
-                  {/* AI / herramientas */}
-                  <div className="glass glass-brand p-3">
-                    <div className="mb-2 flex items-center gap-2">
-                      <Sparkles
-                        size={14}
-                        style={{ color: "var(--brand-text)" }}
-                      />
-                      <h3 className="cg-eyebrow">
-                        {t("ui.Schedule.herramientas", "Herramientas")}
-                      </h3>
-                    </div>
-                    {/* RETIRADOS (2026-08-05, a pedido): "Generar borrador de
-                        horario" y "Auto-asignar puestos vacíos".
-
-                        Auto-asignar sólo reparte vigilantes que NO tienen
-                        ninguna asignación activa, así que en una operación ya
-                        montada no encuentra a nadie y devuelve ceros sin
-                        explicar por qué. El borrador recalcula la rotación
-                        desde cero y la compara contra los turnos reales: con
-                        turnos creados fuera del motor da cifras sin sentido
-                        (7% de cobertura, 431 huecos, +465% de costo).
-
-                        El backend (/scheduler/auto-assign, /scheduler/proposals)
-                        y el modal de revisión siguen intactos — esto es sólo el
-                        punto de entrada, para poder reponerlo cuando la lógica
-                        esté corregida. */}
-                    {/* RETIRADO (2026-08-06, a pedido): "Optimizar Sacafrancos".
-                        Reordena los offsets de los puestos y reparte el relevo,
-                        pero el resultado no cuadra todavía: los sacafrancos
-                        quedan con L irregulares porque la grilla no distingue
-                        "descansa" de "trabaja pero no le tocó hueco ese día", y
-                        con más sacafrancos que huecos simultáneos la mayoría de
-                        sus días caen en el segundo caso.
-
-                        Efecto secundario de dejarlo visible: cada corrida vuelve
-                        a crear los turnos de sacafranco que se habían borrado a
-                        mano.
-
-                        Backend intacto (POST /scheduler/optimize-sacafrancos y
-                        runOptimizeSacafrancos) — esto es solo el punto de
-                        entrada, para reponerlo cuando la lógica esté resuelta. */}
-                    {/* RETIRADO (2026-08-05, a pedido): "Geolocalizar vigilantes".
-                        Convertía la dirección de domicilio de cada vigilante en
-                        coordenadas (Nominatim) para ordenar por cercanía. Su
-                        ÚNICO consumidor era el ranking por distancia de
-                        auto-asignar, que ya está retirado, así que no aportaba
-                        nada por sí solo. Además Nominatim admite ~1 pedido/s, de
-                        modo que procesaba 10 por clic y había que repetirlo.
-                        Endpoint intacto: POST /security-guard/geocode-missing. */}
-                    <button
-                      className="cg-btn-brand cg-focus mt-2 flex w-full items-center justify-center gap-2 rounded-full px-3 py-2 text-xs font-semibold transition-all disabled:opacity-50"
-                      disabled={aiLoading}
-                      onClick={runAiRecommend}
-                    >
-                      {aiLoading ? (
-                        <Loader2 className="animate-spin" size={12} />
-                      ) : (
-                        <Sparkles size={12} />
-                      )}
-                      {aiLoading
-                        ? t("ui.Schedule.analizando", "Analizando…")
-                        : t("ui.Schedule.recomendacionIa", "Recomendación IA")}
-                    </button>
-                    {aiRecommendation && (
-                      <div className="glass-sunken mt-2 max-h-[240px] overflow-y-auto p-3">
-                        <div
-                          className="mb-1 text-[10px] font-semibold"
-                          style={{ color: "var(--brand-text)" }}
-                        >
-                          <Bot className="mr-1 inline h-3 w-3" />
-                          {t("ui.Schedule.recomendacion", "Recomendación:")}
-                        </div>
-                        <div
-                          className="whitespace-pre-wrap text-[10px] leading-relaxed"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {aiRecommendation}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Personal necesario */}
-                  <div className="glass space-y-2 p-3">
-                    <h3 className="cg-eyebrow">
-                      {t("ui.Schedule.personalNecesario", "Personal necesario")}
-                    </h3>
-                    {staffing ? (
-                      <>
-                        <div className="grid grid-cols-3 gap-2">
-                          <div
-                            className="rounded-lg p-2 text-center"
-                            style={tonePill("warn", 12)}
-                          >
-                            <div className="text-lg font-bold tabular-nums">
-                              {staffing.fijosNeeded || 0}
-                            </div>
-                            <div
-                              className="text-[9px]"
-                              style={{ color: "var(--ink-soft)" }}
-                            >
-                              {t("ui.Schedule.fijos", "Fijos")}
-                            </div>
-                          </div>
-                          <div
-                            className="rounded-lg p-2 text-center"
-                            style={tonePill("ok", 12)}
-                          >
-                            <div className="text-lg font-bold tabular-nums">
-                              {staffing.sacafrancosNeeded || 0}
-                            </div>
-                            <div
-                              className="text-[9px]"
-                              style={{ color: "var(--ink-soft)" }}
-                            >
-                              {t("ui.Schedule.sacafrancos", "Sacafrancos")}
-                            </div>
-                          </div>
-                          <div
-                            className="rounded-lg p-2 text-center"
-                            style={tonePill("brand", 14)}
-                          >
-                            <div className="text-lg font-bold tabular-nums">
-                              {staffing.totalGuardsNeeded || 0}
-                            </div>
-                            <div
-                              className="text-[9px]"
-                              style={{ color: "var(--ink-soft)" }}
-                            >
-                              {t("comun.total")}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 pt-1">
-                          <div className="glass-sunken p-2 text-center">
-                            <div className="text-sm font-bold tabular-nums">
-                              {staffing.currentFijoGuards || 0}
-                              <span
-                                className="font-normal"
-                                style={{ color: "var(--ink-faint)" }}
-                              >
-                                /{staffing.fijosNeeded || 0}
-                              </span>
-                            </div>
-                            <div
-                              className="text-[9px]"
-                              style={{ color: "var(--ink-soft)" }}
-                            >
-                              {t("ui.Schedule.fijosAsignados", "Fijos asignados")}
-                            </div>
-                          </div>
-                          <div className="glass-sunken p-2 text-center">
-                            <div className="text-sm font-bold tabular-nums">
-                              {staffing.currentSfGuards || 0}
-                              <span
-                                className="font-normal"
-                                style={{ color: "var(--ink-faint)" }}
-                              >
-                                /{staffing.sacafrancosNeeded || 0}
-                              </span>
-                            </div>
-                            <div
-                              className="text-[9px]"
-                              style={{ color: "var(--ink-soft)" }}
-                            >
-                              {t("ui.Schedule.sfAsignados", "SF asignados")}
-                            </div>
-                          </div>
-                        </div>
-                        {/* Hiring recommendation */}
-                        {((staffing.fijosNeeded || 0) -
-                          (staffing.currentFijoGuards || 0) >
-                          0 ||
-                          (staffing.sacafrancosNeeded || 0) -
-                            (staffing.currentSfGuards || 0) >
-                            0) && (
-                          <div
-                            className="space-y-1 rounded-lg p-2"
-                            style={toneCard("bad", 8, 22)}
-                          >
-                            <div className="text-[10px] font-semibold">
-                              <AlertTriangle className="mr-1 inline h-3 w-3" />
-                              {t("ui.Schedule.haceFaltaContratar", "Hace falta contratar:")}
-                            </div>
-                            {(staffing.fijosNeeded || 0) -
-                              (staffing.currentFijoGuards || 0) >
-                              0 && (
-                              <div className="text-[10px] tabular-nums">
-                                •{" "}
-                                {t("ui.Schedule.nFijosMas", {
-                                  defaultValue: "{{n}} fijos más",
-                                  n:
-                                    (staffing.fijosNeeded || 0) -
-                                    (staffing.currentFijoGuards || 0),
-                                })}
-                              </div>
-                            )}
-                            {(staffing.sacafrancosNeeded || 0) -
-                              (staffing.currentSfGuards || 0) >
-                              0 && (
-                              <div className="text-[10px] tabular-nums">
-                                •{" "}
-                                {t("ui.Schedule.nSacafrancosMas", {
-                                  defaultValue: "{{n}} sacafrancos más",
-                                  n:
-                                    (staffing.sacafrancosNeeded || 0) -
-                                    (staffing.currentSfGuards || 0),
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        {staffing.sfRotation && (
-                          <div
-                            className="pt-1 text-[10px]"
-                            style={{
-                              color: "var(--ink-soft)",
-                              borderTop: "1px solid var(--hairline)",
-                            }}
-                          >
-                            {t("ui.Schedule.rotacionSf", "Rotación SF:")}{" "}
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--ink)" }}
-                            >
-                              {staffing.sfRotation.name}
-                            </span>{" "}
-                            ({staffing.sfRotation.dayShifts}D-
-                            {staffing.sfRotation.nightShifts}N-
-                            {staffing.sfRotation.restDays}L)
-                          </div>
-                        )}
-                        <div
-                          className="text-[10px]"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {t("ui.Schedule.demandaPico", "Demanda pico:")}{" "}
-                          <span
-                            className="font-semibold tabular-nums"
-                            style={{ color: "var(--ink)" }}
-                          >
-                            {staffing.peakDemand}
-                          </span>{" "}
-                          {t("ui.Schedule.puestosSimultaneos", "puestos simultáneos")}
-                        </div>
-
-                        {stationAlerts.length > 0 && (
-                          <div
-                            className="space-y-1.5 pt-2"
-                            style={{ borderTop: "1px solid var(--hairline)" }}
-                          >
-                            <div
-                              className="cg-eyebrow flex items-center gap-1 tabular-nums"
-                              style={{ color: "var(--bad-text)" }}
-                            >
-                              <AlertTriangle size={11} />
-                              {t("ui.Schedule.alertasPorPuesto", {
-                                defaultValue: "Alertas por puesto ({{n}})",
-                                n: stationAlerts.length,
-                              })}
-                            </div>
-                            <div className="max-h-[160px] space-y-1 overflow-y-auto pr-1">
-                              {stationAlerts.map((alert) => (
-                                <div
-                                  key={alert.stationId}
-                                  className="rounded px-2 py-1 text-[10px]"
-                                  style={toneCard("bad", 8, 22)}
-                                >
-                                  <div
-                                    className="truncate font-semibold"
-                                    style={{ color: "var(--ink)" }}
-                                  >
-                                    {stationLabel(alert)}
-                                  </div>
-                                  {alert.missingFijoCount > 0 && (
-                                    <div className="tabular-nums">
-                                      •{" "}
-                                      {t("ui.Schedule.fijosSinVigilante", {
-                                        defaultValue: "{{n}} fijo(s) sin vigilante",
-                                        n: alert.missingFijoCount,
-                                      })}
-                                    </div>
-                                  )}
-                                  {alert.uncoveredDays > 0 && (
-                                    <div className="tabular-nums">
-                                      •{" "}
-                                      {t("ui.Schedule.diasSinCubrirCubriendo", {
-                                        defaultValue: "{{n}} día(s) sin cubrir",
-                                        n: alert.uncoveredDays,
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="glass-sunken p-2 text-center">
-                          <div className="text-lg font-bold tabular-nums">
-                            {stations.length}
-                          </div>
-                          <div
-                            className="text-[9px]"
-                            style={{ color: "var(--ink-soft)" }}
-                          >
-                            {t("ui.Coverage.puestos", "Puestos")}
-                          </div>
-                        </div>
-                        <div className="glass-sunken p-2 text-center">
-                          <div className="text-lg font-bold tabular-nums">
-                            {assignments.length}
-                          </div>
-                          <div
-                            className="text-[9px]"
-                            style={{ color: "var(--ink-soft)" }}
-                          >
-                            {t("ui.Schedule.asignados", "Asignados")}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Coverage */}
-                    {(() => {
-                      const fijoPositions = positions.filter(
-                        (p) => p.type !== "sacafranco",
-                      );
-                      const covered = fijoPositions.filter((p) =>
-                        assignments.some((a) => a.positionId === p.id),
-                      ).length;
-                      const pct =
-                        fijoPositions.length > 0
-                          ? Math.round((covered / fijoPositions.length) * 100)
-                          : 0;
-
-                      return (
-                        <div
-                          className="pt-2"
-                          style={{ borderTop: "1px solid var(--hairline)" }}
-                        >
-                          <div className="mb-1 flex items-center justify-between">
-                            <span
-                              className="text-[10px]"
-                              style={{ color: "var(--ink-soft)" }}
-                            >
-                              {t(
-                                "ui.Schedule.coberturaDeFijos",
-                                "Cobertura de fijos",
-                              )}
-                            </span>
-                            <span className="text-[10px] font-semibold tabular-nums">
-                              {pct}%
-                            </span>
-                          </div>
-                          <MeterBar
-                            ariaLabel={t(
-                              "ui.Schedule.coberturaDeFijos",
-                              "Cobertura de fijos",
-                            )}
-                            height={6}
-                            pct={pct}
-                          />
-                          <div
-                            className="mt-1 text-[9px] tabular-nums"
-                            style={{ color: "var(--ink-soft)" }}
-                          >
-                            {t("ui.Schedule.posicionesCubiertas", {
-                              defaultValue: "{{cubiertas}}/{{total}} posiciones cubiertas",
-                              cubiertas: covered,
-                              total: fijoPositions.length,
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })()}
-                  </div>
-
-                  {/* Sacafrancos summary */}
-                  {sacafrancoData.length > 0 && (
-                    <div className="glass p-3">
-                      <div className="mb-2 flex items-center gap-1.5">
-                        <Shield size={12} style={{ color: "var(--ok-text)" }} />
-                        <h3 className="cg-eyebrow tabular-nums">
-                          {t("ui.Schedule.sacafrancosN", {
-                            defaultValue: "Sacafrancos ({{n}})",
-                            n: sacafrancoData.length,
-                          })}
-                        </h3>
-                      </div>
-                      <div className="space-y-1.5">
-                        {sacafrancoData.map((sf) => {
-                          const name = nombreDeVigilante(sf.guard, "?");
-                          const { availDays, coverDays } = sf;
-                          const stationsCovering = [
-                            ...new Set(
-                              sf.assignments
-                                .map(
-                                  (a) =>
-                                    stationsById.get(a.stationId)?.stationName,
-                                )
-                                .filter(Boolean),
-                            ),
-                          ];
-
-                          return (
-                            <div
-                              key={sf.guard?.id || name}
-                              className="glass-sunken space-y-0.5 px-2 py-1.5"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="truncate text-[10px] font-medium">
-                                  {name}
-                                </span>
-                                <span className="flex shrink-0 items-center gap-1">
-                                  <span
-                                    className="rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums"
-                                    style={tonePill("ok", 12)}
-                                  >
-                                    {t("ui.Schedule.nLibre", {
-                                      defaultValue: "{{n}} libre",
-                                      n: availDays,
-                                    })}
-                                  </span>
-                                  <span
-                                    className="rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums"
-                                    style={tonePill("warn", 12)}
-                                  >
-                                    {t("ui.Schedule.nCubre", {
-                                      defaultValue: "{{n}} cubre",
-                                      n: coverDays,
-                                    })}
-                                  </span>
-                                </span>
-                              </div>
-                              {stationsCovering.length > 0 && (
-                                <div
-                                  className="truncate text-[9px]"
-                                  style={{ color: "var(--ink-soft)" }}
-                                >
-                                  {t("ui.Schedule.cubreEstaciones", {
-                                    defaultValue: "Cubre: {{estaciones}}",
-                                    estaciones: stationsCovering.join(", "),
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </aside>
-              )}
             </div>
 
             {/* ─── Sheet hint bar ─── */}
@@ -7990,7 +7464,7 @@ export default function Schedule() {
                   <b>{t("ui.Schedule.dibujarUnBloqueDeTrabajo")}</b>{" "}
                   {t(
                     "ui.Schedule.ayudaLineaDeTiempo",
-                    "(p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea ·",
+                    "(p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar ·",
                   )}{" "}
                   <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b>{" "}
                   {view === "week"

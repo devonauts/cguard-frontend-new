@@ -12581,7 +12581,7 @@
       "avisoTopeHorasSemanales": "{{n}} agent(s) au-dessus du plafond d'heures hebdomadaires",
       "ayudaAgenda": "Liste par jour · touchez un poste pour ouvrir ce jour ·",
       "ayudaCalendario": "Le mois en un coup d'œil · Cliquez sur un poste ou sur « +N de plus » pour ouvrir ce jour ·",
-      "ayudaLineaDeTiempo": "(p. ex. 07:00 → 07:00 le lendemain) · Clic sur un bloc : détail / supprimer · Déposez un agent du panneau sur la ligne ·",
+      "ayudaLineaDeTiempo": "(p. ex. 07:00 → 07:00 le lendemain) · Clic sur un bloc : détail / supprimer ·",
       "ayudaModoFijo": "Reste sur ces horaires tous ses jours de travail, sans alterner. Cela prend quelques secondes.",
       "ayudaModoRango": "Un poste ponctuel pour chaque jour de la période, aux mêmes horaires.",
       "ayudaModoRotacion": "Intègre la rotation du poste : ses postes sont générés et il alternera jour et nuit. Cela prend quelques secondes.",
@@ -12961,6 +12961,8 @@
       "vistaCalendario": "Calendrier",
       "vistaDia": "Jour",
       "vistaHoja": "Feuille",
+      "vistaGeneral": "Vue d'ensemble",
+      "porEstacion": "Par station",
       "vistaSemana": "Semaine",
       "yFichaConNormalidadPero": "et pointe normalement, mais",
       "yaTieneTurnoEseDiaAviso": "A déjà un poste ce jour-là : le nouveau remplacera celui qui chevauche.",
@@ -19484,6 +19486,10 @@
       "vie": "Ven"
     },
     "AllStaff": {
+      "semaforoFalta": "Besoin d'un horaire ou d'un poste",
+      "semaforoCompleto": "Complet",
+      "semaforoDisponible": "Disponible",
+      "semaforoAyuda": "Selon le jour affiché (aujourd'hui, s'il est visible).",
       "asignarAPuesto": "Affecter à un poste",
       "asignarHorario": "Définir l’horaire",
       "ausente": "Absent",

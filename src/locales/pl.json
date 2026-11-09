@@ -12667,7 +12667,7 @@
       "avisoTopeHorasSemanales": "{{n}} ochroniarzy powyżej limitu godzin tygodniowych",
       "ayudaAgenda": "Lista wg dni · dotknij zmiany, aby otworzyć ten dzień ·",
       "ayudaCalendario": "Miesiąc w skrócie · Kliknij zmianę lub „+N więcej”, aby otworzyć ten dzień ·",
-      "ayudaLineaDeTiempo": "(np. 07:00 → 07:00 następnego dnia) · Kliknij blok: szczegóły / usuń · Upuść ochroniarza z panelu na oś czasu ·",
+      "ayudaLineaDeTiempo": "(np. 07:00 → 07:00 następnego dnia) · Kliknij blok: szczegóły / usuń ·",
       "ayudaModoFijo": "Zostaje w tych godzinach we wszystkie dni pracy, bez zmian. To potrwa kilka sekund.",
       "ayudaModoRango": "Pojedyncza zmiana na każdy dzień zakresu, w tych samych godzinach.",
       "ayudaModoRotacion": "Wchodzi do rotacji posterunku: jego zmiany zostaną wygenerowane i będzie zmieniał dzień i noc. To potrwa kilka sekund.",
@@ -13067,6 +13067,8 @@
       "vistaCalendario": "Kalendarz",
       "vistaDia": "Dzień",
       "vistaHoja": "Arkusz",
+      "vistaGeneral": "Przegląd",
+      "porEstacion": "Według stanowiska",
       "vistaSemana": "Tydzień",
       "yFichaConNormalidadPero": "i rejestruje się normalnie, ale",
       "yaTieneTurnoEseDiaAviso": "Ma już zmianę tego dnia: nowa zastąpi tę, która się nakłada.",
@@ -19783,6 +19785,10 @@
       "vie": "Pt"
     },
     "AllStaff": {
+      "semaforoFalta": "Potrzebuje grafiku lub posterunku",
+      "semaforoCompleto": "Pełny",
+      "semaforoDisponible": "Dostępny",
+      "semaforoAyuda": "Według oglądanego dnia (dziś, jeśli jest widoczny).",
       "asignarAPuesto": "Przypisz do posterunku",
       "asignarHorario": "Ustal grafik",
       "ausente": "Nieobecny",

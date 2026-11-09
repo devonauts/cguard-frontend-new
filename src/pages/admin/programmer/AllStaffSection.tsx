@@ -21,8 +21,10 @@ import OfficeHoursEditor from "@/components/schedule/OfficeHoursEditor";
 import { jornadaDesdeDias } from "@/lib/jornadaSemanal";
 import {
   accionDePersona,
+  contarDisponibilidad,
   contarPersonas,
   cubreLaVentana,
+  disponibilidadDe,
   dondeEstaEl,
   filtrarPersonas,
   normalizarPersonas,
@@ -32,6 +34,7 @@ import {
   tramosQueFaltan,
   ventanaVisible,
   type DiaDePersona,
+  type Disponibilidad,
   type FiltroDeTipo,
   type PersonaDelHorario,
   type TipoDePersona,
@@ -70,6 +73,14 @@ const TONO_TIPO: Record<TipoDePersona, Tone> = {
   office: "neutral",
 };
 
+/** The traffic light: amber = needs a schedule or a post, grey = busy that
+ *  day, green = free that day (can cover). */
+const COLOR_DISPONIBILIDAD: Record<Disponibilidad, string> = {
+  falta: "var(--warn)",
+  completo: "var(--ink-faint)",
+  disponible: "var(--ok)",
+};
+
 function leerAbierta(): boolean {
   try {
     return localStorage.getItem(CLAVE_ABIERTA) !== "0";
@@ -87,6 +98,7 @@ function AllStaffSection({
   tintFor,
   todayStr,
   refreshKey = 0,
+  fija = false,
   onAsignarAPuesto,
 }: {
   /** The SAME days the sheet paints, so the columns line up. */
@@ -101,10 +113,13 @@ function AllStaffSection({
   todayStr: string;
   /** Bumped by the parent after a change elsewhere (an assignment) to reload. */
   refreshKey?: number;
+  /** «Vista general»: the band IS the page, so it is always open (no chevron). */
+  fija?: boolean;
   onAsignarAPuesto: (p: { userId: string; name: string }) => void;
 }) {
   const { t, i18n } = useTranslation();
-  const [abierta, setAbierta] = useState(leerAbierta);
+  const [abiertaGuardada, setAbierta] = useState(leerAbierta);
+  const abierta = fija || abiertaGuardada;
   const [personas, setPersonas] = useState<PersonaDelHorario[] | null>(null);
   const [cargado, setCargado] = useState<{ desde: string; hasta: string } | null>(null);
   const [cargando, setCargando] = useState(false);
@@ -234,6 +249,16 @@ function AllStaffSection({
   /** Where people are «today» — or on the first visible day when today is out of view. */
   const fechaDonde =
     todayStr >= visDesde && todayStr <= visHasta ? todayStr : visDesde;
+
+  const semaforo = useMemo(
+    () => contarDisponibilidad(personas || [], fechaDonde),
+    [personas, fechaDonde],
+  );
+  const textoSemaforo: Record<Disponibilidad, string> = {
+    falta: t("ui.AllStaff.semaforoFalta", "Necesita horario o puesto"),
+    completo: t("ui.AllStaff.semaforoCompleto", "Completo"),
+    disponible: t("ui.AllStaff.semaforoDisponible", "Disponible"),
+  };
 
   const resumen = [
     t("ui.AllStaff.nVigilantes", { defaultValue: "{{count}} vigilantes", count: cuentas.guard }),
@@ -391,9 +416,10 @@ function AllStaffSection({
           style={{
             background: "var(--glass-sunken)",
             width: "max-content",
-            maxWidth: "min(720px, calc(100vw - 32px))",
+            maxWidth: "min(960px, calc(100vw - 32px))",
           }}
         >
+          {!fija && (
           <button
             aria-expanded={abierta}
             aria-label={
@@ -407,6 +433,7 @@ function AllStaffSection({
           >
             {abierta ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
+          )}
           <Users size={14} style={{ color: "var(--brand-text)", flexShrink: 0 }} />
           <div className="min-w-0 flex-1">
             <div className="whitespace-nowrap text-xs font-semibold uppercase tracking-wide">
@@ -434,6 +461,30 @@ function AllStaffSection({
                 count: cuentas.sinHorario,
               })}
             </button>
+          )}
+          {!!personas && (
+            <div
+              className="flex shrink-0 flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[10px]"
+              style={{ color: "var(--ink-soft)" }}
+              title={t(
+                "ui.AllStaff.semaforoAyuda",
+                "Según el día que estás mirando (hoy, si está a la vista).",
+              )}
+            >
+              {(["falta", "completo", "disponible"] as const).map((k) => (
+                <span key={k} className="inline-flex items-center gap-1 whitespace-nowrap">
+                  <span
+                    aria-hidden
+                    className="inline-block size-2 rounded-full"
+                    style={{ background: COLOR_DISPONIBILIDAD[k] }}
+                  />
+                  {textoSemaforo[k]}
+                  <b className="tabular-nums" style={{ color: "var(--ink)" }}>
+                    {semaforo[k]}
+                  </b>
+                </span>
+              ))}
+            </div>
           )}
         </div>
         </div>
@@ -493,6 +544,7 @@ function AllStaffSection({
 
           {filas.map((p) => {
             const accion = accionDePersona(p);
+            const estado = disponibilidadDe(p, fechaDonde);
             const dias = porPersona.get(p.userId);
             const abrirEditor = () => setEditar(p);
 
@@ -508,6 +560,19 @@ function AllStaffSection({
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex min-w-0 items-center gap-1.5">
+                      <span
+                        aria-label={textoSemaforo[estado]}
+                        className="inline-block size-2 shrink-0 rounded-full"
+                        role="img"
+                        style={{
+                          background: COLOR_DISPONIBILIDAD[estado],
+                          boxShadow:
+                            estado === "completo"
+                              ? undefined
+                              : `0 0 0 3px color-mix(in oklab, ${COLOR_DISPONIBILIDAD[estado]} 22%, transparent)`,
+                        }}
+                        title={textoSemaforo[estado]}
+                      />
                       <span
                         className="shrink-0 rounded px-1 py-px text-[8px] font-bold uppercase tracking-wide"
                         style={tonePill(TONO_TIPO[p.kind], 16)}

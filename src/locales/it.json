@@ -12581,7 +12581,7 @@
       "avisoTopeHorasSemanales": "{{n}} guardia/e oltre il tetto di ore settimanali",
       "ayudaAgenda": "Elenco per giorno · tocca un turno per aprire quel giorno ·",
       "ayudaCalendario": "Il mese a colpo d'occhio · Clic su un turno o su «+N altri» per aprire quel giorno ·",
-      "ayudaLineaDeTiempo": "(es. 07:00 → 07:00 del giorno dopo) · Clic su un blocco: dettaglio / elimina · Trascina una guardia dal pannello sulla linea ·",
+      "ayudaLineaDeTiempo": "(es. 07:00 → 07:00 del giorno dopo) · Clic su un blocco: dettaglio / elimina ·",
       "ayudaModoFijo": "Resta in questo orario in tutti i giorni di lavoro, senza alternare. Richiede qualche secondo.",
       "ayudaModoRango": "Un turno singolo per ogni giorno dell'intervallo, con gli stessi orari.",
       "ayudaModoRotacion": "Entra nella rotazione della postazione: i suoi turni vengono generati e alternerà giorno e notte. Richiede qualche secondo.",
@@ -12961,6 +12961,8 @@
       "vistaCalendario": "Calendario",
       "vistaDia": "Giorno",
       "vistaHoja": "Foglio",
+      "vistaGeneral": "Panoramica",
+      "porEstacion": "Per postazione",
       "vistaSemana": "Settimana",
       "yFichaConNormalidadPero": "e timbra normalmente, ma",
       "yaTieneTurnoEseDiaAviso": "Ha già un turno quel giorno: il nuovo sostituirà quello sovrapposto.",
@@ -19484,6 +19486,10 @@
       "vie": "Ven"
     },
     "AllStaff": {
+      "semaforoFalta": "Serve un orario o un posto",
+      "semaforoCompleto": "Completo",
+      "semaforoDisponible": "Disponibile",
+      "semaforoAyuda": "In base al giorno che stai guardando (oggi, se è visibile).",
       "asignarAPuesto": "Assegna a una postazione",
       "asignarHorario": "Assegna orario",
       "ausente": "Assente",

@@ -36,7 +36,7 @@ export interface UiAppearance {
   /** Cómo quiere ver el Horario esta persona. NO va por empresa: «prefiero la
    *  agenda» es un hábito suyo y de su pantalla, no de la empresa en la que
    *  esté. */
-  scheduler?: { view?: string; panel?: boolean; sf?: boolean };
+  scheduler?: { view?: string; panel?: boolean; sf?: boolean; vista?: string };
   /**
    * Los conmutadores «tarjetas ⇄ lista» de los listados, por clave.
    *

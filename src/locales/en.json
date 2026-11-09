@@ -12023,7 +12023,7 @@
       "avisoTopeHorasSemanales": "{{n}} guard(s) over the weekly hours cap",
       "ayudaAgenda": "List by day · tap a shift to open that day ·",
       "ayudaCalendario": "The month at a glance · Click a shift or “+N more” to open that day ·",
-      "ayudaLineaDeTiempo": "(e.g. 07:00 → 07:00 the next day) · Click a block: details / delete · Drop a guard from the panel onto the timeline ·",
+      "ayudaLineaDeTiempo": "(e.g. 07:00 → 07:00 the next day) · Click a block: details / delete ·",
       "ayudaModoFijo": "Stays on these hours every working day, without alternating. It takes a few seconds.",
       "ayudaModoRango": "One one-off shift for each day in the range, with the same hours.",
       "ayudaModoRotacion": "Joins the post's rotation: their shifts are generated and they'll alternate day and night. It takes a few seconds.",
@@ -12403,6 +12403,8 @@
       "vistaCalendario": "Calendar",
       "vistaDia": "Day",
       "vistaHoja": "Sheet",
+      "vistaGeneral": "Overview",
+      "porEstacion": "By station",
       "vistaSemana": "Week",
       "yFichaConNormalidadPero": "and clocks in as usual, but",
       "yaTieneTurnoEseDiaAviso": "Already has a shift that day: the new one will replace the overlapping one.",
@@ -18925,6 +18927,10 @@
       "vie": "Fri"
     },
     "AllStaff": {
+      "semaforoFalta": "Needs a schedule or post",
+      "semaforoCompleto": "Full",
+      "semaforoDisponible": "Available",
+      "semaforoAyuda": "Based on the day you are looking at (today, if it is in view).",
       "asignarAPuesto": "Assign to a post",
       "asignarHorario": "Set schedule",
       "ausente": "Absent",

@@ -460,3 +460,44 @@ export function unirPersonas(listas: PersonaDelHorario[][]): PersonaDelHorario[]
 
   return out;
 }
+
+/**
+ * The traffic light of a row (Mike, 2026-11-08):
+ *  · «falta»      amber — needs a schedule or a post;
+ *  · «completo»   grey  — scheduled and busy that day (working or on leave);
+ *  · «disponible» green — scheduled and free that day: can be called to cover.
+ * `fecha` is the day being looked at (today, or the first visible day).
+ */
+export type Disponibilidad = "falta" | "completo" | "disponible";
+
+export function disponibilidadDe(
+  p: Pick<PersonaDelHorario, "kind" | "hasSchedule" | "assigned" | "days"> &
+    Partial<Pick<PersonaDelHorario, "nextShiftDate">>,
+  fecha: string,
+): Disponibilidad {
+  if (accionDePersona(p)) return "falta";
+  const conHorario =
+    p.hasSchedule ||
+    (p.kind === "supervisor" && p.assigned) ||
+    (p.kind === "office" && !!p.nextShiftDate);
+
+  if (!conHorario) return "falta";
+  const dia = p.days.find((d) => d.date === fecha);
+
+  if (!dia) return "completo";
+  if (dia.status === "off") return "disponible";
+  if (dia.status === "none") return p.kind === "guard" ? "falta" : "completo";
+
+  return "completo";
+}
+
+export function contarDisponibilidad(
+  ps: PersonaDelHorario[],
+  fecha: string,
+): Record<Disponibilidad, number> {
+  const c: Record<Disponibilidad, number> = { falta: 0, completo: 0, disponible: 0 };
+
+  for (const p of ps) c[disponibilidadDe(p, fecha)] += 1;
+
+  return c;
+}

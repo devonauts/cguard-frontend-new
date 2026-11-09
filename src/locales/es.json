@@ -12023,7 +12023,7 @@
       "avisoTopeHorasSemanales": "{{n}} vigilante(s) por encima del tope de horas semanales",
       "ayudaAgenda": "Lista por día · toca un turno para abrir ese día ·",
       "ayudaCalendario": "El mes de un vistazo · Clic en un turno o en «+N más» para abrir ese día ·",
-      "ayudaLineaDeTiempo": "(p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea ·",
+      "ayudaLineaDeTiempo": "(p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar ·",
       "ayudaModoFijo": "Se queda en este horario todos sus días de trabajo, sin alternar. Tarda unos segundos.",
       "ayudaModoRango": "Un turno suelto por cada día del rango, con las mismas horas.",
       "ayudaModoRotacion": "Entra en la rotación del puesto: se generan sus turnos y irá alternando día y noche. Tarda unos segundos.",
@@ -12403,6 +12403,8 @@
       "vistaCalendario": "Calendario",
       "vistaDia": "Día",
       "vistaHoja": "Hoja",
+      "vistaGeneral": "Vista general",
+      "porEstacion": "Por estación",
       "vistaSemana": "Semana",
       "yFichaConNormalidadPero": "y ficha con normalidad, pero",
       "yaTieneTurnoEseDiaAviso": "Ya tiene turno ese día: el nuevo reemplazará al que se solape.",
@@ -18926,6 +18928,10 @@
       "vie": "Vie"
     },
     "AllStaff": {
+      "semaforoFalta": "Necesita horario o puesto",
+      "semaforoCompleto": "Completo",
+      "semaforoDisponible": "Disponible",
+      "semaforoAyuda": "Según el día que estás mirando (hoy, si está a la vista).",
       "asignarAPuesto": "Asignar a un puesto",
       "asignarHorario": "Asignar horario",
       "ausente": "Ausente",

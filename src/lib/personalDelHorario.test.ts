@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  disponibilidadDe,
   accionDePersona,
   contarPersonas,
   cubreLaVentana,
@@ -254,5 +255,49 @@ describe("Todo el personal · invitación pendiente y puestos sin turnos", () =>
     expect(sinTurnosEnElRango(vacio)).toBe(true);
     expect(sinTurnosEnElRango(conTurno)).toBe(false);
     expect(sinTurnosEnElRango(guardia)).toBe(false);
+  });
+});
+
+describe("disponibilidadDe — el semáforo de cada persona", () => {
+  const base = {
+    kind: "guard" as const,
+    hasSchedule: true,
+    assigned: true,
+    nextShiftDate: null,
+  };
+  const dia = (status: "work" | "off" | "absence" | "none") => ({
+    date: "2026-11-08",
+    status,
+    start: null,
+    end: null,
+    where: null,
+    absence: null,
+  });
+
+  it("ámbar si le falta puesto u horario", () => {
+    expect(disponibilidadDe({ ...base, assigned: false, days: [] }, "2026-11-08")).toBe("falta");
+    expect(
+      disponibilidadDe({ ...base, kind: "office", hasSchedule: false, days: [] }, "2026-11-08"),
+    ).toBe("falta");
+    expect(disponibilidadDe({ ...base, hasSchedule: false, days: [] }, "2026-11-08")).toBe("falta");
+    expect(disponibilidadDe({ ...base, days: [dia("none")] }, "2026-11-08")).toBe("falta");
+  });
+
+  it("gris si ese día trabaja o está ausente", () => {
+    expect(disponibilidadDe({ ...base, days: [dia("work")] }, "2026-11-08")).toBe("completo");
+    expect(disponibilidadDe({ ...base, days: [dia("absence")] }, "2026-11-08")).toBe("completo");
+  });
+
+  it("verde si ese día está libre", () => {
+    expect(disponibilidadDe({ ...base, days: [dia("off")] }, "2026-11-08")).toBe("disponible");
+  });
+
+  it("un supervisor con puesto y sin turnos visibles no es ámbar", () => {
+    expect(
+      disponibilidadDe(
+        { ...base, kind: "supervisor", hasSchedule: false, days: [] },
+        "2026-11-08",
+      ),
+    ).toBe("completo");
   });
 });
