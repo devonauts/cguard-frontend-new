@@ -9157,7 +9157,8 @@
       "asignarElPrimero": "Assign the first one",
       "asignarRelevo": "Assign relief guard",
       "puestoSinVigilantes": "This station has no guards yet",
-      "sonLosDiasDeDescanso": "These are the fixed guards' days off. Assign a relief guard to cover them."
+      "sonLosDiasDeDescanso": "These are the fixed guards' days off. Assign a relief guard to cover them.",
+      "sinAsignar": "unassigned"
     },
     "Stations": {
       "masAcciones": "More actions",

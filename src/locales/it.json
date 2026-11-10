@@ -9715,7 +9715,8 @@
       "asignarElPrimero": "Assegna il primo",
       "asignarRelevo": "Assegna sostituto",
       "puestoSinVigilantes": "Questo posto non ha ancora guardie",
-      "sonLosDiasDeDescanso": "Sono i giorni di riposo delle guardie fisse. Assegna un sostituto per coprirli."
+      "sonLosDiasDeDescanso": "Sono i giorni di riposo delle guardie fisse. Assegna un sostituto per coprirli.",
+      "sinAsignar": "non assegnato"
     },
     "Stations": {
       "masAcciones": "Altre azioni",

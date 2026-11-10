@@ -9157,7 +9157,8 @@
       "asignarElPrimero": "Atribuir o primeiro",
       "asignarRelevo": "Atribuir folguista",
       "puestoSinVigilantes": "Este posto ainda não tem vigilantes",
-      "sonLosDiasDeDescanso": "São os dias de folga dos vigilantes fixos. Atribua um folguista para cobri-los."
+      "sonLosDiasDeDescanso": "São os dias de folga dos vigilantes fixos. Atribua um folguista para cobri-los.",
+      "sinAsignar": "sem atribuição"
     },
     "Stations": {
       "masAcciones": "Mais ações",

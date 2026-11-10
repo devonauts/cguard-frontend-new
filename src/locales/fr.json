@@ -9715,7 +9715,8 @@
       "asignarElPrimero": "Affecter le premier",
       "asignarRelevo": "Affecter un relève",
       "puestoSinVigilantes": "Ce poste n'a pas encore d'agents",
-      "sonLosDiasDeDescanso": "Ce sont les jours de repos des agents fixes. Affectez un relève pour les couvrir."
+      "sonLosDiasDeDescanso": "Ce sont les jours de repos des agents fixes. Affectez un relève pour les couvrir.",
+      "sinAsignar": "non assigné"
     },
     "Stations": {
       "masAcciones": "Plus d'actions",

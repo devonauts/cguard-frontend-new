@@ -94,6 +94,15 @@ const monthName = (m: number, month: "long" | "short" = "long") => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
+/* El tipo de jornada sale de lib/jornadasDePlazas en español («Diurno»,
+   «Nocturno», «24 horas»): es una clave interna, se traduce AL PINTAR. */
+function tipoDeJornada(t: (k: string, d: string) => string, v: string): string {
+  if (v === "Diurno") return t("ui.codeTones.diurno", "Diurno");
+  if (v === "Nocturno") return t("ui.codeTones.nocturno", "Nocturno");
+  if (v === "24 horas") return t("ui.codeTones.veinticuatroHoras", "24 horas");
+  return v;
+}
+
 // Map JS getDay() (0=Sun) to our day keys
 const DAY_INDEX_MAP = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
 
@@ -1092,7 +1101,7 @@ export default function StationShifts({
                                         />
                                       )}
                                       <span className="text-xs font-semibold">
-                                        {slot.jornada.tipo}
+                                        {tipoDeJornada(t, slot.jornada.tipo)}
                                       </span>
                                     </div>
                                     <span
@@ -1584,7 +1593,7 @@ function WeekView({
                                 style={{ color: "var(--warn-text)" }}
                               />
                             )}
-                            {slot.jornada.tipo}
+                            {tipoDeJornada(t, slot.jornada.tipo)}
                           </span>
                           <span
                             className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums"
@@ -1879,7 +1888,7 @@ function DayView({
                         style={{ color: "var(--bad-text)" }}
                       >
                         {isNight ? <Moon size={11} /> : <Sun size={11} />}{" "}
-                        {slot.jornada.tipo} · sin asignar
+                        {tipoDeJornada(t, slot.jornada.tipo)} · {t("ui.StationShifts.sinAsignar", "sin asignar")}
                       </span>
                       {height > 36 && (
                         <span
@@ -1987,6 +1996,7 @@ function MonthView({
   onSelectDate: (d: string) => void;
   currentMonth: number;
 }) {
+  const { t } = useTranslation();
   const toDateKey = dateKey;
   const isToday = (d: Date) => toDateKey(d) === toDateKey(new Date());
   const weeks: (Date | null)[][] = [];
@@ -2056,7 +2066,7 @@ function MonthView({
                         return (
                           <div
                             key={i}
-                            title={`${slot.jornada.tipo}: ${slot.guardsAssigned}/${slot.guardsNeeded}`}
+                            title={`${tipoDeJornada(t, slot.jornada.tipo)}: ${slot.guardsAssigned}/${slot.guardsNeeded}`}
                             className="flex h-[8px] items-center justify-center rounded-full text-[6px] font-bold leading-none"
                             style={{
                               background: tono,

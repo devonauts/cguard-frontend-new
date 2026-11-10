@@ -9749,7 +9749,8 @@
       "asignarElPrimero": "Przypisz pierwszego",
       "asignarRelevo": "Przypisz zmiennika",
       "puestoSinVigilantes": "Ten posterunek nie ma jeszcze pracowników ochrony",
-      "sonLosDiasDeDescanso": "To dni wolne stałych pracowników ochrony. Przypisz zmiennika, aby je obsadzić."
+      "sonLosDiasDeDescanso": "To dni wolne stałych pracowników ochrony. Przypisz zmiennika, aby je obsadzić.",
+      "sinAsignar": "nieprzypisane"
     },
     "Stations": {
       "masAcciones": "Więcej akcji",

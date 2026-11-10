@@ -9157,7 +9157,8 @@
       "asignarElPrimero": "Asignar el primero",
       "asignarRelevo": "Asignar relevo",
       "puestoSinVigilantes": "Esta estación todavía no tiene vigilantes",
-      "sonLosDiasDeDescanso": "Son los días de descanso de los vigilantes fijos. Asigna un relevo para cubrirlos."
+      "sonLosDiasDeDescanso": "Son los días de descanso de los vigilantes fijos. Asigna un relevo para cubrirlos.",
+      "sinAsignar": "sin asignar"
     },
     "Stations": {
       "masAcciones": "Más acciones",

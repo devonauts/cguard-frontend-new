@@ -9715,7 +9715,8 @@
       "asignarElPrimero": "Eerste toewijzen",
       "asignarRelevo": "Aflosser toewijzen",
       "puestoSinVigilantes": "Deze post heeft nog geen beveiligers",
-      "sonLosDiasDeDescanso": "Dit zijn de rustdagen van de vaste beveiligers. Wijs een aflosser toe om ze te dekken."
+      "sonLosDiasDeDescanso": "Dit zijn de rustdagen van de vaste beveiligers. Wijs een aflosser toe om ze te dekken.",
+      "sinAsignar": "niet toegewezen"
     },
     "Stations": {
       "masAcciones": "Meer acties",

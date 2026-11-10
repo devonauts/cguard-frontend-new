@@ -9715,7 +9715,8 @@
       "asignarElPrimero": "Ersten zuweisen",
       "asignarRelevo": "Ablösung zuweisen",
       "puestoSinVigilantes": "Dieses Objekt hat noch keine Wachleute",
-      "sonLosDiasDeDescanso": "Das sind die Ruhetage der festen Wachleute. Weisen Sie eine Ablösung zu, um sie abzudecken."
+      "sonLosDiasDeDescanso": "Das sind die Ruhetage der festen Wachleute. Weisen Sie eine Ablösung zu, um sie abzudecken.",
+      "sinAsignar": "nicht zugewiesen"
     },
     "Stations": {
       "masAcciones": "Weitere Aktionen",
